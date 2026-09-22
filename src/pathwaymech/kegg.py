@@ -20,7 +20,9 @@ def kgml_to_pathway_record(root: ElementTree.Element) -> dict[str, Any]:
         reactions.append({"id": reaction_id, "label": reaction_id})
 
         for substrate in reaction.findall("substrate"):
-            participant_id = _kegg_curie(substrate.get("name") or "")
+            participant_id = _kegg_curie(substrate.get("name"))
+            if not participant_id:
+                continue
             participants[participant_id] = {"id": participant_id, "label": participant_id}
             edges.append(
                 _edge(
@@ -32,7 +34,9 @@ def kgml_to_pathway_record(root: ElementTree.Element) -> dict[str, Any]:
                 )
             )
         for product in reaction.findall("product"):
-            participant_id = _kegg_curie(product.get("name") or "")
+            participant_id = _kegg_curie(product.get("name"))
+            if not participant_id:
+                continue
             participants[participant_id] = {"id": participant_id, "label": participant_id}
             edges.append(
                 _edge(
@@ -83,7 +87,9 @@ def _edge(
     }
 
 
-def _kegg_curie(identifier: str) -> str:
+def _kegg_curie(identifier: str | None) -> str | None:
+    if not identifier:
+        return None
     clean = identifier.split()[-1]
     if ":" in clean:
         _, clean = clean.split(":", 1)

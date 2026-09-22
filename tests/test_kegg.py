@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from xml.etree import ElementTree
 
 import yaml
 
@@ -29,3 +30,21 @@ def test_kgml_seed_yaml_round_trips_as_pathway_record() -> None:
     text = yaml.safe_dump(kgml_to_pathway_record(load_kgml(FIXTURE)), sort_keys=False)
 
     assert validate_record(yaml.safe_load(text)).id == "KEGG:map00010"
+
+
+def test_kgml_skips_unnamed_reaction_participants() -> None:
+    root = ElementTree.fromstring(
+        """
+        <pathway name="path:map00010" title="Glycolysis / Gluconeogenesis">
+          <reaction id="1" name="rn:R01512">
+            <substrate id="11" />
+            <product id="12" name="cpd:C00197" />
+          </reaction>
+        </pathway>
+        """
+    )
+
+    record = validate_record(kgml_to_pathway_record(root))
+
+    assert record.participants == [{"id": "KEGG:C00197", "label": "KEGG:C00197"}]
+    assert [edge["predicate"] for edge in record.mechanistic_edges] == ["produces"]

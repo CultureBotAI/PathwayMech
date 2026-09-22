@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
@@ -72,7 +73,7 @@ def gpml_to_pathway_record(
         "description": f"WikiPathways GPML pathway {pathway_id}.",
         "pathway_type": "pathway-diagram",
         "taxa": _taxa(root),
-        "participants": list(node_by_graph_id.values()),
+        "participants": _unique_nodes(node_by_graph_id.values()),
         "reactions": reactions,
         "mechanistic_edges": [
             {"id": f"wikipathways-edge-{index}", **edge}
@@ -115,6 +116,13 @@ def _xref_curie(xref: ElementTree.Element) -> str | None:
     if not prefix or not identifier:
         return None
     return _format_curie(prefix, identifier)
+
+
+def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+    unique: dict[str, dict[str, str]] = {}
+    for node in nodes:
+        unique.setdefault(node["id"], node)
+    return list(unique.values())
 
 
 def _interaction_endpoints(

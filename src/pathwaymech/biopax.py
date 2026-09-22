@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
@@ -61,7 +62,7 @@ def biopax_to_pathway_record(
         "description": f"BioPAX pathway {fallback_id}.",
         "pathway_type": "biopax-pathway",
         "taxa": [],
-        "participants": list(participant_by_ref.values()),
+        "participants": _unique_nodes(participant_by_ref.values()),
         "reactions": reactions,
         "mechanistic_edges": [
             {"id": f"biopax-edge-{index}", **edge}
@@ -99,6 +100,13 @@ def _participants(
                 "label": _text_child(element, "displayName") or identifier,
             }
     return participants
+
+
+def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+    unique: dict[str, dict[str, str]] = {}
+    for node in nodes:
+        unique.setdefault(node["id"], node)
+    return list(unique.values())
 
 
 def _entity_references(
