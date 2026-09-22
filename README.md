@@ -28,7 +28,19 @@ into a pathway-specific schema:
 
 ```bash
 uv run pathwaymech-validate
+uv run pathwaymech-validate-sources
 uv run pathwaymech-check-provenance
+uv run pathwaymech-import-bigg tests/fixtures/bigg/model.json
+uv run pathwaymech-import-biopax Reactome tests/fixtures/biopax/R-TEST.owl
+uv run pathwaymech-import-bvbrc tests/fixtures/bvbrc/pathways.tsv
+uv run pathwaymech-import-gocam tests/fixtures/gocam/mini_model.json
+uv run pathwaymech-import-go tests/fixtures/go/go.obo
+uv run pathwaymech-import-kegg tests/fixtures/kegg/map00010.kgml
+uv run pathwaymech-import-mibig tests/fixtures/mibig/BGC0000001.json
+uv run pathwaymech-import-metacyc tests/fixtures/metacyc/pathways.dat
+uv run pathwaymech-import-modelseed tests/fixtures/modelseed/reactions.tsv
+uv run pathwaymech-import-rhea tests/fixtures/rhea/reactions.tsv
+uv run pathwaymech-import-wikipathways tests/fixtures/wikipathways/WPTEST.gpml
 uv run pathwaymech-render-pages
 uv run pytest
 ```

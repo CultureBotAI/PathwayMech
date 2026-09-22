@@ -5,17 +5,28 @@ from dataclasses import dataclass
 from typing import Any
 
 ALLOWED_CURIE_PREFIXES = {
+    "BV-BRC",
+    "BiGG",
     "CHEBI",
     "DOI",
     "EC",
+    "ECO",
     "GO",
+    "GO_REF",
     "GTDB",
     "KEGG",
+    "MIBiG",
     "MetaCyc",
+    "ModelSEED",
     "NCBITaxon",
+    "PathBank",
     "PMID",
     "RHEA",
+    "Reactome",
+    "SGD",
     "UniProtKB",
+    "WikiPathways",
+    "gomodel",
 }
 
 ALLOWED_EDGE_PREDICATES = {

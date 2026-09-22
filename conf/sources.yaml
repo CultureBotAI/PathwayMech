@@ -1,21 +1,99 @@
 sources:
-  - id: metacyc
-    label: MetaCyc
+  - id: go-cam
+    priority: 10
+    label: Gene Ontology Causal Activity Models
     enabled: true
-    role: pathway-reference
-    homepage: https://metacyc.org/
-  - id: kegg
-    label: KEGG PATHWAY
+    ingest_status: active
+    role: causal-activity-model
+    homepage: https://geneontology.org/docs/download-go-cams/
+    notes: Activity-centric causal models serialized as LinkML-defined JSON.
+  - id: wikipathways
+    priority: 20
+    label: WikiPathways
     enabled: true
+    ingest_status: active
     role: pathway-reference
-    homepage: https://www.genome.jp/kegg/pathway.html
+    homepage: https://www.wikipathways.org/
+    notes: CC0 monthly GPML and RDF releases for community-curated pathways.
   - id: rhea
+    priority: 30
     label: Rhea
     enabled: true
+    ingest_status: support
     role: reaction-reference
     homepage: https://www.rhea-db.org/
+    notes: CC-BY reaction reference for ChEBI-grounded biochemical reactions.
+  - id: mibig
+    priority: 40
+    label: MIBiG
+    enabled: true
+    ingest_status: active
+    role: biosynthetic-gene-cluster-reference
+    homepage: https://mibig.secondarymetabolites.org/
+    notes: CC-BY JSON source for experimentally characterized BGC records.
+  - id: reactome
+    priority: 50
+    label: Reactome
+    enabled: true
+    ingest_status: fixture
+    role: pathway-reference
+    homepage: https://reactome.org/
+    notes: CC0 and CC-BY BioPAX/SBML source with narrow microbial coverage.
+  - id: pathbank
+    priority: 60
+    label: PathBank
+    enabled: true
+    ingest_status: fixture
+    role: model-organism-pathway-reference
+    homepage: https://pathbank.org/
+    notes: >-
+      BioPAX, SBML, and PWML model-organism pathways with ChEBI, KEGG, and
+      UniProt links.
+  - id: metacyc
+    priority: 70
+    label: MetaCyc
+    enabled: true
+    ingest_status: license-gated
+    role: pathway-reference
+    homepage: https://metacyc.org/
+    notes: BioCyc flat-file and web-service source for curated metabolic pathways.
+  - id: kegg
+    priority: 80
+    label: KEGG PATHWAY
+    enabled: true
+    ingest_status: license-gated
+    role: pathway-reference
+    homepage: https://www.genome.jp/kegg/pathway.html
+    notes: License-gated KGML and REST source for pathway maps and modules.
   - id: go
+    priority: 90
     label: Gene Ontology
     enabled: true
+    ingest_status: active
     role: pathway-grounding
     homepage: https://geneontology.org/
+    notes: CC-BY ontology and GO-CAM source for process grounding.
+  - id: modelseed
+    priority: 100
+    label: ModelSEED Biochemistry
+    enabled: true
+    ingest_status: support
+    role: reaction-reference
+    homepage: https://modelseed.org/
+    notes: GitHub-hosted TSV/JSON biochemistry with KEGG and MetaCyc caveats.
+  - id: bigg
+    priority: 110
+    label: BiGG Models
+    enabled: true
+    ingest_status: support
+    role: organism-model-reference
+    homepage: https://bigg.ucsd.edu/
+    notes: Noncommercial SBML/JSON genome-scale models with reaction subsystems.
+  - id: bv-brc
+    priority: 120
+    label: BV-BRC Pathways and Subsystems
+    enabled: true
+    ingest_status: support
+    role: genome-pathway-membership
+    homepage: https://www.bv-brc.org/
+    notes: Genome-specific KEGG pathway calls and SEED subsystem assignments.
