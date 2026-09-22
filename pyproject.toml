@@ -1,0 +1,38 @@
+[project]
+name = "pathwaymech"
+version = "0.1.0"
+description = "Pathway mechanism curation for CultureBotAI"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+pathwaymech-check-docs = "pathwaymech.cli:check_docs_main"
+pathwaymech-check-provenance = "pathwaymech.cli:check_provenance_main"
+pathwaymech-deep-research-contract = "pathwaymech.cli:deep_research_contract_main"
+pathwaymech-render-pages = "pathwaymech.cli:render_pages_main"
+pathwaymech-run-qc = "pathwaymech.cli:run_qc_main"
+pathwaymech-seed-from-sources = "pathwaymech.cli:seed_from_sources_main"
+pathwaymech-validate = "pathwaymech.cli:validate_main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
