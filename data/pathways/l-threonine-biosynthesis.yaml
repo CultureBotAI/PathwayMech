@@ -1,0 +1,135 @@
+id: MetaCyc:HOMOSER-THRESYN-PWY
+label: L-threonine biosynthesis
+description: >-
+  L-threonine biosynthesis converts L-homoserine to L-threonine through
+  O-phospho-L-homoserine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.7.1.39
+    label: homoserine kinase
+  - id: EC:4.2.3.1
+    label: threonine synthase
+  - id: CHEBI:57476
+    label: L-homoserine
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:57590
+    label: O-phospho-L-homoserine
+  - id: CHEBI:456216
+    label: ADP
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:57926
+    label: L-threonine
+  - id: CHEBI:43474
+    label: phosphate
+reactions:
+  - id: RHEA:13986
+    label: homoserine kinase reaction
+  - id: RHEA:10841
+    label: L-threonine synthase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.7.1.39
+    predicate: catalyzes
+    object: RHEA:13986
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "EC numbers 2.7.1.39"
+      - reference_id: PMID:8973190
+        quote: "Homoserine kinase, an enzyme in the aspartate pathway of amino acid biosynthesis in Escherichia coli, catalyzes the conversion of L-homoserine to L-homoserine phosphate."
+  - id: edge-002
+    subject: CHEBI:57476
+    predicate: consumes
+    object: RHEA:13986
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "RHEA:13986 L-homoserine + ATP => O-phospho-L-homoserine + ADP + H(+)"
+  - id: edge-003
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:13986
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "RHEA:13986 L-homoserine + ATP => O-phospho-L-homoserine + ADP + H(+)"
+  - id: edge-004
+    subject: RHEA:13986
+    predicate: produces
+    object: CHEBI:57590
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "RHEA:13986 L-homoserine + ATP => O-phospho-L-homoserine + ADP + H(+)"
+  - id: edge-005
+    subject: RHEA:13986
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "RHEA:13986 L-homoserine + ATP => O-phospho-L-homoserine + ADP + H(+)"
+  - id: edge-006
+    subject: RHEA:13986
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "RHEA:13986 L-homoserine + ATP => O-phospho-L-homoserine + ADP + H(+)"
+  - id: edge-007
+    subject: RHEA:13986
+    predicate: precedes
+    object: RHEA:10841
+    evidence:
+      - reference_id: RHEA:13986
+        quote: "RHEA:13986 L-homoserine + ATP => O-phospho-L-homoserine + ADP + H(+)"
+      - reference_id: RHEA:10840
+        quote: "RHEA:10840 O-phospho-L-homoserine + H2O = L-threonine + phosphate"
+  - id: edge-008
+    subject: EC:4.2.3.1
+    predicate: catalyzes
+    object: RHEA:10841
+    evidence:
+      - reference_id: RHEA:10840
+        quote: "EC 4.2.3.1 threonine synthase"
+  - id: edge-009
+    subject: CHEBI:57590
+    predicate: consumes
+    object: RHEA:10841
+    evidence:
+      - reference_id: RHEA:10840
+        quote: "RHEA:10840 O-phospho-L-homoserine + H2O = L-threonine + phosphate"
+  - id: edge-010
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:10841
+    evidence:
+      - reference_id: RHEA:10840
+        quote: "RHEA:10840 O-phospho-L-homoserine + H2O = L-threonine + phosphate"
+  - id: edge-011
+    subject: RHEA:10841
+    predicate: produces
+    object: CHEBI:57926
+    evidence:
+      - reference_id: RHEA:10840
+        quote: "RHEA:10840 O-phospho-L-homoserine + H2O = L-threonine + phosphate"
+  - id: edge-012
+    subject: RHEA:10841
+    predicate: produces
+    object: CHEBI:43474
+    evidence:
+      - reference_id: RHEA:10840
+        quote: "RHEA:10840 O-phospho-L-homoserine + H2O = L-threonine + phosphate"
+references:
+  - id: MetaCyc:HOMOSER-THRESYN-PWY
+    title: MetaCyc L-threonine biosynthesis pathway
+  - id: RHEA:13986
+    title: Rhea biosynthetic homoserine kinase direction
+  - id: RHEA:10840
+    title: Rhea L-threonine synthase reaction
+  - id: RHEA:10841
+    title: Rhea left-to-right L-threonine synthase direction
+  - id: PMID:8973190
+    citation: Huo and Viola, Biochemistry, 1996
