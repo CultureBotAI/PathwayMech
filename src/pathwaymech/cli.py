@@ -368,14 +368,14 @@ def import_bvbrc_main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def _page(title: str, body: str) -> str:
+def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(title)}</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="{html.escape(stylesheet_href)}">
 </head>
 <body>
   <main>
@@ -388,7 +388,6 @@ def _page(title: str, body: str) -> str:
 
 
 def _record_page(record: object) -> str:
-    title = html.escape(record.label)
     edges = "\n".join(
         "<li>"
         f"{html.escape(edge['subject'])} "
@@ -397,7 +396,11 @@ def _record_page(record: object) -> str:
         "</li>"
         for edge in record.mechanistic_edges
     )
-    return _page(title, f"<p>{html.escape(record.description)}</p><ul>{edges}</ul>")
+    return _page(
+        record.label,
+        f"<p>{html.escape(record.description)}</p><ul>{edges}</ul>",
+        stylesheet_href="../style.css",
+    )
 
 
 def _slug(identifier: str) -> str:
