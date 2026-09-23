@@ -1,0 +1,142 @@
+id: MetaCyc:CYSTSYN-PWY
+label: L-cysteine biosynthesis I
+description: >-
+  L-cysteine biosynthesis I converts L-serine to L-cysteine through
+  O-acetyl-L-serine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.3.1.30
+    label: serine O-acetyltransferase
+  - id: EC:2.5.1.47
+    label: cysteine synthase
+  - id: CHEBI:33384
+    label: L-serine
+  - id: CHEBI:57288
+    label: acetyl-CoA
+  - id: CHEBI:58340
+    label: O-acetyl-L-serine
+  - id: CHEBI:57287
+    label: CoA
+  - id: CHEBI:29919
+    label: hydrogen sulfide
+  - id: CHEBI:35235
+    label: L-cysteine
+  - id: CHEBI:30089
+    label: acetate
+reactions:
+  - id: RHEA:24561
+    label: serine O-acetyltransferase reaction
+  - id: RHEA:14830
+    label: O-acetyl-L-serine sulfhydrylase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.3.1.30
+    predicate: catalyzes
+    object: RHEA:24561
+    evidence:
+      - reference_id: RHEA:24561
+        quote: "EC numbers 2.3.1.30"
+      - reference_id: PMID:12627979
+        quote: "Random-order ternary complex reaction mechanism of serine acetyltransferase from Escherichia coli."
+  - id: edge-002
+    subject: CHEBI:33384
+    predicate: consumes
+    object: RHEA:24561
+    evidence:
+      - reference_id: RHEA:24561
+        quote: "RHEA:24561 L-serine + acetyl-CoA => O-acetyl-L-serine + CoA"
+  - id: edge-003
+    subject: CHEBI:57288
+    predicate: consumes
+    object: RHEA:24561
+    evidence:
+      - reference_id: RHEA:24561
+        quote: "RHEA:24561 L-serine + acetyl-CoA => O-acetyl-L-serine + CoA"
+  - id: edge-004
+    subject: RHEA:24561
+    predicate: produces
+    object: CHEBI:58340
+    evidence:
+      - reference_id: RHEA:24561
+        quote: "RHEA:24561 L-serine + acetyl-CoA => O-acetyl-L-serine + CoA"
+  - id: edge-005
+    subject: RHEA:24561
+    predicate: produces
+    object: CHEBI:57287
+    evidence:
+      - reference_id: RHEA:24561
+        quote: "RHEA:24561 L-serine + acetyl-CoA => O-acetyl-L-serine + CoA"
+  - id: edge-006
+    subject: RHEA:24561
+    predicate: precedes
+    object: RHEA:14830
+    evidence:
+      - reference_id: RHEA:24561
+        quote: "RHEA:24561 L-serine + acetyl-CoA => O-acetyl-L-serine + CoA"
+      - reference_id: RHEA:14829
+        quote: "RHEA:14829 O-acetyl-L-serine + hydrogen sulfide = L-cysteine + acetate"
+      - reference_id: RHEA:14830
+        quote: "14829\t14830\t14831\t14832"
+  - id: edge-007
+    subject: EC:2.5.1.47
+    predicate: catalyzes
+    object: RHEA:14830
+    evidence:
+      - reference_id: RHEA:14829
+        quote: "EC 2.5.1.47 cysteine synthase"
+      - reference_id: RHEA:14830
+        quote: "14829\t14830\t14831\t14832"
+      - reference_id: PMID:16546401
+        quote: "O-Acetylserine sulfhydrylase-B (OASS-B, EC 2.5.1.47) is one of the two isozymes produced by Escherichia coli that catalyze the synthesis of L-cysteine from O-acetyl-L-serine and sulfide."
+  - id: edge-008
+    subject: CHEBI:58340
+    predicate: consumes
+    object: RHEA:14830
+    evidence:
+      - reference_id: RHEA:14829
+        quote: "RHEA:14829 O-acetyl-L-serine + hydrogen sulfide = L-cysteine + acetate"
+      - reference_id: RHEA:14830
+        quote: "14829\t14830\t14831\t14832"
+  - id: edge-009
+    subject: CHEBI:29919
+    predicate: consumes
+    object: RHEA:14830
+    evidence:
+      - reference_id: RHEA:14829
+        quote: "RHEA:14829 O-acetyl-L-serine + hydrogen sulfide = L-cysteine + acetate"
+      - reference_id: RHEA:14830
+        quote: "14829\t14830\t14831\t14832"
+  - id: edge-010
+    subject: RHEA:14830
+    predicate: produces
+    object: CHEBI:35235
+    evidence:
+      - reference_id: RHEA:14829
+        quote: "RHEA:14829 O-acetyl-L-serine + hydrogen sulfide = L-cysteine + acetate"
+      - reference_id: RHEA:14830
+        quote: "14829\t14830\t14831\t14832"
+  - id: edge-011
+    subject: RHEA:14830
+    predicate: produces
+    object: CHEBI:30089
+    evidence:
+      - reference_id: RHEA:14829
+        quote: "RHEA:14829 O-acetyl-L-serine + hydrogen sulfide = L-cysteine + acetate"
+      - reference_id: RHEA:14830
+        quote: "14829\t14830\t14831\t14832"
+references:
+  - id: MetaCyc:CYSTSYN-PWY
+    title: MetaCyc L-cysteine biosynthesis I pathway
+  - id: RHEA:24561
+    title: Rhea biosynthetic serine O-acetyltransferase direction
+  - id: RHEA:14829
+    title: Rhea cysteine synthase reaction
+  - id: RHEA:14830
+    title: Rhea left-to-right cysteine synthase direction
+  - id: PMID:12627979
+    citation: Hindson and Shaw, Biochemistry, 2003
+  - id: PMID:16546401
+    citation: Zhao et al., Protein Expression and Purification, 2006
