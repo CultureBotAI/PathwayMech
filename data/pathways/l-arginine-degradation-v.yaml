@@ -1,0 +1,216 @@
+id: MetaCyc:ARGDEGRAD-PWY
+label: L-arginine degradation V (arginine deiminase pathway)
+description: >-
+  L-arginine degradation through the arginine deiminase pathway converts
+  L-arginine to L-citrulline, L-ornithine, ammonium, hydrogencarbonate, and ATP
+  through arginine deiminase, catabolic ornithine carbamoyltransferase, and
+  carbamate kinase.
+pathway_type: amino-acid-degradation
+taxa:
+  - id: NCBITaxon:2242
+    label: Halobacterium salinarum
+participants:
+  - id: EC:3.5.3.6
+    label: arginine deiminase
+  - id: EC:2.1.3.3
+    label: ornithine carbamoyltransferase
+  - id: EC:2.7.2.2
+    label: carbamate kinase
+  - id: CHEBI:32682
+    label: L-arginine
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:57743
+    label: L-citrulline
+  - id: CHEBI:28938
+    label: ammonium
+  - id: CHEBI:43474
+    label: phosphate
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:58228
+    label: carbamoyl phosphate
+  - id: CHEBI:46911
+    label: L-ornithine
+  - id: CHEBI:456216
+    label: ADP
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:17544
+    label: hydrogencarbonate
+reactions:
+  - id: RHEA:19598
+    label: L-arginine deiminase reaction
+  - id: RHEA:19515
+    label: catabolic ornithine carbamoyltransferase reaction
+  - id: RHEA:10154
+    label: ATP-forming carbamate kinase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:3.5.3.6
+    predicate: catalyzes
+    object: RHEA:19598
+    evidence:
+      - reference_id: RHEA:19598
+        quote: "EC 3.5.3.6 arginine deiminase"
+      - reference_id: PMID:8759859
+        quote: "arcA gene coding for arginine deiminase"
+  - id: edge-002
+    subject: CHEBI:32682
+    predicate: consumes
+    object: RHEA:19598
+    evidence:
+      - reference_id: RHEA:19598
+        quote: "RHEA:19598 L-arginine + H2O => L-citrulline + NH4(+)"
+  - id: edge-003
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:19598
+    evidence:
+      - reference_id: RHEA:19598
+        quote: "RHEA:19598 L-arginine + H2O => L-citrulline + NH4(+)"
+  - id: edge-004
+    subject: RHEA:19598
+    predicate: produces
+    object: CHEBI:57743
+    evidence:
+      - reference_id: RHEA:19598
+        quote: "RHEA:19598 L-arginine + H2O => L-citrulline + NH4(+)"
+  - id: edge-005
+    subject: RHEA:19598
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:19598
+        quote: "RHEA:19598 L-arginine + H2O => L-citrulline + NH4(+)"
+  - id: edge-006
+    subject: RHEA:19598
+    predicate: precedes
+    object: RHEA:19515
+    evidence:
+      - reference_id: RHEA:19598
+        quote: "RHEA:19598 L-arginine + H2O => L-citrulline + NH4(+)"
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+  - id: edge-007
+    subject: EC:2.1.3.3
+    predicate: catalyzes
+    object: RHEA:19515
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "EC numbers 2.1.3.3"
+      - reference_id: PMID:8759859
+        quote: "catabolic ornithine transcarbamylase and the corresponding gene, arcB"
+  - id: edge-008
+    subject: CHEBI:57743
+    predicate: consumes
+    object: RHEA:19515
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+  - id: edge-009
+    subject: CHEBI:43474
+    predicate: consumes
+    object: RHEA:19515
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+  - id: edge-010
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:19515
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+  - id: edge-011
+    subject: RHEA:19515
+    predicate: produces
+    object: CHEBI:58228
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+  - id: edge-012
+    subject: RHEA:19515
+    predicate: produces
+    object: CHEBI:46911
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+  - id: edge-013
+    subject: RHEA:19515
+    predicate: precedes
+    object: RHEA:10154
+    evidence:
+      - reference_id: RHEA:19515
+        quote: "RHEA:19515 L-citrulline + phosphate + H(+) => carbamoyl phosphate + L-ornithine"
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-014
+    subject: EC:2.7.2.2
+    predicate: catalyzes
+    object: RHEA:10154
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "EC numbers 2.7.2.2"
+      - reference_id: PMID:8759859
+        quote: "arcC gene coding for carbamate kinase"
+  - id: edge-015
+    subject: CHEBI:58228
+    predicate: consumes
+    object: RHEA:10154
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-016
+    subject: CHEBI:456216
+    predicate: consumes
+    object: RHEA:10154
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-017
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:10154
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-018
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:10154
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-019
+    subject: RHEA:10154
+    predicate: produces
+    object: CHEBI:17544
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-020
+    subject: RHEA:10154
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+  - id: edge-021
+    subject: RHEA:10154
+    predicate: produces
+    object: CHEBI:30616
+    evidence:
+      - reference_id: RHEA:10154
+        quote: "RHEA:10154 carbamoyl phosphate + ADP + H2O + H(+) => hydrogencarbonate + NH4(+) + ATP"
+references:
+  - id: MetaCyc:ARGDEGRAD-PWY
+    title: MetaCyc L-arginine degradation V pathway
+  - id: RHEA:19598
+    title: Rhea L-arginine deiminase direction
+  - id: RHEA:19515
+    title: Rhea catabolic ornithine carbamoyltransferase direction
+  - id: RHEA:10154
+    title: Rhea ATP-forming carbamate kinase direction
+  - id: PMID:8759859
+    citation: Ruepp and Soppa, Journal of Bacteriology, 1996

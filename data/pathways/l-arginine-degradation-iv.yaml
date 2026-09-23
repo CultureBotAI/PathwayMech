@@ -1,0 +1,193 @@
+id: MetaCyc:ARGDEG-III-PWY
+label: L-arginine degradation IV (arginine decarboxylase/agmatine deiminase pathway)
+description: >-
+  L-arginine degradation through arginine decarboxylase and the agmatine
+  deiminase pathway converts L-arginine to agmatine, N-carbamoylputrescine,
+  putrescine, ammonium, and carbon dioxide.
+pathway_type: amino-acid-degradation
+taxa:
+  - id: NCBITaxon:287
+    label: Pseudomonas aeruginosa
+participants:
+  - id: EC:4.1.1.19
+    label: arginine decarboxylase
+  - id: EC:3.5.3.12
+    label: agmatine deiminase
+  - id: EC:3.5.1.53
+    label: N-carbamoylputrescine amidase
+  - id: CHEBI:32682
+    label: L-arginine
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:58145
+    label: agmatine
+  - id: CHEBI:16526
+    label: CO2
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:58318
+    label: N-carbamoylputrescine
+  - id: CHEBI:28938
+    label: ammonium
+  - id: CHEBI:326268
+    label: putrescine
+reactions:
+  - id: RHEA:17642
+    label: L-arginine decarboxylase reaction
+  - id: RHEA:18038
+    label: agmatine deiminase reaction
+  - id: RHEA:22285
+    label: N-carbamoylputrescine amidohydrolase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:4.1.1.19
+    predicate: catalyzes
+    object: RHEA:17642
+    evidence:
+      - reference_id: RHEA:17642
+        quote: "EC numbers 4.1.1.19"
+  - id: edge-002
+    subject: CHEBI:32682
+    predicate: consumes
+    object: RHEA:17642
+    evidence:
+      - reference_id: RHEA:17642
+        quote: "RHEA:17642 L-arginine + H(+) => agmatine + CO2"
+  - id: edge-003
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:17642
+    evidence:
+      - reference_id: RHEA:17642
+        quote: "RHEA:17642 L-arginine + H(+) => agmatine + CO2"
+  - id: edge-004
+    subject: RHEA:17642
+    predicate: produces
+    object: CHEBI:58145
+    evidence:
+      - reference_id: RHEA:17642
+        quote: "RHEA:17642 L-arginine + H(+) => agmatine + CO2"
+  - id: edge-005
+    subject: RHEA:17642
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:17642
+        quote: "RHEA:17642 L-arginine + H(+) => agmatine + CO2"
+  - id: edge-006
+    subject: RHEA:17642
+    predicate: precedes
+    object: RHEA:18038
+    evidence:
+      - reference_id: RHEA:17642
+        quote: "RHEA:17642 L-arginine + H(+) => agmatine + CO2"
+      - reference_id: RHEA:18038
+        quote: "RHEA:18038 agmatine + H2O => N-carbamoylputrescine + NH4(+)"
+  - id: edge-007
+    subject: EC:3.5.3.12
+    predicate: catalyzes
+    object: RHEA:18038
+    evidence:
+      - reference_id: RHEA:18038
+        quote: "EC numbers 3.5.3.12"
+      - reference_id: PMID:12634339
+        quote: "agmatine deiminase (the aguA product) and N-carbamoylputrescine amidohydrolase (the aguB product)"
+  - id: edge-008
+    subject: CHEBI:58145
+    predicate: consumes
+    object: RHEA:18038
+    evidence:
+      - reference_id: RHEA:18038
+        quote: "RHEA:18038 agmatine + H2O => N-carbamoylputrescine + NH4(+)"
+  - id: edge-009
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:18038
+    evidence:
+      - reference_id: RHEA:18038
+        quote: "RHEA:18038 agmatine + H2O => N-carbamoylputrescine + NH4(+)"
+  - id: edge-010
+    subject: RHEA:18038
+    predicate: produces
+    object: CHEBI:58318
+    evidence:
+      - reference_id: RHEA:18038
+        quote: "RHEA:18038 agmatine + H2O => N-carbamoylputrescine + NH4(+)"
+  - id: edge-011
+    subject: RHEA:18038
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:18038
+        quote: "RHEA:18038 agmatine + H2O => N-carbamoylputrescine + NH4(+)"
+  - id: edge-012
+    subject: RHEA:18038
+    predicate: precedes
+    object: RHEA:22285
+    evidence:
+      - reference_id: RHEA:18038
+        quote: "RHEA:18038 agmatine + H2O => N-carbamoylputrescine + NH4(+)"
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+  - id: edge-013
+    subject: EC:3.5.1.53
+    predicate: catalyzes
+    object: RHEA:22285
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "EC numbers 3.5.1.53"
+      - reference_id: PMID:12634339
+        quote: "agmatine deiminase (the aguA product) and N-carbamoylputrescine amidohydrolase (the aguB product)"
+  - id: edge-014
+    subject: CHEBI:58318
+    predicate: consumes
+    object: RHEA:22285
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+  - id: edge-015
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:22285
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+  - id: edge-016
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:22285
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+  - id: edge-017
+    subject: RHEA:22285
+    predicate: produces
+    object: CHEBI:326268
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+  - id: edge-018
+    subject: RHEA:22285
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+  - id: edge-019
+    subject: RHEA:22285
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:22285
+        quote: "RHEA:22285 N-carbamoylputrescine + H2O + 2 H(+) => putrescine + NH4(+) + CO2"
+references:
+  - id: MetaCyc:ARGDEG-III-PWY
+    title: MetaCyc L-arginine degradation IV pathway
+  - id: RHEA:17642
+    title: Rhea L-arginine decarboxylase direction
+  - id: RHEA:18038
+    title: Rhea agmatine deiminase direction
+  - id: RHEA:22285
+    title: Rhea N-carbamoylputrescine amidohydrolase direction
+  - id: PMID:12634339
+    citation: Nakada and Itoh, Microbiology, 2003
