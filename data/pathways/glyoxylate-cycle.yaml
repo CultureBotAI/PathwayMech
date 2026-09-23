@@ -1,0 +1,151 @@
+id: MetaCyc:GLYOXYLATE-BYPASS
+label: glyoxylate cycle
+description: >-
+  The glyoxylate cycle diverts D-threo-isocitrate to succinate and glyoxylate,
+  then condenses glyoxylate with acetyl-CoA and H2O to form (S)-malate.
+pathway_type: central-carbon-metabolism
+taxa:
+  - id: NCBITaxon:1773
+    label: Mycobacterium tuberculosis
+participants:
+  - id: EC:4.1.3.1
+    label: isocitrate lyase
+  - id: EC:2.3.3.9
+    label: malate synthase
+  - id: CHEBI:15562
+    label: D-threo-isocitrate
+  - id: CHEBI:36655
+    label: glyoxylate
+  - id: CHEBI:30031
+    label: succinate
+  - id: CHEBI:57288
+    label: acetyl-CoA
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:15589
+    label: (S)-malate
+  - id: CHEBI:57287
+    label: CoA
+  - id: CHEBI:15378
+    label: H+
+reactions:
+  - id: RHEA:13246
+    label: isocitrate lyase reaction
+  - id: RHEA:18182
+    label: malate synthase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:4.1.3.1
+    predicate: catalyzes
+    object: RHEA:13246
+    evidence:
+      - reference_id: RHEA:13245
+        quote: "EC 4.1.3.1 isocitrate lyase"
+      - reference_id: PMID:10572116
+        quote: >-
+          In this study we express and purify Icl, as well as AceA proteins,
+          and show that both exhibit isocitrate lyase activity.
+  - id: edge-002
+    subject: CHEBI:15562
+    predicate: consumes
+    object: RHEA:13246
+    evidence:
+      - reference_id: RHEA:13246
+        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
+  - id: edge-003
+    subject: RHEA:13246
+    predicate: produces
+    object: CHEBI:36655
+    evidence:
+      - reference_id: RHEA:13246
+        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
+  - id: edge-004
+    subject: RHEA:13246
+    predicate: produces
+    object: CHEBI:30031
+    evidence:
+      - reference_id: RHEA:13246
+        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
+  - id: edge-005
+    subject: RHEA:13246
+    predicate: precedes
+    object: RHEA:18182
+    evidence:
+      - reference_id: RHEA:13246
+        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+      - reference_id: PMID:12393860
+        quote: >-
+          This is a bypass of the tricarboxylic acid cycle in which isocitrate
+          lyase and malate synthase (GlcB) catalyze the net incorporation of
+          carbon during growth of microorganisms on acetate or fatty acids as
+          the primary carbon source.
+  - id: edge-006
+    subject: EC:2.3.3.9
+    predicate: catalyzes
+    object: RHEA:18182
+    evidence:
+      - reference_id: RHEA:18181
+        quote: "EC 2.3.3.9 malate synthase"
+      - reference_id: PMID:12393860
+        quote: >-
+          The glcB gene from M. tuberculosis, which encodes malate synthase,
+          was cloned, and GlcB was expressed in Escherichia coli.
+  - id: edge-007
+    subject: CHEBI:36655
+    predicate: consumes
+    object: RHEA:18182
+    evidence:
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+  - id: edge-008
+    subject: CHEBI:57288
+    predicate: consumes
+    object: RHEA:18182
+    evidence:
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+  - id: edge-009
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:18182
+    evidence:
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+  - id: edge-010
+    subject: RHEA:18182
+    predicate: produces
+    object: CHEBI:15589
+    evidence:
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+  - id: edge-011
+    subject: RHEA:18182
+    predicate: produces
+    object: CHEBI:57287
+    evidence:
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+  - id: edge-012
+    subject: RHEA:18182
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:18182
+        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+references:
+  - id: MetaCyc:GLYOXYLATE-BYPASS
+    title: MetaCyc glyoxylate cycle pathway
+  - id: RHEA:13245
+    title: Rhea isocitrate lyase reaction
+  - id: RHEA:13246
+    title: Rhea left-to-right isocitrate lyase direction
+  - id: RHEA:18181
+    title: Rhea malate synthase reaction
+  - id: RHEA:18182
+    title: Rhea left-to-right malate synthase direction
+  - id: PMID:10572116
+    citation: Honer Zu Bentrup et al., Journal of Bacteriology, 1999
+  - id: PMID:12393860
+    citation: Smith et al., Journal of Biological Chemistry, 2003
