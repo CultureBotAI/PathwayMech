@@ -1,0 +1,327 @@
+id: MetaCyc:PROSYN-PWY
+label: L-proline biosynthesis I (from L-glutamate)
+description: >-
+  L-proline biosynthesis I phosphorylates L-glutamate to L-glutamyl
+  5-phosphate, reduces it to L-glutamate 5-semialdehyde, cyclizes that
+  intermediate to (S)-1-pyrroline-5-carboxylate, and reduces it to L-proline.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.7.2.11
+    label: glutamate 5-kinase
+  - id: EC:1.2.1.41
+    label: glutamate-5-semialdehyde dehydrogenase
+  - id: EC:1.5.1.2
+    label: pyrroline-5-carboxylate reductase
+  - id: CHEBI:29985
+    label: L-glutamate
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:58274
+    label: L-glutamyl 5-phosphate
+  - id: CHEBI:456216
+    label: ADP
+  - id: CHEBI:57783
+    label: NADPH
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:58066
+    label: L-glutamate 5-semialdehyde
+  - id: CHEBI:43474
+    label: phosphate
+  - id: CHEBI:58349
+    label: NADP(+)
+  - id: CHEBI:17388
+    label: (S)-1-pyrroline-5-carboxylate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:60039
+    label: L-proline
+reactions:
+  - id: RHEA:14878
+    label: glutamate 5-kinase reaction
+  - id: RHEA:19543
+    label: glutamate-5-semialdehyde dehydrogenase reaction
+  - id: RHEA:28235
+    label: L-glutamate 5-semialdehyde cyclization
+  - id: RHEA:14111
+    label: NADPH-dependent pyrroline-5-carboxylate reductase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.7.2.11
+    predicate: catalyzes
+    object: RHEA:14878
+    evidence:
+      - reference_id: RHEA:14877
+        quote: "EC 2.7.2.11 glutamate 5-kinase"
+      - reference_id: PMID:6319365
+        quote: >-
+          gamma-Glutamyl kinase, the first enzyme of the proline biosynthetic
+          pathway, was purified to homogeneity from an Escherichia coli strain
+          resistant to the proline analog 3,4-dehydroproline.
+  - id: edge-002
+    subject: CHEBI:29985
+    predicate: consumes
+    object: RHEA:14878
+    evidence:
+      - reference_id: RHEA:14878
+        quote: "RHEA:14878 L-glutamate + ATP => L-glutamyl 5-phosphate + ADP"
+  - id: edge-003
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:14878
+    evidence:
+      - reference_id: RHEA:14878
+        quote: "RHEA:14878 L-glutamate + ATP => L-glutamyl 5-phosphate + ADP"
+  - id: edge-004
+    subject: RHEA:14878
+    predicate: produces
+    object: CHEBI:58274
+    evidence:
+      - reference_id: RHEA:14878
+        quote: "RHEA:14878 L-glutamate + ATP => L-glutamyl 5-phosphate + ADP"
+  - id: edge-005
+    subject: RHEA:14878
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:14878
+        quote: "RHEA:14878 L-glutamate + ATP => L-glutamyl 5-phosphate + ADP"
+  - id: edge-006
+    subject: RHEA:14878
+    predicate: precedes
+    object: RHEA:19543
+    evidence:
+      - reference_id: RHEA:14878
+        quote: "RHEA:14878 L-glutamate + ATP => L-glutamyl 5-phosphate + ADP"
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+      - reference_id: PMID:39514317
+        quote: >-
+          The pathway for synthesis of proline in Escherichia coli begins with
+          phosphorylation of L-glutamate to gamma-L-glutamyl 5-phosphate (GP)
+          by glutamate 5-kinase (GK, ProB in bacteria).
+  - id: edge-007
+    subject: EC:1.2.1.41
+    predicate: catalyzes
+    object: RHEA:19543
+    evidence:
+      - reference_id: RHEA:19541
+        quote: "EC 1.2.1.41 glutamate-5-semialdehyde dehydrogenase"
+      - reference_id: PMID:7035170
+        quote: >-
+          Glutamate-semialdehyde dehydrogenase, catalysing the reduction in
+          vivo of gamma-glutamyl phosphate to glutamate 5-semialdehyde in the
+          pathway of proline biosynthesis in Escherichia coli, has been
+          purified to homogeneity.
+  - id: edge-008
+    subject: CHEBI:58274
+    predicate: consumes
+    object: RHEA:19543
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+  - id: edge-009
+    subject: CHEBI:57783
+    predicate: consumes
+    object: RHEA:19543
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+  - id: edge-010
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:19543
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+  - id: edge-011
+    subject: RHEA:19543
+    predicate: produces
+    object: CHEBI:58066
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+  - id: edge-012
+    subject: RHEA:19543
+    predicate: produces
+    object: CHEBI:43474
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+  - id: edge-013
+    subject: RHEA:19543
+    predicate: produces
+    object: CHEBI:58349
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+  - id: edge-014
+    subject: RHEA:19543
+    predicate: precedes
+    object: RHEA:28235
+    evidence:
+      - reference_id: RHEA:19543
+        quote: >-
+          RHEA:19543 L-glutamyl 5-phosphate + NADPH + H(+) =>
+          L-glutamate 5-semialdehyde + phosphate + NADP(+)
+      - reference_id: RHEA:28235
+        quote: >-
+          RHEA:28235 L-glutamate 5-semialdehyde =>
+          (S)-1-pyrroline-5-carboxylate + H2O + H(+)
+      - reference_id: PMID:39514317
+        quote: >-
+          GP is subsequently reduced to L-glutamate 5-semialdehyde (GSA) by
+          gamma-glutamyl phosphate reductase (GPR, ProA in bacteria).
+  - id: edge-015
+    subject: CHEBI:58066
+    predicate: consumes
+    object: RHEA:28235
+    evidence:
+      - reference_id: RHEA:28235
+        quote: >-
+          RHEA:28235 L-glutamate 5-semialdehyde =>
+          (S)-1-pyrroline-5-carboxylate + H2O + H(+)
+  - id: edge-016
+    subject: RHEA:28235
+    predicate: produces
+    object: CHEBI:17388
+    evidence:
+      - reference_id: RHEA:28235
+        quote: >-
+          RHEA:28235 L-glutamate 5-semialdehyde =>
+          (S)-1-pyrroline-5-carboxylate + H2O + H(+)
+  - id: edge-017
+    subject: RHEA:28235
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: RHEA:28235
+        quote: >-
+          RHEA:28235 L-glutamate 5-semialdehyde =>
+          (S)-1-pyrroline-5-carboxylate + H2O + H(+)
+  - id: edge-018
+    subject: RHEA:28235
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:28235
+        quote: >-
+          RHEA:28235 L-glutamate 5-semialdehyde =>
+          (S)-1-pyrroline-5-carboxylate + H2O + H(+)
+  - id: edge-019
+    subject: RHEA:28235
+    predicate: precedes
+    object: RHEA:14111
+    evidence:
+      - reference_id: RHEA:28235
+        quote: >-
+          RHEA:28235 L-glutamate 5-semialdehyde =>
+          (S)-1-pyrroline-5-carboxylate + H2O + H(+)
+      - reference_id: RHEA:14111
+        quote: >-
+          RHEA:14111 (S)-1-pyrroline-5-carboxylate + NADPH + 2 H(+)
+          => L-proline + NADP(+)
+      - reference_id: PMID:39514317
+        quote: >-
+          GSA spontaneously cyclizes to (S)-1-pyrroline 5-carboxylate, which
+          is reduced to proline by pyrroline 5-carboxylate reductase (ProC).
+  - id: edge-020
+    subject: EC:1.5.1.2
+    predicate: catalyzes
+    object: RHEA:14111
+    evidence:
+      - reference_id: RHEA:14109
+        quote: "EC 1.5.1.2 pyrroline-5-carboxylate reductase"
+      - reference_id: PMID:6296787
+        quote: >-
+          The sequence of the Escherichia coli proC gene which encodes for
+          delta 1-pyrroline-5-carboxylate (PCA) reductase was determined.
+  - id: edge-021
+    subject: CHEBI:17388
+    predicate: consumes
+    object: RHEA:14111
+    evidence:
+      - reference_id: RHEA:14111
+        quote: >-
+          RHEA:14111 (S)-1-pyrroline-5-carboxylate + NADPH + 2 H(+)
+          => L-proline + NADP(+)
+  - id: edge-022
+    subject: CHEBI:57783
+    predicate: consumes
+    object: RHEA:14111
+    evidence:
+      - reference_id: RHEA:14111
+        quote: >-
+          RHEA:14111 (S)-1-pyrroline-5-carboxylate + NADPH + 2 H(+)
+          => L-proline + NADP(+)
+  - id: edge-023
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:14111
+    evidence:
+      - reference_id: RHEA:14111
+        quote: >-
+          RHEA:14111 (S)-1-pyrroline-5-carboxylate + NADPH + 2 H(+)
+          => L-proline + NADP(+)
+  - id: edge-024
+    subject: RHEA:14111
+    predicate: produces
+    object: CHEBI:60039
+    evidence:
+      - reference_id: RHEA:14111
+        quote: >-
+          RHEA:14111 (S)-1-pyrroline-5-carboxylate + NADPH + 2 H(+)
+          => L-proline + NADP(+)
+  - id: edge-025
+    subject: RHEA:14111
+    predicate: produces
+    object: CHEBI:58349
+    evidence:
+      - reference_id: RHEA:14111
+        quote: >-
+          RHEA:14111 (S)-1-pyrroline-5-carboxylate + NADPH + 2 H(+)
+          => L-proline + NADP(+)
+references:
+  - id: MetaCyc:PROSYN-PWY
+    title: MetaCyc L-proline biosynthesis I (from L-glutamate) pathway
+  - id: RHEA:14877
+    title: Rhea glutamate 5-kinase reaction
+  - id: RHEA:14878
+    title: Rhea left-to-right glutamate 5-kinase direction
+  - id: RHEA:19541
+    title: Rhea glutamate-5-semialdehyde dehydrogenase reaction
+  - id: RHEA:19543
+    title: Rhea L-glutamate 5-semialdehyde-producing direction
+  - id: RHEA:28234
+    title: Rhea spontaneous L-glutamate 5-semialdehyde cyclization reaction
+  - id: RHEA:28235
+    title: Rhea L-glutamate 5-semialdehyde cyclization direction
+  - id: RHEA:14109
+    title: Rhea NADPH-dependent pyrroline-5-carboxylate reductase reaction
+  - id: RHEA:14111
+    title: Rhea L-proline-producing pyrroline-5-carboxylate reductase direction
+  - id: PMID:6319365
+    citation: Smith et al., Journal of Bacteriology, 1984
+  - id: PMID:7035170
+    citation: Hayzer and Leisinger, European Journal of Biochemistry, 1982
+  - id: PMID:6296787
+    citation: Deutch et al., Nucleic Acids Research, 1982
+  - id: PMID:39514317
+    citation: Newton et al., Proceedings of the National Academy of Sciences, 2024
