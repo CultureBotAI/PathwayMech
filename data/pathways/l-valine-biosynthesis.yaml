@@ -1,0 +1,303 @@
+id: MetaCyc:VALSYN-PWY
+label: L-valine biosynthesis
+description: >-
+  L-valine biosynthesis condenses pyruvate to (2S)-2-acetolactate, reduces and
+  rearranges it to (2R)-2,3-dihydroxy-3-methylbutanoate, dehydrates that
+  intermediate to 3-methyl-2-oxobutanoate, and transaminates it to L-valine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.2.1.6
+    label: acetolactate synthase
+  - id: EC:1.1.1.86
+    label: ketol-acid reductoisomerase (NADP(+))
+  - id: EC:4.2.1.9
+    label: dihydroxy-acid dehydratase
+  - id: EC:2.6.1.42
+    label: branched-chain-amino-acid transaminase
+  - id: CHEBI:15361
+    label: pyruvate
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:58476
+    label: (2S)-2-acetolactate
+  - id: CHEBI:16526
+    label: CO2
+  - id: CHEBI:57783
+    label: NADPH
+  - id: CHEBI:49072
+    label: (2R)-2,3-dihydroxy-3-methylbutanoate
+  - id: CHEBI:58349
+    label: NADP(+)
+  - id: CHEBI:11851
+    label: 3-methyl-2-oxobutanoate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:29985
+    label: L-glutamate
+  - id: CHEBI:57762
+    label: L-valine
+  - id: CHEBI:16810
+    label: 2-oxoglutarate
+reactions:
+  - id: RHEA:25250
+    label: acetolactate synthase reaction
+  - id: RHEA:22070
+    label: acetohydroxy acid isomeroreductase reaction
+  - id: RHEA:24810
+    label: dihydroxy-acid dehydratase reaction
+  - id: RHEA:24815
+    label: L-valine aminotransferase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.2.1.6
+    predicate: catalyzes
+    object: RHEA:25250
+    evidence:
+      - reference_id: RHEA:25249
+        quote: "EC 2.2.1.6 acetolactate synthase"
+      - reference_id: PMID:3301814
+        quote: >-
+          Physiological implications of the specificity of acetohydroxy acid
+          synthase isozymes of enteric bacteria.
+  - id: edge-002
+    subject: CHEBI:15361
+    predicate: consumes
+    object: RHEA:25250
+    evidence:
+      - reference_id: RHEA:25250
+        quote: "RHEA:25250 2 pyruvate + H(+) => (2S)-2-acetolactate + CO2"
+  - id: edge-003
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:25250
+    evidence:
+      - reference_id: RHEA:25250
+        quote: "RHEA:25250 2 pyruvate + H(+) => (2S)-2-acetolactate + CO2"
+  - id: edge-004
+    subject: RHEA:25250
+    predicate: produces
+    object: CHEBI:58476
+    evidence:
+      - reference_id: RHEA:25250
+        quote: "RHEA:25250 2 pyruvate + H(+) => (2S)-2-acetolactate + CO2"
+  - id: edge-005
+    subject: RHEA:25250
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:25250
+        quote: "RHEA:25250 2 pyruvate + H(+) => (2S)-2-acetolactate + CO2"
+  - id: edge-006
+    subject: RHEA:25250
+    predicate: precedes
+    object: RHEA:22070
+    evidence:
+      - reference_id: MetaCyc:VALSYN-PWY
+        quote: >-
+          The pathway of valine biosynthesis is a four-step pathway that
+          shares all of its steps with the parallel pathway of isoleucine
+          biosynthesis.
+      - reference_id: RHEA:25250
+        quote: "RHEA:25250 2 pyruvate + H(+) => (2S)-2-acetolactate + CO2"
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+  - id: edge-007
+    subject: EC:1.1.1.86
+    predicate: catalyzes
+    object: RHEA:22070
+    evidence:
+      - reference_id: RHEA:22068
+        quote: "EC 1.1.1.86 ketol-acid reductoisomerase (NADP(+))"
+      - reference_id: PMID:27136273
+        quote: >-
+          Ketol-acid reductoisomerase (KARI) is a Mg(2+) -dependent enzyme in
+          the branched-chain amino acid biosynthesis pathway.
+  - id: edge-008
+    subject: CHEBI:58476
+    predicate: consumes
+    object: RHEA:22070
+    evidence:
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+  - id: edge-009
+    subject: CHEBI:57783
+    predicate: consumes
+    object: RHEA:22070
+    evidence:
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+  - id: edge-010
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:22070
+    evidence:
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+  - id: edge-011
+    subject: RHEA:22070
+    predicate: produces
+    object: CHEBI:49072
+    evidence:
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+  - id: edge-012
+    subject: RHEA:22070
+    predicate: produces
+    object: CHEBI:58349
+    evidence:
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+  - id: edge-013
+    subject: RHEA:22070
+    predicate: precedes
+    object: RHEA:24810
+    evidence:
+      - reference_id: RHEA:22070
+        quote: >-
+          RHEA:22070 (2S)-2-acetolactate + NADPH + H(+) =>
+          (2R)-2,3-dihydroxy-3-methylbutanoate + NADP(+)
+      - reference_id: RHEA:24810
+        quote: >-
+          RHEA:24810 (2R)-2,3-dihydroxy-3-methylbutanoate =>
+          3-methyl-2-oxobutanoate + H2O
+  - id: edge-014
+    subject: EC:4.2.1.9
+    predicate: catalyzes
+    object: RHEA:24810
+    evidence:
+      - reference_id: RHEA:24809
+        quote: "EC 4.2.1.9 dihydroxy-acid dehydratase"
+      - reference_id: PMID:13727223
+        quote: >-
+          Dihydroxy acid dehydrase: an enzyme involved in the biosynthesis of
+          isoleucine and valine.
+  - id: edge-015
+    subject: CHEBI:49072
+    predicate: consumes
+    object: RHEA:24810
+    evidence:
+      - reference_id: RHEA:24810
+        quote: >-
+          RHEA:24810 (2R)-2,3-dihydroxy-3-methylbutanoate =>
+          3-methyl-2-oxobutanoate + H2O
+  - id: edge-016
+    subject: RHEA:24810
+    predicate: produces
+    object: CHEBI:11851
+    evidence:
+      - reference_id: RHEA:24810
+        quote: >-
+          RHEA:24810 (2R)-2,3-dihydroxy-3-methylbutanoate =>
+          3-methyl-2-oxobutanoate + H2O
+  - id: edge-017
+    subject: RHEA:24810
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: RHEA:24810
+        quote: >-
+          RHEA:24810 (2R)-2,3-dihydroxy-3-methylbutanoate =>
+          3-methyl-2-oxobutanoate + H2O
+  - id: edge-018
+    subject: RHEA:24810
+    predicate: precedes
+    object: RHEA:24815
+    evidence:
+      - reference_id: RHEA:24810
+        quote: >-
+          RHEA:24810 (2R)-2,3-dihydroxy-3-methylbutanoate =>
+          3-methyl-2-oxobutanoate + H2O
+      - reference_id: RHEA:24815
+        quote: >-
+          RHEA:24815 3-methyl-2-oxobutanoate + L-glutamate =>
+          L-valine + 2-oxoglutarate
+  - id: edge-019
+    subject: EC:2.6.1.42
+    predicate: catalyzes
+    object: RHEA:24815
+    evidence:
+      - reference_id: RHEA:24813
+        quote: "EC 2.6.1.42 branched-chain-amino-acid transaminase"
+      - reference_id: PMID:378964
+        quote: >-
+          Transaminase B from Escherichia coli: quaternary structure,
+          amino-terminal sequence, substrate specificity, and absence of a
+          separate valine-alpha-ketoglutarate activity.
+  - id: edge-020
+    subject: CHEBI:11851
+    predicate: consumes
+    object: RHEA:24815
+    evidence:
+      - reference_id: RHEA:24815
+        quote: >-
+          RHEA:24815 3-methyl-2-oxobutanoate + L-glutamate =>
+          L-valine + 2-oxoglutarate
+  - id: edge-021
+    subject: CHEBI:29985
+    predicate: consumes
+    object: RHEA:24815
+    evidence:
+      - reference_id: RHEA:24815
+        quote: >-
+          RHEA:24815 3-methyl-2-oxobutanoate + L-glutamate =>
+          L-valine + 2-oxoglutarate
+  - id: edge-022
+    subject: RHEA:24815
+    predicate: produces
+    object: CHEBI:57762
+    evidence:
+      - reference_id: RHEA:24815
+        quote: >-
+          RHEA:24815 3-methyl-2-oxobutanoate + L-glutamate =>
+          L-valine + 2-oxoglutarate
+  - id: edge-023
+    subject: RHEA:24815
+    predicate: produces
+    object: CHEBI:16810
+    evidence:
+      - reference_id: RHEA:24815
+        quote: >-
+          RHEA:24815 3-methyl-2-oxobutanoate + L-glutamate =>
+          L-valine + 2-oxoglutarate
+references:
+  - id: MetaCyc:VALSYN-PWY
+    title: MetaCyc L-valine biosynthesis pathway
+  - id: RHEA:25249
+    title: Rhea acetolactate synthase reaction
+  - id: RHEA:25250
+    title: Rhea acetolactate synthase direction
+  - id: RHEA:22068
+    title: Rhea acetohydroxy acid isomeroreductase reaction
+  - id: RHEA:22070
+    title: Rhea biosynthetic acetohydroxy acid isomeroreductase direction
+  - id: RHEA:24809
+    title: Rhea dihydroxy-acid dehydratase reaction
+  - id: RHEA:24810
+    title: Rhea dihydroxy-acid-to-3-methyl-2-oxobutanoate direction
+  - id: RHEA:24813
+    title: Rhea branched-chain-amino-acid transaminase reaction
+  - id: RHEA:24815
+    title: Rhea biosynthetic L-valine transaminase direction
+  - id: PMID:3301814
+    citation: Barak et al., Journal of Bacteriology, 1987
+  - id: PMID:27136273
+    citation: Tadrowski et al., Chemistry - A European Journal, 2016
+  - id: PMID:13727223
+    citation: Myers, Journal of Biological Chemistry, 1961
+  - id: PMID:378964
+    citation: Lee-Peng et al., Journal of Bacteriology, 1979
