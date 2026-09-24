@@ -1,0 +1,384 @@
+id: MetaCyc:ILEUSYN-PWY
+label: L-isoleucine biosynthesis I (from threonine)
+description: >-
+  L-isoleucine biosynthesis I converts L-threonine to 2-oxobutanoate,
+  condenses 2-oxobutanoate with pyruvate to form
+  (S)-2-ethyl-2-hydroxy-3-oxobutanoate, reduces and rearranges that
+  intermediate to (2R,3R)-2,3-dihydroxy-3-methylpentanoate, dehydrates it to
+  (S)-3-methyl-2-oxopentanoate, and transaminates that 2-oxo acid to
+  L-isoleucine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:4.3.1.19
+    label: threonine ammonia-lyase
+  - id: EC:2.2.1.6
+    label: acetolactate synthase
+  - id: EC:1.1.1.86
+    label: ketol-acid reductoisomerase (NADP(+))
+  - id: EC:4.2.1.9
+    label: dihydroxy-acid dehydratase
+  - id: EC:2.6.1.42
+    label: branched-chain-amino-acid transaminase
+  - id: CHEBI:57926
+    label: L-threonine
+  - id: CHEBI:16763
+    label: 2-oxobutanoate
+  - id: CHEBI:28938
+    label: NH4(+)
+  - id: CHEBI:15361
+    label: pyruvate
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:49256
+    label: (S)-2-ethyl-2-hydroxy-3-oxobutanoate
+  - id: CHEBI:16526
+    label: CO2
+  - id: CHEBI:57783
+    label: NADPH
+  - id: CHEBI:49258
+    label: (2R,3R)-2,3-dihydroxy-3-methylpentanoate
+  - id: CHEBI:58349
+    label: NADP(+)
+  - id: CHEBI:35146
+    label: (S)-3-methyl-2-oxopentanoate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:29985
+    label: L-glutamate
+  - id: CHEBI:58045
+    label: L-isoleucine
+  - id: CHEBI:16810
+    label: 2-oxoglutarate
+reactions:
+  - id: RHEA:22109
+    label: L-threonine ammonia-lyase reaction
+  - id: RHEA:27655
+    label: acetohydroxybutanoate synthase reaction
+  - id: RHEA:13495
+    label: acetohydroxy acid isomeroreductase reaction
+  - id: RHEA:27695
+    label: dihydroxy-acid dehydratase reaction
+  - id: RHEA:24803
+    label: L-isoleucine aminotransferase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:4.3.1.19
+    predicate: catalyzes
+    object: RHEA:22109
+    evidence:
+      - reference_id: RHEA:22108
+        quote: "EC 4.3.1.19 threonine ammonia-lyase"
+      - reference_id: PMID:4573981
+        quote: >-
+          Threonine deaminase from Escherichia coli. I. Purification and
+          properties.
+  - id: edge-002
+    subject: CHEBI:57926
+    predicate: consumes
+    object: RHEA:22109
+    evidence:
+      - reference_id: RHEA:22109
+        quote: "RHEA:22109 L-threonine => 2-oxobutanoate + NH4(+)"
+  - id: edge-003
+    subject: RHEA:22109
+    predicate: produces
+    object: CHEBI:16763
+    evidence:
+      - reference_id: RHEA:22109
+        quote: "RHEA:22109 L-threonine => 2-oxobutanoate + NH4(+)"
+  - id: edge-004
+    subject: RHEA:22109
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:22109
+        quote: "RHEA:22109 L-threonine => 2-oxobutanoate + NH4(+)"
+  - id: edge-005
+    subject: RHEA:22109
+    predicate: precedes
+    object: RHEA:27655
+    evidence:
+      - reference_id: MetaCyc:ILEUSYN-PWY
+        quote: >-
+          The pathway of L-isoleucine biosynthesis from L-threonine is a
+          five-step pathway that shares its last four steps with the pathway of
+          L-valine biosynthesis.
+      - reference_id: RHEA:22109
+        quote: "RHEA:22109 L-threonine => 2-oxobutanoate + NH4(+)"
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+  - id: edge-006
+    subject: EC:2.2.1.6
+    predicate: catalyzes
+    object: RHEA:27655
+    evidence:
+      - reference_id: RHEA:27654
+        quote: "EC 2.2.1.6 acetolactate synthase"
+      - reference_id: PMID:2675968
+        quote: >-
+          Kinetics and mechanism of acetohydroxy acid synthase isozyme III
+          from Escherichia coli.
+  - id: edge-007
+    subject: CHEBI:16763
+    predicate: consumes
+    object: RHEA:27655
+    evidence:
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+  - id: edge-008
+    subject: CHEBI:15361
+    predicate: consumes
+    object: RHEA:27655
+    evidence:
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+  - id: edge-009
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:27655
+    evidence:
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+  - id: edge-010
+    subject: RHEA:27655
+    predicate: produces
+    object: CHEBI:49256
+    evidence:
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+  - id: edge-011
+    subject: RHEA:27655
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+  - id: edge-012
+    subject: RHEA:27655
+    predicate: precedes
+    object: RHEA:13495
+    evidence:
+      - reference_id: RHEA:27655
+        quote: >-
+          RHEA:27655 2-oxobutanoate + pyruvate + H(+) =>
+          (S)-2-ethyl-2-hydroxy-3-oxobutanoate + CO2
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+  - id: edge-013
+    subject: EC:1.1.1.86
+    predicate: catalyzes
+    object: RHEA:13495
+    evidence:
+      - reference_id: RHEA:13493
+        quote: "EC 1.1.1.86 ketol-acid reductoisomerase (NADP(+))"
+      - reference_id: PMID:4562389
+        quote: >-
+          Isoleucine and valine metabolism in Escherichia coli. 18. Induction
+          of acetohydroxy acid isomeroreductase
+  - id: edge-014
+    subject: CHEBI:49256
+    predicate: consumes
+    object: RHEA:13495
+    evidence:
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+  - id: edge-015
+    subject: CHEBI:57783
+    predicate: consumes
+    object: RHEA:13495
+    evidence:
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+  - id: edge-016
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:13495
+    evidence:
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+  - id: edge-017
+    subject: RHEA:13495
+    predicate: produces
+    object: CHEBI:49258
+    evidence:
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+  - id: edge-018
+    subject: RHEA:13495
+    predicate: produces
+    object: CHEBI:58349
+    evidence:
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+  - id: edge-019
+    subject: RHEA:13495
+    predicate: precedes
+    object: RHEA:27695
+    evidence:
+      - reference_id: RHEA:13495
+        quote: >-
+          RHEA:13495 (S)-2-ethyl-2-hydroxy-3-oxobutanoate + NADPH +
+          H(+) => (2R,3R)-2,3-dihydroxy-3-methylpentanoate + NADP(+)
+      - reference_id: RHEA:27695
+        quote: >-
+          RHEA:27695 (2R,3R)-2,3-dihydroxy-3-methylpentanoate =>
+          (S)-3-methyl-2-oxopentanoate + H2O
+  - id: edge-020
+    subject: EC:4.2.1.9
+    predicate: catalyzes
+    object: RHEA:27695
+    evidence:
+      - reference_id: RHEA:27694
+        quote: "EC 4.2.1.9 dihydroxy-acid dehydratase"
+      - reference_id: PMID:13727223
+        quote: >-
+          Dihydroxy acid dehydrase: an enzyme involved in the biosynthesis of
+          isoleucine and valine
+  - id: edge-021
+    subject: CHEBI:49258
+    predicate: consumes
+    object: RHEA:27695
+    evidence:
+      - reference_id: RHEA:27695
+        quote: >-
+          RHEA:27695 (2R,3R)-2,3-dihydroxy-3-methylpentanoate =>
+          (S)-3-methyl-2-oxopentanoate + H2O
+  - id: edge-022
+    subject: RHEA:27695
+    predicate: produces
+    object: CHEBI:35146
+    evidence:
+      - reference_id: RHEA:27695
+        quote: >-
+          RHEA:27695 (2R,3R)-2,3-dihydroxy-3-methylpentanoate =>
+          (S)-3-methyl-2-oxopentanoate + H2O
+  - id: edge-023
+    subject: RHEA:27695
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: RHEA:27695
+        quote: >-
+          RHEA:27695 (2R,3R)-2,3-dihydroxy-3-methylpentanoate =>
+          (S)-3-methyl-2-oxopentanoate + H2O
+  - id: edge-024
+    subject: RHEA:27695
+    predicate: precedes
+    object: RHEA:24803
+    evidence:
+      - reference_id: RHEA:27695
+        quote: >-
+          RHEA:27695 (2R,3R)-2,3-dihydroxy-3-methylpentanoate =>
+          (S)-3-methyl-2-oxopentanoate + H2O
+      - reference_id: RHEA:24803
+        quote: >-
+          RHEA:24803 (S)-3-methyl-2-oxopentanoate + L-glutamate =>
+          L-isoleucine + 2-oxoglutarate
+  - id: edge-025
+    subject: EC:2.6.1.42
+    predicate: catalyzes
+    object: RHEA:24803
+    evidence:
+      - reference_id: RHEA:24801
+        quote: "EC 2.6.1.42 branched-chain-amino-acid transaminase"
+      - reference_id: PMID:378964
+        quote: >-
+          Transaminase B from Escherichia coli: quaternary structure,
+          amino-terminal sequence, substrate specificity, and absence of a
+          separate valine-alpha-ketoglutarate activity.
+  - id: edge-026
+    subject: CHEBI:35146
+    predicate: consumes
+    object: RHEA:24803
+    evidence:
+      - reference_id: RHEA:24803
+        quote: >-
+          RHEA:24803 (S)-3-methyl-2-oxopentanoate + L-glutamate =>
+          L-isoleucine + 2-oxoglutarate
+  - id: edge-027
+    subject: CHEBI:29985
+    predicate: consumes
+    object: RHEA:24803
+    evidence:
+      - reference_id: RHEA:24803
+        quote: >-
+          RHEA:24803 (S)-3-methyl-2-oxopentanoate + L-glutamate =>
+          L-isoleucine + 2-oxoglutarate
+  - id: edge-028
+    subject: RHEA:24803
+    predicate: produces
+    object: CHEBI:58045
+    evidence:
+      - reference_id: RHEA:24803
+        quote: >-
+          RHEA:24803 (S)-3-methyl-2-oxopentanoate + L-glutamate =>
+          L-isoleucine + 2-oxoglutarate
+  - id: edge-029
+    subject: RHEA:24803
+    predicate: produces
+    object: CHEBI:16810
+    evidence:
+      - reference_id: RHEA:24803
+        quote: >-
+          RHEA:24803 (S)-3-methyl-2-oxopentanoate + L-glutamate =>
+          L-isoleucine + 2-oxoglutarate
+references:
+  - id: MetaCyc:ILEUSYN-PWY
+    title: MetaCyc L-isoleucine biosynthesis I (from threonine) pathway
+  - id: RHEA:22108
+    title: Rhea L-threonine ammonia-lyase reaction
+  - id: RHEA:22109
+    title: Rhea L-threonine-to-2-oxobutanoate direction
+  - id: RHEA:27654
+    title: Rhea acetohydroxybutanoate synthase reaction
+  - id: RHEA:27655
+    title: Rhea acetohydroxybutanoate synthase direction
+  - id: RHEA:13493
+    title: Rhea acetohydroxy acid isomeroreductase reaction
+  - id: RHEA:13495
+    title: Rhea biosynthetic acetohydroxy acid isomeroreductase direction
+  - id: RHEA:27694
+    title: Rhea dihydroxy-acid dehydratase reaction
+  - id: RHEA:27695
+    title: Rhea dihydroxy-acid-to-3-methyl-2-oxopentanoate direction
+  - id: RHEA:24801
+    title: Rhea branched-chain-amino-acid transaminase reaction
+  - id: RHEA:24803
+    title: Rhea biosynthetic L-isoleucine transaminase direction
+  - id: PMID:4573981
+    citation: Calhoun et al., Journal of Biological Chemistry, 1973
+  - id: PMID:2675968
+    citation: Gollop et al., Biochemistry, 1989
+  - id: PMID:4562389
+    citation: Ratzkin et al., Journal of Bacteriology, 1972
+  - id: PMID:13727223
+    citation: Myers, Journal of Biological Chemistry, 1961
+  - id: PMID:378964
+    citation: Lee-Peng et al., Journal of Bacteriology, 1979
