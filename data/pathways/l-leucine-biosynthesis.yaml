@@ -1,0 +1,315 @@
+id: MetaCyc:LEUSYN-PWY
+label: L-leucine biosynthesis
+description: >-
+  L-leucine biosynthesis extends 3-methyl-2-oxobutanoate with acetyl-CoA to
+  (2S)-2-isopropylmalate, isomerizes it to
+  (2R,3S)-3-isopropylmalate, oxidatively decarboxylates that intermediate to
+  4-methyl-2-oxopentanoate, and transaminates it to L-leucine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.3.3.13
+    label: 2-isopropylmalate synthase
+  - id: EC:4.2.1.33
+    label: 3-isopropylmalate dehydratase
+  - id: EC:1.1.1.85
+    label: 3-isopropylmalate dehydrogenase
+  - id: EC:2.6.1.42
+    label: branched-chain-amino-acid transaminase
+  - id: CHEBI:11851
+    label: 3-methyl-2-oxobutanoate
+  - id: CHEBI:57288
+    label: acetyl-CoA
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:1178
+    label: (2S)-2-isopropylmalate
+  - id: CHEBI:57287
+    label: CoA
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:35121
+    label: (2R,3S)-3-isopropylmalate
+  - id: CHEBI:57540
+    label: NAD(+)
+  - id: CHEBI:17865
+    label: 4-methyl-2-oxopentanoate
+  - id: CHEBI:16526
+    label: CO2
+  - id: CHEBI:57945
+    label: NADH
+  - id: CHEBI:29985
+    label: L-glutamate
+  - id: CHEBI:57427
+    label: L-leucine
+  - id: CHEBI:16810
+    label: 2-oxoglutarate
+reactions:
+  - id: RHEA:21525
+    label: 2-isopropylmalate synthase reaction
+  - id: RHEA:32289
+    label: 3-isopropylmalate dehydratase reaction
+  - id: RHEA:32272
+    label: 3-isopropylmalate dehydrogenase reaction
+  - id: RHEA:18323
+    label: L-leucine aminotransferase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.3.3.13
+    predicate: catalyzes
+    object: RHEA:21525
+    evidence:
+      - reference_id: RHEA:21524
+        quote: "EC 2.3.3.13 2-isopropylmalate synthase"
+      - reference_id: PMID:4976555
+        quote: >-
+          Alpha-isopropylmalate synthase from Salmonella typhimurium.
+          Purification and properties.
+  - id: edge-002
+    subject: CHEBI:11851
+    predicate: consumes
+    object: RHEA:21525
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+  - id: edge-003
+    subject: CHEBI:57288
+    predicate: consumes
+    object: RHEA:21525
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+  - id: edge-004
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:21525
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+  - id: edge-005
+    subject: RHEA:21525
+    predicate: produces
+    object: CHEBI:1178
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+  - id: edge-006
+    subject: RHEA:21525
+    predicate: produces
+    object: CHEBI:57287
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+  - id: edge-007
+    subject: RHEA:21525
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+  - id: edge-008
+    subject: RHEA:21525
+    predicate: precedes
+    object: RHEA:32289
+    evidence:
+      - reference_id: RHEA:21525
+        quote: >-
+          RHEA:21525 3-methyl-2-oxobutanoate + acetyl-CoA + H2O =>
+          (2S)-2-isopropylmalate + CoA + H(+)
+      - reference_id: RHEA:32289
+        quote: "RHEA:32289 (2S)-2-isopropylmalate => (2R,3S)-3-isopropylmalate"
+  - id: edge-009
+    subject: EC:4.2.1.33
+    predicate: catalyzes
+    object: RHEA:32289
+    evidence:
+      - reference_id: RHEA:32287
+        quote: "EC 4.2.1.33 3-isopropylmalate dehydratase"
+      - reference_id: PMID:14087357
+        quote: >-
+          The biosynthesis of leucine. II. The enzymic isomerization of
+          beta-carboxy-beta-hydroxyisocaproate and
+          alpha-hydroxy-beta-carboxyisocaproate.
+  - id: edge-010
+    subject: CHEBI:1178
+    predicate: consumes
+    object: RHEA:32289
+    evidence:
+      - reference_id: RHEA:32289
+        quote: "RHEA:32289 (2S)-2-isopropylmalate => (2R,3S)-3-isopropylmalate"
+  - id: edge-011
+    subject: RHEA:32289
+    predicate: produces
+    object: CHEBI:35121
+    evidence:
+      - reference_id: RHEA:32289
+        quote: "RHEA:32289 (2S)-2-isopropylmalate => (2R,3S)-3-isopropylmalate"
+  - id: edge-012
+    subject: RHEA:32289
+    predicate: precedes
+    object: RHEA:32272
+    evidence:
+      - reference_id: RHEA:32289
+        quote: "RHEA:32289 (2S)-2-isopropylmalate => (2R,3S)-3-isopropylmalate"
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+  - id: edge-013
+    subject: EC:1.1.1.85
+    predicate: catalyzes
+    object: RHEA:32272
+    evidence:
+      - reference_id: RHEA:32271
+        quote: "EC 1.1.1.85 3-isopropylmalate dehydrogenase"
+      - reference_id: PMID:14087358
+        quote: >-
+          The biosynthesis of leucine. III. The conversion of
+          alpha-hydroxy-beta-carboxyisocaproate to alpha-ketoisocaproate.
+  - id: edge-014
+    subject: CHEBI:35121
+    predicate: consumes
+    object: RHEA:32272
+    evidence:
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+  - id: edge-015
+    subject: CHEBI:57540
+    predicate: consumes
+    object: RHEA:32272
+    evidence:
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+  - id: edge-016
+    subject: RHEA:32272
+    predicate: produces
+    object: CHEBI:17865
+    evidence:
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+  - id: edge-017
+    subject: RHEA:32272
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+  - id: edge-018
+    subject: RHEA:32272
+    predicate: produces
+    object: CHEBI:57945
+    evidence:
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+  - id: edge-019
+    subject: RHEA:32272
+    predicate: precedes
+    object: RHEA:18323
+    evidence:
+      - reference_id: RHEA:32272
+        quote: >-
+          RHEA:32272 (2R,3S)-3-isopropylmalate + NAD(+) =>
+          4-methyl-2-oxopentanoate + CO2 + NADH
+      - reference_id: RHEA:18323
+        quote: >-
+          RHEA:18323 4-methyl-2-oxopentanoate + L-glutamate =>
+          L-leucine + 2-oxoglutarate
+  - id: edge-020
+    subject: EC:2.6.1.42
+    predicate: catalyzes
+    object: RHEA:18323
+    evidence:
+      - reference_id: RHEA:18321
+        quote: "EC 2.6.1.42 branched-chain-amino-acid transaminase"
+      - reference_id: PMID:378964
+        quote: >-
+          Transaminase B from Escherichia coli: quaternary structure,
+          amino-terminal sequence, substrate specificity, and absence of a
+          separate valine-alpha-ketoglutarate activity.
+  - id: edge-021
+    subject: CHEBI:17865
+    predicate: consumes
+    object: RHEA:18323
+    evidence:
+      - reference_id: RHEA:18323
+        quote: >-
+          RHEA:18323 4-methyl-2-oxopentanoate + L-glutamate =>
+          L-leucine + 2-oxoglutarate
+  - id: edge-022
+    subject: CHEBI:29985
+    predicate: consumes
+    object: RHEA:18323
+    evidence:
+      - reference_id: RHEA:18323
+        quote: >-
+          RHEA:18323 4-methyl-2-oxopentanoate + L-glutamate =>
+          L-leucine + 2-oxoglutarate
+  - id: edge-023
+    subject: RHEA:18323
+    predicate: produces
+    object: CHEBI:57427
+    evidence:
+      - reference_id: RHEA:18323
+        quote: >-
+          RHEA:18323 4-methyl-2-oxopentanoate + L-glutamate =>
+          L-leucine + 2-oxoglutarate
+  - id: edge-024
+    subject: RHEA:18323
+    predicate: produces
+    object: CHEBI:16810
+    evidence:
+      - reference_id: RHEA:18323
+        quote: >-
+          RHEA:18323 4-methyl-2-oxopentanoate + L-glutamate =>
+          L-leucine + 2-oxoglutarate
+references:
+  - id: MetaCyc:LEUSYN-PWY
+    title: MetaCyc L-leucine biosynthesis pathway
+  - id: RHEA:21524
+    title: Rhea 2-isopropylmalate synthase reaction
+  - id: RHEA:21525
+    title: Rhea 2-isopropylmalate synthase direction
+  - id: RHEA:32287
+    title: Rhea 3-isopropylmalate dehydratase reaction
+  - id: RHEA:32289
+    title: Rhea biosynthetic 3-isopropylmalate dehydratase direction
+  - id: RHEA:32271
+    title: Rhea 3-isopropylmalate dehydrogenase reaction
+  - id: RHEA:32272
+    title: Rhea 4-methyl-2-oxopentanoate-forming direction
+  - id: RHEA:18321
+    title: Rhea L-leucine transaminase reaction
+  - id: RHEA:18323
+    title: Rhea biosynthetic L-leucine transaminase direction
+  - id: PMID:4976555
+    citation: Kohlhaw et al., Journal of Biological Chemistry, 1969
+  - id: PMID:14087357
+    citation: Gross et al., Biochemistry, 1963
+  - id: PMID:14087358
+    citation: Burns et al., Biochemistry, 1963
+  - id: PMID:378964
+    citation: Lee-Peng et al., Journal of Bacteriology, 1979
