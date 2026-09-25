@@ -1,0 +1,402 @@
+id: MetaCyc:PPGPPMET-PWY
+label: ppGpp metabolism
+description: ppGpp metabolism interconverts GDP, GTP, guanosine 3'-diphosphate 5'-triphosphate, and guanosine 3',5'-bis(diphosphate) through kinase, pyrophosphokinase, and hydrolase reactions.
+pathway_type: metabolic-regulator-biosynthesis
+taxa:
+  - id: NCBITaxon:2
+    label: Bacteria
+participants:
+  - id: EC:2.7.4.6
+    label: nucleoside-diphosphate kinase
+  - id: EC:2.7.6.5
+    label: GTP diphosphokinase
+  - id: EC:3.1.7.2
+    label: guanosine-3',5'-bis(diphosphate) 3'-diphosphatase
+  - id: EC:3.6.1.40
+    label: guanosine-5'-triphosphate,3'-diphosphate diphosphatase
+  - id: CHEBI:58189
+    label: GDP
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:37565
+    label: GTP
+  - id: CHEBI:456216
+    label: ADP
+  - id: CHEBI:142410
+    label: guanosine 3'-diphosphate 5'-triphosphate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:33019
+    label: diphosphate
+  - id: CHEBI:15378
+    label: H(+)
+  - id: CHEBI:77828
+    label: guanosine 3',5'-bis(diphosphate)
+  - id: CHEBI:456215
+    label: AMP
+  - id: CHEBI:43474
+    label: phosphate
+reactions:
+  - id: RHEA:27687
+    label: GDP kinase reaction
+  - id: RHEA:33056
+    label: guanosine 3'-diphosphate 5'-triphosphate hydrolase reaction
+  - id: RHEA:28099
+    label: GDP pyrophosphokinase reaction
+  - id: RHEA:22089
+    label: GTP pyrophosphokinase reaction
+  - id: RHEA:14254
+    label: ppGpp 3'-diphosphatase reaction
+  - id: RHEA:13074
+    label: pppGpp 5'-phosphohydrolase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.7.4.6
+    predicate: catalyzes
+    object: RHEA:27687
+    evidence:
+      - reference_id: RHEA:27686
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.4.6"/>'
+  - id: edge-002
+    subject: CHEBI:58189
+    predicate: consumes
+    object: RHEA:27687
+    evidence:
+      - reference_id: RHEA:27687
+        quote: RHEA:27687 GDP + ATP => GTP + ADP
+  - id: edge-003
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:27687
+    evidence:
+      - reference_id: RHEA:27687
+        quote: RHEA:27687 GDP + ATP => GTP + ADP
+  - id: edge-004
+    subject: RHEA:27687
+    predicate: produces
+    object: CHEBI:37565
+    evidence:
+      - reference_id: RHEA:27687
+        quote: RHEA:27687 GDP + ATP => GTP + ADP
+  - id: edge-005
+    subject: RHEA:27687
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:27687
+        quote: RHEA:27687 GDP + ATP => GTP + ADP
+  - id: edge-006
+    subject: RHEA:27687
+    predicate: precedes
+    object: RHEA:22089
+    evidence:
+      - reference_id: RHEA:27687
+        quote: RHEA:27687 GDP + ATP => GTP + ADP
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-007
+    subject: EC:3.1.7.2
+    predicate: catalyzes
+    object: RHEA:33056
+    evidence:
+      - reference_id: RHEA:33055
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/3.1.7.2"/>'
+  - id: edge-008
+    subject: CHEBI:142410
+    predicate: consumes
+    object: RHEA:33056
+    evidence:
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+  - id: edge-009
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:33056
+    evidence:
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+  - id: edge-010
+    subject: RHEA:33056
+    predicate: produces
+    object: CHEBI:37565
+    evidence:
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+  - id: edge-011
+    subject: RHEA:33056
+    predicate: produces
+    object: CHEBI:33019
+    evidence:
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+  - id: edge-012
+    subject: RHEA:33056
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+  - id: edge-013
+    subject: RHEA:33056
+    predicate: precedes
+    object: RHEA:22089
+    evidence:
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-014
+    subject: EC:2.7.6.5
+    predicate: catalyzes
+    object: RHEA:28099
+    evidence:
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+      - reference_id: MetaCyc:GDPPYPHOSKIN-RXN
+        quote: "Enzymatic activity: GDP pyrophosphokinase (GDP/GTP pyrophosphokinase)"
+      - reference_id: MetaCyc:GDPPYPHOSKIN-RXN
+        quote: EC Number 2.7.6.5
+  - id: edge-015
+    subject: CHEBI:58189
+    predicate: consumes
+    object: RHEA:28099
+    evidence:
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+  - id: edge-016
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:28099
+    evidence:
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+  - id: edge-017
+    subject: RHEA:28099
+    predicate: produces
+    object: CHEBI:77828
+    evidence:
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+  - id: edge-018
+    subject: RHEA:28099
+    predicate: produces
+    object: CHEBI:456215
+    evidence:
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+  - id: edge-019
+    subject: RHEA:28099
+    predicate: precedes
+    object: RHEA:14254
+    evidence:
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-020
+    subject: EC:2.7.6.5
+    predicate: catalyzes
+    object: RHEA:22089
+    evidence:
+      - reference_id: RHEA:22088
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.6.5"/>'
+  - id: edge-021
+    subject: CHEBI:37565
+    predicate: consumes
+    object: RHEA:22089
+    evidence:
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+  - id: edge-022
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:22089
+    evidence:
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+  - id: edge-023
+    subject: RHEA:22089
+    predicate: produces
+    object: CHEBI:142410
+    evidence:
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+  - id: edge-024
+    subject: RHEA:22089
+    predicate: produces
+    object: CHEBI:456215
+    evidence:
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+  - id: edge-025
+    subject: RHEA:22089
+    predicate: precedes
+    object: RHEA:33056
+    evidence:
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+      - reference_id: RHEA:33056
+        quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate + H(+)
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-026
+    subject: RHEA:22089
+    predicate: precedes
+    object: RHEA:13074
+    evidence:
+      - reference_id: RHEA:22089
+        quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-027
+    subject: EC:3.1.7.2
+    predicate: catalyzes
+    object: RHEA:14254
+    evidence:
+      - reference_id: RHEA:14253
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/3.1.7.2"/>'
+  - id: edge-028
+    subject: CHEBI:77828
+    predicate: consumes
+    object: RHEA:14254
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+  - id: edge-029
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:14254
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+  - id: edge-030
+    subject: RHEA:14254
+    predicate: produces
+    object: CHEBI:58189
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+  - id: edge-031
+    subject: RHEA:14254
+    predicate: produces
+    object: CHEBI:33019
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+  - id: edge-032
+    subject: RHEA:14254
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+  - id: edge-033
+    subject: RHEA:14254
+    predicate: precedes
+    object: RHEA:27687
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+      - reference_id: RHEA:27687
+        quote: RHEA:27687 GDP + ATP => GTP + ADP
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-034
+    subject: RHEA:14254
+    predicate: precedes
+    object: RHEA:28099
+    evidence:
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+      - reference_id: RHEA:28099
+        quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+  - id: edge-035
+    subject: EC:3.6.1.40
+    predicate: catalyzes
+    object: RHEA:13074
+    evidence:
+      - reference_id: RHEA:13073
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/3.6.1.40"/>'
+  - id: edge-036
+    subject: CHEBI:142410
+    predicate: consumes
+    object: RHEA:13074
+    evidence:
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+  - id: edge-037
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:13074
+    evidence:
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+  - id: edge-038
+    subject: RHEA:13074
+    predicate: produces
+    object: CHEBI:77828
+    evidence:
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+  - id: edge-039
+    subject: RHEA:13074
+    predicate: produces
+    object: CHEBI:43474
+    evidence:
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+  - id: edge-040
+    subject: RHEA:13074
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+  - id: edge-041
+    subject: RHEA:13074
+    predicate: precedes
+    object: RHEA:14254
+    evidence:
+      - reference_id: RHEA:13074
+        quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine 3',5'-bis(diphosphate) + phosphate + H(+)
+      - reference_id: RHEA:14254
+        quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate + H(+)
+      - reference_id: MetaCyc:PPGPPMET-PWY
+        quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN // PPPGPPHYDRO-RXN
+references:
+  - id: MetaCyc:PPGPPMET-PWY
+    title: MetaCyc ppGpp metabolism pathway
+  - id: RHEA:27686
+    title: Rhea GDP kinase reaction
+  - id: RHEA:27687
+    title: Rhea GTP-forming direction
+  - id: RHEA:33055
+    title: Rhea guanosine 3'-diphosphate 5'-triphosphate hydrolase reaction
+  - id: RHEA:33056
+    title: Rhea GTP-forming pppGpp hydrolase direction
+  - id: RHEA:28099
+    title: Rhea ppGpp-forming GDP pyrophosphokinase direction
+  - id: MetaCyc:GDPPYPHOSKIN-RXN
+    title: MetaCyc GDP pyrophosphokinase reaction
+  - id: RHEA:22088
+    title: Rhea GTP pyrophosphokinase reaction
+  - id: RHEA:22089
+    title: Rhea pppGpp-forming direction
+  - id: RHEA:14253
+    title: Rhea ppGpp 3'-diphosphatase reaction
+  - id: RHEA:14254
+    title: Rhea GDP-forming ppGpp hydrolase direction
+  - id: RHEA:13073
+    title: Rhea pppGpp 5'-phosphohydrolase reaction
+  - id: RHEA:13074
+    title: Rhea ppGpp-forming pppGpp hydrolase direction
