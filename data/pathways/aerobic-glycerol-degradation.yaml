@@ -1,0 +1,166 @@
+id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+label: aerobic glycerol degradation
+description: >-
+  Aerobic glycerol degradation phosphorylates glycerol to sn-glycerol
+  3-phosphate and then oxidizes it to glycerone phosphate with ubiquinone-6 in
+  Saccharomyces cerevisiae S288C.
+pathway_type: carbohydrate-degradation
+taxa:
+  - id: NCBITaxon:559292
+    label: Saccharomyces cerevisiae S288C
+participants:
+  - id: SGD:S000001024
+    label: GUT1 Scer
+  - id: SGD:S000001417
+    label: GUT2 Scer
+  - id: CHEBI:17754
+    label: glycerol
+  - id: CHEBI:30616
+    label: ATP(4-)
+  - id: CHEBI:57597
+    label: sn-glycerol 3-phosphate(2-)
+  - id: CHEBI:456216
+    label: ADP(3-)
+  - id: CHEBI:15378
+    label: hydron
+  - id: CHEBI:52971
+    label: ubiquinone-6
+  - id: CHEBI:52970
+    label: ubiquinol-6
+  - id: CHEBI:57642
+    label: glycerone phosphate(2-)
+reactions:
+  - id: gomodel:GLYCEROL-KIN-RXN
+    label: glycerol kinase activity
+  - id: gomodel:RXN3O-9815
+    label: glycerol-3-phosphate dehydrogenase (quinone) activity
+mechanistic_edges:
+  - id: edge-001
+    subject: SGD:S000001024
+    predicate: enables
+    object: gomodel:GLYCEROL-KIN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"term":"SGD:S000001024"'
+  - id: edge-002
+    subject: CHEBI:17754
+    predicate: consumes
+    object: gomodel:GLYCEROL-KIN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_17754_GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_17754_GLYCEROL-KIN-RXN","term":"CHEBI:17754"'
+  - id: edge-003
+    subject: CHEBI:30616
+    predicate: consumes
+    object: gomodel:GLYCEROL-KIN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_30616_GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_30616_GLYCEROL-KIN-RXN","term":"CHEBI:30616"'
+  - id: edge-004
+    subject: gomodel:GLYCEROL-KIN-RXN
+    predicate: produces
+    object: CHEBI:57597
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_57597_GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_57597_GLYCEROL-KIN-RXN","term":"CHEBI:57597"'
+  - id: edge-005
+    subject: gomodel:GLYCEROL-KIN-RXN
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_456216_GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_456216_GLYCEROL-KIN-RXN","term":"CHEBI:456216"'
+  - id: edge-006
+    subject: gomodel:GLYCEROL-KIN-RXN
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_15378_GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_15378_GLYCEROL-KIN-RXN","term":"CHEBI:15378"'
+  - id: edge-007
+    subject: gomodel:GLYCEROL-KIN-RXN
+    predicate: precedes
+    object: gomodel:RXN3O-9815
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002413","downstream_activity":"gomodel:RXN3O-9815"'
+  - id: edge-008
+    subject: SGD:S000001417
+    predicate: enables
+    object: gomodel:RXN3O-9815
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"term":"SGD:S000001417"'
+  - id: edge-009
+    subject: CHEBI:57597
+    predicate: consumes
+    object: gomodel:RXN3O-9815
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_57597_GLYCEROL-KIN-RXN"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_57597_GLYCEROL-KIN-RXN","term":"CHEBI:57597"'
+  - id: edge-010
+    subject: CHEBI:52971
+    predicate: consumes
+    object: gomodel:RXN3O-9815
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_52971_RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_52971_RXN3O-9815","term":"CHEBI:52971"'
+  - id: edge-011
+    subject: gomodel:RXN3O-9815
+    predicate: produces
+    object: CHEBI:52970
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_52970_RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_52970_RXN3O-9815","term":"CHEBI:52970"'
+  - id: edge-012
+    subject: gomodel:RXN3O-9815
+    predicate: produces
+    object: CHEBI:57642
+    evidence:
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_57642_RXN3O-9815"'
+      - reference_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+        quote: '"id":"gomodel:CHEBI_57642_RXN3O-9815","term":"CHEBI:57642"'
+references:
+  - id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+    title: GO-CAM aerobic glycerol degradation model YeastPathways_AERO-GLYCEROL-CAT-PWY
