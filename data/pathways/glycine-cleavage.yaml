@@ -1,0 +1,209 @@
+id: gomodel:YeastPathways_GLYCLEAV-PWY
+label: glycine cleavage
+description: Glycine cleavage in Saccharomyces cerevisiae S288C uses GCV2 to decarboxylate glycine with lipoylprotein, GCV1 to transfer the aminomethyl group to tetrahydrofolate, and LPD1 to reoxidize dihydrolipoylprotein with NAD.
+pathway_type: amino-acid-degradation
+taxa:
+  - id: NCBITaxon:559292
+    label: Saccharomyces cerevisiae S288C
+participants:
+  - id: SGD:S000004801
+    label: GCV2 Scer
+  - id: CHEBI:15378
+    label: hydron
+  - id: CHEBI:15804
+    label: lipoylprotein
+  - id: CHEBI:57305
+    label: glycine zwitterion
+  - id: CHEBI:16882
+    label: S(8)-aminomethyldihydrolipoylprotein
+  - id: CHEBI:16526
+    label: carbon dioxide
+  - id: SGD:S000002426
+    label: GCV1 Scer
+  - id: CHEBI:67016
+    label: tetrahydrofolate
+  - id: CHEBI:20502
+    label: 5,10-methylenetetrahydrofolic acid
+  - id: CHEBI:28938
+    label: ammonium
+  - id: CHEBI:16194
+    label: dihydrolipoylprotein
+  - id: SGD:S000001876
+    label: LPD1 Scer
+  - id: CHEBI:57540
+    label: NAD(1-)
+  - id: CHEBI:57945
+    label: NADH(2-)
+reactions:
+  - id: gomodel:GCVP-RXN
+    label: glycine dehydrogenase (decarboxylating) activity
+  - id: gomodel:GCVT-RXN
+    label: aminomethyltransferase activity
+  - id: gomodel:RXN-8629
+    label: dihydrolipoyl dehydrogenase (NADH) activity
+mechanistic_edges:
+  - id: edge-001
+    subject: SGD:S000004801
+    predicate: enables
+    object: gomodel:GCVP-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR189W-MONOMER_GCVP-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:YMR189W-MONOMER_GCVP-RXN_controller","type":[{"type":"class","id":"SGD:S000004801"'
+  - id: edge-002
+    subject: CHEBI:15378
+    predicate: consumes
+    object: gomodel:GCVP-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_GCVP-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_15378_GCVP-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-003
+    subject: CHEBI:15804
+    predicate: consumes
+    object: gomodel:GCVP-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15804_RXN-8629"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_15804_RXN-8629","type":[{"type":"class","id":"CHEBI:15804"'
+  - id: edge-004
+    subject: CHEBI:57305
+    predicate: consumes
+    object: gomodel:GCVP-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57305_GCVP-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_57305_GCVP-RXN","type":[{"type":"class","id":"CHEBI:57305"'
+  - id: edge-005
+    subject: gomodel:GCVP-RXN
+    predicate: produces
+    object: CHEBI:16882
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16882_GCVP-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_16882_GCVP-RXN","type":[{"type":"class","id":"CHEBI:16882"'
+  - id: edge-006
+    subject: gomodel:GCVP-RXN
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_GCVP-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_16526_GCVP-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+  - id: edge-007
+    subject: SGD:S000002426
+    predicate: enables
+    object: gomodel:GCVT-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR019C-MONOMER_GCVT-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:YDR019C-MONOMER_GCVT-RXN_controller","type":[{"type":"class","id":"SGD:S000002426"'
+  - id: edge-008
+    subject: CHEBI:16882
+    predicate: consumes
+    object: gomodel:GCVT-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16882_GCVP-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_16882_GCVP-RXN","type":[{"type":"class","id":"CHEBI:16882"'
+  - id: edge-009
+    subject: CHEBI:67016
+    predicate: consumes
+    object: gomodel:GCVT-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_GLYCLEAV-PWY/65692e7e00001185"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:YeastPathways_GLYCLEAV-PWY/65692e7e00001185","type":[{"type":"class","id":"CHEBI:67016"'
+  - id: edge-010
+    subject: gomodel:GCVT-RXN
+    predicate: produces
+    object: CHEBI:20502
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_20502_GCVT-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_20502_GCVT-RXN","type":[{"type":"class","id":"CHEBI:20502"'
+  - id: edge-011
+    subject: gomodel:GCVT-RXN
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28938_GCVT-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_28938_GCVT-RXN","type":[{"type":"class","id":"CHEBI:28938"'
+  - id: edge-012
+    subject: gomodel:GCVT-RXN
+    predicate: produces
+    object: CHEBI:16194
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16194_GCVT-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_16194_GCVT-RXN","type":[{"type":"class","id":"CHEBI:16194"'
+  - id: edge-013
+    subject: SGD:S000001876
+    predicate: enables
+    object: gomodel:RXN-8629
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YFL018C-MONOMER_RXN-8629_controller"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:YFL018C-MONOMER_RXN-8629_controller","type":[{"type":"class","id":"SGD:S000001876"'
+  - id: edge-014
+    subject: CHEBI:16194
+    predicate: consumes
+    object: gomodel:RXN-8629
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16194_GCVT-RXN"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_16194_GCVT-RXN","type":[{"type":"class","id":"CHEBI:16194"'
+  - id: edge-015
+    subject: CHEBI:57540
+    predicate: consumes
+    object: gomodel:RXN-8629
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_RXN-8629"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_57540_RXN-8629","type":[{"type":"class","id":"CHEBI:57540"'
+  - id: edge-016
+    subject: gomodel:RXN-8629
+    predicate: produces
+    object: CHEBI:15804
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15804_RXN-8629"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_15804_RXN-8629","type":[{"type":"class","id":"CHEBI:15804"'
+  - id: edge-017
+    subject: gomodel:RXN-8629
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-8629"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_15378_RXN-8629","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-018
+    subject: gomodel:RXN-8629
+    predicate: produces
+    object: CHEBI:57945
+    evidence:
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_RXN-8629"'
+      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+        quote: '"id":"gomodel:CHEBI_57945_RXN-8629","type":[{"type":"class","id":"CHEBI:57945"'
+references:
+  - id: gomodel:YeastPathways_GLYCLEAV-PWY
+    title: GO-CAM glycine cleavage model YeastPathways_GLYCLEAV-PWY
