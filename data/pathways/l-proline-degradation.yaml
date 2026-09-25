@@ -1,0 +1,198 @@
+id: gomodel:YeastPathways_PROUT-PWY
+label: L-proline degradation
+description: L-proline degradation in Saccharomyces cerevisiae S288C oxidizes L-proline
+  to (S)-1-pyrroline-5-carboxylate, hydrates that intermediate to L-glutamic 5-semialdehyde,
+  and oxidizes it to L-glutamate.
+pathway_type: amino-acid-degradation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: SGD:S000004132
+  label: PUT1 Scer
+- id: CHEBI:60039
+  label: L-proline zwitterion
+- id: CHEBI:36141
+  label: quinone
+- id: CHEBI:17594
+  label: hydroquinone
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:17388
+  label: (S)-1-pyrroline-5-carboxylate
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:58066
+  label: L-glutamic 5-semialdehyde zwitterion
+- id: SGD:S000001079
+  label: PUT2 Scer
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:57945
+  label: NADH(2-)
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+reactions:
+- id: gomodel:RXN-14903
+  label: proline dehydrogenase activity
+- id: gomodel:SPONTPRO-RXN
+  label: (S)-1-pyrroline-5-carboxylate + H+ + H2O <-> L-glutamate-5-semialdehyde
+- id: gomodel:RXN-14116
+  label: L-glutamate gamma-semialdehyde dehydrogenase (NAD+) activity
+mechanistic_edges:
+- id: edge-001
+  subject: SGD:S000004132
+  predicate: enables
+  object: gomodel:RXN-14903
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14903","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR142W-MONOMER_RXN-14903_controller"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:YLR142W-MONOMER_RXN-14903_controller","type":[{"type":"class","id":"SGD:S000004132"'
+- id: edge-002
+  subject: CHEBI:60039
+  predicate: consumes
+  object: gomodel:RXN-14903
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14903","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_60039_RXN-14903"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_60039_RXN-14903","type":[{"type":"class","id":"CHEBI:60039"'
+- id: edge-003
+  subject: CHEBI:36141
+  predicate: consumes
+  object: gomodel:RXN-14903
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14903","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_36141_RXN-14903"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_36141_RXN-14903","type":[{"type":"class","id":"CHEBI:36141"'
+- id: edge-004
+  subject: gomodel:RXN-14903
+  predicate: produces
+  object: CHEBI:17594
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14903","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17594_RXN-14903"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_17594_RXN-14903","type":[{"type":"class","id":"CHEBI:17594"'
+- id: edge-005
+  subject: gomodel:RXN-14903
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14903","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-14903"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_15378_RXN-14903","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-006
+  subject: gomodel:RXN-14903
+  predicate: produces
+  object: CHEBI:17388
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14903","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17388_RXN-14903"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_17388_RXN-14903","type":[{"type":"class","id":"CHEBI:17388"'
+- id: edge-007
+  subject: CHEBI:17388
+  predicate: consumes
+  object: gomodel:SPONTPRO-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:SPONTPRO-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17388_RXN-14903"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_17388_RXN-14903","type":[{"type":"class","id":"CHEBI:17388"'
+- id: edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:SPONTPRO-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:SPONTPRO-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SPONTPRO-RXN"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_15378_SPONTPRO-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-009
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:SPONTPRO-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:SPONTPRO-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_SPONTPRO-RXN"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_15377_SPONTPRO-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-010
+  subject: gomodel:SPONTPRO-RXN
+  predicate: produces
+  object: CHEBI:58066
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:SPONTPRO-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58066_SPONTPRO-RXN"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_58066_SPONTPRO-RXN","type":[{"type":"class","id":"CHEBI:58066"'
+- id: edge-011
+  subject: SGD:S000001079
+  predicate: enables
+  object: gomodel:RXN-14116
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PROUT-PWY/6690711d00000539"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:YeastPathways_PROUT-PWY/6690711d00000539","type":[{"type":"class","id":"SGD:S000001079"'
+- id: edge-012
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:RXN-14116
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_RXN-14116"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_15377_RXN-14116","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-013
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:RXN-14116
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_RXN-14116"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_57540_RXN-14116","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-014
+  subject: CHEBI:58066
+  predicate: consumes
+  object: gomodel:RXN-14116
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58066_SPONTPRO-RXN"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_58066_SPONTPRO-RXN","type":[{"type":"class","id":"CHEBI:58066"'
+- id: edge-015
+  subject: gomodel:RXN-14116
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_RXN-14116"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_57945_RXN-14116","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-016
+  subject: gomodel:RXN-14116
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-14116"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_15378_RXN-14116","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-017
+  subject: gomodel:RXN-14116
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"subject":"gomodel:RXN-14116","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_RXN-14116"'
+  - reference_id: gomodel:YeastPathways_PROUT-PWY
+    quote: '"id":"gomodel:CHEBI_29985_RXN-14116","type":[{"type":"class","id":"CHEBI:29985"'
+references:
+- id: gomodel:YeastPathways_PROUT-PWY
+  title: GO-CAM L-proline degradation model YeastPathways_PROUT-PWY
