@@ -1,0 +1,143 @@
+id: MetaCyc:GLYCEROLMETAB-PWY
+label: glycerol degradation V
+description: glycerol degradation V oxidizes glycerol with NAD(+) to dihydroxyacetone, then phosphorylates dihydroxyacetone with phosphoenolpyruvate to form dihydroxyacetone phosphate and pyruvate.
+pathway_type: carbohydrate-degradation
+taxa:
+  - id: NCBITaxon:511145
+    label: Escherichia coli K-12 substr. MG1655
+participants:
+  - id: EC:1.1.1.6
+    label: glycerol dehydrogenase
+  - id: EC:2.7.1.121
+    label: dihydroxyacetone kinase
+  - id: CHEBI:17754
+    label: glycerol
+  - id: CHEBI:57540
+    label: NAD(+)
+  - id: CHEBI:16016
+    label: dihydroxyacetone
+  - id: CHEBI:57945
+    label: NADH
+  - id: CHEBI:15378
+    label: H(+)
+  - id: CHEBI:58702
+    label: phosphoenolpyruvate
+  - id: CHEBI:57642
+    label: dihydroxyacetone phosphate
+  - id: CHEBI:15361
+    label: pyruvate
+reactions:
+  - id: RHEA:13772
+    label: glycerol dehydrogenase reaction
+  - id: RHEA:18382
+    label: dihydroxyacetone kinase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:1.1.1.6
+    predicate: catalyzes
+    object: RHEA:13772
+    evidence:
+      - reference_id: RHEA:13769
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/1.1.1.6"/>'
+  - id: edge-002
+    subject: CHEBI:17754
+    predicate: consumes
+    object: RHEA:13772
+    evidence:
+      - reference_id: RHEA:13772
+        quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
+      - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLYCDEH-RXN' orgid='META' frameid='GLYCDEH-RXN'/><direction>L2R</direction>"
+  - id: edge-003
+    subject: CHEBI:57540
+    predicate: consumes
+    object: RHEA:13772
+    evidence:
+      - reference_id: RHEA:13772
+        quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
+      - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLYCDEH-RXN' orgid='META' frameid='GLYCDEH-RXN'/><direction>L2R</direction>"
+  - id: edge-004
+    subject: RHEA:13772
+    predicate: produces
+    object: CHEBI:16016
+    evidence:
+      - reference_id: RHEA:13772
+        quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
+      - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLYCDEH-RXN' orgid='META' frameid='GLYCDEH-RXN'/><direction>L2R</direction>"
+  - id: edge-005
+    subject: RHEA:13772
+    predicate: produces
+    object: CHEBI:57945
+    evidence:
+      - reference_id: RHEA:13772
+        quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
+      - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLYCDEH-RXN' orgid='META' frameid='GLYCDEH-RXN'/><direction>L2R</direction>"
+  - id: edge-006
+    subject: RHEA:13772
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:13772
+        quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
+      - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLYCDEH-RXN' orgid='META' frameid='GLYCDEH-RXN'/><direction>L2R</direction>"
+  - id: edge-007
+    subject: RHEA:13772
+    predicate: precedes
+    object: RHEA:18382
+    evidence:
+      - reference_id: RHEA:13772
+        quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
+      - reference_id: RHEA:18382
+        quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate + pyruvate
+      - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:2.7.1.121-RXN' orgid='META' frameid='2.7.1.121-RXN'/><predecessor-reactions><Reaction resource='getxml?META:GLYCDEH-RXN' orgid='META' frameid='GLYCDEH-RXN'/></predecessor-reactions>"
+  - id: edge-008
+    subject: EC:2.7.1.121
+    predicate: catalyzes
+    object: RHEA:18382
+    evidence:
+      - reference_id: RHEA:18381
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.1.121"/>'
+  - id: edge-009
+    subject: CHEBI:16016
+    predicate: consumes
+    object: RHEA:18382
+    evidence:
+      - reference_id: RHEA:18382
+        quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate + pyruvate
+  - id: edge-010
+    subject: CHEBI:58702
+    predicate: consumes
+    object: RHEA:18382
+    evidence:
+      - reference_id: RHEA:18382
+        quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate + pyruvate
+  - id: edge-011
+    subject: RHEA:18382
+    predicate: produces
+    object: CHEBI:57642
+    evidence:
+      - reference_id: RHEA:18382
+        quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate + pyruvate
+  - id: edge-012
+    subject: RHEA:18382
+    predicate: produces
+    object: CHEBI:15361
+    evidence:
+      - reference_id: RHEA:18382
+        quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate + pyruvate
+references:
+  - id: MetaCyc:GLYCEROLMETAB-PWY
+    title: MetaCyc glycerol degradation V
+  - id: RHEA:13769
+    title: Rhea glycerol dehydrogenase reaction
+  - id: RHEA:13772
+    title: Rhea bidirectional glycerol dehydrogenase reaction
+  - id: RHEA:18381
+    title: Rhea dihydroxyacetone kinase reaction
+  - id: RHEA:18382
+    title: Rhea dihydroxyacetone-phosphate-forming direction
