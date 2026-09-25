@@ -1,0 +1,351 @@
+id: gomodel:YeastPathways_PWY-5653
+label: NAD biosynthesis from 2-amino-3-carboxymuconate semialdehyde
+description: NAD biosynthesis from 2-amino-3-carboxymuconate semialdehyde in Saccharomyces
+  cerevisiae S288C cyclizes 2-amino-3-carboxymuconate-6-semialdehyde to quinolinic acid, converts
+  quinolinic acid to nicotinate D-ribonucleotide, adenylates nicotinate D-ribonucleotide to
+  deamido-NAD through NMA1 or NMA2 nicotinate-nucleotide adenylyltransferase activity, and
+  amidates deamido-NAD with glutamine to form NAD.
+pathway_type: cofactor-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:994
+  label: cis,cis-2-amino-3-(3-oxoprop-1-enyl)but-2-enedioate
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:16675
+  label: quinolinic acid
+- id: SGD:S000001943
+  label: BNA6 Scer
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:58017
+  label: 5-O-phosphonato-alpha-D-ribofuranosyl diphosphate(5-)
+- id: CHEBI:57502
+  label: nicotinate D-ribonucleotide(2-)
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: SGD:S000003242
+  label: NMA2 Scer
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: CHEBI:58437
+  label: deamido-NAD(2-)
+- id: SGD:S000004320
+  label: NMA1 Scer
+- id: SGD:S000001116
+  label: QNS1 Scer
+- id: CHEBI:58359
+  label: L-glutamine zwitterion
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+reactions:
+- id: gomodel:RXN-5721
+  label: 2-amino-3-carboxymuconate-6-semialdehyde cyclization
+- id: gomodel:QUINOPRIBOTRANS-RXN
+  label: nicotinate-nucleotide diphosphorylase (carboxylating) activity
+- id: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  label: nicotinate-nucleotide adenylyltransferase activity (NMA2)
+- id: gomodel:NICONUCADENYLYLTRAN-RXN
+  label: nicotinate-nucleotide adenylyltransferase activity
+- id: gomodel:NAD-SYNTH-GLN-RXN
+  label: NAD+ synthase (glutamine-hydrolyzing) activity
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:994
+  predicate: consumes
+  object: gomodel:RXN-5721
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:RXN-5721","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_994_RXN-5721"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_994_RXN-5721","type":[{"type":"class","id":"CHEBI:994"'
+- id: edge-002
+  subject: gomodel:RXN-5721
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:RXN-5721","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_RXN-5721"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_15377_RXN-5721","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-003
+  subject: gomodel:RXN-5721
+  predicate: produces
+  object: CHEBI:16675
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:RXN-5721","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16675_RXN-5721"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_16675_RXN-5721","type":[{"type":"class","id":"CHEBI:16675"'
+- id: edge-004
+  subject: SGD:S000001943
+  predicate: enables
+  object: gomodel:QUINOPRIBOTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YFR047C-MONOMER_QUINOPRIBOTRANS-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:YFR047C-MONOMER_QUINOPRIBOTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000001943"'
+- id: edge-005
+  subject: CHEBI:16675
+  predicate: consumes
+  object: gomodel:QUINOPRIBOTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16675_RXN-5721"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_16675_RXN-5721","type":[{"type":"class","id":"CHEBI:16675"'
+- id: edge-006
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:QUINOPRIBOTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_15378_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: CHEBI:58017
+  predicate: consumes
+  object: gomodel:QUINOPRIBOTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58017_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_58017_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:58017"'
+- id: edge-008
+  subject: gomodel:QUINOPRIBOTRANS-RXN
+  predicate: produces
+  object: CHEBI:57502
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57502_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_57502_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:57502"'
+- id: edge-009
+  subject: gomodel:QUINOPRIBOTRANS-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_16526_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-010
+  subject: gomodel:QUINOPRIBOTRANS-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:QUINOPRIBOTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_29888_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-011
+  subject: SGD:S000003242
+  predicate: enables
+  object: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:YeastPathways_PWY-5653/6a4c244800000432","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-5653/6a4c244800000436"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:YeastPathways_PWY-5653/6a4c244800000436","type":[{"type":"class","id":"SGD:S000003242"'
+- id: edge-012
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:YeastPathways_PWY-5653/6a4c244800000432","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-5653/6a4c244800000434"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:YeastPathways_PWY-5653/6a4c244800000434","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-013
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:YeastPathways_PWY-5653/6a4c244800000432","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-5653/6a4c244800000433"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:YeastPathways_PWY-5653/6a4c244800000433","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-014
+  subject: CHEBI:57502
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:YeastPathways_PWY-5653/6a4c244800000432","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57502_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_57502_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:57502"'
+- id: edge-015
+  subject: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:YeastPathways_PWY-5653/6a4c244800000432","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5653/6a4c244800000435"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:YeastPathways_PWY-5653/6a4c244800000435","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-016
+  subject: gomodel:YeastPathways_PWY-5653/6a4c244800000432
+  predicate: produces
+  object: CHEBI:58437
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:YeastPathways_PWY-5653/6a4c244800000432","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58437_NICONUCADENYLYLTRAN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_58437_NICONUCADENYLYLTRAN-RXN","type":[{"type":"class","id":"CHEBI:58437"'
+- id: edge-017
+  subject: SGD:S000004320
+  predicate: enables
+  object: gomodel:NICONUCADENYLYLTRAN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NICONUCADENYLYLTRAN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR328W-MONOMER_NICONUCADENYLYLTRAN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:YLR328W-MONOMER_NICONUCADENYLYLTRAN-RXN_controller","type":[{"type":"class","id":"SGD:S000004320"'
+- id: edge-018
+  subject: CHEBI:57502
+  predicate: consumes
+  object: gomodel:NICONUCADENYLYLTRAN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NICONUCADENYLYLTRAN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57502_QUINOPRIBOTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_57502_QUINOPRIBOTRANS-RXN","type":[{"type":"class","id":"CHEBI:57502"'
+- id: edge-019
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:NICONUCADENYLYLTRAN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NICONUCADENYLYLTRAN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_NICONUCADENYLYLTRAN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_15378_NICONUCADENYLYLTRAN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-020
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:NICONUCADENYLYLTRAN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NICONUCADENYLYLTRAN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_NICONUCADENYLYLTRAN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_30616_NICONUCADENYLYLTRAN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-021
+  subject: gomodel:NICONUCADENYLYLTRAN-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NICONUCADENYLYLTRAN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_NICONUCADENYLYLTRAN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_29888_NICONUCADENYLYLTRAN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-022
+  subject: gomodel:NICONUCADENYLYLTRAN-RXN
+  predicate: produces
+  object: CHEBI:58437
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NICONUCADENYLYLTRAN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58437_NICONUCADENYLYLTRAN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_58437_NICONUCADENYLYLTRAN-RXN","type":[{"type":"class","id":"CHEBI:58437"'
+- id: edge-023
+  subject: SGD:S000001116
+  predicate: enables
+  object: gomodel:NAD-SYNTH-GLN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-845_NAD-SYNTH-GLN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:MONOMER3O-845_NAD-SYNTH-GLN-RXN_controller","type":[{"type":"class","id":"SGD:S000001116"'
+- id: edge-024
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:NAD-SYNTH-GLN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_30616_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-025
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:NAD-SYNTH-GLN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_15377_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-026
+  subject: CHEBI:58359
+  predicate: consumes
+  object: gomodel:NAD-SYNTH-GLN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58359_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_58359_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:58359"'
+- id: edge-027
+  subject: CHEBI:58437
+  predicate: consumes
+  object: gomodel:NAD-SYNTH-GLN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58437_NICONUCADENYLYLTRAN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_58437_NICONUCADENYLYLTRAN-RXN","type":[{"type":"class","id":"CHEBI:58437"'
+- id: edge-028
+  subject: gomodel:NAD-SYNTH-GLN-RXN
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57540_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_57540_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-029
+  subject: gomodel:NAD-SYNTH-GLN-RXN
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456215_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_456215_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-030
+  subject: gomodel:NAD-SYNTH-GLN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_15378_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-031
+  subject: gomodel:NAD-SYNTH-GLN-RXN
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_29985_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:29985"'
+- id: edge-032
+  subject: gomodel:NAD-SYNTH-GLN-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"subject":"gomodel:NAD-SYNTH-GLN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_NAD-SYNTH-GLN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5653
+    quote: '"id":"gomodel:CHEBI_29888_NAD-SYNTH-GLN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+references:
+- id: gomodel:YeastPathways_PWY-5653
+  title: GO-CAM NAD biosynthesis model YeastPathways_PWY-5653
