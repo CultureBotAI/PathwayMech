@@ -1,0 +1,201 @@
+id: gomodel:YeastPathways_DETOX1-PWY
+label: superoxide radicals degradation
+description: Superoxide radicals degradation in Saccharomyces cerevisiae S288C uses SOD1 and SOD2 superoxide dismutase activities to convert superoxide and hydrons into dioxygen and hydrogen peroxide, then CTA1 and CTT1 catalase activities decompose hydrogen peroxide into water and dioxygen.
+pathway_type: detoxification
+taxa:
+  - id: NCBITaxon:559292
+    label: Saccharomyces cerevisiae S288C
+participants:
+  - id: SGD:S000003865
+    label: SOD1 Scer
+  - id: CHEBI:18421
+    label: superoxide
+  - id: CHEBI:15378
+    label: hydron
+  - id: CHEBI:15379
+    label: dioxygen
+  - id: CHEBI:16240
+    label: hydrogen peroxide
+  - id: SGD:S000002664
+    label: CTA1 Scer
+  - id: CHEBI:15377
+    label: water
+  - id: SGD:S000003320
+    label: CTT1 Scer
+  - id: SGD:S000001050
+    label: SOD2 Scer
+reactions:
+  - id: gomodel:SUPEROX-DISMUT-RXN
+    label: superoxide dismutase activity
+  - id: gomodel:CATAL-RXN
+    label: catalase activity
+  - id: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+    label: catalase activity
+  - id: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+    label: superoxide dismutase activity
+mechanistic_edges:
+  - id: edge-001
+    subject: SGD:S000003865
+    predicate: enables
+    object: gomodel:SUPEROX-DISMUT-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-1629_SUPEROX-DISMUT-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:MONOMER3O-1629_SUPEROX-DISMUT-RXN_controller","type":[{"type":"class","id":"SGD:S000003865"'
+  - id: edge-002
+    subject: CHEBI:18421
+    predicate: consumes
+    object: gomodel:SUPEROX-DISMUT-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_18421_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_18421_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:18421"'
+  - id: edge-003
+    subject: CHEBI:15378
+    predicate: consumes
+    object: gomodel:SUPEROX-DISMUT-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_15378_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-004
+    subject: gomodel:SUPEROX-DISMUT-RXN
+    predicate: produces
+    object: CHEBI:15379
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15379_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_15379_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:15379"'
+  - id: edge-005
+    subject: gomodel:SUPEROX-DISMUT-RXN
+    predicate: produces
+    object: CHEBI:16240
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
+  - id: edge-006
+    subject: SGD:S000002664
+    predicate: enables
+    object: gomodel:CATAL-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR256C-MONOMER_CATAL-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YDR256C-MONOMER_CATAL-RXN_controller","type":[{"type":"class","id":"SGD:S000002664"'
+  - id: edge-007
+    subject: CHEBI:16240
+    predicate: consumes
+    object: gomodel:CATAL-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
+  - id: edge-008
+    subject: gomodel:CATAL-RXN
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_CATAL-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_15377_CATAL-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+  - id: edge-009
+    subject: gomodel:CATAL-RXN
+    predicate: produces
+    object: CHEBI:15379
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15379_CATAL-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_15379_CATAL-RXN","type":[{"type":"class","id":"CHEBI:15379"'
+  - id: edge-010
+    subject: SGD:S000003320
+    predicate: enables
+    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000275"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000275","type":[{"type":"class","id":"SGD:S000003320"'
+  - id: edge-011
+    subject: CHEBI:16240
+    predicate: consumes
+    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
+  - id: edge-012
+    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+    predicate: produces
+    object: CHEBI:15379
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000273"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000273","type":[{"type":"class","id":"CHEBI:15379"'
+  - id: edge-013
+    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000272"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000272","type":[{"type":"class","id":"CHEBI:15377"'
+  - id: edge-014
+    subject: SGD:S000001050
+    predicate: enables
+    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000262"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000262","type":[{"type":"class","id":"SGD:S000001050"'
+  - id: edge-015
+    subject: CHEBI:15378
+    predicate: consumes
+    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000258"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000258","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-016
+    subject: CHEBI:18421
+    predicate: consumes
+    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000259"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000259","type":[{"type":"class","id":"CHEBI:18421"'
+  - id: edge-017
+    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+    predicate: produces
+    object: CHEBI:15379
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000260"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000260","type":[{"type":"class","id":"CHEBI:15379"'
+  - id: edge-018
+    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+    predicate: produces
+    object: CHEBI:16240
+    evidence:
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
+      - reference_id: gomodel:YeastPathways_DETOX1-PWY
+        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
+references:
+  - id: gomodel:YeastPathways_DETOX1-PWY
+    title: GO-CAM superoxide radicals degradation model YeastPathways_DETOX1-PWY
