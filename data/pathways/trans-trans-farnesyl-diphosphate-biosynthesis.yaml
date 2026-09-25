@@ -1,0 +1,169 @@
+id: gomodel:YeastPathways_PWY-5123
+label: trans, trans-farnesyl diphosphate biosynthesis
+description: trans, trans-farnesyl diphosphate biosynthesis in Saccharomyces cerevisiae
+  S288C isomerizes isopentenyl diphosphate to dimethylallyl diphosphate, condenses
+  dimethylallyl diphosphate with isopentenyl diphosphate to geranyl diphosphate, and
+  condenses geranyl diphosphate with isopentenyl diphosphate to (2E,6E)-farnesyl diphosphate.
+pathway_type: lipid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: SGD:S000003703
+  label: ERG20 Scer
+- id: CHEBI:57623
+  label: prenyl diphosphate(3-)
+- id: CHEBI:58057
+  label: geranyl diphosphate(3-)
+- id: SGD:S000006038
+  label: IDI1 Scer
+- id: CHEBI:128769
+  label: isopentenyl diphosphate(3-)
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: CHEBI:175763
+  label: 2-trans,6-trans-farnesyl diphosphate(3-)
+reactions:
+- id: gomodel:GPPSYN-RXN
+  label: dimethylallyl diphosphate + isopentenyl diphosphate -> geranyl diphosphate
+    + diphosphate
+- id: gomodel:FPPSYN-RXN
+  label: geranyl diphosphate + isopentenyl diphosphate -> (2<i>E</i>,6<i>E</i>)-farnesyl
+    diphosphate + diphosphate
+- id: gomodel:IPPISOM-RXN
+  label: isopentenyl diphosphate <=> dimethylallyl diphosphate
+mechanistic_edges:
+- id: edge-001
+  subject: SGD:S000003703
+  predicate: enables
+  object: gomodel:GPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL167W-MONOMER_GPPSYN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:YJL167W-MONOMER_GPPSYN-RXN_controller","type":[{"type":"class","id":"SGD:S000003703"'
+- id: edge-002
+  subject: CHEBI:57623
+  predicate: consumes
+  object: gomodel:GPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57623_IPPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_57623_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:57623"'
+- id: edge-003
+  subject: SGD:S000003703
+  predicate: enables
+  object: gomodel:FPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL167W-MONOMER_FPPSYN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:YJL167W-MONOMER_FPPSYN-RXN_controller","type":[{"type":"class","id":"SGD:S000003703"'
+- id: edge-004
+  subject: CHEBI:58057
+  predicate: consumes
+  object: gomodel:FPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58057_GPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_58057_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:58057"'
+- id: edge-005
+  subject: SGD:S000006038
+  predicate: enables
+  object: gomodel:IPPISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller","type":[{"type":"class","id":"SGD:S000006038"'
+- id: edge-006
+  subject: CHEBI:128769
+  predicate: consumes
+  object: gomodel:FPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_FPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_128769_FPPSYN-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+- id: edge-007
+  subject: gomodel:IPPISOM-RXN
+  predicate: precedes
+  object: gomodel:GPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:GPPSYN-RXN"'
+- id: edge-008
+  subject: CHEBI:128769
+  predicate: consumes
+  object: gomodel:GPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_GPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_128769_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+- id: edge-009
+  subject: gomodel:GPPSYN-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_GPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_29888_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-010
+  subject: gomodel:GPPSYN-RXN
+  predicate: produces
+  object: CHEBI:58057
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58057_GPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_58057_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:58057"'
+- id: edge-011
+  subject: CHEBI:128769
+  predicate: consumes
+  object: gomodel:IPPISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_IPPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_128769_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+- id: edge-012
+  subject: gomodel:FPPSYN-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_FPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_29888_FPPSYN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-013
+  subject: gomodel:IPPISOM-RXN
+  predicate: produces
+  object: CHEBI:57623
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57623_IPPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_57623_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:57623"'
+- id: edge-014
+  subject: gomodel:GPPSYN-RXN
+  predicate: precedes
+  object: gomodel:FPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:FPPSYN-RXN"'
+- id: edge-015
+  subject: gomodel:FPPSYN-RXN
+  predicate: produces
+  object: CHEBI:175763
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_175763_FPPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    quote: '"id":"gomodel:CHEBI_175763_FPPSYN-RXN","type":[{"type":"class","id":"CHEBI:175763"'
+references:
+- id: gomodel:YeastPathways_PWY-5123
+  title: SGD GO-CAM trans, trans-farnesyl diphosphate biosynthesis pathway PWY-5123
