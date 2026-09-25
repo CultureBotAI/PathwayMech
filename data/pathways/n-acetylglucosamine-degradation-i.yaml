@@ -1,0 +1,122 @@
+id: MetaCyc:GLUAMCAT-PWY
+label: N-acetylglucosamine degradation I
+description: N-acetylglucosamine degradation I deacetylates N-acetyl-D-glucosamine 6-phosphate to D-glucosamine 6-phosphate and acetate, then deaminates alpha-D-glucosamine 6-phosphate to beta-D-fructose 6-phosphate and ammonium.
+pathway_type: carbohydrate-degradation
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:3.5.1.25
+    label: N-acetylglucosamine-6-phosphate deacetylase
+  - id: EC:3.5.99.6
+    label: glucosamine-6-phosphate deaminase
+  - id: CHEBI:57513
+    label: N-acetyl-D-glucosamine 6-phosphate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:58725
+    label: D-glucosamine 6-phosphate
+  - id: CHEBI:30089
+    label: acetate
+  - id: CHEBI:75989
+    label: alpha-D-glucosamine 6-phosphate
+  - id: CHEBI:57634
+    label: beta-D-fructose 6-phosphate
+  - id: CHEBI:28938
+    label: NH4(+)
+reactions:
+  - id: RHEA:22937
+    label: N-acetylglucosamine-6-phosphate deacetylase reaction
+  - id: RHEA:12175
+    label: glucosamine-6-phosphate deaminase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:3.5.1.25
+    predicate: catalyzes
+    object: RHEA:22937
+    evidence:
+      - reference_id: RHEA:22936
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/3.5.1.25"/>'
+  - id: edge-002
+    subject: CHEBI:57513
+    predicate: consumes
+    object: RHEA:22937
+    evidence:
+      - reference_id: RHEA:22937
+        quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate + acetate
+  - id: edge-003
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:22937
+    evidence:
+      - reference_id: RHEA:22937
+        quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate + acetate
+  - id: edge-004
+    subject: RHEA:22937
+    predicate: produces
+    object: CHEBI:58725
+    evidence:
+      - reference_id: RHEA:22937
+        quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate + acetate
+  - id: edge-005
+    subject: RHEA:22937
+    predicate: produces
+    object: CHEBI:30089
+    evidence:
+      - reference_id: RHEA:22937
+        quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate + acetate
+  - id: edge-006
+    subject: RHEA:22937
+    predicate: precedes
+    object: RHEA:12175
+    evidence:
+      - reference_id: RHEA:22937
+        quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate + acetate
+      - reference_id: RHEA:12175
+        quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate + NH4(+)
+  - id: edge-007
+    subject: EC:3.5.99.6
+    predicate: catalyzes
+    object: RHEA:12175
+    evidence:
+      - reference_id: RHEA:12172
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/3.5.99.6"/>'
+  - id: edge-008
+    subject: CHEBI:75989
+    predicate: consumes
+    object: RHEA:12175
+    evidence:
+      - reference_id: RHEA:12175
+        quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate + NH4(+)
+  - id: edge-009
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:12175
+    evidence:
+      - reference_id: RHEA:12175
+        quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate + NH4(+)
+  - id: edge-010
+    subject: RHEA:12175
+    predicate: produces
+    object: CHEBI:57634
+    evidence:
+      - reference_id: RHEA:12175
+        quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate + NH4(+)
+  - id: edge-011
+    subject: RHEA:12175
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:12175
+        quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate + NH4(+)
+references:
+  - id: MetaCyc:GLUAMCAT-PWY
+    title: MetaCyc N-acetylglucosamine degradation I
+  - id: RHEA:22936
+    title: Rhea N-acetylglucosamine-6-phosphate deacetylase reaction
+  - id: RHEA:22937
+    title: Rhea D-glucosamine-6-phosphate-forming direction
+  - id: RHEA:12172
+    title: Rhea glucosamine-6-phosphate deaminase reaction
+  - id: RHEA:12175
+    title: Rhea bidirectional glucosamine-6-phosphate deaminase reaction
