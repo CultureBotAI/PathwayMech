@@ -1,0 +1,437 @@
+id: gomodel:YeastPathways_IPPSYN-PWY
+label: mevalonate pathway
+description: The mevalonate pathway in Saccharomyces cerevisiae S288C condenses acetyl-CoA to acetoacetyl-CoA, forms 3-hydroxy-3-methylglutaryl-CoA and mevalonate, phosphorylates mevalonate to 5-diphosphomevalonate, decarboxylates that intermediate to isopentenyl diphosphate, and isomerizes it to prenyl diphosphate.
+pathway_type: lipid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+- id: CHEBI:36464
+  label: (R)-mevalonate
+- id: SGD:S000005949
+  label: ERG10 Scer
+- id: CHEBI:43074
+  label: (3S)-3-hydroxy-3-methylglutaryl-CoA(5-)
+- id: CHEBI:15378
+  label: hydron
+- id: SGD:S000004821
+  label: ERG12 Scer
+- id: CHEBI:128769
+  label: isopentenyl diphosphate(3-)
+- id: CHEBI:57557
+  label: (R)-5-diphosphonatomevalonate(4-)
+- id: CHEBI:456216
+  label: ADP(3-)
+- id: SGD:S000005326
+  label: MVD1 Scer
+- id: SGD:S000006038
+  label: IDI1 Scer
+- id: CHEBI:43474
+  label: hydrogenphosphate
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+- id: CHEBI:58146
+  label: (R)-5-phosphonatomevalonate(3-)
+- id: SGD:S000004442
+  label: HMG2 Scer
+- id: CHEBI:57286
+  label: acetoacetyl-CoA(4-)
+- id: SGD:S000004833
+  label: ERG8 Scer
+- id: SGD:S000004540
+  label: HMG1 Scer
+- id: CHEBI:58349
+  label: NADP(3-)
+- id: CHEBI:57783
+  label: NADPH(4-)
+- id: CHEBI:57623
+  label: prenyl diphosphate(3-)
+- id: SGD:S000004595
+  label: ERG13 Scer
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: CHEBI:15377
+  label: water
+reactions:
+- id: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  label: hydroxymethylglutaryl-CoA synthase activity
+- id: gomodel:MEVALONATE-KINASE-RXN
+  label: mevalonate kinase activity
+- id: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  label: acetyl-CoA C-acetyltransferase activity
+- id: gomodel:1.1.1.34-RXN
+  label: hydroxymethylglutaryl-CoA reductase (NADPH) activity
+- id: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  label: diphosphomevalonate decarboxylase activity
+- id: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  label: phosphomevalonate kinase activity
+- id: gomodel:IPPISOM-RXN
+  label: isopentenyl-diphosphate delta-isomerase activity
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57287_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-002
+  subject: CHEBI:36464
+  predicate: consumes
+  object: gomodel:MEVALONATE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_36464_1.1.1.34-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_36464_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:36464"'
+- id: edge-003
+  subject: SGD:S000005949
+  predicate: enables
+  object: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL028W-MONOMER_ACETYL-COA-ACETYLTRANSFER-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YPL028W-MONOMER_ACETYL-COA-ACETYLTRANSFER-RXN_controller","type":[{"type":"class","id":"SGD:S000005949"'
+- id: edge-004
+  subject: CHEBI:43074
+  predicate: consumes
+  object: gomodel:1.1.1.34-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:43074"'
+- id: edge-005
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_15378_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-006
+  subject: SGD:S000004821
+  predicate: enables
+  object: gomodel:MEVALONATE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR208W-MONOMER_MEVALONATE-KINASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YMR208W-MONOMER_MEVALONATE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004821"'
+- id: edge-007
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: produces
+  object: CHEBI:128769
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+- id: edge-008
+  subject: CHEBI:57557
+  predicate: consumes
+  object: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:57557"'
+- id: edge-009
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:57557
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:57557"'
+- id: edge-010
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_MEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_456216_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-011
+  subject: SGD:S000005326
+  predicate: enables
+  object: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNR043W-MONOMER_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YNR043W-MONOMER_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN_controller","type":[{"type":"class","id":"SGD:S000005326"'
+- id: edge-012
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: produces
+  object: CHEBI:43074
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:43074"'
+- id: edge-013
+  subject: gomodel:1.1.1.34-RXN
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_1.1.1.34-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57287_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-014
+  subject: SGD:S000006038
+  predicate: enables
+  object: gomodel:IPPISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller","type":[{"type":"class","id":"SGD:S000006038"'
+- id: edge-015
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_43474_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+- id: edge-016
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:MEVALONATE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_MEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_30616_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-017
+  subject: CHEBI:57288
+  predicate: consumes
+  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57288_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57288_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:57288"'
+- id: edge-018
+  subject: CHEBI:58146
+  predicate: consumes
+  object: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:58146"'
+- id: edge-019
+  subject: SGD:S000004442
+  predicate: enables
+  object: gomodel:1.1.1.34-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR450W-MONOMER_1.1.1.34-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YLR450W-MONOMER_1.1.1.34-RXN_controller","type":[{"type":"class","id":"SGD:S000004442"'
+- id: edge-020
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_MEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_15378_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-021
+  subject: CHEBI:57286
+  predicate: consumes
+  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57286"'
+- id: edge-022
+  subject: SGD:S000004833
+  predicate: enables
+  object: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR220W-MONOMER_PHOSPHOMEVALONATE-KINASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YMR220W-MONOMER_PHOSPHOMEVALONATE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004833"'
+- id: edge-023
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_PHOSPHOMEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_30616_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-024
+  subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  predicate: produces
+  object: CHEBI:57286
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57286"'
+- id: edge-025
+  subject: SGD:S000004540
+  predicate: enables
+  object: gomodel:1.1.1.34-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YML075C-MONOMER_1.1.1.34-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YML075C-MONOMER_1.1.1.34-RXN_controller","type":[{"type":"class","id":"SGD:S000004540"'
+- id: edge-026
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_PHOSPHOMEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_456216_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-027
+  subject: CHEBI:57288
+  predicate: consumes
+  object: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57288_ACETYL-COA-ACETYLTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57288_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57288"'
+- id: edge-028
+  subject: gomodel:1.1.1.34-RXN
+  predicate: produces
+  object: CHEBI:36464
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_36464_1.1.1.34-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_36464_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:36464"'
+- id: edge-029
+  subject: CHEBI:128769
+  predicate: consumes
+  object: gomodel:IPPISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+- id: edge-030
+  subject: gomodel:1.1.1.34-RXN
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_1.1.1.34-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_58349_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:58349"'
+- id: edge-031
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:1.1.1.34-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_1.1.1.34-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57783_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-032
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_456216_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-033
+  subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_ACETYL-COA-ACETYLTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57287_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-034
+  subject: gomodel:IPPISOM-RXN
+  predicate: produces
+  object: CHEBI:57623
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57623_IPPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_57623_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:57623"'
+- id: edge-035
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:1.1.1.34-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_1.1.1.34-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_15378_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-036
+  subject: SGD:S000004595
+  predicate: enables
+  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YML126C-MONOMER_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:YML126C-MONOMER_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004595"'
+- id: edge-037
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_16526_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-038
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:58146
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:58146"'
+- id: edge-039
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_15377_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-040
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    quote: '"id":"gomodel:CHEBI_30616_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+references:
+- id: gomodel:YeastPathways_IPPSYN-PWY
+  title: SGD GO-CAM mevalonate pathway model
