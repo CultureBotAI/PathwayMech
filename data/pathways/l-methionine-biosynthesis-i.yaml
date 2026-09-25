@@ -1,0 +1,412 @@
+id: MetaCyc:HOMOSER-METSYN-PWY
+label: L-methionine biosynthesis I
+description: >-
+  L-methionine biosynthesis I activates L-homoserine as
+  O-succinyl-L-homoserine, condenses it with L-cysteine to form
+  L,L-cystathionine, hydrolyzes L,L-cystathionine to L-homocysteine, and
+  methylates L-homocysteine to L-methionine through either cobalamin-dependent
+  or cobalamin-independent methionine synthase.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.3.1.46
+    label: homoserine O-succinyltransferase
+  - id: EC:2.5.1.48
+    label: cystathionine gamma-synthase
+  - id: UniProtKB:P06721
+    label: cystathionine beta-lyase MetC
+  - id: EC:2.1.1.13
+    label: methionine synthase
+  - id: EC:2.1.1.14
+    label: 5-methyltetrahydropteroyltriglutamate--homocysteine S-methyltransferase
+  - id: CHEBI:57476
+    label: L-homoserine
+  - id: CHEBI:57292
+    label: succinyl-CoA
+  - id: CHEBI:57661
+    label: O-succinyl-L-homoserine
+  - id: CHEBI:57287
+    label: CoA
+  - id: CHEBI:35235
+    label: L-cysteine
+  - id: CHEBI:58161
+    label: L,L-cystathionine
+  - id: CHEBI:30031
+    label: succinate
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:58199
+    label: L-homocysteine
+  - id: CHEBI:15361
+    label: pyruvate
+  - id: CHEBI:28938
+    label: NH4(+)
+  - id: CHEBI:18608
+    label: (6S)-5-methyl-5,6,7,8-tetrahydrofolate
+  - id: CHEBI:57453
+    label: (6S)-5,6,7,8-tetrahydrofolate
+  - id: CHEBI:58207
+    label: 5-methyltetrahydropteroyltri-L-glutamate
+  - id: CHEBI:58140
+    label: tetrahydropteroyltri-L-glutamate
+  - id: CHEBI:57844
+    label: L-methionine
+reactions:
+  - id: RHEA:22009
+    label: homoserine O-succinyltransferase reaction
+  - id: RHEA:20398
+    label: cystathionine gamma-synthase reaction
+  - id: RHEA:13966
+    label: cystathionine beta-lyase reaction
+  - id: RHEA:11173
+    label: cobalamin-dependent methionine synthase reaction
+  - id: RHEA:21197
+    label: cobalamin-independent methionine synthase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.3.1.46
+    predicate: catalyzes
+    object: RHEA:22009
+    evidence:
+      - reference_id: RHEA:22008
+        quote: "EC 2.3.1.46 homoserine O-succinyltransferase"
+      - reference_id: PMID:10572016
+        quote: >-
+          Enzyme-catalyzed acylation of homoserine: mechanistic
+          characterization of the Escherichia coli metA-encoded homoserine
+          transsuccinylase.
+  - id: edge-002
+    subject: CHEBI:57476
+    predicate: consumes
+    object: RHEA:22009
+    evidence:
+      - reference_id: RHEA:22009
+        quote: >-
+          RHEA:22009 L-homoserine + succinyl-CoA =>
+          O-succinyl-L-homoserine + CoA
+  - id: edge-003
+    subject: CHEBI:57292
+    predicate: consumes
+    object: RHEA:22009
+    evidence:
+      - reference_id: RHEA:22009
+        quote: >-
+          RHEA:22009 L-homoserine + succinyl-CoA =>
+          O-succinyl-L-homoserine + CoA
+  - id: edge-004
+    subject: RHEA:22009
+    predicate: produces
+    object: CHEBI:57661
+    evidence:
+      - reference_id: RHEA:22009
+        quote: >-
+          RHEA:22009 L-homoserine + succinyl-CoA =>
+          O-succinyl-L-homoserine + CoA
+  - id: edge-005
+    subject: RHEA:22009
+    predicate: produces
+    object: CHEBI:57287
+    evidence:
+      - reference_id: RHEA:22009
+        quote: >-
+          RHEA:22009 L-homoserine + succinyl-CoA =>
+          O-succinyl-L-homoserine + CoA
+  - id: edge-006
+    subject: RHEA:22009
+    predicate: precedes
+    object: RHEA:20398
+    evidence:
+      - reference_id: RHEA:22009
+        quote: >-
+          RHEA:22009 L-homoserine + succinyl-CoA =>
+          O-succinyl-L-homoserine + CoA
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+  - id: edge-007
+    subject: EC:2.5.1.48
+    predicate: catalyzes
+    object: RHEA:20398
+    evidence:
+      - reference_id: RHEA:20397
+        quote: "EC 2.5.1.48 cystathionine gamma-synthase"
+      - reference_id: PMID:2405903
+        quote: >-
+          Purification and properties of cystathionine gamma-synthase from
+          overproducing strains of Escherichia coli.
+  - id: edge-008
+    subject: CHEBI:57661
+    predicate: consumes
+    object: RHEA:20398
+    evidence:
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+  - id: edge-009
+    subject: CHEBI:35235
+    predicate: consumes
+    object: RHEA:20398
+    evidence:
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+  - id: edge-010
+    subject: RHEA:20398
+    predicate: produces
+    object: CHEBI:58161
+    evidence:
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+  - id: edge-011
+    subject: RHEA:20398
+    predicate: produces
+    object: CHEBI:30031
+    evidence:
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+  - id: edge-012
+    subject: RHEA:20398
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+  - id: edge-013
+    subject: RHEA:20398
+    predicate: precedes
+    object: RHEA:13966
+    evidence:
+      - reference_id: RHEA:20398
+        quote: >-
+          RHEA:20398 O-succinyl-L-homoserine + L-cysteine =>
+          L,L-cystathionine + succinate + H(+)
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+  - id: edge-014
+    subject: UniProtKB:P06721
+    predicate: catalyzes
+    object: RHEA:13966
+    evidence:
+      - reference_id: UniProtKB:P06721
+        quote: "P06721 METC_ECOLI Cystathionine beta-lyase MetC"
+      - reference_id: PMID:7049234
+        quote: >-
+          Cloning, purification, and characterization of beta-cystathionase
+          from Escherichia coli.
+  - id: edge-015
+    subject: CHEBI:58161
+    predicate: consumes
+    object: RHEA:13966
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+  - id: edge-016
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:13966
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+  - id: edge-017
+    subject: RHEA:13966
+    predicate: produces
+    object: CHEBI:58199
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+  - id: edge-018
+    subject: RHEA:13966
+    predicate: produces
+    object: CHEBI:15361
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+  - id: edge-019
+    subject: RHEA:13966
+    predicate: produces
+    object: CHEBI:28938
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+  - id: edge-020
+    subject: RHEA:13966
+    predicate: precedes
+    object: RHEA:11173
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+      - reference_id: RHEA:11173
+        quote: >-
+          RHEA:11173 (6S)-5-methyl-5,6,7,8-tetrahydrofolate + L-homocysteine
+          => (6S)-5,6,7,8-tetrahydrofolate + L-methionine
+  - id: edge-021
+    subject: RHEA:13966
+    predicate: precedes
+    object: RHEA:21197
+    evidence:
+      - reference_id: RHEA:13966
+        quote: >-
+          RHEA:13966 L,L-cystathionine + H2O => L-homocysteine + pyruvate +
+          NH4(+)
+      - reference_id: RHEA:21197
+        quote: >-
+          RHEA:21197 5-methyltetrahydropteroyltri-L-glutamate +
+          L-homocysteine => tetrahydropteroyltri-L-glutamate + L-methionine
+  - id: edge-022
+    subject: EC:2.1.1.13
+    predicate: catalyzes
+    object: RHEA:11173
+    evidence:
+      - reference_id: RHEA:11172
+        quote: "EC 2.1.1.13 methionine synthase"
+      - reference_id: PMID:11731805
+        quote: >-
+          Domain alternation switches B(12)-dependent methionine synthase to
+          the activation conformation.
+  - id: edge-023
+    subject: CHEBI:18608
+    predicate: consumes
+    object: RHEA:11173
+    evidence:
+      - reference_id: RHEA:11173
+        quote: >-
+          RHEA:11173 (6S)-5-methyl-5,6,7,8-tetrahydrofolate + L-homocysteine
+          => (6S)-5,6,7,8-tetrahydrofolate + L-methionine
+  - id: edge-024
+    subject: CHEBI:58199
+    predicate: consumes
+    object: RHEA:11173
+    evidence:
+      - reference_id: RHEA:11173
+        quote: >-
+          RHEA:11173 (6S)-5-methyl-5,6,7,8-tetrahydrofolate + L-homocysteine
+          => (6S)-5,6,7,8-tetrahydrofolate + L-methionine
+  - id: edge-025
+    subject: RHEA:11173
+    predicate: produces
+    object: CHEBI:57453
+    evidence:
+      - reference_id: RHEA:11173
+        quote: >-
+          RHEA:11173 (6S)-5-methyl-5,6,7,8-tetrahydrofolate + L-homocysteine
+          => (6S)-5,6,7,8-tetrahydrofolate + L-methionine
+  - id: edge-026
+    subject: RHEA:11173
+    predicate: produces
+    object: CHEBI:57844
+    evidence:
+      - reference_id: RHEA:11173
+        quote: >-
+          RHEA:11173 (6S)-5-methyl-5,6,7,8-tetrahydrofolate + L-homocysteine
+          => (6S)-5,6,7,8-tetrahydrofolate + L-methionine
+  - id: edge-027
+    subject: EC:2.1.1.14
+    predicate: catalyzes
+    object: RHEA:21197
+    evidence:
+      - reference_id: RHEA:21196
+        quote: >-
+          EC 2.1.1.14 5-methyltetrahydropteroyltriglutamate--homocysteine
+          S-methyltransferase
+      - reference_id: PMID:8823155
+        quote: >-
+          Cobalamin-independent methionine synthase from Escherichia coli: a
+          zinc metalloenzyme.
+  - id: edge-028
+    subject: CHEBI:58207
+    predicate: consumes
+    object: RHEA:21197
+    evidence:
+      - reference_id: RHEA:21197
+        quote: >-
+          RHEA:21197 5-methyltetrahydropteroyltri-L-glutamate +
+          L-homocysteine => tetrahydropteroyltri-L-glutamate + L-methionine
+  - id: edge-029
+    subject: CHEBI:58199
+    predicate: consumes
+    object: RHEA:21197
+    evidence:
+      - reference_id: RHEA:21197
+        quote: >-
+          RHEA:21197 5-methyltetrahydropteroyltri-L-glutamate +
+          L-homocysteine => tetrahydropteroyltri-L-glutamate + L-methionine
+  - id: edge-030
+    subject: RHEA:21197
+    predicate: produces
+    object: CHEBI:58140
+    evidence:
+      - reference_id: RHEA:21197
+        quote: >-
+          RHEA:21197 5-methyltetrahydropteroyltri-L-glutamate +
+          L-homocysteine => tetrahydropteroyltri-L-glutamate + L-methionine
+  - id: edge-031
+    subject: RHEA:21197
+    predicate: produces
+    object: CHEBI:57844
+    evidence:
+      - reference_id: RHEA:21197
+        quote: >-
+          RHEA:21197 5-methyltetrahydropteroyltri-L-glutamate +
+          L-homocysteine => tetrahydropteroyltri-L-glutamate + L-methionine
+references:
+  - id: MetaCyc:HOMOSER-METSYN-PWY
+    title: MetaCyc L-methionine biosynthesis I pathway
+  - id: RHEA:22008
+    title: Rhea homoserine O-succinyltransferase reaction
+  - id: RHEA:22009
+    title: Rhea O-succinylhomoserine-forming homoserine O-succinyltransferase direction
+  - id: RHEA:20397
+    title: Rhea cystathionine gamma-synthase reaction
+  - id: RHEA:20398
+    title: Rhea L,L-cystathionine-forming cystathionine gamma-synthase direction
+  - id: RHEA:13965
+    title: Rhea cystathionine beta-lyase reaction
+  - id: RHEA:13966
+    title: Rhea L-homocysteine-forming cystathionine beta-lyase direction
+  - id: RHEA:11172
+    title: Rhea cobalamin-dependent methionine synthase reaction
+  - id: RHEA:11173
+    title: Rhea tetrahydrofolate-dependent L-methionine-forming methionine synthase direction
+  - id: RHEA:21196
+    title: Rhea cobalamin-independent methionine synthase reaction
+  - id: RHEA:21197
+    title: Rhea tetrahydropteroyltriglutamate-dependent L-methionine-forming methionine synthase direction
+  - id: UniProtKB:P06721
+    title: UniProtKB E. coli cystathionine beta-lyase MetC
+  - id: PMID:10572016
+    citation: Born and Blanchard, Biochemistry, 1999
+  - id: PMID:2405903
+    citation: Holbrook et al., Biochemistry, 1990
+  - id: PMID:7049234
+    citation: Dwivedi et al., Biochemistry, 1982
+  - id: PMID:11731805
+    citation: Bandarian et al., Nature Structural Biology, 2002
+  - id: PMID:8823155
+    citation: Gonzalez et al., Biochemistry, 1996
