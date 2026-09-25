@@ -1,0 +1,286 @@
+id: MetaCyc:PANTO-PWY
+label: phosphopantothenate biosynthesis I
+description: Phosphopantothenate biosynthesis I condenses 3-methyl-2-oxobutanoate with 5,10-methylene-tetrahydrofolate to form 2-dehydropantoate, reduces it to (R)-pantoate, ligates (R)-pantoate with beta-alanine to form (R)-pantothenate, and phosphorylates (R)-pantothenate to (R)-4'-phosphopantothenate.
+pathway_type: cofactor-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:2.1.2.11
+    label: 3-methyl-2-oxobutanoate hydroxymethyltransferase
+  - id: EC:1.1.1.169
+    label: 2-dehydropantoate reductase
+  - id: EC:6.3.2.1
+    label: pantoate--beta-alanine ligase
+  - id: EC:2.7.1.33
+    label: pantothenate kinase
+  - id: CHEBI:15636
+    label: (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate
+  - id: CHEBI:11851
+    label: 3-methyl-2-oxobutanoate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:11561
+    label: 2-dehydropantoate
+  - id: CHEBI:57453
+    label: (6S)-5,6,7,8-tetrahydrofolate
+  - id: CHEBI:57783
+    label: NADPH
+  - id: CHEBI:15378
+    label: H(+)
+  - id: CHEBI:15980
+    label: (R)-pantoate
+  - id: CHEBI:58349
+    label: NADP(+)
+  - id: CHEBI:57966
+    label: beta-alanine
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:29032
+    label: (R)-pantothenate
+  - id: CHEBI:456215
+    label: AMP
+  - id: CHEBI:33019
+    label: diphosphate
+  - id: CHEBI:10986
+    label: (R)-4'-phosphopantothenate
+  - id: CHEBI:456216
+    label: ADP
+reactions:
+  - id: RHEA:11825
+    label: 3-methyl-2-oxobutanoate hydroxymethyltransferase reaction
+  - id: RHEA:16235
+    label: 2-dehydropantoate reductase reaction
+  - id: RHEA:10913
+    label: pantothenate synthetase reaction
+  - id: RHEA:16374
+    label: pantothenate kinase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:2.1.2.11
+    predicate: catalyzes
+    object: RHEA:11825
+    evidence:
+      - reference_id: RHEA:11824
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.1.2.11"/>'
+  - id: edge-002
+    subject: CHEBI:15636
+    predicate: consumes
+    object: RHEA:11825
+    evidence:
+      - reference_id: RHEA:11825
+        quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
+  - id: edge-003
+    subject: CHEBI:11851
+    predicate: consumes
+    object: RHEA:11825
+    evidence:
+      - reference_id: RHEA:11825
+        quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
+  - id: edge-004
+    subject: CHEBI:15377
+    predicate: consumes
+    object: RHEA:11825
+    evidence:
+      - reference_id: RHEA:11825
+        quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
+  - id: edge-005
+    subject: RHEA:11825
+    predicate: produces
+    object: CHEBI:11561
+    evidence:
+      - reference_id: RHEA:11825
+        quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
+  - id: edge-006
+    subject: RHEA:11825
+    predicate: produces
+    object: CHEBI:57453
+    evidence:
+      - reference_id: RHEA:11825
+        quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
+  - id: edge-007
+    subject: RHEA:11825
+    predicate: precedes
+    object: RHEA:16235
+    evidence:
+      - reference_id: RHEA:11825
+        quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+  - id: edge-008
+    subject: EC:1.1.1.169
+    predicate: catalyzes
+    object: RHEA:16235
+    evidence:
+      - reference_id: RHEA:16233
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/1.1.1.169"/>'
+  - id: edge-009
+    subject: CHEBI:11561
+    predicate: consumes
+    object: RHEA:16235
+    evidence:
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+  - id: edge-010
+    subject: CHEBI:57783
+    predicate: consumes
+    object: RHEA:16235
+    evidence:
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+  - id: edge-011
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:16235
+    evidence:
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+  - id: edge-012
+    subject: RHEA:16235
+    predicate: produces
+    object: CHEBI:15980
+    evidence:
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+  - id: edge-013
+    subject: RHEA:16235
+    predicate: produces
+    object: CHEBI:58349
+    evidence:
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+  - id: edge-014
+    subject: RHEA:16235
+    predicate: precedes
+    object: RHEA:10913
+    evidence:
+      - reference_id: RHEA:16235
+        quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-015
+    subject: EC:6.3.2.1
+    predicate: catalyzes
+    object: RHEA:10913
+    evidence:
+      - reference_id: RHEA:10912
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/6.3.2.1"/>'
+  - id: edge-016
+    subject: CHEBI:15980
+    predicate: consumes
+    object: RHEA:10913
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-017
+    subject: CHEBI:57966
+    predicate: consumes
+    object: RHEA:10913
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-018
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:10913
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-019
+    subject: RHEA:10913
+    predicate: produces
+    object: CHEBI:29032
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-020
+    subject: RHEA:10913
+    predicate: produces
+    object: CHEBI:456215
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-021
+    subject: RHEA:10913
+    predicate: produces
+    object: CHEBI:33019
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-022
+    subject: RHEA:10913
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+  - id: edge-023
+    subject: RHEA:10913
+    predicate: precedes
+    object: RHEA:16374
+    evidence:
+      - reference_id: RHEA:10913
+        quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP + diphosphate + H(+)
+      - reference_id: RHEA:16374
+        quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP + H(+)
+  - id: edge-024
+    subject: EC:2.7.1.33
+    predicate: catalyzes
+    object: RHEA:16374
+    evidence:
+      - reference_id: RHEA:16373
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.1.33"/>'
+  - id: edge-025
+    subject: CHEBI:29032
+    predicate: consumes
+    object: RHEA:16374
+    evidence:
+      - reference_id: RHEA:16374
+        quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP + H(+)
+  - id: edge-026
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:16374
+    evidence:
+      - reference_id: RHEA:16374
+        quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP + H(+)
+  - id: edge-027
+    subject: RHEA:16374
+    predicate: produces
+    object: CHEBI:10986
+    evidence:
+      - reference_id: RHEA:16374
+        quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP + H(+)
+  - id: edge-028
+    subject: RHEA:16374
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:16374
+        quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP + H(+)
+  - id: edge-029
+    subject: RHEA:16374
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:16374
+        quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP + H(+)
+references:
+  - id: MetaCyc:PANTO-PWY
+    title: MetaCyc phosphopantothenate biosynthesis I pathway
+  - id: RHEA:11824
+    title: Rhea 3-methyl-2-oxobutanoate hydroxymethyltransferase reaction
+  - id: RHEA:11825
+    title: Rhea 2-dehydropantoate-forming direction
+  - id: RHEA:16233
+    title: Rhea 2-dehydropantoate reductase reaction
+  - id: RHEA:16235
+    title: Rhea pantoate-forming direction
+  - id: RHEA:10912
+    title: Rhea pantothenate synthetase reaction
+  - id: RHEA:10913
+    title: Rhea pantothenate-forming direction
+  - id: RHEA:16373
+    title: Rhea pantothenate kinase reaction
+  - id: RHEA:16374
+    title: Rhea phosphopantothenate-forming direction
