@@ -1,0 +1,438 @@
+id: gomodel:YeastPathways_PWY-7221
+label: guanosine ribonucleotides de novo biosynthesis
+description: Guanosine ribonucleotides de novo biosynthesis in Saccharomyces cerevisiae S288C oxidizes
+  IMP to xanthosine 5-monophosphate through IMD2, IMD3, and IMD4 IMP dehydrogenase activity, aminates
+  xanthosine 5-monophosphate to GMP, and phosphorylates GMP and GDP to form GTP.
+pathway_type: nucleotide-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:57464
+  label: 5'-xanthylate(2-)
+- id: SGD:S000001550
+  label: YNK1 Scer
+- id: CHEBI:456216
+  label: ADP(3-)
+- id: CHEBI:58189
+  label: GDP(3-)
+- id: CHEBI:57945
+  label: NADH(2-)
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:15377
+  label: water
+- id: SGD:S000002862
+  label: GUK1 Scer
+- id: CHEBI:58115
+  label: guanosine 5'-monophosphate(2-)
+- id: CHEBI:58053
+  label: IMP(2-)
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: SGD:S000004830
+  label: GUA1 Scer
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+- id: SGD:S000004424
+  label: IMD3 Scer
+- id: CHEBI:58359
+  label: L-glutamine zwitterion
+- id: SGD:S000004520
+  label: IMD4 Scer
+- id: SGD:S000001259
+  label: IMD2 Scer
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+- id: CHEBI:37565
+  label: GTP(4-)
+reactions:
+- id: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  label: IMP dehydrogenase activity
+- id: gomodel:GDPKIN-RXN
+  label: nucleoside diphosphate kinase activity
+- id: gomodel:GUANYL-KIN-RXN
+  label: GMP kinase activity
+- id: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  label: IMP dehydrogenase activity
+- id: gomodel:GMP-SYN-GLUT-RXN
+  label: GMP synthase (glutamine-hydrolyzing) activity
+- id: gomodel:IMP-DEHYDROG-RXN
+  label: IMP dehydrogenase activity
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  predicate: produces
+  object: CHEBI:57464
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57464"'
+- id: edge-002
+  subject: SGD:S000001550
+  predicate: enables
+  object: gomodel:GDPKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GDPKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL067W-MONOMER_GDPKIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YKL067W-MONOMER_GDPKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000001550"'
+- id: edge-003
+  subject: gomodel:GUANYL-KIN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GUANYL-KIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_GUANYL-KIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_456216_GUANYL-KIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-004
+  subject: gomodel:GUANYL-KIN-RXN
+  predicate: produces
+  object: CHEBI:58189
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GUANYL-KIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58189_GUANYL-KIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_58189_GUANYL-KIN-RXN","type":[{"type":"class","id":"CHEBI:58189"'
+- id: edge-005
+  subject: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000667"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000667","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-006
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:GUANYL-KIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GUANYL-KIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_GUANYL-KIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_30616_GUANYL-KIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-007
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000655"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000655","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-008
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000654"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000654","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-009
+  subject: SGD:S000002862
+  predicate: enables
+  object: gomodel:GUANYL-KIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GUANYL-KIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-102_GUANYL-KIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:MONOMER3O-102_GUANYL-KIN-RXN_controller","type":[{"type":"class","id":"SGD:S000002862"'
+- id: edge-010
+  subject: gomodel:GMP-SYN-GLUT-RXN
+  predicate: produces
+  object: CHEBI:58115
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58115_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_58115_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:58115"'
+- id: edge-011
+  subject: CHEBI:58053
+  predicate: consumes
+  object: gomodel:IMP-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58053_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_58053_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:58053"'
+- id: edge-012
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:GDPKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GDPKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_GDPKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_30616_GDPKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-013
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000664"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000664","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-014
+  subject: gomodel:IMP-DEHYDROG-RXN
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_57945_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-015
+  subject: CHEBI:58115
+  predicate: consumes
+  object: gomodel:GUANYL-KIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GUANYL-KIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58115_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_58115_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:58115"'
+- id: edge-016
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:IMP-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_57540_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-017
+  subject: gomodel:GMP-SYN-GLUT-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_29888_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-018
+  subject: SGD:S000004830
+  predicate: enables
+  object: gomodel:GMP-SYN-GLUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR217W-MONOMER_GMP-SYN-GLUT-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YMR217W-MONOMER_GMP-SYN-GLUT-RXN_controller","type":[{"type":"class","id":"SGD:S000004830"'
+- id: edge-019
+  subject: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000656"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000656","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-020
+  subject: gomodel:GMP-SYN-GLUT-RXN
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456215_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_456215_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-021
+  subject: gomodel:IMP-DEHYDROG-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_15378_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-022
+  subject: SGD:S000004424
+  predicate: enables
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000670"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000670","type":[{"type":"class","id":"SGD:S000004424"'
+- id: edge-023
+  subject: gomodel:GMP-SYN-GLUT-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_15378_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-024
+  subject: CHEBI:58189
+  predicate: consumes
+  object: gomodel:GDPKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GDPKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58189_GUANYL-KIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_58189_GUANYL-KIN-RXN","type":[{"type":"class","id":"CHEBI:58189"'
+- id: edge-025
+  subject: CHEBI:58359
+  predicate: consumes
+  object: gomodel:GMP-SYN-GLUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58359_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_58359_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:58359"'
+- id: edge-026
+  subject: gomodel:IMP-DEHYDROG-RXN
+  predicate: produces
+  object: CHEBI:57464
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57464"'
+- id: edge-027
+  subject: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000666"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000666","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-028
+  subject: SGD:S000004520
+  predicate: enables
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000658"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000658","type":[{"type":"class","id":"SGD:S000004520"'
+- id: edge-029
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:GMP-SYN-GLUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_30616_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-030
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:IMP-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_15377_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-031
+  subject: gomodel:GDPKIN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GDPKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_GDPKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_456216_GDPKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-032
+  subject: CHEBI:57464
+  predicate: consumes
+  object: gomodel:GMP-SYN-GLUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57464"'
+- id: edge-033
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000665"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000665","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-034
+  subject: CHEBI:58053
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000662
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000662","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000663"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000663","type":[{"type":"class","id":"CHEBI:58053"'
+- id: edge-035
+  subject: SGD:S000001259
+  predicate: enables
+  object: gomodel:IMP-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:IMP-DEHYDROG-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR216W-MONOMER_IMP-DEHYDROG-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YHR216W-MONOMER_IMP-DEHYDROG-RXN_controller","type":[{"type":"class","id":"SGD:S000001259"'
+- id: edge-036
+  subject: gomodel:GMP-SYN-GLUT-RXN
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_29985_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:29985"'
+- id: edge-037
+  subject: gomodel:GDPKIN-RXN
+  predicate: produces
+  object: CHEBI:37565
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GDPKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_37565_GDPKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_37565_GDPKIN-RXN","type":[{"type":"class","id":"CHEBI:37565"'
+- id: edge-038
+  subject: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  predicate: produces
+  object: CHEBI:57464
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_57464_IMP-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57464"'
+- id: edge-039
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:GMP-SYN-GLUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:GMP-SYN-GLUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_GMP-SYN-GLUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:CHEBI_15377_GMP-SYN-GLUT-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-040
+  subject: CHEBI:58053
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000653"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000653","type":[{"type":"class","id":"CHEBI:58053"'
+- id: edge-041
+  subject: gomodel:YeastPathways_PWY-7221/6a4c244800000652
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"subject":"gomodel:YeastPathways_PWY-7221/6a4c244800000652","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7221/6a4c244800000657"'
+  - reference_id: gomodel:YeastPathways_PWY-7221
+    quote: '"id":"gomodel:YeastPathways_PWY-7221/6a4c244800000657","type":[{"type":"class","id":"CHEBI:57945"'
+references:
+- id: gomodel:YeastPathways_PWY-7221
+  title: SGD GO-CAM guanosine ribonucleotides de novo biosynthesis model
