@@ -1,0 +1,213 @@
+id: gomodel:YeastPathways_PWY3O-450
+label: phosphatidylcholine biosynthesis I
+description: Phosphatidylcholine biosynthesis I in Saccharomyces cerevisiae S288C
+  phosphorylates choline to choline phosphate, converts choline phosphate and CTP
+  to CDP-choline, and transfers phosphocholine from CDP-choline to 1,2-diacyl-sn-glycerol
+  to form 1,2-diacyl-sn-glycero-3-phosphocholine.
+pathway_type: lipid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: SGD:S000005074
+  label: CPT1 Scer
+- id: CHEBI:60377
+  label: cytidine 5'-monophosphate(2-)
+- id: CHEBI:58779
+  label: CDP-choline(1-)
+- id: CHEBI:16110
+  label: 1,2-diacyl-sn-glycero-3-phosphocholine(1+)
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:37563
+  label: CTP(4-)
+- id: CHEBI:17815
+  label: 1,2-diacyl-sn-glycerol
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: SGD:S000003434
+  label: PCT1 Scer
+- id: CHEBI:295975
+  label: choline phosphate(1-)
+- id: SGD:S000004123
+  label: CKI1 Scer
+- id: CHEBI:456216
+  label: ADP(3-)
+- id: CHEBI:15354
+  label: choline
+reactions:
+- id: gomodel:CHOLINE-KINASE-RXN
+  label: choline + ATP -> phosphocholine + ADP + H<SUP>+</SUP>
+- id: gomodel:RXN-5781
+  label: a 1,2-diacyl-<i>sn</i>-glycerol + CDP-choline <=> a phosphatidylcholine +
+    CMP + H<SUP>+</SUP>
+- id: gomodel:2.7.7.15-RXN
+  label: CTP + phosphocholine + H<SUP>+</SUP> -> CDP-choline + diphosphate
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:CHOLINE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:CHOLINE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_CHOLINE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_30616_CHOLINE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-002
+  subject: SGD:S000005074
+  predicate: enables
+  object: gomodel:RXN-5781
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:RXN-5781","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL130C-MONOMER_RXN-5781_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:YNL130C-MONOMER_RXN-5781_controller","type":[{"type":"class","id":"SGD:S000005074"'
+- id: edge-003
+  subject: gomodel:RXN-5781
+  predicate: produces
+  object: CHEBI:60377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:RXN-5781","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_60377_RXN-5781"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_60377_RXN-5781","type":[{"type":"class","id":"CHEBI:60377"'
+- id: edge-004
+  subject: gomodel:2.7.7.15-RXN
+  predicate: produces
+  object: CHEBI:58779
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:2.7.7.15-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58779_2.7.7.15-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_58779_2.7.7.15-RXN","type":[{"type":"class","id":"CHEBI:58779"'
+- id: edge-005
+  subject: gomodel:RXN-5781
+  predicate: produces
+  object: CHEBI:16110
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:RXN-5781","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16110_RXN-5781"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_16110_RXN-5781","type":[{"type":"class","id":"CHEBI:16110"'
+- id: edge-006
+  subject: gomodel:RXN-5781
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:RXN-5781","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-5781"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_15378_RXN-5781","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: CHEBI:37563
+  predicate: consumes
+  object: gomodel:2.7.7.15-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:2.7.7.15-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_37563_2.7.7.15-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_37563_2.7.7.15-RXN","type":[{"type":"class","id":"CHEBI:37563"'
+- id: edge-008
+  subject: CHEBI:17815
+  predicate: consumes
+  object: gomodel:RXN-5781
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:RXN-5781","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17815_RXN-5781"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_17815_RXN-5781","type":[{"type":"class","id":"CHEBI:17815"'
+- id: edge-009
+  subject: gomodel:2.7.7.15-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:2.7.7.15-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_2.7.7.15-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_29888_2.7.7.15-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-010
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:2.7.7.15-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:2.7.7.15-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_2.7.7.15-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_15378_2.7.7.15-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-011
+  subject: SGD:S000003434
+  predicate: enables
+  object: gomodel:2.7.7.15-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:2.7.7.15-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGR202C-MONOMER_2.7.7.15-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:YGR202C-MONOMER_2.7.7.15-RXN_controller","type":[{"type":"class","id":"SGD:S000003434"'
+- id: edge-012
+  subject: CHEBI:295975
+  predicate: consumes
+  object: gomodel:2.7.7.15-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:2.7.7.15-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_295975_CHOLINE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_295975_CHOLINE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:295975"'
+- id: edge-013
+  subject: SGD:S000004123
+  predicate: enables
+  object: gomodel:CHOLINE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:CHOLINE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR133W-MONOMER_CHOLINE-KINASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:YLR133W-MONOMER_CHOLINE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004123"'
+- id: edge-014
+  subject: CHEBI:58779
+  predicate: consumes
+  object: gomodel:RXN-5781
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:RXN-5781","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58779_2.7.7.15-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_58779_2.7.7.15-RXN","type":[{"type":"class","id":"CHEBI:58779"'
+- id: edge-015
+  subject: gomodel:CHOLINE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:CHOLINE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_CHOLINE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_15378_CHOLINE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-016
+  subject: gomodel:CHOLINE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:CHOLINE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_CHOLINE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_456216_CHOLINE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-017
+  subject: CHEBI:15354
+  predicate: consumes
+  object: gomodel:CHOLINE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:CHOLINE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15354_CHOLINE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_15354_CHOLINE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15354"'
+- id: edge-018
+  subject: gomodel:CHOLINE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:295975
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"subject":"gomodel:CHOLINE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_295975_CHOLINE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-450
+    quote: '"id":"gomodel:CHEBI_295975_CHOLINE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:295975"'
+references:
+- id: gomodel:YeastPathways_PWY3O-450
+  title: SGD GO-CAM phosphatidylcholine biosynthesis I pathway PWY3O-450
