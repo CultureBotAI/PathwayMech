@@ -1,0 +1,255 @@
+id: gomodel:YeastPathways_PWY-1801-1
+label: formaldehyde oxidation II (glutathione-dependent)
+description: Formaldehyde oxidation II in Saccharomyces cerevisiae S288C
+  condenses formaldehyde with glutathione, oxidizes S-(hydroxymethyl)glutathione
+  to S-formylglutathione, hydrolyzes S-formylglutathione to formate and
+  glutathione, and oxidizes formate to carbon dioxide.
+pathway_type: formaldehyde-degradation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:16842
+  label: formaldehyde
+- id: CHEBI:57925
+  label: glutathionate(1-)
+- id: CHEBI:58758
+  label: S-(hydroxymethyl)glutathione(1-)
+- id: SGD:S000002327
+  label: SFA1 Scer
+- id: CHEBI:13390
+  label: NAD(P)(+)
+- id: CHEBI:57688
+  label: S-formylglutathionate(1-)
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:13392
+  label: NAD(P)H
+- id: SGD:S000003604
+  label: YJL068C Scer
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:15740
+  label: formate
+- id: SGD:S000005915
+  label: FDH1 Scer
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: CHEBI:57945
+  label: NADH(2-)
+reactions:
+- id: gomodel:RXN-2961
+  label: S-(hydroxymethyl)glutathione synthase activity
+- id: gomodel:RXN-2962
+  label: S-(hydroxymethyl)glutathione + NAD(P)+ -> S-formylglutathione + NAD(P)H + H+
+- id: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  label: S-formylglutathione hydrolase activity
+- id: gomodel:1.2.1.2-RXN
+  label: formate dehydrogenase (NAD+) activity
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:16842
+  predicate: consumes
+  object: gomodel:RXN-2961
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16842_RXN-2961"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_16842_RXN-2961","type":[{"type":"class","id":"CHEBI:16842"'
+- id: edge-002
+  subject: CHEBI:57925
+  predicate: consumes
+  object: gomodel:RXN-2961
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57925_RXN-2961"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_57925_RXN-2961","type":[{"type":"class","id":"CHEBI:57925"'
+- id: edge-003
+  subject: gomodel:RXN-2961
+  predicate: produces
+  object: CHEBI:58758
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58758_RXN-2961"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_58758_RXN-2961","type":[{"type":"class","id":"CHEBI:58758"'
+- id: edge-004
+  subject: gomodel:RXN-2961
+  predicate: precedes
+  object: gomodel:RXN-2962
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-2962"'
+- id: edge-005
+  subject: SGD:S000002327
+  predicate: enables
+  object: gomodel:RXN-2962
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDL168W-MONOMER_RXN-2962_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:YDL168W-MONOMER_RXN-2962_controller","type":[{"type":"class","id":"SGD:S000002327"'
+- id: edge-006
+  subject: CHEBI:58758
+  predicate: consumes
+  object: gomodel:RXN-2962
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58758_RXN-2961"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_58758_RXN-2961","type":[{"type":"class","id":"CHEBI:58758"'
+- id: edge-007
+  subject: CHEBI:13390
+  predicate: consumes
+  object: gomodel:RXN-2962
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_13390_RXN-2962"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_13390_RXN-2962","type":[{"type":"class","id":"CHEBI:13390"'
+- id: edge-008
+  subject: gomodel:RXN-2962
+  predicate: produces
+  object: CHEBI:57688
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57688_RXN-2962"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_57688_RXN-2962","type":[{"type":"class","id":"CHEBI:57688"'
+- id: edge-009
+  subject: gomodel:RXN-2962
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-2962"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_15378_RXN-2962","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-010
+  subject: gomodel:RXN-2962
+  predicate: produces
+  object: CHEBI:13392
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_13392_RXN-2962"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_13392_RXN-2962","type":[{"type":"class","id":"CHEBI:13392"'
+- id: edge-011
+  subject: gomodel:RXN-2962
+  predicate: precedes
+  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
+- id: edge-012
+  subject: SGD:S000003604
+  predicate: enables
+  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL068C-MONOMER_S-FORMYLGLUTATHIONE-HYDROLASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:YJL068C-MONOMER_S-FORMYLGLUTATHIONE-HYDROLASE-RXN_controller","type":[{"type":"class","id":"SGD:S000003604"'
+- id: edge-013
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_15377_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-014
+  subject: CHEBI:57688
+  predicate: consumes
+  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57688_RXN-2962"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_57688_RXN-2962","type":[{"type":"class","id":"CHEBI:57688"'
+- id: edge-015
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_15378_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-016
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: produces
+  object: CHEBI:57925
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57925_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_57925_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:57925"'
+- id: edge-017
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: produces
+  object: CHEBI:15740
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15740"'
+- id: edge-018
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: precedes
+  object: gomodel:1.2.1.2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:1.2.1.2-RXN"'
+- id: edge-019
+  subject: SGD:S000005915
+  predicate: enables
+  object: gomodel:1.2.1.2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOR388C-MONOMER_1.2.1.2-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:YOR388C-MONOMER_1.2.1.2-RXN_controller","type":[{"type":"class","id":"SGD:S000005915"'
+- id: edge-020
+  subject: CHEBI:15740
+  predicate: consumes
+  object: gomodel:1.2.1.2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15740"'
+- id: edge-021
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:1.2.1.2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_1.2.1.2-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_57540_1.2.1.2-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-022
+  subject: gomodel:1.2.1.2-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_1.2.1.2-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_16526_1.2.1.2-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-023
+  subject: gomodel:1.2.1.2-RXN
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_1.2.1.2-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    quote: '"id":"gomodel:CHEBI_57945_1.2.1.2-RXN","type":[{"type":"class","id":"CHEBI:57945"'
+references:
+- id: gomodel:YeastPathways_PWY-1801-1
+  title: GO-CAM formaldehyde oxidation II model YeastPathways_PWY-1801-1
