@@ -1,0 +1,137 @@
+id: gomodel:YeastPathways_ARGSPECAT-PWY
+label: spermine biosynthesis
+description: >-
+  Spermine biosynthesis decarboxylates S-adenosyl-L-methionine through SPE2
+  and transfers its aminopropyl group to spermidine through SPE4 to form
+  spermine in Saccharomyces cerevisiae S288C.
+pathway_type: polyamine-biosynthesis
+taxa:
+  - id: NCBITaxon:559292
+    label: Saccharomyces cerevisiae S288C
+participants:
+  - id: SGD:S000005412
+    label: SPE2 Scer
+  - id: SGD:S000004136
+    label: SPE4 Scer
+  - id: CHEBI:59789
+    label: S-adenosyl-L-methionine zwitterion
+  - id: CHEBI:15378
+    label: hydron
+  - id: CHEBI:16526
+    label: carbon dioxide
+  - id: CHEBI:57443
+    label: S-adenosylmethioninaminium
+  - id: CHEBI:57834
+    label: spermidine(3+)
+  - id: CHEBI:17509
+    label: 5'-S-methyl-5'-thioadenosine
+  - id: CHEBI:45725
+    label: spermine(4+)
+reactions:
+  - id: gomodel:SAMDECARB-RXN
+    label: adenosylmethionine decarboxylase activity
+  - id: gomodel:SPERMINE-SYNTHASE-RXN
+    label: spermine synthase activity
+mechanistic_edges:
+  - id: edge-001
+    subject: SGD:S000005412
+    predicate: enables
+    object: gomodel:SAMDECARB-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOL052C-MONOMER_SAMDECARB-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:YOL052C-MONOMER_SAMDECARB-RXN_controller","type":[{"type":"class","id":"SGD:S000005412"'
+  - id: edge-002
+    subject: CHEBI:59789
+    predicate: consumes
+    object: gomodel:SAMDECARB-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_59789_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_59789_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:59789"'
+  - id: edge-003
+    subject: CHEBI:15378
+    predicate: consumes
+    object: gomodel:SAMDECARB-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_15378_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-004
+    subject: gomodel:SAMDECARB-RXN
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_16526_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+  - id: edge-005
+    subject: gomodel:SAMDECARB-RXN
+    predicate: produces
+    object: CHEBI:57443
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57443_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_57443_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:57443"'
+  - id: edge-006
+    subject: SGD:S000004136
+    predicate: enables
+    object: gomodel:SPERMINE-SYNTHASE-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SPERMINE-SYNTHASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR146C-MONOMER_SPERMINE-SYNTHASE-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:YLR146C-MONOMER_SPERMINE-SYNTHASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004136"'
+  - id: edge-007
+    subject: CHEBI:57834
+    predicate: consumes
+    object: gomodel:SPERMINE-SYNTHASE-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SPERMINE-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57834_SPERMINE-SYNTHASE-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_57834_SPERMINE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:57834"'
+  - id: edge-008
+    subject: CHEBI:57443
+    predicate: consumes
+    object: gomodel:SPERMINE-SYNTHASE-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SPERMINE-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57443_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_57443_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:57443"'
+  - id: edge-009
+    subject: gomodel:SPERMINE-SYNTHASE-RXN
+    predicate: produces
+    object: CHEBI:17509
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SPERMINE-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17509_SPERMINE-SYNTHASE-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_17509_SPERMINE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:17509"'
+  - id: edge-010
+    subject: gomodel:SPERMINE-SYNTHASE-RXN
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SPERMINE-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_SPERMINE-SYNTHASE-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_15378_SPERMINE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-011
+    subject: gomodel:SPERMINE-SYNTHASE-RXN
+    predicate: produces
+    object: CHEBI:45725
+    evidence:
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"subject":"gomodel:SPERMINE-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_45725_SPERMINE-SYNTHASE-RXN"'
+      - reference_id: gomodel:YeastPathways_ARGSPECAT-PWY
+        quote: '"id":"gomodel:CHEBI_45725_SPERMINE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:45725"'
+references:
+  - id: gomodel:YeastPathways_ARGSPECAT-PWY
+    title: GO-CAM spermine biosynthesis model YeastPathways_ARGSPECAT-PWY
