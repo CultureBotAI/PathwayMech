@@ -1,0 +1,223 @@
+id: gomodel:YeastPathways_PWY3O-123
+label: dolichyl phosphate D-mannose biosynthesis
+description: Dolichyl phosphate D-mannose biosynthesis in Saccharomyces cerevisiae S288C converts
+  beta-D-fructofuranose 6-phosphate to alpha-D-mannose 1-phosphate, forms GDP-alpha-D-mannose,
+  and transfers D-mannose to dolichyl phosphate to produce dolichyl D-mannosyl phosphate.
+pathway_type: glycan-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: SGD:S000002213
+  label: PSA1 Scer
+- id: CHEBI:57527
+  label: GDP-alpha-D-mannose(2-)
+- id: CHEBI:58189
+  label: GDP(3-)
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:57634
+  label: beta-D-fructofuranose 6-phosphate(2-)
+- id: CHEBI:58409
+  label: alpha-D-mannose 1-phosphate(2-)
+- id: CHEBI:16214
+  label: dolichyl phosphate
+- id: CHEBI:15809
+  label: dolichyl D-mannosyl phosphate
+- id: CHEBI:43474
+  label: hydrogenphosphate
+- id: CHEBI:48066
+  label: D-mannopyranose 6-phosphate
+- id: SGD:S000006387
+  label: DPM1 Scer
+- id: SGD:S000001849
+  label: SEC53 Scer
+- id: SGD:S000000805
+  label: PMI40 Scer
+reactions:
+- id: gomodel:MANNPGUANYLTRANGDP-RXN
+  label: mannose-1-phosphate guanylyltransferase (GDP) activity
+- id: gomodel:2.4.1.83-RXN
+  label: dolichyl-phosphate beta-D-mannosyltransferase activity
+- id: gomodel:PHOSMANMUT-RXN
+  label: phosphomannomutase activity
+- id: gomodel:MANNPISOM-RXN
+  label: mannose-6-phosphate isomerase activity
+mechanistic_edges:
+- id: edge-001
+  subject: SGD:S000002213
+  predicate: enables
+  object: gomodel:MANNPGUANYLTRANGDP-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDL055C-MONOMER_MANNPGUANYLTRANGDP-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:YDL055C-MONOMER_MANNPGUANYLTRANGDP-RXN_controller","type":[{"type":"class","id":"SGD:S000002213"'
+- id: edge-002
+  subject: gomodel:MANNPGUANYLTRANGDP-RXN
+  predicate: precedes
+  object: gomodel:2.4.1.83-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:2.4.1.83-RXN"'
+- id: edge-003
+  subject: gomodel:MANNPGUANYLTRANGDP-RXN
+  predicate: produces
+  object: CHEBI:57527
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57527_MANNPGUANYLTRANGDP-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_57527_MANNPGUANYLTRANGDP-RXN","type":[{"type":"class","id":"CHEBI:57527"'
+- id: edge-004
+  subject: CHEBI:57527
+  predicate: consumes
+  object: gomodel:2.4.1.83-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:2.4.1.83-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57527_MANNPGUANYLTRANGDP-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_57527_MANNPGUANYLTRANGDP-RXN","type":[{"type":"class","id":"CHEBI:57527"'
+- id: edge-005
+  subject: gomodel:2.4.1.83-RXN
+  predicate: produces
+  object: CHEBI:58189
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:2.4.1.83-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58189_2.4.1.83-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_58189_2.4.1.83-RXN","type":[{"type":"class","id":"CHEBI:58189"'
+- id: edge-006
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:MANNPGUANYLTRANGDP-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_MANNPGUANYLTRANGDP-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_15378_MANNPGUANYLTRANGDP-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: gomodel:MANNPISOM-RXN
+  predicate: precedes
+  object: gomodel:PHOSMANMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPISOM-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:PHOSMANMUT-RXN"'
+- id: edge-008
+  subject: CHEBI:57634
+  predicate: consumes
+  object: gomodel:MANNPISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPISOM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57634_MANNPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_57634_MANNPISOM-RXN","type":[{"type":"class","id":"CHEBI:57634"'
+- id: edge-009
+  subject: CHEBI:58409
+  predicate: consumes
+  object: gomodel:MANNPGUANYLTRANGDP-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58409_PHOSMANMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_58409_PHOSMANMUT-RXN","type":[{"type":"class","id":"CHEBI:58409"'
+- id: edge-010
+  subject: CHEBI:16214
+  predicate: consumes
+  object: gomodel:2.4.1.83-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:2.4.1.83-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16214_2.4.1.83-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_16214_2.4.1.83-RXN","type":[{"type":"class","id":"CHEBI:16214"'
+- id: edge-011
+  subject: gomodel:2.4.1.83-RXN
+  predicate: produces
+  object: CHEBI:15809
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:2.4.1.83-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15809_2.4.1.83-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_15809_2.4.1.83-RXN","type":[{"type":"class","id":"CHEBI:15809"'
+- id: edge-012
+  subject: gomodel:MANNPGUANYLTRANGDP-RXN
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_MANNPGUANYLTRANGDP-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_43474_MANNPGUANYLTRANGDP-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+- id: edge-013
+  subject: gomodel:PHOSMANMUT-RXN
+  predicate: precedes
+  object: gomodel:MANNPGUANYLTRANGDP-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:PHOSMANMUT-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:MANNPGUANYLTRANGDP-RXN"'
+- id: edge-014
+  subject: gomodel:MANNPISOM-RXN
+  predicate: produces
+  object: CHEBI:48066
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPISOM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_48066_MANNPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_48066_MANNPISOM-RXN","type":[{"type":"class","id":"CHEBI:48066"'
+- id: edge-015
+  subject: CHEBI:58189
+  predicate: consumes
+  object: gomodel:MANNPGUANYLTRANGDP-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPGUANYLTRANGDP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58189_MANNPGUANYLTRANGDP-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_58189_MANNPGUANYLTRANGDP-RXN","type":[{"type":"class","id":"CHEBI:58189"'
+- id: edge-016
+  subject: gomodel:PHOSMANMUT-RXN
+  predicate: produces
+  object: CHEBI:58409
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:PHOSMANMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58409_PHOSMANMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_58409_PHOSMANMUT-RXN","type":[{"type":"class","id":"CHEBI:58409"'
+- id: edge-017
+  subject: SGD:S000006387
+  predicate: enables
+  object: gomodel:2.4.1.83-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:2.4.1.83-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPR183W-MONOMER_2.4.1.83-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:YPR183W-MONOMER_2.4.1.83-RXN_controller","type":[{"type":"class","id":"SGD:S000006387"'
+- id: edge-018
+  subject: CHEBI:48066
+  predicate: consumes
+  object: gomodel:PHOSMANMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:PHOSMANMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_48066_MANNPISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:CHEBI_48066_MANNPISOM-RXN","type":[{"type":"class","id":"CHEBI:48066"'
+- id: edge-019
+  subject: SGD:S000001849
+  predicate: enables
+  object: gomodel:PHOSMANMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:PHOSMANMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YFL045C-MONOMER_PHOSMANMUT-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:YFL045C-MONOMER_PHOSMANMUT-RXN_controller","type":[{"type":"class","id":"SGD:S000001849"'
+- id: edge-020
+  subject: SGD:S000000805
+  predicate: enables
+  object: gomodel:MANNPISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"subject":"gomodel:MANNPISOM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YER003C-MONOMER_MANNPISOM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-123
+    quote: '"id":"gomodel:YER003C-MONOMER_MANNPISOM-RXN_controller","type":[{"type":"class","id":"SGD:S000000805"'
+references:
+- id: gomodel:YeastPathways_PWY3O-123
+  title: SGD GO-CAM dolichyl phosphate D-mannose biosynthesis pathway PWY3O-123
