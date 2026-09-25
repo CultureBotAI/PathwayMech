@@ -1,0 +1,185 @@
+id: gomodel:YeastPathways_PWY-5669
+label: phosphatidylethanolamine biosynthesis I
+description: Phosphatidylethanolamine biosynthesis I in Saccharomyces cerevisiae S288C transfers
+  phosphatidyl groups from CDP-diacylglycerol to L-serine to form 3-sn-phosphatidyl-L-serine,
+  then decarboxylates 3-sn-phosphatidyl-L-serine through PSD1 or PSD2 to form phosphatidylethanolamine.
+pathway_type: lipid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: SGD:S000000828
+  label: CHO1 Scer
+- id: CHEBI:33384
+  label: L-serine zwitterion
+- id: CHEBI:17962
+  label: CDP-diacylglycerol
+- id: CHEBI:11750
+  label: 3-sn-phosphatidyl-L-serine
+- id: CHEBI:60377
+  label: cytidine 5'-monophosphate(2-)
+- id: CHEBI:15378
+  label: hydron
+- id: SGD:S000003402
+  label: PSD2 Scer
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: CHEBI:16038
+  label: phosphatidylethanolamine
+- id: SGD:S000005113
+  label: PSD1 Scer
+reactions:
+- id: gomodel:PHOSPHASERSYN-RXN
+  label: CDP-diacylglycerol-serine O-phosphatidyltransferase activity
+- id: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  label: phosphatidylserine decarboxylase activity (PSD2)
+- id: gomodel:PHOSPHASERDECARB-RXN
+  label: phosphatidylserine decarboxylase activity
+mechanistic_edges:
+- id: edge-001
+  subject: SGD:S000000828
+  predicate: enables
+  object: gomodel:PHOSPHASERSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YER026C-MONOMER_PHOSPHASERSYN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:YER026C-MONOMER_PHOSPHASERSYN-RXN_controller","type":[{"type":"class","id":"SGD:S000000828"'
+- id: edge-002
+  subject: CHEBI:33384
+  predicate: consumes
+  object: gomodel:PHOSPHASERSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_33384_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_33384_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:33384"'
+- id: edge-003
+  subject: CHEBI:17962
+  predicate: consumes
+  object: gomodel:PHOSPHASERSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17962_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_17962_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:17962"'
+- id: edge-004
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: produces
+  object: CHEBI:11750
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:11750"'
+- id: edge-005
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: produces
+  object: CHEBI:60377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_60377_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_60377_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:60377"'
+- id: edge-006
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_15378_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: SGD:S000003402
+  predicate: enables
+  object: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000812"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000812","type":[{"type":"class","id":"SGD:S000003402"'
+- id: edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000809"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000809","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-009
+  subject: CHEBI:11750
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:11750"'
+- id: edge-010
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000810"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000810","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-011
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: produces
+  object: CHEBI:16038
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000811"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000811","type":[{"type":"class","id":"CHEBI:16038"'
+- id: edge-012
+  subject: SGD:S000005113
+  predicate: enables
+  object: gomodel:PHOSPHASERDECARB-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL169C-MONOMER_PHOSPHASERDECARB-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:YNL169C-MONOMER_PHOSPHASERDECARB-RXN_controller","type":[{"type":"class","id":"SGD:S000005113"'
+- id: edge-013
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:PHOSPHASERDECARB-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_PHOSPHASERDECARB-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_15378_PHOSPHASERDECARB-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-014
+  subject: CHEBI:11750
+  predicate: consumes
+  object: gomodel:PHOSPHASERDECARB-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:11750"'
+- id: edge-015
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_PHOSPHASERDECARB-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_16526_PHOSPHASERDECARB-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-016
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: produces
+  object: CHEBI:16038
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16038_PHOSPHASERDECARB-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    quote: '"id":"gomodel:CHEBI_16038_PHOSPHASERDECARB-RXN","type":[{"type":"class","id":"CHEBI:16038"'
+references:
+- id: gomodel:YeastPathways_PWY-5669
+  title: GO-CAM phosphatidylethanolamine biosynthesis model YeastPathways_PWY-5669
