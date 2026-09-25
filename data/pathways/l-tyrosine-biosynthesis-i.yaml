@@ -1,0 +1,215 @@
+id: MetaCyc:TYRSYN
+label: L-tyrosine biosynthesis I
+description: >-
+  L-tyrosine biosynthesis I converts chorismate to prephenate, oxidatively
+  decarboxylates prephenate with NAD+ to 3-(4-hydroxyphenyl)pyruvate, and
+  transaminates 3-(4-hydroxyphenyl)pyruvate with L-glutamate to form
+  L-tyrosine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:5.4.99.5
+    label: chorismate mutase
+  - id: EC:1.3.1.12
+    label: prephenate dehydrogenase
+  - id: EC:2.6.1.57
+    label: aromatic-amino-acid transaminase
+  - id: CHEBI:29748
+    label: chorismate
+  - id: CHEBI:29934
+    label: prephenate
+  - id: CHEBI:57540
+    label: NAD+
+  - id: CHEBI:36242
+    label: 3-(4-hydroxyphenyl)pyruvate
+  - id: CHEBI:16526
+    label: CO2
+  - id: CHEBI:57945
+    label: NADH
+  - id: CHEBI:29985
+    label: L-glutamate
+  - id: CHEBI:58315
+    label: L-tyrosine
+  - id: CHEBI:16810
+    label: 2-oxoglutarate
+reactions:
+  - id: RHEA:13898
+    label: chorismate mutase reaction
+  - id: RHEA:13870
+    label: prephenate dehydrogenase reaction
+  - id: RHEA:15095
+    label: L-tyrosine aminotransferase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:5.4.99.5
+    predicate: catalyzes
+    object: RHEA:13898
+    evidence:
+      - reference_id: RHEA:13897
+        quote: "EC 5.4.99.5 chorismate mutase"
+      - reference_id: PMID:12581215
+        quote: >-
+          Mapping of chorismate mutase and prephenate dehydrogenase domains in
+          the Escherichia coli T-protein.
+  - id: edge-002
+    subject: CHEBI:29748
+    predicate: consumes
+    object: RHEA:13898
+    evidence:
+      - reference_id: RHEA:13898
+        quote: "RHEA:13898 chorismate => prephenate"
+  - id: edge-003
+    subject: RHEA:13898
+    predicate: produces
+    object: CHEBI:29934
+    evidence:
+      - reference_id: RHEA:13898
+        quote: "RHEA:13898 chorismate => prephenate"
+  - id: edge-004
+    subject: RHEA:13898
+    predicate: precedes
+    object: RHEA:13870
+    evidence:
+      - reference_id: RHEA:13898
+        quote: "RHEA:13898 chorismate => prephenate"
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+  - id: edge-005
+    subject: EC:1.3.1.12
+    predicate: catalyzes
+    object: RHEA:13870
+    evidence:
+      - reference_id: RHEA:13869
+        quote: "EC 1.3.1.12 prephenate dehydrogenase"
+      - reference_id: PMID:12581215
+        quote: >-
+          Mapping of chorismate mutase and prephenate dehydrogenase domains in
+          the Escherichia coli T-protein.
+  - id: edge-006
+    subject: CHEBI:29934
+    predicate: consumes
+    object: RHEA:13870
+    evidence:
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+  - id: edge-007
+    subject: CHEBI:57540
+    predicate: consumes
+    object: RHEA:13870
+    evidence:
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+  - id: edge-008
+    subject: RHEA:13870
+    predicate: produces
+    object: CHEBI:36242
+    evidence:
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+  - id: edge-009
+    subject: RHEA:13870
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+  - id: edge-010
+    subject: RHEA:13870
+    predicate: produces
+    object: CHEBI:57945
+    evidence:
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+  - id: edge-011
+    subject: RHEA:13870
+    predicate: precedes
+    object: RHEA:15095
+    evidence:
+      - reference_id: RHEA:13870
+        quote: >-
+          RHEA:13870 prephenate + NAD(+) => 3-(4-hydroxyphenyl)pyruvate +
+          CO2 + NADH
+      - reference_id: RHEA:15095
+        quote: >-
+          RHEA:15095 3-(4-hydroxyphenyl)pyruvate + L-glutamate => L-tyrosine +
+          2-oxoglutarate
+  - id: edge-012
+    subject: EC:2.6.1.57
+    predicate: catalyzes
+    object: RHEA:15095
+    evidence:
+      - reference_id: RHEA:15093
+        quote: "EC 2.6.1.57 aromatic-amino-acid transaminase"
+      - reference_id: PMID:236311
+        quote: >-
+          Multispecific aspartate and aromatic amino acid aminotransferases in
+          Escherichia coli.
+  - id: edge-013
+    subject: CHEBI:36242
+    predicate: consumes
+    object: RHEA:15095
+    evidence:
+      - reference_id: RHEA:15095
+        quote: >-
+          RHEA:15095 3-(4-hydroxyphenyl)pyruvate + L-glutamate => L-tyrosine +
+          2-oxoglutarate
+  - id: edge-014
+    subject: CHEBI:29985
+    predicate: consumes
+    object: RHEA:15095
+    evidence:
+      - reference_id: RHEA:15095
+        quote: >-
+          RHEA:15095 3-(4-hydroxyphenyl)pyruvate + L-glutamate => L-tyrosine +
+          2-oxoglutarate
+  - id: edge-015
+    subject: RHEA:15095
+    predicate: produces
+    object: CHEBI:58315
+    evidence:
+      - reference_id: RHEA:15095
+        quote: >-
+          RHEA:15095 3-(4-hydroxyphenyl)pyruvate + L-glutamate => L-tyrosine +
+          2-oxoglutarate
+  - id: edge-016
+    subject: RHEA:15095
+    predicate: produces
+    object: CHEBI:16810
+    evidence:
+      - reference_id: RHEA:15095
+        quote: >-
+          RHEA:15095 3-(4-hydroxyphenyl)pyruvate + L-glutamate => L-tyrosine +
+          2-oxoglutarate
+references:
+  - id: MetaCyc:TYRSYN
+    title: MetaCyc L-tyrosine biosynthesis I pathway
+  - id: RHEA:13897
+    title: Rhea chorismate mutase reaction
+  - id: RHEA:13898
+    title: Rhea prephenate-forming chorismate mutase direction
+  - id: RHEA:13869
+    title: Rhea prephenate dehydrogenase reaction
+  - id: RHEA:13870
+    title: Rhea 4-hydroxyphenylpyruvate-forming prephenate dehydrogenase direction
+  - id: RHEA:15093
+    title: Rhea L-tyrosine aminotransferase reaction
+  - id: RHEA:15095
+    title: Rhea L-tyrosine-forming aminotransferase direction
+  - id: PMID:12581215
+    citation: Chen et al., European Journal of Biochemistry, 2003
+  - id: PMID:236311
+    citation: Mavrides and Orr, Journal of Biological Chemistry, 1975
