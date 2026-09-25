@@ -1,0 +1,349 @@
+id: MetaCyc:GLUCARDEG-PWY
+label: D-glucarate degradation I
+description: D-glucarate degradation I dehydrates D-glucarate to 5-dehydro-4-deoxy-D-glucarate, cleaves that intermediate to 2-hydroxy-3-oxopropanoate and pyruvate, reduces 2-hydroxy-3-oxopropanoate to (R)-glycerate with NADPH or NADH, and phosphorylates (R)-glycerate to (2R)-2-phosphoglycerate.
+pathway_type: carbohydrate-degradation
+taxa:
+  - id: NCBITaxon:2
+    label: Bacteria
+participants:
+  - id: EC:4.2.1.40
+    label: D-glucarate dehydratase
+  - id: EC:1.1.1.60
+    label: tartronate-semialdehyde reductase
+  - id: EC:2.7.1.165
+    label: D-glycerate 2-kinase
+  - id: CHEBI:30612
+    label: D-glucarate
+  - id: CHEBI:42819
+    label: 5-dehydro-4-deoxy-D-glucarate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:57978
+    label: 2-hydroxy-3-oxopropanoate
+  - id: CHEBI:15361
+    label: pyruvate
+  - id: CHEBI:57783
+    label: NADPH
+  - id: CHEBI:15378
+    label: H(+)
+  - id: CHEBI:58349
+    label: NADP(+)
+  - id: CHEBI:57945
+    label: NADH
+  - id: CHEBI:57540
+    label: NAD(+)
+  - id: CHEBI:16659
+    label: (R)-glycerate
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:58289
+    label: (2R)-2-phosphoglycerate
+  - id: CHEBI:456216
+    label: ADP
+reactions:
+  - id: RHEA:14574
+    label: D-glucarate dehydratase reaction
+  - id: RHEA:27729
+    label: 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  - id: RHEA:18843
+    label: NADPH-dependent tartronate-semialdehyde reductase reaction
+  - id: RHEA:18847
+    label: NADH-dependent tartronate-semialdehyde reductase reaction
+  - id: RHEA:27378
+    label: D-glycerate 2-kinase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:4.2.1.40
+    predicate: catalyzes
+    object: RHEA:14574
+    evidence:
+      - reference_id: RHEA:14573
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/4.2.1.40"/>'
+  - id: edge-002
+    subject: CHEBI:30612
+    predicate: consumes
+    object: RHEA:14574
+    evidence:
+      - reference_id: RHEA:14574
+        quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLUCARDEHYDRA-RXN' orgid='META' frameid='GLUCARDEHYDRA-RXN'/><direction>L2R</direction>"
+  - id: edge-003
+    subject: RHEA:14574
+    predicate: produces
+    object: CHEBI:42819
+    evidence:
+      - reference_id: RHEA:14574
+        quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLUCARDEHYDRA-RXN' orgid='META' frameid='GLUCARDEHYDRA-RXN'/><direction>L2R</direction>"
+  - id: edge-004
+    subject: RHEA:14574
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: RHEA:14574
+        quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GLUCARDEHYDRA-RXN' orgid='META' frameid='GLUCARDEHYDRA-RXN'/><direction>L2R</direction>"
+  - id: edge-005
+    subject: RHEA:14574
+    predicate: precedes
+    object: RHEA:27729
+    evidence:
+      - reference_id: RHEA:14574
+        quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
+      - reference_id: RHEA:27729
+        quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate + pyruvate
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:KDGALDOL-RXN' orgid='META' frameid='KDGALDOL-RXN'/><predecessor-reactions><Reaction resource='getxml?META:GLUCARDEHYDRA-RXN' orgid='META' frameid='GLUCARDEHYDRA-RXN'/></predecessor-reactions>"
+  - id: edge-006
+    subject: CHEBI:42819
+    predicate: consumes
+    object: RHEA:27729
+    evidence:
+      - reference_id: RHEA:27729
+        quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate + pyruvate
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:KDGALDOL-RXN' orgid='META' frameid='KDGALDOL-RXN'/><direction>L2R</direction>"
+  - id: edge-007
+    subject: RHEA:27729
+    predicate: produces
+    object: CHEBI:57978
+    evidence:
+      - reference_id: RHEA:27729
+        quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate + pyruvate
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:KDGALDOL-RXN' orgid='META' frameid='KDGALDOL-RXN'/><direction>L2R</direction>"
+  - id: edge-008
+    subject: RHEA:27729
+    predicate: produces
+    object: CHEBI:15361
+    evidence:
+      - reference_id: RHEA:27729
+        quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate + pyruvate
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:KDGALDOL-RXN' orgid='META' frameid='KDGALDOL-RXN'/><direction>L2R</direction>"
+  - id: edge-009
+    subject: RHEA:27729
+    predicate: precedes
+    object: RHEA:18843
+    evidence:
+      - reference_id: RHEA:27729
+        quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate + pyruvate
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><predecessor-reactions><Reaction resource='getxml?META:KDGALDOL-RXN' orgid='META' frameid='KDGALDOL-RXN'/></predecessor-reactions>"
+  - id: edge-010
+    subject: RHEA:27729
+    predicate: precedes
+    object: RHEA:18847
+    evidence:
+      - reference_id: RHEA:27729
+        quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate + pyruvate
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><predecessor-reactions><Reaction resource='getxml?META:KDGALDOL-RXN' orgid='META' frameid='KDGALDOL-RXN'/></predecessor-reactions>"
+  - id: edge-011
+    subject: EC:1.1.1.60
+    predicate: catalyzes
+    object: RHEA:18843
+    evidence:
+      - reference_id: RHEA:18841
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/1.1.1.60"/>'
+  - id: edge-012
+    subject: CHEBI:57978
+    predicate: consumes
+    object: RHEA:18843
+    evidence:
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-013
+    subject: CHEBI:57783
+    predicate: consumes
+    object: RHEA:18843
+    evidence:
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-014
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:18843
+    evidence:
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-015
+    subject: RHEA:18843
+    predicate: produces
+    object: CHEBI:16659
+    evidence:
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-016
+    subject: RHEA:18843
+    predicate: produces
+    object: CHEBI:58349
+    evidence:
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-017
+    subject: RHEA:18843
+    predicate: precedes
+    object: RHEA:27378
+    evidence:
+      - reference_id: RHEA:18843
+        quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate + NADP(+)
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><predecessor-reactions><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/></predecessor-reactions>"
+  - id: edge-018
+    subject: EC:1.1.1.60
+    predicate: catalyzes
+    object: RHEA:18847
+    evidence:
+      - reference_id: RHEA:18845
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/1.1.1.60"/>'
+  - id: edge-019
+    subject: CHEBI:57978
+    predicate: consumes
+    object: RHEA:18847
+    evidence:
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-020
+    subject: CHEBI:57945
+    predicate: consumes
+    object: RHEA:18847
+    evidence:
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-021
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:18847
+    evidence:
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-022
+    subject: RHEA:18847
+    predicate: produces
+    object: CHEBI:16659
+    evidence:
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-023
+    subject: RHEA:18847
+    predicate: produces
+    object: CHEBI:57540
+    evidence:
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-024
+    subject: RHEA:18847
+    predicate: precedes
+    object: RHEA:27378
+    evidence:
+      - reference_id: RHEA:18847
+        quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><predecessor-reactions><Reaction resource='getxml?META:TSA-REDUCT-RXN' orgid='META' frameid='TSA-REDUCT-RXN'/></predecessor-reactions>"
+  - id: edge-025
+    subject: EC:2.7.1.165
+    predicate: catalyzes
+    object: RHEA:27378
+    evidence:
+      - reference_id: RHEA:27377
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.1.165"/>'
+  - id: edge-026
+    subject: CHEBI:16659
+    predicate: consumes
+    object: RHEA:27378
+    evidence:
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><direction>L2R</direction>"
+  - id: edge-027
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:27378
+    evidence:
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><direction>L2R</direction>"
+  - id: edge-028
+    subject: RHEA:27378
+    predicate: produces
+    object: CHEBI:58289
+    evidence:
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><direction>L2R</direction>"
+  - id: edge-029
+    subject: RHEA:27378
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><direction>L2R</direction>"
+  - id: edge-030
+    subject: RHEA:27378
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:27378
+        quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
+      - reference_id: MetaCyc:GLUCARDEG-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GKI-RXN' orgid='META' frameid='GKI-RXN'/><direction>L2R</direction>"
+references:
+  - id: MetaCyc:GLUCARDEG-PWY
+    title: MetaCyc D-glucarate degradation I
+  - id: RHEA:14573
+    title: Rhea D-glucarate dehydratase reaction
+  - id: RHEA:14574
+    title: Rhea D-glucarate-dehydrating direction
+  - id: RHEA:27726
+    title: Rhea 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  - id: RHEA:27729
+    title: Rhea bidirectional 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  - id: RHEA:18841
+    title: Rhea NADPH-dependent tartronate-semialdehyde reductase reaction
+  - id: RHEA:18843
+    title: Rhea NADPH-dependent tartronate-semialdehyde reductase reduction direction
+  - id: RHEA:18845
+    title: Rhea NADH-dependent tartronate-semialdehyde reductase reaction
+  - id: RHEA:18847
+    title: Rhea NADH-dependent tartronate-semialdehyde reductase reduction direction
+  - id: RHEA:27377
+    title: Rhea D-glycerate 2-kinase reaction
+  - id: RHEA:27378
+    title: Rhea 2-phosphoglycerate-forming direction
