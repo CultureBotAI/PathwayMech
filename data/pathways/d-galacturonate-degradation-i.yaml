@@ -1,0 +1,298 @@
+id: MetaCyc:GALACTUROCAT-PWY
+label: D-galacturonate degradation I
+description: D-galacturonate degradation I isomerizes aldehydo-D-galacturonate to keto-D-tagaturonate, reduces it to D-altronate, dehydrates and phosphorylates it to 2-dehydro-3-deoxy-6-phospho-D-gluconate, and cleaves that phosphorylated intermediate to D-glyceraldehyde 3-phosphate and pyruvate.
+pathway_type: carbohydrate-degradation
+taxa:
+  - id: NCBITaxon:511145
+    label: Escherichia coli K-12 substr. MG1655
+participants:
+  - id: EC:5.3.1.12
+    label: glucuronate isomerase
+  - id: EC:1.1.1.58
+    label: tagaturonate reductase
+  - id: EC:4.2.1.7
+    label: altronate dehydratase
+  - id: EC:2.7.1.45
+    label: 2-dehydro-3-deoxygluconokinase
+  - id: EC:4.1.2.14
+    label: 2-dehydro-3-deoxy-phosphogluconate aldolase
+  - id: CHEBI:12952
+    label: aldehydo-D-galacturonate
+  - id: CHEBI:17886
+    label: keto-D-tagaturonate
+  - id: CHEBI:57945
+    label: NADH
+  - id: CHEBI:15378
+    label: H(+)
+  - id: CHEBI:57540
+    label: NAD(+)
+  - id: CHEBI:17360
+    label: D-altronate
+  - id: CHEBI:57990
+    label: 2-dehydro-3-deoxy-D-gluconate
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:57569
+    label: 2-dehydro-3-deoxy-6-phospho-D-gluconate
+  - id: CHEBI:456216
+    label: ADP
+  - id: CHEBI:59776
+    label: D-glyceraldehyde 3-phosphate
+  - id: CHEBI:15361
+    label: pyruvate
+reactions:
+  - id: RHEA:27705
+    label: D-galacturonate isomerase reaction
+  - id: RHEA:17816
+    label: tagaturonate reductase reaction
+  - id: RHEA:15958
+    label: altronate dehydratase reaction
+  - id: RHEA:14798
+    label: 2-dehydro-3-deoxygluconokinase reaction
+  - id: RHEA:17090
+    label: 2-dehydro-3-deoxy-6-phosphogluconate aldolase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:5.3.1.12
+    predicate: catalyzes
+    object: RHEA:27705
+    evidence:
+      - reference_id: RHEA:27702
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/5.3.1.12"/>'
+  - id: edge-002
+    subject: CHEBI:12952
+    predicate: consumes
+    object: RHEA:27705
+    evidence:
+      - reference_id: RHEA:27705
+        quote: RHEA:27705 aldehydo-D-galacturonate <=> keto-D-tagaturonate
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GALACTUROISOM-RXN' orgid='META' frameid='GALACTUROISOM-RXN'/><direction>L2R</direction>"
+  - id: edge-003
+    subject: RHEA:27705
+    predicate: produces
+    object: CHEBI:17886
+    evidence:
+      - reference_id: RHEA:27705
+        quote: RHEA:27705 aldehydo-D-galacturonate <=> keto-D-tagaturonate
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:GALACTUROISOM-RXN' orgid='META' frameid='GALACTUROISOM-RXN'/><direction>L2R</direction>"
+  - id: edge-004
+    subject: RHEA:27705
+    predicate: precedes
+    object: RHEA:17816
+    evidence:
+      - reference_id: RHEA:27705
+        quote: RHEA:27705 aldehydo-D-galacturonate <=> keto-D-tagaturonate
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/><predecessor-reactions><Reaction resource='getxml?META:GALACTUROISOM-RXN' orgid='META' frameid='GALACTUROISOM-RXN'/></predecessor-reactions>"
+  - id: edge-005
+    subject: EC:1.1.1.58
+    predicate: catalyzes
+    object: RHEA:17816
+    evidence:
+      - reference_id: RHEA:17813
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/1.1.1.58"/>'
+  - id: edge-006
+    subject: CHEBI:17886
+    predicate: consumes
+    object: RHEA:17816
+    evidence:
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-007
+    subject: CHEBI:57945
+    predicate: consumes
+    object: RHEA:17816
+    evidence:
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-008
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:17816
+    evidence:
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-009
+    subject: RHEA:17816
+    predicate: produces
+    object: CHEBI:17360
+    evidence:
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-010
+    subject: RHEA:17816
+    predicate: produces
+    object: CHEBI:57540
+    evidence:
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/><direction>R2L</direction>"
+  - id: edge-011
+    subject: RHEA:17816
+    predicate: precedes
+    object: RHEA:15958
+    evidence:
+      - reference_id: RHEA:17816
+        quote: RHEA:17816 D-altronate + NAD(+) <=> keto-D-tagaturonate + NADH + H(+)
+      - reference_id: RHEA:15958
+        quote: RHEA:15958 D-altronate => 2-dehydro-3-deoxy-D-gluconate + H2O
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:ALTRODEHYDRAT-RXN' orgid='META' frameid='ALTRODEHYDRAT-RXN'/><predecessor-reactions><Reaction resource='getxml?META:ALTRO-OXIDOREDUCT-RXN' orgid='META' frameid='ALTRO-OXIDOREDUCT-RXN'/></predecessor-reactions>"
+  - id: edge-012
+    subject: EC:4.2.1.7
+    predicate: catalyzes
+    object: RHEA:15958
+    evidence:
+      - reference_id: RHEA:15957
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/4.2.1.7"/>'
+  - id: edge-013
+    subject: CHEBI:17360
+    predicate: consumes
+    object: RHEA:15958
+    evidence:
+      - reference_id: RHEA:15958
+        quote: RHEA:15958 D-altronate => 2-dehydro-3-deoxy-D-gluconate + H2O
+  - id: edge-014
+    subject: RHEA:15958
+    predicate: produces
+    object: CHEBI:57990
+    evidence:
+      - reference_id: RHEA:15958
+        quote: RHEA:15958 D-altronate => 2-dehydro-3-deoxy-D-gluconate + H2O
+  - id: edge-015
+    subject: RHEA:15958
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: RHEA:15958
+        quote: RHEA:15958 D-altronate => 2-dehydro-3-deoxy-D-gluconate + H2O
+  - id: edge-016
+    subject: RHEA:15958
+    predicate: precedes
+    object: RHEA:14798
+    evidence:
+      - reference_id: RHEA:15958
+        quote: RHEA:15958 D-altronate => 2-dehydro-3-deoxy-D-gluconate + H2O
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:DEOXYGLUCONOKIN-RXN' orgid='META' frameid='DEOXYGLUCONOKIN-RXN'/><predecessor-reactions><Reaction resource='getxml?META:ALTRODEHYDRAT-RXN' orgid='META' frameid='ALTRODEHYDRAT-RXN'/></predecessor-reactions>"
+  - id: edge-017
+    subject: EC:2.7.1.45
+    predicate: catalyzes
+    object: RHEA:14798
+    evidence:
+      - reference_id: RHEA:14797
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.1.45"/>'
+  - id: edge-018
+    subject: CHEBI:57990
+    predicate: consumes
+    object: RHEA:14798
+    evidence:
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+  - id: edge-019
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:14798
+    evidence:
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+  - id: edge-020
+    subject: RHEA:14798
+    predicate: produces
+    object: CHEBI:57569
+    evidence:
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+  - id: edge-021
+    subject: RHEA:14798
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+  - id: edge-022
+    subject: RHEA:14798
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+  - id: edge-023
+    subject: RHEA:14798
+    predicate: precedes
+    object: RHEA:17090
+    evidence:
+      - reference_id: RHEA:14798
+        quote: RHEA:14798 2-dehydro-3-deoxy-D-gluconate + ATP => 2-dehydro-3-deoxy-6-phospho-D-gluconate + ADP + H(+)
+      - reference_id: RHEA:17090
+        quote: RHEA:17090 2-dehydro-3-deoxy-6-phospho-D-gluconate => D-glyceraldehyde 3-phosphate + pyruvate
+      - reference_id: MetaCyc:GALACTUROCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:KDPGALDOL-RXN' orgid='META' frameid='KDPGALDOL-RXN'/><predecessor-reactions><Reaction resource='getxml?META:DEOXYGLUCONOKIN-RXN' orgid='META' frameid='DEOXYGLUCONOKIN-RXN'/></predecessor-reactions>"
+  - id: edge-024
+    subject: EC:4.1.2.14
+    predicate: catalyzes
+    object: RHEA:17090
+    evidence:
+      - reference_id: RHEA:17089
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/4.1.2.14"/>'
+  - id: edge-025
+    subject: CHEBI:57569
+    predicate: consumes
+    object: RHEA:17090
+    evidence:
+      - reference_id: RHEA:17090
+        quote: RHEA:17090 2-dehydro-3-deoxy-6-phospho-D-gluconate => D-glyceraldehyde 3-phosphate + pyruvate
+  - id: edge-026
+    subject: RHEA:17090
+    predicate: produces
+    object: CHEBI:59776
+    evidence:
+      - reference_id: RHEA:17090
+        quote: RHEA:17090 2-dehydro-3-deoxy-6-phospho-D-gluconate => D-glyceraldehyde 3-phosphate + pyruvate
+  - id: edge-027
+    subject: RHEA:17090
+    predicate: produces
+    object: CHEBI:15361
+    evidence:
+      - reference_id: RHEA:17090
+        quote: RHEA:17090 2-dehydro-3-deoxy-6-phospho-D-gluconate => D-glyceraldehyde 3-phosphate + pyruvate
+references:
+  - id: MetaCyc:GALACTUROCAT-PWY
+    title: MetaCyc D-galacturonate degradation I
+  - id: RHEA:27702
+    title: Rhea D-galacturonate isomerase reaction
+  - id: RHEA:27705
+    title: Rhea bidirectional D-galacturonate isomerase reaction
+  - id: RHEA:17813
+    title: Rhea tagaturonate reductase reaction
+  - id: RHEA:17816
+    title: Rhea bidirectional tagaturonate reductase reaction
+  - id: RHEA:15957
+    title: Rhea altronate dehydratase reaction
+  - id: RHEA:15958
+    title: Rhea altronate-dehydrating direction
+  - id: RHEA:14797
+    title: Rhea 2-dehydro-3-deoxygluconokinase reaction
+  - id: RHEA:14798
+    title: Rhea 2-dehydro-3-deoxy-6-phospho-D-gluconate-forming direction
+  - id: RHEA:17089
+    title: Rhea 2-dehydro-3-deoxy-6-phosphogluconate aldolase reaction
+  - id: RHEA:17090
+    title: Rhea 2-dehydro-3-deoxy-6-phosphogluconate-cleaving direction
