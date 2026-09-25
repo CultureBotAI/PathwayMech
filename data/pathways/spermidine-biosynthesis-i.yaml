@@ -1,0 +1,144 @@
+id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+label: spermidine biosynthesis I
+description: >-
+  Spermidine biosynthesis I decarboxylates S-adenosyl-L-methionine
+  through SPE2 and transfers its aminopropyl group to 1,4-butanediammonium
+  through SPE3 to form spermidine in Saccharomyces cerevisiae S288C.
+pathway_type: polyamine-biosynthesis
+taxa:
+  - id: NCBITaxon:559292
+    label: Saccharomyces cerevisiae S288C
+participants:
+  - id: SGD:S000005412
+    label: SPE2 Scer
+  - id: SGD:S000006273
+    label: SPE3 Scer
+  - id: CHEBI:59789
+    label: S-adenosyl-L-methionine zwitterion
+  - id: CHEBI:15378
+    label: hydron
+  - id: CHEBI:57443
+    label: S-adenosylmethioninaminium
+  - id: CHEBI:16526
+    label: carbon dioxide
+  - id: CHEBI:326268
+    label: 1,4-butanediammonium
+  - id: CHEBI:17509
+    label: 5'-S-methyl-5'-thioadenosine
+  - id: CHEBI:57834
+    label: spermidine(3+)
+reactions:
+  - id: gomodel:SAMDECARB-RXN
+    label: adenosylmethionine decarboxylase activity
+  - id: gomodel:SPERMIDINESYN-RXN
+    label: spermidine synthase activity
+mechanistic_edges:
+  - id: edge-001
+    subject: SGD:S000005412
+    predicate: enables
+    object: gomodel:SAMDECARB-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOL052C-MONOMER_SAMDECARB-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:YOL052C-MONOMER_SAMDECARB-RXN_controller","type":[{"type":"class","id":"SGD:S000005412"'
+  - id: edge-002
+    subject: CHEBI:59789
+    predicate: consumes
+    object: gomodel:SAMDECARB-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_59789_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_59789_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:59789"'
+  - id: edge-003
+    subject: CHEBI:15378
+    predicate: consumes
+    object: gomodel:SAMDECARB-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_15378_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+  - id: edge-004
+    subject: gomodel:SAMDECARB-RXN
+    predicate: produces
+    object: CHEBI:57443
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57443_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_57443_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:57443"'
+  - id: edge-005
+    subject: gomodel:SAMDECARB-RXN
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_16526_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+  - id: edge-006
+    subject: gomodel:SAMDECARB-RXN
+    predicate: precedes
+    object: gomodel:SPERMIDINESYN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SAMDECARB-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:SPERMIDINESYN-RXN"'
+  - id: edge-007
+    subject: SGD:S000006273
+    predicate: enables
+    object: gomodel:SPERMIDINESYN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SPERMIDINESYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPR069C-MONOMER_SPERMIDINESYN-RXN_controller"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:YPR069C-MONOMER_SPERMIDINESYN-RXN_controller","type":[{"type":"class","id":"SGD:S000006273"'
+  - id: edge-008
+    subject: CHEBI:57443
+    predicate: consumes
+    object: gomodel:SPERMIDINESYN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SPERMIDINESYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57443_SAMDECARB-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_57443_SAMDECARB-RXN","type":[{"type":"class","id":"CHEBI:57443"'
+  - id: edge-009
+    subject: CHEBI:326268
+    predicate: consumes
+    object: gomodel:SPERMIDINESYN-RXN
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SPERMIDINESYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_326268_SPERMIDINESYN-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_326268_SPERMIDINESYN-RXN","type":[{"type":"class","id":"CHEBI:326268"'
+  - id: edge-010
+    subject: gomodel:SPERMIDINESYN-RXN
+    predicate: produces
+    object: CHEBI:17509
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SPERMIDINESYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17509_SPERMIDINESYN-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_17509_SPERMIDINESYN-RXN","type":[{"type":"class","id":"CHEBI:17509"'
+  - id: edge-011
+    subject: gomodel:SPERMIDINESYN-RXN
+    predicate: produces
+    object: CHEBI:57834
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SPERMIDINESYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57834_SPERMIDINESYN-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_57834_SPERMIDINESYN-RXN","type":[{"type":"class","id":"CHEBI:57834"'
+  - id: edge-012
+    subject: gomodel:SPERMIDINESYN-RXN
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"subject":"gomodel:SPERMIDINESYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_SPERMIDINESYN-RXN"'
+      - reference_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+        quote: '"id":"gomodel:CHEBI_15378_SPERMIDINESYN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+references:
+  - id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+    title: GO-CAM spermidine biosynthesis I model YeastPathways_BSUBPOLYAMSYN-PWY
