@@ -1,0 +1,218 @@
+id: MetaCyc:FUCCAT-PWY
+label: L-fucose degradation I
+description: L-fucose degradation I epimerizes beta-L-fucose to alpha-L-fucose, isomerizes L-fucose to L-fuculose, phosphorylates L-fuculose with ATP, and cleaves L-fuculose 1-phosphate to (S)-lactaldehyde and dihydroxyacetone phosphate.
+pathway_type: carbohydrate-degradation
+taxa:
+  - id: NCBITaxon:511145
+    label: Escherichia coli K-12 substr. MG1655
+participants:
+  - id: EC:5.1.3.29
+    label: L-fucose mutarotase
+  - id: EC:5.3.1.25
+    label: L-fucose isomerase
+  - id: EC:2.7.1.51
+    label: L-fuculokinase
+  - id: EC:4.1.2.17
+    label: L-fuculose-phosphate aldolase
+  - id: CHEBI:42589
+    label: beta-L-fucose
+  - id: CHEBI:42548
+    label: alpha-L-fucose
+  - id: CHEBI:2181
+    label: L-fucose
+  - id: CHEBI:17617
+    label: L-fuculose
+  - id: CHEBI:30616
+    label: ATP
+  - id: CHEBI:57846
+    label: L-fuculose 1-phosphate
+  - id: CHEBI:456216
+    label: ADP
+  - id: CHEBI:15378
+    label: H(+)
+  - id: CHEBI:18041
+    label: (S)-lactaldehyde
+  - id: CHEBI:57642
+    label: dihydroxyacetone phosphate
+reactions:
+  - id: RHEA:25583
+    label: L-fucose mutarotase reaction
+  - id: RHEA:17236
+    label: L-fucose isomerase reaction
+  - id: RHEA:12377
+    label: L-fuculokinase reaction
+  - id: RHEA:12934
+    label: L-fuculose-phosphate aldolase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:5.1.3.29
+    predicate: catalyzes
+    object: RHEA:25583
+    evidence:
+      - reference_id: RHEA:25580
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/5.1.3.29"/>'
+  - id: edge-002
+    subject: CHEBI:42589
+    predicate: consumes
+    object: RHEA:25583
+    evidence:
+      - reference_id: RHEA:25583
+        quote: RHEA:25583 alpha-L-fucose <=> beta-L-fucose
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:RXN0-5298' orgid='META' frameid='RXN0-5298'/><direction>R2L</direction>"
+  - id: edge-003
+    subject: RHEA:25583
+    predicate: produces
+    object: CHEBI:42548
+    evidence:
+      - reference_id: RHEA:25583
+        quote: RHEA:25583 alpha-L-fucose <=> beta-L-fucose
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:RXN0-5298' orgid='META' frameid='RXN0-5298'/><direction>R2L</direction>"
+  - id: edge-004
+    subject: RHEA:25583
+    predicate: precedes
+    object: RHEA:17236
+    evidence:
+      - reference_id: RHEA:25583
+        quote: RHEA:25583 alpha-L-fucose <=> beta-L-fucose
+      - reference_id: RHEA:17236
+        quote: RHEA:17236 L-fucose <=> L-fuculose
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:FUCISOM-RXN' orgid='META' frameid='FUCISOM-RXN'/><predecessor-reactions><Reaction resource='getxml?META:RXN0-5298' orgid='META' frameid='RXN0-5298'/></predecessor-reactions>"
+  - id: edge-005
+    subject: EC:5.3.1.25
+    predicate: catalyzes
+    object: RHEA:17236
+    evidence:
+      - reference_id: RHEA:17233
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/5.3.1.25"/>'
+  - id: edge-006
+    subject: CHEBI:2181
+    predicate: consumes
+    object: RHEA:17236
+    evidence:
+      - reference_id: RHEA:17236
+        quote: RHEA:17236 L-fucose <=> L-fuculose
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:FUCISOM-RXN' orgid='META' frameid='FUCISOM-RXN'/><direction>L2R</direction>"
+  - id: edge-007
+    subject: RHEA:17236
+    predicate: produces
+    object: CHEBI:17617
+    evidence:
+      - reference_id: RHEA:17236
+        quote: RHEA:17236 L-fucose <=> L-fuculose
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:FUCISOM-RXN' orgid='META' frameid='FUCISOM-RXN'/><direction>L2R</direction>"
+  - id: edge-008
+    subject: RHEA:17236
+    predicate: precedes
+    object: RHEA:12377
+    evidence:
+      - reference_id: RHEA:17236
+        quote: RHEA:17236 L-fucose <=> L-fuculose
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:FUCULOKIN-RXN' orgid='META' frameid='FUCULOKIN-RXN'/><predecessor-reactions><Reaction resource='getxml?META:FUCISOM-RXN' orgid='META' frameid='FUCISOM-RXN'/></predecessor-reactions>"
+  - id: edge-009
+    subject: EC:2.7.1.51
+    predicate: catalyzes
+    object: RHEA:12377
+    evidence:
+      - reference_id: RHEA:12376
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.1.51"/>'
+  - id: edge-010
+    subject: CHEBI:17617
+    predicate: consumes
+    object: RHEA:12377
+    evidence:
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+  - id: edge-011
+    subject: CHEBI:30616
+    predicate: consumes
+    object: RHEA:12377
+    evidence:
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+  - id: edge-012
+    subject: RHEA:12377
+    predicate: produces
+    object: CHEBI:57846
+    evidence:
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+  - id: edge-013
+    subject: RHEA:12377
+    predicate: produces
+    object: CHEBI:456216
+    evidence:
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+  - id: edge-014
+    subject: RHEA:12377
+    predicate: produces
+    object: CHEBI:15378
+    evidence:
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+  - id: edge-015
+    subject: RHEA:12377
+    predicate: precedes
+    object: RHEA:12934
+    evidence:
+      - reference_id: RHEA:12377
+        quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+      - reference_id: RHEA:12934
+        quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone phosphate
+      - reference_id: MetaCyc:FUCCAT-PWY
+        quote: "<reaction-ordering><Reaction resource='getxml?META:FUCPALDOL-RXN' orgid='META' frameid='FUCPALDOL-RXN'/><predecessor-reactions><Reaction resource='getxml?META:FUCULOKIN-RXN' orgid='META' frameid='FUCULOKIN-RXN'/></predecessor-reactions>"
+  - id: edge-016
+    subject: EC:4.1.2.17
+    predicate: catalyzes
+    object: RHEA:12934
+    evidence:
+      - reference_id: RHEA:12933
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/4.1.2.17"/>'
+  - id: edge-017
+    subject: CHEBI:57846
+    predicate: consumes
+    object: RHEA:12934
+    evidence:
+      - reference_id: RHEA:12934
+        quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone phosphate
+  - id: edge-018
+    subject: RHEA:12934
+    predicate: produces
+    object: CHEBI:18041
+    evidence:
+      - reference_id: RHEA:12934
+        quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone phosphate
+  - id: edge-019
+    subject: RHEA:12934
+    predicate: produces
+    object: CHEBI:57642
+    evidence:
+      - reference_id: RHEA:12934
+        quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone phosphate
+references:
+  - id: MetaCyc:FUCCAT-PWY
+    title: MetaCyc L-fucose degradation I
+  - id: RHEA:25580
+    title: Rhea L-fucose mutarotase reaction
+  - id: RHEA:25583
+    title: Rhea bidirectional L-fucose mutarotase reaction
+  - id: RHEA:17233
+    title: Rhea L-fucose isomerase reaction
+  - id: RHEA:17236
+    title: Rhea bidirectional L-fucose isomerase reaction
+  - id: RHEA:12376
+    title: Rhea L-fuculokinase reaction
+  - id: RHEA:12377
+    title: Rhea L-fuculose-1-phosphate-forming direction
+  - id: RHEA:12933
+    title: Rhea L-fuculose-phosphate aldolase reaction
+  - id: RHEA:12934
+    title: Rhea L-fuculose-1-phosphate-cleaving direction
