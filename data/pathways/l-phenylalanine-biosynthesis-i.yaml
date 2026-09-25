@@ -1,0 +1,207 @@
+id: MetaCyc:PHESYN
+label: L-phenylalanine biosynthesis I
+description: >-
+  L-phenylalanine biosynthesis I converts chorismate to prephenate, dehydrates
+  and decarboxylates prephenate to 3-phenylpyruvate, and transaminates
+  3-phenylpyruvate with L-glutamate to form L-phenylalanine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+  - id: NCBITaxon:562
+    label: Escherichia coli
+participants:
+  - id: EC:5.4.99.5
+    label: chorismate mutase
+  - id: EC:4.2.1.51
+    label: prephenate dehydratase
+  - id: EC:2.6.1.57
+    label: aromatic-amino-acid transaminase
+  - id: CHEBI:29748
+    label: chorismate
+  - id: CHEBI:29934
+    label: prephenate
+  - id: CHEBI:15378
+    label: H+
+  - id: CHEBI:18005
+    label: 3-phenylpyruvate
+  - id: CHEBI:16526
+    label: CO2
+  - id: CHEBI:15377
+    label: H2O
+  - id: CHEBI:29985
+    label: L-glutamate
+  - id: CHEBI:58095
+    label: L-phenylalanine
+  - id: CHEBI:16810
+    label: 2-oxoglutarate
+reactions:
+  - id: RHEA:13898
+    label: chorismate mutase reaction
+  - id: RHEA:21649
+    label: prephenate dehydratase reaction
+  - id: RHEA:25154
+    label: L-phenylalanine aminotransferase reaction
+mechanistic_edges:
+  - id: edge-001
+    subject: EC:5.4.99.5
+    predicate: catalyzes
+    object: RHEA:13898
+    evidence:
+      - reference_id: RHEA:13897
+        quote: "EC 5.4.99.5 chorismate mutase"
+      - reference_id: PMID:4261395
+        quote: >-
+          Chorismate mutase-prephenate dehydratase from Escherichia coli
+          K-12. II. Kinetic properties.
+  - id: edge-002
+    subject: CHEBI:29748
+    predicate: consumes
+    object: RHEA:13898
+    evidence:
+      - reference_id: RHEA:13898
+        quote: "RHEA:13898 chorismate => prephenate"
+  - id: edge-003
+    subject: RHEA:13898
+    predicate: produces
+    object: CHEBI:29934
+    evidence:
+      - reference_id: RHEA:13898
+        quote: "RHEA:13898 chorismate => prephenate"
+  - id: edge-004
+    subject: RHEA:13898
+    predicate: precedes
+    object: RHEA:21649
+    evidence:
+      - reference_id: RHEA:13898
+        quote: "RHEA:13898 chorismate => prephenate"
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+  - id: edge-005
+    subject: EC:4.2.1.51
+    predicate: catalyzes
+    object: RHEA:21649
+    evidence:
+      - reference_id: RHEA:21648
+        quote: "EC 4.2.1.51 prephenate dehydratase"
+      - reference_id: PMID:4261395
+        quote: >-
+          Chorismate mutase-prephenate dehydratase from Escherichia coli
+          K-12. II. Kinetic properties.
+  - id: edge-006
+    subject: CHEBI:29934
+    predicate: consumes
+    object: RHEA:21649
+    evidence:
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+  - id: edge-007
+    subject: CHEBI:15378
+    predicate: consumes
+    object: RHEA:21649
+    evidence:
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+  - id: edge-008
+    subject: RHEA:21649
+    predicate: produces
+    object: CHEBI:18005
+    evidence:
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+  - id: edge-009
+    subject: RHEA:21649
+    predicate: produces
+    object: CHEBI:16526
+    evidence:
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+  - id: edge-010
+    subject: RHEA:21649
+    predicate: produces
+    object: CHEBI:15377
+    evidence:
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+  - id: edge-011
+    subject: RHEA:21649
+    predicate: precedes
+    object: RHEA:25154
+    evidence:
+      - reference_id: RHEA:21649
+        quote: >-
+          RHEA:21649 prephenate + H(+) => 3-phenylpyruvate + CO2 + H2O
+      - reference_id: RHEA:25154
+        quote: >-
+          RHEA:25154 3-phenylpyruvate + L-glutamate => L-phenylalanine +
+          2-oxoglutarate
+  - id: edge-012
+    subject: EC:2.6.1.57
+    predicate: catalyzes
+    object: RHEA:25154
+    evidence:
+      - reference_id: RHEA:25152
+        quote: "EC 2.6.1.57 aromatic-amino-acid transaminase"
+      - reference_id: PMID:236311
+        quote: >-
+          Multispecific aspartate and aromatic amino acid aminotransferases in
+          Escherichia coli.
+  - id: edge-013
+    subject: CHEBI:18005
+    predicate: consumes
+    object: RHEA:25154
+    evidence:
+      - reference_id: RHEA:25154
+        quote: >-
+          RHEA:25154 3-phenylpyruvate + L-glutamate => L-phenylalanine +
+          2-oxoglutarate
+  - id: edge-014
+    subject: CHEBI:29985
+    predicate: consumes
+    object: RHEA:25154
+    evidence:
+      - reference_id: RHEA:25154
+        quote: >-
+          RHEA:25154 3-phenylpyruvate + L-glutamate => L-phenylalanine +
+          2-oxoglutarate
+  - id: edge-015
+    subject: RHEA:25154
+    predicate: produces
+    object: CHEBI:58095
+    evidence:
+      - reference_id: RHEA:25154
+        quote: >-
+          RHEA:25154 3-phenylpyruvate + L-glutamate => L-phenylalanine +
+          2-oxoglutarate
+  - id: edge-016
+    subject: RHEA:25154
+    predicate: produces
+    object: CHEBI:16810
+    evidence:
+      - reference_id: RHEA:25154
+        quote: >-
+          RHEA:25154 3-phenylpyruvate + L-glutamate => L-phenylalanine +
+          2-oxoglutarate
+references:
+  - id: MetaCyc:PHESYN
+    title: MetaCyc L-phenylalanine biosynthesis I pathway
+  - id: RHEA:13897
+    title: Rhea chorismate mutase reaction
+  - id: RHEA:13898
+    title: Rhea prephenate-forming chorismate mutase direction
+  - id: RHEA:21648
+    title: Rhea prephenate dehydratase reaction
+  - id: RHEA:21649
+    title: Rhea phenylpyruvate-forming prephenate dehydratase direction
+  - id: RHEA:25152
+    title: Rhea L-phenylalanine aminotransferase reaction
+  - id: RHEA:25154
+    title: Rhea L-phenylalanine-forming aminotransferase direction
+  - id: PMID:4261395
+    citation: Dopheide et al., Journal of Biological Chemistry, 1972
+  - id: PMID:236311
+    citation: Mavrides and Orr, Journal of Biological Chemistry, 1975
