@@ -1,0 +1,206 @@
+id: gomodel:YeastPathways_PWY3O-4106
+label: NAD salvage pathway IV (from nicotinamide riboside)
+description: NAD salvage pathway IV from nicotinamide riboside in Saccharomyces cerevisiae
+  S288C uses nicotinamide riboside kinase and nicotinamide-nucleotide adenylyltransferase
+  activities to convert N-ribosylnicotinamide through NMN to NAD.
+pathway_type: nad-salvage-pathway-iv
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: CHEBI:14649
+  label: NMN(-)
+- id: SGD:S000005073
+  label: NRK1 Scer
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:15927
+  label: N-ribosylnicotinamide
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: SGD:S000004320
+  label: NMA1 Scer
+- id: CHEBI:456216
+  label: ADP(3-)
+- id: SGD:S000003242
+  label: NMA2 Scer
+reactions:
+- id: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  label: "1-(\u03B2-D ribofuranosyl)nicotinamide + ATP -> \u03B2-nicotinamide D-ribonucleotide\
+    \ + ADP + H<SUP>+</SUP>"
+- id: gomodel:2.7.7.1-RXN
+  label: "\u03B2-nicotinamide D-ribonucleotide + ATP + H<SUP>+</SUP> -> NAD<sup>+</sup>\
+    \ + diphosphate"
+- id: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  label: nicotinamide-nucleotide adenylyltransferase activity
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_15378_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-002
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:2.7.7.1-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_2.7.7.1-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_15378_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000918"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000918","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-004
+  subject: gomodel:2.7.7.1-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_2.7.7.1-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_29888_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-005
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:14649
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:14649"'
+- id: edge-006
+  subject: SGD:S000005073
+  predicate: enables
+  object: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-4139_RIBOSYLNICOTINAMIDE-KINASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:MONOMER3O-4139_RIBOSYLNICOTINAMIDE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000005073"'
+- id: edge-007
+  subject: gomodel:2.7.7.1-RXN
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57540_2.7.7.1-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_57540_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-008
+  subject: CHEBI:15927
+  predicate: consumes
+  object: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15927_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_15927_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15927"'
+- id: edge-009
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000919"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000919","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-010
+  subject: SGD:S000004320
+  predicate: enables
+  object: gomodel:2.7.7.1-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR328W-MONOMER_2.7.7.1-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:YLR328W-MONOMER_2.7.7.1-RXN_controller","type":[{"type":"class","id":"SGD:S000004320"'
+- id: edge-011
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:2.7.7.1-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_2.7.7.1-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_30616_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-012
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_30616_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-013
+  subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000921"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000921","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-014
+  subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000920"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000920","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-015
+  subject: CHEBI:14649
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:14649"'
+- id: edge-016
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_456216_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-017
+  subject: SGD:S000003242
+  predicate: enables
+  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000923"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000923","type":[{"type":"class","id":"SGD:S000003242"'
+- id: edge-018
+  subject: CHEBI:14649
+  predicate: consumes
+  object: gomodel:2.7.7.1-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    quote: '"id":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:14649"'
+references:
+- id: gomodel:YeastPathways_PWY3O-4106
+  title: 'SGD GO-CAM NAD salvage pathway IV (from nicotinamide riboside) - imported
+    from: Saccharomyces Genome Database'
