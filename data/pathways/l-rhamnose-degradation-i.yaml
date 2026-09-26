@@ -22,6 +22,8 @@ participants:
     label: L-rhamnopyranose
   - id: CHEBI:17897
     label: L-rhamnulose
+  - id: MetaCyc:CPD-16567
+    label: L-rhamnulofuranose
   - id: CHEBI:30616
     label: ATP
   - id: CHEBI:58313
@@ -111,69 +113,87 @@ mechanistic_edges:
       - reference_id: MetaCyc:RHAMCAT-PWY
         quote: "<reaction-ordering><Reaction resource='getxml?META:RXN-15356' orgid='META' frameid='RXN-15356'/><predecessor-reactions><Reaction resource='getxml?META:RHAMNISOM-RXN' orgid='META' frameid='RHAMNISOM-RXN'/></predecessor-reactions>"
   - id: edge-009
+    subject: CHEBI:17897
+    predicate: consumes
+    object: MetaCyc:RXN-15356
+    evidence:
+      - reference_id: MetaCyc:RHAMCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:RXN-15356' orgid='META' frameid='RXN-15356'/><direction>L2R</direction>"
+      - reference_id: MetaCyc:RHAMCAT-PWY
+        quote: "<left-primaries><Compound resource='getxml?META:CPD-16566' orgid='META' frameid='CPD-16566'/></left-primaries>"
+  - id: edge-010
+    subject: MetaCyc:RXN-15356
+    predicate: produces
+    object: MetaCyc:CPD-16567
+    evidence:
+      - reference_id: MetaCyc:RHAMCAT-PWY
+        quote: "<reaction-layout><Reaction resource='getxml?META:RXN-15356' orgid='META' frameid='RXN-15356'/><direction>L2R</direction>"
+      - reference_id: MetaCyc:RHAMCAT-PWY
+        quote: "<right-primaries><Compound resource='getxml?META:CPD-16567' orgid='META' frameid='CPD-16567' class='true'/></right-primaries>"
+  - id: edge-011
     subject: MetaCyc:RXN-15356
     predicate: precedes
     object: RHEA:20118
     evidence:
       - reference_id: MetaCyc:RHAMCAT-PWY
         quote: "<reaction-ordering><Reaction resource='getxml?META:RHAMNULOKIN-RXN' orgid='META' frameid='RHAMNULOKIN-RXN'/><predecessor-reactions><Reaction resource='getxml?META:RXN-15356' orgid='META' frameid='RXN-15356'/></predecessor-reactions>"
-  - id: edge-010
+  - id: edge-012
     subject: EC:2.7.1.5
     predicate: catalyzes
     object: RHEA:20118
     evidence:
-      - reference_id: MetaCyc:RHAMCAT-PWY
-        quote: EC 2.7.1.5, rhamnulokinase
-  - id: edge-011
+      - reference_id: RHEA:20117
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.7.1.5"/>'
+  - id: edge-013
     subject: CHEBI:17897
     predicate: consumes
     object: RHEA:20118
     evidence:
       - reference_id: RHEA:20118
         quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-  - id: edge-012
+  - id: edge-014
     subject: CHEBI:30616
     predicate: consumes
     object: RHEA:20118
     evidence:
       - reference_id: RHEA:20118
         quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-  - id: edge-013
+  - id: edge-015
     subject: RHEA:20118
     predicate: produces
     object: CHEBI:58313
     evidence:
       - reference_id: RHEA:20118
         quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-  - id: edge-014
+  - id: edge-016
     subject: RHEA:20118
     predicate: produces
     object: CHEBI:456216
     evidence:
       - reference_id: RHEA:20118
         quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-  - id: edge-015
+  - id: edge-017
     subject: RHEA:20118
     predicate: produces
     object: CHEBI:15378
     evidence:
       - reference_id: RHEA:20118
         quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-  - id: edge-016
+  - id: edge-018
     subject: RHEA:20118
     predicate: precedes
     object: RHEA:19692
     evidence:
       - reference_id: MetaCyc:RHAMCAT-PWY
         quote: "<reaction-ordering><Reaction resource='getxml?META:RHAMNULPALDOL-RXN' orgid='META' frameid='RHAMNULPALDOL-RXN'/><predecessor-reactions><Reaction resource='getxml?META:RHAMNULOKIN-RXN' orgid='META' frameid='RHAMNULOKIN-RXN'/></predecessor-reactions>"
-  - id: edge-017
+  - id: edge-019
     subject: EC:4.1.2.19
     predicate: catalyzes
     object: RHEA:19692
     evidence:
-      - reference_id: MetaCyc:RHAMCAT-PWY
-        quote: EC 4.1.2.19, rhamnulose-1-phosphate aldolase
-  - id: edge-018
+      - reference_id: RHEA:19689
+        quote: '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/4.1.2.19"/>'
+  - id: edge-020
     subject: CHEBI:58313
     predicate: consumes
     object: RHEA:19692
@@ -182,7 +202,7 @@ mechanistic_edges:
         quote: RHEA:19692 L-rhamnulose 1-phosphate <=> (S)-lactaldehyde + dihydroxyacetone phosphate
       - reference_id: MetaCyc:RHAMCAT-PWY
         quote: "<reaction-layout><Reaction resource='getxml?META:RHAMNULPALDOL-RXN' orgid='META' frameid='RHAMNULPALDOL-RXN'/><direction>L2R</direction>"
-  - id: edge-019
+  - id: edge-021
     subject: RHEA:19692
     predicate: produces
     object: CHEBI:18041
@@ -191,7 +211,7 @@ mechanistic_edges:
         quote: RHEA:19692 L-rhamnulose 1-phosphate <=> (S)-lactaldehyde + dihydroxyacetone phosphate
       - reference_id: MetaCyc:RHAMCAT-PWY
         quote: "<reaction-layout><Reaction resource='getxml?META:RHAMNULPALDOL-RXN' orgid='META' frameid='RHAMNULPALDOL-RXN'/><direction>L2R</direction>"
-  - id: edge-020
+  - id: edge-022
     subject: RHEA:19692
     predicate: produces
     object: CHEBI:57642
@@ -211,7 +231,11 @@ references:
     title: Rhea L-rhamnose isomerase reaction
   - id: RHEA:23163
     title: Rhea bidirectional L-rhamnose isomerase reaction
+  - id: RHEA:20117
+    title: Rhea generic rhamnulokinase reaction
   - id: RHEA:20118
     title: Rhea L-rhamnulose-1-phosphate-forming direction
+  - id: RHEA:19689
+    title: Rhea generic rhamnulose-1-phosphate aldolase reaction
   - id: RHEA:19692
     title: Rhea bidirectional rhamnulose-1-phosphate aldolase reaction
