@@ -1,0 +1,151 @@
+id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+label: 4-aminobutyrate degradation
+description: 4-aminobutyrate degradation in Saccharomyces cerevisiae S288C transaminates
+  gamma-aminobutyric acid to 4-oxobutanoate and oxidizes 4-oxobutanoate to succinate
+  in the SGD GO-CAM 4-aminobutyrate degradation pathway.
+pathway_type: 4-aminobutyrate-degradation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:13390
+  label: NAD(P)(+)
+- id: CHEBI:30031
+  label: succinate(2-)
+- id: CHEBI:59888
+  label: gamma-aminobutyric acid zwitterion
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:15377
+  label: water
+- id: SGD:S000000210
+  label: UGA2 Scer
+- id: CHEBI:57706
+  label: 4-oxobutanoate
+- id: CHEBI:13392
+  label: NAD(P)H
+- id: SGD:S000003251
+  label: UGA1 Scer
+- id: CHEBI:16810
+  label: 2-oxoglutarate(2-)
+reactions:
+- id: gomodel:RXN0-5293
+  label: succinate semialdehyde + NAD(P)<sup>+</sup> + H<sub>2</sub>O -> succinate
+    + NAD(P)H + 2 H<SUP>+</SUP>
+- id: gomodel:GABATRANSAM-RXN
+  label: 2-oxoglutarate + 4-aminobutanoate <=> L-glutamate + succinate semialdehyde
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:13390
+  predicate: consumes
+  object: gomodel:RXN0-5293
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_13390_RXN0-5293"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_13390_RXN0-5293","type":[{"type":"class","id":"CHEBI:13390"'
+- id: edge-002
+  subject: gomodel:RXN0-5293
+  predicate: produces
+  object: CHEBI:30031
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_30031_RXN0-5293"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_30031_RXN0-5293","type":[{"type":"class","id":"CHEBI:30031"'
+- id: edge-003
+  subject: CHEBI:59888
+  predicate: consumes
+  object: gomodel:GABATRANSAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_59888_GABATRANSAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_59888_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:59888"'
+- id: edge-004
+  subject: gomodel:GABATRANSAM-RXN
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_GABATRANSAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_29985_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:29985"'
+- id: edge-005
+  subject: gomodel:RXN0-5293
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN0-5293"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_15378_RXN0-5293","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-006
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:RXN0-5293
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_RXN0-5293"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_15377_RXN0-5293","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-007
+  subject: SGD:S000000210
+  predicate: enables
+  object: gomodel:RXN0-5293
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR006W-MONOMER_RXN0-5293_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:YBR006W-MONOMER_RXN0-5293_controller","type":[{"type":"class","id":"SGD:S000000210"'
+- id: edge-008
+  subject: gomodel:GABATRANSAM-RXN
+  predicate: produces
+  object: CHEBI:57706
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57706_GABATRANSAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_57706_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:57706"'
+- id: edge-009
+  subject: gomodel:RXN0-5293
+  predicate: produces
+  object: CHEBI:13392
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_13392_RXN0-5293"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_13392_RXN0-5293","type":[{"type":"class","id":"CHEBI:13392"'
+- id: edge-010
+  subject: SGD:S000003251
+  predicate: enables
+  object: gomodel:GABATRANSAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGR019W-MONOMER_GABATRANSAM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:YGR019W-MONOMER_GABATRANSAM-RXN_controller","type":[{"type":"class","id":"SGD:S000003251"'
+- id: edge-011
+  subject: CHEBI:57706
+  predicate: consumes
+  object: gomodel:RXN0-5293
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57706_GABATRANSAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_57706_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:57706"'
+- id: edge-012
+  subject: CHEBI:16810
+  predicate: consumes
+  object: gomodel:GABATRANSAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16810_GABATRANSAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    quote: '"id":"gomodel:CHEBI_16810_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:16810"'
+references:
+- id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  title: 'SGD GO-CAM 4-aminobutyrate degradation - imported from: Saccharomyces Genome
+    Database'
