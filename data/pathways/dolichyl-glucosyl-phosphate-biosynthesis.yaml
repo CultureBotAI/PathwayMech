@@ -1,0 +1,308 @@
+id: gomodel:YeastPathways_PWY3O-1565
+label: dolichyl glucosyl phosphate biosynthesis
+description: Dolichyl glucosyl phosphate biosynthesis in Saccharomyces cerevisiae
+  S288C converts D-glucopyranose 6-phosphate to alpha-D-glucose 1-phosphate through
+  PGM1 or PGM2 phosphoglucomutase activity, couples alpha-D-glucose 1-phosphate
+  with UTP through UGP1 or YHL012W to form UDP-alpha-D-glucose, and uses ALG5 to
+  transfer glucose from UDP-alpha-D-glucose to dolichyl phosphate, producing dolichyl
+  beta-D-glucosyl phosphate and UDP.
+pathway_type: glycan-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:58885
+  label: UDP-alpha-D-glucose(2-)
+- id: CHEBI:4170
+  label: D-glucopyranose 6-phosphate
+- id: CHEBI:46398
+  label: UTP(4-)
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:58223
+  label: UDP(3-)
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: SGD:S000006148
+  label: ALG5 Scer
+- id: CHEBI:58601
+  label: alpha-D-glucose 1-phosphate(2-)
+- id: SGD:S000001518
+  label: UGP1 Scer
+- id: CHEBI:57525
+  label: dolichyl beta-D-glucosyl phosphate(1-)
+- id: SGD:S000004711
+  label: PGM2 Scer
+- id: SGD:S000001610
+  label: PGM1 Scer
+- id: SGD:S000001004
+  label: YHL012W Scer
+- id: CHEBI:16214
+  label: dolichyl phosphate
+reactions:
+- id: gomodel:2.4.1.117-RXN
+  label: "UDP-\u03B1-D-glucose + a dolichyl phosphate -> a dolichyl \u03B2-D-glucosyl\
+    \ phosphate + UDP"
+- id: gomodel:YeastPathways_PWY3O-1565/6a4c244800003247
+  label: phosphoglucomutase activity
+- id: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  label: UTP:glucose-1-phosphate uridylyltransferase activity
+- id: gomodel:PHOSPHOGLUCMUT-RXN
+  label: "\u03B1-D-glucopyranose 1-phosphate <=> D-glucopyranose 6-phosphate"
+- id: gomodel:GLUC1PURIDYLTRANS-RXN
+  label: "\u03B1-D-glucopyranose 1-phosphate + UTP + H<SUP>+</SUP> -> UDP-\u03B1-D-glucose\
+    \ + diphosphate"
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:58885
+  predicate: consumes
+  object: gomodel:2.4.1.117-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:2.4.1.117-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58885_GLUC1PURIDYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58885_GLUC1PURIDYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58885"'
+- id: edge-002
+  subject: CHEBI:4170
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003247
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003247","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003248"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003248","type":[{"type":"class","id":"CHEBI:4170"'
+- id: edge-003
+  subject: CHEBI:46398
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003260"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003260","type":[{"type":"class","id":"CHEBI:46398"'
+- id: edge-004
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: precedes
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258"'
+- id: edge-005
+  subject: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  predicate: produces
+  object: CHEBI:58885
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58885_GLUC1PURIDYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58885_GLUC1PURIDYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58885"'
+- id: edge-006
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:GLUC1PURIDYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_GLUC1PURIDYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_15378_GLUC1PURIDYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: gomodel:2.4.1.117-RXN
+  predicate: produces
+  object: CHEBI:58223
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:2.4.1.117-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58223_2.4.1.117-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58223_2.4.1.117-RXN","type":[{"type":"class","id":"CHEBI:58223"'
+- id: edge-008
+  subject: gomodel:GLUC1PURIDYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_GLUC1PURIDYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_29888_GLUC1PURIDYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-009
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: precedes
+  object: gomodel:GLUC1PURIDYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:GLUC1PURIDYLTRANS-RXN"'
+- id: edge-010
+  subject: gomodel:YeastPathways_PWY3O-1565/6a4c244800003247
+  predicate: precedes
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003247","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258"'
+- id: edge-011
+  subject: SGD:S000006148
+  predicate: enables
+  object: gomodel:2.4.1.117-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:2.4.1.117-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL227C-MONOMER_2.4.1.117-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YPL227C-MONOMER_2.4.1.117-RXN_controller","type":[{"type":"class","id":"SGD:S000006148"'
+- id: edge-012
+  subject: CHEBI:46398
+  predicate: consumes
+  object: gomodel:GLUC1PURIDYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_46398_GLUC1PURIDYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_46398_GLUC1PURIDYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:46398"'
+- id: edge-013
+  subject: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003261"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003261","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-014
+  subject: gomodel:YeastPathways_PWY3O-1565/6a4c244800003247
+  predicate: produces
+  object: CHEBI:58601
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003247","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-015
+  subject: SGD:S000001518
+  predicate: enables
+  object: gomodel:GLUC1PURIDYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL035W-MONOMER_GLUC1PURIDYLTRANS-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YKL035W-MONOMER_GLUC1PURIDYLTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000001518"'
+- id: edge-016
+  subject: gomodel:2.4.1.117-RXN
+  predicate: produces
+  object: CHEBI:57525
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:2.4.1.117-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57525_2.4.1.117-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_57525_2.4.1.117-RXN","type":[{"type":"class","id":"CHEBI:57525"'
+- id: edge-017
+  subject: gomodel:GLUC1PURIDYLTRANS-RXN
+  predicate: precedes
+  object: gomodel:2.4.1.117-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:2.4.1.117-RXN"'
+- id: edge-018
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: produces
+  object: CHEBI:58601
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-019
+  subject: CHEBI:4170
+  predicate: consumes
+  object: gomodel:PHOSPHOGLUCMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:4170"'
+- id: edge-020
+  subject: SGD:S000004711
+  predicate: enables
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003247
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003247","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003250"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003250","type":[{"type":"class","id":"SGD:S000004711"'
+- id: edge-021
+  subject: SGD:S000001610
+  predicate: enables
+  object: gomodel:PHOSPHOGLUCMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-1565/6690711d00000641"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6690711d00000641","type":[{"type":"class","id":"SGD:S000001610"'
+- id: edge-022
+  subject: SGD:S000001004
+  predicate: enables
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003263"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003263","type":[{"type":"class","id":"SGD:S000001004"'
+- id: edge-023
+  subject: gomodel:YeastPathways_PWY3O-1565/6a4c244800003247
+  predicate: precedes
+  object: gomodel:GLUC1PURIDYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003247","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:GLUC1PURIDYLTRANS-RXN"'
+- id: edge-024
+  subject: CHEBI:58601
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-025
+  subject: gomodel:GLUC1PURIDYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:58885
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58885_GLUC1PURIDYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58885_GLUC1PURIDYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58885"'
+- id: edge-026
+  subject: CHEBI:16214
+  predicate: consumes
+  object: gomodel:2.4.1.117-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:2.4.1.117-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16214_2.4.1.117-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_16214_2.4.1.117-RXN","type":[{"type":"class","id":"CHEBI:16214"'
+- id: edge-027
+  subject: CHEBI:58601
+  predicate: consumes
+  object: gomodel:GLUC1PURIDYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:GLUC1PURIDYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:CHEBI_58601_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-028
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003259"'
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"id":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003259","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-029
+  subject: gomodel:YeastPathways_PWY3O-1565/6a4c244800003258
+  predicate: precedes
+  object: gomodel:2.4.1.117-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-1565
+    quote: '"subject":"gomodel:YeastPathways_PWY3O-1565/6a4c244800003258","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:2.4.1.117-RXN"'
+references:
+- id: gomodel:YeastPathways_PWY3O-1565
+  title: 'SGD GO-CAM dolichyl glucosyl phosphate biosynthesis - imported from: Saccharomyces
+    Genome Database'
