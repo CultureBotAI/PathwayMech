@@ -1,0 +1,153 @@
+id: gomodel:YeastPathways_PWY-5340
+label: sulfate activation (for sulfonation)
+description: Saccharomyces cerevisiae S288C route that adenylates sulfate to adenylyl
+  sulfate and phosphorylates it to 3'-phosphoadenylyl sulfate for sulfonation.
+pathway_type: metabolic
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:58243
+  label: 5'-adenylyl sulfate(2-)
+- id: SGD:S000001484
+  label: MET14 Scer
+- id: CHEBI:16189
+  label: sulfate
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: SGD:S000003771
+  label: MET3 Scer
+- id: CHEBI:58339
+  label: 3'-phosphonato-5'-adenylyl sulfate(4-)
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: CHEBI:456216
+  label: ADP(3-)
+reactions:
+- id: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  label: sulfate + ATP + H<SUP>+</SUP> <=> adenosine 5'-phosphosulfate + diphosphate
+- id: gomodel:ADENYLYLSULFKIN-RXN
+  label: adenosine 5'-phosphosulfate + ATP <=> 3'-phosphoadenylyl-sulfate + ADP +
+    H<SUP>+</SUP>
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:58243
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58243"'
+- id: edge-002
+  subject: SGD:S000001484
+  predicate: enables
+  object: gomodel:ADENYLYLSULFKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL001C-MONOMER_ADENYLYLSULFKIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:YKL001C-MONOMER_ADENYLYLSULFKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000001484"'
+- id: edge-003
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: precedes
+  object: gomodel:ADENYLYLSULFKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:ADENYLYLSULFKIN-RXN"'
+- id: edge-004
+  subject: CHEBI:16189
+  predicate: consumes
+  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16189_SULFATE-ADENYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_16189_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:16189"'
+- id: edge-005
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_ADENYLYLSULFKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_15378_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-006
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:ADENYLYLSULFKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_ADENYLYLSULFKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_30616_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-007
+  subject: SGD:S000003771
+  predicate: enables
+  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJR010W-MONOMER_SULFATE-ADENYLYLTRANS-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:YJR010W-MONOMER_SULFATE-ADENYLYLTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000003771"'
+- id: edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SULFATE-ADENYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_15378_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-009
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: produces
+  object: CHEBI:58339
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:58339"'
+- id: edge-010
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_SULFATE-ADENYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_30616_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-011
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_SULFATE-ADENYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_29888_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-012
+  subject: CHEBI:58243
+  predicate: consumes
+  object: gomodel:ADENYLYLSULFKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58243"'
+- id: edge-013
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_ADENYLYLSULFKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5340
+    quote: '"id":"gomodel:CHEBI_456216_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+references:
+- id: gomodel:YeastPathways_PWY-5340
+  title: 'SGD GO-CAM sulfate activation (for sulfonation) - imported from: Saccharomyces
+    Genome Database'
