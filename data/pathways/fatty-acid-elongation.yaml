@@ -1,0 +1,531 @@
+id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+label: fatty acid elongation
+description: Fatty acid elongation in Saccharomyces cerevisiae S288C uses CEM1, OAR1,
+  FAS1, and FAS2 to condense and reduce acyl-carrier protein intermediates through
+  3-oxoacyl-[acp], (3R)-3-hydroxyacyl-[acyl-carrier-protein], enoyl-[acp], palmitoyl-[acp],
+  and palmitoyl-CoA, then uses TES1 to hydrolyze palmitoyl-CoA to palmitate.
+pathway_type: fatty-acid-elongation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:2393
+  label: acetoacetyl-[acp]
+- id: CHEBI:13534
+  label: acyl-carrier protein
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:58349
+  label: NADP(3-)
+- id: SGD:S000006152
+  label: FAS2 Scer
+- id: SGD:S000001538
+  label: OAR1 Scer
+- id: CHEBI:7896
+  label: hexadecanoate
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:84648
+  label: (3R)-3-hydroxyacyl-[acyl-carrier-protein]
+- id: SGD:S000000863
+  label: CEM1 Scer
+- id: SGD:S000001665
+  label: FAS1 Scer
+- id: CHEBI:16018
+  label: acyl-[acyl-carrier protein]
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+- id: CHEBI:57783
+  label: NADPH(4-)
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: CHEBI:57379
+  label: palmitoyl-CoA(4-)
+- id: CHEBI:5697
+  label: palmitoyl-[acyl-carrier protein]
+- id: SGD:S000003780
+  label: TES1 Scer
+reactions:
+- id: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  label: "a (3<i>R</i>)-3-hydroxyacyl-[acyl-carrier protein] + NADP<sup>+</sup> \u2190\
+    \ a 3-oxoacyl-[acp] + NADPH + H<SUP>+</SUP>"
+- id: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  label: 3-oxoacyl-[acyl-carrier-protein] synthase activity
+- id: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  label: a (3<i>R</i>)-3-hydroxyacyl-[acyl-carrier protein] -> a <i>trans</i>-2-enoyl-[acyl-carrier
+    protein] + H<sub>2</sub>O
+- id: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  label: "a 2,3,4-saturated fatty acyl-[acp] + NADP<sup>+</sup> \u2190 a <i>trans</i>-2-enoyl-[acyl-carrier\
+    \ protein] + NADPH + H<SUP>+</SUP>"
+- id: gomodel:RXN3O-9780
+  label: a palmitoyl-[acp] + coenzyme A -> palmitoyl-CoA + acyl-carrier protein
+- id: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  label: 3-oxoacyl-[acyl-carrier-protein] reductase (NADPH) activity
+- id: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  label: palmitoyl-CoA + H<sub>2</sub>O -> palmitate + coenzyme A + H<SUP>+</SUP>
+- id: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  label: a 2,3,4-saturated fatty acyl-[acp] + a malonyl-[acp] + H<SUP>+</SUP> -> acyl-carrier
+    protein + a 3-oxoacyl-[acp] + CO<SUB>2</SUB>
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:2393
+  predicate: consumes
+  object: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN","type":[{"type":"class","id":"CHEBI:2393"'
+- id: edge-002
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  predicate: produces
+  object: CHEBI:13534
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003414"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003414","type":[{"type":"class","id":"CHEBI:13534"'
+- id: edge-003
+  subject: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  predicate: precedes
+  object: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN"'
+- id: edge-004
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003412"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003412","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-005
+  subject: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  predicate: precedes
+  object: gomodel:RXN3O-9780
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN3O-9780"'
+- id: edge-006
+  subject: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_ENOYL-ACP-REDUCT-NADPH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_58349_ENOYL-ACP-REDUCT-NADPH-RXN","type":[{"type":"class","id":"CHEBI:58349"'
+- id: edge-007
+  subject: SGD:S000006152
+  predicate: enables
+  object: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL231W-MONOMER_3-OXOACYL-ACP-REDUCT-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YPL231W-MONOMER_3-OXOACYL-ACP-REDUCT-RXN_controller","type":[{"type":"class","id":"SGD:S000006152"'
+- id: edge-008
+  subject: SGD:S000001538
+  predicate: enables
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003433"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003433","type":[{"type":"class","id":"SGD:S000001538"'
+- id: edge-009
+  subject: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  predicate: produces
+  object: CHEBI:7896
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:PALMITOYL-COA-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_7896_PALMITOYL-COA-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_7896_PALMITOYL-COA-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:7896"'
+- id: edge-010
+  subject: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_3-OXOACYL-ACP-REDUCT-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_58349_3-OXOACYL-ACP-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:58349"'
+- id: edge-011
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:PALMITOYL-COA-HYDROLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_PALMITOYL-COA-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_15377_PALMITOYL-COA-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-012
+  subject: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  predicate: produces
+  object: CHEBI:13534
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001620"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001620","type":[{"type":"class","id":"CHEBI:13534"'
+- id: edge-013
+  subject: CHEBI:84648
+  predicate: consumes
+  object: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:OH-ACYL-ACP_3-OXOACYL-ACP-REDUCT-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:OH-ACYL-ACP_3-OXOACYL-ACP-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:84648"'
+- id: edge-014
+  subject: SGD:S000000863
+  predicate: enables
+  object: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YER061C-MONOMER_3-OXOACYL-ACP-SYNTH-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YER061C-MONOMER_3-OXOACYL-ACP-SYNTH-RXN_controller","type":[{"type":"class","id":"SGD:S000000863"'
+- id: edge-015
+  subject: SGD:S000001665
+  predicate: enables
+  object: gomodel:RXN3O-9780
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:RXN3O-9780","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL182W-MONOMER_RXN3O-9780_controller"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YKL182W-MONOMER_RXN3O-9780_controller","type":[{"type":"class","id":"SGD:S000001665"'
+- id: edge-016
+  subject: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  predicate: precedes
+  object: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:3-OXOACYL-ACP-REDUCT-RXN"'
+- id: edge-017
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  predicate: precedes
+  object: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:3-OXOACYL-ACP-REDUCT-RXN"'
+- id: edge-018
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_3-OXOACYL-ACP-SYNTH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_15378_3-OXOACYL-ACP-SYNTH-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-019
+  subject: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  predicate: produces
+  object: CHEBI:2393
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN","type":[{"type":"class","id":"CHEBI:2393"'
+- id: edge-020
+  subject: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:PALMITOYL-COA-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_PALMITOYL-COA-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_15378_PALMITOYL-COA-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-021
+  subject: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  predicate: produces
+  object: CHEBI:16018
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:TRANS-D2-ENOYL-ACP_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:TRANS-D2-ENOYL-ACP_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","type":[{"type":"class","id":"CHEBI:16018"'
+- id: edge-022
+  subject: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:PALMITOYL-COA-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_PALMITOYL-COA-HYDROLASE-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_57287_PALMITOYL-COA-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-023
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  predicate: produces
+  object: CHEBI:2393
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN","type":[{"type":"class","id":"CHEBI:2393"'
+- id: edge-024
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  predicate: precedes
+  object: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN"'
+- id: edge-025
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_3-OXOACYL-ACP-REDUCT-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_15378_3-OXOACYL-ACP-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-026
+  subject: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_15377_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-027
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_3-OXOACYL-ACP-REDUCT-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_57783_3-OXOACYL-ACP-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-028
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003415"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003415","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-029
+  subject: gomodel:RXN3O-9780
+  predicate: produces
+  object: CHEBI:57379
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:RXN3O-9780","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001534"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001534","type":[{"type":"class","id":"CHEBI:57379"'
+- id: edge-030
+  subject: CHEBI:2393
+  predicate: consumes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:B-KETOACYL-ACP_3-OXOACYL-ACP-SYNTH-RXN","type":[{"type":"class","id":"CHEBI:2393"'
+- id: edge-031
+  subject: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  predicate: precedes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428"'
+- id: edge-032
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_ENOYL-ACP-REDUCT-NADPH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_57783_ENOYL-ACP-REDUCT-NADPH-RXN","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-033
+  subject: SGD:S000001665
+  predicate: enables
+  object: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL182W-MONOMER_ENOYL-ACP-REDUCT-NADPH-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YKL182W-MONOMER_ENOYL-ACP-REDUCT-NADPH-RXN_controller","type":[{"type":"class","id":"SGD:S000001665"'
+- id: edge-034
+  subject: CHEBI:57379
+  predicate: consumes
+  object: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:PALMITOYL-COA-HYDROLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57379_RXN3O-9780"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_57379_RXN3O-9780","type":[{"type":"class","id":"CHEBI:57379"'
+- id: edge-035
+  subject: CHEBI:16018
+  predicate: consumes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003413"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003413","type":[{"type":"class","id":"CHEBI:16018"'
+- id: edge-036
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:RXN3O-9780
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:RXN3O-9780","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57287_RXN3O-9780"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_57287_RXN3O-9780","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-037
+  subject: CHEBI:5697
+  predicate: consumes
+  object: gomodel:RXN3O-9780
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:RXN3O-9780","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001629"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001629","type":[{"type":"class","id":"CHEBI:5697"'
+- id: edge-038
+  subject: gomodel:RXN3O-9780
+  predicate: precedes
+  object: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:RXN3O-9780","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:PALMITOYL-COA-HYDROLASE-RXN"'
+- id: edge-039
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003431"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003431","type":[{"type":"class","id":"CHEBI:58349"'
+- id: edge-040
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_ENOYL-ACP-REDUCT-NADPH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_15378_ENOYL-ACP-REDUCT-NADPH-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-041
+  subject: SGD:S000006152
+  predicate: enables
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003417"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003417","type":[{"type":"class","id":"SGD:S000006152"'
+- id: edge-042
+  subject: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  predicate: produces
+  object: CHEBI:16018
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001631"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001631","type":[{"type":"class","id":"CHEBI:16018"'
+- id: edge-043
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  predicate: produces
+  object: CHEBI:84648
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:OH-ACYL-ACP_3-OXOACYL-ACP-REDUCT-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:OH-ACYL-ACP_3-OXOACYL-ACP-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:84648"'
+- id: edge-044
+  subject: CHEBI:16018
+  predicate: consumes
+  object: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001614"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6690711d00001614","type":[{"type":"class","id":"CHEBI:16018"'
+- id: edge-045
+  subject: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411
+  predicate: precedes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003411","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428"'
+- id: edge-046
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003430"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003430","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-047
+  subject: CHEBI:16018
+  predicate: consumes
+  object: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:TRANS-D2-ENOYL-ACP_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:TRANS-D2-ENOYL-ACP_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","type":[{"type":"class","id":"CHEBI:16018"'
+- id: edge-048
+  subject: gomodel:3-OXOACYL-ACP-SYNTH-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-SYNTH-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_3-OXOACYL-ACP-SYNTH-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:CHEBI_16526_3-OXOACYL-ACP-SYNTH-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-049
+  subject: gomodel:3-OXOACYL-ACP-REDUCT-RXN
+  predicate: produces
+  object: CHEBI:84648
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-OXOACYL-ACP-REDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:OH-ACYL-ACP_3-OXOACYL-ACP-REDUCT-RXN"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:OH-ACYL-ACP_3-OXOACYL-ACP-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:84648"'
+- id: edge-050
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003428","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003429"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/6a4c244800003429","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-051
+  subject: SGD:S000001665
+  predicate: enables
+  object: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL182W-MONOMER_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YKL182W-MONOMER_3-HYDROXYDECANOYL-ACP-DEHYDR-RXN_controller","type":[{"type":"class","id":"SGD:S000001665"'
+- id: edge-052
+  subject: gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN
+  predicate: precedes
+  object: gomodel:ENOYL-ACP-REDUCT-NADPH-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:3-HYDROXYDECANOYL-ACP-DEHYDR-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:ENOYL-ACP-REDUCT-NADPH-RXN"'
+- id: edge-053
+  subject: SGD:S000003780
+  predicate: enables
+  object: gomodel:PALMITOYL-COA-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"subject":"gomodel:PALMITOYL-COA-HYDROLASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_FASYN-ELONG2-PWY/67c10cc400000547"'
+  - reference_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+    quote: '"id":"gomodel:YeastPathways_FASYN-ELONG2-PWY/67c10cc400000547","type":[{"type":"class","id":"SGD:S000003780"'
+references:
+- id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+  title: SGD GO-CAM fatty acid elongation pathway FASYN-ELONG2-PWY
