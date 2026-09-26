@@ -1,0 +1,266 @@
+id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+label: pyruvate decarboxylation to acetyl CoA
+description: Pyruvate decarboxylation to acetyl CoA in Saccharomyces cerevisiae S288C
+  uses pyruvate dehydrogenase activities to transfer acetyl groups through lipoyl-lysine
+  intermediates, form acetyl-CoA, and regenerate oxidized lipoyl cofactor while reducing
+  NAD(+) to NADH.
+pathway_type: central-carbon-metabolism
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:15361
+  label: pyruvate
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: CHEBI:80218
+  label: Enzyme N6-(lipoyl)lysine
+- id: CHEBI:80404
+  label: '[Dihydrolipoyllysine-residue acetyltransferase] S-acetyldihydrolipoyllysine'
+- id: CHEBI:80219
+  label: Enzyme N6-(dihydrolipoyl)lysine
+- id: SGD:S000005015
+  label: LAT1 Scer
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+- id: SGD:S000001876
+  label: LPD1 Scer
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: SGD:S000000425
+  label: PDB1 Scer
+- id: CHEBI:57945
+  label: NADH(2-)
+- id: SGD:S000000980
+  label: PDA1 Scer
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+reactions:
+- id: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  label: pyruvate dehydrogenase (acetyl-transferring) activity
+- id: gomodel:RXN0-1134
+  label: pyruvate + a [pyruvate dehydrogenase E2 protein] <i>N<sup>6</sup></i>-lipoyl-L-lysine
+    + H<SUP>+</SUP> -> a [pyruvate dehydrogenase E2 protein] <i>N<sup>6</sup></i>-<i>S</i>-acetyldihydrolipoyl-L-lysine
+    + CO<SUB>2</SUB>
+- id: gomodel:RXN0-1132
+  label: a [pyruvate dehydrogenase E2 protein] <i>N<sup>6</sup></i>-dihydrolipoyl-L-lysine
+    + NAD<sup>+</sup> -> a [pyruvate dehydrogenase E2 protein] <i>N<sup>6</sup></i>-lipoyl-L-lysine
+    + NADH + H<SUP>+</SUP>
+- id: gomodel:RXN0-1133
+  label: acetyl-CoA + a [pyruvate dehydrogenase E2 protein] <i>N<sup>6</sup></i>-dihydrolipoyl-L-lysine
+    <- a [pyruvate dehydrogenase E2 protein] <i>N<sup>6</sup></i>-<i>S</i>-acetyldihydrolipoyl-L-lysine
+    + coenzyme A
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:15361
+  predicate: consumes
+  object: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000322"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000322","type":[{"type":"class","id":"CHEBI:15361"'
+- id: edge-002
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000321"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000321","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-003
+  subject: gomodel:RXN0-1134
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1134","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_RXN0-1134"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_16526_RXN0-1134","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-004
+  subject: CHEBI:80218
+  predicate: consumes
+  object: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_80218_RXN0-1132"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80218_RXN0-1132","type":[{"type":"class","id":"CHEBI:80218"'
+- id: edge-005
+  subject: CHEBI:80218
+  predicate: consumes
+  object: gomodel:RXN0-1134
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1134","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_80218_RXN0-1132"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80218_RXN0-1132","type":[{"type":"class","id":"CHEBI:80218"'
+- id: edge-006
+  subject: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  predicate: produces
+  object: CHEBI:80404
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_80404_RXN0-1134"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80404_RXN0-1134","type":[{"type":"class","id":"CHEBI:80404"'
+- id: edge-007
+  subject: CHEBI:80219
+  predicate: consumes
+  object: gomodel:RXN0-1132
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1132","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_80219_RXN0-1133"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80219_RXN0-1133","type":[{"type":"class","id":"CHEBI:80219"'
+- id: edge-008
+  subject: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000323"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000323","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-009
+  subject: SGD:S000005015
+  predicate: enables
+  object: gomodel:RXN0-1133
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1133","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL071W-MONOMER_RXN0-1133_controller"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YNL071W-MONOMER_RXN0-1133_controller","type":[{"type":"class","id":"SGD:S000005015"'
+- id: edge-010
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:RXN0-1134
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1134","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN0-1134"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_15378_RXN0-1134","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-011
+  subject: gomodel:RXN0-1133
+  predicate: produces
+  object: CHEBI:57288
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1133","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57288_RXN0-1133"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_57288_RXN0-1133","type":[{"type":"class","id":"CHEBI:57288"'
+- id: edge-012
+  subject: gomodel:RXN0-1132
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1132","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN0-1132"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_15378_RXN0-1132","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-013
+  subject: CHEBI:80404
+  predicate: consumes
+  object: gomodel:RXN0-1133
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1133","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_80404_RXN0-1134"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80404_RXN0-1134","type":[{"type":"class","id":"CHEBI:80404"'
+- id: edge-014
+  subject: SGD:S000001876
+  predicate: enables
+  object: gomodel:RXN0-1132
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1132","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YFL018C-MONOMER_RXN0-1132_controller"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YFL018C-MONOMER_RXN0-1132_controller","type":[{"type":"class","id":"SGD:S000001876"'
+- id: edge-015
+  subject: gomodel:RXN0-1132
+  predicate: produces
+  object: CHEBI:80218
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1132","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_80218_RXN0-1132"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80218_RXN0-1132","type":[{"type":"class","id":"CHEBI:80218"'
+- id: edge-016
+  subject: gomodel:RXN0-1133
+  predicate: produces
+  object: CHEBI:80219
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1133","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_80219_RXN0-1133"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80219_RXN0-1133","type":[{"type":"class","id":"CHEBI:80219"'
+- id: edge-017
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:RXN0-1132
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1132","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_RXN0-1132"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_57540_RXN0-1132","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-018
+  subject: SGD:S000000425
+  predicate: enables
+  object: gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000320","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000324"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6a4c244800000324","type":[{"type":"class","id":"SGD:S000000425"'
+- id: edge-019
+  subject: CHEBI:15361
+  predicate: consumes
+  object: gomodel:RXN0-1134
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1134","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15361_RXN0-1134"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_15361_RXN0-1134","type":[{"type":"class","id":"CHEBI:15361"'
+- id: edge-020
+  subject: gomodel:RXN0-1132
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1132","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_RXN0-1132"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_57945_RXN0-1132","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-021
+  subject: gomodel:RXN0-1134
+  predicate: produces
+  object: CHEBI:80404
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1134","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_80404_RXN0-1134"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_80404_RXN0-1134","type":[{"type":"class","id":"CHEBI:80404"'
+- id: edge-022
+  subject: SGD:S000000980
+  predicate: enables
+  object: gomodel:RXN0-1134
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1134","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6690711d00000754"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:YeastPathways_PYRUVDEHYD-PWY/6690711d00000754","type":[{"type":"class","id":"SGD:S000000980"'
+- id: edge-023
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:RXN0-1133
+  evidence:
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"subject":"gomodel:RXN0-1133","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57287_RXN0-1133"'
+  - reference_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+    quote: '"id":"gomodel:CHEBI_57287_RXN0-1133","type":[{"type":"class","id":"CHEBI:57287"'
+references:
+- id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+  title: 'SGD GO-CAM pyruvate decarboxylation to acetyl CoA - imported from: Saccharomyces
+    Genome Database'
