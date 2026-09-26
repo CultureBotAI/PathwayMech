@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
 
+WIKIPATHWAYS_ACCESSION = re.compile(r"WP\d+")
+
 DATABASE_PREFIXES = {
     "chebi": "CHEBI",
     "enzyme nomenclature": "EC",
     "geneontology": "GO",
+    "sgd": "SGD",
     "uniprot": "UniProtKB",
     "uniprot-trembl": "UniProtKB",
     "uniprotkb": "UniProtKB",
@@ -31,6 +35,8 @@ def gpml_to_pathway_record(
 ) -> dict[str, Any]:
     pathway_id = _pathway_id(root) or fallback_id
     node_by_graph_id = _data_nodes(root)
+    nodes_by_group_graph_id = _group_nodes(root, node_by_graph_id)
+    reaction_by_anchor_id = _anchor_reactions(root, pathway_id)
     references = _publication_references(root)
     evidence_reference = next(iter(references.values()), _fallback_reference(pathway_id))
     references.setdefault(evidence_reference["id"], evidence_reference)
@@ -41,9 +47,26 @@ def gpml_to_pathway_record(
         graph_id = interaction.get("GraphId")
         if not graph_id:
             continue
+        if _contains_anchor_ref(interaction, reaction_by_anchor_id):
+            edges.extend(
+                _anchor_edges(
+                    interaction,
+                    node_by_graph_id,
+                    nodes_by_group_graph_id,
+                    reaction_by_anchor_id,
+                    evidence_reference["id"],
+                )
+            )
+            continue
 
-        sources, targets = _interaction_endpoints(interaction, node_by_graph_id)
-        if not sources or not targets:
+        sources, targets = _interaction_endpoints(
+            interaction,
+            node_by_graph_id,
+            nodes_by_group_graph_id,
+        )
+        if not sources and not targets:
+            continue
+        if not _interaction_anchors(interaction) and (not sources or not targets):
             continue
 
         reaction_id = f"{pathway_id}/{graph_id}"
@@ -78,10 +101,21 @@ def gpml_to_pathway_record(
         "reactions": reactions,
         "mechanistic_edges": [
             {"id": f"wikipathways-edge-{index}", **edge}
-            for index, edge in enumerate(edges, start=1)
+            for index, edge in enumerate(_unique_edges(edges), start=1)
         ],
         "references": list(references.values()),
     }
+
+
+def wikipathways_curie_from_text(text: str) -> str | None:
+    match = WIKIPATHWAYS_ACCESSION.search(text)
+    if not match:
+        return None
+    return _format_curie("WikiPathways", match.group(0))
+
+
+def wikipathways_fallback_id(path: Path) -> str:
+    return wikipathways_curie_from_text(path.stem) or f"WikiPathways:{path.stem}"
 
 
 def _pathway_id(root: ElementTree.Element) -> str | None:
@@ -90,7 +124,7 @@ def _pathway_id(root: ElementTree.Element) -> str | None:
         identifier = _attribute(xref, "ID", "identifier")
         if database == "wikipathways" and identifier:
             return _format_curie("WikiPathways", identifier)
-    return None
+    return wikipathways_curie_from_text(root.get("Version") or "")
 
 
 def _data_nodes(root: ElementTree.Element) -> dict[str, dict[str, str]]:
@@ -126,29 +160,170 @@ def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
     return list(unique.values())
 
 
+def _unique_edges(edges: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    unique = {}
+    for edge in edges:
+        unique.setdefault((edge["subject"], edge["predicate"], edge["object"]), edge)
+    return list(unique.values())
+
+
+def _group_nodes(
+    root: ElementTree.Element,
+    node_by_graph_id: dict[str, dict[str, str]],
+) -> dict[str, list[str]]:
+    nodes_by_group_id: dict[str, list[str]] = {}
+    for node in _children(root, "DataNode"):
+        graph_id = node.get("GraphId")
+        group_id = node.get("GroupRef")
+        if not group_id or graph_id not in node_by_graph_id:
+            continue
+        nodes_by_group_id.setdefault(group_id, []).append(node_by_graph_id[graph_id]["id"])
+
+    nodes_by_group_graph_id = {}
+    for group in _children(root, "Group"):
+        graph_id = group.get("GraphId")
+        group_id = group.get("GroupId")
+        if graph_id and group_id:
+            nodes_by_group_graph_id[graph_id] = nodes_by_group_id.get(group_id, [])
+    return nodes_by_group_graph_id
+
+
+def _anchor_reactions(
+    root: ElementTree.Element,
+    pathway_id: str,
+) -> dict[str, str]:
+    reactions = {}
+    for interaction in _children(root, "Interaction"):
+        graph_id = interaction.get("GraphId")
+        if not graph_id:
+            continue
+        for anchor in _interaction_anchors(interaction):
+            anchor_id = anchor.get("GraphId")
+            if anchor_id:
+                reactions[anchor_id] = f"{pathway_id}/{graph_id}"
+    return reactions
+
+
 def _interaction_endpoints(
     interaction: ElementTree.Element,
     node_by_graph_id: dict[str, dict[str, str]],
+    nodes_by_group_graph_id: dict[str, list[str]],
 ) -> tuple[list[str], list[str]]:
     sources: list[str] = []
     targets: list[str] = []
-    graphics = _first_child(interaction, "Graphics")
-    points = _children(graphics, "Point") if graphics is not None else []
-    for point in points:
+    for point in _interaction_points(interaction):
         graph_ref = point.get("GraphRef")
-        if graph_ref not in node_by_graph_id:
-            continue
-        node_id = node_by_graph_id[graph_ref]["id"]
+        node_ids = _nodes_for_graph_ref(
+            graph_ref,
+            node_by_graph_id,
+            nodes_by_group_graph_id,
+        )
         if _is_target(point):
-            targets.append(node_id)
+            targets.extend(node_ids)
         else:
-            sources.append(node_id)
+            sources.extend(node_ids)
     return sources, targets
+
+
+def _anchor_edges(
+    interaction: ElementTree.Element,
+    node_by_graph_id: dict[str, dict[str, str]],
+    nodes_by_group_graph_id: dict[str, list[str]],
+    reaction_by_anchor_id: dict[str, str],
+    evidence_reference: str,
+) -> list[dict[str, Any]]:
+    points = _interaction_points(interaction)
+    anchor_points = [
+        point
+        for point in points
+        if point.get("GraphRef") and point.get("GraphRef") in reaction_by_anchor_id
+    ]
+    if len(anchor_points) != 1:
+        return []
+
+    anchor_point = anchor_points[0]
+    anchor_id = anchor_point.get("GraphRef", "")
+    reaction_id = reaction_by_anchor_id[anchor_id]
+    edges = []
+    for point in points:
+        if point is anchor_point:
+            continue
+
+        node_ids = _nodes_for_graph_ref(
+            point.get("GraphRef"),
+            node_by_graph_id,
+            nodes_by_group_graph_id,
+        )
+        for node_id in node_ids:
+            if _is_catalysis(anchor_point):
+                edges.append(
+                    _edge(
+                        subject=node_id,
+                        predicate="catalyzes",
+                        obj=reaction_id,
+                        evidence_reference=evidence_reference,
+                    )
+                )
+            elif _is_target(anchor_point):
+                edges.append(
+                    _edge(
+                        subject=node_id,
+                        predicate="consumes",
+                        obj=reaction_id,
+                        evidence_reference=evidence_reference,
+                    )
+                )
+            elif _is_target(point):
+                edges.append(
+                    _edge(
+                        subject=reaction_id,
+                        predicate="produces",
+                        obj=node_id,
+                        evidence_reference=evidence_reference,
+                    )
+                )
+    return edges
+
+
+def _nodes_for_graph_ref(
+    graph_ref: str | None,
+    node_by_graph_id: dict[str, dict[str, str]],
+    nodes_by_group_graph_id: dict[str, list[str]],
+) -> list[str]:
+    if not graph_ref:
+        return []
+    if graph_ref in node_by_graph_id:
+        return [node_by_graph_id[graph_ref]["id"]]
+    return nodes_by_group_graph_id.get(graph_ref, [])
+
+
+def _contains_anchor_ref(
+    interaction: ElementTree.Element,
+    reaction_by_anchor_id: dict[str, str],
+) -> bool:
+    return any(
+        point.get("GraphRef") in reaction_by_anchor_id
+        for point in _interaction_points(interaction)
+    )
+
+
+def _interaction_anchors(interaction: ElementTree.Element) -> list[ElementTree.Element]:
+    graphics = _first_child(interaction, "Graphics")
+    return _children(graphics, "Anchor") if graphics is not None else []
+
+
+def _interaction_points(interaction: ElementTree.Element) -> list[ElementTree.Element]:
+    graphics = _first_child(interaction, "Graphics")
+    return _children(graphics, "Point") if graphics is not None else []
 
 
 def _is_target(point: ElementTree.Element) -> bool:
     arrow_head = point.get("ArrowHead")
     return bool(arrow_head and arrow_head.lower() not in {"line", "none"})
+
+
+def _is_catalysis(point: ElementTree.Element) -> bool:
+    return "catalysis" in (point.get("ArrowHead") or "").lower()
 
 
 def _publication_references(root: ElementTree.Element) -> dict[str, dict[str, str]]:
