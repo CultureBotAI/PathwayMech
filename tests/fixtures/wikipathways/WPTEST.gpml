@@ -5,19 +5,31 @@
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   Name="Mini glycolysis"
   Organism="Saccharomyces cerevisiae"
+  Version="WP9999_r20260901073100"
 >
-  <Xref Database="WikiPathways" ID="WPTEST" />
   <DataNode TextLabel="3-phosphonato-D-glycerate(3-)" GraphId="source" Type="Metabolite">
     <Xref Database="ChEBI" ID="CHEBI:58272" />
   </DataNode>
   <DataNode TextLabel="2-phosphonato-D-glycerate(3-)" GraphId="target" Type="Metabolite">
-    <Xref Database="ChEBI" ID="CHEBI:58289" />
+    <Xref Database="ChEBI" ID="58289" />
   </DataNode>
   <DataNode TextLabel="Mini enzyme" GraphId="enzyme" Type="Protein">
     <Xref Database="Uniprot-TrEMBL" ID="P12345" />
   </DataNode>
-  <DataNode TextLabel="Mini SGD enzyme" GraphId="sgd-enzyme" Type="Protein">
+  <DataNode TextLabel="Mini SGD enzyme" GraphId="sgd-enzyme" Type="Protein" GroupRef="enzyme-group">
     <Xref Database="SGD" ID="S000000001" />
+  </DataNode>
+  <DataNode TextLabel="unsupported substrate" GraphId="unsupported-substrate" Type="Metabolite">
+    <Xref Database="CAS" ID="98-92-0" />
+  </DataNode>
+  <DataNode TextLabel="H2O" GraphId="side-water" Type="Metabolite" GroupRef="side-substrates">
+    <Xref Database="ChEBI" ID="CHEBI:15377" />
+  </DataNode>
+  <DataNode TextLabel="ATP" GraphId="side-atp" Type="Metabolite" GroupRef="side-substrates">
+    <Xref Database="CAS" ID="1927-31-7" />
+  </DataNode>
+  <DataNode TextLabel="AMP" GraphId="anchored-target" Type="Metabolite">
+    <Xref Database="ChEBI" ID="CHEBI:456215" />
   </DataNode>
   <Interaction GraphId="interaction">
     <Graphics ConnectorType="Straight">
@@ -25,6 +37,27 @@
       <Point X="20" Y="20" GraphRef="target" ArrowHead="Arrow" />
     </Graphics>
   </Interaction>
+  <Interaction GraphId="anchored">
+    <Graphics ConnectorType="Straight">
+      <Point X="30" Y="30" GraphRef="unsupported-substrate" />
+      <Point X="40" Y="40" GraphRef="anchored-target" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="reaction-anchor" />
+    </Graphics>
+  </Interaction>
+  <Interaction GraphId="side-substrate">
+    <Graphics ConnectorType="Straight">
+      <Point X="50" Y="50" GraphRef="side-substrate-group" />
+      <Point X="60" Y="60" GraphRef="reaction-anchor" ArrowHead="mim-conversion" />
+    </Graphics>
+  </Interaction>
+  <Interaction GraphId="side-catalyst">
+    <Graphics ConnectorType="Straight">
+      <Point X="70" Y="70" GraphRef="enzyme-group-node" />
+      <Point X="80" Y="80" GraphRef="reaction-anchor" ArrowHead="mim-catalysis" />
+    </Graphics>
+  </Interaction>
+  <Group GroupId="side-substrates" GraphId="side-substrate-group" Style="Group" />
+  <Group GroupId="enzyme-group" GraphId="enzyme-group-node" Style="Group" />
   <Biopax>
     <bp:PublicationXref rdf:id="pubmed">
       <bp:ID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12345678</bp:ID>

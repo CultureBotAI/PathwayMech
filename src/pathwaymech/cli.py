@@ -24,7 +24,11 @@ from pathwaymech.sources import (
     load_source_inventory,
     source_seed_rows,
 )
-from pathwaymech.wikipathways import gpml_to_pathway_record, load_gpml_pathway
+from pathwaymech.wikipathways import (
+    gpml_to_pathway_record,
+    load_gpml_pathway,
+    wikipathways_fallback_id,
+)
 from pathwaymech.yaml_io import load_pathway_records
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -193,7 +197,7 @@ def import_wikipathways_main(argv: list[str] | None = None) -> int:
     records = []
     for path in args.paths:
         try:
-            fallback_id = f"WikiPathways:{path.stem}"
+            fallback_id = wikipathways_fallback_id(path)
             record = gpml_to_pathway_record(load_gpml_pathway(path), fallback_id)
             validate_record(record)
             records.append(record)
