@@ -1,0 +1,254 @@
+id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+label: homocysteine and cysteine interconversion
+description: Homocysteine and cysteine interconversion in Saccharomyces cerevisiae
+  S288C combines cystathionine beta-synthase and gamma-lyase activities that convert
+  L-homocysteine to L-cysteine via L-cystathionine with cystathionine gamma-synthase
+  and beta-lyase activities that convert L-cysteine toward L-homocysteine through
+  the same intermediate.
+pathway_type: amino-acid-metabolism
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:16134
+  label: ammonia
+- id: CHEBI:15361
+  label: pyruvate
+- id: CHEBI:28938
+  label: ammonium
+- id: CHEBI:30089
+  label: acetate
+- id: CHEBI:58161
+  label: L-cystathionine dizwitterion
+- id: SGD:S000003152
+  label: STR3 Scer
+- id: CHEBI:57716
+  label: O-acetyl-L-homoserine zwitterion
+- id: CHEBI:33384
+  label: L-serine zwitterion
+- id: SGD:S000000010
+  label: CYS3 Scer
+- id: CHEBI:35235
+  label: L-cysteine zwitterion
+- id: CHEBI:16763
+  label: 2-oxobutanoate
+- id: SGD:S000003387
+  label: CYS4 Scer
+- id: CHEBI:58199
+  label: L-homocysteine zwitterion
+- id: SGD:S000003891
+  label: STR2 Scer
+reactions:
+- id: gomodel:CYSTAGLY-RXN
+  label: L-cystathionine + H<sub>2</sub>O <=> 2-oxobutanoate + L-cysteine + ammonia
+- id: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  label: L-cystathionine + H<sub>2</sub>O -> L-homocysteine + pyruvate + ammonium
+- id: gomodel:RXN-721
+  label: L-cysteine + <i>O</i>-acetyl-L-homoserine -> L-cystathionine + acetate
+- id: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  label: L-homocysteine + L-serine <=> L-cystathionine + H<sub>2</sub>O
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:CYSTAGLY-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTAGLY-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_CYSTAGLY-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_15377_CYSTAGLY-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-002
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: produces
+  object: CHEBI:16134
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTAGLY-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16134_CYSTAGLY-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_16134_CYSTAGLY-RXN","type":[{"type":"class","id":"CHEBI:16134"'
+- id: edge-003
+  subject: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-LYASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15361_CYSTATHIONINE-BETA-LYASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_15361_CYSTATHIONINE-BETA-LYASE-RXN","type":[{"type":"class","id":"CHEBI:15361"'
+- id: edge-004
+  subject: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-LYASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28938_CYSTATHIONINE-BETA-LYASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_28938_CYSTATHIONINE-BETA-LYASE-RXN","type":[{"type":"class","id":"CHEBI:28938"'
+- id: edge-005
+  subject: gomodel:RXN-721
+  predicate: produces
+  object: CHEBI:30089
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:RXN-721","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_30089_RXN-721"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_30089_RXN-721","type":[{"type":"class","id":"CHEBI:30089"'
+- id: edge-006
+  subject: CHEBI:58161
+  predicate: consumes
+  object: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-LYASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58161_RXN-721"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_58161_RXN-721","type":[{"type":"class","id":"CHEBI:58161"'
+- id: edge-007
+  subject: SGD:S000003152
+  predicate: enables
+  object: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-LYASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGL184C-MONOMER_CYSTATHIONINE-BETA-LYASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:YGL184C-MONOMER_CYSTATHIONINE-BETA-LYASE-RXN_controller","type":[{"type":"class","id":"SGD:S000003152"'
+- id: edge-008
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_15377_CYSTATHIONINE-BETA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-009
+  subject: CHEBI:57716
+  predicate: consumes
+  object: gomodel:RXN-721
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:RXN-721","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57716_RXN-721"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_57716_RXN-721","type":[{"type":"class","id":"CHEBI:57716"'
+- id: edge-010
+  subject: CHEBI:33384
+  predicate: consumes
+  object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_33384_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_33384_CYSTATHIONINE-BETA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:33384"'
+- id: edge-011
+  subject: SGD:S000000010
+  predicate: enables
+  object: gomodel:CYSTAGLY-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTAGLY-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YAL012W-MONOMER_CYSTAGLY-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:YAL012W-MONOMER_CYSTAGLY-RXN_controller","type":[{"type":"class","id":"SGD:S000000010"'
+- id: edge-012
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-LYASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_CYSTATHIONINE-BETA-LYASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_15377_CYSTATHIONINE-BETA-LYASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-013
+  subject: CHEBI:35235
+  predicate: consumes
+  object: gomodel:RXN-721
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:RXN-721","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_35235_CYSTAGLY-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_35235_CYSTAGLY-RXN","type":[{"type":"class","id":"CHEBI:35235"'
+- id: edge-014
+  subject: CHEBI:58161
+  predicate: consumes
+  object: gomodel:CYSTAGLY-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTAGLY-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58161_RXN-721"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_58161_RXN-721","type":[{"type":"class","id":"CHEBI:58161"'
+- id: edge-015
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: produces
+  object: CHEBI:16763
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTAGLY-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16763_CYSTAGLY-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_16763_CYSTAGLY-RXN","type":[{"type":"class","id":"CHEBI:16763"'
+- id: edge-016
+  subject: SGD:S000003387
+  predicate: enables
+  object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGR155W-MONOMER_CYSTATHIONINE-BETA-SYNTHASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:YGR155W-MONOMER_CYSTATHIONINE-BETA-SYNTHASE-RXN_controller","type":[{"type":"class","id":"SGD:S000003387"'
+- id: edge-017
+  subject: gomodel:CYSTATHIONINE-BETA-LYASE-RXN
+  predicate: produces
+  object: CHEBI:58199
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-LYASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58199_CYSTATHIONINE-BETA-LYASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_58199_CYSTATHIONINE-BETA-LYASE-RXN","type":[{"type":"class","id":"CHEBI:58199"'
+- id: edge-018
+  subject: CHEBI:58199
+  predicate: consumes
+  object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58199_CYSTATHIONINE-BETA-LYASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_58199_CYSTATHIONINE-BETA-LYASE-RXN","type":[{"type":"class","id":"CHEBI:58199"'
+- id: edge-019
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: produces
+  object: CHEBI:58161
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:58161"'
+- id: edge-020
+  subject: SGD:S000003891
+  predicate: enables
+  object: gomodel:RXN-721
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:RXN-721","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJR130C-MONOMER_RXN-721_controller"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:YJR130C-MONOMER_RXN-721_controller","type":[{"type":"class","id":"SGD:S000003891"'
+- id: edge-021
+  subject: gomodel:RXN-721
+  predicate: produces
+  object: CHEBI:58161
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:RXN-721","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58161_RXN-721"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_58161_RXN-721","type":[{"type":"class","id":"CHEBI:58161"'
+- id: edge-022
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: produces
+  object: CHEBI:35235
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"subject":"gomodel:CYSTAGLY-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_35235_CYSTAGLY-RXN"'
+  - reference_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+    quote: '"id":"gomodel:CHEBI_35235_CYSTAGLY-RXN","type":[{"type":"class","id":"CHEBI:35235"'
+references:
+- id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  title: 'SGD GO-CAM homocysteine and cysteine interconversion - imported from: Saccharomyces
+    Genome Database'
