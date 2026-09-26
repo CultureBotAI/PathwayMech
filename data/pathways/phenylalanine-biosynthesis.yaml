@@ -1,0 +1,226 @@
+id: gomodel:YeastPathways_PWY3O-4153
+label: phenylalanine biosynthesis
+description: Phenylalanine biosynthesis in Saccharomyces cerevisiae S288C uses chorismate
+  mutase, prephenate dehydratase, and aromatic-amino-acid transaminase activities
+  to convert chorismate through prephenate and 3-phenylpyruvate to L-phenylalanine.
+pathway_type: amino-acid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:58095
+  label: L-phenylalanine zwitterion
+- id: CHEBI:57972
+  label: L-alanine zwitterion
+- id: CHEBI:29934
+  label: (1s,4s)-prephenate(2-)
+- id: CHEBI:18005
+  label: keto-phenylpyruvate
+- id: SGD:S000003170
+  label: ARO8 Scer
+- id: CHEBI:16810
+  label: 2-oxoglutarate(2-)
+- id: SGD:S000005260
+  label: PHA2 Scer
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: SGD:S000006264
+  label: ARO7 Scer
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:29748
+  label: chorismate(2-)
+- id: CHEBI:15361
+  label: pyruvate
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+- id: SGD:S000001179
+  label: ARO9 Scer
+reactions:
+- id: gomodel:2.6.1.58-RXN
+  label: L-phenylalanine + pyruvate <=> 3-phenyl-2-oxopropanoate + L-alanine
+- id: gomodel:CHORISMATEMUT-RXN
+  label: chorismate <=> prephenate
+- id: gomodel:RXN-10814
+  label: L-phenylalanine + 2-oxoglutarate <=> 3-phenyl-2-oxopropanoate + L-glutamate
+- id: gomodel:PREPHENATEDEHYDRAT-RXN
+  label: prephenate + H<SUP>+</SUP> <=> 3-phenyl-2-oxopropanoate + CO<SUB>2</SUB>
+    + H<sub>2</sub>O
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:2.6.1.58-RXN
+  predicate: produces
+  object: CHEBI:58095
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:2.6.1.58-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58095_2.6.1.58-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_58095_2.6.1.58-RXN","type":[{"type":"class","id":"CHEBI:58095"'
+- id: edge-002
+  subject: CHEBI:57972
+  predicate: consumes
+  object: gomodel:2.6.1.58-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:2.6.1.58-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57972_2.6.1.58-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_57972_2.6.1.58-RXN","type":[{"type":"class","id":"CHEBI:57972"'
+- id: edge-003
+  subject: gomodel:CHORISMATEMUT-RXN
+  predicate: produces
+  object: CHEBI:29934
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:CHORISMATEMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN","type":[{"type":"class","id":"CHEBI:29934"'
+- id: edge-004
+  subject: CHEBI:18005
+  predicate: consumes
+  object: gomodel:RXN-10814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:RXN-10814","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_18005_PREPHENATEDEHYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_18005_PREPHENATEDEHYDRAT-RXN","type":[{"type":"class","id":"CHEBI:18005"'
+- id: edge-005
+  subject: gomodel:RXN-10814
+  predicate: produces
+  object: CHEBI:58095
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:RXN-10814","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58095_RXN-10814"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_58095_RXN-10814","type":[{"type":"class","id":"CHEBI:58095"'
+- id: edge-006
+  subject: SGD:S000003170
+  predicate: enables
+  object: gomodel:RXN-10814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:RXN-10814","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-4153/6690711d00000281"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:YeastPathways_PWY3O-4153/6690711d00000281","type":[{"type":"class","id":"SGD:S000003170"'
+- id: edge-007
+  subject: gomodel:RXN-10814
+  predicate: produces
+  object: CHEBI:16810
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:RXN-10814","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16810_RXN-10814"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_16810_RXN-10814","type":[{"type":"class","id":"CHEBI:16810"'
+- id: edge-008
+  subject: SGD:S000005260
+  predicate: enables
+  object: gomodel:PREPHENATEDEHYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:PREPHENATEDEHYDRAT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-279_PREPHENATEDEHYDRAT-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:MONOMER3O-279_PREPHENATEDEHYDRAT-RXN_controller","type":[{"type":"class","id":"SGD:S000005260"'
+- id: edge-009
+  subject: gomodel:PREPHENATEDEHYDRAT-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:PREPHENATEDEHYDRAT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_PREPHENATEDEHYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_16526_PREPHENATEDEHYDRAT-RXN","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-010
+  subject: CHEBI:18005
+  predicate: consumes
+  object: gomodel:2.6.1.58-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:2.6.1.58-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_18005_PREPHENATEDEHYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_18005_PREPHENATEDEHYDRAT-RXN","type":[{"type":"class","id":"CHEBI:18005"'
+- id: edge-011
+  subject: SGD:S000006264
+  predicate: enables
+  object: gomodel:CHORISMATEMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:CHORISMATEMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPR060C-MONOMER_CHORISMATEMUT-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:YPR060C-MONOMER_CHORISMATEMUT-RXN_controller","type":[{"type":"class","id":"SGD:S000006264"'
+- id: edge-012
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:PREPHENATEDEHYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:PREPHENATEDEHYDRAT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_PREPHENATEDEHYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_15378_PREPHENATEDEHYDRAT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-013
+  subject: CHEBI:29748
+  predicate: consumes
+  object: gomodel:CHORISMATEMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:CHORISMATEMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_29748_CHORISMATEMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_29748_CHORISMATEMUT-RXN","type":[{"type":"class","id":"CHEBI:29748"'
+- id: edge-014
+  subject: gomodel:2.6.1.58-RXN
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:2.6.1.58-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15361_2.6.1.58-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_15361_2.6.1.58-RXN","type":[{"type":"class","id":"CHEBI:15361"'
+- id: edge-015
+  subject: CHEBI:29934
+  predicate: consumes
+  object: gomodel:PREPHENATEDEHYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:PREPHENATEDEHYDRAT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN","type":[{"type":"class","id":"CHEBI:29934"'
+- id: edge-016
+  subject: gomodel:PREPHENATEDEHYDRAT-RXN
+  predicate: produces
+  object: CHEBI:18005
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:PREPHENATEDEHYDRAT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_18005_PREPHENATEDEHYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_18005_PREPHENATEDEHYDRAT-RXN","type":[{"type":"class","id":"CHEBI:18005"'
+- id: edge-017
+  subject: gomodel:PREPHENATEDEHYDRAT-RXN
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:PREPHENATEDEHYDRAT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_PREPHENATEDEHYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_15377_PREPHENATEDEHYDRAT-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-018
+  subject: CHEBI:29985
+  predicate: consumes
+  object: gomodel:RXN-10814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:RXN-10814","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_29985_RXN-10814"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:CHEBI_29985_RXN-10814","type":[{"type":"class","id":"CHEBI:29985"'
+- id: edge-019
+  subject: SGD:S000001179
+  predicate: enables
+  object: gomodel:2.6.1.58-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"subject":"gomodel:2.6.1.58-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR137W-MONOMER_2.6.1.58-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-4153
+    quote: '"id":"gomodel:YHR137W-MONOMER_2.6.1.58-RXN_controller","type":[{"type":"class","id":"SGD:S000001179"'
+references:
+- id: gomodel:YeastPathways_PWY3O-4153
+  title: 'SGD GO-CAM phenylalanine biosynthesis - imported from: Saccharomyces Genome
+    Database'
