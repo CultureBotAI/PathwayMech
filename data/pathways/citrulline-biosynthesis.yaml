@@ -1,0 +1,193 @@
+id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+label: citrulline biosynthesis
+description: Citrulline biosynthesis in Saccharomyces cerevisiae S288C uses CPX-579
+  carbamoyl-phosphate synthase to form carbamoyl phosphate from L-glutamine, hydrogencarbonate,
+  water, and ATP, then ARG3 ornithine carbamoyltransferase transfers the carbamoyl
+  group to L-ornithine to form L-citrulline in the SGD GO-CAM citrulline biosynthesis
+  pathway.
+pathway_type: amino-acid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:57743
+  label: L-citrulline zwitterion
+- id: CHEBI:43474
+  label: hydrogenphosphate
+- id: CHEBI:17544
+  label: hydrogencarbonate
+- id: CHEBI:456216
+  label: ADP(3-)
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:58228
+  label: carbamoyl phosphate(2-)
+- id: SGD:S000217863
+  label: CPX-579 Scer
+- id: SGD:S000003624
+  label: ARG3 Scer
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+- id: CHEBI:58359
+  label: L-glutamine zwitterion
+- id: CHEBI:46911
+  label: L-ornithinium(1+)
+- id: CHEBI:30616
+  label: ATP(4-)
+reactions:
+- id: gomodel:ORNCARBAMTRANSFER-RXN
+  label: L-ornithine + carbamoyl phosphate -> L-citrulline + phosphate + H<SUP>+</SUP>
+- id: gomodel:CARBPSYN-RXN
+  label: 2 ATP + L-glutamine + hydrogencarbonate + H<sub>2</sub>O -> L-glutamate +
+    carbamoyl phosphate + 2 ADP + phosphate + 2 H<SUP>+</SUP>
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: produces
+  object: CHEBI:57743
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57743_ORNCARBAMTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_57743_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57743"'
+- id: edge-002
+  subject: gomodel:CARBPSYN-RXN
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_43474_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+- id: edge-003
+  subject: CHEBI:17544
+  predicate: consumes
+  object: gomodel:CARBPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17544_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_17544_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:17544"'
+- id: edge-004
+  subject: gomodel:CARBPSYN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_456216_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-005
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:CARBPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_15377_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-006
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_ORNCARBAMTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_43474_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+- id: edge-007
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_ORNCARBAMTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_15378_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-008
+  subject: gomodel:CARBPSYN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_15378_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-009
+  subject: gomodel:CARBPSYN-RXN
+  predicate: produces
+  object: CHEBI:58228
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58228_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_58228_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:58228"'
+- id: edge-010
+  subject: SGD:S000217863
+  predicate: enables
+  object: gomodel:CARBPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_CITRUL-BIO2-PWY/6690711d00000301"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:YeastPathways_CITRUL-BIO2-PWY/6690711d00000301","type":[{"type":"class","id":"SGD:S000217863"'
+- id: edge-011
+  subject: SGD:S000003624
+  predicate: enables
+  object: gomodel:ORNCARBAMTRANSFER-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL088W-MONOMER_ORNCARBAMTRANSFER-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:YJL088W-MONOMER_ORNCARBAMTRANSFER-RXN_controller","type":[{"type":"class","id":"SGD:S000003624"'
+- id: edge-012
+  subject: gomodel:CARBPSYN-RXN
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_29985_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:29985"'
+- id: edge-013
+  subject: CHEBI:58359
+  predicate: consumes
+  object: gomodel:CARBPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58359_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_58359_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:58359"'
+- id: edge-014
+  subject: CHEBI:46911
+  predicate: consumes
+  object: gomodel:ORNCARBAMTRANSFER-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_46911_ORNCARBAMTRANSFER-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_46911_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:46911"'
+- id: edge-015
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:CARBPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_30616_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-016
+  subject: CHEBI:58228
+  predicate: consumes
+  object: gomodel:ORNCARBAMTRANSFER-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58228_CARBPSYN-RXN"'
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    quote: '"id":"gomodel:CHEBI_58228_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:58228"'
+references:
+- id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+  title: 'SGD GO-CAM citrulline biosynthesis - imported from: Saccharomyces Genome
+    Database'
