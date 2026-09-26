@@ -10,6 +10,7 @@ DATABASE_PREFIXES = {
     "enzyme nomenclature": "EC",
     "geneontology": "GO",
     "uniprot": "UniProtKB",
+    "uniprot-trembl": "UniProtKB",
     "uniprotkb": "UniProtKB",
 }
 
