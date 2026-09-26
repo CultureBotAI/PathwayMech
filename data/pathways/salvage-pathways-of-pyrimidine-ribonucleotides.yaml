@@ -1,0 +1,526 @@
+id: gomodel:YeastPathways_YEAST-RNT-SALV
+label: salvage pathways of pyrimidine ribonucleotides
+description: Salvage pathways of pyrimidine ribonucleotides in Saccharomyces cerevisiae
+  S288C recover uridine, cytidine, cytosine, and uracil through nucleosidase, deaminase,
+  kinase, and uracil phosphoribosyltransferase reactions to regenerate UMP, CMP, CDP,
+  UDP, CTP, and UTP in the SGD GO-CAM pyrimidine ribonucleotide salvage pathway.
+pathway_type: nucleotide-salvage
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:17568
+  label: uracil
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:16040
+  label: cytosine
+- id: CHEBI:456216
+  label: ADP(3-)
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:28938
+  label: ammonium
+- id: CHEBI:47013
+  label: D-ribofuranose
+- id: CHEBI:16704
+  label: uridine
+- id: SGD:S000002808
+  label: URH1 Scer
+- id: SGD:S000005295
+  label: URK1 Scer
+- id: CHEBI:37565
+  label: GTP(4-)
+- id: CHEBI:58017
+  label: 5-O-phosphonato-alpha-D-ribofuranosyl diphosphate(5-)
+- id: CHEBI:58189
+  label: GDP(3-)
+- id: CHEBI:17562
+  label: cytidine
+- id: SGD:S000001550
+  label: YNK1 Scer
+- id: CHEBI:58069
+  label: CDP(3-)
+- id: CHEBI:60377
+  label: cytidine 5'-monophosphate(2-)
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: SGD:S000001507
+  label: URA6 Scer
+- id: SGD:S000006266
+  label: FCY1 Scer
+- id: SGD:S000004235
+  label: CDD1 Scer
+- id: CHEBI:37563
+  label: CTP(4-)
+- id: CHEBI:57865
+  label: uridine 5'-monophosphate(2-)
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: SGD:S000001170
+  label: FUR1 Scer
+reactions:
+- id: gomodel:URACIL-PRIBOSYLTRANS-RXN
+  label: "UMP + diphosphate <- 5-phospho-\u03B1-D-ribose 1-diphosphate + uracil"
+- id: gomodel:URIDINE-NUCLEOSIDASE-RXN
+  label: uridine + H<sub>2</sub>O -> D-ribofuranose + uracil
+- id: gomodel:RXN0-361
+  label: cytidine + H<sub>2</sub>O -> D-ribofuranose + cytosine
+- id: gomodel:RXN-11832
+  label: CMP + ATP <=> CDP + ADP
+- id: gomodel:CYTDEAM-RXN
+  label: cytosine + H<sub>2</sub>O + H<SUP>+</SUP> -> uracil + ammonium
+- id: gomodel:URIDINEKIN-RXN
+  label: uridine + ATP -> UMP + ADP + H<SUP>+</SUP>
+- id: gomodel:CDPKIN-RXN
+  label: CDP + ATP -> CTP + ADP
+- id: gomodel:CYTIDINEKIN-RXN
+  label: cytidine + GTP -> CMP + GDP + H<SUP>+</SUP>
+- id: gomodel:CYTIDEAM2-RXN
+  label: cytidine + H<SUP>+</SUP> + H<sub>2</sub>O -> uridine + ammonium
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:17568
+  predicate: consumes
+  object: gomodel:URACIL-PRIBOSYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URACIL-PRIBOSYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17568_URIDINE-NUCLEOSIDASE-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_17568_URIDINE-NUCLEOSIDASE-RXN","type":[{"type":"class","id":"CHEBI:17568"'
+- id: edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:URIDINE-NUCLEOSIDASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINE-NUCLEOSIDASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_URIDINE-NUCLEOSIDASE-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15377_URIDINE-NUCLEOSIDASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-003
+  subject: gomodel:RXN0-361
+  predicate: produces
+  object: CHEBI:16040
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN0-361","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16040_RXN0-361"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_16040_RXN0-361","type":[{"type":"class","id":"CHEBI:16040"'
+- id: edge-004
+  subject: gomodel:RXN-11832
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN-11832","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_RXN-11832"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_456216_RXN-11832","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-005
+  subject: CHEBI:16040
+  predicate: consumes
+  object: gomodel:CYTDEAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTDEAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16040_RXN0-361"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_16040_RXN0-361","type":[{"type":"class","id":"CHEBI:16040"'
+- id: edge-006
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:CYTDEAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTDEAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_CYTDEAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15378_CYTDEAM-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: gomodel:CYTDEAM-RXN
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTDEAM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28938_CYTDEAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_28938_CYTDEAM-RXN","type":[{"type":"class","id":"CHEBI:28938"'
+- id: edge-008
+  subject: gomodel:URIDINEKIN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINEKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_URIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_456216_URIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-009
+  subject: gomodel:URIDINE-NUCLEOSIDASE-RXN
+  predicate: produces
+  object: CHEBI:47013
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINE-NUCLEOSIDASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_47013_URIDINE-NUCLEOSIDASE-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_47013_URIDINE-NUCLEOSIDASE-RXN","type":[{"type":"class","id":"CHEBI:47013"'
+- id: edge-010
+  subject: CHEBI:16704
+  predicate: consumes
+  object: gomodel:URIDINE-NUCLEOSIDASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINE-NUCLEOSIDASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16704_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_16704_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:16704"'
+- id: edge-011
+  subject: gomodel:RXN0-361
+  predicate: produces
+  object: CHEBI:47013
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN0-361","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_47013_RXN0-361"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_47013_RXN0-361","type":[{"type":"class","id":"CHEBI:47013"'
+- id: edge-012
+  subject: SGD:S000002808
+  predicate: enables
+  object: gomodel:URIDINE-NUCLEOSIDASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINE-NUCLEOSIDASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR400W-MONOMER_URIDINE-NUCLEOSIDASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YDR400W-MONOMER_URIDINE-NUCLEOSIDASE-RXN_controller","type":[{"type":"class","id":"SGD:S000002808"'
+- id: edge-013
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:CYTDEAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTDEAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_CYTDEAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15377_CYTDEAM-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-014
+  subject: CHEBI:16704
+  predicate: consumes
+  object: gomodel:URIDINEKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINEKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16704_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_16704_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:16704"'
+- id: edge-015
+  subject: SGD:S000002808
+  predicate: enables
+  object: gomodel:RXN0-361
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN0-361","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR400W-MONOMER_RXN0-361_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YDR400W-MONOMER_RXN0-361_controller","type":[{"type":"class","id":"SGD:S000002808"'
+- id: edge-016
+  subject: gomodel:CDPKIN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CDPKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_CDPKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_456216_CDPKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-017
+  subject: SGD:S000005295
+  predicate: enables
+  object: gomodel:CYTIDINEKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDINEKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNR012W-MONOMER_CYTIDINEKIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YNR012W-MONOMER_CYTIDINEKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000005295"'
+- id: edge-018
+  subject: gomodel:CYTIDINEKIN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDINEKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_CYTIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15378_CYTIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-019
+  subject: CHEBI:37565
+  predicate: consumes
+  object: gomodel:CYTIDINEKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDINEKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_37565_CYTIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_37565_CYTIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:37565"'
+- id: edge-020
+  subject: CHEBI:58017
+  predicate: consumes
+  object: gomodel:URACIL-PRIBOSYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URACIL-PRIBOSYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58017_URACIL-PRIBOSYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_58017_URACIL-PRIBOSYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58017"'
+- id: edge-021
+  subject: gomodel:CYTIDINEKIN-RXN
+  predicate: produces
+  object: CHEBI:58189
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDINEKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58189_CYTIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_58189_CYTIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:58189"'
+- id: edge-022
+  subject: CHEBI:17562
+  predicate: consumes
+  object: gomodel:RXN0-361
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN0-361","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17562_RXN0-361"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_17562_RXN0-361","type":[{"type":"class","id":"CHEBI:17562"'
+- id: edge-023
+  subject: SGD:S000001550
+  predicate: enables
+  object: gomodel:CDPKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CDPKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL067W-MONOMER_CDPKIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YKL067W-MONOMER_CDPKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000001550"'
+- id: edge-024
+  subject: gomodel:RXN-11832
+  predicate: produces
+  object: CHEBI:58069
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN-11832","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58069_RXN-11832"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_58069_RXN-11832","type":[{"type":"class","id":"CHEBI:58069"'
+- id: edge-025
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:RXN0-361
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN0-361","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_RXN0-361"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15377_RXN0-361","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-026
+  subject: gomodel:CYTIDEAM2-RXN
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDEAM2-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28938_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_28938_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:28938"'
+- id: edge-027
+  subject: gomodel:CYTIDINEKIN-RXN
+  predicate: produces
+  object: CHEBI:60377
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDINEKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_60377_CYTIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_60377_CYTIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:60377"'
+- id: edge-028
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:RXN-11832
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN-11832","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_RXN-11832"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_30616_RXN-11832","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-029
+  subject: gomodel:CYTDEAM-RXN
+  predicate: produces
+  object: CHEBI:17568
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTDEAM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17568_CYTDEAM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_17568_CYTDEAM-RXN","type":[{"type":"class","id":"CHEBI:17568"'
+- id: edge-030
+  subject: gomodel:CYTIDEAM2-RXN
+  predicate: produces
+  object: CHEBI:16704
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDEAM2-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16704_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_16704_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:16704"'
+- id: edge-031
+  subject: CHEBI:58069
+  predicate: consumes
+  object: gomodel:CDPKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CDPKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58069_RXN-11832"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_58069_RXN-11832","type":[{"type":"class","id":"CHEBI:58069"'
+- id: edge-032
+  subject: CHEBI:60377
+  predicate: consumes
+  object: gomodel:RXN-11832
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN-11832","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_60377_CYTIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_60377_CYTIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:60377"'
+- id: edge-033
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:CYTIDEAM2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDEAM2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15378_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-034
+  subject: SGD:S000001507
+  predicate: enables
+  object: gomodel:RXN-11832
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:RXN-11832","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL024C-MONOMER_RXN-11832_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YKL024C-MONOMER_RXN-11832_controller","type":[{"type":"class","id":"SGD:S000001507"'
+- id: edge-035
+  subject: SGD:S000006266
+  predicate: enables
+  object: gomodel:CYTDEAM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTDEAM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPR062W-MONOMER_CYTDEAM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YPR062W-MONOMER_CYTDEAM-RXN_controller","type":[{"type":"class","id":"SGD:S000006266"'
+- id: edge-036
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:URIDINEKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINEKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_URIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_30616_URIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-037
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:CYTIDEAM2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDEAM2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15377_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-038
+  subject: SGD:S000004235
+  predicate: enables
+  object: gomodel:CYTIDEAM2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDEAM2-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR245C-MONOMER_CYTIDEAM2-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YLR245C-MONOMER_CYTIDEAM2-RXN_controller","type":[{"type":"class","id":"SGD:S000004235"'
+- id: edge-039
+  subject: gomodel:CDPKIN-RXN
+  predicate: produces
+  object: CHEBI:37563
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CDPKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_37563_CDPKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_37563_CDPKIN-RXN","type":[{"type":"class","id":"CHEBI:37563"'
+- id: edge-040
+  subject: CHEBI:17562
+  predicate: consumes
+  object: gomodel:CYTIDINEKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDINEKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17562_CYTIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_17562_CYTIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:17562"'
+- id: edge-041
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:CDPKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CDPKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_CDPKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_30616_CDPKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-042
+  subject: SGD:S000005295
+  predicate: enables
+  object: gomodel:URIDINEKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINEKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNR012W-MONOMER_URIDINEKIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YNR012W-MONOMER_URIDINEKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000005295"'
+- id: edge-043
+  subject: gomodel:URIDINE-NUCLEOSIDASE-RXN
+  predicate: produces
+  object: CHEBI:17568
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINE-NUCLEOSIDASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17568_URIDINE-NUCLEOSIDASE-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_17568_URIDINE-NUCLEOSIDASE-RXN","type":[{"type":"class","id":"CHEBI:17568"'
+- id: edge-044
+  subject: gomodel:URIDINEKIN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINEKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_URIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_15378_URIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-045
+  subject: gomodel:URACIL-PRIBOSYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:57865
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URACIL-PRIBOSYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57865_URACIL-PRIBOSYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_57865_URACIL-PRIBOSYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:57865"'
+- id: edge-046
+  subject: gomodel:URACIL-PRIBOSYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URACIL-PRIBOSYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_URACIL-PRIBOSYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_29888_URACIL-PRIBOSYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-047
+  subject: CHEBI:17562
+  predicate: consumes
+  object: gomodel:CYTIDEAM2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:CYTIDEAM2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17562_CYTIDEAM2-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_17562_CYTIDEAM2-RXN","type":[{"type":"class","id":"CHEBI:17562"'
+- id: edge-048
+  subject: SGD:S000001170
+  predicate: enables
+  object: gomodel:URACIL-PRIBOSYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URACIL-PRIBOSYLTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR128W-MONOMER_URACIL-PRIBOSYLTRANS-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:YHR128W-MONOMER_URACIL-PRIBOSYLTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000001170"'
+- id: edge-049
+  subject: gomodel:URIDINEKIN-RXN
+  predicate: produces
+  object: CHEBI:57865
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"subject":"gomodel:URIDINEKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57865_URIDINEKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-RNT-SALV
+    quote: '"id":"gomodel:CHEBI_57865_URIDINEKIN-RXN","type":[{"type":"class","id":"CHEBI:57865"'
+references:
+- id: gomodel:YeastPathways_YEAST-RNT-SALV
+  title: 'SGD GO-CAM salvage pathways of pyrimidine ribonucleotides - imported from:
+    Saccharomyces Genome Database'
