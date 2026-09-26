@@ -1,0 +1,751 @@
+id: gomodel:YeastPathways_YEAST-FAO-PWY
+label: fatty acid oxidation pathway
+description: Fatty acid oxidation in Saccharomyces cerevisiae S288C connects acyl-CoA
+  activation, acyl-CoA dehydrogenation, enoyl-CoA hydration, hydroxyacyl-CoA dehydrogenation,
+  thiolysis, and auxiliary unsaturated fatty acid oxidation steps in the SGD GO-CAM
+  fatty acid oxidation pathway.
+pathway_type: fatty-acid-oxidation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+- id: CHEBI:15377
+  label: water
+- id: CHEBI:15489
+  label: 3-oxo-fatty acyl-CoA
+- id: SGD:S000004860
+  label: FAA4 Scer
+- id: CHEBI:71627
+  label: 2,3,4-saturated fatty acid(1-)
+- id: CHEBI:77332
+  label: saturated fatty acyl-CoA(4-)
+- id: CHEBI:50998
+  label: trans-2-enoyl-CoA
+- id: CHEBI:29888
+  label: diphosphoric acid
+- id: CHEBI:16240
+  label: hydrogen peroxide
+- id: SGD:S000001717
+  label: FOX2 Scer
+- id: CHEBI:27773
+  label: cis-3-enoyl-CoA
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: CHEBI:15455
+  label: (S)-3-hydroxyacyl-CoA
+- id: SGD:S000004274
+  label: ECI1 Scer
+- id: SGD:S000005844
+  label: FAA1 Scer
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:15379
+  label: dioxygen
+- id: SGD:S000001422
+  label: POT1 Scer
+- id: SGD:S000000245
+  label: FAT1 Scer
+- id: SGD:S000003173
+  label: POX1 Scer
+- id: SGD:S000005706
+  label: DCI1 Scer
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+- id: CHEBI:57945
+  label: NADH(2-)
+- id: SGD:S000000817
+  label: FAA2 Scer
+- id: SGD:S000001271
+  label: FAA3 Scer
+reactions:
+- id: gomodel:ENOYL-COA-HYDRAT-RXN
+  label: a (3<i>S</i>)-3-hydroxyacyl-CoA <- a <i>trans</i>-2-enoyl-CoA + H<sub>2</sub>O
+- id: gomodel:OHACYL-COA-DEHYDROG-RXN
+  label: a (3<i>S</i>)-3-hydroxyacyl-CoA + NAD<sup>+</sup> -> a 3-oxoacyl-CoA + NADH
+    + H<SUP>+</SUP>
+- id: gomodel:ACYLCOASYN-RXN
+  label: a 2,3,4-saturated fatty acid + ATP + coenzyme A -> a 2,3,4-saturated fatty
+    acyl CoA + AMP + diphosphate
+- id: gomodel:KETOACYLCOATHIOL-RXN
+  label: a 2,3,4-saturated fatty acyl CoA + acetyl-CoA <- a 3-oxoacyl-CoA + coenzyme
+    A
+- id: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  label: long-chain fatty acid-CoA ligase activity
+- id: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  label: long-chain fatty acid-CoA ligase activity
+- id: gomodel:RXN-11026
+  label: a 2,3,4-saturated fatty acyl CoA + oxygen -> a <i>trans</i>-2-enoyl-CoA +
+    hydrogen peroxide
+- id: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  label: long-chain fatty acid-CoA ligase activity
+- id: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775
+  label: delta(3)-delta(2)-enoyl-CoA isomerase activity
+- id: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  label: long-chain fatty acid-CoA ligase activity
+- id: gomodel:ENOYL-COA-DELTA-ISOM-RXN
+  label: a (3Z)-alk-3-enoyl-CoA -> a <i>trans</i>-2-enoyl-CoA
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:ENOYL-COA-HYDRAT-RXN
+  predicate: precedes
+  object: gomodel:OHACYL-COA-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-HYDRAT-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:OHACYL-COA-DEHYDROG-RXN"'
+- id: edge-002
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:ACYLCOASYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57287_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_57287_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-003
+  subject: CHEBI:15377
+  predicate: consumes
+  object: gomodel:ENOYL-COA-HYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-HYDRAT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_ENOYL-COA-HYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15377_ENOYL-COA-HYDRAT-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-004
+  subject: CHEBI:15489
+  predicate: consumes
+  object: gomodel:KETOACYLCOATHIOL-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15489_OHACYL-COA-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15489_OHACYL-COA-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:15489"'
+- id: edge-005
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006832"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006832","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-006
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  predicate: precedes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-11026"'
+- id: edge-007
+  subject: SGD:S000004860
+  predicate: enables
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006839"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006839","type":[{"type":"class","id":"SGD:S000004860"'
+- id: edge-008
+  subject: CHEBI:71627
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006854"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006854","type":[{"type":"class","id":"CHEBI:71627"'
+- id: edge-009
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  predicate: produces
+  object: CHEBI:77332
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_77332_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+- id: edge-010
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775
+  predicate: produces
+  object: CHEBI:50998
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006777"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006777","type":[{"type":"class","id":"CHEBI:50998"'
+- id: edge-011
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  predicate: produces
+  object: CHEBI:77332
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_77332_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+- id: edge-012
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006857"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006857","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-013
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: precedes
+  object: gomodel:ACYLCOASYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:ACYLCOASYN-RXN"'
+- id: edge-014
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006788"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006788","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-015
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: produces
+  object: CHEBI:77332
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_77332_KETOACYLCOATHIOL-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_KETOACYLCOATHIOL-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+- id: edge-016
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  predicate: produces
+  object: CHEBI:77332
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_77332_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+- id: edge-017
+  subject: gomodel:RXN-11026
+  predicate: produces
+  object: CHEBI:16240
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:RXN-11026","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16240_RXN-11026"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_16240_RXN-11026","type":[{"type":"class","id":"CHEBI:16240"'
+- id: edge-018
+  subject: SGD:S000001717
+  predicate: enables
+  object: gomodel:ENOYL-COA-HYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-HYDRAT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKR009C-MONOMER_ENOYL-COA-HYDRAT-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YKR009C-MONOMER_ENOYL-COA-HYDRAT-RXN_controller","type":[{"type":"class","id":"SGD:S000001717"'
+- id: edge-019
+  subject: CHEBI:27773
+  predicate: consumes
+  object: gomodel:ENOYL-COA-DELTA-ISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-DELTA-ISOM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_27773_ENOYL-COA-DELTA-ISOM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_27773_ENOYL-COA-DELTA-ISOM-RXN","type":[{"type":"class","id":"CHEBI:27773"'
+- id: edge-020
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006791"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006791","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-021
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006813"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006813","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-022
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006855"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006855","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-023
+  subject: CHEBI:50998
+  predicate: consumes
+  object: gomodel:ENOYL-COA-HYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-HYDRAT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6690711d00000514"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6690711d00000514","type":[{"type":"class","id":"CHEBI:50998"'
+- id: edge-024
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006834"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006834","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-025
+  subject: gomodel:ENOYL-COA-HYDRAT-RXN
+  predicate: produces
+  object: CHEBI:15455
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-HYDRAT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15455_ENOYL-COA-HYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15455_ENOYL-COA-HYDRAT-RXN","type":[{"type":"class","id":"CHEBI:15455"'
+- id: edge-026
+  subject: SGD:S000004274
+  predicate: enables
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006779"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006779","type":[{"type":"class","id":"SGD:S000004274"'
+- id: edge-027
+  subject: gomodel:ACYLCOASYN-RXN
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456215_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_456215_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-028
+  subject: SGD:S000005844
+  predicate: enables
+  object: gomodel:ACYLCOASYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOR317W-MONOMER_ACYLCOASYN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YOR317W-MONOMER_ACYLCOASYN-RXN_controller","type":[{"type":"class","id":"SGD:S000005844"'
+- id: edge-029
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006853"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006853","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-030
+  subject: gomodel:OHACYL-COA-DEHYDROG-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_OHACYL-COA-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15378_OHACYL-COA-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-031
+  subject: gomodel:ACYLCOASYN-RXN
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_29888_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-032
+  subject: gomodel:RXN-11026
+  predicate: precedes
+  object: gomodel:ENOYL-COA-HYDRAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:RXN-11026","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:ENOYL-COA-HYDRAT-RXN"'
+- id: edge-033
+  subject: gomodel:ENOYL-COA-DELTA-ISOM-RXN
+  predicate: precedes
+  object: gomodel:OHACYL-COA-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-DELTA-ISOM-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:OHACYL-COA-DEHYDROG-RXN"'
+- id: edge-034
+  subject: CHEBI:15379
+  predicate: consumes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:RXN-11026","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15379_RXN-11026"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15379_RXN-11026","type":[{"type":"class","id":"CHEBI:15379"'
+- id: edge-035
+  subject: gomodel:OHACYL-COA-DEHYDROG-RXN
+  predicate: produces
+  object: CHEBI:15489
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15489_OHACYL-COA-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15489_OHACYL-COA-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:15489"'
+- id: edge-036
+  subject: CHEBI:71627
+  predicate: consumes
+  object: gomodel:ACYLCOASYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_71627_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_71627_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:71627"'
+- id: edge-037
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  predicate: precedes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-11026"'
+- id: edge-038
+  subject: CHEBI:71627
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006812"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006812","type":[{"type":"class","id":"CHEBI:71627"'
+- id: edge-039
+  subject: SGD:S000001422
+  predicate: enables
+  object: gomodel:KETOACYLCOATHIOL-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YIL160C-MONOMER_KETOACYLCOATHIOL-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YIL160C-MONOMER_KETOACYLCOATHIOL-RXN_controller","type":[{"type":"class","id":"SGD:S000001422"'
+- id: edge-040
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006790"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006790","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-041
+  subject: CHEBI:71627
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006789"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006789","type":[{"type":"class","id":"CHEBI:71627"'
+- id: edge-042
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006811"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006811","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-043
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: precedes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831"'
+- id: edge-044
+  subject: SGD:S000001717
+  predicate: enables
+  object: gomodel:OHACYL-COA-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKR009C-MONOMER_OHACYL-COA-DEHYDROG-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YKR009C-MONOMER_OHACYL-COA-DEHYDROG-RXN_controller","type":[{"type":"class","id":"SGD:S000001717"'
+- id: edge-045
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: precedes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787"'
+- id: edge-046
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  predicate: precedes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-11026"'
+- id: edge-047
+  subject: SGD:S000000245
+  predicate: enables
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006858"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006858","type":[{"type":"class","id":"SGD:S000000245"'
+- id: edge-048
+  subject: CHEBI:77332
+  predicate: consumes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:RXN-11026","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_77332_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+- id: edge-049
+  subject: SGD:S000003173
+  predicate: enables
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:RXN-11026","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGL205W-MONOMER_RXN-11026_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YGL205W-MONOMER_RXN-11026_controller","type":[{"type":"class","id":"SGD:S000003173"'
+- id: edge-050
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006836"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006836","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-051
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006792"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006792","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-052
+  subject: gomodel:ACYLCOASYN-RXN
+  predicate: precedes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-11026"'
+- id: edge-053
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  predicate: precedes
+  object: gomodel:RXN-11026
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-11026"'
+- id: edge-054
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006856"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006856","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-055
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775
+  predicate: precedes
+  object: gomodel:OHACYL-COA-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:OHACYL-COA-DEHYDROG-RXN"'
+- id: edge-056
+  subject: CHEBI:57287
+  predicate: consumes
+  object: gomodel:KETOACYLCOATHIOL-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57287_KETOACYLCOATHIOL-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_57287_KETOACYLCOATHIOL-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-057
+  subject: SGD:S000005706
+  predicate: enables
+  object: gomodel:ENOYL-COA-DELTA-ISOM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-DELTA-ISOM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOR180C-MONOMER_ENOYL-COA-DELTA-ISOM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YOR180C-MONOMER_ENOYL-COA-DELTA-ISOM-RXN_controller","type":[{"type":"class","id":"SGD:S000005706"'
+- id: edge-058
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  predicate: produces
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006815"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006815","type":[{"type":"class","id":"CHEBI:29888"'
+- id: edge-059
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006835"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006835","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-060
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006814"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006814","type":[{"type":"class","id":"CHEBI:456215"'
+- id: edge-061
+  subject: gomodel:RXN-11026
+  predicate: produces
+  object: CHEBI:50998
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:RXN-11026","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6690711d00000512"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6690711d00000512","type":[{"type":"class","id":"CHEBI:50998"'
+- id: edge-062
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:OHACYL-COA-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_OHACYL-COA-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_57540_OHACYL-COA-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-063
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: produces
+  object: CHEBI:57288
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57288_KETOACYLCOATHIOL-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_57288_KETOACYLCOATHIOL-RXN","type":[{"type":"class","id":"CHEBI:57288"'
+- id: edge-064
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: precedes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852"'
+- id: edge-065
+  subject: gomodel:OHACYL-COA-DEHYDROG-RXN
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_OHACYL-COA-DEHYDROG-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_57945_OHACYL-COA-DEHYDROG-RXN","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-066
+  subject: CHEBI:15455
+  predicate: consumes
+  object: gomodel:OHACYL-COA-DEHYDROG-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15455_ENOYL-COA-HYDRAT-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_15455_ENOYL-COA-HYDRAT-RXN","type":[{"type":"class","id":"CHEBI:15455"'
+- id: edge-067
+  subject: CHEBI:27773
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006775","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006776"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006776","type":[{"type":"class","id":"CHEBI:27773"'
+- id: edge-068
+  subject: CHEBI:71627
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006831","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006833"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006833","type":[{"type":"class","id":"CHEBI:71627"'
+- id: edge-069
+  subject: gomodel:KETOACYLCOATHIOL-RXN
+  predicate: precedes
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:KETOACYLCOATHIOL-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810"'
+- id: edge-070
+  subject: gomodel:ACYLCOASYN-RXN
+  predicate: produces
+  object: CHEBI:77332
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_77332_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+- id: edge-071
+  subject: SGD:S000000817
+  predicate: enables
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006787","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006795"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006795","type":[{"type":"class","id":"SGD:S000000817"'
+- id: edge-072
+  subject: SGD:S000001271
+  predicate: enables
+  object: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006810","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006816"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006816","type":[{"type":"class","id":"SGD:S000001271"'
+- id: edge-073
+  subject: gomodel:ENOYL-COA-DELTA-ISOM-RXN
+  predicate: produces
+  object: CHEBI:50998
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ENOYL-COA-DELTA-ISOM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-FAO-PWY/6690711d00000516"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-FAO-PWY/6690711d00000516","type":[{"type":"class","id":"CHEBI:50998"'
+- id: edge-074
+  subject: gomodel:OHACYL-COA-DEHYDROG-RXN
+  predicate: precedes
+  object: gomodel:KETOACYLCOATHIOL-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:OHACYL-COA-DEHYDROG-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:KETOACYLCOATHIOL-RXN"'
+- id: edge-075
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:ACYLCOASYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:ACYLCOASYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_30616_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-076
+  subject: gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852
+  predicate: produces
+  object: CHEBI:77332
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-FAO-PWY/6a4c244800006852","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_77332_ACYLCOASYN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-FAO-PWY
+    quote: '"id":"gomodel:CHEBI_77332_ACYLCOASYN-RXN","type":[{"type":"class","id":"CHEBI:77332"'
+references:
+- id: gomodel:YeastPathways_YEAST-FAO-PWY
+  title: 'SGD GO-CAM fatty acid oxidation pathway - imported from: Saccharomyces Genome
+    Database'
