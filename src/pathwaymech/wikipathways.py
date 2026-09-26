@@ -9,6 +9,7 @@ DATABASE_PREFIXES = {
     "chebi": "CHEBI",
     "enzyme nomenclature": "EC",
     "geneontology": "GO",
+    "sgd": "SGD",
     "uniprot": "UniProtKB",
     "uniprot-trembl": "UniProtKB",
     "uniprotkb": "UniProtKB",

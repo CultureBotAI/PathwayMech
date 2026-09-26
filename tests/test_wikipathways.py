@@ -22,6 +22,7 @@ def test_gpml_converts_to_valid_pathway_record() -> None:
         {"id": "CHEBI:58272", "label": "3-phosphonato-D-glycerate(3-)"},
         {"id": "CHEBI:58289", "label": "2-phosphonato-D-glycerate(3-)"},
         {"id": "UniProtKB:P12345", "label": "Mini enzyme"},
+        {"id": "SGD:S000000001", "label": "Mini SGD enzyme"},
     ]
     assert record.reactions == [
         {
@@ -61,5 +62,6 @@ def test_gpml_deduplicates_participants_by_stable_curie() -> None:
     assert record.participants == [
         {"id": "CHEBI:58272", "label": "3-phosphonato-D-glycerate(3-)"},
         {"id": "UniProtKB:P12345", "label": "Mini enzyme"},
+        {"id": "SGD:S000000001", "label": "Mini SGD enzyme"},
     ]
     assert record.mechanistic_edges[1]["object"] == "CHEBI:58272"
