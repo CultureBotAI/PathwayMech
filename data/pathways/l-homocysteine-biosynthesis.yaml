@@ -1,0 +1,147 @@
+id: gomodel:YeastPathways_PWY-5344
+label: L-homocysteine biosynthesis
+description: L-homocysteine biosynthesis in Saccharomyces cerevisiae S288C uses MET2
+  to acetylate L-homoserine with acetyl-CoA, forming O-acetyl-L-homoserine and coenzyme
+  A, then uses MET17 to condense O-acetyl-L-homoserine with hydrogen sulfide to produce
+  L-homocysteine, acetate, and hydron.
+pathway_type: amino-acid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:30089
+  label: acetate
+- id: CHEBI:57716
+  label: O-acetyl-L-homoserine zwitterion
+- id: SGD:S000005221
+  label: MET2 Scer
+- id: CHEBI:57476
+  label: L-homoserine zwitterion
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+- id: CHEBI:16136
+  label: hydrogen sulfide
+- id: CHEBI:58199
+  label: L-homocysteine zwitterion
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+- id: SGD:S000004294
+  label: MET17 Scer
+reactions:
+- id: gomodel:ACETYLHOMOSER-CYS-RXN
+  label: <i>O</i>-acetyl-L-homoserine + hydrogen sulfide -> L-homocysteine + acetate
+    + H<SUP>+</SUP>
+- id: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  label: L-homoserine + acetyl-CoA -> <i>O</i>-acetyl-L-homoserine + coenzyme A
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:ACETYLHOMOSER-CYS-RXN
+  predicate: produces
+  object: CHEBI:30089
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:ACETYLHOMOSER-CYS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_30089_ACETYLHOMOSER-CYS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_30089_ACETYLHOMOSER-CYS-RXN","type":[{"type":"class","id":"CHEBI:30089"'
+- id: edge-002
+  subject: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  predicate: produces
+  object: CHEBI:57716
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57716_HOMOSERINE-O-ACETYLTRANSFERASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_57716_HOMOSERINE-O-ACETYLTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:57716"'
+- id: edge-003
+  subject: SGD:S000005221
+  predicate: enables
+  object: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL277W-MONOMER_HOMOSERINE-O-ACETYLTRANSFERASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:YNL277W-MONOMER_HOMOSERINE-O-ACETYLTRANSFERASE-RXN_controller","type":[{"type":"class","id":"SGD:S000005221"'
+- id: edge-004
+  subject: CHEBI:57716
+  predicate: consumes
+  object: gomodel:ACETYLHOMOSER-CYS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:ACETYLHOMOSER-CYS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57716_HOMOSERINE-O-ACETYLTRANSFERASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_57716_HOMOSERINE-O-ACETYLTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:57716"'
+- id: edge-005
+  subject: CHEBI:57476
+  predicate: consumes
+  object: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57476_HOMOSERINE-O-ACETYLTRANSFERASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_57476_HOMOSERINE-O-ACETYLTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:57476"'
+- id: edge-006
+  subject: gomodel:ACETYLHOMOSER-CYS-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:ACETYLHOMOSER-CYS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_ACETYLHOMOSER-CYS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_15378_ACETYLHOMOSER-CYS-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: CHEBI:57288
+  predicate: consumes
+  object: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57288_HOMOSERINE-O-ACETYLTRANSFERASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_57288_HOMOSERINE-O-ACETYLTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:57288"'
+- id: edge-008
+  subject: CHEBI:16136
+  predicate: consumes
+  object: gomodel:ACETYLHOMOSER-CYS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:ACETYLHOMOSER-CYS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16136_ACETYLHOMOSER-CYS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_16136_ACETYLHOMOSER-CYS-RXN","type":[{"type":"class","id":"CHEBI:16136"'
+- id: edge-009
+  subject: gomodel:ACETYLHOMOSER-CYS-RXN
+  predicate: produces
+  object: CHEBI:58199
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:ACETYLHOMOSER-CYS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58199_ACETYLHOMOSER-CYS-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_58199_ACETYLHOMOSER-CYS-RXN","type":[{"type":"class","id":"CHEBI:58199"'
+- id: edge-010
+  subject: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_HOMOSERINE-O-ACETYLTRANSFERASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:CHEBI_57287_HOMOSERINE-O-ACETYLTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-011
+  subject: SGD:S000004294
+  predicate: enables
+  object: gomodel:ACETYLHOMOSER-CYS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:ACETYLHOMOSER-CYS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR303W-MONOMER_ACETYLHOMOSER-CYS-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"id":"gomodel:YLR303W-MONOMER_ACETYLHOMOSER-CYS-RXN_controller","type":[{"type":"class","id":"SGD:S000004294"'
+- id: edge-012
+  subject: gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN
+  predicate: precedes
+  object: gomodel:ACETYLHOMOSER-CYS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5344
+    quote: '"subject":"gomodel:HOMOSERINE-O-ACETYLTRANSFERASE-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:ACETYLHOMOSER-CYS-RXN"'
+references:
+- id: gomodel:YeastPathways_PWY-5344
+  title: SGD GO-CAM L-homocysteine biosynthesis pathway PWY-5344
