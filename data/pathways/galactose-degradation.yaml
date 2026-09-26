@@ -1,0 +1,267 @@
+id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+label: galactose degradation
+description: Galactose degradation in Saccharomyces cerevisiae S288C epimerizes beta-D-galactose
+  to alpha-D-galactose, phosphorylates it, transfers UDP-glucose to form alpha-D-glucose
+  1-phosphate and UDP-galactose, regenerates UDP-glucose, and converts alpha-D-glucose
+  1-phosphate to D-glucose 6-phosphate in the SGD GO-CAM galactose degradation pathway.
+pathway_type: galactose-degradation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:4170
+  label: D-glucopyranose 6-phosphate
+- id: SGD:S000004711
+  label: PGM2 Scer
+- id: CHEBI:58601
+  label: alpha-D-glucose 1-phosphate(2-)
+- id: CHEBI:58885
+  label: UDP-alpha-D-glucose(2-)
+- id: CHEBI:58336
+  label: alpha-D-galactose 1-phosphate(2-)
+- id: CHEBI:15378
+  label: hydron
+- id: SGD:S000000223
+  label: GAL10 Scer
+- id: SGD:S000000224
+  label: GAL1 Scer
+- id: CHEBI:28061
+  label: alpha-D-galactose
+- id: CHEBI:30616
+  label: ATP(4-)
+- id: SGD:S000000222
+  label: GAL7 Scer
+- id: SGD:S000001610
+  label: PGM1 Scer
+- id: CHEBI:27667
+  label: beta-D-galactose
+- id: CHEBI:66914
+  label: UDP-alpha-D-galactose(2-)
+- id: CHEBI:456216
+  label: ADP(3-)
+reactions:
+- id: gomodel:PHOSPHOGLUCMUT-RXN
+  label: "\u03B1-D-glucopyranose 1-phosphate <=> D-glucopyranose 6-phosphate"
+- id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  label: phosphoglucomutase activity
+- id: gomodel:UDPGLUCEPIM-RXN
+  label: "UDP-\u03B1-D-glucose <=> UDP-\u03B1-D-galactose"
+- id: gomodel:GALACTOKIN-RXN
+  label: "\u03B1-D-galactopyranose + ATP -> \u03B1-D-galactose 1-phosphate + ADP +\
+    \ H<SUP>+</SUP>"
+- id: gomodel:ALDOSE1EPIM-RXN
+  label: "\u03B2-D-galactopyranose -> \u03B1-D-galactopyranose"
+- id: gomodel:GALACTURIDYLYLTRANS-RXN
+  label: "UDP-\u03B1-D-glucose + \u03B1-D-galactose 1-phosphate -> UDP-\u03B1-D-galactose\
+    \ + \u03B1-D-glucopyranose 1-phosphate"
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: produces
+  object: CHEBI:4170
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:4170"'
+- id: edge-002
+  subject: SGD:S000004711
+  predicate: enables
+  object: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000634"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000634","type":[{"type":"class","id":"SGD:S000004711"'
+- id: edge-003
+  subject: CHEBI:58601
+  predicate: consumes
+  object: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-004
+  subject: CHEBI:58601
+  predicate: consumes
+  object: gomodel:PHOSPHOGLUCMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-005
+  subject: gomodel:UDPGLUCEPIM-RXN
+  predicate: produces
+  object: CHEBI:58885
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:UDPGLUCEPIM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN","type":[{"type":"class","id":"CHEBI:58885"'
+- id: edge-006
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: produces
+  object: CHEBI:58336
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58336_GALACTOKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58336_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:58336"'
+- id: edge-007
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_GALACTOKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_15378_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-008
+  subject: SGD:S000000223
+  predicate: enables
+  object: gomodel:ALDOSE1EPIM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:ALDOSE1EPIM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR019C-MONOMER_ALDOSE1EPIM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YBR019C-MONOMER_ALDOSE1EPIM-RXN_controller","type":[{"type":"class","id":"SGD:S000000223"'
+- id: edge-009
+  subject: SGD:S000000224
+  predicate: enables
+  object: gomodel:GALACTOKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR020W-MONOMER_GALACTOKIN-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YBR020W-MONOMER_GALACTOKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000000224"'
+- id: edge-010
+  subject: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  predicate: produces
+  object: CHEBI:4170
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000633"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000633","type":[{"type":"class","id":"CHEBI:4170"'
+- id: edge-011
+  subject: gomodel:ALDOSE1EPIM-RXN
+  predicate: produces
+  object: CHEBI:28061
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:ALDOSE1EPIM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN","type":[{"type":"class","id":"CHEBI:28061"'
+- id: edge-012
+  subject: CHEBI:30616
+  predicate: consumes
+  object: gomodel:GALACTOKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_GALACTOKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_30616_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+- id: edge-013
+  subject: SGD:S000000222
+  predicate: enables
+  object: gomodel:GALACTURIDYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR018C-MONOMER_GALACTURIDYLYLTRANS-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YBR018C-MONOMER_GALACTURIDYLYLTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000000222"'
+- id: edge-014
+  subject: gomodel:GALACTURIDYLYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:58601
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+- id: edge-015
+  subject: SGD:S000001610
+  predicate: enables
+  object: gomodel:PHOSPHOGLUCMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6690711d00000510"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6690711d00000510","type":[{"type":"class","id":"SGD:S000001610"'
+- id: edge-016
+  subject: CHEBI:27667
+  predicate: consumes
+  object: gomodel:ALDOSE1EPIM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:ALDOSE1EPIM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_27667_ALDOSE1EPIM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_27667_ALDOSE1EPIM-RXN","type":[{"type":"class","id":"CHEBI:27667"'
+- id: edge-017
+  subject: CHEBI:58336
+  predicate: consumes
+  object: gomodel:GALACTURIDYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58336_GALACTOKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58336_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:58336"'
+- id: edge-018
+  subject: gomodel:GALACTURIDYLYLTRANS-RXN
+  predicate: produces
+  object: CHEBI:66914
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:66914"'
+- id: edge-019
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_GALACTOKIN-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_456216_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+- id: edge-020
+  subject: CHEBI:66914
+  predicate: consumes
+  object: gomodel:UDPGLUCEPIM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:UDPGLUCEPIM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:66914"'
+- id: edge-021
+  subject: SGD:S000000223
+  predicate: enables
+  object: gomodel:UDPGLUCEPIM-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:UDPGLUCEPIM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR019C-MONOMER_UDPGLUCEPIM-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:YBR019C-MONOMER_UDPGLUCEPIM-RXN_controller","type":[{"type":"class","id":"SGD:S000000223"'
+- id: edge-022
+  subject: CHEBI:28061
+  predicate: consumes
+  object: gomodel:GALACTOKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN","type":[{"type":"class","id":"CHEBI:28061"'
+- id: edge-023
+  subject: CHEBI:58885
+  predicate: consumes
+  object: gomodel:GALACTURIDYLYLTRANS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN"'
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    quote: '"id":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN","type":[{"type":"class","id":"CHEBI:58885"'
+references:
+- id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  title: 'SGD GO-CAM galactose degradation - imported from: Saccharomyces Genome Database'
