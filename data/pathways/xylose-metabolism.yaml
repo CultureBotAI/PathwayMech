@@ -1,0 +1,147 @@
+id: gomodel:YeastPathways_PWY3O-8
+label: xylose metabolism
+description: Xylose metabolism in Saccharomyces cerevisiae S288C uses GRE3 aldose
+  reductase to reduce D-xylopyranose to xylitol with NADPH, and XYL2 xylitol dehydrogenase
+  to oxidize xylitol to D-xylulose with NAD+ in the SGD GO-CAM xylose metabolism pathway.
+pathway_type: carbohydrate-degradation
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:57783
+  label: NADPH(4-)
+- id: SGD:S000004060
+  label: XYL2 Scer
+- id: CHEBI:53455
+  label: D-xylopyranose
+- id: SGD:S000001146
+  label: GRE3 Scer
+- id: CHEBI:17151
+  label: xylitol
+- id: CHEBI:15378
+  label: hydron
+- id: CHEBI:57945
+  label: NADH(2-)
+- id: CHEBI:17140
+  label: D-xylulose
+- id: CHEBI:57540
+  label: NAD(1-)
+- id: CHEBI:58349
+  label: NADP(3-)
+reactions:
+- id: gomodel:RXN-8773
+  label: xylitol + NADP<sup>+</sup> <=> D-xylopyranose + NADPH + H<SUP>+</SUP>
+- id: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  label: xylitol + NAD<sup>+</sup> -> D-xylulose + NADH + H<SUP>+</SUP>
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:RXN-8773
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_RXN-8773"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_57783_RXN-8773","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-002
+  subject: SGD:S000004060
+  predicate: enables
+  object: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR070C-MONOMER_D-XYLULOSE-REDUCTASE-RXN_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:YLR070C-MONOMER_D-XYLULOSE-REDUCTASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004060"'
+- id: edge-003
+  subject: CHEBI:53455
+  predicate: consumes
+  object: gomodel:RXN-8773
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_53455_RXN-8773"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_53455_RXN-8773","type":[{"type":"class","id":"CHEBI:53455"'
+- id: edge-004
+  subject: SGD:S000001146
+  predicate: enables
+  object: gomodel:RXN-8773
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR104W-MONOMER_RXN-8773_controller"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:YHR104W-MONOMER_RXN-8773_controller","type":[{"type":"class","id":"SGD:S000001146"'
+- id: edge-005
+  subject: CHEBI:17151
+  predicate: consumes
+  object: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17151_RXN-8773"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_17151_RXN-8773","type":[{"type":"class","id":"CHEBI:17151"'
+- id: edge-006
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:RXN-8773
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN-8773"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_15378_RXN-8773","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-007
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_D-XYLULOSE-REDUCTASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_57945_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-008
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: produces
+  object: CHEBI:17140
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17140_D-XYLULOSE-REDUCTASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_17140_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:17140"'
+- id: edge-009
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_D-XYLULOSE-REDUCTASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_15378_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-010
+  subject: gomodel:RXN-8773
+  predicate: produces
+  object: CHEBI:17151
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17151_RXN-8773"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_17151_RXN-8773","type":[{"type":"class","id":"CHEBI:17151"'
+- id: edge-011
+  subject: CHEBI:57540
+  predicate: consumes
+  object: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_D-XYLULOSE-REDUCTASE-RXN"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_57540_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+- id: edge-012
+  subject: gomodel:RXN-8773
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_RXN-8773"'
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    quote: '"id":"gomodel:CHEBI_58349_RXN-8773","type":[{"type":"class","id":"CHEBI:58349"'
+references:
+- id: gomodel:YeastPathways_PWY3O-8
+  title: 'SGD GO-CAM xylose metabolism - imported from: Saccharomyces Genome Database'
