@@ -101,9 +101,9 @@ duplicates.
   `WP5201`, and `WP5354`
 - unsupported or misleading chemistry:
   `WP14`, `WP36`, `WP46`, `WP54`, `WP70`, `WP109`, `WP121`, `WP132`, `WP137`,
-  `WP159`, `WP256`, `WP257`, `WP260`, `WP261`, `WP301`, `WP328`, `WP332`,
-  `WP369`, `WP380`, `WP440`, `WP452`, `WP503`, `WP533`, `WP541`, `WP546`,
-  `WP563`, `WP573`, and `WP579`
+  `WP159`, `WP256`, `WP257`, `WP260`, `WP261`, `WP275`, `WP301`, `WP328`,
+  `WP332`, `WP369`, `WP370`, `WP380`, `WP440`, `WP452`, `WP463`, `WP503`,
+  `WP533`, `WP541`, `WP546`, `WP563`, `WP573`, `WP579`, and `WP4162`
 - non-pathway or protein/regulatory maps:
   `WP13`, `WP32`, `WP62`, `WP158`, `WP210`, `WP219`, `WP346`, `WP377`,
   `WP414`, `WP425`, `WP510`, `WP2838`, `WP2869`, and `WP3636`
