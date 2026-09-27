@@ -62,15 +62,20 @@ The following WikiPathways records are already represented exactly:
 
 The low-edge Escherichia coli Pathway Tools maps are not usable with the
 current prefix set. `WP2484`, `WP2487`, `WP2488`, and `WP2886` collapse to
-HMDB, CAS, PubChem, and Ensembl nodes. `WP3583`, `WP5070`, and `WP2472` are
-broad central-carbon, Salmonella regulatory, and E. coli K-12 peripherome
-diagrams rather than bounded pathway definitions.
+HMDB, CAS, PubChem, and Ensembl nodes. `WP3538` is a cell-division
+protein-state map, `WP3641` overlaps peptidoglycan and
+UDP-<i>N</i>-acetylglucosamine records while depending on Ensembl and
+Wikidata nodes, and `WP3583`, `WP5070`, and `WP2472` are broad
+central-carbon, Salmonella regulatory, and E. coli K-12 peripherome diagrams
+rather than bounded pathway definitions.
 
 The Mycobacterium and Plasmodium maps are mostly KEGG or TubercuList exports.
 `WP1567`, `WP1581`, `WP1622`, `WP1631`, `WP1642`, `WP1652`, `WP1667`, `WP2563`,
 `WP2566`, `WP2638`, and `WP2918` currently reduce to catalyst-only stubs or
-ChemSpider-only compound lists. `WP2564` is a sigma-factor transcription map,
-not a biochemical pathway.
+ChemSpider-only compound lists. `WP4198` keeps a few UniProtKB and mycolic acid
+nodes but loses the PubChem/Entrez/Pks13 chemistry needed to represent mycolic
+acid biosynthesis. `WP2564` is a sigma-factor transcription map, not a
+biochemical pathway.
 
 The remaining Bacillus, Caulobacter, and Gibberella GPML files are blocked for
 similar reasons. `WP1466` is a response-regulator protein interaction diagram,
@@ -86,22 +91,22 @@ also contain unsupported compounds, and several unsupported maps are also near
 duplicates.
 
 - already covered by exact or near-exact records:
-  `WP2`, `WP67`, `WP84`, `WP91`, `WP128`, `WP1518`, `WP180`, `WP194`, `WP224`,
-  `WP250`, `WP287`, `WP345`, `WP354`, `WP379`, `WP381`, `WP432`, `WP459`,
-  `WP479`, `WP514`, `WP538`, and `WP555`
+  `WP2`, `WP67`, `WP84`, `WP91`, `WP128`, `WP1518`, `WP165`, `WP180`,
+  `WP194`, `WP196`, `WP214`, `WP224`, `WP250`, `WP287`, `WP345`, `WP354`,
+  `WP379`, `WP381`, `WP432`, `WP459`, `WP479`, `WP514`, `WP538`, and `WP555`
 - broader duplicates of existing routes:
   `WP7`, `WP9`, `WP27`, `WP92`, `WP95`, `WP102`, `WP112`, `WP156`, `WP191`,
-  `WP198`, `WP203`, `WP218`, `WP220`, `WP290`, `WP321`, `WP331`, `WP398`,
-  `WP416`, `WP4173`, `WP423`, `WP462`, `WP472`, `WP490`, `WP515`, `WP5201`,
-  and `WP5354`
+  `WP198`, `WP203`, `WP218`, `WP220`, `WP253`, `WP290`, `WP321`, `WP331`,
+  `WP398`, `WP416`, `WP4173`, `WP423`, `WP462`, `WP472`, `WP490`, `WP515`,
+  `WP5201`, and `WP5354`
 - unsupported or misleading chemistry:
   `WP14`, `WP36`, `WP46`, `WP54`, `WP70`, `WP109`, `WP121`, `WP132`, `WP137`,
-  `WP159`, `WP256`, `WP257`, `WP260`, `WP301`, `WP328`, `WP332`, `WP369`,
-  `WP380`, `WP440`, `WP452`, `WP503`, `WP533`, `WP541`, `WP546`, `WP563`,
-  `WP573`, and `WP579`
+  `WP159`, `WP256`, `WP257`, `WP260`, `WP261`, `WP301`, `WP328`, `WP332`,
+  `WP369`, `WP380`, `WP440`, `WP452`, `WP503`, `WP533`, `WP541`, `WP546`,
+  `WP563`, `WP573`, and `WP579`
 - non-pathway or protein/regulatory maps:
-  `WP13`, `WP32`, `WP62`, `WP158`, `WP210`, `WP219`, `WP2869`, `WP346`,
-  `WP377`, `WP414`, `WP425`, `WP510`, and `WP3636`
+  `WP13`, `WP32`, `WP62`, `WP158`, `WP210`, `WP219`, `WP346`, `WP377`,
+  `WP414`, `WP425`, `WP510`, `WP2838`, `WP2869`, and `WP3636`
 
 ## SGD GO-CAM state
 
