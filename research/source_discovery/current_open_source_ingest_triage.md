@@ -11,10 +11,19 @@ prefixes accepted by the local schema.
 The sweep covered:
 
 - the cached SGD GO-CAM JSON models under `/private/tmp/sgd-yeast-gocams`
-- the September 2026 WikiPathways GPML bundles cached for Acetobacterium
-  woodii, Bacillus subtilis, Caulobacter vibrioides, Escherichia coli,
-  Gibberella zeae, Mycobacterium tuberculosis, Plasmodium falciparum, and
-  Saccharomyces cerevisiae
+- the September 10, 2026 WikiPathways GPML archives cached as
+  `/private/tmp/wikipathways-20260910-gpml-*.zip` for Acetobacterium woodii,
+  Bacillus subtilis, Caulobacter vibrioides, Escherichia coli, Gibberella
+  zeae, Mycobacterium tuberculosis, Plasmodium falciparum, and Saccharomyces
+  cerevisiae
+
+GPML candidates were converted through `src/pathwaymech/wikipathways.py` and
+inspected with `/private/tmp/inspect_wikipathways_gpml.py`, so rejected
+records reflect the same local Xref whitelist used by the production importer.
+SGD GO-CAM candidates were scored with `/private/tmp/score_gocam_candidates.py`
+for duplicate labels, broad superpathways, missing nodes, unlabeled ChEBI
+nodes, and generic placeholders before the least-bad models were inspected
+manually.
 
 ## Result
 
@@ -71,7 +80,10 @@ HMDB and KEGG compounds, `WP5271` depends on unsupported lipid identifiers, and
 meaningful.
 
 Saccharomyces cerevisiae has the largest GPML set, but after the exact
-WikiPathways records above it divides cleanly:
+WikiPathways records above it divides into curation-blocking buckets. These are
+first blockers rather than mutually exclusive claims: several overview maps
+also contain unsupported compounds, and several unsupported maps are also near
+duplicates.
 
 - already covered by exact or near-exact records:
   `WP2`, `WP67`, `WP84`, `WP91`, `WP128`, `WP1518`, `WP180`, `WP194`, `WP224`,
