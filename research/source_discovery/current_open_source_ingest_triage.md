@@ -61,8 +61,8 @@ The following WikiPathways records are already represented exactly:
 - `WikiPathways:WP5587` - 2-phenylethanol biosynthesis
 
 The low-edge Escherichia coli Pathway Tools maps are not usable with the
-current prefix set. `WP2484`, `WP2487`, `WP2488`, and `WP2886` collapse to
-HMDB, CAS, PubChem, and Ensembl nodes. `WP3538` is a cell-division
+current prefix set. `WP2484`, `WP2486`, `WP2487`, `WP2488`, and `WP2886`
+collapse to HMDB, CAS, PubChem, and Ensembl nodes. `WP3538` is a cell-division
 protein-state map, `WP3641` overlaps peptidoglycan and
 UDP-<i>N</i>-acetylglucosamine records while depending on Ensembl and
 Wikidata nodes, and `WP3583`, `WP5070`, and `WP2472` are broad
