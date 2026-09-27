@@ -1,0 +1,303 @@
+id: gomodel:YeastPathways_PWY-5080-1
+label: very long chain fatty acid biosynthesis I
+description: The very long chain fatty acid biosynthesis I GO-CAM for Saccharomyces
+  cerevisiae S288C links ELO2/ELO3 fatty acid elongase, IFA38 acetoacetyl-CoA reductase,
+  PHS1 enoyl-CoA hydratase, and TSC13 very-long-chain enoyl-CoA reductase activities
+  that elongate long-chain fatty acyl-CoA through 3-oxo, 3-hydroxy, and trans-2-enoyl-CoA
+  intermediates.
+pathway_type: lipid-biosynthesis
+taxa:
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
+participants:
+- id: CHEBI:16526
+  label: carbon dioxide
+- id: SGD:S000000630
+  label: ELO2 Scer
+- id: CHEBI:15378
+  label: hydron
+- id: SGD:S000002173
+  label: TSC13 Scer
+- id: CHEBI:50998
+  label: trans-2-enoyl-CoA
+- id: CHEBI:15489
+  label: 3-oxo-fatty acyl-CoA
+- id: CHEBI:57783
+  label: NADPH(4-)
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+- id: CHEBI:33184
+  label: long-chain fatty acyl-CoA
+- id: CHEBI:65260
+  label: 3-hydroxyacyl-CoA
+- id: SGD:S000000363
+  label: IFA38 Scer
+- id: SGD:S000004364
+  label: ELO3 Scer
+- id: CHEBI:57384
+  label: malonyl-CoA(5-)
+- id: SGD:S000003633
+  label: PHS1 Scer
+- id: CHEBI:58349
+  label: NADP(3-)
+- id: CHEBI:15377
+  label: water
+reactions:
+- id: gomodel:RXN3O-9811
+  label: a long-chain acyl-CoA + malonyl-CoA -> a 3-oxoacyl-CoA + CO<SUB>2</SUB> +
+    coenzyme A
+- id: gomodel:RXN3O-9814
+  label: a <i>trans</i>-2-enoyl-CoA + NADPH + H<SUP>+</SUP> -> a long-chain acyl-CoA
+    + NADP<sup>+</sup>
+- id: gomodel:RXN3O-9813
+  label: a 3-hydroxyacyl-CoA -> a <i>trans</i>-2-enoyl-CoA + H<sub>2</sub>O
+- id: gomodel:RXN3O-9812
+  label: a 3-oxoacyl-CoA + NADPH + H<SUP>+</SUP> -> a 3-hydroxyacyl-CoA + NADP<sup>+</sup>
+- id: gomodel:YeastPathways_PWY-5080-1/6a2b236300005423
+  label: fatty acid elongase activity
+mechanistic_edges:
+- id: edge-001
+  subject: gomodel:RXN3O-9811
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9811","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_RXN3O-9811"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_16526_RXN3O-9811","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-002
+  subject: SGD:S000000630
+  predicate: enables
+  object: gomodel:RXN3O-9811
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9811","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YCR034W-MONOMER_RXN3O-9811_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:YCR034W-MONOMER_RXN3O-9811_controller","type":[{"type":"class","id":"SGD:S000000630"'
+- id: edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:RXN3O-9814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9814","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN3O-9814"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_15378_RXN3O-9814","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-004
+  subject: SGD:S000002173
+  predicate: enables
+  object: gomodel:RXN3O-9814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9814","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-101_RXN3O-9814_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:MONOMER3O-101_RXN3O-9814_controller","type":[{"type":"class","id":"SGD:S000002173"'
+- id: edge-005
+  subject: gomodel:RXN3O-9813
+  predicate: regulates
+  object: gomodel:RXN3O-9814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9813","property":"RO:0002411","property-label":"RO:0002411","object":"gomodel:RXN3O-9814"'
+- id: edge-006
+  subject: gomodel:RXN3O-9813
+  predicate: produces
+  object: CHEBI:50998
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9813","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:a5c2c59b-7e94-48d3-ba08-123722f9430b_RXN3O-9813"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:a5c2c59b-7e94-48d3-ba08-123722f9430b_RXN3O-9813","type":[{"type":"class","id":"CHEBI:50998"'
+- id: edge-007
+  subject: CHEBI:15378
+  predicate: consumes
+  object: gomodel:RXN3O-9812
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9812","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN3O-9812"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_15378_RXN3O-9812","type":[{"type":"class","id":"CHEBI:15378"'
+- id: edge-008
+  subject: gomodel:RXN3O-9811
+  predicate: produces
+  object: CHEBI:15489
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9811","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15489_RXN3O-9811"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_15489_RXN3O-9811","type":[{"type":"class","id":"CHEBI:15489"'
+- id: edge-009
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:RXN3O-9814
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9814","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_RXN3O-9814"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_57783_RXN3O-9814","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-010
+  subject: gomodel:RXN3O-9811
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9811","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_RXN3O-9811"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_57287_RXN3O-9811","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-011
+  subject: gomodel:RXN3O-9814
+  predicate: produces
+  object: CHEBI:33184
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9814","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_33184_RXN3O-9814"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_33184_RXN3O-9814","type":[{"type":"class","id":"CHEBI:33184"'
+- id: edge-012
+  subject: CHEBI:65260
+  predicate: consumes
+  object: gomodel:RXN3O-9813
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9813","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_65260_RXN3O-9812"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_65260_RXN3O-9812","type":[{"type":"class","id":"CHEBI:65260"'
+- id: edge-013
+  subject: SGD:S000000363
+  predicate: enables
+  object: gomodel:RXN3O-9812
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9812","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-79_RXN3O-9812_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:MONOMER3O-79_RXN3O-9812_controller","type":[{"type":"class","id":"SGD:S000000363"'
+- id: edge-014
+  subject: SGD:S000004364
+  predicate: enables
+  object: gomodel:YeastPathways_PWY-5080-1/6a2b236300005423
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005423","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005429"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005429","type":[{"type":"class","id":"SGD:S000004364"'
+- id: edge-015
+  subject: CHEBI:33184
+  predicate: consumes
+  object: gomodel:RXN3O-9811
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9811","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_33184_RXN3O-9811"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_33184_RXN3O-9811","type":[{"type":"class","id":"CHEBI:33184"'
+- id: edge-016
+  subject: CHEBI:15489
+  predicate: consumes
+  object: gomodel:RXN3O-9812
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9812","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15489_RXN3O-9811"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_15489_RXN3O-9811","type":[{"type":"class","id":"CHEBI:15489"'
+- id: edge-017
+  subject: CHEBI:57384
+  predicate: consumes
+  object: gomodel:RXN3O-9811
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9811","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57384_RXN3O-9811"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_57384_RXN3O-9811","type":[{"type":"class","id":"CHEBI:57384"'
+- id: edge-018
+  subject: CHEBI:33184
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5080-1/6a2b236300005423
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005423","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005424"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005424","type":[{"type":"class","id":"CHEBI:33184"'
+- id: edge-019
+  subject: gomodel:RXN3O-9812
+  predicate: produces
+  object: CHEBI:65260
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9812","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_65260_RXN3O-9812"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_65260_RXN3O-9812","type":[{"type":"class","id":"CHEBI:65260"'
+- id: edge-020
+  subject: CHEBI:57384
+  predicate: consumes
+  object: gomodel:YeastPathways_PWY-5080-1/6a2b236300005423
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005423","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005425"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005425","type":[{"type":"class","id":"CHEBI:57384"'
+- id: edge-021
+  subject: SGD:S000003633
+  predicate: enables
+  object: gomodel:RXN3O-9813
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9813","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-85_RXN3O-9813_controller"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:MONOMER3O-85_RXN3O-9813_controller","type":[{"type":"class","id":"SGD:S000003633"'
+- id: edge-022
+  subject: gomodel:RXN3O-9814
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9814","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_RXN3O-9814"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_58349_RXN3O-9814","type":[{"type":"class","id":"CHEBI:58349"'
+- id: edge-023
+  subject: gomodel:YeastPathways_PWY-5080-1/6a2b236300005423
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005423","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005427"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005427","type":[{"type":"class","id":"CHEBI:57287"'
+- id: edge-024
+  subject: gomodel:YeastPathways_PWY-5080-1/6a2b236300005423
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005423","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005426"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:YeastPathways_PWY-5080-1/6a2b236300005426","type":[{"type":"class","id":"CHEBI:16526"'
+- id: edge-025
+  subject: gomodel:RXN3O-9813
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9813","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_RXN3O-9813"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_15377_RXN3O-9813","type":[{"type":"class","id":"CHEBI:15377"'
+- id: edge-026
+  subject: CHEBI:57783
+  predicate: consumes
+  object: gomodel:RXN3O-9812
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9812","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_RXN3O-9812"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_57783_RXN3O-9812","type":[{"type":"class","id":"CHEBI:57783"'
+- id: edge-027
+  subject: gomodel:RXN3O-9812
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"subject":"gomodel:RXN3O-9812","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_RXN3O-9812"'
+  - reference_id: gomodel:YeastPathways_PWY-5080-1
+    quote: '"id":"gomodel:CHEBI_58349_RXN3O-9812","type":[{"type":"class","id":"CHEBI:58349"'
+references:
+- id: gomodel:YeastPathways_PWY-5080-1
+  title: 'SGD GO-CAM very long chain fatty acid biosynthesis I - imported from: Saccharomyces
+    Genome Database'
