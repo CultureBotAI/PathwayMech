@@ -1,0 +1,51 @@
+name: Build and test
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches: [main]
+  # Required checks report on every PR and on the combined queue commit.
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+# Updated PR heads supersede old runs; queue and main verdicts complete independently.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  qc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --extra dev
+
+      # The same commands as `just lint`, `just test` and `just validate`.
+      - name: Lint
+        run: uv run --locked --extra dev ruff check .
+
+      - name: Test
+        run: uv run --locked --extra dev pytest -q
+
+      # Skills, record validation, provenance, sources, docs, research
+      # contract, and generated-site drift (pages/ must be what the records
+      # render to).
+      - name: Run the quality gate
+        run: |
+          uv run --locked python scripts/validate_claude_skills.py
+          uv run --locked pathwaymech-run-qc

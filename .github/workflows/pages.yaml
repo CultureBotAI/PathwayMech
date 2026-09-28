@@ -1,0 +1,99 @@
+name: Publish Pages
+
+# Publishes only the root redirect and pages/, only for main's current head,
+# and only once "Build and test" has passed on a push of that exact commit.
+on:  # yamllint disable-line rule:truthy
+  workflow_run:
+    workflows: [Build and test]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # Deciding what to publish is its own job, with no environment: a job that
+  # names `github-pages` records a deployment even when every step is skipped,
+  # and a declined run must not look like a published one.
+  guard:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      publish: ${{ steps.decide.outputs.publish }}
+      sha: ${{ steps.decide.outputs.sha }}
+    steps:
+      # Always main's head, not necessarily the commit that triggered this run:
+      # concurrency keeps one pending run, so a run for an older commit can
+      # displace the queued run for main, and must publish main in its place.
+      # A manual dispatch goes through the same check, so it cannot publish a
+      # commit whose "Build and test" did not pass.
+      - name: Publish main's head only once its build has passed
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          conclusion=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow main.yaml \
+            --event push --commit "$head" --limit 1 --json conclusion --jq '.[0].conclusion // ""')
+          if [ "$conclusion" = "success" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "sha=$head" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Build and test has not passed on main's head $head (${conclusion:-not finished}); not publishing"
+          fi
+
+  publish:
+    needs: guard
+    if: needs.guard.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ needs.guard.outputs.sha }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      # Never publish a site that is not what the records render to.
+      - name: Refuse a stale site
+        run: uv run --locked pathwaymech-check-pages
+
+      - name: Stage the site
+        run: |
+          site="$RUNNER_TEMP/pathwaymech-site"
+          mkdir -p "$site"
+          cp index.html "$site/"
+          cp -R pages "$site/pages"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/pathwaymech-site
+
+      - uses: actions/deploy-pages@v4
+        id: deployment

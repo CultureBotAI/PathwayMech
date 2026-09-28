@@ -106,37 +106,121 @@ def deep_research_contract_main() -> int:
     return 0
 
 
-def render_pages_main() -> int:
-    records = load_pathway_records(ROOT / "data" / "pathways")
-    pages = ROOT / "pages"
-    records_dir = pages / "records"
-    records_dir.mkdir(parents=True, exist_ok=True)
+# Files under pages/ that are maintained by hand. Everything else there is
+# rendered from the records, and the check refuses anything that is neither.
+HAND_KEPT_PAGES = frozenset({"style.css", ".nojekyll"})
 
+
+class SiteError(ValueError):
+    """The records cannot be rendered to one unambiguous site."""
+
+
+def render_site(records: list) -> dict[str, str]:
+    """Every file the renderer owns under pages/, keyed by its path there."""
+    files: dict[str, str] = {}
+    claimed: dict[str, str] = {}
     rows = []
     for record in records:
         slug = _slug(record.id)
+        # Compared without case: on a case-insensitive filesystem two slugs that
+        # differ only in case are one file, and one record would never publish.
+        other = claimed.setdefault(slug.casefold(), record.id)
+        if other != record.id:
+            raise SiteError(
+                f"{other} and {record.id} both render to pages/records/{slug}.html"
+            )
         rows.append(
             f'<li><a href="records/{slug}.html"><strong>{html.escape(record.label)}</strong>'
             f"<span>{html.escape(record.id)} - "
             f"{len(record.mechanistic_edges)} mechanistic edges</span></a></li>"
         )
-        (records_dir / f"{slug}.html").write_text(_record_page(record), encoding="utf-8")
+        files[f"records/{slug}.html"] = _record_page(record)
 
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
-    (pages / "browse.html").write_text(
-        _page("PathwayMech records", f'<ul class="record-list">{browse_body}</ul>'),
-        encoding="utf-8",
+    files["browse.html"] = _page(
+        "PathwayMech records", f'<ul class="record-list">{browse_body}</ul>'
     )
-    (pages / "index.html").write_text(
-        _page(
-            "PathwayMech",
-            "<p>Evidence-backed microbial pathway mechanism records.</p>"
-            '<p><a href="browse.html">Browse pathways</a></p>',
-        ),
-        encoding="utf-8",
+    files["index.html"] = _page(
+        "PathwayMech",
+        "<p>Evidence-backed microbial pathway mechanism records.</p>"
+        '<p><a href="browse.html">Browse pathways</a></p>',
     )
-    print(f"rendered {len(records)} pathway records")
+    return files
+
+
+def _files_under(pages: Path) -> set[str]:
+    if not pages.is_dir():
+        return set()
+    return {path.relative_to(pages).as_posix() for path in pages.rglob("*") if path.is_file()}
+
+
+def _site_problems(pages: Path, expected: dict[str, str]) -> list[str]:
+    """Every way pages/ differs from what the records render to."""
+    problems = []
+    for path, text in sorted(expected.items()):
+        target = pages / path
+        # Bytes, not text: reading with newline translation would turn a
+        # rendered "\r\n" into "\n" and fail a page that was just written.
+        if not target.is_file() or target.read_bytes() != text.encode("utf-8"):
+            problems.append(f"pages/{path}: not what its record renders to")
+    for path in sorted(_files_under(pages) - set(expected) - HAND_KEPT_PAGES):
+        problems.append(f"pages/{path}: neither rendered from a record nor hand-kept")
+    for path in sorted(HAND_KEPT_PAGES - _files_under(pages)):
+        problems.append(f"pages/{path}: hand-kept file is missing")
+    return problems
+
+
+def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    parser = argparse.ArgumentParser(
+        prog="pathwaymech-render-pages",
+        description="Render pages/ from data/pathways, or check that it is current.",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="write nothing; exit 1 if pages/ differs from what the records render to",
+    )
+    args = parser.parse_args(argv)
+
+    records = load_pathway_records(root / "data" / "pathways")
+    pages = root / "pages"
+    try:
+        expected = render_site(records)
+    except SiteError as error:
+        print(str(error), file=sys.stderr)
+        return 1
+
+    if args.check:
+        problems = _site_problems(pages, expected)
+        for line in problems:
+            print(line, file=sys.stderr)
+        if problems:
+            print("pages/ is stale; run `just render-pages` and commit it", file=sys.stderr)
+            return 1
+        print(f"pages/ is current with {len(records)} pathway records")
+        return 0
+
+    # Rendered pages whose name no record produces any more -- a removed
+    # record, or an id whose case changed -- are removed first, so that on a
+    # case-insensitive filesystem the new name is written rather than kept
+    # under the old one. Other unexpected files are left for the check to name.
+    rendered = {path for path in _files_under(pages) if path.startswith("records/")}
+    rendered |= {name for name in ("browse.html", "index.html") if (pages / name).is_file()}
+    orphaned = sorted(path for path in rendered - set(expected) if path.endswith(".html"))
+    for path in orphaned:
+        (pages / path).unlink()
+    (pages / "records").mkdir(parents=True, exist_ok=True)
+    for path, text in expected.items():
+        (pages / path).write_bytes(text.encode("utf-8"))
+    print(f"rendered {len(records)} pathway records" + (
+        f"; removed {len(orphaned)} orphaned page(s)" if orphaned else ""
+    ))
     return 0
+
+
+def check_pages_main(*, root: Path = ROOT) -> int:
+    """The committed site is what the records render to."""
+    return render_pages_main(["--check"], root=root)
 
 
 def run_qc_main() -> int:
@@ -146,6 +230,7 @@ def run_qc_main() -> int:
         validate_sources_main,
         check_docs_main,
         deep_research_contract_main,
+        check_pages_main,
     ]:
         exit_code = check()
         if exit_code:

@@ -30,6 +30,7 @@ pathwaymech-import-modelseed = "pathwaymech.cli:import_modelseed_main"
 pathwaymech-import-rhea = "pathwaymech.cli:import_rhea_main"
 pathwaymech-import-wikipathways = "pathwaymech.cli:import_wikipathways_main"
 pathwaymech-render-pages = "pathwaymech.cli:render_pages_main"
+pathwaymech-check-pages = "pathwaymech.cli:check_pages_main"
 pathwaymech-run-qc = "pathwaymech.cli:run_qc_main"
 pathwaymech-seed-from-sources = "pathwaymech.cli:seed_from_sources_main"
 pathwaymech-validate = "pathwaymech.cli:validate_main"
@@ -41,6 +42,9 @@ build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# tests/test_claude_skills.py imports the scripts/ package; without the
+# repository root on the path `just test` stopped at collection.
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

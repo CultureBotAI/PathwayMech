@@ -32,8 +32,10 @@ of GitHub mutations and keep the evidence in the comment concise.
 - `conf/sources.yaml` is the current source inventory. Candidate source
   adoption and licensing questions should be handed to `source-triage`.
 - The first local gates validate YAML shape, local edge endpoints, local
-  reference IDs, documentation presence, the deep-research report contract, and
-  tests. They do not establish that a cited paper really supports an edge.
+  reference IDs, documentation presence, the deep-research report contract,
+  that the committed `pages/` is what the records render to (`just
+  check-pages`), and tests. They do not establish that a cited paper really
+  supports an edge.
 - PathwayMech does not yet have record status, curation history, or guarded
   writers. Treat issues asking for those as infrastructure work, not record
   curation.
