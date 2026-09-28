@@ -29,7 +29,7 @@ from pathwaymech.wikipathways import (
     load_gpml_pathway,
     wikipathways_fallback_id,
 )
-from pathwaymech.yaml_io import load_pathway_records
+from pathwaymech.yaml_io import load_pathway_records, pathway_files
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -233,9 +233,11 @@ def validate_strict_main(argv: list[str] | None = None, *, root: Path = ROOT) ->
     )
     parser.add_argument("paths", nargs="*", type=Path, help="records (default: data/pathways)")
     args = parser.parse_args(argv)
-    paths = [path.resolve() for path in args.paths] or sorted(
-        (root / "data" / "pathways").glob("*.yaml")
-    )
+    # The same list validate_main, the provenance check and the renderer read:
+    # a record in a subdirectory must not escape the closed schema (#191).
+    paths = [path.resolve() for path in args.paths] or [
+        path.resolve() for path in pathway_files(root / "data" / "pathways")
+    ]
     errors = strict_errors(paths, root.resolve())
     for line in errors:
         print(line, file=sys.stderr)

@@ -8,7 +8,9 @@ description: >-
   closed, so an undeclared key is an error. What LinkML cannot state stays in
   src/pathwaymech/schema.py: that edge endpoints resolve to the record, its
   taxa, participants or reactions; that evidence cites a declared reference;
-  and that pathway ids are unique across the corpus.
+  and that pathway ids are unique across the corpus. An explicit null is an
+  error wherever it appears (the gate generates JSON Schema without nulls):
+  omit an optional key rather than setting it to null.
 license: MIT
 version: 0.1.0
 prefixes:
@@ -27,7 +29,7 @@ classes:
       id:
         identifier: true
         required: true
-        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):"
+        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
         description: The pathway's CURIE, e.g. MetaCyc:PWY-5097.
       label:
         required: true
@@ -70,7 +72,7 @@ classes:
     attributes:
       id:
         required: true
-        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):"
+        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
       label:
         required: true
         pattern: "\\S"
@@ -108,15 +110,18 @@ classes:
         description: The id of a reference declared in this record.
       quote:
         required: true
-        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}$"
-        description: A verbatim excerpt of at most 400 characters.
+        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
+        description: >-
+          A verbatim excerpt of at most 400 characters. The pattern ends in
+          (?![\s\S]) rather than $, which in Python's re also matches before a
+          final newline and so admitted 401.
 
   Reference:
     description: A source cited by evidence; needs a title or a citation.
     attributes:
       id:
         required: true
-        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):"
+        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
       title:
         pattern: "\\S"
       citation:

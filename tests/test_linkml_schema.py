@@ -16,11 +16,16 @@ import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 
 import pathwaymech.cli as cli
-from pathwaymech.schema import ALLOWED_CURIE_PREFIXES, ALLOWED_EDGE_PREDICATES
+from pathwaymech.schema import (
+    ALLOWED_CURIE_PREFIXES,
+    ALLOWED_EDGE_PREDICATES,
+    ValidationError,
+    validate_record,
+)
 from pathwaymech.strict import SCHEMA_PATH, TARGET_CLASS, strict_errors, validator
 
 ROOT = Path(__file__).resolve().parents[1]
-RECORDS = sorted((ROOT / "data" / "pathways").glob("*.yaml"))
+RECORDS = sorted((ROOT / "data" / "pathways").rglob("*.yaml"))
 
 
 @pytest.fixture(scope="module")
@@ -91,7 +96,7 @@ def test_the_schema_and_the_python_validator_allow_the_same_prefixes() -> None:
         for name in ("PathwayRecord", "NamedNode", "Reference")
     }
     assert len(patterns) == 1
-    allowed = re.fullmatch(r"\^\((.*)\):", patterns.pop()).group(1).split("|")
+    allowed = re.match(r"\^\(([^)]*)\):", patterns.pop()).group(1).split("|")
     assert set(allowed) == ALLOWED_CURIE_PREFIXES
 
 
@@ -118,3 +123,163 @@ def test_the_command_names_the_failing_record(tmp_path, capsys, record) -> None:
     path.write_text(yaml.safe_dump(broken), encoding="utf-8")
     assert cli.validate_strict_main([], root=tmp_path) == 1
     assert "data/pathways/broken.yaml: Additional properties" in capsys.readouterr().err
+
+
+# --------------------------------------------------------------------------
+# Every rule the schema declares, driven from the schema itself (#195)
+# --------------------------------------------------------------------------
+
+# Where one instance of each class sits in a record, to break it there.
+_WHERE = {
+    "PathwayRecord": lambda r: r,
+    "NamedNode": lambda r: r["participants"][0],
+    "MechanisticEdge": lambda r: r["mechanistic_edges"][0],
+    "EvidenceItem": lambda r: r["mechanistic_edges"][0]["evidence"][0],
+    "Reference": lambda r: r["references"][0],
+}
+_VIEW = SchemaView(str(SCHEMA_PATH))
+_REQUIRED = [
+    (name, slot)
+    for name in _WHERE
+    for slot in _VIEW.class_slots(name)
+    if _VIEW.induced_slot(slot, name).required
+]
+# Every slot whose pattern refuses a blank string.
+_NON_BLANK = [
+    (name, slot)
+    for name in _WHERE
+    for slot in _VIEW.class_slots(name)
+    if (pattern := _VIEW.induced_slot(slot, name).pattern) and not re.search(pattern, "  ")
+]
+
+
+def test_the_schema_driven_cases_cover_the_schema() -> None:
+    assert set(_WHERE) == set(_VIEW.all_classes())
+
+
+# The rules pinned here are the Python validator's (src/pathwaymech/schema.py).
+# The cases above are generated from the schema, so on their own they would
+# follow a schema that lost a rule; these sets are what keep it from losing one.
+EXPECTED_REQUIRED = (
+    {
+        ("PathwayRecord", slot)
+        for slot in ("id", "label", "description", "pathway_type", "taxa", "participants",
+                     "reactions", "mechanistic_edges", "references")
+    }
+    | {("MechanisticEdge", slot) for slot in ("id", "subject", "predicate", "object", "evidence")}
+    | {("NamedNode", "id"), ("NamedNode", "label"), ("Reference", "id"),
+       ("EvidenceItem", "reference_id"), ("EvidenceItem", "quote")}
+)
+EXPECTED_NON_BLANK = (
+    {("PathwayRecord", slot) for slot in ("id", "label", "description", "pathway_type")}
+    | {("NamedNode", "id"), ("NamedNode", "label"), ("MechanisticEdge", "id"),
+       ("EvidenceItem", "quote"), ("Reference", "id"), ("Reference", "title"),
+       ("Reference", "citation")}
+)
+
+
+def test_the_schema_requires_exactly_what_the_python_validator_requires() -> None:
+    assert set(_REQUIRED) == EXPECTED_REQUIRED
+
+
+def test_the_schema_refuses_blanks_exactly_where_the_python_validator_does() -> None:
+    assert set(_NON_BLANK) == EXPECTED_NON_BLANK
+
+
+@pytest.mark.parametrize(("name", "slot"), _REQUIRED, ids=[f"{n}.{s}" for n, s in _REQUIRED])
+def test_removing_any_required_slot_is_rejected(checker, record, name, slot) -> None:
+    broken = copy.deepcopy(record)
+    _WHERE[name](broken).pop(slot)
+    assert checker.validate(broken, TARGET_CLASS).results, f"{name}.{slot} is not enforced"
+
+
+@pytest.mark.parametrize(("name", "slot"), _NON_BLANK, ids=[f"{n}.{s}" for n, s in _NON_BLANK])
+def test_blanking_any_non_blank_slot_is_rejected(checker, record, name, slot) -> None:
+    broken = copy.deepcopy(record)
+    target = _WHERE[name](broken)
+    target[slot] = "  "
+    assert checker.validate(broken, TARGET_CLASS).results, f"{name}.{slot} accepts blanks"
+
+
+# --------------------------------------------------------------------------
+# Where the schema was looser than the Python validator (#193)
+# --------------------------------------------------------------------------
+
+
+def test_a_401_character_quote_ending_in_a_newline_is_rejected(checker, record) -> None:
+    """`$` matches before a final newline in Python's re, so it admitted 401."""
+    broken = copy.deepcopy(record)
+    _evidence(broken)["quote"] = "x" * 400 + "\n"
+    assert checker.validate(broken, TARGET_CLASS).results
+
+
+@pytest.mark.parametrize("value", [None, "c"], ids=["citation-null", "citation-set"])
+def test_an_explicit_null_is_an_error_not_an_omission(checker, record, value) -> None:
+    broken = copy.deepcopy(record)
+    reference = {"id": broken["references"][0]["id"], "title": None}
+    if value is not None:
+        reference["citation"] = value
+    broken["references"][0] = reference
+    assert checker.validate(broken, TARGET_CLASS).results
+
+
+@pytest.mark.parametrize("curie", ["CHEBI:", "CHEBI: 123", "CHEBI:12 3", "CHEBI:123\n"])
+def test_a_curie_needs_a_local_part_without_whitespace(checker, record, curie) -> None:
+    """A new, unreferenced node, so no other rule (edge resolution) can be
+    what rejects it."""
+    broken = copy.deepcopy(record)
+    broken["participants"].append({"id": curie, "label": "added"})
+    assert checker.validate(broken, TARGET_CLASS).results
+    with pytest.raises(ValidationError) as raised:
+        validate_record(broken)
+    assert raised.value.errors == [
+        f"participants[{len(broken['participants']) - 1}].id "
+        "must have a local part with no whitespace"
+    ]
+
+
+# --------------------------------------------------------------------------
+# What the gate reads (#191, #192, #194)
+# --------------------------------------------------------------------------
+
+
+def _repo_with(tmp_path: Path, files: dict[str, object]) -> Path:
+    for name, content in files.items():
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            content if isinstance(content, str) else yaml.safe_dump(content), encoding="utf-8"
+        )
+    return tmp_path
+
+
+def test_a_record_in_a_subdirectory_is_validated_too(tmp_path, record, capsys) -> None:
+    """Every other gate recurses; the closed one must read the same records."""
+    broken = copy.deepcopy(record)
+    broken["notes"] = "x"
+    root = _repo_with(tmp_path, {"data/pathways/good.yaml": record,
+                                 "data/pathways/group/nested.yaml": broken})
+    assert cli.validate_strict_main([], root=root) == 1
+    assert "data/pathways/group/nested.yaml: Additional properties" in capsys.readouterr().err
+
+
+def test_a_draft_outside_the_repository_is_checked_not_crashed(tmp_path, record, capsys) -> None:
+    root = _repo_with(tmp_path / "repo", {"data/pathways/good.yaml": record})
+    draft = tmp_path / "draft.yaml"
+    broken = copy.deepcopy(record)
+    broken["notes"] = "x"
+    draft.write_text(yaml.safe_dump(broken), encoding="utf-8")
+    assert cli.validate_strict_main([str(draft)], root=root) == 1
+    assert f"{draft.resolve()}: Additional properties" in capsys.readouterr().err
+
+
+def test_an_unreadable_record_is_named(tmp_path) -> None:
+    root = _repo_with(tmp_path, {"data/pathways/broken.yaml": "id: [unclosed\n"})
+    errors = strict_errors([root / "data/pathways/broken.yaml"], root)
+    assert errors and errors[0].startswith("data/pathways/broken.yaml: unreadable")
+
+
+def test_the_conventional_script_runs_the_closed_gate() -> None:
+    """scripts/validate_strict.py is the closed LinkML gate in every sibling Mech."""
+    text = (ROOT / "scripts" / "validate_strict.py").read_text(encoding="utf-8")
+    assert "validate_strict_main" in text and "validate_main()" not in text

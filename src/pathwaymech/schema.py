@@ -233,6 +233,8 @@ def _validate_curie(value: Any, path: str, errors: list[str]) -> None:
     if not isinstance(value, str) or ":" not in value:
         errors.append(f"{path} must be a CURIE")
         return
-    prefix = value.split(":", 1)[0]
+    prefix, local = value.split(":", 1)
     if prefix not in ALLOWED_CURIE_PREFIXES:
         errors.append(f"{path} has unsupported prefix: {prefix}")
+    if not local or any(character.isspace() for character in local):
+        errors.append(f"{path} must have a local part with no whitespace")
