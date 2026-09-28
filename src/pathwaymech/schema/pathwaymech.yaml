@@ -1,0 +1,155 @@
+id: https://w3id.org/culturebotai/pathwaymech
+name: pathwaymech
+title: PathwayMech pathway mechanism records
+description: >-
+  One record per pathway: its taxa, participants and reactions as CURIE nodes,
+  and the causal edges between them, each backed by quoted evidence from a
+  reference declared in the same record. This schema states the structure,
+  closed, so an undeclared key is an error. What LinkML cannot state stays in
+  src/pathwaymech/schema.py: that edge endpoints resolve to the record, its
+  taxa, participants or reactions; that evidence cites a declared reference;
+  and that pathway ids are unique across the corpus. An explicit null is an
+  error wherever it appears (the gate generates JSON Schema without nulls):
+  omit an optional key rather than setting it to null.
+license: MIT
+version: 0.1.0
+prefixes:
+  linkml: https://w3id.org/linkml/
+  pathwaymech: https://w3id.org/culturebotai/pathwaymech/
+default_prefix: pathwaymech
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  PathwayRecord:
+    tree_root: true
+    description: One curated pathway mechanism, one file under data/pathways/.
+    attributes:
+      id:
+        identifier: true
+        required: true
+        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+        description: The pathway's CURIE, e.g. MetaCyc:PWY-5097.
+      label:
+        required: true
+        pattern: "\\S"
+      description:
+        required: true
+        pattern: "\\S"
+      pathway_type:
+        required: true
+        pattern: "\\S"
+        description: Free-text pathway category, e.g. amino-acid-biosynthesis.
+      taxa:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: NamedNode
+      participants:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: NamedNode
+      reactions:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: NamedNode
+      mechanistic_edges:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: MechanisticEdge
+      references:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: Reference
+
+  NamedNode:
+    description: A taxon, participant or reaction, named by CURIE.
+    attributes:
+      id:
+        required: true
+        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+      label:
+        required: true
+        pattern: "\\S"
+
+  MechanisticEdge:
+    description: >-
+      A directed causal or mechanistic claim between two nodes of the same
+      record, with at least one quoted piece of evidence.
+    attributes:
+      id:
+        required: true
+        pattern: "\\S"
+      subject:
+        required: true
+        description: A node id in this record (checked in src/pathwaymech/schema.py).
+      predicate:
+        required: true
+        range: EdgePredicateEnum
+      object:
+        required: true
+        description: A node id in this record (checked in src/pathwaymech/schema.py).
+      description:
+        description: Optional prose about the edge.
+      evidence:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+        range: EvidenceItem
+
+  EvidenceItem:
+    attributes:
+      reference_id:
+        required: true
+        description: The id of a reference declared in this record.
+      quote:
+        required: true
+        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
+        description: >-
+          A verbatim excerpt of at most 400 characters. The pattern ends in
+          (?![\s\S]) rather than $, which in Python's re also matches before a
+          final newline and so admitted 401.
+
+  Reference:
+    description: A source cited by evidence; needs a title or a citation.
+    attributes:
+      id:
+        required: true
+        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+      title:
+        pattern: "\\S"
+      citation:
+        pattern: "\\S"
+    any_of:
+      - slot_conditions:
+          title:
+            required: true
+      - slot_conditions:
+          citation:
+            required: true
+
+enums:
+  EdgePredicateEnum:
+    permissible_values:
+      activates:
+        description: The subject increases the activity of the object.
+      catalyzes:
+        description: The subject (an enzyme or gene product) catalyzes the object reaction.
+      consumes:
+        description: The subject reaction consumes the object participant.
+      enables:
+        description: The subject enables the object (a function or reaction) to occur.
+      inhibits:
+        description: The subject decreases the activity of the object.
+      precedes:
+        description: The subject step happens before the object step.
+      produces:
+        description: The subject reaction produces the object participant.
+      regulates:
+        description: The subject regulates the object, with direction unstated.
