@@ -50,3 +50,16 @@ Run the complete local gate with:
 ```bash
 just validate
 ```
+
+`just validate` includes `just check-pages`, which fails when `pages/` is not
+what the records render to, including a page left behind by a removed record.
+After changing a record, run `just render-pages` and commit the result.
+
+## Published site
+
+The browser is published at <https://culturebotai.github.io/PathwayMech/>.
+`.github/workflows/main.yaml` ("Build and test") runs lint, the tests and
+`just validate` on every pull request and push. When it passes on a push to
+`main`, `.github/workflows/pages.yaml` publishes the root `index.html`
+redirect and `pages/` -- only those, only for the commit that is still `main`,
+and only after checking again that `pages/` is current.

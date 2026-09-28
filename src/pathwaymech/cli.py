@@ -106,12 +106,13 @@ def deep_research_contract_main() -> int:
     return 0
 
 
-def render_pages_main() -> int:
-    records = load_pathway_records(ROOT / "data" / "pathways")
-    pages = ROOT / "pages"
-    records_dir = pages / "records"
-    records_dir.mkdir(parents=True, exist_ok=True)
+def render_site(records: list) -> dict[str, str]:
+    """Every file the renderer owns under pages/, keyed by its path there.
 
+    `style.css` and `.nojekyll` are maintained by hand and are not listed, so
+    neither a render nor a check ever touches them.
+    """
+    files: dict[str, str] = {}
     rows = []
     for record in records:
         slug = _slug(record.id)
@@ -120,23 +121,77 @@ def render_pages_main() -> int:
             f"<span>{html.escape(record.id)} - "
             f"{len(record.mechanistic_edges)} mechanistic edges</span></a></li>"
         )
-        (records_dir / f"{slug}.html").write_text(_record_page(record), encoding="utf-8")
+        files[f"records/{slug}.html"] = _record_page(record)
 
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
-    (pages / "browse.html").write_text(
-        _page("PathwayMech records", f'<ul class="record-list">{browse_body}</ul>'),
-        encoding="utf-8",
+    files["browse.html"] = _page(
+        "PathwayMech records", f'<ul class="record-list">{browse_body}</ul>'
     )
-    (pages / "index.html").write_text(
-        _page(
-            "PathwayMech",
-            "<p>Evidence-backed microbial pathway mechanism records.</p>"
-            '<p><a href="browse.html">Browse pathways</a></p>',
-        ),
-        encoding="utf-8",
+    files["index.html"] = _page(
+        "PathwayMech",
+        "<p>Evidence-backed microbial pathway mechanism records.</p>"
+        '<p><a href="browse.html">Browse pathways</a></p>',
     )
-    print(f"rendered {len(records)} pathway records")
+    return files
+
+
+def _rendered_on_disk(pages: Path) -> set[str]:
+    """The files under pages/ that the renderer owns, as they are now."""
+    owned = {path.relative_to(pages).as_posix() for path in (pages / "records").glob("*.html")}
+    owned |= {name for name in ("browse.html", "index.html") if (pages / name).is_file()}
+    return owned
+
+
+def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    parser = argparse.ArgumentParser(
+        prog="pathwaymech-render-pages",
+        description="Render pages/ from data/pathways, or check that it is current.",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="write nothing; exit 1 if pages/ differs from what the records render to",
+    )
+    args = parser.parse_args(argv)
+
+    records = load_pathway_records(root / "data" / "pathways")
+    pages = root / "pages"
+    expected = render_site(records)
+    # A page whose record was removed or renamed is still published unless
+    # something deletes it.
+    orphaned = sorted(_rendered_on_disk(pages) - set(expected))
+
+    if args.check:
+        stale = sorted(
+            path
+            for path, text in expected.items()
+            if not (pages / path).is_file()
+            or (pages / path).read_text(encoding="utf-8") != text
+        )
+        for path in stale:
+            print(f"pages/{path}: not what its record renders to", file=sys.stderr)
+        for path in orphaned:
+            print(f"pages/{path}: no record renders it", file=sys.stderr)
+        if stale or orphaned:
+            print("pages/ is stale; run `just render-pages` and commit it", file=sys.stderr)
+            return 1
+        print(f"pages/ is current with {len(records)} pathway records")
+        return 0
+
+    (pages / "records").mkdir(parents=True, exist_ok=True)
+    for path, text in expected.items():
+        (pages / path).write_text(text, encoding="utf-8")
+    for path in orphaned:
+        (pages / path).unlink()
+    print(f"rendered {len(records)} pathway records" + (
+        f"; removed {len(orphaned)} orphaned page(s)" if orphaned else ""
+    ))
     return 0
+
+
+def check_pages_main() -> int:
+    """The committed site is what the records render to."""
+    return render_pages_main(["--check"])
 
 
 def run_qc_main() -> int:
@@ -146,6 +201,7 @@ def run_qc_main() -> int:
         validate_sources_main,
         check_docs_main,
         deep_research_contract_main,
+        check_pages_main,
     ]:
         exit_code = check()
         if exit_code:
