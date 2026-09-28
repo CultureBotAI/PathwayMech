@@ -113,15 +113,17 @@ Create one YAML file under `data/pathways/`, named with a stable lower-case
 ASCII slug for the pathway. Then run:
 
 ```bash
-just validate
 just render-pages
+just validate
 just test
 just lint
 git diff --check
 ```
 
-`pages/` is generated from `data/pathways/`. Rebuild it with
-`just render-pages`; do not edit generated pathway pages by hand.
+`pages/` is generated from `data/pathways/`. Render it before validating:
+`just validate` includes `just check-pages`, which fails while `pages/` is not
+what the records render to. Commit the rendered pages with the record, and do
+not edit generated pathway pages by hand.
 
 ## Report
 

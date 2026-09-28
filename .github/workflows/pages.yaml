@@ -1,7 +1,7 @@
 name: Publish Pages
 
-# Publishes only the root redirect and pages/, and only after "Build and test"
-# has passed on the commit being published.
+# Publishes only the root redirect and pages/, only for main's current head,
+# and only once "Build and test" has passed on a push of that exact commit.
 on:  # yamllint disable-line rule:truthy
   workflow_run:
     workflows: [Build and test]
@@ -17,13 +17,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
+  # Deciding what to publish is its own job, with no environment: a job that
+  # names `github-pages` records a deployment even when every step is skipped,
+  # and a declined run must not look like a published one.
+  guard:
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
        (github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.event == 'push' &&
         github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      publish: ${{ steps.decide.outputs.publish }}
+      sha: ${{ steps.decide.outputs.sha }}
+    steps:
+      # Always main's head, not necessarily the commit that triggered this run:
+      # concurrency keeps one pending run, so a run for an older commit can
+      # displace the queued run for main, and must publish main in its place.
+      # A manual dispatch goes through the same check, so it cannot publish a
+      # commit whose "Build and test" did not pass.
+      - name: Publish main's head only once its build has passed
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          conclusion=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow main.yaml \
+            --event push --commit "$head" --limit 1 --json conclusion --jq '.[0].conclusion // ""')
+          if [ "$conclusion" = "success" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "sha=$head" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Build and test has not passed on main's head $head (${conclusion:-not finished}); not publishing"
+          fi
+
+  publish:
+    needs: guard
+    if: needs.guard.outputs.publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,24 +70,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-
-      # A slow run for an older commit must not overwrite a newer site.
-      - name: Publish only the current main commit
-        id: current
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          published_head=$(git rev-parse HEAD)
-          current_head=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
-          if [ "$published_head" = "$current_head" ]; then
-            echo "publish=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::notice::$published_head is no longer main ($current_head); not publishing"
-          fi
+          ref: ${{ needs.guard.outputs.sha }}
 
       - name: Install uv
-        if: steps.current.outputs.publish == 'true'
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
@@ -61,11 +80,9 @@ jobs:
 
       # Never publish a site that is not what the records render to.
       - name: Refuse a stale site
-        if: steps.current.outputs.publish == 'true'
         run: uv run --locked pathwaymech-check-pages
 
       - name: Stage the site
-        if: steps.current.outputs.publish == 'true'
         run: |
           site="$RUNNER_TEMP/pathwaymech-site"
           mkdir -p "$site"
@@ -73,13 +90,10 @@ jobs:
           cp -R pages "$site/pages"
 
       - uses: actions/configure-pages@v5
-        if: steps.current.outputs.publish == 'true'
 
       - uses: actions/upload-pages-artifact@v4
-        if: steps.current.outputs.publish == 'true'
         with:
           path: ${{ runner.temp }}/pathwaymech-site
 
       - uses: actions/deploy-pages@v4
-        if: steps.current.outputs.publish == 'true'
         id: deployment

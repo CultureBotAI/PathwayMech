@@ -106,16 +106,29 @@ def deep_research_contract_main() -> int:
     return 0
 
 
-def render_site(records: list) -> dict[str, str]:
-    """Every file the renderer owns under pages/, keyed by its path there.
+# Files under pages/ that are maintained by hand. Everything else there is
+# rendered from the records, and the check refuses anything that is neither.
+HAND_KEPT_PAGES = frozenset({"style.css", ".nojekyll"})
 
-    `style.css` and `.nojekyll` are maintained by hand and are not listed, so
-    neither a render nor a check ever touches them.
-    """
+
+class SiteError(ValueError):
+    """The records cannot be rendered to one unambiguous site."""
+
+
+def render_site(records: list) -> dict[str, str]:
+    """Every file the renderer owns under pages/, keyed by its path there."""
     files: dict[str, str] = {}
+    claimed: dict[str, str] = {}
     rows = []
     for record in records:
         slug = _slug(record.id)
+        # Compared without case: on a case-insensitive filesystem two slugs that
+        # differ only in case are one file, and one record would never publish.
+        other = claimed.setdefault(slug.casefold(), record.id)
+        if other != record.id:
+            raise SiteError(
+                f"{other} and {record.id} both render to pages/records/{slug}.html"
+            )
         rows.append(
             f'<li><a href="records/{slug}.html"><strong>{html.escape(record.label)}</strong>'
             f"<span>{html.escape(record.id)} - "
@@ -135,11 +148,26 @@ def render_site(records: list) -> dict[str, str]:
     return files
 
 
-def _rendered_on_disk(pages: Path) -> set[str]:
-    """The files under pages/ that the renderer owns, as they are now."""
-    owned = {path.relative_to(pages).as_posix() for path in (pages / "records").glob("*.html")}
-    owned |= {name for name in ("browse.html", "index.html") if (pages / name).is_file()}
-    return owned
+def _files_under(pages: Path) -> set[str]:
+    if not pages.is_dir():
+        return set()
+    return {path.relative_to(pages).as_posix() for path in pages.rglob("*") if path.is_file()}
+
+
+def _site_problems(pages: Path, expected: dict[str, str]) -> list[str]:
+    """Every way pages/ differs from what the records render to."""
+    problems = []
+    for path, text in sorted(expected.items()):
+        target = pages / path
+        # Bytes, not text: reading with newline translation would turn a
+        # rendered "\r\n" into "\n" and fail a page that was just written.
+        if not target.is_file() or target.read_bytes() != text.encode("utf-8"):
+            problems.append(f"pages/{path}: not what its record renders to")
+    for path in sorted(_files_under(pages) - set(expected) - HAND_KEPT_PAGES):
+        problems.append(f"pages/{path}: neither rendered from a record nor hand-kept")
+    for path in sorted(HAND_KEPT_PAGES - _files_under(pages)):
+        problems.append(f"pages/{path}: hand-kept file is missing")
+    return problems
 
 
 def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
@@ -156,42 +184,43 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
 
     records = load_pathway_records(root / "data" / "pathways")
     pages = root / "pages"
-    expected = render_site(records)
-    # A page whose record was removed or renamed is still published unless
-    # something deletes it.
-    orphaned = sorted(_rendered_on_disk(pages) - set(expected))
+    try:
+        expected = render_site(records)
+    except SiteError as error:
+        print(str(error), file=sys.stderr)
+        return 1
 
     if args.check:
-        stale = sorted(
-            path
-            for path, text in expected.items()
-            if not (pages / path).is_file()
-            or (pages / path).read_text(encoding="utf-8") != text
-        )
-        for path in stale:
-            print(f"pages/{path}: not what its record renders to", file=sys.stderr)
-        for path in orphaned:
-            print(f"pages/{path}: no record renders it", file=sys.stderr)
-        if stale or orphaned:
+        problems = _site_problems(pages, expected)
+        for line in problems:
+            print(line, file=sys.stderr)
+        if problems:
             print("pages/ is stale; run `just render-pages` and commit it", file=sys.stderr)
             return 1
         print(f"pages/ is current with {len(records)} pathway records")
         return 0
 
-    (pages / "records").mkdir(parents=True, exist_ok=True)
-    for path, text in expected.items():
-        (pages / path).write_text(text, encoding="utf-8")
+    # Rendered pages whose name no record produces any more -- a removed
+    # record, or an id whose case changed -- are removed first, so that on a
+    # case-insensitive filesystem the new name is written rather than kept
+    # under the old one. Other unexpected files are left for the check to name.
+    rendered = {path for path in _files_under(pages) if path.startswith("records/")}
+    rendered |= {name for name in ("browse.html", "index.html") if (pages / name).is_file()}
+    orphaned = sorted(path for path in rendered - set(expected) if path.endswith(".html"))
     for path in orphaned:
         (pages / path).unlink()
+    (pages / "records").mkdir(parents=True, exist_ok=True)
+    for path, text in expected.items():
+        (pages / path).write_bytes(text.encode("utf-8"))
     print(f"rendered {len(records)} pathway records" + (
         f"; removed {len(orphaned)} orphaned page(s)" if orphaned else ""
     ))
     return 0
 
 
-def check_pages_main() -> int:
+def check_pages_main(*, root: Path = ROOT) -> int:
     """The committed site is what the records render to."""
-    return render_pages_main(["--check"])
+    return render_pages_main(["--check"], root=root)
 
 
 def run_qc_main() -> int:
