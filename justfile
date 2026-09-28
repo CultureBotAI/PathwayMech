@@ -3,6 +3,10 @@ set dotenv-load := true
 validate: validate-skills
     uv run pathwaymech-run-qc
 
+# Every record against the closed LinkML schema (also run by `validate`).
+validate-strict *args:
+    uv run pathwaymech-validate-strict {{args}}
+
 validate-skills:
     uv run python scripts/validate_claude_skills.py
 

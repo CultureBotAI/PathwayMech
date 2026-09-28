@@ -46,6 +46,13 @@ Each `mechanistic_edges` entry must:
 - cite at least one `references` entry by `reference_id`;
 - quote only short supporting snippets.
 
+Records must fit the closed LinkML schema in
+`src/pathwaymech/schema/pathwaymech.yaml`: a key it does not declare is an
+error, not an extension. Adding a field means changing that schema (and, where
+it has a rule, `src/pathwaymech/schema.py`), in the same pull request. Do not
+add an `__init__.py` to `src/pathwaymech/schema/`: it would shadow the module
+`schema.py`.
+
 The strict validator is the source of truth:
 
 ```bash

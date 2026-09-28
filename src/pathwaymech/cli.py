@@ -223,9 +223,36 @@ def check_pages_main(*, root: Path = ROOT) -> int:
     return render_pages_main(["--check"], root=root)
 
 
+def validate_strict_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    """Every record against the closed LinkML schema (src/pathwaymech/schema/)."""
+    from pathwaymech.strict import strict_errors
+
+    parser = argparse.ArgumentParser(
+        prog="pathwaymech-validate-strict",
+        description="Validate records against the closed LinkML schema.",
+    )
+    parser.add_argument("paths", nargs="*", type=Path, help="records (default: data/pathways)")
+    args = parser.parse_args(argv)
+    paths = [path.resolve() for path in args.paths] or sorted(
+        (root / "data" / "pathways").glob("*.yaml")
+    )
+    errors = strict_errors(paths, root.resolve())
+    for line in errors:
+        print(line, file=sys.stderr)
+    if errors:
+        return 1
+    print(f"validated {len(paths)} records against the closed LinkML schema")
+    return 0
+
+
+def _validate_strict_gate() -> int:
+    return validate_strict_main([])
+
+
 def run_qc_main() -> int:
     for check in [
         validate_main,
+        _validate_strict_gate,
         check_provenance_main,
         validate_sources_main,
         check_docs_main,

@@ -24,10 +24,19 @@ into a pathway-specific schema:
 - record identifiers must use explicit CURIE-style prefixes;
 - static pages are generated from the same YAML records that feed QC.
 
+Records are modelled in LinkML at `src/pathwaymech/schema/pathwaymech.yaml`
+(`PathwayRecord`, with `NamedNode`, `MechanisticEdge`, `EvidenceItem` and
+`Reference`). `just validate-strict` checks every record against it in closed
+mode, so an undeclared key is an error; `just validate` runs it too. The rules
+LinkML cannot state -- edge endpoints resolve inside the record, evidence cites
+a declared reference, pathway ids are unique -- stay in
+`src/pathwaymech/schema.py`.
+
 ## Quickstart
 
 ```bash
 uv run pathwaymech-validate
+uv run pathwaymech-validate-strict
 uv run pathwaymech-validate-sources
 uv run pathwaymech-check-provenance
 uv run pathwaymech-import-bigg tests/fixtures/bigg/model.json
