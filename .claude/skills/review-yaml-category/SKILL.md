@@ -61,6 +61,43 @@ patterns across the member records.
 - Preserve conflicts. If inspected sources disagree, report the disagreement
   and its scope instead of forcing the category to look tidy.
 
+## Structured Source Cross-Checks
+
+<!-- canonical:begin structured-source-cross-checks -->
+Use structured source adapters before open-ended web search when the cohort
+boundary depends on genes, locus tags, UniProt accessions, regulators,
+pathways, reactions, enzymes, or transcriptomics datasets that may already be
+represented in a shared database.
+
+For iModulonDB candidates, first resolve the runner. In the commands below,
+`<kg-microbe-sources>` means either an installed `kg-microbe-sources` console
+script or `uv run --project <claw-root> kg-microbe-sources` from a local
+`culturebotai-claw` checkout. If neither runner is available, record the
+structured adapter as unavailable and fall back to inspected iModulonDB source
+pages or open web search.
+
+- Run `<kg-microbe-sources> imodulondb datasets` to find covered
+  organism/dataset keys.
+- Run `<kg-microbe-sources> imodulondb search --organism <organism> --dataset
+  <dataset> --query <term>` for member genes, loci, regulators, protein names,
+  pathway terms, reaction terms, or iModulon names that match covered
+  organisms.
+- Run `<kg-microbe-sources> imodulondb summarize --organism <organism>
+  --dataset <dataset> --k <component>` for iModulon hits that explain a
+  repeated evidence or membership pattern.
+- Record useful `organism/dataset/component` and `organism/dataset/gene` keys
+  under **Graph and Evidence Patterns** or **Additional Notes**, and keep any
+  copied summary tables small enough to justify why pathway proteins are or
+  are not supported.
+
+iModulon membership is computational expression-module evidence. It can support
+a bounded transcriptomic context finding for a covered strain, gene, regulator,
+or protein, but it is not direct proof of pathway identity, reaction
+membership, catalysis, metabolite usage, edge direction, or taxon scope. If no
+covered organism/dataset matches the cohort, write that iModulonDB was not
+applicable; absence from iModulonDB is not negative evidence.
+<!-- canonical:end structured-source-cross-checks -->
+
 ## Missing Things
 
 Before reporting that a sibling pathway, duplicate record, source file,

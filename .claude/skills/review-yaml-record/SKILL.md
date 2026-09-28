@@ -70,6 +70,42 @@ Use `.claude/skills/add-pathway/SKILL.md`, `docs/CURATION.md`, and
 - A near miss is not a match. Do not ground a pathway, reaction, or participant
   to a plausible broader or adjacent term.
 
+## Structured Source Cross-Checks
+
+<!-- canonical:begin structured-source-cross-checks -->
+Use structured source adapters before open-ended web search when this record
+names a gene, locus tag, UniProt accession, regulator, pathway, reaction,
+enzyme, or transcriptomics dataset that may already be represented in a shared
+database.
+
+For iModulonDB candidates, first resolve the runner. In the commands below,
+`<kg-microbe-sources>` means either an installed `kg-microbe-sources` console
+script or `uv run --project <claw-root> kg-microbe-sources` from a local
+`culturebotai-claw` checkout. If neither runner is available, record the
+structured adapter as unavailable and fall back to inspected iModulonDB source
+pages or open web search.
+
+- Run `<kg-microbe-sources> imodulondb datasets` to find covered
+  organism/dataset keys.
+- Run `<kg-microbe-sources> imodulondb search --organism <organism> --dataset
+  <dataset> --query <term>` for a record gene, locus, regulator, protein name,
+  pathway term, reaction term, or iModulon name that matches a covered
+  organism.
+- Run `<kg-microbe-sources> imodulondb summarize --organism <organism>
+  --dataset <dataset> --k <component>` for any iModulon hit that would inform
+  the record verdict.
+- Record useful `organism/dataset/component` and `organism/dataset/gene` keys
+  under **Edge Evidence** or **Additional Notes**, and keep any copied summary
+  table small enough to justify why a pathway protein is or is not supported.
+
+iModulon membership is computational expression-module evidence. It can support
+a bounded transcriptomic context finding for a covered strain, gene, regulator,
+or protein, but it is not direct proof of pathway identity, reaction
+membership, catalysis, metabolite usage, edge direction, or taxon scope. If no
+covered organism/dataset matches the target, write that iModulonDB was not
+applicable; absence from iModulonDB is not negative evidence.
+<!-- canonical:end structured-source-cross-checks -->
+
 ## Missing Things
 
 Before reporting that a record, source file, evidence object, pathway node,
