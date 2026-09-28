@@ -15,6 +15,7 @@ CI ("Build and test") runs them on every pull request:
 
 ```bash
 uv run pathwaymech-validate
+uv run pathwaymech-validate-strict
 uv run pathwaymech-validate-sources
 uv run pathwaymech-check-provenance
 uv run pathwaymech-deep-research-contract

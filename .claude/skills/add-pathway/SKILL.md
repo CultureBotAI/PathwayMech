@@ -125,6 +125,13 @@ git diff --check
 what the records render to. Commit the rendered pages with the record, and do
 not edit generated pathway pages by hand.
 
+`just validate` also runs `just validate-strict`: the record must fit the
+closed LinkML schema in `src/pathwaymech/schema/pathwaymech.yaml`, so a key it
+does not declare is an error, and an optional key is omitted rather than set
+to null. The allowed CURIE prefixes and edge predicates live in both that
+schema and `src/pathwaymech/schema.py`; a new one goes into both, in the same
+pull request.
+
 ## Report
 
 End with the new record id, label, and YAML path; every GO, GO-CAM,
