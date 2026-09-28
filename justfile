@@ -26,6 +26,9 @@ check-pages:
 seed:
     uv run pathwaymech-seed-from-sources
 
+stage-imodulondb *args:
+    uv run python scripts/stage_imodulondb_pathway_contexts.py {{args}}
+
 import-biopax *args:
     uv run pathwaymech-import-biopax {{args}}
 
