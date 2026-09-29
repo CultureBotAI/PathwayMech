@@ -64,6 +64,10 @@ just validate
 what the records render to, including a page left behind by a removed record.
 After changing a record, run `just render-pages` and commit the result.
 
+Files vendored from claw (listed in `CLAUDE.md`) are checked separately, with
+network access, by `just vendored-check`; CI runs it as the `vendored-sync`
+workflow.
+
 ## Published site
 
 The browser is published at <https://culturebotai.github.io/PathwayMech/>.

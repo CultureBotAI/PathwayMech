@@ -5,9 +5,15 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import Any
 
+from jsonschema import FormatChecker
+
 # The fleet's deterministic curation-timestamp year guard (CurationEvent.timestamp
 # in the schema): rejects the 2206-for-2026 class of typo without a wall clock.
 CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
+# `range: datetime` in the schema becomes JSON Schema `format: date-time`, which the
+# closed gate checks with jsonschema's FormatChecker. Using the same checker here
+# keeps the two validators agreeing on what a timestamp is by construction.
+_DATE_TIME = FormatChecker(formats=["date-time"])
 
 ALLOWED_CURIE_PREFIXES = {
     "BV-BRC",
@@ -191,10 +197,14 @@ def _validate_curation_history(value: Any, errors: list[str]) -> None:
             errors.append(f"{path} must be a mapping")
             continue
         timestamp = item.get("timestamp")
-        if not isinstance(timestamp, str) or not CURATION_TIMESTAMP.match(timestamp):
+        if (
+            not isinstance(timestamp, str)
+            or not CURATION_TIMESTAMP.match(timestamp)
+            or not _DATE_TIME.conforms(timestamp, "date-time")
+        ):
             errors.append(
-                f"{path}.timestamp must be a quoted ISO 8601 string starting 20YY-: "
-                f"{timestamp!r}"
+                f"{path}.timestamp must be a quoted RFC 3339 date-time with a timezone, "
+                f"starting 20YY-, such as '2026-09-28T12:00:00Z': {timestamp!r}"
             )
 
 

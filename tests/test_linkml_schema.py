@@ -311,14 +311,44 @@ def test_a_record_with_a_curation_event_validates_in_both_validators(checker, re
     validate_record(changed)
 
 
+# Each is a valid RFC 3339 date-time, so only the year guard can reject it.
 @pytest.mark.parametrize(
     "timestamp",
-    ["2206-08-22T12:00:00Z", "1999-12-31T23:59:59Z", "26-09-28T00:00:00Z"],
+    ["2206-08-22T12:00:00Z", "1999-12-31T23:59:59Z", "2106-01-01T00:00:00Z"],
 )
 def test_a_timestamp_outside_the_year_guard_is_rejected_by_both(checker, record, timestamp) -> None:
     changed = _with_history(record, dict(_CURATION_EVENT, timestamp=timestamp))
     assert checker.validate(changed, TARGET_CLASS).results
     with pytest.raises(ValidationError, match="timestamp"):
+        validate_record(changed)
+
+
+# Each passes the year guard, so only the date-time check can reject it.
+@pytest.mark.parametrize(
+    "timestamp",
+    ["2026-13-99T00:00:00Z", "2026-09-28", "2026-09-28T00:00:00", "2026-garbage"],
+)
+def test_a_year_guarded_non_date_time_is_rejected_by_both(checker, record, timestamp) -> None:
+    changed = _with_history(record, dict(_CURATION_EVENT, timestamp=timestamp))
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match="RFC 3339"):
+        validate_record(changed)
+
+
+def test_an_event_without_a_timestamp_is_rejected_by_both(checker, record) -> None:
+    event = dict(_CURATION_EVENT)
+    del event["timestamp"]
+    changed = _with_history(record, event)
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match="timestamp"):
+        validate_record(changed)
+
+
+def test_every_event_is_checked_not_only_the_first(checker, record) -> None:
+    later = dict(_CURATION_EVENT, timestamp="2206-08-22T12:00:00Z")
+    changed = _with_history(record, dict(_CURATION_EVENT), later)
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match=r"curation_history\[1\]\.timestamp"):
         validate_record(changed)
 
 
@@ -330,7 +360,8 @@ def test_an_unquoted_timestamp_is_rejected_not_coerced(record) -> None:
         validate_record(changed)
 
 
-@pytest.mark.parametrize("history", ["2026-09-28T00:00:00Z", {"timestamp": "2026-09-28"}])
+# A valid event that is not wrapped in a list, a bare string, and an explicit null.
+@pytest.mark.parametrize("history", [dict(_CURATION_EVENT), "2026-09-28T00:00:00Z", None])
 def test_curation_history_must_be_a_list_in_both(checker, record, history) -> None:
     changed = copy.deepcopy(record)
     changed["curation_history"] = history

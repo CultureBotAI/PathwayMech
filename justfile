@@ -23,6 +23,12 @@ render-pages:
 check-pages:
     uv run pathwaymech-check-pages
 
+# Verify every claw-governed vendored file matches the pinned canonical
+# revision in scripts/.vendored_canon_ref (the check the vendored-sync workflow
+# runs). Needs network access to fetch the pinned claw revision.
+vendored-check:
+    bash scripts/check_vendored_sync.sh
+
 seed:
     uv run pathwaymech-seed-from-sources
 

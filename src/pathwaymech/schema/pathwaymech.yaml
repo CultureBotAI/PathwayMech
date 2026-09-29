@@ -68,8 +68,9 @@ classes:
         range: Reference
       curation_history:
         description: >-
-          Append-only audit trail of curator actions on this record. Optional;
-          the class is the fleet's shared CurationEvent shape.
+          Append-only audit trail of curator actions on this record. Optional.
+          CurationEvent has the same shape as TaxonMech's; what every Mech
+          shares is the timestamp's year guard.
         multivalued: true
         inlined_as_list: true
         range: CurationEvent
@@ -151,8 +152,10 @@ classes:
         # 2206-for-2026 class of typo without consulting the wall clock.
         pattern: "^20[0-9]{2}-"
         description: >-
-          When the action happened, as an ISO 8601 string. Quote it in YAML: an
-          unquoted timestamp loads as a datetime object, not a string.
+          When the action happened: an RFC 3339 date-time with a timezone, such
+          as '2026-09-28T12:00:00Z' (a date alone, or a time without an offset,
+          is rejected). Quote it in YAML: an unquoted timestamp loads as a
+          datetime object, not a string.
       curator:
         range: string
       action:
