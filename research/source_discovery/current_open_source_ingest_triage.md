@@ -1,6 +1,6 @@
 # Current open-source ingest triage
 
-Updated: 2026-09-27
+Updated: 2026-09-29
 
 This note records the terminal sweep of the currently enabled open pathway
 sources after the first GO-CAM and WikiPathways records were ingested into
@@ -60,29 +60,37 @@ The following WikiPathways records are already represented exactly:
   pathways
 - `WikiPathways:WP5587` - 2-phenylethanol biosynthesis
 
-The low-edge Escherichia coli Pathway Tools maps are not usable with the
-current prefix set. `WP2484`, `WP2486`, `WP2487`, `WP2488`, and `WP2886`
-collapse to HMDB, CAS, PubChem, and Ensembl nodes. `WP3538` is a cell-division
-protein-state map, `WP3641` overlaps peptidoglycan and
-UDP-<i>N</i>-acetylglucosamine records while depending on Ensembl and
-Wikidata nodes, and `WP3583`, `WP5070`, and `WP2472` are broad
-central-carbon, Salmonella regulatory, and E. coli K-12 peripherome diagrams
-rather than bounded pathway definitions.
+The low-edge Escherichia coli Pathway Tools maps are no longer blocked by
+HMDB, CAS, PubChem, or Ensembl prefix support. After native GPML xref support,
+`WP2484` imports as a 33-edge NAD de novo draft but duplicates the curated
+MetaCyc/Rhea `PYRIDNUCSYN-PWY` record; `WP2486` and `WP2488` overlap existing
+NAD salvage curation; and `WP2487` and `WP2886` are still weak Pathway Tools
+exports rather than better evidence sources. `WP3538` is a cell-division
+protein-state map, `WP3641` still overlaps peptidoglycan and
+UDP-<i>N</i>-acetylglucosamine records while failing strict validation through
+unresolved chained GPML anchors, and `WP3583`, `WP5070`, and `WP2472` remain
+broad central-carbon, Salmonella regulatory, and E. coli K-12 peripherome
+diagrams rather than bounded pathway definitions.
 
-The Mycobacterium and Plasmodium maps are mostly KEGG or TubercuList exports.
-`WP1567`, `WP1581`, `WP1622`, `WP1631`, `WP1642`, `WP1652`, `WP1667`, `WP2563`,
-`WP2566`, `WP2638`, and `WP2918` currently reduce to catalyst-only stubs or
-ChemSpider-only compound lists. `WP4198` keeps a few UniProtKB and mycolic acid
-nodes but loses the PubChem/Entrez/Pks13 chemistry needed to represent mycolic
-acid biosynthesis. `WP2564` is a sigma-factor transcription map, not a
-biochemical pathway.
+The Mycobacterium and Plasmodium maps are also richer after KEGG, PubChem,
+ChemSpider, TubercuList, Entrez, and NCBI Protein support, but they are not
+commit-ready. `WP1567`, `WP2563`, `WP2566`, and `WP2638` are KEGG-style
+overview maps that mix glycolysis/gluconeogenesis, the TCA cycle, glyoxylate
+cycle, and GAS branches. `WP1581`, `WP1622`, `WP1631`, `WP1642`, `WP1652`, and
+`WP1667` need source-specific review before their KEGG/TubercuList projections
+can be split into bounded records. `WP4198` now preserves PubChem and Entrez
+nodes but still lacks catalyst edges for a reviewable mycolic-acid pathway.
+`WP2918` imports as a 31-edge apicoplast isoprenoid draft, but it also includes
+inhibitor and transporter diagram lines that the GPML importer cannot yet
+separate from biochemical conversions. `WP2564` is a sigma-factor transcription
+map, not a biochemical pathway.
 
 The remaining Bacillus, Caulobacter, and Gibberella GPML files are blocked for
 similar reasons. `WP1466` is a response-regulator protein interaction diagram,
-`WP2360` overlaps existing folate and tetrahydrofolate curation while using
-HMDB and KEGG compounds, `WP5271` depends on unsupported lipid identifiers, and
-`WP2258` loses the DON mycotoxin chemistry needed to make the record
-meaningful.
+`WP2360` overlaps existing folate and tetrahydrofolate curation, `WP5271` now
+preserves the ceramide lipids but still needs lipid normalization to produce a
+reviewable biochemical graph, and `WP2258` preserves the DON mycotoxin
+chemistry but still fails strict validation through an unresolved GPML anchor.
 
 Saccharomyces cerevisiae has the largest GPML set, but after the exact
 WikiPathways records above it divides into curation-blocking buckets. These are
@@ -141,21 +149,23 @@ ambiguous chemistry:
 - `YeastPathways_GLUCOSE-MANNOSYL-CHITO-DOLICHOL` - contains unlabeled
   oligosaccharide ChEBI nodes and `CHEBI:24431`
 
-## Unlocks
+## Revisited unlocks
 
-The next likely pathway records need harmonization rather than more manual
-triage:
+The first harmonization blockers have landed in the importer layer:
 
-- LIPID MAPS to ChEBI or native LIPID MAPS support would reopen bacterial
-  ceramide, ergosterol, sphingolipid, and fatty-acid candidates.
-- KEGG Compound to ChEBI mapping would reopen most Mycobacterium and
-  Plasmodium GPML maps.
-- HMDB, CAS, ChemSpider, PubChem, Ensembl, Entrez, TubercuList, and NCBI
-  Protein mappings would be needed before the E. coli Pathway Tools GPML
-  exports can produce anything beyond empty or catalyst-only graphs.
-- BGC-shaped fields are still needed before MIBiG can be more than a source of
-  seed rows for secondary-metabolite clusters.
+- Native LIPIDMAPS support preserves lipids that have no checked ChEBI mapping.
+- Local ChEBI OBO xrefs can normalize KEGG Compound, HMDB, CAS, ChemSpider, and
+  PubChem GPML chemistry to ChEBI when an exact xref exists.
+- Ensembl, Entrez, TubercuList, and NCBI Protein GPML nodes can be preserved as
+  native gene or protein participants.
+- MIBiG JSON can emit draft records with `gene_clusters` for BGC accessions,
+  products, biosynthetic classes, local genes, GenBank loci, taxa, and PubMed
+  references.
 
-Candidate absence and duplicate checks used `rg --no-ignore --hidden` before
-new records were written. No further GO-CAM or WikiPathways pathway from the
-current caches should be curated until one of the unlocks above lands.
+These unlocks make the formerly empty or catalyst-only GPML candidates
+inspectable, but they do not by themselves make any rejected record
+commit-ready. Candidate absence and duplicate checks used `rg --no-ignore
+--hidden` before new records were written. Further GPML curation should now
+focus on narrower maps with native chemistry that can be normalized to ChEBI
+and Rhea, or on improving MIM inhibition and chained-anchor handling before
+revisiting `WP2918` and `WP3641`.

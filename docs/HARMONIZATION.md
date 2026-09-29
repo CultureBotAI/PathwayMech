@@ -2,8 +2,9 @@
 
 PathwayMech harmonizes pathway, reaction, compound, protein, activity, cluster,
 model, and pathway-call identifiers from GO, GO-CAM, WikiPathways, Rhea, MIBiG,
-Reactome, PathBank, MetaCyc, KEGG, ModelSEED, BiGG, BV-BRC, ChEBI, UniProtKB,
-and EC records into a single pathway mechanism module.
+Reactome, PathBank, MetaCyc, KEGG, ModelSEED, BiGG, BV-BRC, ChEBI, LIPID MAPS,
+CAS, ChemSpider, HMDB, PubChem, EC, UniProtKB, Ensembl, Entrez Gene, NCBI
+Protein, TubercuList, and SGD records into a single pathway mechanism module.
 
 Prefer stable external identifiers over local identifiers. Local identifiers
 must be temporary and must be documented in `curation/decisions.tsv`.
@@ -14,14 +15,19 @@ Genome Database gene products or GO evidence references.
 
 WikiPathways GPML ingestion keeps the `WikiPathways` pathway ID and interaction
 graph IDs in draft reaction CURIEs. DataNodes are imported only when their Xref
-database can be mapped to a supported biological CURIE.
+database can be mapped to a supported biological CURIE, including native
+LIPIDMAPS, CAS, ChemSpider, HMDB, PubChem, Ensembl, Entrez, NCBIProtein, and
+TubercuList accessions that do not yet have a checked ChEBI, Rhea, or UniProtKB
+mapping.
 
 Rhea TSV ingestion extracts RHEA reaction IDs, ChEBI participants, EC numbers,
 GO molecular functions, and KEGG or MetaCyc reaction crosswalks for importers
 that need an open biochemical reaction normalization layer.
 
 MIBiG JSON ingestion extracts BGC accessions, products, genes, loci, and PubMed
-references as seed rows until PathwayMech has a BGC-shaped curated YAML schema.
+references as seed rows or as BGC-shaped draft YAML records whose
+`gene_clusters` preserve MIBiG products, biosynthetic classes, local genes, and
+GenBank loci separately from ChEBI/Rhea reaction graphs.
 
 Reactome and PathBank BioPAX ingestion share a fixture importer that reads
 BioPAX biochemical reactions and grounds physical entities through ChEBI,

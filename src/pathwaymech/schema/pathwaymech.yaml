@@ -29,7 +29,7 @@ classes:
       id:
         identifier: true
         required: true
-        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PathBank|PMID|PubChem|Reactome|RHEA|SGD|TubercuList|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
         description: The pathway's CURIE, e.g. MetaCyc:PWY-5097.
       label:
         required: true
@@ -61,6 +61,10 @@ classes:
         multivalued: true
         inlined_as_list: true
         range: MechanisticEdge
+      gene_clusters:
+        multivalued: true
+        inlined_as_list: true
+        range: GeneCluster
       references:
         required: true
         multivalued: true
@@ -80,10 +84,59 @@ classes:
     attributes:
       id:
         required: true
-        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PathBank|PMID|PubChem|Reactome|RHEA|SGD|TubercuList|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
       label:
         required: true
         pattern: "\\S"
+
+  GeneCluster:
+    description: >-
+      A biosynthetic gene cluster accession, with provider-local genes, loci,
+      product names and biosynthetic classes that do not have to be reaction
+      graph nodes.
+    attributes:
+      id:
+        required: true
+        pattern: "^MIBiG:\\S+(?![\\s\\S])"
+      label:
+        required: true
+        pattern: "\\S"
+      products:
+        multivalued: true
+        pattern: "\\S"
+      biosynthetic_classes:
+        multivalued: true
+        pattern: "\\S"
+      genes:
+        multivalued: true
+        inlined_as_list: true
+        range: ClusterGene
+      loci:
+        multivalued: true
+        inlined_as_list: true
+        range: GenomicLocus
+
+  ClusterGene:
+    description: A provider-local gene or protein accession in a biosynthetic gene cluster.
+    attributes:
+      id:
+        required: true
+        pattern: "\\S"
+      label:
+        pattern: "\\S"
+
+  GenomicLocus:
+    description: A GenBank-style sequence accession and optional region coordinates.
+    attributes:
+      accession:
+        required: true
+        pattern: "\\S"
+      start:
+        range: integer
+        minimum_value: 1
+      end:
+        range: integer
+        minimum_value: 1
 
   MechanisticEdge:
     description: >-
@@ -129,7 +182,7 @@ classes:
     attributes:
       id:
         required: true
-        pattern: "^(BiGG|BV-BRC|CHEBI|DOI|EC|ECO|GO|GO_REF|gomodel|GTDB|KEGG|MetaCyc|MIBiG|ModelSEED|NCBITaxon|PathBank|PMID|Reactome|RHEA|SGD|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PathBank|PMID|PubChem|Reactome|RHEA|SGD|TubercuList|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
       title:
         pattern: "\\S"
       citation:

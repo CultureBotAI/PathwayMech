@@ -32,8 +32,10 @@ or mechanistic edge.
   schema is intentionally small; leave unsupported nodes and edges out.
 - Do not invent a local CURIE. `src/pathwaymech/schema.py` currently accepts
   `GO`, `gomodel`, `WikiPathways`, `MetaCyc`, `KEGG`, `RHEA`, `MIBiG`,
-  `ModelSEED`, `BiGG`, `BV-BRC`, `Reactome`, `PathBank`, `CHEBI`, `EC`, `ECO`,
-  `SGD`, `UniProtKB`, `NCBITaxon`, `GTDB`, `GO_REF`, `PMID`, and `DOI`.
+  `ModelSEED`, `BiGG`, `BV-BRC`, `Reactome`, `PathBank`, `CHEBI`, `CAS`,
+  `ChemSpider`, `HMDB`, `LIPIDMAPS`, `PubChem`, `EC`, `ECO`, `Ensembl`,
+  `Entrez`, `NCBIProtein`, `SGD`, `TubercuList`, `UniProtKB`, `NCBITaxon`,
+  `GTDB`, `GO_REF`, `PMID`, and `DOI`.
 
 ## Read First
 
@@ -82,7 +84,9 @@ Declare every node used by an edge in one of the local node lists:
 
 - `taxa`: microbial scope with `NCBITaxon` or `GTDB` identifiers;
 - `participants`: small molecules, cofactors, enzymes, or proteins with
-  `CHEBI`, `EC`, or `UniProtKB` identifiers;
+  `CHEBI`, `LIPIDMAPS`, `EC`, `UniProtKB`, or native pathway-diagram xref
+  identifiers such as `CAS`, `ChemSpider`, `HMDB`, `PubChem`, `Ensembl`,
+  `Entrez`, `NCBIProtein`, or `TubercuList`;
 - `reactions`: reaction nodes with `RHEA`, `gomodel`, `WikiPathways`,
   `MetaCyc`, `KEGG`, `Reactome`, or `PathBank` identifiers.
 
@@ -136,7 +140,9 @@ pull request.
 
 End with the new record id, label, and YAML path; every GO, GO-CAM,
 WikiPathways, MetaCyc, KEGG, Rhea, MIBiG, Reactome, PathBank, ModelSEED, BiGG,
-BV-BRC, ChEBI, EC, UniProtKB, NCBITaxon, GTDB, PMID, and DOI identifier added;
+BV-BRC, ChEBI, LIPIDMAPS, CAS, ChemSpider, HMDB, PubChem, EC, Ensembl, Entrez,
+NCBIProtein, SGD, TubercuList, UniProtKB, NCBITaxon, GTDB, PMID, and DOI
+identifier added;
 the strongest identity and mechanism sources; any edges deliberately left out;
 whether duplicate searches included ignored and hidden files; and every
 validation command that passed or was unavailable.

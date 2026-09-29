@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from collections import Counter
 from dataclasses import dataclass
+from dataclasses import field as dataclass_field
 from typing import Any
 
 from jsonschema import FormatChecker
@@ -18,23 +19,32 @@ _DATE_TIME = FormatChecker(formats=["date-time"])
 ALLOWED_CURIE_PREFIXES = {
     "BV-BRC",
     "BiGG",
+    "CAS",
     "CHEBI",
+    "ChemSpider",
     "DOI",
     "EC",
     "ECO",
+    "Ensembl",
+    "Entrez",
     "GO",
     "GO_REF",
     "GTDB",
+    "HMDB",
     "KEGG",
+    "LIPIDMAPS",
     "MIBiG",
     "MetaCyc",
     "ModelSEED",
+    "NCBIProtein",
     "NCBITaxon",
     "PathBank",
     "PMID",
+    "PubChem",
     "RHEA",
     "Reactome",
     "SGD",
+    "TubercuList",
     "UniProtKB",
     "WikiPathways",
     "gomodel",
@@ -71,6 +81,7 @@ class PathwayRecord:
     reactions: list[dict[str, Any]]
     mechanistic_edges: list[dict[str, Any]]
     references: list[dict[str, Any]]
+    gene_clusters: list[dict[str, Any]] = dataclass_field(default_factory=list)
 
 
 def validate_records(records: list[dict[str, Any]]) -> list[PathwayRecord]:
@@ -115,6 +126,7 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
     taxa = _validate_named_nodes(record.get("taxa"), "taxa", errors)
     participants = _validate_named_nodes(record.get("participants"), "participants", errors)
     reactions = _validate_named_nodes(record.get("reactions"), "reactions", errors)
+    gene_clusters = _validate_gene_clusters(record.get("gene_clusters", []), errors)
     references = _validate_references(record.get("references"), errors)
     edges = _validate_edges(
         record.get("mechanistic_edges"),
@@ -136,6 +148,7 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         taxa=record["taxa"],
         participants=record["participants"],
         reactions=record["reactions"],
+        gene_clusters=gene_clusters,
         mechanistic_edges=edges,
         references=record["references"],
     )
@@ -162,6 +175,101 @@ def _validate_named_nodes(value: Any, field: str, errors: list[str]) -> set[str]
         if not isinstance(label, str) or not label.strip():
             errors.append(f"{path}.label must be a non-empty string")
     return ids
+
+
+def _validate_gene_clusters(value: Any, errors: list[str]) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        errors.append("gene_clusters must be a list")
+        return []
+
+    for index, item in enumerate(value):
+        path = f"gene_clusters[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{path} must be a mapping")
+            continue
+
+        cluster_id = item.get("id")
+        if not isinstance(cluster_id, str) or not cluster_id.strip():
+            errors.append(f"{path}.id must be a non-empty string")
+        else:
+            _validate_curie(cluster_id, f"{path}.id", errors)
+            if not cluster_id.startswith("MIBiG:"):
+                errors.append(f"{path}.id must use the MIBiG prefix")
+
+        label = item.get("label")
+        if not isinstance(label, str) or not label.strip():
+            errors.append(f"{path}.label must be a non-empty string")
+
+        _validate_optional_strings(
+            item.get("products"),
+            f"{path}.products",
+            errors,
+        )
+        _validate_optional_strings(
+            item.get("biosynthetic_classes"),
+            f"{path}.biosynthetic_classes",
+            errors,
+        )
+        _validate_cluster_genes(item.get("genes"), f"{path}.genes", errors)
+        _validate_genomic_loci(item.get("loci"), f"{path}.loci", errors)
+    return value
+
+
+def _validate_optional_strings(value: Any, path: str, errors: list[str]) -> None:
+    if value is None:
+        return
+    if not isinstance(value, list):
+        errors.append(f"{path} must be a list")
+        return
+    for index, item in enumerate(value):
+        if not isinstance(item, str) or not item.strip():
+            errors.append(f"{path}[{index}] must be a non-empty string")
+
+
+def _validate_cluster_genes(value: Any, path: str, errors: list[str]) -> None:
+    if value is None:
+        return
+    if not isinstance(value, list):
+        errors.append(f"{path} must be a list")
+        return
+    for index, item in enumerate(value):
+        item_path = f"{path}[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{item_path} must be a mapping")
+            continue
+        gene_id = item.get("id")
+        if not isinstance(gene_id, str) or not gene_id.strip():
+            errors.append(f"{item_path}.id must be a non-empty string")
+        label = item.get("label")
+        if "label" in item and (not isinstance(label, str) or not label.strip()):
+            errors.append(f"{item_path}.label must be a non-empty string")
+
+
+def _validate_genomic_loci(value: Any, path: str, errors: list[str]) -> None:
+    if value is None:
+        return
+    if not isinstance(value, list):
+        errors.append(f"{path} must be a list")
+        return
+    for index, item in enumerate(value):
+        item_path = f"{path}[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{item_path} must be a mapping")
+            continue
+        accession = item.get("accession")
+        if not isinstance(accession, str) or not accession.strip():
+            errors.append(f"{item_path}.accession must be a non-empty string")
+        _validate_optional_positive_int(item.get("start"), f"{item_path}.start", errors)
+        _validate_optional_positive_int(item.get("end"), f"{item_path}.end", errors)
+        if ("start" in item) != ("end" in item):
+            errors.append(f"{item_path} must include both start and end when either is set")
+
+
+def _validate_optional_positive_int(value: Any, path: str, errors: list[str]) -> None:
+    if value is None:
+        return
+    if type(value) is not int or value < 1:
+        errors.append(f"{path} must be a positive integer")
 
 
 def _validate_references(value: Any, errors: list[str]) -> set[str]:
