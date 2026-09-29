@@ -1,0 +1,91 @@
+name: vendored-sync
+
+# Cross-repo durability guard. Governed files here are vendored byte-identical
+# from the canonical source (CultureBotAI/culturebotai-claw) at the immutable
+# commit pinned in scripts/.vendored_canon_ref. The checker fetches claw's
+# manifest and every applicable payload, then verifies bytes and Git modes, so
+# a one-copy edit or incomplete artifact list fails CI.
+#
+# DELIBERATELY NO `paths:` FILTER, inherited from the fleet pattern rather than
+# learned here: in a sibling Mech repository a `paths:` filter on this job
+# listed only one of the governed files the checker compares, so edits to the
+# other governed files — and to the checker and the pinned ref themselves —
+# never fired the guard.
+#
+# A path list cannot be derived from claw's manifest: GitHub evaluates `paths:`
+# from static YAML before checkout, so it cannot read the pin or the manifest.
+# Any hand-maintained list therefore has to be kept in sync with the canonical
+# list by hand, which is precisely the drift this guard exists to prevent.
+# Running unconditionally removes the failure class instead of re-syncing two
+# lists, and costs little: the job is a thin Bash launcher plus Python's
+# standard library, with no uv or OAK.
+
+on:
+  # Required checks report on every PR and on the combined queue commit.
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # PR runs share a ref group and may supersede one another. Every non-PR run
+  # gets a unique group so GitHub cannot replace a pending main-commit verdict
+  # before it starts.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  vendored-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      # Transient canonical fetch failures are retryable exit 1 results. Local
+      # pin, repository-identity, and manifest precondition failures use exit 2
+      # and must fail immediately. The launcher and checker are themselves
+      # governed by claw, so this workflow carries no independent file list.
+      - name: Verify vendored files match canonical claw
+        run: |
+          set -uo pipefail
+          for attempt in 1 2 3; do
+            # Capture the status explicitly. `if cmd; then ...; fi` is NOT usable
+            # here: an if-statement whose condition fails and which has no else
+            # branch returns 0 itself, so a following `status=$?` reads 0 rather
+            # than the command's exit code.
+            status=0
+            bash scripts/check_vendored_sync.sh || status=$?
+            case "$status" in
+              0)
+                exit 0
+                ;;
+              1)
+                ;;
+              2)
+                # Local pin/identity/manifest precondition failures are
+                # deterministic; another network attempt cannot help.
+                echo "::error::vendored-sync local precondition failed" >&2
+                exit 2
+                ;;
+              *)
+                echo "::error::vendored-sync returned unexpected exit $status" >&2
+                exit "$status"
+                ;;
+            esac
+            if [ "$attempt" -lt 3 ]; then
+              echo "::warning::vendored-sync attempt $attempt failed (exit $status); retrying in 5s" >&2
+              sleep 5
+            fi
+          done
+          echo "::error::vendored files differ from canonical claw, or claw could not be reached after 3 attempts" >&2
+          exit 1

@@ -70,6 +70,14 @@ classes:
         multivalued: true
         inlined_as_list: true
         range: Reference
+      curation_history:
+        description: >-
+          Append-only audit trail of curator actions on this record. Optional.
+          CurationEvent has the same shape as TaxonMech's; what every Mech
+          shares is the timestamp's year guard.
+        multivalued: true
+        inlined_as_list: true
+        range: CurationEvent
 
   NamedNode:
     description: A taxon, participant or reaction, named by CURIE.
@@ -186,6 +194,29 @@ classes:
       - slot_conditions:
           citation:
             required: true
+
+  CurationEvent:
+    description: A timestamped curator action on a PathwayRecord.
+    attributes:
+      timestamp:
+        range: datetime
+        required: true
+        # Deterministic year guard, shared across the Mech repos: rejects the
+        # 2206-for-2026 class of typo without consulting the wall clock.
+        pattern: "^20[0-9]{2}-"
+        description: >-
+          When the action happened: an RFC 3339 date-time with a timezone, such
+          as '2026-09-28T12:00:00Z' (a date alone, a time without an offset,
+          or a leap second is rejected). Quote it in YAML: an unquoted timestamp loads as a
+          datetime object, not a string.
+      curator:
+        range: string
+      action:
+        range: string
+      changes:
+        range: string
+      llm_assisted:
+        range: boolean
 
 enums:
   EdgePredicateEnum:

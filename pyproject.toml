@@ -6,6 +6,14 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "linkml>=1.11.1",
+    # The vendored id-label correspondence gate resolves CURIEs through OAK.
+    "oaklib>=0.7.3",
+    # oaklib imports eutils, which still imports pkg_resources; setuptools 82+ removed it.
+    "setuptools<82",
+    # jsonschema checks `format: date-time` (CurationEvent.timestamp) only when
+    # this is installed. Without it the closed gate would silently skip the
+    # check, and src/pathwaymech/schema.py would fail at import (KeyError).
+    "rfc3339-validator>=0.1.4",
     "pyyaml>=6.0.2",
 ]
 
@@ -51,6 +59,21 @@ pythonpath = ["."]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+# extend-exclude, not exclude: `exclude` REPLACES ruff's defaults (which cover
+# .venv, .git, build/, ...). The files below are claw-governed and vendored
+# byte-identical to canon, so they are linted there, not here: reformatting one
+# would fail scripts/check_vendored_sync.sh.
+extend-exclude = [
+    "scripts/check_vendored_sync.py",
+    "scripts/validate_id_label_correspondence.py",
+    "scripts/chem_formula.py",
+    "scripts/deep_research_contract.py",
+    "tests/test_skill_frontmatter.py",
+    "tests/test_curation_timestamp_schema.py",
+    "tests/test_id_label_empty_adapter.py",
+    "tests/test_id_label_unknown_prefix.py",
+    "tests/test_id_label_plausibility.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

@@ -1,9 +1,20 @@
 from __future__ import annotations
 
+import re
 from collections import Counter
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from typing import Any
+
+from jsonschema import FormatChecker
+
+# The fleet's deterministic curation-timestamp year guard (CurationEvent.timestamp
+# in the schema): rejects the 2206-for-2026 class of typo without a wall clock.
+CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
+# `range: datetime` in the schema becomes JSON Schema `format: date-time`, which the
+# closed gate checks with jsonschema's FormatChecker. Using the same checker here
+# keeps the two validators agreeing on what a timestamp is by construction.
+_DATE_TIME = FormatChecker(formats=["date-time"])
 
 ALLOWED_CURIE_PREFIXES = {
     "BV-BRC",
@@ -123,6 +134,8 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         references,
         errors,
     )
+    if "curation_history" in record:
+        _validate_curation_history(record["curation_history"], errors)
 
     if errors:
         raise ValidationError(errors)
@@ -279,6 +292,28 @@ def _validate_references(value: Any, errors: list[str]) -> set[str]:
         if not item.get("title") and not item.get("citation"):
             errors.append(f"{path} must include title or citation")
     return ids
+
+
+def _validate_curation_history(value: Any, errors: list[str]) -> None:
+    if not isinstance(value, list):
+        errors.append("curation_history must be a list")
+        return
+
+    for index, item in enumerate(value):
+        path = f"curation_history[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{path} must be a mapping")
+            continue
+        timestamp = item.get("timestamp")
+        if (
+            not isinstance(timestamp, str)
+            or not CURATION_TIMESTAMP.match(timestamp)
+            or not _DATE_TIME.conforms(timestamp, "date-time")
+        ):
+            errors.append(
+                f"{path}.timestamp must be a quoted RFC 3339 date-time with a timezone, "
+                f"starting 20YY-, such as '2026-09-28T12:00:00Z': {timestamp!r}"
+            )
 
 
 def _validate_edges(
