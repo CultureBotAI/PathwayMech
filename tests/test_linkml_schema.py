@@ -347,7 +347,7 @@ def test_the_conventional_script_runs_the_closed_gate() -> None:
 
 
 # --------------------------------------------------------------------------
-# curation_history: the fleet's shared CurationEvent shape, optional here
+# curation_history: CurationEvent (TaxonMech's shape; the year guard is fleet-wide), optional
 # --------------------------------------------------------------------------
 
 
