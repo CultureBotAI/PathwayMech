@@ -4,11 +4,11 @@ import re
 from pathlib import Path
 
 XREF_PATTERNS = (
-    ("CAS", re.compile(r"\bCAS(?::| Registry Number:)(\d{2,7}-\d{2}-\d)\b", re.I)),
-    ("ChemSpider", re.compile(r"\bChemSpider:(\d+)\b", re.I)),
-    ("HMDB", re.compile(r"\bHMDB:(HMDB\d+)\b", re.I)),
-    ("KEGG", re.compile(r"\bKEGG(?:\s+COMPOUND)?:(C\d{5})\b", re.I)),
-    ("PubChem", re.compile(r"\bPubChem(?:[-\s]Compound)?:(\d+)\b", re.I)),
+    ("CAS", re.compile(r"\bCAS(?::| Registry Number:)\s*(\d{2,7}-\d{2}-\d)\b", re.I)),
+    ("ChemSpider", re.compile(r"\bChemSpider:\s*(\d+)\b", re.I)),
+    ("HMDB", re.compile(r"\bHMDB:\s*(HMDB\d+)\b", re.I)),
+    ("KEGG", re.compile(r"\bKEGG(?:\s+COMPOUND)?:\s*(C\d{5})\b", re.I)),
+    ("PubChem", re.compile(r"\bPubChem(?:[-\s]Compound)?:\s*(\d+)\b", re.I)),
 )
 
 
@@ -17,6 +17,7 @@ def load_chebi_xrefs(path: Path) -> dict[str, str]:
     mappings: dict[str, str] = {}
     current_id: str | None = None
     current_xrefs: set[str] = set()
+    in_term = False
     is_obsolete = False
 
     def flush() -> None:
@@ -27,11 +28,14 @@ def load_chebi_xrefs(path: Path) -> dict[str, str]:
 
     for raw_line in path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
-        if line == "[Term]":
+        if line.startswith("[") and line.endswith("]"):
             flush()
             current_id = None
             current_xrefs = set()
+            in_term = line == "[Term]"
             is_obsolete = False
+            continue
+        if not in_term:
             continue
         if line.startswith("id: CHEBI:"):
             current_id = line.removeprefix("id: ")

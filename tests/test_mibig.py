@@ -16,8 +16,11 @@ def test_mibig_json_builds_cluster_lookup_rows() -> None:
     assert cluster.id == "MIBiG:BGC0000001"
     assert cluster.products == ("mini metabolite",)
     assert cluster.genes == ("gene-a", "gene-b")
-    assert [locus.accession for locus in cluster.loci] == ["ABCD01000001.1"]
-    assert [(locus.start, locus.end) for locus in cluster.loci] == [(10, 80)]
+    assert [locus.accession for locus in cluster.loci] == [
+        "ABCD01000001.1",
+        "ABCD01000001.1",
+    ]
+    assert [(locus.start, locus.end) for locus in cluster.loci] == [(10, 80), (120, 160)]
     assert cluster.references == ("PMID:12345678",)
     assert cluster.biosynthetic_classes == ("RiPP",)
     assert cluster.organism == "Mini test microbe"
@@ -27,7 +30,8 @@ def test_mibig_json_builds_cluster_lookup_rows() -> None:
 def test_mibig_seed_rows_emit_tsv() -> None:
     assert mibig_seed_rows([mibig_cluster(load_mibig_json(FIXTURE))]) == [
         "mibig_id\tproducts\tgenes\tloci\treferences",
-        "MIBiG:BGC0000001\tmini metabolite\tgene-a;gene-b\tABCD01000001.1\tPMID:12345678",
+        "MIBiG:BGC0000001\tmini metabolite\tgene-a;gene-b\t"
+        "ABCD01000001.1;ABCD01000001.1\tPMID:12345678",
     ]
 
 
@@ -51,7 +55,10 @@ def test_mibig_cluster_builds_bgc_shaped_pathway_record() -> None:
                 "products": ["mini metabolite"],
                 "biosynthetic_classes": ["RiPP"],
                 "genes": [{"id": "gene-a"}, {"id": "gene-b"}],
-                "loci": [{"accession": "ABCD01000001.1", "start": 10, "end": 80}],
+                "loci": [
+                    {"accession": "ABCD01000001.1", "start": 10, "end": 80},
+                    {"accession": "ABCD01000001.1", "start": 120, "end": 160},
+                ],
             }
         ],
         "references": [
@@ -59,3 +66,12 @@ def test_mibig_cluster_builds_bgc_shaped_pathway_record() -> None:
             {"id": "PMID:12345678", "title": "MIBiG literature reference PMID:12345678"},
         ],
     }
+
+
+def test_mibig_cluster_rejects_records_without_a_cluster_accession() -> None:
+    try:
+        mibig_cluster({"loci": [{"accession": "ABCD01000001.1"}]})
+    except ValueError as error:
+        assert str(error) == "MIBiG JSON missing mibig_accession"
+    else:
+        raise AssertionError("expected a missing accession error")

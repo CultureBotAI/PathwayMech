@@ -36,7 +36,7 @@ def load_mibig_json(path: Path) -> dict[str, Any]:
 
 
 def mibig_cluster(record: dict[str, Any]) -> MibigCluster:
-    accession = _first_string(record, "mibig_accession", "accession")
+    accession = _cluster_accession(record)
     if not accession:
         raise ValueError("MIBiG JSON missing mibig_accession")
 
@@ -44,7 +44,7 @@ def mibig_cluster(record: dict[str, Any]) -> MibigCluster:
         id=f"MIBiG:{accession.removeprefix('MIBiG:')}",
         products=tuple(sorted(_compound_names(record))),
         genes=tuple(sorted(_gene_ids(record))),
-        loci=tuple(sorted(_loci(record), key=lambda locus: locus.accession)),
+        loci=tuple(sorted(_loci(record), key=_locus_sort_key)),
         references=tuple(sorted(_pubmed_references(record))),
         biosynthetic_classes=tuple(sorted(_biosynthetic_classes(record))),
         organism=_organism_name(record),
@@ -147,6 +147,21 @@ def _compound_names(value: Any) -> set[str]:
             if isinstance(name, str) and name:
                 names.add(name)
     return names
+
+
+def _cluster_accession(value: dict[str, Any]) -> str | None:
+    for field in ["mibig_accession", "accession"]:
+        accession = value.get(field)
+        if isinstance(accession, str) and accession:
+            return accession
+    cluster = value.get("cluster")
+    if isinstance(cluster, dict):
+        return _cluster_accession(cluster)
+    return None
+
+
+def _locus_sort_key(locus: MibigLocus) -> tuple[str, int, int]:
+    return (locus.accession, locus.start or 0, locus.end or 0)
 
 
 def _gene_ids(value: Any) -> set[str]:
