@@ -17,8 +17,22 @@ def test_configured_sources_have_ingest_priorities() -> None:
 
     sources = validate_source_inventory(config)
 
-    assert [source.id for source in sources[:3]] == ["go-cam", "wikipathways", "rhea"]
-    assert [source.id for source in sources[-3:]] == ["modelseed", "bigg", "bv-brc"]
+    assert [source.id for source in sources] == [
+        "go-cam",
+        "wikipathways",
+        "rhea",
+        "mibig",
+        "reactome",
+        "pathbank",
+        "metacyc",
+        "kegg",
+        "go",
+        "modelseed",
+        "bigg",
+        "bv-brc",
+        "gapmind",
+        "unipathway",
+    ]
     assert [source.priority for source in sources] == sorted(
         source.priority for source in sources
     )
@@ -36,6 +50,8 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "Gene Ontology Causal Activity Models"
     )
     assert any(row.startswith("60\tpathbank\tfixture\ttrue\t") for row in rows)
+    assert "130\tgapmind\tdeferred\tfalse\tenzyme-step-rulebase\tGapMind" in rows
+    assert "140\tunipathway\tdeferred\tfalse\tpathway-crosswalk\tUniPathway" in rows
 
 
 def test_duplicate_source_priority_fails() -> None:

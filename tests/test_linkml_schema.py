@@ -53,6 +53,9 @@ def _evidence(r: dict) -> dict:
 CASES = {
     "an undeclared record key": lambda r: r.__setitem__("notes", "x"),
     "an undeclared node key": lambda r: r["participants"][0].__setitem__("role", "x"),
+    "an undeclared gene cluster key": lambda r: _gene_cluster(r).__setitem__("role", "x"),
+    "an undeclared cluster gene key": lambda r: _cluster_gene(r).__setitem__("role", "x"),
+    "an undeclared genomic locus key": lambda r: _genomic_locus(r).__setitem__("role", "x"),
     "an undeclared edge key": lambda r: _edge(r).__setitem__("weight", 1),
     "an undeclared evidence key": lambda r: _evidence(r).__setitem__("page", 3),
     "a predicate outside the enum": lambda r: _edge(r).__setitem__("predicate", "causes"),
@@ -60,6 +63,7 @@ CASES = {
         "id", "FOO:1"
     ),
     "a record id that is not a CURIE": lambda r: r.__setitem__("id", "nocolon"),
+    "a gene cluster outside MIBiG": lambda r: _gene_cluster(r).__setitem__("id", "RHEA:1"),
     "a reference with neither title nor citation": lambda r: r["references"].__setitem__(
         0, {"id": r["references"][0]["id"]}
     ),
@@ -130,9 +134,35 @@ def test_the_command_names_the_failing_record(tmp_path, capsys, record) -> None:
 # --------------------------------------------------------------------------
 
 # Where one instance of each class sits in a record, to break it there.
+_GENE_CLUSTER = {
+    "id": "MIBiG:BGC0000001",
+    "label": "mini metabolite biosynthetic gene cluster",
+    "products": ["mini metabolite"],
+    "biosynthetic_classes": ["RiPP"],
+    "genes": [{"id": "gene-a", "label": "gene A"}],
+    "loci": [{"accession": "ABCD01000001.1", "start": 10, "end": 80}],
+}
+
+
+def _gene_cluster(r: dict) -> dict:
+    r["gene_clusters"] = [copy.deepcopy(_GENE_CLUSTER)]
+    return r["gene_clusters"][0]
+
+
+def _cluster_gene(r: dict) -> dict:
+    return _gene_cluster(r)["genes"][0]
+
+
+def _genomic_locus(r: dict) -> dict:
+    return _gene_cluster(r)["loci"][0]
+
+
 _WHERE = {
     "PathwayRecord": lambda r: r,
     "NamedNode": lambda r: r["participants"][0],
+    "GeneCluster": _gene_cluster,
+    "ClusterGene": _cluster_gene,
+    "GenomicLocus": _genomic_locus,
     "MechanisticEdge": lambda r: r["mechanistic_edges"][0],
     "EvidenceItem": lambda r: r["mechanistic_edges"][0]["evidence"][0],
     "Reference": lambda r: r["references"][0],
@@ -166,6 +196,8 @@ EXPECTED_REQUIRED = (
         for slot in ("id", "label", "description", "pathway_type", "taxa", "participants",
                      "reactions", "mechanistic_edges", "references")
     }
+    | {("GeneCluster", slot) for slot in ("id", "label")}
+    | {("ClusterGene", "id"), ("GenomicLocus", "accession")}
     | {("MechanisticEdge", slot) for slot in ("id", "subject", "predicate", "object", "evidence")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("Reference", "id"),
        ("EvidenceItem", "reference_id"), ("EvidenceItem", "quote")}
@@ -175,6 +207,9 @@ EXPECTED_NON_BLANK = (
     | {("NamedNode", "id"), ("NamedNode", "label"), ("MechanisticEdge", "id"),
        ("EvidenceItem", "quote"), ("Reference", "id"), ("Reference", "title"),
        ("Reference", "citation")}
+    | {("GeneCluster", slot) for slot in ("id", "label", "products",
+                                          "biosynthetic_classes")}
+    | {("ClusterGene", "id"), ("ClusterGene", "label"), ("GenomicLocus", "accession")}
 )
 
 
@@ -199,6 +234,23 @@ def test_blanking_any_non_blank_slot_is_rejected(checker, record, name, slot) ->
     target = _WHERE[name](broken)
     target[slot] = "  "
     assert checker.validate(broken, TARGET_CLASS).results, f"{name}.{slot} accepts blanks"
+
+
+def test_bgc_shaped_fields_are_validated_by_both_schemas(checker, record) -> None:
+    edited = copy.deepcopy(record)
+    edited["gene_clusters"] = [copy.deepcopy(_GENE_CLUSTER)]
+    assert not checker.validate(edited, TARGET_CLASS).results
+    assert validate_record(edited).gene_clusters == [_GENE_CLUSTER]
+
+
+@pytest.mark.parametrize(("field", "value"), [("start", 0), ("end", -1)])
+def test_bgc_locus_coordinates_must_be_positive(checker, record, field, value) -> None:
+    broken = copy.deepcopy(record)
+    _genomic_locus(broken)[field] = value
+    assert checker.validate(broken, TARGET_CLASS).results
+    with pytest.raises(ValidationError) as raised:
+        validate_record(broken)
+    assert raised.value.errors == [f"gene_clusters[0].loci[0].{field} must be a positive integer"]
 
 
 # --------------------------------------------------------------------------

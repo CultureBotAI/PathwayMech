@@ -38,8 +38,9 @@ not by database fame. In order:
    IDs must be citable and versionable enough to reproduce a YAML record.
 3. **Cross references.** Prefer direct joins to `GO`, `gomodel`,
    `WikiPathways`, `MetaCyc`, `KEGG`, `RHEA`, `MIBiG`, `ModelSEED`, `BiGG`,
-   `BV-BRC`, `Reactome`, `PathBank`, `CHEBI`, `EC`, `SGD`, `UniProtKB`,
-   `NCBITaxon`, `GTDB`, or `GO_REF`.
+   `BV-BRC`, `Reactome`, `PathBank`, `CHEBI`, `LIPIDMAPS`, `CAS`,
+   `ChemSpider`, `HMDB`, `PubChem`, `EC`, `Ensembl`, `Entrez`, `NCBIProtein`,
+   `SGD`, `TubercuList`, `UniProtKB`, `NCBITaxon`, `GTDB`, or `GO_REF`.
 4. **Redistribution and attribution.** Verify the source's own terms. A
    restricted source may still guide manual curation, but it must not be
    copied into committed YAML unless the license allows that use.

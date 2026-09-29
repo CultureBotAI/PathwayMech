@@ -9,10 +9,26 @@ from xml.etree import ElementTree
 WIKIPATHWAYS_ACCESSION = re.compile(r"WP\d+")
 
 DATABASE_PREFIXES = {
+    "cas": "CAS",
     "chebi": "CHEBI",
+    "chemspider": "ChemSpider",
     "enzyme nomenclature": "EC",
+    "ensembl": "Ensembl",
+    "entrez gene": "Entrez",
     "geneontology": "GO",
+    "hmdb": "HMDB",
+    "kegg": "KEGG",
+    "kegg compound": "KEGG",
+    "kegg.compound": "KEGG",
+    "lipid maps": "LIPIDMAPS",
+    "lipid maps structure database": "LIPIDMAPS",
+    "lipidmaps": "LIPIDMAPS",
+    "ncbi protein": "NCBIProtein",
+    "pubchem": "PubChem",
+    "pubchem compound": "PubChem",
+    "pubchem-compound": "PubChem",
     "sgd": "SGD",
+    "tuberculist": "TubercuList",
     "uniprot": "UniProtKB",
     "uniprot-trembl": "UniProtKB",
     "uniprotkb": "UniProtKB",
@@ -32,9 +48,10 @@ def load_gpml_pathway(path: Path) -> ElementTree.Element:
 def gpml_to_pathway_record(
     root: ElementTree.Element,
     fallback_id: str,
+    compound_mappings: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     pathway_id = _pathway_id(root) or fallback_id
-    node_by_graph_id = _data_nodes(root)
+    node_by_graph_id = _data_nodes(root, compound_mappings or {})
     nodes_by_group_graph_id = _group_nodes(root, node_by_graph_id)
     reaction_by_anchor_id = _anchor_reactions(root, pathway_id)
     references = _publication_references(root)
@@ -127,14 +144,17 @@ def _pathway_id(root: ElementTree.Element) -> str | None:
     return wikipathways_curie_from_text(root.get("Version") or "")
 
 
-def _data_nodes(root: ElementTree.Element) -> dict[str, dict[str, str]]:
+def _data_nodes(
+    root: ElementTree.Element,
+    compound_mappings: dict[str, str],
+) -> dict[str, dict[str, str]]:
     data_nodes = {}
     for node in _children(root, "DataNode"):
         graph_id = node.get("GraphId")
         xref = _first_child(node, "Xref")
         if not graph_id or xref is None:
             continue
-        identifier = _xref_curie(xref)
+        identifier = _xref_curie(xref, compound_mappings)
         if not identifier:
             continue
         data_nodes[graph_id] = {
@@ -144,13 +164,17 @@ def _data_nodes(root: ElementTree.Element) -> dict[str, dict[str, str]]:
     return data_nodes
 
 
-def _xref_curie(xref: ElementTree.Element) -> str | None:
-    database = _attribute(xref, "Database", "dataSource").lower()
+def _xref_curie(
+    xref: ElementTree.Element,
+    compound_mappings: dict[str, str],
+) -> str | None:
+    database = _attribute(xref, "Database", "dataSource").lower().strip()
     identifier = _attribute(xref, "ID", "identifier")
     prefix = DATABASE_PREFIXES.get(database)
     if not prefix or not identifier:
         return None
-    return _format_curie(prefix, identifier)
+    curie = _format_curie(prefix, identifier)
+    return compound_mappings.get(curie, curie)
 
 
 def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:

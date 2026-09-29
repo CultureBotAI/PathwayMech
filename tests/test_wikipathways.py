@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 
 import yaml
 
+from pathwaymech.chebi import load_chebi_xrefs
 from pathwaymech.schema import validate_record
 from pathwaymech.wikipathways import (
     gpml_to_pathway_record,
@@ -13,6 +14,7 @@ from pathwaymech.wikipathways import (
 )
 
 FIXTURE = Path("tests/fixtures/wikipathways/WPTEST.gpml")
+CHEBI_FIXTURE = Path("tests/fixtures/chebi/kegg_compounds.obo")
 
 
 def test_gpml_converts_to_valid_pathway_record() -> None:
@@ -27,7 +29,9 @@ def test_gpml_converts_to_valid_pathway_record() -> None:
         {"id": "CHEBI:58289", "label": "2-phosphonato-D-glycerate(3-)"},
         {"id": "UniProtKB:P12345", "label": "Mini enzyme"},
         {"id": "SGD:S000000001", "label": "Mini SGD enzyme"},
+        {"id": "CAS:98-92-0", "label": "Nicotinamide"},
         {"id": "CHEBI:15377", "label": "H2O"},
+        {"id": "LIPIDMAPS:LMFA01010001", "label": "ATP"},
         {"id": "CHEBI:456215", "label": "AMP"},
     ]
     assert record.reactions == [
@@ -46,8 +50,10 @@ def test_gpml_converts_to_valid_pathway_record() -> None:
     ] == [
         ("CHEBI:58272", "consumes", "WikiPathways:WP9999/interaction"),
         ("WikiPathways:WP9999/interaction", "produces", "CHEBI:58289"),
+        ("CAS:98-92-0", "consumes", "WikiPathways:WP9999/anchored"),
         ("WikiPathways:WP9999/anchored", "produces", "CHEBI:456215"),
         ("CHEBI:15377", "consumes", "WikiPathways:WP9999/anchored"),
+        ("LIPIDMAPS:LMFA01010001", "consumes", "WikiPathways:WP9999/anchored"),
         ("SGD:S000000001", "catalyzes", "WikiPathways:WP9999/anchored"),
     ]
     assert record.references == [
@@ -79,7 +85,9 @@ def test_gpml_deduplicates_participants_by_stable_curie() -> None:
         {"id": "CHEBI:58272", "label": "3-phosphonato-D-glycerate(3-)"},
         {"id": "UniProtKB:P12345", "label": "Mini enzyme"},
         {"id": "SGD:S000000001", "label": "Mini SGD enzyme"},
+        {"id": "CAS:98-92-0", "label": "Nicotinamide"},
         {"id": "CHEBI:15377", "label": "H2O"},
+        {"id": "LIPIDMAPS:LMFA01010001", "label": "ATP"},
         {"id": "CHEBI:456215", "label": "AMP"},
     ]
     assert record.mechanistic_edges[1]["object"] == "CHEBI:58272"
@@ -90,3 +98,110 @@ def test_wikipathways_fallback_id_uses_filename_accession() -> None:
         wikipathways_fallback_id(Path("Sc_NAD_salvage_pathway_V_WP171_20260901.gpml"))
         == "WikiPathways:WP171"
     )
+
+
+def test_gpml_can_map_kegg_compound_xrefs_to_chebi() -> None:
+    root = ElementTree.fromstring(
+        """
+        <Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="KEGG compound">
+          <DataNode TextLabel="2PG" GraphId="source" Type="Metabolite">
+            <Xref Database="KEGG Compound" ID="C00197" />
+          </DataNode>
+          <DataNode TextLabel="ATP" GraphId="target" Type="Metabolite">
+            <Xref Database="LIPID MAPS" ID="LMFA01010001" />
+          </DataNode>
+          <Interaction GraphId="interaction">
+            <Graphics ConnectorType="Straight">
+              <Point GraphRef="source" />
+              <Point GraphRef="target" ArrowHead="Arrow" />
+            </Graphics>
+          </Interaction>
+        </Pathway>
+        """
+    )
+
+    record = validate_record(
+        gpml_to_pathway_record(
+            root,
+            "WikiPathways:WPTEST",
+            load_chebi_xrefs(CHEBI_FIXTURE),
+        )
+    )
+
+    assert record.participants == [
+        {"id": "CHEBI:58289", "label": "2PG"},
+        {"id": "LIPIDMAPS:LMFA01010001", "label": "ATP"},
+    ]
+
+
+def test_gpml_can_keep_xrefs_from_leftover_microbial_maps() -> None:
+    root = ElementTree.fromstring(
+        """
+        <Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="leftover xrefs">
+          <DataNode TextLabel="hmdb" GraphId="hmdb" Type="Metabolite">
+            <Xref Database="HMDB" ID="HMDB0000902" />
+          </DataNode>
+          <DataNode TextLabel="cas" GraphId="cas" Type="Metabolite">
+            <Xref Database="CAS" ID="98-92-0" />
+          </DataNode>
+          <DataNode TextLabel="chemspider" GraphId="chemspider" Type="Metabolite">
+            <Xref Database="Chemspider" ID="555" />
+          </DataNode>
+          <DataNode TextLabel="pubchem" GraphId="pubchem" Type="Metabolite">
+            <Xref Database="PubChem-compound" ID="647" />
+          </DataNode>
+          <DataNode TextLabel="ensembl" GraphId="ensembl" Type="GeneProduct">
+            <Xref Database="Ensembl" ID="b0639" />
+          </DataNode>
+          <DataNode TextLabel="entrez" GraphId="entrez" Type="GeneProduct">
+            <Xref Database="Entrez Gene" ID="812223" />
+          </DataNode>
+          <DataNode TextLabel="tuberculist" GraphId="tuberculist" Type="GeneProduct">
+            <Xref Database="TubercuList" ID="Rv1905c" />
+          </DataNode>
+          <DataNode TextLabel="ncbi protein" GraphId="ncbi-protein" Type="Protein">
+            <Xref Database="NCBI Protein" ID="NP_215282" />
+          </DataNode>
+        </Pathway>
+        """
+    )
+
+    record = validate_record(gpml_to_pathway_record(root, "WikiPathways:WPTEST"))
+
+    assert record.participants == [
+        {"id": "HMDB:HMDB0000902", "label": "hmdb"},
+        {"id": "CAS:98-92-0", "label": "cas"},
+        {"id": "ChemSpider:555", "label": "chemspider"},
+        {"id": "PubChem:647", "label": "pubchem"},
+        {"id": "Ensembl:b0639", "label": "ensembl"},
+        {"id": "Entrez:812223", "label": "entrez"},
+        {"id": "TubercuList:Rv1905c", "label": "tuberculist"},
+        {"id": "NCBIProtein:NP_215282", "label": "ncbi protein"},
+    ]
+
+
+def test_gpml_can_map_native_chemical_xrefs_to_chebi() -> None:
+    root = ElementTree.fromstring(
+        """
+        <Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="chemical xrefs">
+          <DataNode TextLabel="hmdb" GraphId="hmdb" Type="Metabolite">
+            <Xref Database="HMDB" ID="HMDB0000902" />
+          </DataNode>
+          <DataNode TextLabel="cas" GraphId="cas" Type="Metabolite">
+            <Xref Database="CAS" ID="98-92-0" />
+          </DataNode>
+          <DataNode TextLabel="chemspider" GraphId="chemspider" Type="Metabolite">
+            <Xref Database="Chemspider" ID="555" />
+          </DataNode>
+          <DataNode TextLabel="pubchem" GraphId="pubchem" Type="Metabolite">
+            <Xref Database="PubChem-compound" ID="647" />
+          </DataNode>
+        </Pathway>
+        """
+    )
+
+    record = validate_record(
+        gpml_to_pathway_record(root, "WikiPathways:WPTEST", load_chebi_xrefs(CHEBI_FIXTURE))
+    )
+
+    assert record.participants == [{"id": "CHEBI:17154", "label": "hmdb"}]
