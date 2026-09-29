@@ -58,3 +58,20 @@ The strict validator is the source of truth:
 ```bash
 just validate
 ```
+
+A record may carry an optional `curation_history`: a list of the fleet's
+shared `CurationEvent` entries, each with a quoted ISO 8601 `timestamp`
+starting `20YY-` (the fleet's year guard) and optional `curator`, `action`,
+`changes` and `llm_assisted`. No recipe appends events yet.
+
+## Governed files
+
+Some files are vendored byte-identical from
+[culturebotai-claw](https://github.com/CultureBotAI/culturebotai-claw) at the
+full commit pinned in `scripts/.vendored_canon_ref`: the shared validators and
+tests under `scripts/` and `tests/`, `src/pathwaymech/schema/history.yaml` and
+`mech_shared.yaml`, `prompts/backlog-loop-goal.md` and
+`.github/workflows/pr-shepherd.yml`. Never edit one here. Change it in claw and
+re-pin; `bash scripts/check_vendored_sync.sh` (the `vendored-sync` workflow)
+fails on any local drift. Local rules for the backlog loop belong in
+`prompts/backlog-loop-local.md`, which is PathwayMech's own.

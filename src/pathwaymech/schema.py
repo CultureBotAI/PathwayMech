@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import re
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any
+
+# The fleet's deterministic curation-timestamp year guard (CurationEvent.timestamp
+# in the schema): rejects the 2206-for-2026 class of typo without a wall clock.
+CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
 
 ALLOWED_CURIE_PREFIXES = {
     "BV-BRC",
@@ -111,6 +116,8 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         references,
         errors,
     )
+    if "curation_history" in record:
+        _validate_curation_history(record["curation_history"], errors)
 
     if errors:
         raise ValidationError(errors)
@@ -171,6 +178,24 @@ def _validate_references(value: Any, errors: list[str]) -> set[str]:
         if not item.get("title") and not item.get("citation"):
             errors.append(f"{path} must include title or citation")
     return ids
+
+
+def _validate_curation_history(value: Any, errors: list[str]) -> None:
+    if not isinstance(value, list):
+        errors.append("curation_history must be a list")
+        return
+
+    for index, item in enumerate(value):
+        path = f"curation_history[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{path} must be a mapping")
+            continue
+        timestamp = item.get("timestamp")
+        if not isinstance(timestamp, str) or not CURATION_TIMESTAMP.match(timestamp):
+            errors.append(
+                f"{path}.timestamp must be a quoted ISO 8601 string starting 20YY-: "
+                f"{timestamp!r}"
+            )
 
 
 def _validate_edges(
