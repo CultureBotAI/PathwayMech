@@ -1,12 +1,12 @@
 # Microbial pathway source discovery
 
-Updated: 2026-09-22
+Updated: 2026-09-27
 
 This memo ranks resources that could feed PathwayMech with pathway definitions,
 reaction definitions, organism-specific pathway calls, or crosswalks. The local
-schema currently accepts only GO, MetaCyc, KEGG, RHEA, ChEBI, UniProtKB, EC,
-NCBITaxon, GTDB, PMID, and DOI CURIEs, so several resources below would need new
-prefixes before their native identifiers can be stored in curated YAML.
+schema accepts only whitelisted source and grounding CURIEs, so several
+resources below would need new prefixes before their native identifiers can be
+stored in curated YAML.
 
 ## Shortlist
 
@@ -22,6 +22,7 @@ prefixes before their native identifiers can be stored in curated YAML.
 | 2 | ModelSEED Biochemistry | ModelSEED reaction/compound namespace, aliases to KEGG/MetaCyc/Rhea/BiGG, and modeling-tested microbial reaction definitions | GitHub TSV/JSON plus ModelSEED web/API | Medium: released as CC BY, but records derived from KEGG and MetaCyc inherit source licenses |
 | 2 | BiGG Models | Published organism-scale microbial metabolic networks in SBML/JSON, with subsystem labels | Web API and model downloads | Medium: free for noncommercial research only |
 | 2 | BV-BRC Pathways and Subsystems | Genome-specific pathway presence calls, EC membership, and SEED functional-role subsystems across public bacterial genomes | BV-BRC API and Comparative Systems TSV/JSON outputs | Medium to high: KEGG-derived maps and service-specific data |
+| 2 | GapMind | Curated bacterial and archaeal amino-acid biosynthesis and small-carbon catabolism enzyme-step rules | PaperBLAST GitHub `gaps/aa` and `gaps/carbon` files | Medium: GPL-3.0 source and local rule IDs need review before reuse in MIT-licensed YAML |
 
 ## Canonical endpoints
 
@@ -38,6 +39,8 @@ prefixes before their native identifiers can be stored in curated YAML.
 | ModelSEED | https://github.com/ModelSEED/ModelSEEDDatabase | https://github.com/ModelSEED/ModelSEEDDatabase |
 | BiGG | https://bigg.ucsd.edu/data_access | https://bigg.ucsd.edu/license |
 | BV-BRC | https://www.bv-brc.org/api/doc/pathway | https://www.bv-brc.org/docs/quick_references/services/comparative_systems.html |
+| GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
+| UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway |
 
 ## Tier 0: already configured and worth keeping
 
@@ -177,6 +180,29 @@ are represented with KEGG, and the service folds in PATRIC/RASTtk calls, so it
 is a good way to find organisms and EC steps for a candidate pathway but should
 not be treated as the independent source of pathway topology.
 
+### GapMind
+
+GapMind is a curated rulebase for identifying amino-acid biosynthesis and
+small-carbon catabolism steps in bacterial and archaeal genomes. The 2020
+mSystems paper describes amino-acid GapMind as a web tool that uses many
+variant routes and a database of experimentally characterized proteins instead
+of transitive annotations, and its data-availability statement points to the
+PaperBLAST repository. Current PaperBLAST `master` stores amino-acid rules in
+`gaps/aa/*.steps`, carbon-source rules in `gaps/carbon/*.steps`, and TSV index
+files that assign local slugs such as `arg`, `thr`, `pyruvate`, and `xylose`
+to pathway labels.
+
+The `.steps` files are valuable for variant triage and enzyme support but are
+not a direct pathway-graph import. They define local steps and alternatives
+over EC numbers, UniProt exemplars, PaperBLAST curation tags, HMM accessions,
+and local imports rather than stable GapMind CURIEs or chemical reaction
+nodes. Some records cite MetaCyc pathway IDs in comments, and many encode
+transporters or protein complexes needed to decide whether a pathway is
+present in a genome. Keep GapMind disabled until there is a GPL-3.0 license
+decision, a parser for the local rule language, and a normalization pass that
+can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
+`MetaCyc` identifiers.
+
 ## Defer or use only as crosswalks
 
 | Resource | Why not a primary ingest source |
@@ -185,6 +211,7 @@ not be treated as the independent source of pathway topology.
 | MetaNetX / MNXref | Excellent compound, reaction, and model identifier reconciliation layer across BiGG, ModelSEED, BioCyc, and Reactome, but it intentionally abstracts away direction and is not a curated pathway-topology source. |
 | ChEBI | Required chemical ontology for participants, and already indirectly available through Rhea, but it does not define pathways. |
 | UniProtKB | Required protein/enzyme grounding layer, but it does not define pathway graphs. |
+| UniPathway | The inactive GO-hosted `UPA`, `ULS`, `UER`, `UCR`, and `UPC` ontology has pathway, subpathway, enzymatic-reaction, reaction, and compound identifiers plus reaction-participant edges, but its README says reactions have already moved into Rhea. Its GO mirror has no explicit license metadata and the historical chemistry was imported from KEGG LIGAND, so treat it as a legacy UniProtKB crosswalk unless licensing and a native `UPA` prefix are resolved. |
 | BioModels | Useful SBML corpus for individual kinetic or constraint models, including microbial models, but records are publication-scale mathematical models rather than a normalized catalogue of pathway definitions. |
 | antiSMASH DB | Comprehensive for predicted BGC regions, but predictions should not outrank MIBiG's experimentally characterized BGCs. |
 

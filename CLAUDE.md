@@ -13,9 +13,11 @@ Use stable CURIEs whenever possible:
 - `MetaCyc` and `KEGG` for pathway and reaction references.
 - `MIBiG` for biosynthetic gene cluster drafts and seed rows.
 - `ModelSEED`, `BiGG`, and `BV-BRC` for support seed rows.
-- `CHEBI` for metabolites and cofactors.
-- `SGD` for Saccharomyces Genome Database gene products from GO-CAM.
-- `EC` and `UniProtKB` for enzymes.
+- `CHEBI` and `LIPIDMAPS` for metabolites, lipids, and cofactors; `CAS`,
+  `ChemSpider`, `HMDB`, and `PubChem` for imported pathway-diagram chemical
+  xrefs that still need ChEBI review.
+- `EC`, `Ensembl`, `Entrez`, `NCBIProtein`, `SGD`, `TubercuList`, and
+  `UniProtKB` for enzymes, genes, and proteins.
 - `GO_REF` and `ECO` for GO-CAM evidence references and evidence codes.
 - `Reactome` and `PathBank` for BioPAX fixture draft IDs.
 - `WikiPathways` for GPML pathway and interaction draft IDs.

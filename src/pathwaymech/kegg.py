@@ -9,8 +9,12 @@ def load_kgml(path: Path) -> ElementTree.Element:
     return ElementTree.parse(path).getroot()
 
 
-def kgml_to_pathway_record(root: ElementTree.Element) -> dict[str, Any]:
+def kgml_to_pathway_record(
+    root: ElementTree.Element,
+    compound_mappings: dict[str, str] | None = None,
+) -> dict[str, Any]:
     pathway_id = _kegg_curie(root.get("name") or "path:unknown")
+    compound_mappings = compound_mappings or {}
     participants: dict[str, dict[str, str]] = {}
     reactions = []
     edges = []
@@ -23,6 +27,7 @@ def kgml_to_pathway_record(root: ElementTree.Element) -> dict[str, Any]:
             participant_id = _kegg_curie(substrate.get("name"))
             if not participant_id:
                 continue
+            participant_id = compound_mappings.get(participant_id, participant_id)
             participants[participant_id] = {"id": participant_id, "label": participant_id}
             edges.append(
                 _edge(
@@ -37,6 +42,7 @@ def kgml_to_pathway_record(root: ElementTree.Element) -> dict[str, Any]:
             participant_id = _kegg_curie(product.get("name"))
             if not participant_id:
                 continue
+            participant_id = compound_mappings.get(participant_id, participant_id)
             participants[participant_id] = {"id": participant_id, "label": participant_id}
             edges.append(
                 _edge(

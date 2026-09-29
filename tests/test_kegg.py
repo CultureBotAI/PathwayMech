@@ -5,10 +5,12 @@ from xml.etree import ElementTree
 
 import yaml
 
+from pathwaymech.chebi import load_chebi_xrefs
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
 from pathwaymech.schema import validate_record
 
 FIXTURE = Path("tests/fixtures/kegg/map00010.kgml")
+CHEBI_FIXTURE = Path("tests/fixtures/chebi/kegg_compounds.obo")
 
 
 def test_kgml_converts_to_valid_pathway_record() -> None:
@@ -30,6 +32,20 @@ def test_kgml_seed_yaml_round_trips_as_pathway_record() -> None:
     text = yaml.safe_dump(kgml_to_pathway_record(load_kgml(FIXTURE)), sort_keys=False)
 
     assert validate_record(yaml.safe_load(text)).id == "KEGG:map00010"
+
+
+def test_kgml_can_map_kegg_compounds_to_chebi() -> None:
+    record = validate_record(
+        kgml_to_pathway_record(
+            load_kgml(FIXTURE),
+            load_chebi_xrefs(CHEBI_FIXTURE),
+        )
+    )
+
+    assert record.participants == [
+        {"id": "CHEBI:58272", "label": "CHEBI:58272"},
+        {"id": "CHEBI:58289", "label": "CHEBI:58289"},
+    ]
 
 
 def test_kgml_skips_unnamed_reaction_participants() -> None:

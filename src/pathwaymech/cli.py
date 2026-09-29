@@ -11,11 +11,17 @@ import yaml
 from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.biopax import biopax_to_pathway_record, load_biopax
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
+from pathwaymech.chebi import load_chebi_xrefs
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
 from pathwaymech.metacyc import load_metacyc_dat, metacyc_pathway_records
-from pathwaymech.mibig import load_mibig_json, mibig_cluster, mibig_seed_rows
+from pathwaymech.mibig import (
+    load_mibig_json,
+    mibig_cluster,
+    mibig_pathway_record,
+    mibig_seed_rows,
+)
 from pathwaymech.modelseed import load_modelseed_tsv, modelseed_seed_rows
 from pathwaymech.rhea import load_rhea_tsv, rhea_seed_rows
 from pathwaymech.schema import ValidationError, validate_record
@@ -306,13 +312,23 @@ def import_wikipathways_main(argv: list[str] | None = None) -> int:
         description="Convert local WikiPathways GPML files to PathwayMech YAML drafts.",
     )
     parser.add_argument("paths", nargs="+", type=Path, help="GPML pathway path")
+    parser.add_argument(
+        "--chebi-obo",
+        type=Path,
+        help="optional ChEBI OBO file with chemical database xrefs",
+    )
     args = parser.parse_args(argv)
 
+    compound_mappings = load_chebi_xrefs(args.chebi_obo) if args.chebi_obo else {}
     records = []
     for path in args.paths:
         try:
             fallback_id = wikipathways_fallback_id(path)
-            record = gpml_to_pathway_record(load_gpml_pathway(path), fallback_id)
+            record = gpml_to_pathway_record(
+                load_gpml_pathway(path),
+                fallback_id,
+                compound_mappings,
+            )
             validate_record(record)
             records.append(record)
         except (ElementTree.ParseError, ValidationError, ValueError) as error:
@@ -347,6 +363,11 @@ def import_mibig_main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Extract MIBiG JSON biosynthetic gene cluster seed rows.",
     )
+    parser.add_argument(
+        "--yaml",
+        action="store_true",
+        help="emit draft PathwayMech records instead of seed rows",
+    )
     parser.add_argument("paths", nargs="+", type=Path, help="MIBiG JSON path")
     args = parser.parse_args(argv)
 
@@ -358,8 +379,19 @@ def import_mibig_main(argv: list[str] | None = None) -> int:
             print(f"{path}: {error}", file=sys.stderr)
             return 1
 
-    for row in mibig_seed_rows(clusters):
-        print(row)
+    if args.yaml:
+        records = [mibig_pathway_record(cluster) for cluster in clusters]
+        try:
+            for record in records:
+                validate_record(record)
+        except ValidationError as error:
+            for line in error.errors:
+                print(line, file=sys.stderr)
+            return 1
+        print(yaml.safe_dump_all(records, sort_keys=False), end="")
+    else:
+        for row in mibig_seed_rows(clusters):
+            print(row)
     return 0
 
 
@@ -412,12 +444,18 @@ def import_kegg_main(argv: list[str] | None = None) -> int:
         description="Convert local KEGG KGML files to PathwayMech YAML drafts.",
     )
     parser.add_argument("paths", nargs="+", type=Path, help="KEGG KGML path")
+    parser.add_argument(
+        "--chebi-obo",
+        type=Path,
+        help="optional ChEBI OBO file with chemical database xrefs",
+    )
     args = parser.parse_args(argv)
 
+    compound_mappings = load_chebi_xrefs(args.chebi_obo) if args.chebi_obo else {}
     records = []
     for path in args.paths:
         try:
-            record = kgml_to_pathway_record(load_kgml(path))
+            record = kgml_to_pathway_record(load_kgml(path), compound_mappings)
             validate_record(record)
             records.append(record)
         except (ElementTree.ParseError, ValidationError, ValueError) as error:
@@ -514,11 +552,53 @@ def _record_page(record: object) -> str:
         "</li>"
         for edge in record.mechanistic_edges
     )
+    clusters = _gene_clusters(getattr(record, "gene_clusters", []))
     return _page(
         record.label,
-        f"<p>{html.escape(record.description)}</p><ul>{edges}</ul>",
+        f"<p>{html.escape(record.description)}</p><ul>{edges}</ul>{clusters}",
         stylesheet_href="../style.css",
     )
+
+
+def _gene_clusters(clusters: list[dict[str, object]]) -> str:
+    if not clusters:
+        return ""
+
+    rendered = []
+    for cluster in clusters:
+        detail_items = []
+        for label, key in [
+            ("Products", "products"),
+            ("Classes", "biosynthetic_classes"),
+        ]:
+            values = cluster.get(key)
+            if isinstance(values, list) and values:
+                detail_items.append(f"{label}: {html.escape(', '.join(map(str, values)))}")
+
+        loci = cluster.get("loci")
+        if isinstance(loci, list) and loci:
+            accessions = [
+                str(locus.get("accession"))
+                for locus in loci
+                if isinstance(locus, dict) and locus.get("accession")
+            ]
+            if accessions:
+                detail_items.append(f"Loci: {html.escape(', '.join(accessions))}")
+
+        genes = cluster.get("genes")
+        if isinstance(genes, list) and genes:
+            gene_count = sum(isinstance(gene, dict) for gene in genes)
+            detail_items.append(f"Genes: {gene_count}")
+
+        details = "".join(f"<li>{item}</li>" for item in detail_items)
+        rendered.append(
+            "<li>"
+            f"<strong>{html.escape(str(cluster['label']))}</strong>"
+            f"<span>{html.escape(str(cluster['id']))}</span>"
+            f"<ul>{details}</ul>"
+            "</li>"
+        )
+    return f"<h2>Biosynthetic gene clusters</h2><ul>{''.join(rendered)}</ul>"
 
 
 def _slug(identifier: str) -> str:
