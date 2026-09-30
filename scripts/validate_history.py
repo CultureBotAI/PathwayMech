@@ -3,7 +3,7 @@
 
 One implementation, called by both `just validate-history` and `scripts/run_qc.py`,
 so the gate does not depend on the task runner being installed — CI runs qc with
-uv alone, and a `just` shell-out failed there with exit 127 (#54).
+uv alone, and a `just` shell-out failed there with exit 127 (TaxonMech#54).
 
     python scripts/validate_history.py                 # everything under history/
     python scripts/validate_history.py history/records/x/y.yaml

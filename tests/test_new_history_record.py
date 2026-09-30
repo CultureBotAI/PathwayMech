@@ -4,7 +4,7 @@ The point of this scaffolder is that a record gets written on a machine with no
 claw checkout, so the tests that matter are the ones about it being a genuine
 drop-in: same required arguments, same field order, schema-valid output. An
 interface that diverges from claw's reproduces the original trap in a new form —
-a command that works with claw and fails without it (#296).
+a command that works with claw and fails without it (TaxonMech#296).
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def _kinds_from_schema() -> set[str]:
 
     The previous version compared two hardcoded sets, so it could not notice the
     schema growing a kind — and the risk this guards is a KeyError at write time
-    for a kind with no directory (#296 review).
+    for a kind with no directory (TaxonMech#296 review).
     """
     schema = yaml.safe_load((REPO_ROOT / "src/pathwaymech/schema/history.yaml").read_text())
     return set(schema["enums"]["HistoryTargetKindEnum"]["permissible_values"])
@@ -55,7 +55,7 @@ def _run(tmp_path, *extra):
 def test_the_record_lands_under_its_kind_directory(tmp_path):
     """history/<kind-dir>/<slug>/, not history/records/<slug>/ for every kind —
     history/infrastructure/curation-history/ is a live example. The schema does
-    not constrain the path, so the wrong directory validates clean (#296)."""
+    not constrain the path, so the wrong directory validates clean (TaxonMech#296)."""
     main(["--kind", "infrastructure", "--slug", "curation-history",
           "--path", "docs/x.md", "--summary", "s", "--details", "d",
           "--history-root", str(tmp_path), "--timestamp", "2026-08-05T12:00:00Z"])
@@ -166,7 +166,7 @@ def test_the_placeholder_is_claw_s_exact_string(tmp_path):
     The vendored schema carries `pattern: '^(?!TODO: replace this placeholder)'`
     so a plain linkml-validate catches an unfilled record. A near-miss wording
     slips past the negative lookahead and makes an unfilled record permanently
-    committable, which is what the first version of this script did (#296).
+    committable, which is what the first version of this script did (TaxonMech#296).
     """
     main(["--kind", "record", "--slug", "x", "--target-root", "data/pathways",
           "--summary", "s", "--history-root", str(tmp_path),
@@ -188,7 +188,7 @@ def test_a_placeholder_record_fails_the_schema_as_the_readme_promises(tmp_path):
 
 def test_a_failed_force_rewrite_does_not_destroy_the_original(tmp_path, monkeypatch):
     """Append-only: validate a scratch file, then move. Writing first and
-    unlinking on failure loses the record --force was correcting (#296)."""
+    unlinking on failure loses the record --force was correcting (TaxonMech#296)."""
     import new_history_record as m
     _, path = _run(tmp_path)
     before = path.read_text()
@@ -231,8 +231,8 @@ def test_the_committed_records_still_validate():
 
 def test_sections_sits_between_outcome_and_summary(tmp_path):
     """Schema declaration order, and the order of the one committed record that
-    carries it. history/README's headline example passes --sections, so getting
-    this wrong put the DOCUMENTED invocation on the divergent path (#296)."""
+    carries it. TaxonMech's history README headline example passes --sections, so getting
+    this wrong put the DOCUMENTED invocation on the divergent path (TaxonMech#296)."""
     _, path = _run(tmp_path, "--sections", "causal_graphs, grounding")
     event = yaml.safe_load(path.read_text())["events"][0]
     assert list(event.keys()) == ["type", "outcome", "sections", "summary", "details"]

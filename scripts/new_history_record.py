@@ -3,9 +3,9 @@
 
 `just new-history` uses this repository-local scaffolder so its output does not
 depend on whether a `culturebotai-claw` checkout happens to be present. Both
-edits in #294 were hand-authored when the old recipe required claw, and
+edits in TaxonMech#294 were hand-authored when the old recipe required claw, and
 `history/README.md`'s own worked example is literally the issue that PR was
-closing (#296).
+closing (TaxonMech#296).
 
 The schema is already vendored at `src/pathwaymech/schema/history.yaml`, which is
 what `just validate-history` and CI check against, so nothing about writing a
@@ -42,7 +42,7 @@ HISTORY_ROOT = REPO_ROOT / "history"
 # The layout is history/<kind-dir>/<slug>/, not history/records/<slug>/ for
 # everything — history/infrastructure/curation-history/ is a live example. The
 # schema does not constrain the path, so writing to the wrong directory
-# validates clean and nothing downstream notices (#296 review).
+# validates clean and nothing downstream notices (TaxonMech#296 review).
 #
 # COPIED FROM claw's kg_microbe_history/scaffold.py KIND_DIRS, not inferred. The
 # pluralisation is genuinely uneven (mappings/reports but schema/other), which is
@@ -94,7 +94,7 @@ def _link(value: str, kind: str) -> str:
     pre-existing committed record (history/records/dumbbell_shaped/) carries full
     URLs — so a bare number is both schema-wrong and unlike the corpus. Accepting
     either form means the same command produces a valid record through this path
-    whichever way the caller writes it (#296).
+    whichever way the caller writes it (TaxonMech#296).
     """
     value = value.strip()
     if value.startswith(("http://", "https://")):
@@ -257,7 +257,7 @@ def main(argv: list[str] | None = None) -> int:
     # that takes different arguments reproduces the original trap in a new form:
     # a command that works on a machine with claw fails on one without. This was
     # caught by running `just new-history` on a machine that HAS claw and
-    # watching the two interfaces disagree (#296).
+    # watching the two interfaces disagree (TaxonMech#296).
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--kind", required=True, choices=sorted(KINDS))
     ap.add_argument("--slug", default="", help="target identifier / directory name")
@@ -304,7 +304,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Validate a TEMP file, then move into place. Writing first and unlinking on
     # failure destroys whatever --force was overwriting, in a directory whose
-    # entire policy is append-only (#296 review).
+    # entire policy is append-only (TaxonMech#296 review).
     # Keep the .yaml suffix so scratch files remain easy to inspect if the
     # process is interrupted before cleanup.
     scratch = out_path.with_name(f".{out_path.stem}.scratch.yaml")
