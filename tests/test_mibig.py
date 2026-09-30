@@ -107,6 +107,27 @@ def test_mibig_cluster_accepts_v4_top_level_json() -> None:
     assert cluster.taxon_id == "465541"
 
 
+def test_mibig_cluster_preserves_source_product_order_for_label() -> None:
+    cluster = mibig_cluster(
+        {
+            "cluster": {
+                "mibig_accession": "BGC0000070",
+                "compounds": [
+                    {"compound": "griseofulvin"},
+                    {"compound": "4-desmethylgriseofulvin"},
+                    {"compound": "griseofulvin"},
+                ],
+            }
+        }
+    )
+
+    assert cluster.products == ("griseofulvin", "4-desmethylgriseofulvin")
+    assert (
+        mibig_pathway_record(cluster)["label"]
+        == "griseofulvin and related metabolites biosynthetic gene cluster"
+    )
+
+
 def test_mibig_cluster_rejects_records_without_a_cluster_accession() -> None:
     try:
         mibig_cluster({"loci": [{"accession": "ABCD01000001.1"}]})
