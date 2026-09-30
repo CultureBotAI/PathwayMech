@@ -274,3 +274,18 @@ def test_the_quality_gate_runs_history_validation(monkeypatch):
     monkeypatch.setattr(cli, "_validate_history_gate", lambda: 1)
     assert cli.run_qc_main() == 1
 
+
+def test_the_history_gate_runs_without_the_virtualenv_on_path():
+    """It ran linkml-validate by bare name, so outside `uv run` it crashed (#211)."""
+    import os
+    import subprocess
+    import sys
+
+    completed = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "validate_history.py")],
+        cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        env={"PATH": "/usr/bin:/bin", "HOME": os.environ.get("HOME", "/tmp")},
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert "valid against" in completed.stdout
+

@@ -20,6 +20,16 @@ SCHEMA = REPO_ROOT / "src" / "pathwaymech" / "schema" / "history.yaml"
 TARGET_CLASS = "HistoryRecord"
 
 
+def linkml_validate() -> str:
+    """The linkml-validate installed beside this interpreter.
+
+    A bare name resolves only when the virtualenv is on PATH, as under `uv run`;
+    run any other way it raised FileNotFoundError instead of validating (#211).
+    """
+    beside = Path(sys.executable).with_name("linkml-validate")
+    return str(beside) if beside.exists() else "linkml-validate"
+
+
 def records(target: Path) -> list[Path]:
     if target.is_dir():
         return sorted(target.rglob("*.yaml"))
@@ -45,7 +55,7 @@ def main() -> int:
         return links.returncode
 
     result = subprocess.run(
-        ["linkml-validate", "--schema", str(SCHEMA), "--target-class", TARGET_CLASS,
+        [linkml_validate(), "--schema", str(SCHEMA), "--target-class", TARGET_CLASS,
          *[str(p) for p in paths]],
         cwd=REPO_ROOT, check=False,
     )
