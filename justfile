@@ -32,6 +32,22 @@ vendored-check:
 seed:
     uv run pathwaymech-seed-from-sources
 
+# Scaffold an append-only curation-history record (history/<kind>/<slug>/...).
+# See history/README.md. Needs no claw checkout.
+new-history *args:
+    uv run python scripts/new_history_record.py {{args}}
+
+# Validate history records (default: all of history/) against the vendored
+# schema. `just validate` runs this too, through pathwaymech-run-qc.
+validate-history *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    targets=({{args}})
+    if [ "${#targets[@]}" -eq 0 ]; then targets=(history); fi
+    for target in "${targets[@]}"; do
+      uv run python scripts/validate_history.py "$target"
+    done
+
 stage-imodulondb *args:
     uv run python scripts/stage_imodulondb_pathway_contexts.py {{args}}
 

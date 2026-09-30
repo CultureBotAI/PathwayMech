@@ -1,0 +1,25 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: history/README.md
+  slug: curation-history-adoption
+session:
+  id: 2026-09-30T042207Z-claude-code-e811b0
+  timestamp: '2026-09-30T04:22:07Z'
+  actors:
+  - type: ai_agent
+    name: claude-code
+    model: claude-opus-5-5
+    agent_tool: claude-code
+links:
+  issues:
+  - https://github.com/CultureBotAI/culturebotai-claw/issues/515
+events:
+- type: CREATE
+  outcome: changed
+  summary: 'Adopt the curation-history layer: scaffolder, validator, recipes and a QC gate'
+  details: Ports TaxonMech's repository-local history scaffolder and validator (scripts/new_history_record.py,
+    validate_history.py, validate_history_links.py) with PathwayMech's schema path and repository
+    URL, adds just new-history and just validate-history, and runs history validation in pathwaymech-run-qc
+    so CI checks every record. The HistoryRecord schema was vendored in PR 204. This is the
+    first record; it was written with the new scaffolder.

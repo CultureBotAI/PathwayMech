@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import subprocess
 import sys
 from pathlib import Path
 from xml.etree import ElementTree
@@ -257,10 +258,24 @@ def _validate_strict_gate() -> int:
     return validate_strict_main([])
 
 
+def _validate_history_gate() -> int:
+    """Every history/ record against the vendored HistoryRecord schema.
+
+    The same script `just validate-history` runs, so the gate needs no task
+    runner in CI.
+    """
+    return subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "validate_history.py")],
+        cwd=ROOT,
+        check=False,
+    ).returncode
+
+
 def run_qc_main() -> int:
     for check in [
         validate_main,
         _validate_strict_gate,
+        _validate_history_gate,
         check_provenance_main,
         validate_sources_main,
         check_docs_main,
