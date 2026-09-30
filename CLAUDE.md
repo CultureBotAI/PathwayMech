@@ -73,7 +73,7 @@ checkout); `just validate` validates every record. See `history/README.md`.
 
 ## Governed files
 
-These 14 files are vendored byte-identical from
+These 18 files are vendored byte-identical from
 [culturebotai-claw](https://github.com/CultureBotAI/culturebotai-claw) at the
 full commit pinned in `scripts/.vendored_canon_ref` (itself governed):
 
@@ -88,7 +88,13 @@ full commit pinned in `scripts/.vendored_canon_ref` (itself governed):
 - `src/pathwaymech/schema/history.yaml`, `src/pathwaymech/schema/mech_shared.yaml`
 - `prompts/backlog-loop-goal.md`
 - `.github/workflows/pr-shepherd.yml`
+- `scripts/auto_merge_ready_prs.py`, `scripts/verify_merge_integrity.py`
+- `.github/workflows/merge-queue-admission.yaml`,
+  `.github/workflows/verify-merge-integrity.yaml`
 
 Never edit one here. Change it in claw and re-pin. `just vendored-check` (the
 `vendored-sync` workflow) fails on any local drift. PathwayMech's own gates and
 data rules for the backlog loop are in `prompts/backlog-loop-local.md`.
+
+The deterministic merge workflows use the native queue, independently of model-agent
+cron profiles. See the [canonical merge automation guide](https://github.com/CultureBotAI/culturebotai-claw/blob/f27502fe02b73460af7b9c86d9fa97f72ac67933/docs/guides/MERGE_QUEUES.md) for admission, retry, cache coordination, pause controls, and tree verification.
