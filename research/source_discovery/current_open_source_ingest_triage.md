@@ -1,6 +1,6 @@
 # Current open-source ingest triage
 
-Updated: 2026-09-29
+Updated: 2026-09-30
 
 This note records the terminal sweep of the currently enabled open pathway
 sources after the first GO-CAM and WikiPathways records were ingested into
@@ -169,3 +169,83 @@ commit-ready. Candidate absence and duplicate checks used `rg --no-ignore
 focus on narrower maps with native chemistry that can be normalized to ChEBI
 and Rhea, or on improving MIM inhibition and chained-anchor handling before
 revisiting `WP2918` and `WP3641`.
+
+## Next source pick
+
+Reactome was the next real pathway source to promote past fixture coverage.
+It has a BioPAX importer, CC0 data exports in the current Reactome license
+terms, stable pathway and reaction identifiers, BioPAX/SBML downloads, and
+ChEBI/UniProt/GO/PubMed mappings that can seed PathwayMech participants,
+reactions, and evidence without KEGG or MetaCyc redistribution questions.
+
+The first canary was `Reactome:R-MTU-879325`, Mycothiol catabolism from
+Mycobacterium tuberculosis. It is a narrow BioPAX pathway with one biochemical
+reaction grounded to ChEBI participants, a UniProtKB catalyst, an NCBI Taxonomy
+source organism, and a PMID-backed Reactome reaction.
+
+The second canary was `Reactome:R-MTU-879299`, Mycothiol biosynthesis from the
+same organism. It expanded the Reactome exercise from one reaction to six
+ordered biochemical reactions, exposed long reaction comments that needed
+schema-safe evidence handling, and confirmed that a multi-reaction Reactome
+BioPAX pathway can preserve reaction-local PMIDs instead of falling back to the
+first publication in the document.
+
+The third accepted canary was `Reactome:R-MTU-868688`, Trehalose biosynthesis
+from the same organism. It is not an exact duplicate of the existing
+`MetaCyc:TRESYN-PWY` Escherichia coli record because the Reactome record
+preserves the M. tuberculosis OtsAB, TreS, and TreYZ routes with UniProtKB
+catalysts, ChEBI metabolites, five Reactome reaction IDs, and seven PMID
+references from BioPAX.
+
+The remaining direct Mycobacterium tuberculosis Reactome pathways are blocked
+after import. Candidate absence and duplicate checks included gitignored and
+hidden paths through `rg --no-ignore --hidden`. `R-MTU-936654` encodes CysO,
+CysO-COSH, and the CysO-CO-Cys adduct as distinct BioPAX protein states whose
+only stable xref is `UniProtKB:P9WP33`, so the importer now has to omit the
+carrier substrates and products. `R-MTU-936721` has the same issue for reduced
+and oxidized TrxA in the APS reductase step, plus ferredoxin redox states that
+do not survive ChEBI-only side import. `R-MTU-936635` omits the
+SubI--sulfate complex, leaving a sulfate-binding reaction with no importable
+product. `R-MTU-964903` is an exact shikimate/chorismate overlap with existing
+curation. `R-MTU-879235` mixes grounded formaldehyde/mycothiol reactions with
+generic electrophilic xenobiotic conjugates, and `R-MTU-9635470` leans on
+generic long-chain fatty-acid and carrier-protein classes for PDIM synthesis.
+
+The Reactome species sweep found no next non-human microbial canary after
+Mycobacterium tuberculosis. Escherichia coli `NCBITaxon:562` is listed by the
+all-species endpoint but has no top-level pathways in Content Service.
+Plasmodium falciparum, Saccharomyces cerevisiae, and Schizosaccharomyces pombe
+have large inferred `Metabolism` trees, but those trees include broad
+human-centered categories such as bile-acid, insulin-secretion,
+glycosaminoglycan, hemostasis, and neuronal-system pathways that are poor
+primary PathwayMech curation targets.
+
+Together those canaries keep the work smaller than adopting the all-species
+archive, exercise the shared Reactome/PathBank BioPAX path, and give enough
+signal to decide whether Reactome's microbial coverage is worth deeper
+source-specific normalization.
+
+Defer PathBank until its redistribution terms are clearer, keep MetaCyc and
+KEGG behind licensed local extractors, keep Rhea/ModelSEED/BiGG/BV-BRC as
+support layers, and leave GapMind and UniPathway disabled until their rulebase
+or legacy-ontology blockers are resolved.
+
+PathBank remains a local BioPAX/SBML fixture source rather than an ingest
+target: its current About page still combines Open Database License language
+with an explicit-permission requirement for commercial redistribution, while
+the public Downloads page still exposes older 2019 and 2020 BioPAX, SBML,
+PWML, and identifier-link archives.
+
+MIBiG is the next source after the Reactome canaries. It is an active, open
+source, but it contributes experimentally characterized biosynthetic-gene
+clusters rather than elementary reaction chains, so the first accepted canary
+uses `pathway_type: biosynthetic-gene-cluster` with an empty `reactions` list.
+`MIBiG:BGC0002072` covers linearmycin A/B/C biosynthesis in
+`NCBITaxon:465541`, preserves the `CP011664.1` GenBank locus coordinates, nine
+protein accessions from the v4 modular PKS annotation, the `PKS:Type I`
+biosynthetic class, and three PubMed references. The accession and product
+absence check used `rg --no-ignore --hidden` before adding the record.
+
+The compact MIBiG JSON shape used by older fixtures stores literature under
+`cluster.publications`; the importer now reads those PMIDs in addition to
+top-level `legacy_references`, while still skipping unsupported DOI references.

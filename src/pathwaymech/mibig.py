@@ -229,9 +229,12 @@ def _pubmed_references(value: Any) -> set[str]:
         for pmid in _walk_string_values(value, field):
             if reference := _pmid_reference(pmid):
                 references.add(reference)
-    for reference in _walk_list_members(value, "legacy_references"):
-        if isinstance(reference, str) and (pmid := _pmid_reference(reference)):
-            references.add(pmid)
+    for field in ["legacy_references", "publications"]:
+        for reference in _walk_list_members(value, field):
+            if not isinstance(reference, str):
+                continue
+            if pmid := _pmid_reference(reference):
+                references.add(pmid)
     return references
 
 
