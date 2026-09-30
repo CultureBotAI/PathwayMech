@@ -67,6 +67,10 @@ entries (the same shape TaxonMech uses), each with a quoted RFC 3339
 `20YY-` (the fleet's shared year guard), plus optional `curator`, `action`,
 `changes` and `llm_assisted`. No recipe appends events yet.
 
+Session-level provenance goes in `history/` instead: scaffold a record with
+`just new-history` and check it with `just validate-history` (both need no claw
+checkout); `just validate` validates every record. See `history/README.md`.
+
 ## Governed files
 
 These 14 files are vendored byte-identical from
