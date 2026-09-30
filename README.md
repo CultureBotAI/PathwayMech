@@ -68,6 +68,9 @@ Files vendored from claw (listed in `CLAUDE.md`) are checked separately, with
 network access, by `just vendored-check`; CI runs it as the `vendored-sync`
 workflow.
 
+Follow the [merge queue workflow](docs/MERGE_QUEUE.md) when submitting a pull
+request to protected `main`.
+
 ## Published site
 
 The browser is published at <https://culturebotai.github.io/PathwayMech/>.
