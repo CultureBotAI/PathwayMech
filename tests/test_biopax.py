@@ -16,24 +16,47 @@ def test_biopax_converts_to_valid_reactome_record() -> None:
 
     record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
 
-    assert record.id == "Reactome:R-TEST"
+    assert record.id == "Reactome:R-TEST-12345"
     assert record.label == "Mini BioPAX glycolysis"
+    assert record.taxa == [{"id": "NCBITaxon:12345", "label": "Mini test microbe"}]
     assert record.participants == [
         {"id": "CHEBI:58272", "label": "3-phosphonato-D-glycerate(3-)"},
         {"id": "CHEBI:58289", "label": "2-phosphonato-D-glycerate(3-)"},
+        {"id": "UniProtKB:P12345", "label": "Mini enzyme"},
     ]
+    assert {"id": "UniProtKB:P99999", "label": "Mini carrier"} not in record.participants
     assert record.reactions == [
         {
-            "id": "Reactome:R-TEST/reaction",
+            "id": "Reactome:R-TEST-67890",
             "label": "phosphoglycerate mutase reaction",
         }
     ]
     assert [edge["predicate"] for edge in record.mechanistic_edges] == [
         "consumes",
         "produces",
+        "catalyzes",
     ]
+    assert record.mechanistic_edges[0]["evidence"] == [
+        {
+            "reference_id": "PMID:12345678",
+            "quote": "Mini BioPAX reaction evidence.",
+        }
+    ]
+    assert record.mechanistic_edges[2] == {
+        "id": "biopax-edge-3",
+        "subject": "UniProtKB:P12345",
+        "predicate": "catalyzes",
+        "object": "Reactome:R-TEST-67890",
+        "evidence": [
+            {
+                "reference_id": "PMID:12345678",
+                "quote": "Mini BioPAX reaction evidence.",
+            }
+        ],
+    }
     assert record.references == [
-        {"id": "PMID:12345678", "title": "BioPAX publication PMID:12345678"}
+        {"id": "PMID:87654321", "title": "Pathway-only BioPAX publication"},
+        {"id": "PMID:12345678", "title": "Mini BioPAX publication"}
     ]
 
 
@@ -45,6 +68,22 @@ def test_biopax_seed_yaml_round_trips_as_pathbank_record() -> None:
     )
 
     assert validate_record(yaml.safe_load(text)).id == "PathBank:SMP0000001"
+    assert "id: PathBank:SMP0000001/reaction" in text
+
+
+def test_biopax_truncates_long_reaction_comments() -> None:
+    long_quote = "a" * 401
+    text = FIXTURE.read_text(encoding="utf-8").replace(
+        "Mini BioPAX reaction evidence.",
+        long_quote,
+    )
+
+    record = validate_record(
+        biopax_to_pathway_record(ElementTree.fromstring(text), "Reactome:R-TEST")
+    )
+
+    quote = record.mechanistic_edges[0]["evidence"][0]["quote"]
+    assert quote == "a" * 400
 
 
 def test_biopax_deduplicates_participants_by_stable_curie() -> None:
@@ -58,6 +97,7 @@ def test_biopax_deduplicates_participants_by_stable_curie() -> None:
     )
 
     assert record.participants == [
-        {"id": "CHEBI:58272", "label": "3-phosphonato-D-glycerate(3-)"}
+        {"id": "CHEBI:58272", "label": "3-phosphonato-D-glycerate(3-)"},
+        {"id": "UniProtKB:P12345", "label": "Mini enzyme"},
     ]
     assert record.mechanistic_edges[1]["object"] == "CHEBI:58272"

@@ -6,9 +6,13 @@ from typing import Any
 from xml.etree import ElementTree
 
 RDF = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+MAX_EVIDENCE_QUOTE_LENGTH = 400
 DB_PREFIXES = {
     "chebi": "CHEBI",
     "go": "GO",
+    "gene ontology": "GO",
+    "ncbi taxonomy": "NCBITaxon",
+    "reactome": "Reactome",
     "uniprot": "UniProtKB",
     "uniprotkb": "UniProtKB",
 }
@@ -22,28 +26,46 @@ def biopax_to_pathway_record(
     root: ElementTree.Element,
     fallback_id: str,
 ) -> dict[str, Any]:
+    source_prefix = fallback_id.split(":", 1)[0]
     xref_by_ref = _unification_xrefs(root)
     participant_by_ref = _participants(root, xref_by_ref)
-    references = _publication_references(root)
-    evidence_reference = next(iter(references.values()), _fallback_reference(fallback_id))
-    references.setdefault(evidence_reference["id"], evidence_reference)
+    complex_components_by_ref = _complex_components(root)
+    references, publication_reference_by_ref = _publication_references(root)
+    default_reference = next(iter(references.values()), _fallback_reference(fallback_id))
+    references.setdefault(default_reference["id"], default_reference)
 
+    pathway_id = _pathway_id(root, xref_by_ref, source_prefix) or fallback_id
+    reaction_by_ref = {}
+    evidence_quote_by_reaction_ref: dict[str, str | None] = {}
+    evidence_reference_by_reaction_ref: dict[str, str] = {}
     reactions = []
     edges: list[dict[str, Any]] = []
     for reaction in _elements(root, "BiochemicalReaction"):
         reaction_ref = _element_ref(reaction)
-        reaction_id = f"{fallback_id}/{reaction_ref}"
+        reaction_id = (
+            _source_xref(reaction, xref_by_ref, source_prefix)
+            or f"{pathway_id}/{reaction_ref}"
+        )
+        reaction_by_ref[reaction_ref] = reaction_id
         reactions.append(
             {"id": reaction_id, "label": _text_child(reaction, "displayName") or reaction_ref}
         )
 
+        evidence_quote = _text_child(reaction, "comment")
+        evidence_reference = (
+            _publication_reference_id(reaction, publication_reference_by_ref)
+            or default_reference["id"]
+        )
+        evidence_quote_by_reaction_ref[reaction_ref] = evidence_quote
+        evidence_reference_by_reaction_ref[reaction_ref] = evidence_reference
         for participant_id in _side_participants(reaction, "left", participant_by_ref):
             edges.append(
                 _edge(
                     subject=participant_id,
                     predicate="consumes",
                     obj=reaction_id,
-                    evidence_reference=evidence_reference["id"],
+                    evidence_reference=evidence_reference,
+                    evidence_quote=evidence_quote,
                 )
             )
         for participant_id in _side_participants(reaction, "right", participant_by_ref):
@@ -52,17 +74,46 @@ def biopax_to_pathway_record(
                     subject=reaction_id,
                     predicate="produces",
                     obj=participant_id,
-                    evidence_reference=evidence_reference["id"],
+                    evidence_reference=evidence_reference,
+                    evidence_quote=evidence_quote,
                 )
             )
 
+    for catalysis in _elements(root, "Catalysis"):
+        reaction_ref = _resource_child(catalysis, "controlled")
+        if reaction_ref not in reaction_by_ref:
+            continue
+        for participant_id in _controller_participants(
+            _resource_child(catalysis, "controller"),
+            participant_by_ref,
+            complex_components_by_ref,
+        ):
+            if not participant_id.startswith("UniProtKB:"):
+                continue
+            edges.append(
+                _edge(
+                    subject=participant_id,
+                    predicate="catalyzes",
+                    obj=reaction_by_ref[reaction_ref],
+                    evidence_reference=evidence_reference_by_reaction_ref[reaction_ref],
+                    evidence_quote=evidence_quote_by_reaction_ref.get(reaction_ref),
+                )
+            )
+
+    used_participants = {edge["subject"] for edge in edges} | {
+        edge["object"] for edge in edges
+    }
     return {
-        "id": fallback_id,
-        "label": _pathway_label(root) or fallback_id,
-        "description": f"BioPAX pathway {fallback_id}.",
+        "id": pathway_id,
+        "label": _pathway_label(root) or pathway_id,
+        "description": f"BioPAX pathway {pathway_id}.",
         "pathway_type": "biopax-pathway",
-        "taxa": [],
-        "participants": _unique_nodes(participant_by_ref.values()),
+        "taxa": _taxa(root, xref_by_ref),
+        "participants": _unique_nodes(
+            participant
+            for participant in participant_by_ref.values()
+            if participant["id"] in used_participants
+        ),
         "reactions": reactions,
         "mechanistic_edges": [
             {"id": f"biopax-edge-{index}", **edge}
@@ -102,6 +153,15 @@ def _participants(
     return participants
 
 
+def _complex_components(root: ElementTree.Element) -> dict[str, list[str]]:
+    components = {}
+    for complex_element in _elements(root, "Complex"):
+        components[_element_ref(complex_element)] = [
+            _resource(component) for component in _children(complex_element, "component")
+        ]
+    return components
+
+
 def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
     unique: dict[str, dict[str, str]] = {}
     for node in nodes:
@@ -122,6 +182,59 @@ def _entity_references(
     return references
 
 
+def _taxa(
+    root: ElementTree.Element,
+    xref_by_ref: dict[str, str],
+) -> list[dict[str, str]]:
+    taxa_by_ref = {}
+    for source in _elements(root, "BioSource"):
+        taxon_id = _curie_with_prefix(source, xref_by_ref, "NCBITaxon")
+        if not taxon_id:
+            continue
+        taxa_by_ref[_element_ref(source)] = {
+            "id": taxon_id,
+            "label": _text_child(source, "name") or taxon_id,
+        }
+
+    taxa = []
+    for pathway in _elements(root, "Pathway"):
+        organism = _resource_child(pathway, "organism")
+        if organism and organism in taxa_by_ref:
+            taxa.append(taxa_by_ref[organism])
+    return _unique_nodes(taxa)
+
+
+def _pathway_id(
+    root: ElementTree.Element,
+    xref_by_ref: dict[str, str],
+    source_prefix: str,
+) -> str | None:
+    pathway = next(iter(_elements(root, "Pathway")), None)
+    if pathway is None:
+        return None
+    return _source_xref(pathway, xref_by_ref, source_prefix)
+
+
+def _source_xref(
+    element: ElementTree.Element,
+    xref_by_ref: dict[str, str],
+    source_prefix: str,
+) -> str | None:
+    return _curie_with_prefix(element, xref_by_ref, source_prefix)
+
+
+def _curie_with_prefix(
+    element: ElementTree.Element,
+    xref_by_ref: dict[str, str],
+    prefix: str,
+) -> str | None:
+    for xref in _children(element, "xref"):
+        curie = xref_by_ref.get(_resource(xref))
+        if curie and curie.startswith(f"{prefix}:"):
+            return curie
+    return None
+
+
 def _side_participants(
     reaction: ElementTree.Element,
     side: str,
@@ -130,23 +243,71 @@ def _side_participants(
     participants = []
     for element in _children(reaction, side):
         resource = _resource(element)
-        if resource in participant_by_ref:
-            participants.append(participant_by_ref[resource]["id"])
+        if resource not in participant_by_ref:
+            continue
+        participant_id = participant_by_ref[resource]["id"]
+        if participant_id.startswith("CHEBI:"):
+            participants.append(participant_id)
     return participants
 
 
-def _publication_references(root: ElementTree.Element) -> dict[str, dict[str, str]]:
+def _controller_participants(
+    controller_ref: str | None,
+    participant_by_ref: dict[str, dict[str, str]],
+    complex_components_by_ref: dict[str, list[str]],
+    seen: set[str] | None = None,
+) -> list[str]:
+    if not controller_ref:
+        return []
+    if controller_ref in participant_by_ref:
+        return [participant_by_ref[controller_ref]["id"]]
+
+    seen = seen or set()
+    if controller_ref in seen:
+        return []
+    seen.add(controller_ref)
+
+    participants = []
+    for component_ref in complex_components_by_ref.get(controller_ref, []):
+        participants.extend(
+            _controller_participants(
+                component_ref,
+                participant_by_ref,
+                complex_components_by_ref,
+                seen,
+            )
+        )
+    return participants
+
+
+def _publication_references(
+    root: ElementTree.Element,
+) -> tuple[dict[str, dict[str, str]], dict[str, str]]:
     references = {}
+    publication_reference_by_ref = {}
     for publication in _elements(root, "PublicationXref"):
         pmid = _text_child(publication, "id")
         if not pmid or not pmid.isdigit():
             continue
         reference_id = f"PMID:{pmid}"
+        publication_reference_by_ref[_element_ref(publication)] = reference_id
         references[reference_id] = {
             "id": reference_id,
-            "title": f"BioPAX publication {reference_id}",
+            "title": _text_child(publication, "title")
+            or f"BioPAX publication {reference_id}",
         }
-    return references
+    return references, publication_reference_by_ref
+
+
+def _publication_reference_id(
+    element: ElementTree.Element,
+    publication_reference_by_ref: dict[str, str],
+) -> str | None:
+    for xref in _children(element, "xref"):
+        reference_id = publication_reference_by_ref.get(_resource(xref))
+        if reference_id:
+            return reference_id
+    return None
 
 
 def _fallback_reference(pathway_id: str) -> dict[str, str]:
@@ -168,6 +329,7 @@ def _edge(
     predicate: str,
     obj: str,
     evidence_reference: str,
+    evidence_quote: str | None = None,
 ) -> dict[str, Any]:
     return {
         "subject": subject,
@@ -176,10 +338,17 @@ def _edge(
         "evidence": [
             {
                 "reference_id": evidence_reference,
-                "quote": f"BioPAX reaction cites {evidence_reference}.",
+                "quote": _short_evidence_quote(evidence_quote)
+                or f"BioPAX reaction cites {evidence_reference}.",
             }
         ],
     }
+
+
+def _short_evidence_quote(evidence_quote: str | None) -> str | None:
+    if not evidence_quote:
+        return None
+    return evidence_quote[:MAX_EVIDENCE_QUOTE_LENGTH]
 
 
 def _elements(root: ElementTree.Element, name: str) -> list[ElementTree.Element]:

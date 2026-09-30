@@ -42,7 +42,7 @@ def mibig_cluster(record: dict[str, Any]) -> MibigCluster:
 
     return MibigCluster(
         id=f"MIBiG:{accession.removeprefix('MIBiG:')}",
-        products=tuple(sorted(_compound_names(record))),
+        products=tuple(_compound_names(record)),
         genes=tuple(sorted(_gene_ids(record))),
         loci=tuple(sorted(_loci(record), key=_locus_sort_key)),
         references=tuple(sorted(_pubmed_references(record))),
@@ -137,16 +137,16 @@ def _cluster_label(cluster: MibigCluster) -> str:
     return f"{cluster.products[0]} and related metabolites biosynthetic gene cluster"
 
 
-def _compound_names(value: Any) -> set[str]:
-    names = set()
+def _compound_names(value: Any) -> list[str]:
+    names = {}
     for compound in _walk_list_members(value, "compounds"):
         if not isinstance(compound, dict):
             continue
         for field in ["compound", "compound_name", "name"]:
             name = compound.get(field)
             if isinstance(name, str) and name:
-                names.add(name)
-    return names
+                names.setdefault(name, None)
+    return list(names)
 
 
 def _cluster_accession(value: dict[str, Any]) -> str | None:
@@ -229,9 +229,12 @@ def _pubmed_references(value: Any) -> set[str]:
         for pmid in _walk_string_values(value, field):
             if reference := _pmid_reference(pmid):
                 references.add(reference)
-    for reference in _walk_list_members(value, "legacy_references"):
-        if isinstance(reference, str) and (pmid := _pmid_reference(reference)):
-            references.add(pmid)
+    for field in ["legacy_references", "publications"]:
+        for reference in _walk_list_members(value, field):
+            if not isinstance(reference, str):
+                continue
+            if pmid := _pmid_reference(reference):
+                references.add(pmid)
     return references
 
 

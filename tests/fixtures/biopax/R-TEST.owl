@@ -5,15 +5,29 @@
 >
   <bp:Pathway rdf:ID="pathway">
     <bp:displayName>Mini BioPAX glycolysis</bp:displayName>
+    <bp:organism rdf:resource="#taxon" />
     <bp:pathwayComponent rdf:resource="#reaction" />
+    <bp:xref rdf:resource="#pathway_xref" />
+    <bp:xref rdf:resource="#pathway_publication" />
     <bp:xref rdf:resource="#publication" />
   </bp:Pathway>
   <bp:BiochemicalReaction rdf:ID="reaction">
     <bp:displayName>phosphoglycerate mutase reaction</bp:displayName>
+    <bp:comment>Mini BioPAX reaction evidence.</bp:comment>
     <bp:left rdf:resource="#three_pga" />
+    <bp:left rdf:resource="#protein_state_before" />
     <bp:right rdf:resource="#two_pga" />
+    <bp:right rdf:resource="#protein_state_after" />
+    <bp:xref rdf:resource="#reaction_xref" />
     <bp:xref rdf:resource="#publication" />
   </bp:BiochemicalReaction>
+  <bp:Catalysis rdf:ID="catalysis">
+    <bp:controller rdf:resource="#enzyme_complex" />
+    <bp:controlled rdf:resource="#reaction" />
+  </bp:Catalysis>
+  <bp:Complex rdf:ID="enzyme_complex">
+    <bp:component rdf:resource="#mini_enzyme" />
+  </bp:Complex>
   <bp:SmallMolecule rdf:ID="three_pga">
     <bp:displayName>3-phosphonato-D-glycerate(3-)</bp:displayName>
     <bp:entityReference rdf:resource="#three_pga_reference" />
@@ -28,6 +42,28 @@
   <bp:SmallMoleculeReference rdf:ID="two_pga_reference">
     <bp:xref rdf:resource="#two_pga_xref" />
   </bp:SmallMoleculeReference>
+  <bp:Protein rdf:ID="mini_enzyme">
+    <bp:displayName>Mini enzyme</bp:displayName>
+    <bp:entityReference rdf:resource="#mini_enzyme_reference" />
+  </bp:Protein>
+  <bp:ProteinReference rdf:ID="mini_enzyme_reference">
+    <bp:xref rdf:resource="#mini_enzyme_xref" />
+  </bp:ProteinReference>
+  <bp:Protein rdf:ID="protein_state_before">
+    <bp:displayName>Mini carrier</bp:displayName>
+    <bp:entityReference rdf:resource="#stateful_carrier_reference" />
+  </bp:Protein>
+  <bp:Protein rdf:ID="protein_state_after">
+    <bp:displayName>Mini modified carrier</bp:displayName>
+    <bp:entityReference rdf:resource="#stateful_carrier_reference" />
+  </bp:Protein>
+  <bp:ProteinReference rdf:ID="stateful_carrier_reference">
+    <bp:xref rdf:resource="#stateful_carrier_xref" />
+  </bp:ProteinReference>
+  <bp:BioSource rdf:ID="taxon">
+    <bp:name>Mini test microbe</bp:name>
+    <bp:xref rdf:resource="#taxon_xref" />
+  </bp:BioSource>
   <bp:UnificationXref rdf:ID="three_pga_xref">
     <bp:db>ChEBI</bp:db>
     <bp:id>CHEBI:58272</bp:id>
@@ -36,7 +72,32 @@
     <bp:db>ChEBI</bp:db>
     <bp:id>CHEBI:58289</bp:id>
   </bp:UnificationXref>
+  <bp:UnificationXref rdf:ID="mini_enzyme_xref">
+    <bp:db>UniProt</bp:db>
+    <bp:id>P12345</bp:id>
+  </bp:UnificationXref>
+  <bp:UnificationXref rdf:ID="stateful_carrier_xref">
+    <bp:db>UniProt</bp:db>
+    <bp:id>P99999</bp:id>
+  </bp:UnificationXref>
+  <bp:UnificationXref rdf:ID="taxon_xref">
+    <bp:db>NCBI Taxonomy</bp:db>
+    <bp:id>12345</bp:id>
+  </bp:UnificationXref>
+  <bp:UnificationXref rdf:ID="pathway_xref">
+    <bp:db>Reactome</bp:db>
+    <bp:id>R-TEST-12345</bp:id>
+  </bp:UnificationXref>
+  <bp:UnificationXref rdf:ID="reaction_xref">
+    <bp:db>Reactome</bp:db>
+    <bp:id>R-TEST-67890</bp:id>
+  </bp:UnificationXref>
+  <bp:PublicationXref rdf:ID="pathway_publication">
+    <bp:id>87654321</bp:id>
+    <bp:title>Pathway-only BioPAX publication</bp:title>
+  </bp:PublicationXref>
   <bp:PublicationXref rdf:ID="publication">
     <bp:id>12345678</bp:id>
+    <bp:title>Mini BioPAX publication</bp:title>
   </bp:PublicationXref>
 </rdf:RDF>

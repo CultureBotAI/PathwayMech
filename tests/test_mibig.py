@@ -21,7 +21,7 @@ def test_mibig_json_builds_cluster_lookup_rows() -> None:
         "ABCD01000001.1",
     ]
     assert [(locus.start, locus.end) for locus in cluster.loci] == [(10, 80), (120, 160)]
-    assert cluster.references == ("PMID:12345678",)
+    assert cluster.references == ("PMID:12345678", "PMID:87654321")
     assert cluster.biosynthetic_classes == ("RiPP",)
     assert cluster.organism == "Mini test microbe"
     assert cluster.taxon_id == "12345"
@@ -31,7 +31,7 @@ def test_mibig_seed_rows_emit_tsv() -> None:
     assert mibig_seed_rows([mibig_cluster(load_mibig_json(FIXTURE))]) == [
         "mibig_id\tproducts\tgenes\tloci\treferences",
         "MIBiG:BGC0000001\tmini metabolite\tgene-a;gene-b\t"
-        "ABCD01000001.1;ABCD01000001.1\tPMID:12345678",
+        "ABCD01000001.1;ABCD01000001.1\tPMID:12345678;PMID:87654321",
     ]
 
 
@@ -64,8 +64,68 @@ def test_mibig_cluster_builds_bgc_shaped_pathway_record() -> None:
         "references": [
             {"id": "MIBiG:BGC0000001", "title": "MIBiG record BGC0000001"},
             {"id": "PMID:12345678", "title": "MIBiG literature reference PMID:12345678"},
+            {"id": "PMID:87654321", "title": "MIBiG literature reference PMID:87654321"},
         ],
     }
+
+
+def test_mibig_cluster_accepts_v4_top_level_json() -> None:
+    cluster = mibig_cluster(
+        {
+            "accession": "BGC0002072",
+            "compounds": [
+                {"name": "linearmycin A"},
+                {"name": "linearmycin C"},
+                {"name": "linearmycin C"},
+            ],
+            "biosynthesis": {
+                "classes": [{"class": "PKS", "subclass": "Type I"}],
+                "modules": [
+                    {"genes": ["AKL64834.1"]},
+                    {"at_domain": {"gene": "AKL69764.1"}},
+                ],
+            },
+            "loci": [
+                {
+                    "accession": "CP011664.1",
+                    "location": {"from": 1061319, "to": 1236790},
+                }
+            ],
+            "legacy_references": [
+                "pubmed:28919037",
+                "doi:10.1016/0040-4039(95)00392-P",
+            ],
+            "taxonomy": {"name": "Streptomyces sp. Mg1", "ncbiTaxId": 465541},
+        }
+    )
+
+    assert cluster.id == "MIBiG:BGC0002072"
+    assert cluster.products == ("linearmycin A", "linearmycin C")
+    assert cluster.genes == ("AKL64834.1", "AKL69764.1")
+    assert cluster.biosynthetic_classes == ("PKS:Type I",)
+    assert cluster.references == ("PMID:28919037",)
+    assert cluster.taxon_id == "465541"
+
+
+def test_mibig_cluster_preserves_source_product_order_for_label() -> None:
+    cluster = mibig_cluster(
+        {
+            "cluster": {
+                "mibig_accession": "BGC0000070",
+                "compounds": [
+                    {"compound": "griseofulvin"},
+                    {"compound": "4-desmethylgriseofulvin"},
+                    {"compound": "griseofulvin"},
+                ],
+            }
+        }
+    )
+
+    assert cluster.products == ("griseofulvin", "4-desmethylgriseofulvin")
+    assert (
+        mibig_pathway_record(cluster)["label"]
+        == "griseofulvin and related metabolites biosynthetic gene cluster"
+    )
 
 
 def test_mibig_cluster_rejects_records_without_a_cluster_accession() -> None:
