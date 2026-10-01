@@ -32,6 +32,7 @@ from pathwaymech.sources import (
     load_source_inventory,
     source_seed_rows,
 )
+from pathwaymech.sssom import write_sssom
 from pathwaymech.wikipathways import (
     gpml_to_pathway_record,
     load_gpml_pathway,
@@ -288,6 +289,25 @@ def export_kgx_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
     records = load_pathway_records(root / "data" / "pathways")
     nodes_path, edges_path = write_kgx(records, args.output_dir)
     print(f"wrote {nodes_path} and {edges_path} from {len(records)} pathway records")
+    return 0
+
+
+def export_sssom_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    parser = argparse.ArgumentParser(
+        prog="pathwaymech-export-sssom",
+        description="Export retained source mappings as an SSSOM TSV file.",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=root / "output" / "sssom" / "source_mappings.sssom.tsv",
+        help="destination SSSOM TSV path",
+    )
+    args = parser.parse_args(argv)
+
+    records = load_pathway_records(root / "data" / "pathways")
+    path = write_sssom(records, args.output)
+    print(f"wrote {path} from {len(records)} pathway records")
     return 0
 
 

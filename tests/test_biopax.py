@@ -58,6 +58,18 @@ def test_biopax_converts_to_valid_reactome_record() -> None:
         {"id": "PMID:87654321", "title": "Pathway-only BioPAX publication"},
         {"id": "PMID:12345678", "title": "Mini BioPAX publication"}
     ]
+    assert record.source_mappings == [
+        {
+            "subject_id": "UniProt:P12345",
+            "subject_label": "Mini enzyme",
+            "predicate_id": "skos:exactMatch",
+            "object_id": "UniProtKB:P12345",
+            "object_label": "Mini enzyme",
+            "mapping_justification": "semapv:UnspecifiedMatching",
+            "source_pathway_id": "Reactome:R-TEST-12345",
+            "source_element_id": "mini_enzyme",
+        }
+    ]
 
 
 def test_biopax_seed_yaml_round_trips_as_pathbank_record() -> None:

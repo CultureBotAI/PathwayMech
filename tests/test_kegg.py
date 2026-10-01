@@ -46,6 +46,28 @@ def test_kgml_can_map_kegg_compounds_to_chebi() -> None:
         {"id": "CHEBI:58272", "label": "CHEBI:58272"},
         {"id": "CHEBI:58289", "label": "CHEBI:58289"},
     ]
+    assert record.source_mappings == [
+        {
+            "subject_id": "KEGG:C00236",
+            "subject_label": "3-phospho-D-glycerate",
+            "predicate_id": "skos:exactMatch",
+            "object_id": "CHEBI:58272",
+            "object_label": "3-phosphonato-D-glycerate(3-)",
+            "mapping_justification": "semapv:UnspecifiedMatching",
+            "source_pathway_id": "KEGG:map00010",
+            "source_element_id": "KEGG:R01512/substrate/11",
+        },
+        {
+            "subject_id": "KEGG:C00197",
+            "subject_label": "2-phospho-D-glycerate",
+            "predicate_id": "skos:exactMatch",
+            "object_id": "CHEBI:58289",
+            "object_label": "2-phosphonato-D-glycerate(3-)",
+            "mapping_justification": "semapv:UnspecifiedMatching",
+            "source_pathway_id": "KEGG:map00010",
+            "source_element_id": "KEGG:R01512/product/12",
+        },
+    ]
 
 
 def test_kgml_skips_unnamed_reaction_participants() -> None:

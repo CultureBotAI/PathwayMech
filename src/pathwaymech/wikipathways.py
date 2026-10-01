@@ -6,6 +6,13 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
 
+from pathwaymech.source_mapping import (
+    CurieMappings,
+    normalized_curie,
+    source_mapping_row,
+    unique_source_mappings,
+)
+
 WIKIPATHWAYS_ACCESSION = re.compile(r"WP\d+")
 
 DATABASE_PREFIXES = {
@@ -48,10 +55,14 @@ def load_gpml_pathway(path: Path) -> ElementTree.Element:
 def gpml_to_pathway_record(
     root: ElementTree.Element,
     fallback_id: str,
-    compound_mappings: dict[str, str] | None = None,
+    compound_mappings: CurieMappings | None = None,
 ) -> dict[str, Any]:
     pathway_id = _pathway_id(root) or fallback_id
-    node_by_graph_id = _data_nodes(root, compound_mappings or {})
+    node_by_graph_id, source_mappings = _data_nodes(
+        root,
+        pathway_id,
+        compound_mappings or {},
+    )
     nodes_by_group_graph_id = _group_nodes(root, node_by_graph_id)
     reaction_by_anchor_id = _anchor_reactions(root, pathway_id)
     references = _publication_references(root)
@@ -108,7 +119,7 @@ def gpml_to_pathway_record(
                 )
             )
 
-    return {
+    record = {
         "id": pathway_id,
         "label": root.get("Name") or pathway_id,
         "description": f"WikiPathways GPML pathway {pathway_id}.",
@@ -122,6 +133,9 @@ def gpml_to_pathway_record(
         ],
         "references": list(references.values()),
     }
+    if source_mappings:
+        record["source_mappings"] = unique_source_mappings(source_mappings)
+    return record
 
 
 def wikipathways_curie_from_text(text: str) -> str | None:
@@ -146,35 +160,45 @@ def _pathway_id(root: ElementTree.Element) -> str | None:
 
 def _data_nodes(
     root: ElementTree.Element,
-    compound_mappings: dict[str, str],
-) -> dict[str, dict[str, str]]:
+    pathway_id: str,
+    compound_mappings: CurieMappings,
+) -> tuple[dict[str, dict[str, str]], list[dict[str, str]]]:
     data_nodes = {}
+    source_mappings = []
     for node in _children(root, "DataNode"):
         graph_id = node.get("GraphId")
         xref = _first_child(node, "Xref")
         if not graph_id or xref is None:
             continue
-        identifier = _xref_curie(xref, compound_mappings)
-        if not identifier:
+        source_id = _xref_curie(xref)
+        if not source_id:
             continue
+        label = node.get("TextLabel") or source_id
+        identifier = normalized_curie(source_id, compound_mappings)
         data_nodes[graph_id] = {
             "id": identifier,
-            "label": node.get("TextLabel") or identifier,
+            "label": label,
         }
-    return data_nodes
+        if identifier != source_id and (mapping := compound_mappings.get(source_id)):
+            source_mappings.append(
+                source_mapping_row(
+                    source_id,
+                    label,
+                    mapping,
+                    source_pathway_id=pathway_id,
+                    source_element_id=graph_id,
+                )
+            )
+    return data_nodes, source_mappings
 
 
-def _xref_curie(
-    xref: ElementTree.Element,
-    compound_mappings: dict[str, str],
-) -> str | None:
+def _xref_curie(xref: ElementTree.Element) -> str | None:
     database = _attribute(xref, "Database", "dataSource").lower().strip()
     identifier = _attribute(xref, "ID", "identifier")
     prefix = DATABASE_PREFIXES.get(database)
     if not prefix or not identifier:
         return None
-    curie = _format_curie(prefix, identifier)
-    return compound_mappings.get(curie, curie)
+    return _format_curie(prefix, identifier)
 
 
 def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:

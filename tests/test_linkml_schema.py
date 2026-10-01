@@ -56,6 +56,9 @@ CASES = {
     "an undeclared gene cluster key": lambda r: _gene_cluster(r).__setitem__("role", "x"),
     "an undeclared cluster gene key": lambda r: _cluster_gene(r).__setitem__("role", "x"),
     "an undeclared genomic locus key": lambda r: _genomic_locus(r).__setitem__("role", "x"),
+    "an undeclared source mapping key": lambda r: _source_mapping(r).__setitem__(
+        "role", "x"
+    ),
     "an undeclared edge key": lambda r: _edge(r).__setitem__("weight", 1),
     "an undeclared evidence key": lambda r: _evidence(r).__setitem__("page", 3),
     "a predicate outside the enum": lambda r: _edge(r).__setitem__("predicate", "causes"),
@@ -162,6 +165,16 @@ _GENE_CLUSTER = {
     "genes": [{"id": "gene-a", "label": "gene A"}],
     "loci": [{"accession": "ABCD01000001.1", "start": 10, "end": 80}],
 }
+_SOURCE_MAPPING = {
+    "subject_id": "UniProt:P12345",
+    "subject_label": "Mini enzyme",
+    "predicate_id": "skos:exactMatch",
+    "object_id": "UniProtKB:P12345",
+    "object_label": "Mini enzyme",
+    "mapping_justification": "semapv:UnspecifiedMatching",
+    "source_pathway_id": "Reactome:R-TEST-12345",
+    "source_element_id": "mini_enzyme",
+}
 
 
 def _gene_cluster(r: dict) -> dict:
@@ -177,12 +190,18 @@ def _genomic_locus(r: dict) -> dict:
     return _gene_cluster(r)["loci"][0]
 
 
+def _source_mapping(r: dict) -> dict:
+    r["source_mappings"] = [dict(_SOURCE_MAPPING)]
+    return r["source_mappings"][0]
+
+
 _WHERE = {
     "PathwayRecord": lambda r: r,
     "NamedNode": lambda r: r["participants"][0],
     "GeneCluster": _gene_cluster,
     "ClusterGene": _cluster_gene,
     "GenomicLocus": _genomic_locus,
+    "SourceMapping": _source_mapping,
     "MechanisticEdge": lambda r: r["mechanistic_edges"][0],
     "EvidenceItem": lambda r: r["mechanistic_edges"][0]["evidence"][0],
     "Reference": lambda r: r["references"][0],
@@ -219,6 +238,19 @@ EXPECTED_REQUIRED = (
     }
     | {("GeneCluster", slot) for slot in ("id", "label")}
     | {("ClusterGene", "id"), ("GenomicLocus", "accession")}
+    | {
+        ("SourceMapping", slot)
+        for slot in (
+            "subject_id",
+            "subject_label",
+            "predicate_id",
+            "object_id",
+            "object_label",
+            "mapping_justification",
+            "source_pathway_id",
+            "source_element_id",
+        )
+    }
     | {("MechanisticEdge", slot) for slot in ("id", "subject", "predicate", "object", "evidence")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("Reference", "id"),
        ("EvidenceItem", "reference_id"), ("EvidenceItem", "quote"),
@@ -232,6 +264,19 @@ EXPECTED_NON_BLANK = (
     | {("GeneCluster", slot) for slot in ("id", "label", "products",
                                           "biosynthetic_classes")}
     | {("ClusterGene", "id"), ("ClusterGene", "label"), ("GenomicLocus", "accession")}
+    | {
+        ("SourceMapping", slot)
+        for slot in (
+            "subject_id",
+            "subject_label",
+            "predicate_id",
+            "object_id",
+            "object_label",
+            "mapping_justification",
+            "source_pathway_id",
+            "source_element_id",
+        )
+    }
 )
 
 

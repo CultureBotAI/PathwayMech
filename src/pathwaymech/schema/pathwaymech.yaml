@@ -18,6 +18,8 @@ version: 0.1.0
 prefixes:
   linkml: https://w3id.org/linkml/
   pathwaymech: https://w3id.org/culturebotai/pathwaymech/
+  semapv: https://w3id.org/semapv/vocab/
+  skos: http://www.w3.org/2004/02/skos/core#
 default_prefix: pathwaymech
 default_range: string
 imports:
@@ -67,6 +69,13 @@ classes:
         multivalued: true
         inlined_as_list: true
         range: GeneCluster
+      source_mappings:
+        description: >-
+          Source xrefs retained at import time when a provider-local accession
+          is normalized into the final CURIE stored on a pathway node.
+        multivalued: true
+        inlined_as_list: true
+        range: SourceMapping
       references:
         required: true
         multivalued: true
@@ -139,6 +148,36 @@ classes:
       end:
         range: integer
         minimum_value: 1
+
+  SourceMapping:
+    description: >-
+      An SSSOM-ready exact mapping from an original source accession to the
+      normalized CURIE retained in the PathwayRecord.
+    attributes:
+      subject_id:
+        required: true
+        pattern: "^[^:\\s]+:\\S+(?![\\s\\S])"
+      subject_label:
+        required: true
+        pattern: "\\S"
+      predicate_id:
+        required: true
+        pattern: "^skos:exactMatch$"
+      object_id:
+        required: true
+        pattern: "^[^:\\s]+:\\S+(?![\\s\\S])"
+      object_label:
+        required: true
+        pattern: "\\S"
+      mapping_justification:
+        required: true
+        pattern: "^semapv:\\S+(?![\\s\\S])"
+      source_pathway_id:
+        required: true
+        pattern: "^[^:\\s]+:\\S+(?![\\s\\S])"
+      source_element_id:
+        required: true
+        pattern: "\\S"
 
   MechanisticEdge:
     description: >-
