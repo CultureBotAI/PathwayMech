@@ -140,6 +140,7 @@ def test_gpml_can_map_kegg_compound_xrefs_to_chebi() -> None:
             "object_id": "CHEBI:58289",
             "object_label": "2-phosphonato-D-glycerate(3-)",
             "mapping_justification": "semapv:UnspecifiedMatching",
+            "confidence": "1.0",
             "source_pathway_id": "WikiPathways:WPTEST",
             "source_element_id": "source",
         }

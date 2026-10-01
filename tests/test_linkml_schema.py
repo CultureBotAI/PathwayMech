@@ -172,6 +172,7 @@ _SOURCE_MAPPING = {
     "object_id": "UniProtKB:P12345",
     "object_label": "Mini enzyme",
     "mapping_justification": "semapv:UnspecifiedMatching",
+    "confidence": "1.0",
     "source_pathway_id": "Reactome:R-TEST-12345",
     "source_element_id": "mini_enzyme",
 }
@@ -247,6 +248,7 @@ EXPECTED_REQUIRED = (
             "object_id",
             "object_label",
             "mapping_justification",
+            "confidence",
             "source_pathway_id",
             "source_element_id",
         )
@@ -273,6 +275,7 @@ EXPECTED_NON_BLANK = (
             "object_id",
             "object_label",
             "mapping_justification",
+            "confidence",
             "source_pathway_id",
             "source_element_id",
         )
@@ -308,6 +311,19 @@ def test_bgc_shaped_fields_are_validated_by_both_schemas(checker, record) -> Non
     edited["gene_clusters"] = [copy.deepcopy(_GENE_CLUSTER)]
     assert not checker.validate(edited, TARGET_CLASS).results
     assert validate_record(edited).gene_clusters == [_GENE_CLUSTER]
+
+
+@pytest.mark.parametrize("confidence", ["high", "-0.1", "1.1", "1.0\n", "0.\u0665"])
+def test_source_mapping_confidence_must_be_zero_to_one_in_both(
+    checker,
+    record,
+    confidence,
+) -> None:
+    changed = copy.deepcopy(record)
+    _source_mapping(changed)["confidence"] = confidence
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match="confidence"):
+        validate_record(changed)
 
 
 @pytest.mark.parametrize(("field", "value"), [("start", 0), ("end", -1)])

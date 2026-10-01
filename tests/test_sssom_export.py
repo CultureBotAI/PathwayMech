@@ -31,6 +31,7 @@ def record(source_mappings: list[dict[str, str]] | None = None) -> PathwayRecord
                 "object_id": "UniProtKB:P12345",
                 "object_label": "Mini enzyme",
                 "mapping_justification": "semapv:UnspecifiedMatching",
+                "confidence": "1.0",
                 "source_pathway_id": "Reactome:R-TEST-12345",
                 "source_element_id": "mini_enzyme",
             }
@@ -47,6 +48,7 @@ def test_sssom_rows_keep_source_context_in_deterministic_rows() -> None:
             object_id="UniProtKB:P12345",
             object_label="Mini enzyme",
             mapping_justification="semapv:UnspecifiedMatching",
+            confidence="1.0",
             comment=(
                 "source_pathway_id=Reactome:R-TEST-12345; "
                 "source_element_id=mini_enzyme"

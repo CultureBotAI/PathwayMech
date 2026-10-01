@@ -16,6 +16,7 @@ SSSOM_COLUMNS = (
     "object_id",
     "object_label",
     "mapping_justification",
+    "confidence",
     "comment",
 )
 
@@ -35,6 +36,7 @@ class SssomRow:
     object_id: str
     object_label: str
     mapping_justification: str
+    confidence: str
     comment: str
 
 
@@ -49,6 +51,7 @@ def sssom_rows(records: list[PathwayRecord]) -> list[SssomRow]:
                 object_id=mapping["object_id"],
                 object_label=mapping["object_label"],
                 mapping_justification=mapping["mapping_justification"],
+                confidence=mapping["confidence"],
                 comment=(
                     f"source_pathway_id={mapping['source_pathway_id']}; "
                     f"source_element_id={mapping['source_element_id']}"

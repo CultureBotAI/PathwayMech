@@ -6,6 +6,15 @@ from typing import Any, TypeAlias
 
 EXACT_MATCH = "skos:exactMatch"
 UNSPECIFIED_MATCHING = "semapv:UnspecifiedMatching"
+DEFAULT_CONFIDENCE = "1.0"
+SOURCE_MAPPING_IDENTITY_FIELDS = (
+    "subject_id",
+    "predicate_id",
+    "object_id",
+    "mapping_justification",
+    "source_pathway_id",
+    "source_element_id",
+)
 
 
 @dataclass(frozen=True)
@@ -18,6 +27,7 @@ class CurieMapping:
     object_label: str
     predicate_id: str = EXACT_MATCH
     mapping_justification: str = UNSPECIFIED_MATCHING
+    confidence: str = DEFAULT_CONFIDENCE
 
 
 CurieMappings: TypeAlias = Mapping[str, str | CurieMapping]
@@ -46,6 +56,7 @@ def source_mapping_row(
             "object_id": mapping.object_id,
             "object_label": mapping.object_label,
             "mapping_justification": mapping.mapping_justification,
+            "confidence": mapping.confidence,
             "source_pathway_id": source_pathway_id,
             "source_element_id": source_element_id,
         }
@@ -57,6 +68,7 @@ def source_mapping_row(
         "object_id": mapping,
         "object_label": mapping,
         "mapping_justification": UNSPECIFIED_MATCHING,
+        "confidence": DEFAULT_CONFIDENCE,
         "source_pathway_id": source_pathway_id,
         "source_element_id": source_element_id,
     }
@@ -65,5 +77,8 @@ def source_mapping_row(
 def unique_source_mappings(mappings: list[dict[str, str]]) -> list[dict[str, str]]:
     unique: dict[tuple[tuple[str, Any], ...], dict[str, str]] = {}
     for mapping in mappings:
-        unique.setdefault(tuple(sorted(mapping.items())), mapping)
+        unique.setdefault(
+            tuple((field, mapping.get(field)) for field in SOURCE_MAPPING_IDENTITY_FIELDS),
+            mapping,
+        )
     return list(unique.values())
