@@ -131,6 +131,8 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
     edges = _validate_edges(
         record.get("mechanistic_edges"),
         {record.get("id"), *taxa, *participants, *reactions},
+        participants,
+        reactions,
         references,
         errors,
     )
@@ -319,6 +321,8 @@ def _validate_curation_history(value: Any, errors: list[str]) -> None:
 def _validate_edges(
     value: Any,
     node_ids: set[Any],
+    participant_ids: set[str],
+    reaction_ids: set[str],
     reference_ids: set[str],
     errors: list[str],
 ) -> list[dict[str, Any]]:
@@ -337,14 +341,45 @@ def _validate_edges(
         subject = item.get("subject")
         predicate = item.get("predicate")
         obj = item.get("object")
-        if subject not in node_ids:
+        subject_resolves = subject in node_ids
+        object_resolves = obj in node_ids
+        if not subject_resolves:
             errors.append(f"{path}.subject does not resolve locally: {subject!r}")
-        if obj not in node_ids:
+        if not object_resolves:
             errors.append(f"{path}.object does not resolve locally: {obj!r}")
         if predicate not in ALLOWED_EDGE_PREDICATES:
             errors.append(f"{path}.predicate is not supported: {predicate!r}")
+        if subject_resolves and object_resolves:
+            _validate_edge_endpoint_types(
+                path,
+                predicate,
+                subject,
+                obj,
+                participant_ids,
+                reaction_ids,
+                errors,
+            )
         _validate_evidence(item.get("evidence"), reference_ids, f"{path}.evidence", errors)
     return value
+
+
+def _validate_edge_endpoint_types(
+    path: str,
+    predicate: Any,
+    subject: Any,
+    obj: Any,
+    participant_ids: set[str],
+    reaction_ids: set[str],
+    errors: list[str],
+) -> None:
+    if predicate == "consumes" and (subject not in participant_ids or obj not in reaction_ids):
+        errors.append(
+            f"{path} consumes edges must point from a participant subject to a reaction object"
+        )
+    if predicate == "produces" and (subject not in reaction_ids or obj not in participant_ids):
+        errors.append(
+            f"{path} produces edges must point from a reaction subject to a participant object"
+        )
 
 
 def _validate_evidence(

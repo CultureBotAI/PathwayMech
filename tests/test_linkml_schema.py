@@ -93,6 +93,19 @@ def test_the_schema_and_the_python_validator_name_the_same_predicates() -> None:
     assert set(enum.permissible_values) == ALLOWED_EDGE_PREDICATES
 
 
+def test_the_schema_documents_consumes_and_produces_direction() -> None:
+    enum = SchemaView(str(SCHEMA_PATH)).get_enum("EdgePredicateEnum")
+
+    assert (
+        enum.permissible_values["consumes"].description
+        == "The subject participant is consumed by the object reaction."
+    )
+    assert (
+        enum.permissible_values["produces"].description
+        == "The subject reaction produces the object participant."
+    )
+
+
 def test_the_schema_and_the_python_validator_allow_the_same_prefixes() -> None:
     view = SchemaView(str(SCHEMA_PATH))
     patterns = {
