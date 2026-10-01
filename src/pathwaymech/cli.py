@@ -16,6 +16,7 @@ from pathwaymech.chebi import load_chebi_xrefs
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
+from pathwaymech.kgx import write_kgx
 from pathwaymech.metacyc import load_metacyc_dat, metacyc_pathway_records
 from pathwaymech.mibig import (
     load_mibig_json,
@@ -269,6 +270,25 @@ def _validate_history_gate() -> int:
         cwd=ROOT,
         check=False,
     ).returncode
+
+
+def export_kgx_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    parser = argparse.ArgumentParser(
+        prog="pathwaymech-export-kgx",
+        description="Export data/pathways as KGX node and edge TSV files.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=root / "output" / "kgx",
+        help="destination directory for nodes.tsv and edges.tsv",
+    )
+    args = parser.parse_args(argv)
+
+    records = load_pathway_records(root / "data" / "pathways")
+    nodes_path, edges_path = write_kgx(records, args.output_dir)
+    print(f"wrote {nodes_path} and {edges_path} from {len(records)} pathway records")
+    return 0
 
 
 def run_qc_main() -> int:
