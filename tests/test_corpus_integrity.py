@@ -21,7 +21,7 @@ def valid_record() -> dict:
             {
                 "id": "edge-1",
                 "subject": "CHEBI:17234",
-                "predicate": "precedes",
+                "predicate": "consumes",
                 "object": "RHEA:16109",
                 "evidence": [
                     {
@@ -52,3 +52,30 @@ def test_missing_reference_fails() -> None:
 def test_duplicate_record_ids_fail() -> None:
     with pytest.raises(ValidationError, match="duplicate pathway id"):
         validate_records([valid_record(), valid_record()])
+
+
+def test_consumes_edges_point_from_participants_to_reactions() -> None:
+    record = valid_record()
+    record["mechanistic_edges"][0]["subject"] = "RHEA:16109"
+    record["mechanistic_edges"][0]["object"] = "CHEBI:17234"
+
+    with pytest.raises(ValidationError) as raised:
+        validate_record(record)
+
+    assert raised.value.errors == [
+        "mechanistic_edges[0] consumes edges must point from a participant subject "
+        "to a reaction object"
+    ]
+
+
+def test_produces_edges_point_from_reactions_to_participants() -> None:
+    record = valid_record()
+    record["mechanistic_edges"][0]["predicate"] = "produces"
+
+    with pytest.raises(ValidationError) as raised:
+        validate_record(record)
+
+    assert raised.value.errors == [
+        "mechanistic_edges[0] produces edges must point from a reaction subject "
+        "to a participant object"
+    ]

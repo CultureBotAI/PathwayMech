@@ -7,10 +7,11 @@ description: >-
   reference declared in the same record. This schema states the structure,
   closed, so an undeclared key is an error. What LinkML cannot state stays in
   src/pathwaymech/schema.py: that edge endpoints resolve to the record, its
-  taxa, participants or reactions; that evidence cites a declared reference;
-  and that pathway ids are unique across the corpus. An explicit null is an
-  error wherever it appears (the gate generates JSON Schema without nulls):
-  omit an optional key rather than setting it to null.
+  taxa, participants or reactions; that consumes/produces edges have
+  participant/reaction endpoints in the proper direction; that evidence cites
+  a declared reference; and that pathway ids are unique across the corpus. An
+  explicit null is an error wherever it appears (the gate generates JSON
+  Schema without nulls): omit an optional key rather than setting it to null.
 license: MIT
 version: 0.1.0
 prefixes:
@@ -226,7 +227,7 @@ enums:
       catalyzes:
         description: The subject (an enzyme or gene product) catalyzes the object reaction.
       consumes:
-        description: The subject reaction consumes the object participant.
+        description: The subject participant is consumed by the object reaction.
       enables:
         description: The subject enables the object (a function or reaction) to occur.
       inhibits:
