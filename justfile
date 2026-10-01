@@ -19,6 +19,9 @@ lint:
 render-pages:
     uv run pathwaymech-render-pages
 
+kgx-export *args:
+    uv run pathwaymech-export-kgx {{args}}
+
 # Fails if pages/ is not what the records render to (also run by `validate`).
 check-pages:
     uv run pathwaymech-check-pages
