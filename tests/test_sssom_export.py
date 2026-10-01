@@ -7,6 +7,7 @@ import pytest
 
 from pathwaymech.schema import PathwayRecord
 from pathwaymech.sssom import SSSOM_COLUMNS, SssomRow, sssom_rows, write_sssom
+from pathwaymech.yaml_io import load_pathway_records
 
 
 def record(source_mappings: list[dict[str, str]] | None = None) -> PathwayRecord:
@@ -64,6 +65,17 @@ def test_write_sssom_uses_lf_tsv_with_stable_headers(tmp_path: Path) -> None:
 
     assert rows[-1]["subject_id"] == "UniProt:P12345"
     assert rows[-1]["object_id"] == "UniProtKB:P12345"
+
+
+def test_committed_sssom_output_is_current(tmp_path: Path) -> None:
+    expected = write_sssom(
+        load_pathway_records(Path("data/pathways")),
+        tmp_path / "source_mappings.sssom.tsv",
+    )
+
+    assert Path("output/sssom/source_mappings.sssom.tsv").read_text(
+        encoding="utf-8"
+    ) == expected.read_text(encoding="utf-8")
 
 
 def test_sssom_rejects_label_only_subjects() -> None:

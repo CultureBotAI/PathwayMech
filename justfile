@@ -25,6 +25,9 @@ kgx-export *args:
 sssom-export *args:
     uv run pathwaymech-export-sssom {{args}}
 
+backfill-source-mappings *args:
+    uv run python scripts/backfill_source_mappings.py {{args}}
+
 # Fails if pages/ is not what the records render to (also run by `validate`).
 check-pages:
     uv run pathwaymech-check-pages
