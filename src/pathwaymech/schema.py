@@ -15,6 +15,21 @@ CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
 # closed gate checks with jsonschema's FormatChecker. Using the same checker here
 # keeps the two validators agreeing on what a timestamp is by construction.
 _DATE_TIME = FormatChecker(formats=["date-time"])
+_SOURCE_XML_QUOTE = re.compile(r"^\s*<\s*/?\s*([A-Za-z_:][\w:.-]*)")
+_SOURCE_XML_EVIDENCE_TAGS = {
+    "Anchor",
+    "DataNode",
+    "Graphics",
+    "Group",
+    "Interaction",
+    "Point",
+    "Xref",
+    "left-primaries",
+    "reaction-layout",
+    "reaction-ordering",
+    "rh:ec",
+    "right-primaries",
+}
 
 ALLOWED_CURIE_PREFIXES = {
     "BV-BRC",
@@ -405,6 +420,8 @@ def _validate_evidence(
             errors.append(f"{item_path}.quote must be a non-empty string")
         elif len(quote) > 400:
             errors.append(f"{item_path}.quote must be 400 characters or fewer")
+        elif _is_source_xml_quote(quote):
+            errors.append(f"{item_path}.quote must be human-readable, not raw source XML")
 
 
 def _validate_curie(value: Any, path: str, errors: list[str]) -> None:
@@ -416,3 +433,8 @@ def _validate_curie(value: Any, path: str, errors: list[str]) -> None:
         errors.append(f"{path} has unsupported prefix: {prefix}")
     if not local or any(character.isspace() for character in local):
         errors.append(f"{path} must have a local part with no whitespace")
+
+
+def _is_source_xml_quote(quote: str) -> bool:
+    match = _SOURCE_XML_QUOTE.match(quote)
+    return bool(match and match.group(1) in _SOURCE_XML_EVIDENCE_TAGS)

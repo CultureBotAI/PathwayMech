@@ -79,3 +79,34 @@ def test_produces_edges_point_from_reactions_to_participants() -> None:
         "mechanistic_edges[0] produces edges must point from a reaction subject "
         "to a participant object"
     ]
+
+
+@pytest.mark.parametrize(
+    "quote",
+    [
+        '<Interaction GraphId="id32159333">',
+        '  <DataNode TextLabel="H2O" GraphId="d44" Type="Metabolite">',
+        '<rh:ec rdf:resource="http://purl.uniprot.org/enzyme/2.4.2.14"/>',
+        "<reaction-layout><Reaction frameid='RXN0-5298'/></reaction-layout>",
+    ],
+)
+def test_raw_source_xml_evidence_quotes_fail(quote: str) -> None:
+    record = valid_record()
+    record["mechanistic_edges"][0]["evidence"][0]["quote"] = quote
+
+    with pytest.raises(ValidationError) as raised:
+        validate_record(record)
+
+    assert raised.value.errors == [
+        "mechanistic_edges[0].evidence[0].quote must be human-readable, "
+        "not raw source XML"
+    ]
+
+
+def test_harmless_xml_shaped_evidence_text_passes() -> None:
+    record = valid_record()
+    record["mechanistic_edges"][0]["evidence"][0]["quote"] = (
+        "<i>Saccharomyces cerevisiae</i> evidence stays human-readable."
+    )
+
+    validate_record(record)

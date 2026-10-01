@@ -11,9 +11,10 @@ optional slot as nullable, so `title: null` satisfied the rule that a
 reference needs a title or a citation (#193). Here an explicit null is an
 error: omit the key instead.
 
-The cross-record rules LinkML cannot state -- endpoints resolve locally,
-evidence cites a declared reference, ids are unique -- stay in
-`pathwaymech.schema`.
+The cross-record and corpus rules LinkML cannot state -- endpoints resolve
+locally, consumes/produces endpoint types match the record sections, evidence
+cites a declared reference, evidence quotes avoid raw source XML, ids are
+unique -- stay in `pathwaymech.schema`.
 """
 
 from __future__ import annotations
