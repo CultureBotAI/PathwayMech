@@ -65,6 +65,7 @@ def test_backfill_adds_source_mappings_without_rewriting_curated_fields(
             "object_id": "CHEBI:17154",
             "object_label": "nicotinamide",
             "mapping_justification": "semapv:UnspecifiedMatching",
+            "confidence": "1.0",
             "source_pathway_id": "WikiPathways:WP9999",
             "source_element_id": "cas-substrate",
         }
@@ -92,6 +93,30 @@ def test_backfill_check_does_not_write(tmp_path: Path) -> None:
     )
 
     assert backfill_source_mappings(data_dir, source_records, check=True)
+    assert record_path.read_text(encoding="utf-8") == text
+
+
+def test_backfill_preserves_existing_confidence_without_adding_duplicate(
+    tmp_path: Path,
+) -> None:
+    data_dir = tmp_path / "data" / "pathways"
+    data_dir.mkdir(parents=True)
+    record = gpml_to_pathway_record(
+        load_gpml_pathway(WIKIPATHWAYS_FIXTURE),
+        "WikiPathways:WPTEST",
+        load_chebi_xrefs(CHEBI_FIXTURE),
+    )
+    record["source_mappings"][0]["confidence"] = "0.5"
+    record_path = data_dir / "mini.yaml"
+    text = yaml.safe_dump(record, sort_keys=False)
+    record_path.write_text(text, encoding="utf-8")
+    source_records = raw_source_records(
+        wikipathways_gpml=[WIKIPATHWAYS_FIXTURE],
+        reactome_biopax=[],
+        chebi_obo=CHEBI_FIXTURE,
+    )
+
+    assert backfill_source_mappings(data_dir, source_records) == []
     assert record_path.read_text(encoding="utf-8") == text
 
 

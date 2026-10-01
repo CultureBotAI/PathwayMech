@@ -66,6 +66,7 @@ def test_biopax_converts_to_valid_reactome_record() -> None:
             "object_id": "UniProtKB:P12345",
             "object_label": "Mini enzyme",
             "mapping_justification": "semapv:UnspecifiedMatching",
+            "confidence": "1.0",
             "source_pathway_id": "Reactome:R-TEST-12345",
             "source_element_id": "mini_enzyme",
         }

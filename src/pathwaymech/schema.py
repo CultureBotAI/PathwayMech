@@ -16,6 +16,7 @@ CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
 # keeps the two validators agreeing on what a timestamp is by construction.
 _DATE_TIME = FormatChecker(formats=["date-time"])
 _SOURCE_XML_QUOTE = re.compile(r"^\s*<\s*/?\s*([A-Za-z_:][\w:.-]*)")
+_CONFIDENCE = re.compile(r"^(0(\.[0-9]+)?|1(\.0+)?)(?![\s\S])")
 _SOURCE_XML_EVIDENCE_TAGS = {
     "Anchor",
     "DataNode",
@@ -348,6 +349,7 @@ def _validate_source_mappings(value: Any, errors: list[str]) -> list[dict[str, A
         "object_id",
         "object_label",
         "mapping_justification",
+        "confidence",
         "source_pathway_id",
         "source_element_id",
     )
@@ -375,6 +377,8 @@ def _validate_source_mappings(value: Any, errors: list[str]) -> list[dict[str, A
                 _validate_external_curie(item[field], f"{path}.{field}", errors)
         if "predicate_id" in values and item["predicate_id"] != "skos:exactMatch":
             errors.append(f"{path}.predicate_id must be skos:exactMatch")
+        if "confidence" in values and not _CONFIDENCE.match(item["confidence"]):
+            errors.append(f"{path}.confidence must be a number from 0 through 1")
         if (
             "subject_id" in values
             and "object_id" in values
