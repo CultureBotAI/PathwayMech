@@ -132,6 +132,18 @@ def test_gpml_can_map_kegg_compound_xrefs_to_chebi() -> None:
         {"id": "CHEBI:58289", "label": "2PG"},
         {"id": "LIPIDMAPS:LMFA01010001", "label": "ATP"},
     ]
+    assert record.source_mappings == [
+        {
+            "subject_id": "KEGG:C00197",
+            "subject_label": "2PG",
+            "predicate_id": "skos:exactMatch",
+            "object_id": "CHEBI:58289",
+            "object_label": "2-phosphonato-D-glycerate(3-)",
+            "mapping_justification": "semapv:UnspecifiedMatching",
+            "source_pathway_id": "WikiPathways:WPTEST",
+            "source_element_id": "source",
+        }
+    ]
 
 
 def test_gpml_can_keep_xrefs_from_leftover_microbial_maps() -> None:

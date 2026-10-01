@@ -22,6 +22,9 @@ render-pages:
 kgx-export *args:
     uv run pathwaymech-export-kgx {{args}}
 
+sssom-export *args:
+    uv run pathwaymech-export-sssom {{args}}
+
 # Fails if pages/ is not what the records render to (also run by `validate`).
 check-pages:
     uv run pathwaymech-check-pages

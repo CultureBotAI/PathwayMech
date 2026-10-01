@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
+
+from pathwaymech.source_mapping import CurieMapping, source_mapping_row, unique_source_mappings
 
 RDF = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
 MAX_EVIDENCE_QUOTE_LENGTH = 400
@@ -18,6 +21,12 @@ DB_PREFIXES = {
 }
 
 
+@dataclass(frozen=True)
+class NormalizedXref:
+    source_id: str
+    object_id: str
+
+
 def load_biopax(path: Path) -> ElementTree.Element:
     return ElementTree.parse(path).getroot()
 
@@ -28,13 +37,13 @@ def biopax_to_pathway_record(
 ) -> dict[str, Any]:
     source_prefix = fallback_id.split(":", 1)[0]
     xref_by_ref = _unification_xrefs(root)
-    participant_by_ref = _participants(root, xref_by_ref)
-    complex_components_by_ref = _complex_components(root)
     references, publication_reference_by_ref = _publication_references(root)
     default_reference = next(iter(references.values()), _fallback_reference(fallback_id))
     references.setdefault(default_reference["id"], default_reference)
 
     pathway_id = _pathway_id(root, xref_by_ref, source_prefix) or fallback_id
+    participant_by_ref, source_mappings = _participants(root, xref_by_ref, pathway_id)
+    complex_components_by_ref = _complex_components(root)
     reaction_by_ref = {}
     evidence_quote_by_reaction_ref: dict[str, str | None] = {}
     evidence_reference_by_reaction_ref: dict[str, str] = {}
@@ -103,7 +112,10 @@ def biopax_to_pathway_record(
     used_participants = {edge["subject"] for edge in edges} | {
         edge["object"] for edge in edges
     }
-    return {
+    source_mappings = [
+        mapping for mapping in source_mappings if mapping["object_id"] in used_participants
+    ]
+    record = {
         "id": pathway_id,
         "label": _pathway_label(root) or pathway_id,
         "description": f"BioPAX pathway {pathway_id}.",
@@ -121,36 +133,62 @@ def biopax_to_pathway_record(
         ],
         "references": list(references.values()),
     }
+    if source_mappings:
+        record["source_mappings"] = unique_source_mappings(source_mappings)
+    return record
 
 
-def _unification_xrefs(root: ElementTree.Element) -> dict[str, str]:
+def _unification_xrefs(root: ElementTree.Element) -> dict[str, NormalizedXref]:
     xrefs = {}
     for xref in _elements(root, "UnificationXref"):
-        database = (_text_child(xref, "db") or "").lower()
+        database = _text_child(xref, "db") or ""
+        normalized_database = database.lower()
         identifier = _text_child(xref, "id")
-        prefix = DB_PREFIXES.get(database)
+        prefix = DB_PREFIXES.get(normalized_database)
         if prefix and identifier:
-            xrefs[_element_ref(xref)] = _format_curie(prefix, identifier)
+            xrefs[_element_ref(xref)] = NormalizedXref(
+                source_id=_format_curie(_source_prefix(database, prefix), identifier),
+                object_id=_format_curie(prefix, identifier),
+            )
     return xrefs
 
 
 def _participants(
     root: ElementTree.Element,
-    xref_by_ref: dict[str, str],
-) -> dict[str, dict[str, str]]:
+    xref_by_ref: dict[str, NormalizedXref],
+    pathway_id: str,
+) -> tuple[dict[str, dict[str, str]], list[dict[str, str]]]:
     reference_by_ref = _entity_references(root, xref_by_ref)
     participants = {}
+    source_mappings = []
     for element_name in ["SmallMolecule", "Protein"]:
         for element in _elements(root, element_name):
             reference = _resource_child(element, "entityReference")
             if not reference or reference not in reference_by_ref:
                 continue
-            identifier = reference_by_ref[reference]
+            xref = reference_by_ref[reference]
+            identifier = xref.object_id
+            label = _text_child(element, "displayName") or identifier
             participants[_element_ref(element)] = {
                 "id": identifier,
-                "label": _text_child(element, "displayName") or identifier,
+                "label": label,
             }
-    return participants
+            if xref.source_id != xref.object_id:
+                source_mappings.append(
+                    source_mapping_row(
+                        xref.source_id,
+                        label,
+                        CurieMapping(
+                            subject_id=xref.source_id,
+                            subject_label=label,
+                            object_id=xref.object_id,
+                            object_label=label,
+                        ),
+                        source_pathway_id=pathway_id,
+                        source_element_id=_element_ref(element),
+                    )
+                )
+    return participants, source_mappings
 
 
 def _complex_components(root: ElementTree.Element) -> dict[str, list[str]]:
@@ -171,8 +209,8 @@ def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
 
 def _entity_references(
     root: ElementTree.Element,
-    xref_by_ref: dict[str, str],
-) -> dict[str, str]:
+    xref_by_ref: dict[str, NormalizedXref],
+) -> dict[str, NormalizedXref]:
     references = {}
     for element_name in ["SmallMoleculeReference", "ProteinReference"]:
         for element in _elements(root, element_name):
@@ -184,7 +222,7 @@ def _entity_references(
 
 def _taxa(
     root: ElementTree.Element,
-    xref_by_ref: dict[str, str],
+    xref_by_ref: dict[str, NormalizedXref],
 ) -> list[dict[str, str]]:
     taxa_by_ref = {}
     for source in _elements(root, "BioSource"):
@@ -206,7 +244,7 @@ def _taxa(
 
 def _pathway_id(
     root: ElementTree.Element,
-    xref_by_ref: dict[str, str],
+    xref_by_ref: dict[str, NormalizedXref],
     source_prefix: str,
 ) -> str | None:
     pathway = next(iter(_elements(root, "Pathway")), None)
@@ -217,7 +255,7 @@ def _pathway_id(
 
 def _source_xref(
     element: ElementTree.Element,
-    xref_by_ref: dict[str, str],
+    xref_by_ref: dict[str, NormalizedXref],
     source_prefix: str,
 ) -> str | None:
     return _curie_with_prefix(element, xref_by_ref, source_prefix)
@@ -225,13 +263,13 @@ def _source_xref(
 
 def _curie_with_prefix(
     element: ElementTree.Element,
-    xref_by_ref: dict[str, str],
+    xref_by_ref: dict[str, NormalizedXref],
     prefix: str,
 ) -> str | None:
     for xref in _children(element, "xref"):
-        curie = xref_by_ref.get(_resource(xref))
-        if curie and curie.startswith(f"{prefix}:"):
-            return curie
+        normalized_xref = xref_by_ref.get(_resource(xref))
+        if normalized_xref and normalized_xref.object_id.startswith(f"{prefix}:"):
+            return normalized_xref.object_id
     return None
 
 
@@ -390,6 +428,12 @@ def _format_curie(prefix: str, identifier: str) -> str:
     if identifier.startswith(f"{prefix}:"):
         return identifier
     return f"{prefix}:{identifier}"
+
+
+def _source_prefix(database: str, object_prefix: str) -> str:
+    if database.lower() == "uniprot":
+        return "UniProt"
+    return object_prefix
 
 
 def _local_name(tag: str) -> str:

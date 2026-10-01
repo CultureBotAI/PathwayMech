@@ -97,6 +97,7 @@ class PathwayRecord:
     mechanistic_edges: list[dict[str, Any]]
     references: list[dict[str, Any]]
     gene_clusters: list[dict[str, Any]] = dataclass_field(default_factory=list)
+    source_mappings: list[dict[str, Any]] = dataclass_field(default_factory=list)
 
 
 def validate_records(records: list[dict[str, Any]]) -> list[PathwayRecord]:
@@ -142,6 +143,7 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
     participants = _validate_named_nodes(record.get("participants"), "participants", errors)
     reactions = _validate_named_nodes(record.get("reactions"), "reactions", errors)
     gene_clusters = _validate_gene_clusters(record.get("gene_clusters", []), errors)
+    source_mappings = _validate_source_mappings(record.get("source_mappings", []), errors)
     references = _validate_references(record.get("references"), errors)
     edges = _validate_edges(
         record.get("mechanistic_edges"),
@@ -166,6 +168,7 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         participants=record["participants"],
         reactions=record["reactions"],
         gene_clusters=gene_clusters,
+        source_mappings=source_mappings,
         mechanistic_edges=edges,
         references=record["references"],
     )
@@ -333,6 +336,54 @@ def _validate_curation_history(value: Any, errors: list[str]) -> None:
             )
 
 
+def _validate_source_mappings(value: Any, errors: list[str]) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        errors.append("source_mappings must be a list")
+        return []
+
+    required = (
+        "subject_id",
+        "subject_label",
+        "predicate_id",
+        "object_id",
+        "object_label",
+        "mapping_justification",
+        "source_pathway_id",
+        "source_element_id",
+    )
+    for index, item in enumerate(value):
+        path = f"source_mappings[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{path} must be a mapping")
+            continue
+        values = {}
+        for field in required:
+            field_path = f"{path}.{field}"
+            field_value = item.get(field)
+            if not isinstance(field_value, str) or not field_value.strip():
+                errors.append(f"{field_path} must be a non-empty string")
+            else:
+                values[field] = field_value
+        for field in (
+            "subject_id",
+            "predicate_id",
+            "object_id",
+            "mapping_justification",
+            "source_pathway_id",
+        ):
+            if field in values:
+                _validate_external_curie(item[field], f"{path}.{field}", errors)
+        if "predicate_id" in values and item["predicate_id"] != "skos:exactMatch":
+            errors.append(f"{path}.predicate_id must be skos:exactMatch")
+        if (
+            "subject_id" in values
+            and "object_id" in values
+            and item["subject_id"] == item["object_id"]
+        ):
+            errors.append(f"{path} must map a source CURIE to a different object CURIE")
+    return value
+
+
 def _validate_edges(
     value: Any,
     node_ids: set[Any],
@@ -431,6 +482,17 @@ def _validate_curie(value: Any, path: str, errors: list[str]) -> None:
     prefix, local = value.split(":", 1)
     if prefix not in ALLOWED_CURIE_PREFIXES:
         errors.append(f"{path} has unsupported prefix: {prefix}")
+    if not local or any(character.isspace() for character in local):
+        errors.append(f"{path} must have a local part with no whitespace")
+
+
+def _validate_external_curie(value: Any, path: str, errors: list[str]) -> None:
+    if not isinstance(value, str) or ":" not in value:
+        errors.append(f"{path} must be a CURIE")
+        return
+    prefix, local = value.split(":", 1)
+    if not prefix or any(character.isspace() for character in prefix):
+        errors.append(f"{path} must have a prefix with no whitespace")
     if not local or any(character.isspace() for character in local):
         errors.append(f"{path} must have a local part with no whitespace")
 
