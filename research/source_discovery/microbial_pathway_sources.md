@@ -259,10 +259,9 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
 2. Split source roles in `conf/sources.yaml` into four operational classes:
    canonical pathway definitions, reaction references, organism membership
    calls, and crosswalks.
-3. Keep MetaCyc, KEGG, VEuPathDB, GapMind, and UniPathway disabled until
-   each has a licensing, native-ID, and parser decision. PMN/ChlamyCyc is the
-   only newly reviewed direct pathway source that fills a taxon gap not covered
-   by GO-CAM, WikiPathways, MIBiG, Reactome, or PathBank.
+3. Treat PMN/ChlamyCyc like MetaCyc and KEGG: implemented, license-gated, and
+   limited to local extracts. Keep VEuPathDB, GapMind, and UniPathway disabled
+   until each has a licensing, native-ID, and parser decision.
 4. Normalize every elementary reaction through Rhea when possible; if a
    candidate source names only an EC number or a KEGG reaction, attach the
    source ID but leave the Rhea edge unmapped until an explicit equivalence is
