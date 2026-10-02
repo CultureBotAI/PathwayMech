@@ -40,6 +40,7 @@ from pathwaymech.sources import (
     source_seed_rows,
 )
 from pathwaymech.sssom import write_sssom
+from pathwaymech.unipathway import load_unipathway_obo, unipathway_seed_rows
 from pathwaymech.veupathdb import load_veupathdb_pathways, veupathdb_seed_rows
 from pathwaymech.wikipathways import (
     gpml_to_pathway_record,
@@ -624,6 +625,22 @@ def import_gapmind_main(argv: list[str] | None = None) -> int:
         elements.extend(load_gapmind_steps(path))
 
     for row in gapmind_seed_rows(elements):
+        print(row)
+    return 0
+
+
+def import_unipathway_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract UniPathway UPA OBO crosswalk rows.",
+    )
+    parser.add_argument("paths", nargs="+", type=Path, help="UniPathway UPA OBO")
+    args = parser.parse_args(argv)
+
+    terms = []
+    for path in args.paths:
+        terms.extend(load_unipathway_obo(path))
+
+    for row in unipathway_seed_rows(terms):
         print(row)
     return 0
 

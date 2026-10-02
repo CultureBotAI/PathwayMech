@@ -1,0 +1,45 @@
+format-version: 1.2
+ontology: upa
+
+[Term]
+id: UPa:UCR99999
+name: substrate = product
+namespace: reaction
+xref: KEGG:R99999 "KEGG reaction"
+xref: METACYC:RXN-99999 "MetaCyc REACTION" {source="MetaCyc"}
+xref: RHEA:99999 "Rhea reaction"
+relationship: has_input_compound UPa:UPC99998 {cardinality="1"} ! substrate
+relationship: has_input_compound UPa:UPC99998 ! substrate
+relationship: has_output_compound UPa:UPC99999 ! product
+relationship: part_of UPa:UER99999 {cardinality="1", direction="LR", order="1"} ! product from substrate: step 1/1
+relationship: part_of UPa:UER99999 ! product from substrate: step 1/1
+
+[Term]
+id: UPa:UER99999
+name: product from substrate: step 1/1
+namespace: enzymatic_reaction
+xref: EC:1.1.1.1
+xref: GO:0004022 "molecular_function:synthetic activity"
+relationship: has_input_compound UPa:UPC99998 ! substrate
+relationship: has_output_compound UPa:UPC99999 ! product
+relationship: part_of UPa:ULS99999 {cardinality="1", order="1"} ! product from substrate
+
+[Term]
+id: UPa:ULS99999
+name: product from substrate
+namespace: linear_sub_pathway
+relationship: has_input_compound UPa:UPC99998 ! substrate
+relationship: has_output_compound UPa:UPC99999 ! product
+relationship: part_of UPa:UPA99999 {cardinality="1"} ! synthetic product biosynthesis
+
+[Term]
+id: UPa:UPA99999
+name: synthetic product biosynthesis
+namespace: pathway
+is_a: UPa:UPA00001 ! biological process
+
+[Term]
+id: UPa:UPC99999
+name: product
+namespace: compound
+xref: CHEBI:99999 "product"

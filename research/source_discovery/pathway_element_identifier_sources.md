@@ -26,6 +26,7 @@ without a second pathway-topology source.
 | 2 | Rhea | Rhea reaction IDs, ChEBI participants, EC, UniProtKB, GO xrefs | Normalize reactions after a pathway source proposes them |
 | 3 | ModelSEED / BiGG / BV-BRC | Reaction, compound, gene, genome, model, or KEGG-pathway membership IDs | Crosswalks and organism membership evidence, not canonical pathway definitions |
 | 3 | GapMind | Local enzyme-step rules with EC, UniProtKB, MetaCyc, and HMM clues | Variant and enzyme triage, not stable pathway definitions |
+| 3 | UniPathway | Legacy UPA pathway, subpathway, enzymatic-reaction, reaction, and compound terms with Rhea, MetaCyc, KEGG, GO, EC, and ChEBI xrefs | Crosswalk source for retired UniProt pathway annotation terms |
 
 ## Identifier coverage by source
 
@@ -184,6 +185,22 @@ protein-complex rows may not be single biochemical reactions, and the
 PaperBLAST repository is GPL-3.0. Keep the importer as support-only seed rows
 for finding EC, UniProtKB, MetaCyc, and HMM hints during manual curation.
 
+### UniPathway
+
+UniPathway's retired UPA OBO mirror preserves pathway, linear subpathway,
+enzymatic-reaction, reaction, and compound terms as `UPa:*` IDs. UCR and UER
+terms carry part-of and input/output compound relationships plus Rhea,
+MetaCyc, KEGG, GO, EC, ChEBI, and PMID cross-references, so the OBO can still
+help reviewers connect a legacy UniProt pathway annotation to a modern Rhea
+or MetaCyc reaction.
+
+That reuse should stay support-only. The README says UniPathway is inactive
+and its reactions have already been incorporated into Rhea; the repository is
+licensed as CC-BY only in `src/metadata/upa.md`; and native `UPa` CURIEs remain
+outside the PathwayMech curated-record schema. The local importer therefore
+indexes OBO crosswalk rows from a local UPA file instead of promoting retired
+UPA pathways to first-class YAML record IDs.
+
 ## Deferred aggregators
 
 | Resource | Decision |
@@ -228,3 +245,4 @@ for finding EC, UniProtKB, MetaCyc, and HMM hints during manual curation.
 | ModelSEED | https://github.com/ModelSEED/ModelSEEDDatabase/tree/master/Biochemistry | https://github.com/ModelSEED/ModelSEEDDatabase |
 | BiGG | https://bigg.ucsd.edu/data_access | https://bigg.ucsd.edu/license |
 | GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
+| UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway/blob/master/src/metadata/upa.md |
