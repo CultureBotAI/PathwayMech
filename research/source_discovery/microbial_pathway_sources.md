@@ -254,9 +254,10 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
 
 ## Import implications
 
-1. Add native-prefix support before storing candidate identifiers:
-   `Reactome`, `WikiPathways`, `MIBiG`, `ModelSEED`, `BiGG`, `BV-BRC`, `PMN`,
-   and possibly `SEED` for subsystem and role IDs.
+1. Add native-prefix support only for future sources with stable pathway or
+   reaction identifiers that are not already accepted by PathwayMech, possibly
+   including `SEED` for subsystem and role IDs. Do not mint `VEuPathDB` CURIEs
+   from component-site gene IDs in support rows.
 2. Split source roles in `conf/sources.yaml` into four operational classes:
    canonical pathway definitions, reaction references, organism membership
    calls, and crosswalks.
