@@ -30,6 +30,8 @@ def test_configured_sources_have_ingest_priorities() -> None:
         "modelseed",
         "bigg",
         "bv-brc",
+        "pmn",
+        "veupathdb",
         "gapmind",
         "unipathway",
     ]
@@ -50,8 +52,16 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "Gene Ontology Causal Activity Models"
     )
     assert any(row.startswith("60\tpathbank\tfixture\ttrue\t") for row in rows)
-    assert "130\tgapmind\tdeferred\tfalse\tenzyme-step-rulebase\tGapMind" in rows
-    assert "140\tunipathway\tdeferred\tfalse\tpathway-crosswalk\tUniPathway" in rows
+    assert (
+        "130\tpmn\tlicense-gated\ttrue\talgal-pathway-reference\t"
+        "Plant Metabolic Network / ChlamyCyc"
+    ) in rows
+    assert (
+        "140\tveupathdb\tdeferred\tfalse\tprotist-fungal-pathway-membership\t"
+        "VEuPathDB"
+    ) in rows
+    assert "150\tgapmind\tdeferred\tfalse\tenzyme-step-rulebase\tGapMind" in rows
+    assert "160\tunipathway\tdeferred\tfalse\tpathway-crosswalk\tUniPathway" in rows
 
 
 def test_duplicate_source_priority_fails() -> None:

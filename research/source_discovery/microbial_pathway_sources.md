@@ -1,6 +1,6 @@
 # Microbial pathway source discovery
 
-Updated: 2026-09-27
+Updated: 2026-10-02
 
 This memo ranks resources that could feed PathwayMech with pathway definitions,
 reaction definitions, organism-specific pathway calls, or crosswalks. The local
@@ -22,6 +22,8 @@ stored in curated YAML.
 | 2 | ModelSEED Biochemistry | ModelSEED reaction/compound namespace, aliases to KEGG/MetaCyc/Rhea/BiGG, and modeling-tested microbial reaction definitions | GitHub TSV/JSON plus ModelSEED web/API | Medium: released as CC BY, but records derived from KEGG and MetaCyc inherit source licenses |
 | 2 | BiGG Models | Published organism-scale microbial metabolic networks in SBML/JSON, with subsystem labels | Web API and model downloads | Medium: free for noncommercial research only |
 | 2 | BV-BRC Pathways and Subsystems | Genome-specific pathway presence calls, EC membership, and SEED functional-role subsystems across public bacterial genomes | BV-BRC API and Comparative Systems TSV/JSON outputs | Medium to high: KEGG-derived maps and service-specific data |
+| 2 | Plant Metabolic Network / ChlamyCyc | Pathway Tools pathway/genome databases for green algae, including Chlamydomonas-specific pathways | Local free-license Pathway Tools flat files | Low to medium: free PMN license, but download requires a license request and the source is algae-only |
+| 2 | VEuPathDB metabolic pathways | KEGG/MetaCyc pathway membership over fungal and protist gene records | WDK services and component-site downloads | Medium: useful organism evidence, but the pathway topology comes from KEGG/MetaCyc |
 | 2 | GapMind | Curated bacterial and archaeal amino-acid biosynthesis and small-carbon catabolism enzyme-step rules | PaperBLAST GitHub `gaps/aa` and `gaps/carbon` files | Medium: GPL-3.0 source and local rule IDs need review before reuse in MIT-licensed YAML |
 
 ## Canonical endpoints
@@ -39,6 +41,8 @@ stored in curated YAML.
 | ModelSEED | https://github.com/ModelSEED/ModelSEEDDatabase | https://github.com/ModelSEED/ModelSEEDDatabase |
 | BiGG | https://bigg.ucsd.edu/data_access | https://bigg.ucsd.edu/license |
 | BV-BRC | https://www.bv-brc.org/api/doc/pathway | https://www.bv-brc.org/docs/quick_references/services/comparative_systems.html |
+| Plant Metabolic Network / ChlamyCyc | https://plantcyc.org/downloads/ | https://plantcyc.org/?webform=license-agreement |
+| VEuPathDB | https://veupathdb.org/service-api.html | https://veupathdb.org/veupathdb/app/static-content/about.html |
 | GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
 | UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway |
 
@@ -94,13 +98,13 @@ activities into qualitative causal models and are now downloadable in a
 LinkML-defined JSON format; those activity nodes and causal links can seed
 `mechanistic_edges` more directly than a plain GO DAG can.
 
-## Tier 1: add next
+## Tier 1: active open ingests with narrow remaining headroom
 
 ### WikiPathways
 
-WikiPathways is the easiest permissive pathway-graph source to test first. The
-official monthly release archive at `data.wikipathways.org` exposes GPML, GMT,
-SVG, and RDF bundles, and its data-release repository is CC0. GPML stores
+WikiPathways is the easiest permissive pathway-graph source to parse visually.
+The official monthly release archive at `data.wikipathways.org` exposes GPML,
+GMT, SVG, and RDF bundles, and its data-release repository is CC0. GPML stores
 pathway diagrams with data nodes and interactions, while RDF exposes the same
 curated pathway content as linked data.
 
@@ -116,20 +120,20 @@ MIBiG is the best open source for microbial specialized metabolism where the
 than a small-molecule reaction chain. Records are available as JSON, BGC
 sequences are available as GBK, and current MIBiG releases are CC BY 4.0.
 
-The mapping into PathwayMech will be lossy unless we add BGC-shaped fields:
-MIBiG knows loci, genes, product chemistry, biosynthetic class, and evidence,
-but generally does not enumerate every Rhea-like elementary reaction. Use it
-for secondary-metabolite records with participants such as products, clusters,
-and tailoring enzymes, and keep antiSMASH DB predictions downstream from MIBiG
-rather than using predictions as primary curated evidence.
+The mapping into PathwayMech is intentionally BGC-shaped: MIBiG knows loci,
+genes, product chemistry, biosynthetic class, and evidence, but generally does
+not enumerate every Rhea-like elementary reaction. Use it for
+secondary-metabolite records with products, clusters, tailoring enzymes, and
+PubMed-backed BGC publications, and keep antiSMASH DB predictions downstream
+from MIBiG rather than using predictions as primary curated evidence.
 
 ### Reactome
 
 Reactome is a high-quality graph source with BioPAX and all-species SBML
 downloads, reaction-to-PubMed tables, ChEBI/UniProt mappings, a GraphDB export,
-and a Content Service. The current download directory already exposes the files
-we would want for an import prototype: `biopax.zip`, `all_species.3.1.sbml.tgz`,
-`ReactionPMIDS.txt`, `ChEBI2ReactomeReactions.txt`, and `gocam.zip`.
+and a Content Service. The active BioPAX importer can exercise Reactome stable
+pathway and reaction IDs, ChEBI metabolites, UniProtKB catalysts, NCBITaxon
+organisms, and reaction-local PMIDs without KEGG or MetaCyc redistribution.
 
 Do not over-rank Reactome for broad bacteria. Its deepest curation is human;
 it contains some microbial pages such as Mycobacterium tuberculosis and
@@ -180,6 +184,36 @@ are represented with KEGG, and the service folds in PATRIC/RASTtk calls, so it
 is a good way to find organisms and EC steps for a candidate pathway but should
 not be treated as the independent source of pathway topology.
 
+### Plant Metabolic Network / ChlamyCyc
+
+The Plant Metabolic Network fills the clearest algal gap. PMN publishes
+Pathway Tools pathway/genome databases for plants and green algae, and
+`ChlamyCyc` is a current Chlamydomonas reinhardtii database rather than only a
+historical web portal. PMN downloads require a free license request and include
+the native Ocelot representation, BioCyc-style flat files, tab-delimited
+tables, and BioPAX level 3.
+
+ChlamyCyc and its sibling green-algal PGDBs can reuse the Pathway Tools
+`pathways.dat` importer that MetaCyc uses, but they mint `PMN` CURIEs so their
+frame IDs stay separate from BioCyc frame IDs. PMN closes a real algal coverage
+gap, but it is not broad microbial coverage, and much of the per-species
+network is computationally predicted then refined by PMN validation rules.
+
+### VEuPathDB
+
+VEuPathDB covers eukaryotic pathogens and selected fungi/protists through
+component sites such as FungiDB, PlasmoDB, TriTrypDB, AmoebaDB, CryptoDB,
+GiardiaDB, MicrosporidiaDB, PiroplasmaDB, ToxoDB, and TrichDB. Its WDK service
+can export record searches, and gene pages expose metabolic pathway tables
+with reaction compounds and ChEBI hover IDs on reaction equations.
+
+The pathway layer is still a support source, not a primary import. VEuPathDB
+metabolic pathway tables are useful for checking whether fungal or protist
+genes support a KEGG, MetaCyc, or Reactome candidate, but the maps are loaded
+from those upstream resources and inherit their topology and licensing
+questions. Keep VEuPathDB deferred until a WDK search proves that pathway rows
+with stable gene IDs can be exported without scraping rendered pages.
+
 ### GapMind
 
 GapMind is a curated rulebase for identifying amino-acid biosynthesis and
@@ -214,19 +248,20 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
 | UniPathway | The inactive GO-hosted `UPA`, `ULS`, `UER`, `UCR`, and `UPC` ontology has pathway, subpathway, enzymatic-reaction, reaction, and compound identifiers plus reaction-participant edges, but its README says reactions have already moved into Rhea. Its GO mirror has no explicit license metadata and the historical chemistry was imported from KEGG LIGAND, so treat it as a legacy UniProtKB crosswalk unless licensing and a native `UPA` prefix are resolved. |
 | BioModels | Useful SBML corpus for individual kinetic or constraint models, including microbial models, but records are publication-scale mathematical models rather than a normalized catalogue of pathway definitions. |
 | antiSMASH DB | Comprehensive for predicted BGC regions, but predictions should not outrank MIBiG's experimentally characterized BGCs. |
+| JGI IMG/M | Strong archaeal, bacterial, and metagenome functional annotation portal with KEGG, MetaCyc, and IMG Term pathway views, but source downloads require JGI Data Usage Policy acceptance and the pathway topology is imported or IMG-specific rather than a redistributable canonical graph. |
+| KBase | Useful ModelSEED-powered workspace for bacterial and fungal metabolic reconstructions, but narratives and generated models are user artifacts over ModelSEED reactions rather than a curated pathway-definition catalogue. |
 
 ## Import implications
 
-1. Add native-prefix support before storing tier-1 identifiers:
-   `Reactome`, `WikiPathways`, `MIBiG`, `ModelSEED`, `BiGG`, `BV-BRC`, and
-   possibly `SEED` for subsystem and role IDs.
+1. Add native-prefix support before storing candidate identifiers:
+   `Reactome`, `WikiPathways`, `MIBiG`, `ModelSEED`, `BiGG`, `BV-BRC`, `PMN`,
+   `VEuPathDB`, and possibly `SEED` for subsystem and role IDs.
 2. Split source roles in `conf/sources.yaml` into four operational classes:
    canonical pathway definitions, reaction references, organism membership
    calls, and crosswalks.
-3. Implement importers in license order:
-   `go-cam` and `wikipathways` first, then `mibig`, then `reactome`, then
-   gated local extractors for MetaCyc/KEGG/BioCyc that run only in an
-   appropriately licensed environment.
+3. Treat PMN/ChlamyCyc like MetaCyc and KEGG: implemented, license-gated, and
+   limited to local extracts. Keep VEuPathDB, GapMind, and UniPathway disabled
+   until each has a licensing, native-ID, and parser decision.
 4. Normalize every elementary reaction through Rhea when possible; if a
    candidate source names only an EC number or a KEGG reaction, attach the
    source ID but leave the Rhea edge unmapped until an explicit equivalence is
@@ -235,12 +270,18 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
    hand-reviewed pathway records with short quotes from primary references, and
    record any one-to-many reaction mapping decision in `curation/decisions.tsv`.
 
-## Immediate targets
+## Current recommendations
 
-The first low-risk importer should read GO-CAM JSON and emit a draft record for
-one microbial model, because the model is already a causal graph and the source
-license matches an open repository. The second should parse WikiPathways GPML
-for one bacterial or fungal pathway and exercise participant/interaction
-normalization without touching KEGG or MetaCyc licensing. In parallel, Rhea TSV
-downloads can build the `RHEA` to `CHEBI`, `EC`, and `UniProtKB` lookup table
-that both importers will need.
+1. Keep adding GO-CAM, WikiPathways, Reactome, and MIBiG records only when a
+   candidate contributes a bounded pathway or experimentally characterized BGC
+   that is not a duplicate of the current corpus.
+2. Run `source-triage` on the first PMN/ChlamyCyc canary before committing an
+   algal record. Its Pathway Tools format is supported after MetaCyc/BioCyc
+   planning, but the canary still needs source-ID and evidence decisions.
+3. Keep VEuPathDB as a fungal/protist organism-membership support source. It
+   can help pick Plasmodium, Giardia, Cryptosporidium, Trypanosoma, or fungal
+   canaries for KEGG/MetaCyc/Reactome routes, but it should not be the
+   topology authority.
+4. Keep MetaCyc and KEGG as licensed local extractors, Rhea as the reaction
+   normalizer, ModelSEED/BiGG/BV-BRC as support layers, GapMind as a disabled
+   rulebase, and UniPathway as a disabled legacy crosswalk.

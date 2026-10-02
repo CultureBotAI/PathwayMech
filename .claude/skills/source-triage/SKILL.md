@@ -106,3 +106,8 @@ git diff --check
 Report the top candidates, the gap each closes, what remains unverified about
 license or access, any `conf/sources.yaml` rows changed, and every validation
 command that passed or was unavailable.
+
+## Related
+
+- `.claude/skills/review-pathway-sources/SKILL.md` for full bacteria,
+  archaea, fungi, algae, and protist source-inventory refreshes.

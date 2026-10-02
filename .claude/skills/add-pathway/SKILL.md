@@ -32,7 +32,7 @@ or mechanistic edge.
   schema is intentionally small; leave unsupported nodes and edges out.
 - Do not invent a local CURIE. `src/pathwaymech/schema.py` currently accepts
   `GO`, `gomodel`, `WikiPathways`, `MetaCyc`, `KEGG`, `RHEA`, `MIBiG`,
-  `ModelSEED`, `BiGG`, `BV-BRC`, `Reactome`, `PathBank`, `CHEBI`, `CAS`,
+  `ModelSEED`, `BiGG`, `BV-BRC`, `Reactome`, `PathBank`, `PMN`, `CHEBI`, `CAS`,
   `ChemSpider`, `HMDB`, `LIPIDMAPS`, `PubChem`, `EC`, `ECO`, `Ensembl`,
   `Entrez`, `NCBIProtein`, `SGD`, `TubercuList`, `UniProtKB`, `NCBITaxon`,
   `GTDB`, `GO_REF`, `PMID`, and `DOI`.
@@ -62,7 +62,7 @@ rg --no-ignore --hidden -n -F "<RHEA-or-MIBiG-or-PMID-or-DOI>" . -g '!/.git' -g 
 ```
 
 Search the candidate GO, GO-CAM, WikiPathways, MetaCyc, KEGG, Rhea, MIBiG,
-Reactome, PathBank, ModelSEED, BiGG, and BV-BRC identifiers; exact pathway
+Reactome, PathBank, PMN, ModelSEED, BiGG, and BV-BRC identifiers; exact pathway
 labels and synonyms; defining reaction IDs; source accessions; and DOI or PMID
 evidence. Never use a bare prefix such as `GO:` or `PMID:` to prove absence.
 
@@ -88,7 +88,7 @@ Declare every node used by an edge in one of the local node lists:
   identifiers such as `CAS`, `ChemSpider`, `HMDB`, `PubChem`, `Ensembl`,
   `Entrez`, `NCBIProtein`, or `TubercuList`;
 - `reactions`: reaction nodes with `RHEA`, `gomodel`, `WikiPathways`,
-  `MetaCyc`, `KEGG`, `Reactome`, or `PathBank` identifiers.
+  `MetaCyc`, `KEGG`, `Reactome`, `PathBank`, or `PMN` identifiers.
 
 Resolve every CURIE at its issuing authority before committing it. Leave a node
 out when the identifier is still a guess; a shorter true graph is better than a
@@ -139,8 +139,8 @@ pull request.
 ## Report
 
 End with the new record id, label, and YAML path; every GO, GO-CAM,
-WikiPathways, MetaCyc, KEGG, Rhea, MIBiG, Reactome, PathBank, ModelSEED, BiGG,
-BV-BRC, ChEBI, LIPIDMAPS, CAS, ChemSpider, HMDB, PubChem, EC, Ensembl, Entrez,
+WikiPathways, MetaCyc, KEGG, Rhea, MIBiG, Reactome, PathBank, PMN, ModelSEED,
+BiGG, BV-BRC, ChEBI, LIPIDMAPS, CAS, ChemSpider, HMDB, PubChem, EC, Ensembl, Entrez,
 NCBIProtein, SGD, TubercuList, UniProtKB, NCBITaxon, GTDB, PMID, and DOI
 identifier added;
 the strongest identity and mechanism sources; any edges deliberately left out;
