@@ -64,6 +64,9 @@ def test_write_sssom_uses_lf_tsv_with_stable_headers(tmp_path: Path) -> None:
 
     assert path.read_bytes().count(b"\r") == 0
     lines = path.read_text(encoding="utf-8").splitlines()
+    assert [line for line in lines if line.startswith("# license:")] == [
+        "# license: https://creativecommons.org/licenses/by/4.0/"
+    ]
     assert "# curie_map:" in lines
     assert '#   CHEBI: "http://purl.obolibrary.org/obo/CHEBI_"' in lines
     assert '#   HMDB: "https://identifiers.org/hmdb:"' in lines
