@@ -36,7 +36,7 @@ SSSOM_COLUMNS = (
 
 SSSOM_HEADER = (
     "# mapping_set_id: https://w3id.org/culturebotai/pathwaymech/source-mappings",
-    "# license: https://spdx.org/licenses/MIT",
+    "# license: https://creativecommons.org/licenses/by/4.0/",
     f"# mapping_provider: {KNOWLEDGE_SOURCE}",
     "# curie_map:",
     *(f"#   {prefix}: {json.dumps(uri)}" for prefix, uri in CURIE_MAP),

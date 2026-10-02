@@ -79,3 +79,11 @@ The browser is published at <https://culturebotai.github.io/PathwayMech/>.
 `main`, `.github/workflows/pages.yaml` publishes the root `index.html`
 redirect and `pages/` -- only those, only for the commit that is still `main`,
 and only after checking again that `pages/` is current.
+
+## License
+
+Project-authored data and narrative documentation are licensed under
+[CC BY 4.0](LICENSE-DATA). Project-authored code, including scripts, tests,
+schemas and website templates, is licensed under [BSD-3-Clause](LICENSE-CODE).
+Third-party material retains its own licenses and attribution requirements.
+See [LICENSE](LICENSE) for scope and attribution.
