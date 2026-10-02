@@ -23,7 +23,7 @@ stored in curated YAML.
 | 2 | BiGG Models | Published organism-scale microbial metabolic networks in SBML/JSON, with subsystem labels | Web API and model downloads | Medium: free for noncommercial research only |
 | 2 | BV-BRC Pathways and Subsystems | Genome-specific pathway presence calls, EC membership, and SEED functional-role subsystems across public bacterial genomes | BV-BRC API and Comparative Systems TSV/JSON outputs | Medium to high: KEGG-derived maps and service-specific data |
 | 2 | Plant Metabolic Network / ChlamyCyc | Pathway Tools pathway/genome databases for green algae, including Chlamydomonas-specific pathways | Local free-license Pathway Tools flat files | Low to medium: free PMN license, but download requires a license request and the source is algae-only |
-| 2 | VEuPathDB metabolic pathways | KEGG/MetaCyc pathway membership over fungal and protist gene records | WDK services and component-site downloads | Medium: useful organism evidence, but the pathway topology comes from KEGG/MetaCyc |
+| 2 | VEuPathDB metabolic pathways | KEGG/MetaCyc pathway membership over fungal and protist gene records | Local WDK `MetabolicPathways` TSV exports from component sites | Medium: useful organism evidence, but the pathway topology comes from KEGG/MetaCyc |
 | 2 | GapMind | Curated bacterial and archaeal amino-acid biosynthesis and small-carbon catabolism enzyme-step rules | PaperBLAST GitHub `gaps/aa` and `gaps/carbon` files | Medium: GPL-3.0 source and local rule IDs need review before reuse in MIT-licensed YAML |
 
 ## Canonical endpoints
@@ -207,12 +207,13 @@ GiardiaDB, MicrosporidiaDB, PiroplasmaDB, ToxoDB, and TrichDB. Its WDK service
 can export record searches, and gene pages expose metabolic pathway tables
 with reaction compounds and ChEBI hover IDs on reaction equations.
 
-The pathway layer is still a support source, not a primary import. VEuPathDB
+The pathway layer is a support source, not a primary import. VEuPathDB
 metabolic pathway tables are useful for checking whether fungal or protist
 genes support a KEGG, MetaCyc, or Reactome candidate, but the maps are loaded
 from those upstream resources and inherit their topology and licensing
-questions. Keep VEuPathDB deferred until a WDK search proves that pathway rows
-with stable gene IDs can be exported without scraping rendered pages.
+questions. The local WDK TSV importer consumes the `MetabolicPathways` gene
+table exported from component sites and keeps component-site gene IDs as seed
+row evidence rather than minting `VEuPathDB` CURIEs.
 
 ### GapMind
 
@@ -255,13 +256,15 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
 
 1. Add native-prefix support before storing candidate identifiers:
    `Reactome`, `WikiPathways`, `MIBiG`, `ModelSEED`, `BiGG`, `BV-BRC`, `PMN`,
-   `VEuPathDB`, and possibly `SEED` for subsystem and role IDs.
+   and possibly `SEED` for subsystem and role IDs.
 2. Split source roles in `conf/sources.yaml` into four operational classes:
    canonical pathway definitions, reaction references, organism membership
    calls, and crosswalks.
 3. Treat PMN/ChlamyCyc like MetaCyc and KEGG: implemented, license-gated, and
-   limited to local extracts. Keep VEuPathDB, GapMind, and UniPathway disabled
-   until each has a licensing, native-ID, and parser decision.
+   limited to local extracts. Use VEuPathDB as a support-only WDK TSV ingest
+   for KEGG/MetaCyc pathway membership over fungal and protist genes. Keep
+   GapMind and UniPathway disabled until each has a licensing, native-ID, and
+   parser decision.
 4. Normalize every elementary reaction through Rhea when possible; if a
    candidate source names only an EC number or a KEGG reaction, attach the
    source ID but leave the Rhea edge unmapped until an explicit equivalence is
@@ -278,10 +281,10 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
 2. Run `source-triage` on the first PMN/ChlamyCyc canary before committing an
    algal record. Its Pathway Tools format is supported after MetaCyc/BioCyc
    planning, but the canary still needs source-ID and evidence decisions.
-3. Keep VEuPathDB as a fungal/protist organism-membership support source. It
-   can help pick Plasmodium, Giardia, Cryptosporidium, Trypanosoma, or fungal
-   canaries for KEGG/MetaCyc/Reactome routes, but it should not be the
-   topology authority.
+3. Keep VEuPathDB as a fungal/protist organism-membership support source. Its
+   seed rows can help pick Plasmodium, Giardia, Cryptosporidium, Trypanosoma,
+   or fungal canaries for KEGG/MetaCyc/Reactome routes, but it should not be
+   the topology authority.
 4. Keep MetaCyc and KEGG as licensed local extractors, Rhea as the reaction
    normalizer, ModelSEED/BiGG/BV-BRC as support layers, GapMind as a disabled
    rulebase, and UniPathway as a disabled legacy crosswalk.
