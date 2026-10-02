@@ -62,9 +62,10 @@ rg --no-ignore --hidden -n -F "<RHEA-or-MIBiG-or-PMID-or-DOI>" . -g '!/.git' -g 
 ```
 
 Search the candidate GO, GO-CAM, WikiPathways, MetaCyc, KEGG, Rhea, MIBiG,
-Reactome, PathBank, PMN, ModelSEED, BiGG, and BV-BRC identifiers; exact pathway
-labels and synonyms; defining reaction IDs; source accessions; and DOI or PMID
-evidence. Never use a bare prefix such as `GO:` or `PMID:` to prove absence.
+Reactome, PathBank, PMN, ModelSEED, BiGG, BV-BRC, and VEuPathDB identifiers;
+exact pathway labels and synonyms; defining reaction IDs; source accessions;
+and DOI or PMID evidence. Never use a bare prefix such as `GO:` or `PMID:` to
+prove absence.
 
 If a prior mention exists in `research/`, read it before continuing. A rejected
 candidate, source gap, or unresolved identifier conflict changes the work from

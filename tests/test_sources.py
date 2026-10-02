@@ -57,7 +57,7 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "Plant Metabolic Network / ChlamyCyc"
     ) in rows
     assert (
-        "140\tveupathdb\tdeferred\tfalse\tprotist-fungal-pathway-membership\t"
+        "140\tveupathdb\tsupport\ttrue\tprotist-fungal-pathway-membership\t"
         "VEuPathDB"
     ) in rows
     assert "150\tgapmind\tdeferred\tfalse\tenzyme-step-rulebase\tGapMind" in rows

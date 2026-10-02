@@ -39,6 +39,7 @@ from pathwaymech.sources import (
     source_seed_rows,
 )
 from pathwaymech.sssom import write_sssom
+from pathwaymech.veupathdb import load_veupathdb_pathways, veupathdb_seed_rows
 from pathwaymech.wikipathways import (
     gpml_to_pathway_record,
     load_gpml_pathway,
@@ -606,6 +607,22 @@ def import_bvbrc_main(argv: list[str] | None = None) -> int:
         calls.extend(load_bvbrc_pathways(path))
 
     for row in bvbrc_seed_rows(calls):
+        print(row)
+    return 0
+
+
+def import_veupathdb_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract VEuPathDB WDK MetabolicPathways seed rows.",
+    )
+    parser.add_argument("paths", nargs="+", type=Path, help="VEuPathDB pathway TSV")
+    args = parser.parse_args(argv)
+
+    calls = []
+    for path in args.paths:
+        calls.extend(load_veupathdb_pathways(path))
+
+    for row in veupathdb_seed_rows(calls):
         print(row)
     return 0
 

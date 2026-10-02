@@ -6,6 +6,7 @@ from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.modelseed import load_modelseed_tsv, modelseed_seed_rows
+from pathwaymech.veupathdb import load_veupathdb_pathways, veupathdb_seed_rows
 
 
 def test_go_obo_seed_rows_skip_obsolete_terms() -> None:
@@ -42,4 +43,20 @@ def test_bvbrc_pathway_seed_rows() -> None:
         "genome_id\tgene_id\tec_number\tpathway_id\tpathway_name",
         "562.1\tfig|562.1.peg.1\tEC:2.7.2.3\tKEGG:map00010\t"
         "Glycolysis / Gluconeogenesis",
+    ]
+
+
+def test_veupathdb_pathway_seed_rows() -> None:
+    calls = load_veupathdb_pathways(Path("tests/fixtures/veupathdb/pathways.tsv"))
+
+    assert veupathdb_seed_rows(calls) == [
+        (
+            "component_site\torganism\tgene_id\tgene_product\tpathway_source\t"
+            "pathway_id\tpathway_name\tec_number\texact_match\treaction_count"
+        ),
+        (
+            "PlasmoDB\tPlasmodium falciparum 3D7\tPF3D7_1133400\t"
+            "phosphoglycerate kinase\tKEGG\tKEGG:ec00010\t"
+            "Glycolysis / Gluconeogenesis\tEC:2.7.2.3\tYes\t1"
+        ),
     ]

@@ -49,6 +49,6 @@ MetaCyc, PMN, and KEGG ingestion only read local, license-gated exports:
 Pathway Tools `pathways.dat` files and KGML maps. PMN Pathway Tools records mint
 `PMN` CURIEs so ChlamyCyc frame IDs remain separate from MetaCyc frame IDs.
 
-GO, ModelSEED, BiGG, and BV-BRC ingestion provide grounding, reaction-alias,
-model-reaction, and genome-specific pathway membership rows that support
-manual review of drafts from primary pathway sources.
+GO, ModelSEED, BiGG, BV-BRC, and VEuPathDB ingestion provide grounding,
+reaction-alias, model-reaction, and organism-specific pathway membership rows
+that support manual review of drafts from primary pathway sources.

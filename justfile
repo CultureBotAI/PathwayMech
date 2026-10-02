@@ -93,5 +93,8 @@ import-pmn *paths:
 import-rhea *paths:
     uv run pathwaymech-import-rhea {{paths}}
 
+import-veupathdb *paths:
+    uv run pathwaymech-import-veupathdb {{paths}}
+
 import-wikipathways *paths:
     uv run pathwaymech-import-wikipathways {{paths}}
