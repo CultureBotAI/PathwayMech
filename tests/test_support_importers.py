@@ -4,6 +4,7 @@ from pathlib import Path
 
 from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
+from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.modelseed import load_modelseed_tsv, modelseed_seed_rows
 from pathwaymech.veupathdb import load_veupathdb_pathways, veupathdb_seed_rows
@@ -59,4 +60,23 @@ def test_veupathdb_pathway_seed_rows() -> None:
             "phosphoglycerate kinase\tKEGG\tKEGG:ec00010\t"
             "Glycolysis / Gluconeogenesis\tEC:2.7.2.3\tYes\t1"
         ),
+    ]
+
+
+def test_gapmind_step_seed_rows() -> None:
+    elements = load_gapmind_steps(Path("tests/fixtures/gapmind/aa/thr.steps"))
+
+    assert gapmind_seed_rows(elements) == [
+        (
+            "family\tpathway_slug\telement_id\telement_type\tdescription\tec_numbers\t"
+            "uniprot_ids\tmetacyc_ids\thmm_ids\tother_identifiers\t"
+            "ignored_identifiers\timports\tcomponents"
+        ),
+        "aa\tthr\tphosphohomoserine\timport\t\t\t\t\t\t\t\tmet.steps:phosphohomoserine\t",
+        (
+            "aa\tthr\tthrC\tstep\tthreonine synthase\tEC:4.2.3.1\t"
+            "UniProtKB:A0A000|UniProtKB:Q935V6\tMetaCyc:RXN-1\tTIGR00001\t"
+            "reanno:sample:locus\tUniProtKB:P11111|EC:1.2.3.4\t\t"
+        ),
+        "aa\tthr\tall\tvariant\t\t\t\t\t\t\t\t\tphosphohomoserine|thrC",
     ]

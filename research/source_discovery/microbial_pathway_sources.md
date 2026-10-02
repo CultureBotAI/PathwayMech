@@ -24,7 +24,7 @@ stored in curated YAML.
 | 2 | BV-BRC Pathways and Subsystems | Genome-specific pathway presence calls, EC membership, and SEED functional-role subsystems across public bacterial genomes | BV-BRC API and Comparative Systems TSV/JSON outputs | Medium to high: KEGG-derived maps and service-specific data |
 | 2 | Plant Metabolic Network / ChlamyCyc | Pathway Tools pathway/genome databases for green algae, including Chlamydomonas-specific pathways | Local free-license Pathway Tools flat files | Low to medium: free PMN license, but download requires a license request and the source is algae-only |
 | 2 | VEuPathDB metabolic pathways | KEGG/MetaCyc pathway membership over fungal and protist gene records | Local WDK `MetabolicPathways` TSV exports from component sites | Medium: useful organism evidence, but the pathway topology comes from KEGG/MetaCyc |
-| 2 | GapMind | Curated bacterial and archaeal amino-acid biosynthesis and small-carbon catabolism enzyme-step rules | PaperBLAST GitHub `gaps/aa` and `gaps/carbon` files | Medium: GPL-3.0 source and local rule IDs need review before reuse in MIT-licensed YAML |
+| 2 | GapMind | Curated bacterial and archaeal amino-acid biosynthesis and small-carbon catabolism enzyme-step rules | PaperBLAST GitHub `gaps/aa` and `gaps/carbon` files | Medium: GPL-3.0 source; local rule IDs are support-only seed rows |
 
 ## Canonical endpoints
 
@@ -233,10 +233,10 @@ over EC numbers, UniProt exemplars, PaperBLAST curation tags, HMM accessions,
 and local imports rather than stable GapMind CURIEs or chemical reaction
 nodes. Some records cite MetaCyc pathway IDs in comments, and many encode
 transporters or protein complexes needed to decide whether a pathway is
-present in a genome. Keep GapMind disabled until there is a GPL-3.0 license
-decision, a parser for the local rule language, and a normalization pass that
-can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
-`MetaCyc` identifiers.
+present in a genome. The local support importer indexes step, import, and
+variant rows from local `*.steps` files so reviewers can find EC, UniProtKB,
+MetaCyc, and HMM clues, while leaving GPL-3.0 rule text and local GapMind
+slugs out of curated YAML until there is a native-ID normalization decision.
 
 ## Defer or use only as crosswalks
 
@@ -263,9 +263,9 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
    calls, and crosswalks.
 3. Treat PMN/ChlamyCyc like MetaCyc and KEGG: implemented, license-gated, and
    limited to local extracts. Use VEuPathDB as a support-only WDK TSV ingest
-   for KEGG/MetaCyc pathway membership over fungal and protist genes. Keep
-   GapMind and UniPathway disabled until each has a licensing, native-ID, and
-   parser decision.
+   for KEGG/MetaCyc pathway membership over fungal and protist genes. Use
+   GapMind as a support-only `.steps` indexer, and keep UniPathway disabled
+   until its licensing, native-ID, and parser decisions are resolved.
 4. Normalize every elementary reaction through Rhea when possible; if a
    candidate source names only an EC number or a KEGG reaction, attach the
    source ID but leave the Rhea edge unmapped until an explicit equivalence is
@@ -287,5 +287,5 @@ can map each accepted step to existing `RHEA`, `CHEBI`, `EC`, `UniProtKB`, or
    or fungal canaries for KEGG/MetaCyc/Reactome routes, but it should not be
    the topology authority.
 4. Keep MetaCyc and KEGG as licensed local extractors, Rhea as the reaction
-   normalizer, ModelSEED/BiGG/BV-BRC as support layers, GapMind as a disabled
-   rulebase, and UniPathway as a disabled legacy crosswalk.
+   normalizer, ModelSEED/BiGG/BV-BRC/GapMind as support layers, and UniPathway
+   as a disabled legacy crosswalk.

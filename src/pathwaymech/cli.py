@@ -15,6 +15,7 @@ from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.biopax import biopax_to_pathway_record, load_biopax
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.chebi import load_chebi_xrefs
+from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
@@ -607,6 +608,22 @@ def import_bvbrc_main(argv: list[str] | None = None) -> int:
         calls.extend(load_bvbrc_pathways(path))
 
     for row in bvbrc_seed_rows(calls):
+        print(row)
+    return 0
+
+
+def import_gapmind_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract GapMind .steps rule elements for manual pathway triage.",
+    )
+    parser.add_argument("paths", nargs="+", type=Path, help="GapMind .steps path")
+    args = parser.parse_args(argv)
+
+    elements = []
+    for path in args.paths:
+        elements.extend(load_gapmind_steps(path))
+
+    for row in gapmind_seed_rows(elements):
         print(row)
     return 0
 

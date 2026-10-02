@@ -25,6 +25,7 @@ without a second pathway-topology source.
 | 2 | MIBiG JSON/GBK | BGC accessions, GenBank regions, genes/protein translations, products, publications | Secondary-metabolite/BGC records, not elementary reaction chains |
 | 2 | Rhea | Rhea reaction IDs, ChEBI participants, EC, UniProtKB, GO xrefs | Normalize reactions after a pathway source proposes them |
 | 3 | ModelSEED / BiGG / BV-BRC | Reaction, compound, gene, genome, model, or KEGG-pathway membership IDs | Crosswalks and organism membership evidence, not canonical pathway definitions |
+| 3 | GapMind | Local enzyme-step rules with EC, UniProtKB, MetaCyc, and HMM clues | Variant and enzyme triage, not stable pathway definitions |
 
 ## Identifier coverage by source
 
@@ -168,6 +169,21 @@ KEGG pathway IDs for organism-specific membership calls. Use them to find
 candidate organisms or to check genome support for a curated pathway, not to
 define the pathway's topology.
 
+### GapMind
+
+GapMind encodes bacterial and archaeal amino-acid biosynthesis and small-carbon
+catabolism as local `*.steps` rule files. Step rows can carry EC numbers,
+UniProt exemplars, MetaCyc monomer IDs, TIGRFAM HMM IDs, and PaperBLAST
+curation tags, while `all:` or subpathway rows describe alternative groups of
+steps for a complete route.
+
+Those rule files are excellent at showing which enzyme variants GapMind checks
+when it evaluates a genome. They are weaker as direct PathwayMech definitions:
+their local rule slugs are not stable external pathway CURIEs, transporter and
+protein-complex rows may not be single biochemical reactions, and the
+PaperBLAST repository is GPL-3.0. Keep the importer as support-only seed rows
+for finding EC, UniProtKB, MetaCyc, and HMM hints during manual curation.
+
 ## Deferred aggregators
 
 | Resource | Decision |
@@ -211,3 +227,4 @@ define the pathway's topology.
 | MIBiG | https://mibig.secondarymetabolites.org/download | https://mibig.secondarymetabolites.org/ |
 | ModelSEED | https://github.com/ModelSEED/ModelSEEDDatabase/tree/master/Biochemistry | https://github.com/ModelSEED/ModelSEEDDatabase |
 | BiGG | https://bigg.ucsd.edu/data_access | https://bigg.ucsd.edu/license |
+| GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
