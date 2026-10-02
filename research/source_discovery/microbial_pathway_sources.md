@@ -44,7 +44,7 @@ stored in curated YAML.
 | Plant Metabolic Network / ChlamyCyc | https://plantcyc.org/downloads/ | https://plantcyc.org/?webform=license-agreement |
 | VEuPathDB | https://veupathdb.org/service-api.html | https://veupathdb.org/veupathdb/app/static-content/about.html |
 | GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
-| UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway |
+| UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway/blob/master/src/metadata/upa.md |
 
 ## Tier 0: already configured and worth keeping
 
@@ -246,7 +246,7 @@ slugs out of curated YAML until there is a native-ID normalization decision.
 | MetaNetX / MNXref | Excellent compound, reaction, and model identifier reconciliation layer across BiGG, ModelSEED, BioCyc, and Reactome, but it intentionally abstracts away direction and is not a curated pathway-topology source. |
 | ChEBI | Required chemical ontology for participants, and already indirectly available through Rhea, but it does not define pathways. |
 | UniProtKB | Required protein/enzyme grounding layer, but it does not define pathway graphs. |
-| UniPathway | The inactive GO-hosted `UPA`, `ULS`, `UER`, `UCR`, and `UPC` ontology has pathway, subpathway, enzymatic-reaction, reaction, and compound identifiers plus reaction-participant edges, but its README says reactions have already moved into Rhea. Its GO mirror has no explicit license metadata and the historical chemistry was imported from KEGG LIGAND, so treat it as a legacy UniProtKB crosswalk unless licensing and a native `UPA` prefix are resolved. |
+| UniPathway | The inactive GO-hosted `UPA`, `ULS`, `UER`, `UCR`, and `UPC` ontology has pathway, subpathway, enzymatic-reaction, reaction, and compound identifiers plus reaction-participant edges, but its README says reactions have already moved into Rhea. Its current repository has no `LICENSE` file, but `src/metadata/upa.md` declares CC-BY terms. Treat it as a legacy Rhea, MetaCyc, KEGG, GO, EC, and ChEBI crosswalk unless a future native `UPA` prefix is justified. |
 | BioModels | Useful SBML corpus for individual kinetic or constraint models, including microbial models, but records are publication-scale mathematical models rather than a normalized catalogue of pathway definitions. |
 | antiSMASH DB | Comprehensive for predicted BGC regions, but predictions should not outrank MIBiG's experimentally characterized BGCs. |
 | JGI IMG/M | Strong archaeal, bacterial, and metagenome functional annotation portal with KEGG, MetaCyc, and IMG Term pathway views, but source downloads require JGI Data Usage Policy acceptance and the pathway topology is imported or IMG-specific rather than a redistributable canonical graph. |
@@ -264,8 +264,9 @@ slugs out of curated YAML until there is a native-ID normalization decision.
 3. Treat PMN/ChlamyCyc like MetaCyc and KEGG: implemented, license-gated, and
    limited to local extracts. Use VEuPathDB as a support-only WDK TSV ingest
    for KEGG/MetaCyc pathway membership over fungal and protist genes. Use
-   GapMind as a support-only `.steps` indexer, and keep UniPathway disabled
-   until its licensing, native-ID, and parser decisions are resolved.
+   GapMind as a support-only `.steps` indexer, and use UniPathway as a
+   support-only UPA OBO crosswalk without minting native `UPa` CURIEs in
+   curated YAML.
 4. Normalize every elementary reaction through Rhea when possible; if a
    candidate source names only an EC number or a KEGG reaction, attach the
    source ID but leave the Rhea edge unmapped until an explicit equivalence is
@@ -287,5 +288,4 @@ slugs out of curated YAML until there is a native-ID normalization decision.
    or fungal canaries for KEGG/MetaCyc/Reactome routes, but it should not be
    the topology authority.
 4. Keep MetaCyc and KEGG as licensed local extractors, Rhea as the reaction
-   normalizer, ModelSEED/BiGG/BV-BRC/GapMind as support layers, and UniPathway
-   as a disabled legacy crosswalk.
+   normalizer, and ModelSEED/BiGG/BV-BRC/GapMind/UniPathway as support layers.

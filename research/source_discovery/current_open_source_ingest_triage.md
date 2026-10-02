@@ -227,8 +227,8 @@ source-specific normalization.
 
 Defer PathBank until its redistribution terms are clearer, keep MetaCyc and
 KEGG behind licensed local extractors, keep Rhea/ModelSEED/BiGG/BV-BRC/GapMind
-as support layers, and leave UniPathway disabled until its legacy-ontology
-blockers are resolved.
+and UniPathway as support layers, and keep new primary pathway records focused
+on active sources instead of retired crosswalks.
 
 PathBank remains a local BioPAX/SBML fixture source rather than an ingest
 target: its current About page still combines Open Database License language

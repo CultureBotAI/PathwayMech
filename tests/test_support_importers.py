@@ -7,6 +7,7 @@ from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.modelseed import load_modelseed_tsv, modelseed_seed_rows
+from pathwaymech.unipathway import load_unipathway_obo, unipathway_seed_rows
 from pathwaymech.veupathdb import load_veupathdb_pathways, veupathdb_seed_rows
 
 
@@ -79,4 +80,34 @@ def test_gapmind_step_seed_rows() -> None:
             "reanno:sample:locus\tUniProtKB:P11111|EC:1.2.3.4\t\t"
         ),
         "aa\tthr\tall\tvariant\t\t\t\t\t\t\t\t\tphosphohomoserine|thrC",
+    ]
+
+
+def test_unipathway_obo_seed_rows() -> None:
+    terms = load_unipathway_obo(Path("tests/fixtures/unipathway/upa.obo"))
+
+    assert unipathway_seed_rows(terms) == [
+        (
+            "unipathway_id\tterm_type\tname\txrefs\tparents\tpart_ofs\t"
+            "input_compounds\toutput_compounds"
+        ),
+        (
+            "UPa:UCR99999\treaction\tsubstrate = product\t"
+            "KEGG:R99999|MetaCyc:RXN-99999|RHEA:99999\t\tUPa:UER99999\t"
+            "UPa:UPC99998\tUPa:UPC99999"
+        ),
+        (
+            "UPa:UER99999\tenzymatic_reaction\tproduct from substrate: step 1/1\t"
+            "EC:1.1.1.1|GO:0004022\t\tUPa:ULS99999\t"
+            "UPa:UPC99998\tUPa:UPC99999"
+        ),
+        (
+            "UPa:ULS99999\tlinear_sub_pathway\tproduct from substrate\t\t\t"
+            "UPa:UPA99999\tUPa:UPC99998\tUPa:UPC99999"
+        ),
+        (
+            "UPa:UPA99999\tpathway\tsynthetic product biosynthesis\t\t"
+            "UPa:UPA00001\t\t\t"
+        ),
+        "UPa:UPC99999\tcompound\tproduct\tCHEBI:99999\t\t\t\t",
     ]

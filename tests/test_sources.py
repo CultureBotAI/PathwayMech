@@ -61,7 +61,7 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "VEuPathDB"
     ) in rows
     assert "150\tgapmind\tsupport\ttrue\tenzyme-step-rulebase\tGapMind" in rows
-    assert "160\tunipathway\tdeferred\tfalse\tpathway-crosswalk\tUniPathway" in rows
+    assert "160\tunipathway\tsupport\ttrue\tpathway-crosswalk\tUniPathway" in rows
 
 
 def test_duplicate_source_priority_fails() -> None:
