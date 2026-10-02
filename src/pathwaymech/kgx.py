@@ -51,6 +51,7 @@ _PREFIX_CATEGORIES = {
     "NCBIProtein": "biolink:GeneOrGeneProduct",
     "NCBITaxon": "biolink:OrganismTaxon",
     "PathBank": "biolink:SmallMolecule",
+    "PMN": "biolink:BiochemicalReaction",
     "PubChem": "biolink:SmallMolecule",
     "RHEA": "biolink:BiochemicalReaction",
     "Reactome": "biolink:BiochemicalReaction",

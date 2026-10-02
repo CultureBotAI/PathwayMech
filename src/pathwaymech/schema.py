@@ -55,6 +55,7 @@ ALLOWED_CURIE_PREFIXES = {
     "NCBIProtein",
     "NCBITaxon",
     "PathBank",
+    "PMN",
     "PMID",
     "PubChem",
     "RHEA",

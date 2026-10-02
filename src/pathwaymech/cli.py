@@ -4,7 +4,9 @@ import argparse
 import html
 import subprocess
 import sys
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 from xml.etree import ElementTree
 
 import yaml
@@ -17,7 +19,6 @@ from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
 from pathwaymech.kgx import write_kgx
-from pathwaymech.metacyc import load_metacyc_dat, metacyc_pathway_records
 from pathwaymech.mibig import (
     load_mibig_json,
     mibig_cluster,
@@ -25,6 +26,11 @@ from pathwaymech.mibig import (
     mibig_seed_rows,
 )
 from pathwaymech.modelseed import load_modelseed_tsv, modelseed_seed_rows
+from pathwaymech.pathway_tools import (
+    load_pathway_tools_dat,
+    metacyc_pathway_records,
+    pmn_pathway_records,
+)
 from pathwaymech.rhea import load_rhea_tsv, rhea_seed_rows
 from pathwaymech.schema import ValidationError, validate_record
 from pathwaymech.sources import (
@@ -474,18 +480,43 @@ def import_biopax_main(argv: list[str] | None = None) -> int:
 
 
 def import_metacyc_main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
+    return _import_pathway_tools_main(
+        argv,
         description="Convert local MetaCyc Pathway Tools pathways.dat files to drafts.",
+        path_help="MetaCyc pathways.dat path",
+        record_factory=metacyc_pathway_records,
     )
-    parser.add_argument("paths", nargs="+", type=Path, help="MetaCyc pathways.dat path")
+
+
+def import_pmn_main(argv: list[str] | None = None) -> int:
+    return _import_pathway_tools_main(
+        argv,
+        description="Convert local PMN Pathway Tools pathways.dat files to drafts.",
+        path_help="PMN pathways.dat path",
+        record_factory=pmn_pathway_records,
+    )
+
+
+def _import_pathway_tools_main(
+    argv: list[str] | None,
+    *,
+    description: str,
+    path_help: str,
+    record_factory: Callable[[list[dict[str, list[str]]]], list[dict[str, Any]]],
+) -> int:
+    parser = argparse.ArgumentParser(
+        description=description,
+    )
+    parser.add_argument("paths", nargs="+", type=Path, help=path_help)
     args = parser.parse_args(argv)
 
     records = []
     for path in args.paths:
         try:
-            records.extend(metacyc_pathway_records(load_metacyc_dat(path)))
-            for record in records:
+            path_records = record_factory(load_pathway_tools_dat(path))
+            for record in path_records:
                 validate_record(record)
+            records.extend(path_records)
         except (ValidationError, ValueError) as error:
             print(f"{path}: {error}", file=sys.stderr)
             return 1

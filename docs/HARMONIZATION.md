@@ -2,9 +2,9 @@
 
 PathwayMech harmonizes pathway, reaction, compound, protein, activity, cluster,
 model, and pathway-call identifiers from GO, GO-CAM, WikiPathways, Rhea, MIBiG,
-Reactome, PathBank, MetaCyc, KEGG, ModelSEED, BiGG, BV-BRC, ChEBI, LIPID MAPS,
-CAS, ChemSpider, HMDB, PubChem, EC, UniProtKB, Ensembl, Entrez Gene, NCBI
-Protein, TubercuList, and SGD records into a single pathway mechanism module.
+Reactome, PathBank, MetaCyc, KEGG, PMN, ModelSEED, BiGG, BV-BRC, ChEBI, LIPID
+MAPS, CAS, ChemSpider, HMDB, PubChem, EC, UniProtKB, Ensembl, Entrez Gene,
+NCBI Protein, TubercuList, and SGD records into a single pathway mechanism module.
 
 Prefer stable external identifiers over local identifiers. Local identifiers
 must be temporary and must be documented in `curation/decisions.tsv`.
@@ -45,8 +45,9 @@ BioPAX prefix normalizations such as `UniProt` to `UniProtKB` are retained as
 the same `source_mappings` rows when the normalized participant remains in the
 draft mechanism graph.
 
-MetaCyc and KEGG ingestion only read local, license-gated exports:
-Pathway Tools `pathways.dat` files and KGML maps.
+MetaCyc, PMN, and KEGG ingestion only read local, license-gated exports:
+Pathway Tools `pathways.dat` files and KGML maps. PMN Pathway Tools records mint
+`PMN` CURIEs so ChlamyCyc frame IDs remain separate from MetaCyc frame IDs.
 
 GO, ModelSEED, BiGG, and BV-BRC ingestion provide grounding, reaction-alias,
 model-reaction, and genome-specific pathway membership rows that support

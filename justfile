@@ -87,6 +87,9 @@ import-metacyc *paths:
 import-modelseed *paths:
     uv run pathwaymech-import-modelseed {{paths}}
 
+import-pmn *paths:
+    uv run pathwaymech-import-pmn {{paths}}
+
 import-rhea *paths:
     uv run pathwaymech-import-rhea {{paths}}
 
