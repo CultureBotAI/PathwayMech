@@ -60,7 +60,7 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "140\tveupathdb\tsupport\ttrue\tprotist-fungal-pathway-membership\t"
         "VEuPathDB"
     ) in rows
-    assert "150\tgapmind\tdeferred\tfalse\tenzyme-step-rulebase\tGapMind" in rows
+    assert "150\tgapmind\tsupport\ttrue\tenzyme-step-rulebase\tGapMind" in rows
     assert "160\tunipathway\tdeferred\tfalse\tpathway-crosswalk\tUniPathway" in rows
 
 

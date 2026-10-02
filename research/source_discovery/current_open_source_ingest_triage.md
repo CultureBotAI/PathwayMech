@@ -226,9 +226,9 @@ signal to decide whether Reactome's microbial coverage is worth deeper
 source-specific normalization.
 
 Defer PathBank until its redistribution terms are clearer, keep MetaCyc and
-KEGG behind licensed local extractors, keep Rhea/ModelSEED/BiGG/BV-BRC as
-support layers, and leave GapMind and UniPathway disabled until their rulebase
-or legacy-ontology blockers are resolved.
+KEGG behind licensed local extractors, keep Rhea/ModelSEED/BiGG/BV-BRC/GapMind
+as support layers, and leave UniPathway disabled until its legacy-ontology
+blockers are resolved.
 
 PathBank remains a local BioPAX/SBML fixture source rather than an ingest
 target: its current About page still combines Open Database License language

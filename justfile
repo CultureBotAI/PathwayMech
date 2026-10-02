@@ -69,6 +69,9 @@ import-bigg *paths:
 import-bvbrc *paths:
     uv run pathwaymech-import-bvbrc {{paths}}
 
+import-gapmind *paths:
+    uv run pathwaymech-import-gapmind {{paths}}
+
 import-gocam *paths:
     uv run pathwaymech-import-gocam {{paths}}
 
