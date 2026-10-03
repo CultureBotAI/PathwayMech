@@ -1,6 +1,6 @@
 # Microbial pathway source discovery
 
-Updated: 2026-10-02
+Updated: 2026-10-03
 
 This memo ranks resources that could feed PathwayMech with pathway definitions,
 reaction definitions, organism-specific pathway calls, or crosswalks. The local
@@ -45,6 +45,14 @@ stored in curated YAML.
 | VEuPathDB | https://veupathdb.org/service-api.html | https://veupathdb.org/veupathdb/app/static-content/about.html |
 | GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
 | UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway/blob/master/src/metadata/upa.md |
+| dbCAN-PUL | https://pro.unl.edu/dbCAN_PUL/dbCAN_PUL/home | https://pro.unl.edu/dbCAN_PUL/dbCAN_PUL/home |
+| PULDB | https://www.cazymodo.org/PULDB/ | https://www.cazymodo.org/PULDB/ |
+| SEED / PubSEED Subsystems | https://blog.theseed.org/servers/2010/08/downloading-a-subsystem.html | https://www.theseed.org/ |
+| MicroScope / MicroCyc | https://microscope.readthedocs.io/en/latest/ | https://mage.genoscope.cns.fr/ |
+| PANTHER Pathway | https://archive.pantherdb.org/downloads/index.jsp | https://pantherdb.org/ |
+| E. coli Metabolome Database | https://ecmdb.ca/pathways | https://ecmdb.ca/downloads |
+| AlgaePath | https://algaepath.itps.ncku.edu.tw/ | https://algaepath.itps.ncku.edu.tw/ |
+| IMG-ABC | https://img.jgi.doe.gov/help.html | https://portal-web-1.jgi.doe.gov/portal/help/download.jsf |
 
 ## Tier 0: already configured and worth keeping
 
@@ -249,7 +257,14 @@ slugs out of curated YAML until there is a native-ID normalization decision.
 | UniPathway | The inactive GO-hosted `UPA`, `ULS`, `UER`, `UCR`, and `UPC` ontology has pathway, subpathway, enzymatic-reaction, reaction, and compound identifiers plus reaction-participant edges, but its README says reactions have already moved into Rhea. Its current repository has no `LICENSE` file, but `src/metadata/upa.md` declares CC-BY terms. Treat it as a legacy Rhea, MetaCyc, KEGG, GO, EC, and ChEBI crosswalk unless a future native `UPA` prefix is justified. |
 | BioModels | Useful SBML corpus for individual kinetic or constraint models, including microbial models, but records are publication-scale mathematical models rather than a normalized catalogue of pathway definitions. |
 | antiSMASH DB | Comprehensive for predicted BGC regions, but predictions should not outrank MIBiG's experimentally characterized BGCs. |
-| JGI IMG/M | Strong archaeal, bacterial, and metagenome functional annotation portal with KEGG, MetaCyc, and IMG Term pathway views, but source downloads require JGI Data Usage Policy acceptance and the pathway topology is imported or IMG-specific rather than a redistributable canonical graph. |
+| dbCAN-PUL | Curated prokaryotic CAZyme-containing gene clusters with stable `PUL####` IDs, substrate and experimental-method metadata, protein sequences, EC numbers, dbCAN2 annotations, and batch downloads. PathwayMech can now parse a local metadata workbook as license-gated support data, but the records are experimentally characterized loci rather than full small-molecule reaction chains, and the site does not expose a redistribution license for bulk committed derivatives. |
+| PULDB | PULDB complements dbCAN-PUL with Bacteroidetes-centered experimental and predicted susC/susD polysaccharide-utilization loci, but it is less taxonomically broad, prediction-heavy, and not obviously available as licensed bulk data. Keep it deferred unless the dbCAN-PUL workbook proves useful and PULDB's reuse terms become clear. |
+| SEED / PubSEED Subsystems | Manually curated microbial subsystem role spreadsheets contain ordered functional roles, variant codes, and genome-specific feature calls retrievable through the SEED network API. BV-BRC already exposes downstream SEED subsystem rows, so use PubSEED only if native role variants become important and the API currentness and data license are resolved. |
+| MicroScope / MicroCyc | MicroScope can export MicroCyc Pathway Tools PGDBs for selected genomes, and those PGDBs are daily Tier-3 PathoLogic predictions over MetaCyc. The export could reuse the PMN/MetaCyc parser, but MicroCyc requires authenticated MicroScope access, and its topology is predicted from MetaCyc rather than an independent pathway source. |
+| JGI IMG/M and IMG-ABC | Strong archaeal, bacterial, metagenome, and biosynthetic-gene-cluster portals with KEGG, MetaCyc, IMG Term, and BGC views, but source downloads require JGI Data Usage Policy acceptance and the pathway topology is imported, predicted, or IMG-specific rather than a redistributable canonical graph. |
+| PANTHER Pathway | PANTHER exposes 177 regulatory and metabolic pathways in SBML and BioPAX level 3 plus pathway-component protein association data. It can now reuse the BioPAX importer as a fixture, but is mainly a generic/eukaryotic pathway source and is already aggregated by Pathway Commons. |
+| E. coli Metabolome Database | ECMDB has E. coli K-12 metabolite, protein, reaction, and pathway cards from KEGG, EcoCyc, and PathWhiz. It overlaps EcoCyc/KEGG, its PathWhiz pathway diagrams are E. coli-specific web cards rather than a clear bulk graph format, and no open pathway-graph redistribution license was found. |
+| AlgaePath | AlgaePath maps Chlamydomonas and Neodesmus genes, NGS expression data, and KEGG-derived pathway views for algal transcriptomics. PMN/ChlamyCyc has a richer Pathway Tools export for the same algal gap; AlgaePath is an expression overlay, not a primary topology source. |
 | KBase | Useful ModelSEED-powered workspace for bacterial and fungal metabolic reconstructions, but narratives and generated models are user artifacts over ModelSEED reactions rather than a curated pathway-definition catalogue. |
 
 ## Import implications

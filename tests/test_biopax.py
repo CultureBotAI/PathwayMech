@@ -84,6 +84,17 @@ def test_biopax_seed_yaml_round_trips_as_pathbank_record() -> None:
     assert "id: PathBank:SMP0000001/reaction" in text
 
 
+def test_biopax_accepts_panther_pathway_xrefs() -> None:
+    text = FIXTURE.read_text(encoding="utf-8").replace("Reactome", "PANTHER Pathway")
+
+    record = validate_record(
+        biopax_to_pathway_record(ElementTree.fromstring(text), "PANTHER:P00001")
+    )
+
+    assert record.id == "PANTHER:R-TEST-12345"
+    assert record.reactions[0]["id"] == "PANTHER:R-TEST-67890"
+
+
 def test_biopax_truncates_long_reaction_comments() -> None:
     long_quote = "a" * 401
     text = FIXTURE.read_text(encoding="utf-8").replace(

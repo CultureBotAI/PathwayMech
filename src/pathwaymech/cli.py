@@ -16,6 +16,7 @@ from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.biopax import biopax_to_pathway_record, load_biopax
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.chebi import load_chebi_xrefs
+from pathwaymech.dbcan import dbcan_pul_seed_rows, load_dbcan_pul
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
@@ -469,7 +470,7 @@ def import_biopax_main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Convert local BioPAX pathway files to PathwayMech YAML drafts.",
     )
-    parser.add_argument("source_prefix", choices=["PathBank", "Reactome"])
+    parser.add_argument("source_prefix", choices=["PANTHER", "PathBank", "Reactome"])
     parser.add_argument("paths", nargs="+", type=Path, help="BioPAX RDF/XML path")
     args = parser.parse_args(argv)
 
@@ -486,6 +487,10 @@ def import_biopax_main(argv: list[str] | None = None) -> int:
 
     print(yaml.safe_dump_all(records, sort_keys=False), end="")
     return 0
+
+
+def import_panther_main(argv: list[str] | None = None) -> int:
+    return import_biopax_main(["PANTHER", *(sys.argv[1:] if argv is None else argv)])
 
 
 def import_metacyc_main(argv: list[str] | None = None) -> int:
@@ -631,6 +636,22 @@ def import_gapmind_main(argv: list[str] | None = None) -> int:
         elements.extend(load_gapmind_steps(path))
 
     for row in gapmind_seed_rows(elements):
+        print(row)
+    return 0
+
+
+def import_dbcan_pul_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract dbCAN-PUL workbook or TSV glycan-locus seed rows.",
+    )
+    parser.add_argument("paths", nargs="+", type=Path, help="dbCAN-PUL XLSX, TSV, or CSV")
+    args = parser.parse_args(argv)
+
+    records = []
+    for path in args.paths:
+        records.extend(load_dbcan_pul(path))
+
+    for row in dbcan_pul_seed_rows(records):
         print(row)
     return 0
 

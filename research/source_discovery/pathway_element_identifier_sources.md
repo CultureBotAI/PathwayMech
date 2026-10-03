@@ -1,6 +1,6 @@
 # Pathway element identifier source discovery
 
-Updated: 2026-09-22
+Updated: 2026-10-03
 
 This follow-up ranks pathway sources by a narrower question than the broader
 microbial source survey: does each pathway definition carry stable biological
@@ -201,6 +201,32 @@ outside the PathwayMech curated-record schema. The local importer therefore
 indexes OBO crosswalk rows from a local UPA file instead of promoting retired
 UPA pathways to first-class YAML record IDs.
 
+## Additional candidates checked
+
+The post-ingestion sweep found no additional source that should outrank the
+current active, support, fixture, or license-gated rows.
+
+`dbCAN-PUL` and `PULDB` are the strongest new microbial candidates by identifier
+quality. They identify polysaccharide-utilization loci and CAZyme-containing
+gene clusters, connect those loci to substrates and component proteins, and
+dbCAN-PUL exposes EC numbers plus dbCAN annotations for CAZymes and other
+proteins. PathwayMech can now consume local dbCAN-PUL metadata for support
+triage, but both sources should stay out of first-class YAML records until
+PathwayMech intentionally models glycan-utilization loci as BGC-like records
+and their bulk reuse terms are clear.
+
+Native `SEED` subsystem spreadsheets, MicroCyc PGDB exports, IMG/IMG-ABC, and
+AlgaePath all preserve useful microbial pathway or membership signals, but
+they are generated from MetaCyc, KEGG, SEED, or antiSMASH-style layers already
+represented in PathwayMech. Use BV-BRC for SEED-derived subsystem membership,
+PMN/ChlamyCyc for Pathway Tools algal PGDBs, MIBiG for experimentally
+characterized BGCs, and MetaCyc/KEGG local exports for licensed topology.
+
+PANTHER Pathway and ECMDB are technically parseable pathway resources with
+component identifiers, but neither fills an uncovered microbial curation gap:
+PANTHER's downloadable BioPAX/SBML set is mostly generic and eukaryotic, while
+ECMDB's E. coli pathway cards overlap EcoCyc and KEGG.
+
 ## Deferred aggregators
 
 | Resource | Decision |
@@ -224,9 +250,9 @@ UPA pathways to first-class YAML record IDs.
 4. **Keep MetaCyc and KEGG as licensed importers.** Both are stronger than the
    open sources for microbial metabolism but need license-gated local extractors
    and review of what can be committed.
-5. **Use Reactome and PathBank as BioPAX/SBML fixtures.** They have excellent
-   per-element IDs, but their microbial coverage is narrower than BioCyc or
-   KEGG.
+5. **Use Reactome, PathBank, and PANTHER as BioPAX/SBML fixtures.** They have
+   excellent per-element IDs, but their microbial coverage is narrower than
+   BioCyc or KEGG.
 
 ## Source pages checked
 
@@ -246,3 +272,10 @@ UPA pathways to first-class YAML record IDs.
 | BiGG | https://bigg.ucsd.edu/data_access | https://bigg.ucsd.edu/license |
 | GapMind | https://github.com/morgannprice/PaperBLAST/tree/master/gaps | https://github.com/morgannprice/PaperBLAST/blob/master/LICENSE |
 | UniPathway | https://github.com/geneontology/unipathway | https://github.com/geneontology/unipathway/blob/master/src/metadata/upa.md |
+| dbCAN-PUL | https://pro.unl.edu/dbCAN_PUL/dbCAN_PUL/home | https://pro.unl.edu/dbCAN_PUL/dbCAN_PUL/home |
+| PULDB | https://www.cazymodo.org/PULDB/ | https://www.cazymodo.org/PULDB/ |
+| SEED / PubSEED | https://blog.theseed.org/servers/2010/08/downloading-a-subsystem.html | https://www.theseed.org/ |
+| MicroScope / MicroCyc | https://microscope.readthedocs.io/en/latest/ | https://mage.genoscope.cns.fr/ |
+| PANTHER Pathway | https://archive.pantherdb.org/downloads/index.jsp | https://pantherdb.org/ |
+| E. coli Metabolome Database | https://ecmdb.ca/pathways | https://ecmdb.ca/downloads |
+| AlgaePath | https://algaepath.itps.ncku.edu.tw/ | https://algaepath.itps.ncku.edu.tw/ |

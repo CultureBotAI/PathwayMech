@@ -50,6 +50,7 @@ _PREFIX_CATEGORIES = {
     "ModelSEED": "biolink:SmallMolecule",
     "NCBIProtein": "biolink:GeneOrGeneProduct",
     "NCBITaxon": "biolink:OrganismTaxon",
+    "PANTHER": "biolink:BiochemicalReaction",
     "PathBank": "biolink:SmallMolecule",
     "PMN": "biolink:BiochemicalReaction",
     "PubChem": "biolink:SmallMolecule",
