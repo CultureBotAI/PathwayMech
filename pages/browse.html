@@ -7,9 +7,44 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header><nav aria-label="Main navigation">
+    <a href="index.html">PathwayMech overview</a>
+    <a href="browse.html">Browse pathways</a>
+    <a href="https://github.com/CultureBotAI/PathwayMech">Source</a>
+    <a href="https://culturebotai.github.io/mechs/">All Mech projects</a>
+  </nav></header>
+  <main id="main-content" tabindex="-1">
     <h1>PathwayMech records</h1>
-    <ul class="record-list"><li><a href="records/WikiPathways_WP5587.html"><strong>2-phenylethanol biosynthesis</strong><span>WikiPathways:WP5587 - 15 mechanistic edges</span></a></li>
+    <form id="pathway-search" hidden>
+<label for="pathway-query">Search pathway name or identifier</label>
+<input id="pathway-query" type="search"><button type="reset">Reset</button>
+</form><p id="pathway-status" role="status" aria-live="polite"></p>
+<p id="pathway-empty" hidden>No pathways match. Try another term or reset the search.</p>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  const form = document.getElementById('pathway-search');
+  const query = document.getElementById('pathway-query');
+  const rows = Array.from(document.querySelectorAll('#pathway-list li'));
+  function filter() {
+    const term = query.value.trim().toLowerCase();
+    let count = 0;
+    rows.forEach(row => { row.hidden = !row.textContent.toLowerCase().includes(term);
+      if (!row.hidden) count += 1; });
+    document.getElementById('pathway-status').textContent =
+      count + ' of ' + rows.length + ' pathways match';
+    document.getElementById('pathway-empty').hidden = count !== 0;
+  }
+  query.addEventListener('input', filter);
+  form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+  form.addEventListener('reset', event => {
+    event.preventDefault(); query.value = ''; filter(); query.focus();
+  });
+  form.hidden = false;
+  filter();
+});
+</script><ul class="record-list" id="pathway-list"><li><a href="records/WikiPathways_WP5587.html"><strong>2-phenylethanol biosynthesis</strong><span>WikiPathways:WP5587 - 15 mechanistic edges</span></a></li>
 <li><a href="records/MetaCyc_PWY-6543.html"><strong>4-aminobenzoate biosynthesis I</strong><span>MetaCyc:PWY-6543 - 11 mechanistic edges</span></a></li>
 <li><a href="records/gomodel_YeastPathways_YEAST-4AMINOBUTMETAB-PWY.html"><strong>4-aminobutyrate degradation</strong><span>gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY - 12 mechanistic edges</span></a></li>
 <li><a href="records/MetaCyc_PWY-6121.html"><strong>5-aminoimidazole ribonucleotide biosynthesis I</strong><span>MetaCyc:PWY-6121 - 42 mechanistic edges</span></a></li>
