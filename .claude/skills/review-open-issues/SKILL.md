@@ -6,7 +6,7 @@ metadata:
   category: workflow
   requires_database: false
   requires_internet: true
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # Review and Prioritize Open Issues
@@ -37,9 +37,13 @@ of GitHub mutations and keep the evidence in the comment concise.
   that the committed `pages/` is what the records render to (`just
   check-pages`), and tests. They do not establish that a cited paper really
   supports an edge.
-- PathwayMech does not yet have record status, curation history, or guarded
-  writers. Treat issues asking for those as infrastructure work, not record
-  curation.
+- Pathway records support optional `curation_history` events through
+  `CurationEvent` in `src/pathwaymech/schema/pathwaymech.yaml` and validation
+  in `src/pathwaymech/schema.py`. Separate session-level history records and
+  their validation are documented in `history/README.md`.
+- Check the current schema and mutation commands before treating a requested
+  capability as missing infrastructure. A history issue may concern an
+  existing contract or its use in curation rather than a new subsystem.
 
 ## Workflow
 
