@@ -35,12 +35,12 @@ references as seed rows or as BGC-shaped draft YAML records whose
 `gene_clusters` preserve MIBiG products, biosynthetic classes, local genes, and
 GenBank loci separately from ChEBI/Rhea reaction graphs.
 
-Reactome and PathBank BioPAX ingestion share an importer that reads BioPAX
+Reactome, PathBank, and PANTHER BioPAX ingestion share an importer that reads BioPAX
 biochemical reactions, grounds reaction-side small molecules through ChEBI, and
-grounds enzyme catalysts through UniProtKB `Catalysis` controllers. Reactome
-BioPAX ingestion also preserves pathway and reaction stable identifiers, taxa
-from `BioSource` nodes, and reaction-scoped PubMed evidence without allowing
-long BioPAX comments to exceed the local evidence-quote limit.
+grounds enzyme catalysts through UniProtKB `Catalysis` controllers. BioPAX
+ingestion also preserves source pathway and reaction stable identifiers, taxa
+from `BioSource` nodes, and reaction-scoped PubMed evidence when present
+without allowing long BioPAX comments to exceed the local evidence-quote limit.
 BioPAX prefix normalizations such as `UniProt` to `UniProtKB` are retained as
 the same `source_mappings` rows when the normalized participant remains in the
 draft mechanism graph.

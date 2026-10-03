@@ -34,6 +34,14 @@ def test_configured_sources_have_ingest_priorities() -> None:
         "veupathdb",
         "gapmind",
         "unipathway",
+        "dbcan-pul",
+        "panther",
+        "puldb",
+        "seed-pubseed",
+        "microscope-microcyc",
+        "jgi-img-abc",
+        "ecmdb",
+        "algaepath",
     ]
     assert [source.priority for source in sources] == sorted(
         source.priority for source in sources
@@ -62,6 +70,13 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     ) in rows
     assert "150\tgapmind\tsupport\ttrue\tenzyme-step-rulebase\tGapMind" in rows
     assert "160\tunipathway\tsupport\ttrue\tpathway-crosswalk\tUniPathway" in rows
+    assert "170\tdbcan-pul\tlicense-gated\ttrue\tglycan-locus-reference\tdbCAN-PUL" in rows
+    assert (
+        "180\tpanther\tfixture\ttrue\tbiopax-pathway-reference\tPANTHER Pathway"
+    ) in rows
+    assert (
+        "190\tpuldb\tdeferred\tfalse\tglycan-locus-reference\tPULDB"
+    ) in rows
 
 
 def test_duplicate_source_priority_fails() -> None:

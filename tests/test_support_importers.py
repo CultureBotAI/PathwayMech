@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import zipfile
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
+from pathwaymech.dbcan import dbcan_pul_seed_rows, load_dbcan_pul
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.modelseed import load_modelseed_tsv, modelseed_seed_rows
@@ -111,3 +114,137 @@ def test_unipathway_obo_seed_rows() -> None:
         ),
         "UPa:UPC99999\tcompound\tproduct\tCHEBI:99999\t\t\t\t",
     ]
+
+
+def test_dbcan_pul_seed_rows() -> None:
+    records = load_dbcan_pul(Path("tests/fixtures/dbcan/dbcan-pul.tsv"))
+
+    assert dbcan_pul_seed_rows(records) == [
+        (
+            "dbcan_pul_id\tpmids\torganism\tncbi_taxon_id\tgenomic_accession\t"
+            "nucleotide_range\tsubstrate\tmode\tverification_methods\tgene_loci\t"
+            "cazyme_families\tnum_cazymes\tnum_genes"
+        ),
+        (
+            "PUL0001\tPMID:30796211\tRoseburia intestinalis\tNCBITaxon:166486\t"
+            "NZ_GG692714.1\t156723-175880\tbeta-mannan\tdegradation\t"
+            "RNA-Seq|substrate binding assay|enzyme activity assay|mass spectrometry\t"
+            "ROSINTL182_05469-ROSINTL182_05483\t"
+            "GH1|CE2|GH130|GH36|GH113\t7\t15"
+        ),
+        (
+            "PUL0003\tPMID:26559526|PMID:26827771\tBacillus subtilis\t"
+            "NCBITaxon:1423\tNC_000964\t1942714-1945654\txylan\tdegradation\t"
+            "RT-PCR\txynCD\tGH30|GH30_8|GH43_16|CBM6\t2\t2"
+        ),
+    ]
+
+
+def test_dbcan_pul_xlsx_reader_preserves_blank_cells(tmp_path: Path) -> None:
+    path = tmp_path / "dbcan-pul.xlsx"
+    _write_xlsx(
+        path,
+        [
+            [
+                "ID",
+                "PMID",
+                "notes",
+                "verification_final",
+                "genomic_accession_number",
+                "organism_name",
+                "ncbi_species_tax_id",
+                "substrate_final",
+                "cazymes_predicted_dbcan",
+            ],
+            [
+                "PUL0004",
+                "26827771",
+                "",
+                "enzyme activity assay,substrate binding assay",
+                "KM624528.1",
+                "uncultured bacterium",
+                "77133",
+                "beta-glucan",
+                "GH1",
+            ],
+        ],
+    )
+
+    record = load_dbcan_pul(path)[0]
+
+    assert record.id == "PUL0004"
+    assert record.verification_methods == (
+        "enzyme activity assay",
+        "substrate binding assay",
+    )
+    assert record.genomic_accession == "KM624528.1"
+
+
+def _write_xlsx(path: Path, rows: list[list[str]]) -> None:
+    string_indexes: dict[str, int] = {}
+    sheet_rows = []
+    for row_index, row in enumerate(rows, start=1):
+        cells = []
+        for column_index, value in enumerate(row):
+            if value == "":
+                continue
+            string_index = string_indexes.setdefault(value, len(string_indexes))
+            cells.append(
+                f'<c r="{_column_ref(column_index)}{row_index}" t="s">'
+                f"<v>{string_index}</v>"
+                "</c>"
+            )
+        sheet_rows.append(f'<row r="{row_index}">{"".join(cells)}</row>')
+
+    strings = "".join(
+        f"<si><t>{escape(value)}</t></si>"
+        for value in string_indexes
+    )
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "xl/workbook.xml",
+            (
+                '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+                'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+                "<sheets>"
+                '<sheet name="Add_to_DB" sheetId="1" r:id="rId1"/>'
+                "</sheets>"
+                "</workbook>"
+            ),
+        )
+        archive.writestr(
+            "xl/_rels/workbook.xml.rels",
+            (
+                '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                '<Relationship Id="rId1" '
+                'Target="worksheets/sheet1.xml"/>'
+                "</Relationships>"
+            ),
+        )
+        archive.writestr(
+            "xl/sharedStrings.xml",
+            (
+                '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                f"{strings}"
+                "</sst>"
+            ),
+        )
+        archive.writestr(
+            "xl/worksheets/sheet1.xml",
+            (
+                '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                "<sheetData>"
+                f"{''.join(sheet_rows)}"
+                "</sheetData>"
+                "</worksheet>"
+            ),
+        )
+
+
+def _column_ref(index: int) -> str:
+    value = ""
+    index += 1
+    while index:
+        index, remainder = divmod(index - 1, 26)
+        value = chr(ord("A") + remainder) + value
+    return value

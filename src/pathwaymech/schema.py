@@ -54,6 +54,7 @@ ALLOWED_CURIE_PREFIXES = {
     "ModelSEED",
     "NCBIProtein",
     "NCBITaxon",
+    "PANTHER",
     "PathBank",
     "PMN",
     "PMID",
