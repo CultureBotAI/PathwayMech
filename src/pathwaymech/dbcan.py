@@ -136,7 +136,7 @@ def _xlsx_rows(path: Path) -> list[dict[str, str]]:
         strings = _shared_strings(archive)
         workbook = ElementTree.fromstring(archive.read("xl/workbook.xml"))
         rels = _workbook_relationships(archive)
-        sheet = workbook.find(f".//{{{_NS_MAIN}}}sheet")
+        sheet = _dbcan_pul_sheet(workbook.findall(f".//{{{_NS_MAIN}}}sheet"))
         if sheet is None:
             return []
         sheet_path = _sheet_path(rels[sheet.attrib[f"{{{_NS_REL}}}id"]])
@@ -162,6 +162,15 @@ def _xlsx_rows(path: Path) -> list[dict[str, str]]:
         for row in rows[header_index + 1 :]
         if any(_cell(value) for value in row)
     ]
+
+
+def _dbcan_pul_sheet(
+    sheets: list[ElementTree.Element],
+) -> ElementTree.Element | None:
+    return next(
+        (sheet for sheet in sheets if sheet.attrib.get("name") == "Add_to_DB"),
+        next(iter(sheets), None),
+    )
 
 
 def _shared_strings(archive: zipfile.ZipFile) -> list[str]:

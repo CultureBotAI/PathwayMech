@@ -74,6 +74,28 @@ def test_kgx_nodes_cover_every_pathway_local_node_type() -> None:
     assert rows["MIBiG:BGC0000001"].category == "biolink:GenomicEntity"
 
 
+def test_kgx_nodes_category_panther_reactions() -> None:
+    rows = {
+        node.id: node
+        for node in kgx_nodes(
+            [
+                replace(
+                    record(),
+                    id="PANTHER:P00001",
+                    reactions=[
+                        {
+                            "id": "PANTHER:R-TEST-67890",
+                            "label": "test PANTHER reaction",
+                        }
+                    ],
+                )
+            ]
+        )
+    }
+
+    assert rows["PANTHER:R-TEST-67890"].category == "biolink:BiochemicalReaction"
+
+
 def test_kgx_edges_are_curied_and_unique_outside_record_scope() -> None:
     rows = kgx_edges([record()])
 

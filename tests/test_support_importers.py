@@ -180,21 +180,62 @@ def test_dbcan_pul_xlsx_reader_preserves_blank_cells(tmp_path: Path) -> None:
     assert record.genomic_accession == "KM624528.1"
 
 
+def test_dbcan_pul_xlsx_reader_prefers_add_to_db_sheet(tmp_path: Path) -> None:
+    path = tmp_path / "dbcan-pul.xlsx"
+    _write_xlsx_sheets(
+        path,
+        {
+            "Readme": [["ID"], ["not-a-pul"]],
+            "Add_to_DB": [
+                ["ID", "PMID", "organism_name"],
+                ["PUL0005", "30796211", "Bacteroides cellulosilyticus"],
+            ],
+        },
+    )
+
+    records = load_dbcan_pul(path)
+
+    assert [record.id for record in records] == ["PUL0005"]
+    assert records[0].pmids == ("PMID:30796211",)
+
+
 def _write_xlsx(path: Path, rows: list[list[str]]) -> None:
+    _write_xlsx_sheets(path, {"Add_to_DB": rows})
+
+
+def _write_xlsx_sheets(path: Path, sheets: dict[str, list[list[str]]]) -> None:
     string_indexes: dict[str, int] = {}
-    sheet_rows = []
-    for row_index, row in enumerate(rows, start=1):
-        cells = []
-        for column_index, value in enumerate(row):
-            if value == "":
-                continue
-            string_index = string_indexes.setdefault(value, len(string_indexes))
-            cells.append(
-                f'<c r="{_column_ref(column_index)}{row_index}" t="s">'
-                f"<v>{string_index}</v>"
-                "</c>"
-            )
-        sheet_rows.append(f'<row r="{row_index}">{"".join(cells)}</row>')
+    sheet_bodies = []
+    for rows in sheets.values():
+        sheet_rows = []
+        for row_index, row in enumerate(rows, start=1):
+            cells = []
+            for column_index, value in enumerate(row):
+                if value == "":
+                    continue
+                string_index = string_indexes.setdefault(value, len(string_indexes))
+                cells.append(
+                    f'<c r="{_column_ref(column_index)}{row_index}" t="s">'
+                    f"<v>{string_index}</v>"
+                    "</c>"
+                )
+            sheet_rows.append(f'<row r="{row_index}">{"".join(cells)}</row>')
+        sheet_bodies.append("".join(sheet_rows))
+
+    workbook_sheets = "".join(
+        (
+            f'<sheet name="{escape(name)}" sheetId="{index}" '
+            f'r:id="rId{index}"/>'
+        )
+        for index, name in enumerate(sheets, start=1)
+    )
+    relationships = "".join(
+        (
+            f'<Relationship Id="rId{index}" '
+            f'Target="worksheets/sheet{index}.xml"/>'
+        )
+        for index in range(1, len(sheets) + 1)
+    )
 
     strings = "".join(
         f"<si><t>{escape(value)}</t></si>"
@@ -206,9 +247,7 @@ def _write_xlsx(path: Path, rows: list[list[str]]) -> None:
             (
                 '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
                 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
-                "<sheets>"
-                '<sheet name="Add_to_DB" sheetId="1" r:id="rId1"/>'
-                "</sheets>"
+                f"<sheets>{workbook_sheets}</sheets>"
                 "</workbook>"
             ),
         )
@@ -216,8 +255,7 @@ def _write_xlsx(path: Path, rows: list[list[str]]) -> None:
             "xl/_rels/workbook.xml.rels",
             (
                 '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-                '<Relationship Id="rId1" '
-                'Target="worksheets/sheet1.xml"/>'
+                f"{relationships}"
                 "</Relationships>"
             ),
         )
@@ -229,16 +267,17 @@ def _write_xlsx(path: Path, rows: list[list[str]]) -> None:
                 "</sst>"
             ),
         )
-        archive.writestr(
-            "xl/worksheets/sheet1.xml",
-            (
-                '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
-                "<sheetData>"
-                f"{''.join(sheet_rows)}"
-                "</sheetData>"
-                "</worksheet>"
-            ),
-        )
+        for index, sheet_body in enumerate(sheet_bodies, start=1):
+            archive.writestr(
+                f"xl/worksheets/sheet{index}.xml",
+                (
+                    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                    "<sheetData>"
+                    f"{sheet_body}"
+                    "</sheetData>"
+                    "</worksheet>"
+                ),
+            )
 
 
 def _column_ref(index: int) -> str:
