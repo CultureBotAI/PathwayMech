@@ -42,6 +42,12 @@ def test_configured_sources_have_ingest_priorities() -> None:
         "jgi-img-abc",
         "ecmdb",
         "algaepath",
+        "brenda",
+        "hadeg",
+        "envipath",
+        "dram",
+        "diting",
+        "metabolic",
     ]
     assert [source.priority for source in sources] == sorted(
         source.priority for source in sources
@@ -77,6 +83,25 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     assert (
         "190\tpuldb\tdeferred\tfalse\tglycan-locus-reference\tPULDB"
     ) in rows
+
+
+@pytest.mark.parametrize(
+    ("source_id", "status"),
+    [
+        ("brenda", "next"),
+        ("hadeg", "next"),
+        ("envipath", "license-gated"),
+        ("dram", "license-gated"),
+        ("diting", "deferred"),
+        ("metabolic", "license-gated"),
+    ],
+)
+def test_discovery_candidates_are_not_enabled(source_id: str, status: str) -> None:
+    config = yaml.safe_load(Path("conf/sources.yaml").read_text(encoding="utf-8"))
+    sources = {source.id: source for source in validate_source_inventory(config)}
+
+    assert sources[source_id].enabled is False
+    assert sources[source_id].ingest_status == status
 
 
 def test_duplicate_source_priority_fails() -> None:

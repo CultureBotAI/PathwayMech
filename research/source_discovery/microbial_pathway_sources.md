@@ -2,6 +2,12 @@
 
 Updated: 2026-10-03
 
+For the latest incremental additions and update baselines, see
+[the October 3 follow-up](2026-10-03-additional-sources-and-updates.md):
+BRENDA, HADEG, enviPath, DRAM, DiTing, and METABOLIC. They remain disabled
+candidates, not ingested sources. The recommendations below retain their
+historical landscape context; current enablement is in `conf/sources.yaml`.
+
 This memo ranks resources that could feed PathwayMech with pathway definitions,
 reaction definitions, organism-specific pathway calls, or crosswalks. The local
 schema accepts only whitelisted source and grounding CURIEs, so several

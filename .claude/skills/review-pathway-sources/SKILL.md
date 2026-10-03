@@ -98,6 +98,9 @@ metabolites, genomes, or expression. A candidate needs at least one of:
 
 ## Handoffs
 
+Use `.claude/skills/pathwaymech-discover-sources/SKILL.md` for an incremental
+new-source or upstream-update scan rather than repeating this full review.
+
 Use `.claude/skills/source-triage/SKILL.md` after this review when one source
 needs a detailed next-ingest decision. Do not download bulk archives, write an
 extractor, or mark a candidate active as part of this broad landscape refresh.

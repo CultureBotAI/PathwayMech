@@ -109,5 +109,7 @@ command that passed or was unavailable.
 
 ## Related
 
+- `.claude/skills/pathwaymech-discover-sources/SKILL.md` for incremental
+  discovery and repeatable upstream update checks.
 - `.claude/skills/review-pathway-sources/SKILL.md` for full bacteria,
   archaea, fungi, algae, and protist source-inventory refreshes.
