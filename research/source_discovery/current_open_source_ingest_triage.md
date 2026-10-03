@@ -2,6 +2,11 @@
 
 Updated: 2026-09-30
 
+Scope note: this result applies to the caches listed below, not to all available
+pathway resources. See the
+[October 3 discovery scan](2026-10-03-additional-sources-and-updates.md) for
+additional candidates and upstream update baselines.
+
 This note records the terminal sweep of the currently enabled open pathway
 sources after the first GO-CAM and WikiPathways records were ingested into
 PathwayMech. The goal was to find another hand-reviewable record whose
@@ -39,8 +44,8 @@ The current useful remainder falls into four buckets:
 4. reaction maps whose defining compounds or genes are not grounded in an
    accepted prefix
 
-Do not re-attempt the rejected GPML and SGD GO-CAM rows below unless the schema
-or import layer gains a new identifier mapping step.
+Revisit the rejected GPML and SGD GO-CAM rows below only when upstream record
+content changes or the schema/import layer gains a relevant mapping step.
 
 ## WikiPathways state
 

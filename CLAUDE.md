@@ -30,6 +30,11 @@ Use stable CURIEs whenever possible:
   `data/pathways/` YAML record with edge-level evidence.
 - `.claude/skills/source-triage/SKILL.md` - evaluate reusable pathway sources
   and keep `conf/sources.yaml` aligned with source-discovery research.
+- `.claude/skills/pathwaymech-discover-sources/SKILL.md` - find additional
+  sources and compare upstream data, license, and access changes with dated
+  baselines, without implying ingestion.
+- `.claude/skills/review-pathway-sources/SKILL.md` - refresh the complete
+  microbial source landscape across taxon groups.
 - `.claude/skills/review-yaml-record/SKILL.md` - review one pathway YAML
   record without editing it.
 - `.claude/skills/review-yaml-category/SKILL.md` - review a coherent cohort of
