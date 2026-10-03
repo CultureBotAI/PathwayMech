@@ -7,6 +7,7 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 from xml.etree import ElementTree
 
 import yaml
@@ -133,7 +134,7 @@ class SiteError(ValueError):
     """The records cannot be rendered to one unambiguous site."""
 
 
-def render_site(records: list) -> dict[str, str]:
+def render_site(records: list, source_paths: dict[str, str] | None = None) -> dict[str, str]:
     """Every file the renderer owns under pages/, keyed by its path there."""
     files: dict[str, str] = {}
     claimed: dict[str, str] = {}
@@ -152,11 +153,12 @@ def render_site(records: list) -> dict[str, str]:
             f"<span>{html.escape(record.id)} - "
             f"{len(record.mechanistic_edges)} mechanistic edges</span></a></li>"
         )
-        files[f"records/{slug}.html"] = _record_page(record)
+        files[f"records/{slug}.html"] = _record_page(record, (source_paths or {}).get(record.id))
 
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
     files["browse.html"] = _page(
-        "PathwayMech records", f'<ul class="record-list">{browse_body}</ul>'
+        "PathwayMech records",
+        _browse_controls() + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
     )
     files["index.html"] = _page(
         "PathwayMech",
@@ -203,7 +205,11 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
     records = load_pathway_records(root / "data" / "pathways")
     pages = root / "pages"
     try:
-        expected = render_site(records)
+        source_paths = {
+            yaml.safe_load(path.read_text())["id"]: path.relative_to(root).as_posix()
+            for path in pathway_files(root / "data" / "pathways")
+        }
+        expected = render_site(records, source_paths)
     except SiteError as error:
         print(str(error), file=sys.stderr)
         return 1
@@ -662,6 +668,7 @@ def import_veupathdb_main(argv: list[str] | None = None) -> int:
 
 
 def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
+    site_root = html.escape(stylesheet_href.removesuffix("style.css"))
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -671,7 +678,14 @@ def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
   <link rel="stylesheet" href="{html.escape(stylesheet_href)}">
 </head>
 <body>
-  <main>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header><nav aria-label="Main navigation">
+    <a href="{site_root}index.html">PathwayMech overview</a>
+    <a href="{site_root}browse.html">Browse pathways</a>
+    <a href="https://github.com/CultureBotAI/PathwayMech">Source</a>
+    <a href="https://culturebotai.github.io/mechs/">All Mech projects</a>
+  </nav></header>
+  <main id="main-content" tabindex="-1">
     <h1>{html.escape(title)}</h1>
     {body}
   </main>
@@ -680,19 +694,105 @@ def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
 """
 
 
-def _record_page(record: object) -> str:
-    edges = "\n".join(
-        "<li>"
-        f"{html.escape(edge['subject'])} "
-        f"{html.escape(edge['predicate'])} "
-        f"{html.escape(edge['object'])}"
-        "</li>"
-        for edge in record.mechanistic_edges
-    )
+def _browse_controls() -> str:
+    return """<form id="pathway-search" hidden>
+<label for="pathway-query">Search pathway name or identifier</label>
+<input id="pathway-query" type="search"><button type="reset">Reset</button>
+</form><p id="pathway-status" role="status" aria-live="polite"></p>
+<p id="pathway-empty" hidden>No pathways match. Try another term or reset the search.</p>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  const form = document.getElementById('pathway-search');
+  const query = document.getElementById('pathway-query');
+  const rows = Array.from(document.querySelectorAll('#pathway-list li'));
+  function filter() {
+    const term = query.value.trim().toLocaleLowerCase();
+    let count = 0;
+    rows.forEach(row => { row.hidden = !row.textContent.toLocaleLowerCase().includes(term);
+      if (!row.hidden) count += 1; });
+    document.getElementById('pathway-status').textContent =
+      count + ' of ' + rows.length + ' pathways match';
+    document.getElementById('pathway-empty').hidden = count !== 0;
+  }
+  query.addEventListener('input', filter);
+  form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+  form.addEventListener('reset', event => {
+    event.preventDefault(); query.value = ''; filter(); query.focus();
+  });
+  form.hidden = false;
+  filter();
+});
+</script>"""
+
+
+def _reference_url(identifier: str) -> str | None:
+    """Resolve only citation namespaces with a known public source route."""
+    prefix, _, local_id = identifier.partition(":")
+    if prefix == "PMID" and local_id.isdigit():
+        return f"https://pubmed.ncbi.nlm.nih.gov/{local_id}/"
+    if prefix == "DOI" and local_id.startswith("10.") and "/" in local_id:
+        return "https://doi.org/" + quote(local_id, safe="/")
+    if prefix == "RHEA" and local_id.isdigit():
+        return f"https://www.rhea-db.org/rhea/{local_id}"
+    return None
+
+
+def _record_page(record: object, source_path: str | None = None) -> str:
+    """Publish the declared endpoints and evidence without interpreting them."""
+    labels: dict[str, set[str]] = {}
+    for field in ("taxa", "participants", "reactions", "gene_clusters"):
+        for node in getattr(record, field, []):
+            labels.setdefault(node["id"], set()).add(node.get("label") or node["id"])
+    nodes = {identifier: next(iter(values)) if len(values) == 1 else identifier
+             for identifier, values in labels.items()}
+
+    def endpoint(identifier: str) -> str:
+        label = nodes.get(identifier, identifier)
+        return (f"{html.escape(label)}<br><code>{html.escape(identifier)}</code>"
+                if label != identifier else f"<code>{html.escape(identifier)}</code>")
+
+    references = getattr(record, "references", [])
+    ref_anchors = {ref["id"]: f"reference-{number}" for number, ref in enumerate(references, 1)}
+    rows = []
+    for edge in record.mechanistic_edges:
+        citations = []
+        for evidence in edge.get("evidence", []):
+            reference = html.escape(evidence["reference_id"])
+            anchor = ref_anchors.get(evidence["reference_id"])
+            citation = f'<a href="#{anchor}">{reference}</a>' if anchor else reference
+            citations.append(f"<li>{citation}<blockquote>{html.escape(evidence['quote'])}</blockquote></li>")
+        description = html.escape(edge.get("description", ""))
+        rows.append(f"<tr><td>{endpoint(edge['subject'])}</td>"
+                    f"<td>{html.escape(edge['predicate'])}<p>{description}</p></td>"
+                    f"<td>{endpoint(edge['object'])}</td><td><ul>{''.join(citations)}</ul></td></tr>")
+    edges = ('<div class="table-scroll" role="region" tabindex="0" '
+             'aria-label="Mechanistic edges and evidence">'
+             '<table><caption>Mechanistic edges and their cited evidence</caption><thead><tr>'
+             '<th scope="col">Subject</th><th scope="col">Predicate and description</th>'
+             '<th scope="col">Object</th><th scope="col">Evidence</th></tr></thead>'
+             f"<tbody>{''.join(rows)}</tbody></table></div>")
+    if not rows:
+        edges = '<p>No mechanistic edges recorded.</p>'
+    cited = []
+    for ref in references:
+        details = " — ".join(html.escape(ref[field])
+                             for field in ("title", "citation") if ref.get(field))
+        identifier = html.escape(ref["id"])
+        source_url = _reference_url(ref["id"])
+        reference = (f'<a href="{html.escape(source_url)}">{identifier}</a>'
+                     if source_url else identifier)
+        cited.append(f'<li id="{ref_anchors[ref["id"]]}"><code>{reference}</code> {details}</li>')
+    reference_section = f"<h2>References</h2><ul>{''.join(cited)}</ul>" if cited else ""
+    provenance = (f'<p><a href="https://github.com/CultureBotAI/PathwayMech/blob/main/'
+                  f'{quote(source_path, safe="/")}">Read the source YAML</a></p>'
+                  if source_path else "")
     clusters = _gene_clusters(getattr(record, "gene_clusters", []))
+    identifier = html.escape(getattr(record, "id", ""))
     return _page(
         record.label,
-        f"<p>{html.escape(record.description)}</p><ul>{edges}</ul>{clusters}",
+        f"<p><code>{identifier}</code></p><p>{html.escape(record.description)}</p>"
+        f"{provenance}<h2>Mechanistic edges</h2>{edges}{clusters}{reference_section}",
         stylesheet_href="../style.css",
     )
 
