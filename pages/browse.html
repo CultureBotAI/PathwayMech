@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const query = document.getElementById('pathway-query');
   const rows = Array.from(document.querySelectorAll('#pathway-list li'));
   function filter() {
-    const term = query.value.trim().toLocaleLowerCase();
+    const term = query.value.trim().toLowerCase();
     let count = 0;
-    rows.forEach(row => { row.hidden = !row.textContent.toLocaleLowerCase().includes(term);
+    rows.forEach(row => { row.hidden = !row.textContent.toLowerCase().includes(term);
       if (!row.hidden) count += 1; });
     document.getElementById('pathway-status').textContent =
       count + ' of ' + rows.length + ' pathways match';
