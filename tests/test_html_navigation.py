@@ -21,7 +21,7 @@ class Elements(HTMLParser):
 def record():
     return SimpleNamespace(id="GO:42", label="Example", description="A pathway",
         participants=[{"id": "CHEBI:1", "label": '<script>Substrate</script>'}],
-        taxa=[], reactions=[], references=[{"id": "PMID:123", "title": "Source paper"},
+        taxa=[], reactions=[], gene_clusters=[], references=[{"id": "PMID:123", "title": "Source paper"},
                                           {"id": "DOI:10.1/paper", "citation": "Second source"}],
         mechanistic_edges=[{"id": "edge-1", "subject": "CHEBI:1", "predicate": "produces",
             "object": "UNKNOWN:2", "description": "Only the source claim", "evidence": [

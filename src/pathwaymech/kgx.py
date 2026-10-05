@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -156,18 +157,26 @@ def _edge_id(record_id: str, edge_id: str) -> str:
     return f"pathwaymech:{safe}_{digest}"
 
 
+def render_kgx(records: list[PathwayRecord]) -> dict[str, str]:
+    """Render exactly the same complete TSV pair for CLI export and Pages."""
+    return {
+        "nodes.tsv": _tsv(NODE_COLUMNS, [asdict(node) for node in kgx_nodes(records)]),
+        "edges.tsv": _tsv(EDGE_COLUMNS, [asdict(edge) for edge in kgx_edges(records)]),
+    }
+
+
 def _write_tsv(path: Path, columns: tuple[str, ...], rows: list[dict[str, Any]]) -> None:
-    with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(
-            stream,
-            delimiter="\t",
-            fieldnames=columns,
-            extrasaction="ignore",
-            lineterminator="\n",
-        )
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({column: _cell(row.get(column)) for column in columns})
+    path.write_text(_tsv(columns, rows), encoding="utf-8", newline="")
+
+
+def _tsv(columns: tuple[str, ...], rows: list[dict[str, Any]]) -> str:
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, delimiter="\t", fieldnames=columns,
+                            extrasaction="ignore", lineterminator="\n")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({column: _cell(row.get(column)) for column in columns})
+    return stream.getvalue()
 
 
 def _cell(value: Any) -> str:

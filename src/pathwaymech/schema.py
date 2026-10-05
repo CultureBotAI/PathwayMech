@@ -101,6 +101,7 @@ class PathwayRecord:
     references: list[dict[str, Any]]
     gene_clusters: list[dict[str, Any]] = dataclass_field(default_factory=list)
     source_mappings: list[dict[str, Any]] = dataclass_field(default_factory=list)
+    curation_history: list[dict[str, Any]] = dataclass_field(default_factory=list)
 
 
 def validate_records(records: list[dict[str, Any]]) -> list[PathwayRecord]:
@@ -174,6 +175,7 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         source_mappings=source_mappings,
         mechanistic_edges=edges,
         references=record["references"],
+        curation_history=record.get("curation_history", []),
     )
 
 
