@@ -186,12 +186,66 @@ def render_site(records: list, source_paths: dict[str, str] | None = None) -> di
         "PathwayMech records",
         _browse_controls() + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
     )
-    files["index.html"] = _page(
-        "PathwayMech",
-        "<p>Evidence-backed microbial pathway mechanism records.</p>"
-        '<p><a href="browse.html">Browse pathways</a></p>',
-    )
+    files["index.html"] = _home_page(records)
     return files
+
+
+def _home_page(records: list) -> str:
+    """Describe the same published records that populate the pathway browser."""
+    metrics = [
+        (len(records), "Pathway records"),
+        (len({taxon["id"] for record in records for taxon in record.taxa}), "Taxa represented"),
+        (sum(len(record.mechanistic_edges) for record in records), "Mechanistic edges"),
+        (len({ref["id"] for record in records for ref in record.references}),
+         "Distinct references"),
+    ]
+    statistics = "".join(
+        f'<div class="home-stat"><dt>{label}</dt><dd>{count:,}</dd></div>'
+        for count, label in metrics
+    )
+    body = f"""<section class="home-hero" aria-labelledby="home-title">
+      <p class="home-eyebrow">Microbial pathway knowledge base</p>
+      <h1 id="home-title">PathwayMech</h1>
+      <p class="home-tagline">Explore microbial pathways, their molecular participants,
+        and the evidence behind their mechanistic connections.</p>
+      <div class="home-actions">
+        <a class="home-button" href="browse.html">Browse pathways
+          <span aria-hidden="true">→</span></a>
+        <a class="home-button home-button-secondary"
+           href="https://github.com/CultureBotAI/PathwayMech">View on GitHub</a>
+      </div>
+      <dl class="home-stats" aria-label="Published pathway collection">{statistics}</dl>
+    </section>
+    <section class="home-explore" aria-labelledby="explore-title">
+      <h2 id="explore-title">Explore PathwayMech</h2>
+      <p class="home-section-intro">Find a pathway, follow its evidence, or contribute a record.</p>
+      <div class="home-cards">
+        <article class="home-card">
+          <h3>Pathway browser</h3>
+          <p>Search the published collection by name or identifier. Open a record to inspect
+            its mechanistic edges, participants, and cited evidence.</p>
+          <a href="browse.html">Browse pathway records <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="home-card">
+          <h3>Source records</h3>
+          <p>Inspect the underlying YAML records, including pathway descriptions,
+            organism scope, molecular participants, and references.</p>
+          <a href="https://github.com/CultureBotAI/PathwayMech/tree/main/data/pathways">
+            Explore source records <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="home-card">
+          <h3>Curation guide</h3>
+          <p>Learn how to describe a pathway, connect its mechanism, and attach evidence
+            to individual edges.</p>
+          <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/docs/CURATION.md">
+            Read the curation guide <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </section>
+    <footer class="home-footer">Part of the CultureBotAI Mech knowledge bases.
+      <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a>
+    </footer>"""
+    return _page("PathwayMech", body, homepage=True)
 
 
 def _files_under(pages: Path) -> set[str]:
@@ -714,8 +768,12 @@ def import_veupathdb_main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
+def _page(
+    title: str, body: str, stylesheet_href: str = "style.css", *, homepage: bool = False
+) -> str:
     site_root = html.escape(stylesheet_href.removesuffix("style.css"))
+    body_class = ' class="home-page"' if homepage else ""
+    heading = "" if homepage else f"    <h1>{html.escape(title)}</h1>"
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -724,7 +782,7 @@ def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
   <title>{html.escape(title)}</title>
   <link rel="stylesheet" href="{html.escape(stylesheet_href)}">
 </head>
-<body>
+<body{body_class}>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header><nav aria-label="Main navigation">
     <a href="{site_root}index.html">PathwayMech overview</a>
@@ -733,7 +791,7 @@ def _page(title: str, body: str, stylesheet_href: str = "style.css") -> str:
     <a href="https://culturebotai.github.io/mechs/">All Mech projects</a>
   </nav></header>
   <main id="main-content" tabindex="-1">
-    <h1>{html.escape(title)}</h1>
+{heading}
     {body}
   </main>
 </body>

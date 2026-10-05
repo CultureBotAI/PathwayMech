@@ -7,7 +7,38 @@ from types import SimpleNamespace
 import pytest
 import yaml
 
-from pathwaymech.cli import _page, _record_page, _slug, check_pages_main, render_pages_main
+from pathwaymech.cli import (
+    _home_page,
+    _page,
+    _record_page,
+    _slug,
+    check_pages_main,
+    render_pages_main,
+)
+
+
+def test_home_statistics_count_records_and_deduplicate_taxa_and_references() -> None:
+    records = [
+        SimpleNamespace(taxa=[{"id": "NCBITaxon:1"}], mechanistic_edges=[{}, {}],
+                        references=[{"id": "PMID:1"}, {"id": "PMID:2"}]),
+        SimpleNamespace(taxa=[{"id": "NCBITaxon:1"}], mechanistic_edges=[{}],
+                        references=[{"id": "PMID:2"}]),
+    ]
+    page = _home_page(records)
+
+    assert '<dt>Pathway records</dt><dd>2</dd>' in page
+    assert '<dt>Taxa represented</dt><dd>1</dd>' in page
+    assert '<dt>Mechanistic edges</dt><dd>3</dd>' in page
+    assert '<dt>Distinct references</dt><dd>2</dd>' in page
+
+
+def test_empty_home_collection_has_zero_statistics_and_working_navigation() -> None:
+    page = _home_page([])
+
+    assert page.count('<dd>0</dd>') == 4
+    assert page.count('<h1') == 1
+    assert 'href="browse.html"' in page
+    assert 'href="https://culturebotai.github.io/mechs/"' in page
 
 
 def test_slug_uses_safe_path_characters() -> None:
