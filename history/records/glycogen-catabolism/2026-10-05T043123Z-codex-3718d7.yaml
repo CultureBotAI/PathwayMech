@@ -1,0 +1,34 @@
+history_version: 1
+target:
+  kind: record
+  path: data/pathways/glycogen-catabolism.yaml
+  slug: glycogen-catabolism
+session:
+  id: 2026-10-05T043123Z-codex-3718d7
+  timestamp: '2026-10-05T04:31:23Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/244
+  urls:
+  - https://pathway.yeastgenome.org/YEAST/NEW-IMAGE?object=PHOSPHOGLUCMUT-RXN&type=REACTION
+events:
+- type: EDIT
+  outcome: changed
+  sections:
+  - participants
+  - mechanistic_edges
+  summary: Correct upstream glucose-6-phosphate identifier in WP478
+  details: The original WP478_r139587 GPML node c69 labels glucose-6-phosphate (closed form)
+    but directly cross-references CHEBI:75150, which ChEBI255 identifies as the different
+    oxidized compound 3-dehydro-D-glucose 6-phosphate. Replaced the participant ID and edge-005
+    product with CHEBI:4170 (neutral, anomer-unspecified D-glucopyranose 6-phosphate), preserving
+    display text, charge scope, and unspecified anomer. Independent YeastCyc PHOSPHOGLUCMUT-RXN
+    evidence confirms the PGM1/PGM2 substrate/product pair. Original GPML SHA256 c02b28bb6136df307e48c26d6b79ad15acb251555772b64f86715f8333530586.
+    Recorded the upstream correction in curation/decisions.tsv; no exactMatch is asserted
+    between different molecules. Reviewed all 108 CHEBI participant occurrences across 12
+    WikiPathways records; no other definite different-molecule conflict found.

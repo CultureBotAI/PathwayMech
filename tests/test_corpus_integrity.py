@@ -1,8 +1,30 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
+import yaml
 
 from pathwaymech.schema import ValidationError, validate_record, validate_records
+
+
+def test_glycogen_phosphoglucomutase_does_not_produce_an_oxidized_sugar() -> None:
+    """Protect the curated correction of WP478's erroneous source Xref (#244).
+
+    CHEBI:4170 is neutral, anomer-unspecified D-glucopyranose 6-phosphate.
+    The upstream CHEBI:75150 denotes 3-dehydro-D-glucose 6-phosphate instead.
+    Both IDs exist, so an existence check cannot detect this semantic regression.
+    """
+    root = Path(__file__).resolve().parents[1]
+    record = yaml.safe_load((root / "data/pathways/glycogen-catabolism.yaml").read_text())
+    pathway = validate_record(record)
+    products = {
+        edge["object"] for edge in pathway.mechanistic_edges
+        if edge["subject"] == "WikiPathways:WP478/id5442c585"
+        and edge["predicate"] == "produces"
+    }
+    assert products == {"CHEBI:4170"}
+    assert "CHEBI:75150" not in {node["id"] for node in pathway.participants}
 
 
 def valid_record() -> dict:

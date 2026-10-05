@@ -22,6 +22,8 @@ into a pathway-specific schema:
 - graph edge endpoints must resolve to the pathway itself, a participant, or a
   reaction in the same record;
 - record identifiers must use explicit CURIE-style prefixes;
+- named identifiers resolve against independent authority snapshots, with
+  explicit canonical and contextual label policies;
 - static pages are generated from the same YAML records that feed QC.
 
 Records are modelled in LinkML at `src/pathwaymech/schema/pathwaymech.yaml`
@@ -37,6 +39,7 @@ a declared reference, pathway ids are unique -- stay in
 ```bash
 uv run pathwaymech-validate
 uv run pathwaymech-validate-strict
+uv run pathwaymech-check-identifiers
 uv run pathwaymech-validate-sources
 uv run pathwaymech-check-provenance
 uv run pathwaymech-import-bigg tests/fixtures/bigg/model.json
@@ -65,6 +68,10 @@ just validate
 `just validate` includes `just check-pages`, which fails when `pages/` is not
 what the records render to, including a page left behind by a removed record.
 After changing a record, run `just render-pages` and commit the result.
+
+`just check-identifiers`, also included in QC, verifies the recursive pathway
+corpus against pinned authority data. See [identifier verification](docs/IDENTIFIERS.md)
+for label policies, supported namespaces, and snapshot refresh instructions.
 
 Files vendored from claw (listed in `CLAUDE.md`) are checked separately, with
 network access, by `just vendored-check`; CI runs it as the `vendored-sync`

@@ -20,6 +20,7 @@ from pathwaymech.dbcan import dbcan_pul_seed_rows, load_dbcan_pul
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
+from pathwaymech.identifiers import identifier_errors
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
 from pathwaymech.kgx import write_kgx
 from pathwaymech.mibig import (
@@ -63,6 +64,30 @@ def validate_main() -> int:
         return 1
     print(f"validated {len(records)} pathway records")
     return 0
+
+
+def check_identifiers_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    parser = argparse.ArgumentParser(
+        prog="pathwaymech-check-identifiers",
+        description="Resolve pathway identifiers and asserted labels against authority snapshots.",
+    )
+    parser.add_argument("--config", type=Path, help="identifier policy (default: conf/)")
+    args = parser.parse_args(argv)
+    errors = identifier_errors(root, args.config)
+    for error in errors:
+        print(error, file=sys.stderr)
+    if errors:
+        return 1
+    count = len(pathway_files(root / "data" / "pathways"))
+    print(
+        f"verified identifiers and label policies in {count} "
+        "pathway records against authority snapshots"
+    )
+    return 0
+
+
+def _validate_identifier_gate() -> int:
+    return check_identifiers_main([], root=ROOT)
 
 
 def check_provenance_main() -> int:
@@ -331,6 +356,7 @@ def run_qc_main() -> int:
     for check in [
         validate_main,
         _validate_strict_gate,
+        _validate_identifier_gate,
         _validate_history_gate,
         check_provenance_main,
         validate_sources_main,

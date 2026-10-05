@@ -1,0 +1,89 @@
+version: 1
+# Every configured namespace has an independently sourced authority snapshot.
+# Unknown or not-yet-snapshotted identifiers fail; there are no ignored prefixes.
+namespaces:
+  GO:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical
+  CHEBI:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical_or_synonym
+  NCBITaxon:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical
+  RHEA:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical_or_synonym
+  EC:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  MIBiG:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  MetaCyc:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  Reactome:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  SGD:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  UniProtKB:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  WikiPathways:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  gomodel:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+contextual_labels:
+  - namespace: CHEBI
+    sections: [participants]
+    record_prefixes: [MetaCyc]
+    reason: Curated pathway steps preserve biochemical display names and formulas from reaction descriptions; the ChEBI identifier fixes the exact charge and stereochemical form.
+  - namespace: CHEBI
+    sections: [participants]
+    record_prefixes: [WikiPathways]
+    reason: GPML diagram labels preserve source display text after chemical cross-reference mapping.
+  - namespace: CHEBI
+    sections: [participants]
+    record_prefixes: [Reactome]
+    reason: BioPAX display names preserve biochemical shorthand while ChEBI IDs specify the grounded chemical form.
+  - namespace: EC
+    sections: [participants]
+    record_prefixes: [MetaCyc]
+    reason: Pathway enzyme-step descriptions preserve activity and gene-context names rather than assert the current IUBMB recommended enzyme name.
+  - namespace: RHEA
+    sections: [reactions]
+    record_prefixes: [MetaCyc]
+    reason: Curated pathway step labels describe enzyme function; the Rhea authority labels reaction equations.
+  - namespace: SGD
+    sections: [participants]
+    record_prefixes: [gomodel, WikiPathways]
+    reason: Source diagrams preserve gene symbols and organism or activity qualifiers such as Scer.
+  - namespace: UniProtKB
+    sections: [participants]
+    record_prefixes: [MetaCyc, Reactome, WikiPathways]
+    reason: Pathway diagrams use gene symbols or enzyme-step names rather than the recommended protein name.
+  - namespace: gomodel
+    sections: [record, reactions]
+    record_prefixes: [gomodel]
+    reason: GO-CAM records use curated pathway titles and activity descriptions; display cleanup removes import annotations and diagram markup without changing native graph IDs.
+  - namespace: WikiPathways
+    sections: [reactions]
+    record_prefixes: [WikiPathways]
+    reason: GPML interactions have native GraphIds but no canonical reaction names; pathway records give them readable source-context descriptions.
+  - namespace: MIBiG
+    sections: [record]
+    record_prefixes: [MIBiG]
+    reason: A pathway record describes the biosynthetic gene cluster rather than asserting a product name as the canonical cluster title.
+  - namespace: MetaCyc
+    sections: [record, reactions]
+    record_prefixes: [MetaCyc]
+    reason: Curated titles and enzyme-step descriptions preserve the record's scoped presentation; the independently accessible native release verifies frame identity, not current preferred pathway naming.
+  - namespace: Reactome
+    sections: [record, reactions]
+    record_prefixes: [Reactome]
+    reason: Curated pathway and reaction titles add organism or enzyme context to native BioPAX display names.

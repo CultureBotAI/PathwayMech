@@ -9,6 +9,11 @@ NCBI Protein, TubercuList, and SGD records into a single pathway mechanism modul
 Prefer stable external identifiers over local identifiers. Local identifiers
 must be temporary and must be documented in `curation/decisions.tsv`.
 
+The blocking [identifier and label gate](IDENTIFIERS.md) checks named pathway,
+taxon, participant, and reaction IDs against independent authority snapshots.
+Its explicit contextual-label policies preserve source display text while
+still checking identifier existence.
+
 GO-CAM ingestion keeps `gomodel` activity identifiers as draft reaction nodes
 and preserves SGD and GO_REF CURIEs when the upstream model uses Saccharomyces
 Genome Database gene products or GO evidence references.
