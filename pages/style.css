@@ -71,3 +71,89 @@ blockquote { margin: .4rem 0 1rem; }
 #pathway-search { margin: 1rem 0; }
 #pathway-search label { display: block; }
 #pathway-search input, #pathway-search button { max-width: 100%; padding: .5rem; font: inherit; background: var(--background); color: var(--text); border: 1px solid var(--muted); }
+
+/* The landing page follows the Mech hero, statistics, and navigation-card pattern. */
+.home-page {
+  --home-card: #ffffff;
+  --home-border: #dce4ef;
+  --home-hero-start: #e0eaff;
+  --home-hero-end: #eae4fa;
+  --home-stat: #ffffffb8;
+  --home-accent: #1d4ed8;
+  --home-on-accent: #ffffff;
+}
+.home-page header { max-width: 1120px; padding: 1.4rem 24px; }
+.home-page nav a { font-weight: 600; text-decoration: none; }
+.home-page a:hover { text-decoration: underline; }
+.home-page a:focus-visible { outline: 3px solid var(--link); outline-offset: 5px; }
+.home-page .skip-link { z-index: 1; }
+.home-page main { max-width: none; padding: 0; }
+.home-hero {
+  padding: 4rem 24px 3rem;
+  text-align: center;
+  background: linear-gradient(135deg, var(--home-hero-start), var(--home-hero-end));
+  border-block: 1px solid var(--home-border);
+}
+.home-eyebrow { margin: 0 0 .8rem; color: var(--muted); font-weight: 600; }
+.home-hero h1 { margin: 0; font-size: clamp(2.4rem, 6vw, 3.2rem); line-height: 1.15; letter-spacing: -.03em; }
+.home-tagline { max-width: 680px; margin: 1.2rem auto 1.8rem; font-size: 1.2rem; color: var(--muted); }
+.home-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: .8rem; }
+.home-button {
+  display: inline-block;
+  padding: .75rem 1.4rem;
+  border: 1px solid var(--home-accent);
+  border-radius: 999px;
+  background: var(--home-accent);
+  color: var(--home-on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.home-button-secondary { background: var(--home-card); color: var(--home-accent); }
+.home-stats { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin: 2.5rem auto 0; max-width: 960px; }
+.home-stat {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 180px;
+  max-width: 220px;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--home-stat);
+  border: 1px solid var(--home-border);
+}
+.home-stat dt { order: 1; color: var(--muted); font-size: .9rem; }
+.home-stat dd { margin: 0; font-size: 2rem; line-height: 1.3; font-weight: 700; }
+.home-explore { max-width: 1120px; margin: auto; padding: 3rem 24px; }
+.home-explore h2 { margin: 0; font-size: 1.75rem; }
+.home-section-intro { margin: .6rem 0 1.6rem; color: var(--muted); }
+.home-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.home-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 28px;
+  background: var(--home-card);
+  border: 1px solid var(--home-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px #10203308;
+}
+.home-card h3 { margin: 0; font-size: 1.25rem; }
+.home-card p { color: var(--muted); margin: 1rem 0 1.5rem; }
+.home-card a { margin-top: auto; font-weight: 600; }
+.home-footer { padding: 1.5rem 24px 2.5rem; text-align: center; color: var(--muted); }
+.home-footer a { display: inline-block; margin: .5rem; }
+@media (max-width: 800px) {
+  .home-cards { grid-template-columns: 1fr; }
+  .home-hero { padding: 2.5rem 24px; }
+  .home-stat { flex-basis: 130px; }
+}
+@media (prefers-color-scheme: dark) {
+  .home-page {
+    --home-card: #18243a;
+    --home-border: #40506b;
+    --home-hero-start: #1a2c48;
+    --home-hero-end: #302542;
+    --home-stat: #172338d9;
+    --home-accent: #93c5fd;
+    --home-on-accent: #102033;
+  }
+}
