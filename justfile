@@ -7,6 +7,9 @@ validate: validate-skills
 validate-strict *args:
     uv run pathwaymech-validate-strict {{args}}
 
+check-identifiers *args:
+    uv run pathwaymech-check-identifiers {{args}}
+
 validate-skills:
     uv run python scripts/validate_claude_skills.py
 

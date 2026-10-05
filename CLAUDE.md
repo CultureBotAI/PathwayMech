@@ -66,6 +66,11 @@ The strict validator is the source of truth:
 just validate
 ```
 
+`just validate` also runs the blocking identifier/label gate. The independent
+authority snapshots and canonical versus contextual label rules are documented
+in `docs/IDENTIFIERS.md`; `just check-identifiers` runs this check alone. New
+identifiers need verified authority coverage, not only a schema-supported prefix.
+
 A record may carry an optional `curation_history`: a list of `CurationEvent`
 entries (the same shape TaxonMech uses), each with a quoted RFC 3339
 `timestamp` that has a timezone, such as `'2026-09-28T12:00:00Z'`, and starts
