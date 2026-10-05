@@ -25,6 +25,13 @@ render-pages:
 kgx-export *args:
     uv run pathwaymech-export-kgx {{args}}
 
+# Inventory UniProt proteins in sibling Mech checkouts against PathwayMech
+# participants and check sibling PathwayMech links (conf/sibling_mechs.yaml).
+# Local files only unless --fetch-sgd-map / --fetch-annotations is passed.
+# Example: just cross-mech-proteins --mechs-root .. --out /tmp/cross-mech
+cross-mech-proteins *args:
+    uv run pathwaymech-cross-mech-proteins {{args}}
+
 sssom-export *args:
     uv run pathwaymech-export-sssom {{args}}
 

@@ -41,6 +41,10 @@ Use stable CURIEs whenever possible:
   pathway records without editing them.
 - `.claude/skills/review-open-issues/SKILL.md` - triage the full open-issue
   queue without mutating GitHub unless explicitly asked.
+- `.claude/skills/cross-mech-protein-links/SKILL.md` - inventory the UniProt
+  proteins sibling Mechs hold against PathwayMech participants
+  (`just cross-mech-proteins`), rank missing pathways, and plan PathwayMech
+  links and examples in sibling Mechs under each sibling's own rules.
 
 ## Record Contract
 

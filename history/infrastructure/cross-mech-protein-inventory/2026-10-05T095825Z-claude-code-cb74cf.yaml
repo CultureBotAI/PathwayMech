@@ -1,0 +1,30 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/cross_mech.py
+  slug: cross-mech-protein-inventory
+session:
+  id: 2026-10-05T095825Z-claude-code-cb74cf
+  timestamp: '2026-10-05T09:58:25Z'
+  actors:
+  - type: ai_agent
+    name: claude-code
+    model: claude-opus-5-5
+    agent_tool: claude-code
+events:
+- type: CREATE
+  outcome: changed
+  summary: Add the cross-Mech protein inventory, its sibling slot config, the published pathway
+    index, and the cross-mech-protein-links skill
+  details: 'Adds src/pathwaymech/cross_mech.py and the pathwaymech-cross-mech-proteins command
+    (just cross-mech-proteins). It reads the UniProtKB slots that conf/sibling_mechs.yaml
+    names in sibling Mech checkouts, from the working tree or from a git ref, and joins them
+    to PathwayMech participants. UniProtKB participants join directly; SGD participants join
+    through UniProtKB SGD cross-references. It reports shared accessions, shared Rhea reactions
+    and complete EC numbers, sibling PathwayMech links and whether they resolve, and candidate
+    examples. render-pages now also writes pages/pathway_index.json (record id, label, page,
+    taxa, protein participants, reactions), so sibling Mechs can verify links without a checkout;
+    check-pages gates it. Adds .claude/skills/cross-mech-protein-links/SKILL.md and lists
+    it in CLAUDE.md. Tests: tests/test_cross_mech.py, including a temporary git repository
+    for ref mode. UniProt is called only on request (--fetch-sgd-map, --fetch-annotations),
+    anonymously, and never by validation.'
