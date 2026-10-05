@@ -1,8 +1,8 @@
 id: MetaCyc:PLPSAL-PWY
 label: pyridoxal 5'-phosphate salvage I
-description: The pyridoxal 5'-phosphate salvage I pathway phosphorylates pyridoxal,
-  pyridoxamine, and pyridoxine, then oxidizes pyridoxamine 5'-phosphate and pyridoxine
-  5'-phosphate to regenerate pyridoxal 5'-phosphate.
+description: The pyridoxal 5'-phosphate salvage I pathway phosphorylates pyridoxal, pyridoxamine, and
+  pyridoxine, then oxidizes pyridoxamine 5'-phosphate and pyridoxine 5'-phosphate to regenerate pyridoxal
+  5'-phosphate.
 pathway_type: cofactor-biosynthesis
 taxa:
 - id: NCBITaxon:562
@@ -10,303 +10,488 @@ taxa:
 participants:
 - id: EC:2.7.1.35
   label: pyridoxal kinase
+  category: molecular_activity
 - id: EC:1.4.3.5
   label: pyridoxine 5'-phosphate oxidase
+  category: molecular_activity
 - id: CHEBI:17310
   label: pyridoxal
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:597326
   label: pyridoxal 5'-phosphate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:57761
   label: pyridoxamine
+  category: small_molecule
 - id: CHEBI:58451
   label: pyridoxamine 5'-phosphate
+  category: small_molecule
 - id: CHEBI:15379
   label: O2
+  category: small_molecule
 - id: CHEBI:15377
   label: H2O
+  category: small_molecule
 - id: CHEBI:16240
   label: H2O2
+  category: small_molecule
 - id: CHEBI:28938
   label: NH4(+)
+  category: small_molecule
 - id: CHEBI:16709
   label: pyridoxine
+  category: small_molecule
 - id: CHEBI:58589
   label: pyridoxine 5'-phosphate
+  category: small_molecule
+- id: UniProtKB:P0AFI7
+  label: Pyridoxine/pyridoxamine 5'-phosphate oxidase
+  category: protein
+- id: CHEBI:58210
+  label: FMN(3-)
+  category: cofactor
+- id: UniProtKB:P40191
+  label: Pyridoxine/pyridoxal/pyridoxamine kinase
+  category: protein
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: UniProtKB:P77150
+  label: Pyridoxal kinase PdxY
+  category: protein
 reactions:
 - id: RHEA:10225
   label: pyridoxal kinase reaction
+  direction: left_to_right
 - id: RHEA:25105
   label: pyridoxamine kinase reaction
+  direction: left_to_right
 - id: RHEA:15818
   label: pyridoxamine 5'-phosphate oxidase reaction
+  direction: left_to_right
 - id: RHEA:25109
   label: pyridoxine kinase reaction
+  direction: left_to_right
 - id: RHEA:15150
   label: pyridoxine 5'-phosphate oxidase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:2.7.1.35
-  predicate: catalyzes
-  object: RHEA:10225
-  evidence:
-  - reference_id: RHEA:10224
-    quote: pyridoxal kinase catalyzes pyridoxal kinase reaction.
-- id: edge-002
   subject: CHEBI:17310
   predicate: consumes
   object: RHEA:10225
   evidence:
   - reference_id: RHEA:10225
-    quote: RHEA:10225 pyridoxal + ATP => pyridoxal 5'-phosphate + ADP + H(+)
-- id: edge-003
+    source_assertion: Rhea lists CHEBI:17310 on the substrates side of RHEA:10225 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10225']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:10225
   evidence:
   - reference_id: RHEA:10225
-    quote: RHEA:10225 pyridoxal + ATP => pyridoxal 5'-phosphate + ADP + H(+)
-- id: edge-004
-  subject: RHEA:10225
-  predicate: produces
-  object: CHEBI:597326
-  evidence:
-  - reference_id: RHEA:10225
-    quote: RHEA:10225 pyridoxal + ATP => pyridoxal 5'-phosphate + ADP + H(+)
-- id: edge-005
-  subject: RHEA:10225
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:10225
-    quote: RHEA:10225 pyridoxal + ATP => pyridoxal 5'-phosphate + ADP + H(+)
-- id: edge-006
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:10225 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10225']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
   subject: RHEA:10225
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:10225
-    quote: RHEA:10225 pyridoxal + ATP => pyridoxal 5'-phosphate + ADP + H(+)
-- id: edge-007
-  subject: EC:2.7.1.35
-  predicate: catalyzes
-  object: RHEA:25105
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:10225 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10225']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
+  subject: RHEA:10225
+  predicate: produces
+  object: CHEBI:456216
   evidence:
-  - reference_id: RHEA:25104
-    quote: pyridoxal kinase catalyzes pyridoxamine kinase reaction.
-- id: edge-008
-  subject: CHEBI:57761
-  predicate: consumes
-  object: RHEA:25105
+  - reference_id: RHEA:10225
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:10225 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10225']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: RHEA:10225
+  predicate: produces
+  object: CHEBI:597326
   evidence:
-  - reference_id: RHEA:25105
-    quote: RHEA:25105 pyridoxamine + ATP => pyridoxamine 5'-phosphate + ADP + H(+)
-- id: edge-009
+  - reference_id: RHEA:10225
+    source_assertion: Rhea lists CHEBI:597326 on the products side of RHEA:10225 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10225']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-006
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:25105
   evidence:
   - reference_id: RHEA:25105
-    quote: RHEA:25105 pyridoxamine + ATP => pyridoxamine 5'-phosphate + ADP + H(+)
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:25105 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25105']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: CHEBI:57761
+  predicate: consumes
+  object: RHEA:25105
+  evidence:
+  - reference_id: RHEA:25105
+    source_assertion: Rhea lists CHEBI:57761 on the substrates side of RHEA:25105 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25105']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:25105
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:25105
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:25105 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25105']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: RHEA:25105
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:25105
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:25105 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25105']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-010
   subject: RHEA:25105
   predicate: produces
   object: CHEBI:58451
   evidence:
   - reference_id: RHEA:25105
-    quote: RHEA:25105 pyridoxamine + ATP => pyridoxamine 5'-phosphate + ADP + H(+)
+    source_assertion: Rhea lists CHEBI:58451 on the products side of RHEA:25105 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25105']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-011
-  subject: RHEA:25105
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:25105
-    quote: RHEA:25105 pyridoxamine + ATP => pyridoxamine 5'-phosphate + ADP + H(+)
-- id: edge-012
-  subject: RHEA:25105
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: RHEA:25105
-    quote: RHEA:25105 pyridoxamine + ATP => pyridoxamine 5'-phosphate + ADP + H(+)
-- id: edge-013
-  subject: RHEA:25105
-  predicate: precedes
-  object: RHEA:15818
-  evidence:
-  - reference_id: RHEA:25105
-    quote: RHEA:25105 pyridoxamine + ATP => pyridoxamine 5'-phosphate + ADP + H(+)
-  - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-014
-  subject: EC:1.4.3.5
-  predicate: catalyzes
-  object: RHEA:15818
-  evidence:
-  - reference_id: RHEA:15817
-    quote: pyridoxine 5'-phosphate oxidase catalyzes pyridoxamine 5'-phosphate oxidase
-      reaction.
-- id: edge-015
-  subject: CHEBI:58451
-  predicate: consumes
-  object: RHEA:15818
-  evidence:
-  - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-016
-  subject: CHEBI:15379
-  predicate: consumes
-  object: RHEA:15818
-  evidence:
-  - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-017
   subject: CHEBI:15377
   predicate: consumes
   object: RHEA:15818
   evidence:
   - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-018
-  subject: RHEA:15818
-  predicate: produces
-  object: CHEBI:597326
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:15818 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15818']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:15818
   evidence:
   - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-019
+    source_assertion: Rhea lists CHEBI:15379 on the substrates side of RHEA:15818 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15818']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-013
+  subject: CHEBI:58451
+  predicate: consumes
+  object: RHEA:15818
+  evidence:
+  - reference_id: RHEA:15818
+    source_assertion: Rhea lists CHEBI:58451 on the substrates side of RHEA:15818 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15818']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-014
   subject: RHEA:15818
   predicate: produces
   object: CHEBI:16240
   evidence:
   - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-020
+    source_assertion: Rhea lists CHEBI:16240 on the products side of RHEA:15818 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15818']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-015
   subject: RHEA:15818
   predicate: produces
   object: CHEBI:28938
   evidence:
   - reference_id: RHEA:15818
-    quote: RHEA:15818 pyridoxamine 5'-phosphate + O2 + H2O => pyridoxal 5'-phosphate
-      + H2O2 + NH4(+)
-- id: edge-021
-  subject: EC:2.7.1.35
-  predicate: catalyzes
-  object: RHEA:25109
+    source_assertion: Rhea lists CHEBI:28938 on the products side of RHEA:15818 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15818']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-016
+  subject: RHEA:15818
+  predicate: produces
+  object: CHEBI:597326
   evidence:
-  - reference_id: RHEA:25108
-    quote: pyridoxal kinase catalyzes pyridoxine kinase reaction.
-- id: edge-022
+  - reference_id: RHEA:15818
+    source_assertion: Rhea lists CHEBI:597326 on the products side of RHEA:15818 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15818']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-017
   subject: CHEBI:16709
   predicate: consumes
   object: RHEA:25109
   evidence:
   - reference_id: RHEA:25109
-    quote: RHEA:25109 pyridoxine + ATP => pyridoxine 5'-phosphate + ADP + H(+)
-- id: edge-023
+    source_assertion: Rhea lists CHEBI:16709 on the substrates side of RHEA:25109 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25109']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-018
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:25109
   evidence:
   - reference_id: RHEA:25109
-    quote: RHEA:25109 pyridoxine + ATP => pyridoxine 5'-phosphate + ADP + H(+)
-- id: edge-024
-  subject: RHEA:25109
-  predicate: produces
-  object: CHEBI:58589
-  evidence:
-  - reference_id: RHEA:25109
-    quote: RHEA:25109 pyridoxine + ATP => pyridoxine 5'-phosphate + ADP + H(+)
-- id: edge-025
-  subject: RHEA:25109
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:25109
-    quote: RHEA:25109 pyridoxine + ATP => pyridoxine 5'-phosphate + ADP + H(+)
-- id: edge-026
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:25109 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25109']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-019
   subject: RHEA:25109
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:25109
-    quote: RHEA:25109 pyridoxine + ATP => pyridoxine 5'-phosphate + ADP + H(+)
-- id: edge-027
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:25109 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25109']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-020
   subject: RHEA:25109
-  predicate: precedes
-  object: RHEA:15150
+  predicate: produces
+  object: CHEBI:456216
   evidence:
   - reference_id: RHEA:25109
-    quote: RHEA:25109 pyridoxine + ATP => pyridoxine 5'-phosphate + ADP + H(+)
-  - reference_id: RHEA:15150
-    quote: RHEA:15150 pyridoxine 5'-phosphate + O2 => pyridoxal 5'-phosphate + H2O2
-- id: edge-028
-  subject: EC:1.4.3.5
-  predicate: catalyzes
-  object: RHEA:15150
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:25109 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25109']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-021
+  subject: RHEA:25109
+  predicate: produces
+  object: CHEBI:58589
   evidence:
-  - reference_id: RHEA:15149
-    quote: pyridoxine 5'-phosphate oxidase catalyzes pyridoxine 5'-phosphate oxidase
-      reaction.
-- id: edge-029
-  subject: CHEBI:58589
-  predicate: consumes
-  object: RHEA:15150
-  evidence:
-  - reference_id: RHEA:15150
-    quote: RHEA:15150 pyridoxine 5'-phosphate + O2 => pyridoxal 5'-phosphate + H2O2
-- id: edge-030
+  - reference_id: RHEA:25109
+    source_assertion: Rhea lists CHEBI:58589 on the products side of RHEA:25109 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25109']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-022
   subject: CHEBI:15379
   predicate: consumes
   object: RHEA:15150
   evidence:
   - reference_id: RHEA:15150
-    quote: RHEA:15150 pyridoxine 5'-phosphate + O2 => pyridoxal 5'-phosphate + H2O2
-- id: edge-031
-  subject: RHEA:15150
-  predicate: produces
-  object: CHEBI:597326
+    source_assertion: Rhea lists CHEBI:15379 on the substrates side of RHEA:15150 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15150']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-023
+  subject: CHEBI:58589
+  predicate: consumes
+  object: RHEA:15150
   evidence:
   - reference_id: RHEA:15150
-    quote: RHEA:15150 pyridoxine 5'-phosphate + O2 => pyridoxal 5'-phosphate + H2O2
-- id: edge-032
+    source_assertion: Rhea lists CHEBI:58589 on the substrates side of RHEA:15150 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15150']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-024
   subject: RHEA:15150
   predicate: produces
   object: CHEBI:16240
   evidence:
   - reference_id: RHEA:15150
-    quote: RHEA:15150 pyridoxine 5'-phosphate + O2 => pyridoxal 5'-phosphate + H2O2
+    source_assertion: Rhea lists CHEBI:16240 on the products side of RHEA:15150 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15150']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-025
+  subject: RHEA:15150
+  predicate: produces
+  object: CHEBI:597326
+  evidence:
+  - reference_id: RHEA:15150
+    source_assertion: Rhea lists CHEBI:597326 on the products side of RHEA:15150 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15150']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-026
+  subject: EC:2.7.1.35
+  predicate: catalyzes
+  object: RHEA:10225
+  evidence:
+  - reference_id: RHEA:10224
+    source_assertion: Rhea associates EC:2.7.1.35 with the reaction family containing RHEA:10225.
+    source_locator: rh:ec
+- id: edge-027
+  subject: EC:2.7.1.35
+  predicate: catalyzes
+  object: RHEA:25105
+  evidence:
+  - reference_id: RHEA:25104
+    source_assertion: Rhea associates EC:2.7.1.35 with the reaction family containing RHEA:25105.
+    source_locator: rh:ec
+- id: edge-028
+  subject: EC:1.4.3.5
+  predicate: catalyzes
+  object: RHEA:15818
+  evidence:
+  - reference_id: RHEA:15817
+    source_assertion: Rhea associates EC:1.4.3.5 with the reaction family containing RHEA:15818.
+    source_locator: rh:ec
+- id: edge-029
+  subject: EC:2.7.1.35
+  predicate: catalyzes
+  object: RHEA:25109
+  evidence:
+  - reference_id: RHEA:25108
+    source_assertion: Rhea associates EC:2.7.1.35 with the reaction family containing RHEA:25109.
+    source_locator: rh:ec
+- id: edge-030
+  subject: EC:1.4.3.5
+  predicate: catalyzes
+  object: RHEA:15150
+  evidence:
+  - reference_id: RHEA:15149
+    source_assertion: Rhea associates EC:1.4.3.5 with the reaction family containing RHEA:15150.
+    source_locator: rh:ec
+- id: edge-031
+  subject: RHEA:25105
+  predicate: precedes
+  object: RHEA:15818
+  evidence:
+  - reference_id: MetaCyc:PLPSAL-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:25105 before RHEA:15818 in this pathway. Shared
+      intermediate: CHEBI:58451.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-032
+  subject: RHEA:25109
+  predicate: precedes
+  object: RHEA:15150
+  evidence:
+  - reference_id: MetaCyc:PLPSAL-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:25109 before RHEA:15150 in this pathway. Shared
+      intermediate: CHEBI:58589.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-033
+  subject: UniProtKB:P0AFI7
+  predicate: enables
+  object: RHEA:15818
+  evidence:
+  - reference_id: UniProtKB:P0AFI7
+    source_assertion: 'UniProt annotates UniProtKB:P0AFI7 with catalytic activity for the reaction family
+      of RHEA:15818. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-034
+  subject: UniProtKB:P0AFI7
+  predicate: enables
+  object: RHEA:15150
+  evidence:
+  - reference_id: UniProtKB:P0AFI7
+    source_assertion: 'UniProt annotates UniProtKB:P0AFI7 with catalytic activity for the reaction family
+      of RHEA:15150. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-035
+  subject: UniProtKB:P0AFI7
+  predicate: has_cofactor
+  object: CHEBI:58210
+  evidence:
+  - reference_id: UniProtKB:P0AFI7
+    source_assertion: 'UniProt lists CHEBI:58210 as a cofactor of UniProtKB:P0AFI7 (evidence: ECO:0000269).
+      Binds 1 FMN per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-036
+  subject: UniProtKB:P40191
+  predicate: enables
+  object: RHEA:10225
+  evidence:
+  - reference_id: UniProtKB:P40191
+    source_assertion: 'UniProt annotates UniProtKB:P40191 with catalytic activity for the reaction family
+      of RHEA:10225. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-037
+  subject: UniProtKB:P40191
+  predicate: enables
+  object: RHEA:25109
+  evidence:
+  - reference_id: UniProtKB:P40191
+    source_assertion: 'UniProt annotates UniProtKB:P40191 with catalytic activity for the reaction family
+      of RHEA:25109. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-038
+  subject: UniProtKB:P40191
+  predicate: enables
+  object: RHEA:25105
+  evidence:
+  - reference_id: UniProtKB:P40191
+    source_assertion: 'UniProt annotates UniProtKB:P40191 with catalytic activity for the reaction family
+      of RHEA:25105. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-039
+  subject: UniProtKB:P40191
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P40191
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P40191 (evidence: ECO:0000269).
+      Can use both zinc and magnesium that is complexed with ATP. However, magnesium seems to be the preferred
+      metal used under physiological conditions.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-040
+  subject: UniProtKB:P40191
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P40191
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P40191 (evidence: ECO:0000269).
+      Can use both zinc and magnesium that is complexed with ATP. However, magnesium seems to be the preferred
+      metal used under physiological conditions.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-041
+  subject: UniProtKB:P77150
+  predicate: enables
+  object: RHEA:10225
+  evidence:
+  - reference_id: UniProtKB:P77150
+    source_assertion: 'UniProt annotates UniProtKB:P77150 with catalytic activity for the reaction family
+      of RHEA:10225. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-042
+  subject: UniProtKB:P77150
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P77150
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P77150 (evidence: ECO:0000255). '
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
 references:
 - id: MetaCyc:PLPSAL-PWY
   title: MetaCyc pyridoxal 5'-phosphate salvage I pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:PLPSAL-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 49f838af2a3f143075cb2e195b184cd75f0e9c09dffe4a37f51c63674a82df09
 - id: RHEA:10224
   title: Rhea pyridoxal kinase reaction
+  url: https://www.rhea-db.org/rhea/10224
+  source_version: '139'
 - id: RHEA:10225
   title: Rhea pyridoxal 5'-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/10225
+  source_version: '139'
 - id: RHEA:25104
   title: Rhea pyridoxamine kinase reaction
+  url: https://www.rhea-db.org/rhea/25104
+  source_version: '139'
 - id: RHEA:25105
   title: Rhea pyridoxamine 5'-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/25105
+  source_version: '139'
 - id: RHEA:15817
   title: Rhea pyridoxamine 5'-phosphate oxidase reaction
+  url: https://www.rhea-db.org/rhea/15817
+  source_version: '139'
 - id: RHEA:15818
   title: Rhea pyridoxal 5'-phosphate-forming pyridoxamine oxidase direction
+  url: https://www.rhea-db.org/rhea/15818
+  source_version: '139'
 - id: RHEA:25108
   title: Rhea pyridoxine kinase reaction
+  url: https://www.rhea-db.org/rhea/25108
+  source_version: '139'
 - id: RHEA:25109
   title: Rhea pyridoxine 5'-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/25109
+  source_version: '139'
 - id: RHEA:15149
   title: Rhea pyridoxine 5'-phosphate oxidase reaction
+  url: https://www.rhea-db.org/rhea/15149
+  source_version: '139'
 - id: RHEA:15150
   title: Rhea pyridoxal 5'-phosphate-forming pyridoxine oxidase direction
+  url: https://www.rhea-db.org/rhea/15150
+  source_version: '139'
+- id: UniProtKB:P0AFI7
+  title: UniProtKB:P0AFI7 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0AFI7.json
+  source_version: '2026_03'
+- id: UniProtKB:P40191
+  title: UniProtKB:P40191 authority record
+  url: https://rest.uniprot.org/uniprotkb/P40191.json
+  source_version: '2026_03'
+- id: UniProtKB:P77150
+  title: UniProtKB:P77150 authority record
+  url: https://rest.uniprot.org/uniprotkb/P77150.json
+  source_version: '2026_03'

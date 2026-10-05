@@ -1,73 +1,88 @@
 id: WikiPathways:WP71
 label: Phospholipids degradation
-description: Phospholipids degradation in Saccharomyces cerevisiae covers the WikiPathways
-  phospholipase D branch that hydrolyzes phosphatidylcholine to phosphatidate and
-  choline through SPO14.
+description: Phospholipids degradation in Saccharomyces cerevisiae covers the WikiPathways phospholipase
+  D branch that hydrolyzes phosphatidylcholine to phosphatidate and choline through SPO14.
 pathway_type: phospholipid-degradation
 taxa:
 - id: NCBITaxon:4932
   label: Saccharomyces cerevisiae
 participants:
-- id: CHEBI:15354
-  label: choline
-- id: CHEBI:15377
-  label: water
 - id: CHEBI:15378
   label: hydron
-- id: CHEBI:16110
-  label: phosphatidylcholine
-- id: CHEBI:29089
-  label: 1,2-diacyl-sn-glycerol 3-phosphate
+  category: small_molecule
 - id: SGD:S000001739
   label: SPO14
+  category: protein
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:16110
+  label: phosphatidylcholine
+  category: lipid
+- id: CHEBI:29089
+  label: 1,2-diacyl-sn-glycerol 3-phosphate
+  category: lipid
+- id: CHEBI:15354
+  label: choline
+  category: lipid
 reactions:
 - id: WikiPathways:WP71/id3a707ae4
   label: phosphatidylcholine to phosphatidate and choline
+  direction: left_to_right
+  category: molecular_activity
 mechanistic_edges:
-- id: edge-001
+- id: causal-review-1
   subject: CHEBI:16110
   predicate: consumes
   object: WikiPathways:WP71/id3a707ae4
   evidence:
   - reference_id: WikiPathways:WP71
-    quote: phosphatidylcholine is consumed by phosphatidylcholine to phosphatidate
-      and choline.
-- id: edge-002
-  subject: CHEBI:15377
-  predicate: consumes
-  object: WikiPathways:WP71/id3a707ae4
-  evidence:
-  - reference_id: WikiPathways:WP71
-    quote: water is consumed by phosphatidylcholine to phosphatidate and choline.
-- id: edge-003
+    source_assertion: GPML id3a707ae4 connects normalized CHEBI:16110 as an input of interaction id3a707ae4.
+    source_locator: /Pathway/Interaction[@GraphId='id3a707ae4']/Graphics; /Pathway/DataNode[@GraphId='ee13a']
+- id: causal-review-2
   subject: WikiPathways:WP71/id3a707ae4
   predicate: produces
   object: CHEBI:29089
   evidence:
   - reference_id: WikiPathways:WP71
-    quote: phosphatidylcholine to phosphatidate and choline produces 1,2-diacyl-sn-glycerol
-      3-phosphate.
-- id: edge-004
+    source_assertion: GPML id3a707ae4 connects normalized CHEBI:29089 as an output of interaction id3a707ae4.
+    source_locator: /Pathway/Interaction[@GraphId='id3a707ae4']/Graphics; /Pathway/DataNode[@GraphId='c42d6']
+- id: causal-review-3
   subject: WikiPathways:WP71/id3a707ae4
   predicate: produces
   object: CHEBI:15354
   evidence:
   - reference_id: WikiPathways:WP71
-    quote: phosphatidylcholine to phosphatidate and choline produces choline.
-- id: edge-005
+    source_assertion: GPML id153723c8 connects normalized CHEBI:15354 as an output of interaction id3a707ae4.
+    source_locator: /Pathway/Interaction[@GraphId='id153723c8']/Graphics; /Pathway/DataNode[@GraphId='ad11f']
+- id: causal-review-4
   subject: WikiPathways:WP71/id3a707ae4
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: WikiPathways:WP71
-    quote: phosphatidylcholine to phosphatidate and choline produces hydron.
-- id: edge-006
+    source_assertion: GPML id153723c8 connects normalized CHEBI:15378 as an output of interaction id3a707ae4.
+    source_locator: /Pathway/Interaction[@GraphId='id153723c8']/Graphics; /Pathway/DataNode[@GraphId='ca3e3']
+- id: causal-review-5
   subject: SGD:S000001739
   predicate: catalyzes
   object: WikiPathways:WP71/id3a707ae4
   evidence:
   - reference_id: WikiPathways:WP71
-    quote: SPO14 catalyzes phosphatidylcholine to phosphatidate and choline.
+    source_assertion: GPML id8293ebf6 connects normalized SGD:S000001739 as a catalyst of interaction
+      id3a707ae4.
+    source_locator: /Pathway/Interaction[@GraphId='id8293ebf6']/Graphics; /Pathway/DataNode[@GraphId='e31']
+- id: causal-review-6
+  subject: CHEBI:15377
+  predicate: consumes
+  object: WikiPathways:WP71/id3a707ae4
+  evidence:
+  - reference_id: WikiPathways:WP71
+    source_assertion: GPML idb1638a08 connects normalized CHEBI:15377 as an input of interaction id3a707ae4.
+    source_locator: /Pathway/Interaction[@GraphId='idb1638a08']/Graphics; /Pathway/DataNode[@GraphId='bc483']
 references:
 - id: WikiPathways:WP71
-  title: WikiPathways Phospholipids degradation GPML pathway WP71_r140565
+  title: WP71 native structured pathway source
+  url: https://www.wikipathways.org/wikipathways-assets/pathways/WP71/WP71.gpml
+  source_version: WP71_r20260926102110
+  source_sha256: 4f47195c00087954a101bee443f5ae9a87c40c7a0f8c0d64f5496a61a4b624cf

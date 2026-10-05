@@ -1,8 +1,8 @@
 id: MetaCyc:GLUCARDEG-PWY
 label: D-glucarate degradation I
-description: D-glucarate degradation I dehydrates D-glucarate to 5-dehydro-4-deoxy-D-glucarate,
-  cleaves that intermediate to 2-hydroxy-3-oxopropanoate and pyruvate, reduces 2-hydroxy-3-oxopropanoate
-  to (R)-glycerate with NADPH or NADH, and phosphorylates (R)-glycerate to (2R)-2-phosphoglycerate.
+description: D-glucarate degradation I dehydrates D-glucarate to 5-dehydro-4-deoxy-D-glucarate, cleaves
+  that intermediate to 2-hydroxy-3-oxopropanoate and pyruvate, reduces 2-hydroxy-3-oxopropanoate to (R)-glycerate
+  with NADPH or NADH, and phosphorylates (R)-glycerate to (2R)-2-phosphoglycerate.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:2
@@ -10,366 +10,364 @@ taxa:
 participants:
 - id: EC:4.2.1.40
   label: D-glucarate dehydratase
+  category: molecular_activity
 - id: EC:1.1.1.60
   label: tartronate-semialdehyde reductase
+  category: molecular_activity
 - id: EC:2.7.1.165
   label: D-glycerate 2-kinase
+  category: molecular_activity
 - id: CHEBI:30612
   label: D-glucarate
+  category: small_molecule
 - id: CHEBI:42819
   label: 5-dehydro-4-deoxy-D-glucarate
+  category: small_molecule
 - id: CHEBI:15377
   label: H2O
+  category: small_molecule
 - id: CHEBI:57978
   label: 2-hydroxy-3-oxopropanoate
+  category: small_molecule
 - id: CHEBI:15361
   label: pyruvate
+  category: small_molecule
 - id: CHEBI:57783
   label: NADPH
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:58349
   label: NADP(+)
+  category: small_molecule
 - id: CHEBI:57945
   label: NADH
+  category: small_molecule
 - id: CHEBI:57540
   label: NAD(+)
+  category: small_molecule
 - id: CHEBI:16659
   label: (R)-glycerate
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:58289
   label: (2R)-2-phosphoglycerate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 reactions:
 - id: RHEA:14574
   label: D-glucarate dehydratase reaction
-- id: RHEA:27729
-  label: 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  direction: left_to_right
 - id: RHEA:18843
   label: NADPH-dependent tartronate-semialdehyde reductase reaction
+  direction: right_to_left
 - id: RHEA:18847
   label: NADH-dependent tartronate-semialdehyde reductase reaction
+  direction: right_to_left
 - id: RHEA:27378
   label: D-glycerate 2-kinase reaction
+  direction: left_to_right
+- id: RHEA:27727
+  label: 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:4.2.1.40
-  predicate: catalyzes
-  object: RHEA:14574
-  evidence:
-  - reference_id: RHEA:14573
-    quote: D-glucarate dehydratase catalyzes D-glucarate dehydratase reaction.
-- id: edge-002
   subject: CHEBI:30612
   predicate: consumes
   object: RHEA:14574
   evidence:
   - reference_id: RHEA:14574
-    quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glucarate is consumed by D-glucarate dehydratase reaction.
+    source_assertion: Rhea lists CHEBI:30612 on the substrates side of RHEA:14574 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14574']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
+  subject: RHEA:14574
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:14574
+    source_assertion: Rhea lists CHEBI:15377 on the products side of RHEA:14574 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14574']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-003
   subject: RHEA:14574
   predicate: produces
   object: CHEBI:42819
   evidence:
   - reference_id: RHEA:14574
-    quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glucarate dehydratase reaction produces 5-dehydro-4-deoxy-D-glucarate.
+    source_assertion: Rhea lists CHEBI:42819 on the products side of RHEA:14574 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14574']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-004
-  subject: RHEA:14574
-  predicate: produces
-  object: CHEBI:15377
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:18843
   evidence:
-  - reference_id: RHEA:14574
-    quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glucarate dehydratase reaction produces H2O.
+  - reference_id: RHEA:18843
+    source_assertion: Rhea lists CHEBI:15378 on the substrates side of RHEA:18843 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18843']/rh:substrates; rh:contains/rh:compound/rh:accession
 - id: edge-005
-  subject: RHEA:14574
-  predicate: precedes
-  object: RHEA:27729
-  evidence:
-  - reference_id: RHEA:14574
-    quote: RHEA:14574 D-glucarate => 5-dehydro-4-deoxy-D-glucarate + H2O
-  - reference_id: RHEA:27729
-    quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate
-      + pyruvate
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glucarate dehydratase reaction precedes 5-dehydro-4-deoxy-D-glucarate
-      aldolase reaction.
-- id: edge-006
-  subject: CHEBI:42819
-  predicate: consumes
-  object: RHEA:27729
-  evidence:
-  - reference_id: RHEA:27729
-    quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate
-      + pyruvate
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 5-dehydro-4-deoxy-D-glucarate is consumed by 5-dehydro-4-deoxy-D-glucarate
-      aldolase reaction.
-- id: edge-007
-  subject: RHEA:27729
-  predicate: produces
-  object: CHEBI:57978
-  evidence:
-  - reference_id: RHEA:27729
-    quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate
-      + pyruvate
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 5-dehydro-4-deoxy-D-glucarate aldolase reaction produces 2-hydroxy-3-oxopropanoate.
-- id: edge-008
-  subject: RHEA:27729
-  predicate: produces
-  object: CHEBI:15361
-  evidence:
-  - reference_id: RHEA:27729
-    quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate
-      + pyruvate
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 5-dehydro-4-deoxy-D-glucarate aldolase reaction produces pyruvate.
-- id: edge-009
-  subject: RHEA:27729
-  predicate: precedes
-  object: RHEA:18843
-  evidence:
-  - reference_id: RHEA:27729
-    quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate
-      + pyruvate
-  - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 5-dehydro-4-deoxy-D-glucarate aldolase reaction precedes NADPH-dependent
-      tartronate-semialdehyde reductase reaction.
-- id: edge-010
-  subject: RHEA:27729
-  predicate: precedes
-  object: RHEA:18847
-  evidence:
-  - reference_id: RHEA:27729
-    quote: RHEA:27729 5-dehydro-4-deoxy-D-glucarate <=> 2-hydroxy-3-oxopropanoate
-      + pyruvate
-  - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 5-dehydro-4-deoxy-D-glucarate aldolase reaction precedes NADH-dependent
-      tartronate-semialdehyde reductase reaction.
-- id: edge-011
-  subject: EC:1.1.1.60
-  predicate: catalyzes
-  object: RHEA:18843
-  evidence:
-  - reference_id: RHEA:18841
-    quote: tartronate-semialdehyde reductase catalyzes NADPH-dependent tartronate-semialdehyde
-      reductase reaction.
-- id: edge-012
-  subject: CHEBI:57978
-  predicate: consumes
-  object: RHEA:18843
-  evidence:
-  - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 2-hydroxy-3-oxopropanoate is consumed by NADPH-dependent tartronate-semialdehyde
-      reductase reaction.
-- id: edge-013
   subject: CHEBI:57783
   predicate: consumes
   object: RHEA:18843
   evidence:
   - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADPH is consumed by NADPH-dependent tartronate-semialdehyde reductase
-      reaction.
-- id: edge-014
-  subject: CHEBI:15378
+    source_assertion: Rhea lists CHEBI:57783 on the substrates side of RHEA:18843 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18843']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:57978
   predicate: consumes
   object: RHEA:18843
   evidence:
   - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: H(+) is consumed by NADPH-dependent tartronate-semialdehyde reductase reaction.
-- id: edge-015
+    source_assertion: Rhea lists CHEBI:57978 on the substrates side of RHEA:18843 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18843']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
   subject: RHEA:18843
   predicate: produces
   object: CHEBI:16659
   evidence:
   - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADPH-dependent tartronate-semialdehyde reductase reaction produces (R)-glycerate.
-- id: edge-016
+    source_assertion: Rhea lists CHEBI:16659 on the products side of RHEA:18843 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18843']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
   subject: RHEA:18843
   predicate: produces
   object: CHEBI:58349
   evidence:
   - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADPH-dependent tartronate-semialdehyde reductase reaction produces NADP(+).
-- id: edge-017
-  subject: RHEA:18843
-  predicate: precedes
-  object: RHEA:27378
-  evidence:
-  - reference_id: RHEA:18843
-    quote: RHEA:18843 2-hydroxy-3-oxopropanoate + NADPH + H(+) => (R)-glycerate +
-      NADP(+)
-  - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADPH-dependent tartronate-semialdehyde reductase reaction precedes D-glycerate
-      2-kinase reaction.
-- id: edge-018
-  subject: EC:1.1.1.60
-  predicate: catalyzes
-  object: RHEA:18847
-  evidence:
-  - reference_id: RHEA:18845
-    quote: tartronate-semialdehyde reductase catalyzes NADH-dependent tartronate-semialdehyde
-      reductase reaction.
-- id: edge-019
-  subject: CHEBI:57978
-  predicate: consumes
-  object: RHEA:18847
-  evidence:
-  - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: 2-hydroxy-3-oxopropanoate is consumed by NADH-dependent tartronate-semialdehyde
-      reductase reaction.
-- id: edge-020
-  subject: CHEBI:57945
-  predicate: consumes
-  object: RHEA:18847
-  evidence:
-  - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADH is consumed by NADH-dependent tartronate-semialdehyde reductase reaction.
-- id: edge-021
+    source_assertion: Rhea lists CHEBI:58349 on the products side of RHEA:18843 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18843']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
   subject: CHEBI:15378
   predicate: consumes
   object: RHEA:18847
   evidence:
   - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: H(+) is consumed by NADH-dependent tartronate-semialdehyde reductase reaction.
-- id: edge-022
+    source_assertion: Rhea lists CHEBI:15378 on the substrates side of RHEA:18847 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18847']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:18847
+  evidence:
+  - reference_id: RHEA:18847
+    source_assertion: Rhea lists CHEBI:57945 on the substrates side of RHEA:18847 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18847']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-011
+  subject: CHEBI:57978
+  predicate: consumes
+  object: RHEA:18847
+  evidence:
+  - reference_id: RHEA:18847
+    source_assertion: Rhea lists CHEBI:57978 on the substrates side of RHEA:18847 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18847']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
   subject: RHEA:18847
   predicate: produces
   object: CHEBI:16659
   evidence:
   - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADH-dependent tartronate-semialdehyde reductase reaction produces (R)-glycerate.
-- id: edge-023
+    source_assertion: Rhea lists CHEBI:16659 on the products side of RHEA:18847 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18847']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-013
   subject: RHEA:18847
   predicate: produces
   object: CHEBI:57540
   evidence:
   - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADH-dependent tartronate-semialdehyde reductase reaction produces NAD(+).
-- id: edge-024
-  subject: RHEA:18847
-  predicate: precedes
+    source_assertion: Rhea lists CHEBI:57540 on the products side of RHEA:18847 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18847']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-014
+  subject: CHEBI:16659
+  predicate: consumes
   object: RHEA:27378
   evidence:
-  - reference_id: RHEA:18847
-    quote: RHEA:18847 2-hydroxy-3-oxopropanoate + NADH + H(+) => (R)-glycerate + NAD(+)
   - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
-  - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: NADH-dependent tartronate-semialdehyde reductase reaction precedes D-glycerate
-      2-kinase reaction.
+    source_assertion: Rhea lists CHEBI:16659 on the substrates side of RHEA:27378 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27378']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-015
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:27378
+  evidence:
+  - reference_id: RHEA:27378
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:27378 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27378']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-016
+  subject: RHEA:27378
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:27378
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:27378 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27378']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-017
+  subject: RHEA:27378
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:27378
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:27378 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27378']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-018
+  subject: RHEA:27378
+  predicate: produces
+  object: CHEBI:58289
+  evidence:
+  - reference_id: RHEA:27378
+    source_assertion: Rhea lists CHEBI:58289 on the products side of RHEA:27378 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27378']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-019
+  subject: CHEBI:42819
+  predicate: consumes
+  object: RHEA:27727
+  evidence:
+  - reference_id: RHEA:27727
+    source_assertion: Rhea lists CHEBI:42819 on the substrates side of RHEA:27727 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27727']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-020
+  subject: RHEA:27727
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:27727
+    source_assertion: Rhea lists CHEBI:15361 on the products side of RHEA:27727 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27727']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-021
+  subject: RHEA:27727
+  predicate: produces
+  object: CHEBI:57978
+  evidence:
+  - reference_id: RHEA:27727
+    source_assertion: Rhea lists CHEBI:57978 on the products side of RHEA:27727 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27727']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-022
+  subject: EC:4.2.1.40
+  predicate: catalyzes
+  object: RHEA:14574
+  evidence:
+  - reference_id: RHEA:14573
+    source_assertion: Rhea associates EC:4.2.1.40 with the reaction family containing RHEA:14574.
+    source_locator: rh:ec
+- id: edge-023
+  subject: EC:1.1.1.60
+  predicate: catalyzes
+  object: RHEA:18843
+  evidence:
+  - reference_id: RHEA:18841
+    source_assertion: Rhea associates EC:1.1.1.60 with the reaction family containing RHEA:18843.
+    source_locator: rh:ec
+- id: edge-024
+  subject: EC:1.1.1.60
+  predicate: catalyzes
+  object: RHEA:18847
+  evidence:
+  - reference_id: RHEA:18845
+    source_assertion: Rhea associates EC:1.1.1.60 with the reaction family containing RHEA:18847.
+    source_locator: rh:ec
 - id: edge-025
   subject: EC:2.7.1.165
   predicate: catalyzes
   object: RHEA:27378
   evidence:
   - reference_id: RHEA:27377
-    quote: D-glycerate 2-kinase catalyzes D-glycerate 2-kinase reaction.
+    source_assertion: Rhea associates EC:2.7.1.165 with the reaction family containing RHEA:27378.
+    source_locator: rh:ec
 - id: edge-026
-  subject: CHEBI:16659
-  predicate: consumes
-  object: RHEA:27378
+  subject: RHEA:14574
+  predicate: precedes
+  object: RHEA:27727
   evidence:
-  - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
   - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: (R)-glycerate is consumed by D-glycerate 2-kinase reaction.
+    source_assertion: 'MetaCyc pathway ordering places RHEA:14574 before RHEA:27727 in this pathway. Shared
+      intermediate: CHEBI:42819.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-027
-  subject: CHEBI:30616
-  predicate: consumes
+  subject: RHEA:18843
+  predicate: precedes
   object: RHEA:27378
   evidence:
-  - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
   - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: ATP is consumed by D-glycerate 2-kinase reaction.
+    source_assertion: 'MetaCyc pathway ordering places RHEA:18843 before RHEA:27378 in this pathway. Shared
+      intermediate: CHEBI:16659.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-028
-  subject: RHEA:27378
-  predicate: produces
-  object: CHEBI:58289
+  subject: RHEA:18847
+  predicate: precedes
+  object: RHEA:27378
   evidence:
-  - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
   - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glycerate 2-kinase reaction produces (2R)-2-phosphoglycerate.
+    source_assertion: 'MetaCyc pathway ordering places RHEA:18847 before RHEA:27378 in this pathway. Shared
+      intermediate: CHEBI:16659.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-029
-  subject: RHEA:27378
-  predicate: produces
-  object: CHEBI:456216
+  subject: RHEA:27727
+  predicate: precedes
+  object: RHEA:18843
   evidence:
-  - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
   - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glycerate 2-kinase reaction produces ADP.
+    source_assertion: 'MetaCyc pathway ordering places RHEA:27727 before RHEA:18843 in this pathway. Shared
+      intermediate: CHEBI:57978.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-030
-  subject: RHEA:27378
-  predicate: produces
-  object: CHEBI:15378
+  subject: RHEA:27727
+  predicate: precedes
+  object: RHEA:18847
   evidence:
-  - reference_id: RHEA:27378
-    quote: RHEA:27378 (R)-glycerate + ATP => (2R)-2-phosphoglycerate + ADP + H(+)
   - reference_id: MetaCyc:GLUCARDEG-PWY
-    quote: D-glycerate 2-kinase reaction produces H(+).
+    source_assertion: 'MetaCyc pathway ordering places RHEA:27727 before RHEA:18847 in this pathway. Shared
+      intermediate: CHEBI:57978.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 references:
 - id: MetaCyc:GLUCARDEG-PWY
   title: MetaCyc D-glucarate degradation I
+  url: https://pathway.yeastgenome.org/getxml?id=META:GLUCARDEG-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 51237b8f8e360d2e8cb24c3d933c31618b83963a584db397d745aa7cd19155f0
 - id: RHEA:14573
   title: Rhea D-glucarate dehydratase reaction
+  url: https://www.rhea-db.org/rhea/14573
+  source_version: '139'
 - id: RHEA:14574
   title: Rhea D-glucarate-dehydrating direction
+  url: https://www.rhea-db.org/rhea/14574
+  source_version: '139'
 - id: RHEA:27726
   title: Rhea 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  url: https://www.rhea-db.org/rhea/27726
+  source_version: '139'
 - id: RHEA:27729
   title: Rhea bidirectional 5-dehydro-4-deoxy-D-glucarate aldolase reaction
+  url: https://www.rhea-db.org/rhea/27729
+  source_version: '139'
 - id: RHEA:18841
   title: Rhea NADPH-dependent tartronate-semialdehyde reductase reaction
+  url: https://www.rhea-db.org/rhea/18841
+  source_version: '139'
 - id: RHEA:18843
   title: Rhea NADPH-dependent tartronate-semialdehyde reductase reduction direction
+  url: https://www.rhea-db.org/rhea/18843
+  source_version: '139'
 - id: RHEA:18845
   title: Rhea NADH-dependent tartronate-semialdehyde reductase reaction
+  url: https://www.rhea-db.org/rhea/18845
+  source_version: '139'
 - id: RHEA:18847
   title: Rhea NADH-dependent tartronate-semialdehyde reductase reduction direction
+  url: https://www.rhea-db.org/rhea/18847
+  source_version: '139'
 - id: RHEA:27377
   title: Rhea D-glycerate 2-kinase reaction
+  url: https://www.rhea-db.org/rhea/27377
+  source_version: '139'
 - id: RHEA:27378
   title: Rhea 2-phosphoglycerate-forming direction
+  url: https://www.rhea-db.org/rhea/27378
+  source_version: '139'
+- id: RHEA:27727
+  title: RHEA:27727 authority record
+  url: https://www.rhea-db.org/rhea/27727
+  source_version: '139'

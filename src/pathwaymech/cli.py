@@ -793,6 +793,25 @@ def _record_page(record: object, source_path: str | None = None) -> str:
             labels.setdefault(node["id"], set()).add(node.get("label") or node["id"])
     nodes = {identifier: next(iter(values)) if len(values) == 1 else identifier
              for identifier, values in labels.items()}
+    components = []
+    for field in ("taxa", "participants", "reactions"):
+        for node in getattr(record, field, []):
+            kind = node.get("category") or {"taxa": "taxon"}.get(field, field.removesuffix("s"))
+            direction = node.get("direction", "")
+            components.append(
+                f"<tr><td>{html.escape(nodes[node['id']])}<br>"
+                f"<code>{html.escape(node['id'])}</code></td>"
+                f"<td>{html.escape(kind.replace('_', ' '))}</td>"
+                f"<td>{html.escape(direction.replace('_', ' '))}</td></tr>"
+            )
+    component_section = (
+        '<h2>Components and activities</h2><div class="table-scroll" role="region" '
+        'tabindex="0" aria-label="Biological components and reaction directions">'
+        "<table><caption>Declared biological components and source reaction directions</caption>"
+        "<thead><tr><th scope=\"col\">Node</th><th scope=\"col\">Kind or role</th>"
+        "<th scope=\"col\">Source direction</th></tr></thead>"
+        f"<tbody>{''.join(components)}</tbody></table></div>"
+    ) if components else ""
 
     def endpoint(identifier: str) -> str:
         label = nodes.get(identifier, identifier)
@@ -808,7 +827,15 @@ def _record_page(record: object, source_path: str | None = None) -> str:
             reference = html.escape(evidence["reference_id"])
             anchor = ref_anchors.get(evidence["reference_id"])
             citation = f'<a href="#{anchor}">{reference}</a>' if anchor else reference
-            citations.append(f"<li>{citation}<blockquote>{html.escape(evidence['quote'])}</blockquote></li>")
+            if "quote" in evidence:
+                support = f"<blockquote>{html.escape(evidence['quote'])}</blockquote>"
+            else:
+                support = ("<p><strong>Source assertion:</strong> "
+                           f"{html.escape(evidence['source_assertion'])}</p>")
+            if evidence.get("source_locator"):
+                support += ("<details><summary>Source location</summary><code>"
+                            f"{html.escape(evidence['source_locator'])}</code></details>")
+            citations.append(f"<li>{citation}{support}</li>")
         description = html.escape(edge.get("description", ""))
         rows.append(f"<tr><td>{endpoint(edge['subject'])}</td>"
                     f"<td>{html.escape(edge['predicate'])}<p>{description}</p></td>"
@@ -826,7 +853,9 @@ def _record_page(record: object, source_path: str | None = None) -> str:
         details = " — ".join(html.escape(ref[field])
                              for field in ("title", "citation") if ref.get(field))
         identifier = html.escape(ref["id"])
-        source_url = _reference_url(ref["id"])
+        source_url = ref.get("url") or _reference_url(ref["id"])
+        if ref.get("source_version"):
+            details += f" (source version: {html.escape(ref['source_version'])})"
         reference = (f'<a href="{html.escape(source_url)}">{identifier}</a>'
                      if source_url else identifier)
         cited.append(f'<li id="{ref_anchors[ref["id"]]}"><code>{reference}</code> {details}</li>')
@@ -839,7 +868,8 @@ def _record_page(record: object, source_path: str | None = None) -> str:
     return _page(
         record.label,
         f"<p><code>{identifier}</code></p><p>{html.escape(record.description)}</p>"
-        f"{provenance}<h2>Mechanistic edges</h2>{edges}{clusters}{reference_section}",
+        f"{provenance}{component_section}<h2>Mechanistic edges</h2>"
+        f"{edges}{clusters}{reference_section}",
         stylesheet_href="../style.css",
     )
 

@@ -51,7 +51,11 @@ Each `mechanistic_edges` entry must:
 - use a predicate from the local schema;
 - connect nodes declared in the same record;
 - cite at least one `references` entry by `reference_id`;
-- quote only short supporting snippets.
+- use short verbatim quotations or traceable structured-source assertions.
+
+See `docs/CAUSAL_GRAPHS.md` for component scope, cofactor and compartment
+relations, source coverage, and the distinction between quotations and
+structured database assertions.
 
 Records must fit the closed LinkML schema in
 `src/pathwaymech/schema/pathwaymech.yaml`: a key it does not declare is an

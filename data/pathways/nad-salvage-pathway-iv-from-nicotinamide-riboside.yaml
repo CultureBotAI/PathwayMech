@@ -10,197 +10,383 @@ taxa:
 participants:
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
 - id: CHEBI:29888
   label: diphosphoric acid
+  category: small_molecule
 - id: CHEBI:14649
   label: NMN(-)
+  category: small_molecule
 - id: SGD:S000005073
   label: NRK1 Scer
+  category: protein
 - id: CHEBI:57540
   label: NAD(1-)
+  category: small_molecule
 - id: CHEBI:15927
   label: N-ribosylnicotinamide
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP(4-)
+  category: small_molecule
 - id: SGD:S000004320
   label: NMA1 Scer
+  category: protein
+- id: GO:0034355
+  label: NAD+ biosynthetic process via the salvage pathway
+  category: biological_process
 - id: CHEBI:456216
   label: ADP(3-)
+  category: small_molecule
 - id: SGD:S000003242
   label: NMA2 Scer
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
 reactions:
-- id: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
-  label: "1-(\u03B2-D ribofuranosyl)nicotinamide + ATP -> \u03B2-nicotinamide D-ribonucleotide\
-    \ + ADP + H<SUP>+</SUP>"
 - id: gomodel:2.7.7.1-RXN
-  label: "\u03B2-nicotinamide D-ribonucleotide + ATP + H<SUP>+</SUP> -> NAD<sup>+</sup>\
-    \ + diphosphate"
+  label: β-nicotinamide D-ribonucleotide + ATP + H<SUP>+</SUP> -> NAD<sup>+</sup> + diphosphate
+  category: molecular_activity
+- id: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  label: 1-(β-D ribofuranosyl)nicotinamide + ATP -> β-nicotinamide D-ribonucleotide + ADP
+    + H<SUP>+</SUP>
+  category: molecular_activity
 - id: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
   label: nicotinamide-nucleotide adenylyltransferase activity
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_15378_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN RO:0002234
+      gomodel:CHEBI_15378_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/0; endpoint types: /individuals/10/type;
+      /individuals/2/type'
 - id: edge-002
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:2.7.7.1-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_2.7.7.1-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_15378_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-003
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000918"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000918","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-004
   subject: gomodel:2.7.7.1-RXN
-  predicate: produces
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN RO:0002233 gomodel:CHEBI_15378_2.7.7.1-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/1; endpoint types: /individuals/28/type;
+      /individuals/1/type'
+- id: edge-003
+  subject: gomodel:2.7.7.1-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN BFO:0000066 gomodel:reaction_2.7.7.1-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/2; endpoint types: /individuals/28/type;
+      /individuals/26/type'
+- id: edge-004
+  subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      RO:0002233 gomodel:YeastPathways_PWY3O-4106/6a46ef0600000918.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/3; endpoint types: /individuals/30/type;
+      /individuals/31/type'
+- id: edge-005
+  subject: gomodel:2.7.7.1-RXN
+  predicate: has_output
   object: CHEBI:29888
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_2.7.7.1-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_29888_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:29888"'
-- id: edge-005
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN RO:0002234 gomodel:CHEBI_29888_2.7.7.1-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/4; endpoint types: /individuals/28/type;
+      /individuals/4/type'
+- id: edge-006
   subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:14649
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:14649"'
-- id: edge-006
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN RO:0002234
+      gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/5; endpoint types: /individuals/10/type;
+      /individuals/0/type'
+- id: edge-007
   subject: SGD:S000005073
   predicate: enables
   object: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-4139_RIBOSYLNICOTINAMIDE-KINASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:MONOMER3O-4139_RIBOSYLNICOTINAMIDE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000005073"'
-- id: edge-007
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN RO:0002333
+      gomodel:MONOMER3O-4139_RIBOSYLNICOTINAMIDE-KINASE-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/6; endpoint types: /individuals/10/type;
+      /individuals/9/type'
+- id: edge-008
   subject: gomodel:2.7.7.1-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57540
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57540_2.7.7.1-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_57540_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:57540"'
-- id: edge-008
-  subject: CHEBI:15927
-  predicate: consumes
-  object: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15927_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_15927_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15927"'
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN RO:0002234 gomodel:CHEBI_57540_2.7.7.1-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/7; endpoint types: /individuals/28/type;
+      /individuals/8/type'
 - id: edge-009
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: has_input
+  object: CHEBI:15927
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000919"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000919","type":[{"type":"class","id":"CHEBI:30616"'
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN RO:0002233
+      gomodel:CHEBI_15927_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/8; endpoint types: /individuals/10/type;
+      /individuals/3/type'
 - id: edge-010
+  subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      RO:0002233 gomodel:YeastPathways_PWY3O-4106/6a46ef0600000919.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/9; endpoint types: /individuals/30/type;
+      /individuals/32/type'
+- id: edge-011
   subject: SGD:S000004320
   predicate: enables
   object: gomodel:2.7.7.1-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR328W-MONOMER_2.7.7.1-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:YLR328W-MONOMER_2.7.7.1-RXN_controller","type":[{"type":"class","id":"SGD:S000004320"'
-- id: edge-011
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:2.7.7.1-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_2.7.7.1-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_30616_2.7.7.1-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN RO:0002333 gomodel:YLR328W-MONOMER_2.7.7.1-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/10; endpoint types: /individuals/28/type;
+      /individuals/11/type'
 - id: edge-012
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  subject: gomodel:2.7.7.1-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN RO:0002233 gomodel:CHEBI_30616_2.7.7.1-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/11; endpoint types: /individuals/28/type;
+      /individuals/5/type'
+- id: edge-014
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_30616_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN RO:0002233
+      gomodel:CHEBI_30616_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/13; endpoint types: /individuals/10/type;
+      /individuals/6/type'
+- id: edge-015
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4106
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN BFO:0000066
+      gomodel:reaction_RIBOSYLNICOTINAMIDE-KINASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/14; endpoint types: /individuals/10/type;
+      /individuals/27/type'
+- id: edge-016
   subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57540
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000921"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000921","type":[{"type":"class","id":"CHEBI:57540"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      RO:0002234 gomodel:YeastPathways_PWY3O-4106/6a46ef0600000921.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/15; endpoint types: /individuals/30/type;
+      /individuals/34/type'
+- id: edge-017
   subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
-  predicate: produces
+  predicate: has_output
   object: CHEBI:29888
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000920"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000920","type":[{"type":"class","id":"CHEBI:29888"'
-- id: edge-015
-  subject: CHEBI:14649
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      RO:0002234 gomodel:YeastPathways_PWY3O-4106/6a46ef0600000920.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/16; endpoint types: /individuals/30/type;
+      /individuals/33/type'
+- id: edge-018
+  subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  predicate: has_input
+  object: CHEBI:14649
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      RO:0002233 gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/17; endpoint types: /individuals/30/type;
+      /individuals/0/type'
+- id: edge-019
+  subject: gomodel:2.7.7.1-RXN
+  predicate: part_of
+  object: GO:0034355
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:14649"'
-- id: edge-016
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN BFO:0000050 gomodel:YeastPathways_PWY3O-4106/YeastPathways_PWY3O-4106.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/18; endpoint types: /individuals/28/type;
+      /individuals/29/type'
+- id: edge-020
   subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN RO:0002234
+      gomodel:CHEBI_456216_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/19; endpoint types: /individuals/10/type;
+      /individuals/7/type'
+- id: edge-021
+  subject: gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN
+  predicate: part_of
+  object: GO:0034355
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_456216_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-017
+    source_assertion: The model asserts gomodel:RIBOSYLNICOTINAMIDE-KINASE-RXN BFO:0000050
+      gomodel:YeastPathways_PWY3O-4106/YeastPathways_PWY3O-4106.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/20; endpoint types: /individuals/10/type;
+      /individuals/29/type'
+- id: edge-022
   subject: SGD:S000003242
   predicate: enables
   object: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000923"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4106/6a46ef0600000923","type":[{"type":"class","id":"SGD:S000003242"'
-- id: edge-018
-  subject: CHEBI:14649
-  predicate: consumes
-  object: gomodel:2.7.7.1-RXN
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      RO:0002333 gomodel:YeastPathways_PWY3O-4106/6a46ef0600000923.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/21; endpoint types: /individuals/30/type;
+      /individuals/35/type'
+- id: edge-023
+  subject: gomodel:2.7.7.1-RXN
+  predicate: has_input
+  object: CHEBI:14649
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"subject":"gomodel:2.7.7.1-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:2.7.7.1-RXN RO:0002233 gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/22; endpoint types: /individuals/28/type;
+      /individuals/0/type'
+- id: edge-024
+  subject: gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+  predicate: part_of
+  object: GO:0034355
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4106
-    quote: '"id":"gomodel:CHEBI_14649_RIBOSYLNICOTINAMIDE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:14649"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-4106/6a46ef0600000917
+      BFO:0000050 gomodel:YeastPathways_PWY3O-4106/YeastPathways_PWY3O-4106.
+    source_locator: './YeastPathways_PWY3O-4106.json#/facts/23; endpoint types: /individuals/30/type;
+      /individuals/29/type'
+- id: location-468dc09ff1ce
+  subject: SGD:S000004320
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:Q06178
+    source_assertion: UniProtKB:Q06178 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2726/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q06178
+    source_assertion: UniProtKB:Q06178 has the exact SGD cross-reference SGD:S000004320.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2726/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-cd3f40d8ca41
+  subject: SGD:S000004320
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:Q06178
+    source_assertion: UniProtKB:Q06178 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2726/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q06178
+    source_assertion: UniProtKB:Q06178 has the exact SGD cross-reference SGD:S000004320.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2726/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-e5c3511bf090
+  subject: SGD:S000003242
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:11884393)
+  evidence:
+  - reference_id: UniProtKB:P53204
+    source_assertion: UniProtKB:P53204 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2159/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P53204
+    source_assertion: UniProtKB:P53204 has the exact SGD cross-reference SGD:S000003242.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2159/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-def4425deb9f
+  subject: SGD:S000004320
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:10428462) Divalent metal cation. UniProt note evidence: ECO:0000269 (PubMed:10428462)'
+  evidence:
+  - reference_id: UniProtKB:Q06178
+    source_assertion: UniProtKB:Q06178 annotates CHEBI:49786 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2726/comments/0/cofactors/0;
+      /results/2726/comments/0/note'
+  - reference_id: UniProtKB:Q06178
+    source_assertion: UniProtKB:Q06178 has the exact SGD cross-reference SGD:S000004320.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2726/uniProtKBCrossReferences/0'
+- id: cofactor-d2f2e51cfdb3
+  subject: SGD:S000003242
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:12597897) Divalent metal cation. UniProt note evidence: ECO:0000269 (PubMed:12597897)'
+  evidence:
+  - reference_id: UniProtKB:P53204
+    source_assertion: UniProtKB:P53204 annotates CHEBI:48828 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2159/comments/0/cofactors/0;
+      /results/2159/comments/0/note'
+  - reference_id: UniProtKB:P53204
+    source_assertion: UniProtKB:P53204 has the exact SGD cross-reference SGD:S000003242.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2159/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY3O-4106
-  title: 'SGD GO-CAM NAD salvage pathway IV (from nicotinamide riboside) - imported
-    from: Saccharomyces Genome Database'
+  title: 'SGD GO-CAM NAD salvage pathway IV (from nicotinamide riboside) - imported from:
+    Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-06; member ./YeastPathways_PWY3O-4106.json
+- id: UniProtKB:Q06178
+  title: Reviewed UniProtKB Q06178 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P53204
+  title: Reviewed UniProtKB P53204 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

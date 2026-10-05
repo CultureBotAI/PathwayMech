@@ -1,8 +1,8 @@
 id: MetaCyc:ARABCAT-PWY
 label: L-arabinose degradation I
-description: L-arabinose degradation I isomerizes beta-L-arabinopyranose to L-ribulose,
-  phosphorylates L-ribulose with ATP to form L-ribulose 5-phosphate, and epimerizes
-  that phosphoketose to D-xylulose 5-phosphate for entry into pentose phosphate metabolism.
+description: L-arabinose degradation I isomerizes beta-L-arabinopyranose to L-ribulose, phosphorylates
+  L-ribulose with ATP to form L-ribulose 5-phosphate, and epimerizes that phosphoketose to D-xylulose
+  5-phosphate for entry into pentose phosphate metabolism.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:562
@@ -10,147 +10,317 @@ taxa:
 participants:
 - id: EC:5.3.1.4
   label: L-arabinose isomerase
+  category: molecular_activity
 - id: EC:2.7.1.16
   label: ribulokinase
+  category: molecular_activity
 - id: EC:5.1.3.4
   label: L-ribulose-5-phosphate 4-epimerase
+  category: molecular_activity
 - id: CHEBI:40886
   label: beta-L-arabinopyranose
+  category: small_molecule
 - id: CHEBI:16880
   label: L-ribulose
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:58226
   label: L-ribulose 5-phosphate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:57737
   label: D-xylulose 5-phosphate
+  category: small_molecule
+- id: UniProtKB:P08202
+  label: L-arabinose isomerase
+  category: protein
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: UniProtKB:P08203
+  label: L-ribulose-5-phosphate 4-epimerase AraD
+  category: protein
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P08204
+  label: Ribulokinase
+  category: protein
+- id: UniProtKB:P37680
+  label: L-ribulose-5-phosphate 4-epimerase SgbE
+  category: protein
+- id: UniProtKB:P39306
+  label: L-ribulose-5-phosphate 4-epimerase UlaF
+  category: protein
 reactions:
-- id: RHEA:14824
-  label: L-arabinose isomerase reaction
 - id: RHEA:22073
   label: ribulokinase reaction
-- id: RHEA:22371
+  direction: left_to_right
+- id: RHEA:14822
+  label: L-arabinose isomerase reaction
+  direction: left_to_right
+- id: RHEA:22369
   label: L-ribulose-5-phosphate 4-epimerase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:5.3.1.4
-  predicate: catalyzes
-  object: RHEA:14824
-  evidence:
-  - reference_id: RHEA:14821
-    quote: L-arabinose isomerase catalyzes L-arabinose isomerase reaction.
-- id: edge-002
-  subject: CHEBI:40886
-  predicate: consumes
-  object: RHEA:14824
-  evidence:
-  - reference_id: RHEA:14824
-    quote: RHEA:14824 beta-L-arabinopyranose <=> L-ribulose
-- id: edge-003
-  subject: RHEA:14824
-  predicate: produces
-  object: CHEBI:16880
-  evidence:
-  - reference_id: RHEA:14824
-    quote: RHEA:14824 beta-L-arabinopyranose <=> L-ribulose
-- id: edge-004
-  subject: RHEA:14824
-  predicate: precedes
-  object: RHEA:22073
-  evidence:
-  - reference_id: RHEA:14824
-    quote: RHEA:14824 beta-L-arabinopyranose <=> L-ribulose
-  - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-- id: edge-005
-  subject: EC:2.7.1.16
-  predicate: catalyzes
-  object: RHEA:22073
-  evidence:
-  - reference_id: RHEA:22072
-    quote: ribulokinase catalyzes ribulokinase reaction.
-- id: edge-006
   subject: CHEBI:16880
   predicate: consumes
   object: RHEA:22073
   evidence:
   - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-- id: edge-007
+    source_assertion: Rhea lists CHEBI:16880 on the substrates side of RHEA:22073 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22073']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:22073
   evidence:
   - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-- id: edge-008
-  subject: RHEA:22073
-  predicate: produces
-  object: CHEBI:58226
-  evidence:
-  - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-- id: edge-009
-  subject: RHEA:22073
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-- id: edge-010
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:22073 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22073']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
   subject: RHEA:22073
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-- id: edge-011
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:22073 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22073']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
   subject: RHEA:22073
-  predicate: precedes
-  object: RHEA:22371
+  predicate: produces
+  object: CHEBI:456216
   evidence:
   - reference_id: RHEA:22073
-    quote: RHEA:22073 L-ribulose + ATP => L-ribulose 5-phosphate + ADP + H(+)
-  - reference_id: RHEA:22371
-    quote: RHEA:22371 L-ribulose 5-phosphate <=> D-xylulose 5-phosphate
-- id: edge-012
-  subject: EC:5.1.3.4
-  predicate: catalyzes
-  object: RHEA:22371
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:22073 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22073']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: RHEA:22073
+  predicate: produces
+  object: CHEBI:58226
   evidence:
-  - reference_id: RHEA:22368
-    quote: L-ribulose-5-phosphate 4-epimerase catalyzes L-ribulose-5-phosphate 4-epimerase
-      reaction.
-- id: edge-013
+  - reference_id: RHEA:22073
+    source_assertion: Rhea lists CHEBI:58226 on the products side of RHEA:22073 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22073']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:40886
+  predicate: consumes
+  object: RHEA:14822
+  evidence:
+  - reference_id: RHEA:14822
+    source_assertion: Rhea lists CHEBI:40886 on the substrates side of RHEA:14822 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14822']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:14822
+  predicate: produces
+  object: CHEBI:16880
+  evidence:
+  - reference_id: RHEA:14822
+    source_assertion: Rhea lists CHEBI:16880 on the products side of RHEA:14822 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14822']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
   subject: CHEBI:58226
   predicate: consumes
-  object: RHEA:22371
+  object: RHEA:22369
   evidence:
-  - reference_id: RHEA:22371
-    quote: RHEA:22371 L-ribulose 5-phosphate <=> D-xylulose 5-phosphate
-- id: edge-014
-  subject: RHEA:22371
+  - reference_id: RHEA:22369
+    source_assertion: Rhea lists CHEBI:58226 on the substrates side of RHEA:22369 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22369']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: RHEA:22369
   predicate: produces
   object: CHEBI:57737
   evidence:
-  - reference_id: RHEA:22371
-    quote: RHEA:22371 L-ribulose 5-phosphate <=> D-xylulose 5-phosphate
+  - reference_id: RHEA:22369
+    source_assertion: Rhea lists CHEBI:57737 on the products side of RHEA:22369 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22369']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: EC:5.3.1.4
+  predicate: catalyzes
+  object: RHEA:14822
+  evidence:
+  - reference_id: RHEA:14821
+    source_assertion: Rhea associates EC:5.3.1.4 with the reaction family containing RHEA:14822.
+    source_locator: rh:ec
+- id: edge-011
+  subject: EC:2.7.1.16
+  predicate: catalyzes
+  object: RHEA:22073
+  evidence:
+  - reference_id: RHEA:22072
+    source_assertion: Rhea associates EC:2.7.1.16 with the reaction family containing RHEA:22073.
+    source_locator: rh:ec
+- id: edge-012
+  subject: EC:5.1.3.4
+  predicate: catalyzes
+  object: RHEA:22369
+  evidence:
+  - reference_id: RHEA:22368
+    source_assertion: Rhea associates EC:5.1.3.4 with the reaction family containing RHEA:22369.
+    source_locator: rh:ec
+- id: edge-013
+  subject: RHEA:14822
+  predicate: precedes
+  object: RHEA:22073
+  evidence:
+  - reference_id: MetaCyc:ARABCAT-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:14822 before RHEA:22073 in this pathway. Shared
+      intermediate: CHEBI:16880.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-014
+  subject: RHEA:22073
+  predicate: precedes
+  object: RHEA:22369
+  evidence:
+  - reference_id: MetaCyc:ARABCAT-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:22073 before RHEA:22369 in this pathway. Shared
+      intermediate: CHEBI:58226.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-015
+  subject: UniProtKB:P08202
+  predicate: enables
+  object: RHEA:14822
+  evidence:
+  - reference_id: UniProtKB:P08202
+    source_assertion: 'UniProt annotates UniProtKB:P08202 with catalytic activity for the reaction family
+      of RHEA:14822. Annotation evidence: curated source annotation; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-016
+  subject: UniProtKB:P08202
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:P08202
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P08202 (evidence: curated
+      annotation). Binds 1 Mn(2+) ion per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-017
+  subject: UniProtKB:P08203
+  predicate: enables
+  object: RHEA:22369
+  evidence:
+  - reference_id: UniProtKB:P08203
+    source_assertion: 'UniProt annotates UniProtKB:P08203 with catalytic activity for the reaction family
+      of RHEA:22369. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-018
+  subject: UniProtKB:P08203
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P08203
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P08203 (evidence: ECO:0000255,
+      ECO:0000269). Binds 1 zinc ion per subunit (PubMed:10769139, PubMed:11732895, PubMed:11732896, PubMed:9548961).
+      Also able to use cobalt and manganese ions, but less efficiently (PubMed:10769139).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-019
+  subject: UniProtKB:P08204
+  predicate: enables
+  object: RHEA:22073
+  evidence:
+  - reference_id: UniProtKB:P08204
+    source_assertion: 'UniProt annotates UniProtKB:P08204 with catalytic activity for the reaction family
+      of RHEA:22073. Annotation evidence: curated source annotation; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-020
+  subject: UniProtKB:P37680
+  predicate: enables
+  object: RHEA:22369
+  evidence:
+  - reference_id: UniProtKB:P37680
+    source_assertion: 'UniProt annotates UniProtKB:P37680 with catalytic activity for the reaction family
+      of RHEA:22369. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-021
+  subject: UniProtKB:P37680
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P37680
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P37680 (evidence: ECO:0000250).
+      Binds 1 zinc ion per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-022
+  subject: UniProtKB:P39306
+  predicate: enables
+  object: RHEA:22369
+  evidence:
+  - reference_id: UniProtKB:P39306
+    source_assertion: 'UniProt annotates UniProtKB:P39306 with catalytic activity for the reaction family
+      of RHEA:22369. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-023
+  subject: UniProtKB:P39306
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P39306
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P39306 (evidence: ECO:0000250,
+      ECO:0000255). Binds 1 zinc ion per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
 references:
 - id: MetaCyc:ARABCAT-PWY
   title: MetaCyc L-arabinose degradation I
+  url: https://pathway.yeastgenome.org/getxml?id=META:ARABCAT-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 4ae7b870e017c650735f464954c905aade143d619ca16c29e9789f9171fb6e66
 - id: RHEA:14821
   title: Rhea L-arabinose isomerase reaction
+  url: https://www.rhea-db.org/rhea/14821
+  source_version: '139'
 - id: RHEA:14824
   title: Rhea bidirectional L-arabinose isomerase reaction
+  url: https://www.rhea-db.org/rhea/14824
+  source_version: '139'
 - id: RHEA:22072
   title: Rhea ribulokinase reaction
+  url: https://www.rhea-db.org/rhea/22072
+  source_version: '139'
 - id: RHEA:22073
   title: Rhea L-ribulose-5-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/22073
+  source_version: '139'
 - id: RHEA:22368
   title: Rhea L-ribulose-5-phosphate 4-epimerase reaction
+  url: https://www.rhea-db.org/rhea/22368
+  source_version: '139'
 - id: RHEA:22371
   title: Rhea bidirectional L-ribulose-5-phosphate 4-epimerase reaction
+  url: https://www.rhea-db.org/rhea/22371
+  source_version: '139'
+- id: RHEA:14822
+  title: RHEA:14822 authority record
+  url: https://www.rhea-db.org/rhea/14822
+  source_version: '139'
+- id: RHEA:22369
+  title: RHEA:22369 authority record
+  url: https://www.rhea-db.org/rhea/22369
+  source_version: '139'
+- id: UniProtKB:P08202
+  title: UniProtKB:P08202 authority record
+  url: https://rest.uniprot.org/uniprotkb/P08202.json
+  source_version: '2026_03'
+- id: UniProtKB:P08203
+  title: UniProtKB:P08203 authority record
+  url: https://rest.uniprot.org/uniprotkb/P08203.json
+  source_version: '2026_03'
+- id: UniProtKB:P08204
+  title: UniProtKB:P08204 authority record
+  url: https://rest.uniprot.org/uniprotkb/P08204.json
+  source_version: '2026_03'
+- id: UniProtKB:P37680
+  title: UniProtKB:P37680 authority record
+  url: https://rest.uniprot.org/uniprotkb/P37680.json
+  source_version: '2026_03'
+- id: UniProtKB:P39306
+  title: UniProtKB:P39306 authority record
+  url: https://rest.uniprot.org/uniprotkb/P39306.json
+  source_version: '2026_03'

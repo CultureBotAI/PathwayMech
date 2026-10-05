@@ -1,146 +1,245 @@
 id: MetaCyc:PWY0-1312
 label: acetate and ATP formation from acetyl-CoA I
-description: >-
-  Acetate and ATP formation from acetyl-CoA I converts acetyl-CoA to acetate
-  through acetyl phosphate while producing ATP from ADP.
+description: Acetate and ATP formation from acetyl-CoA I converts acetyl-CoA to acetate through acetyl
+  phosphate while producing ATP from ADP.
 pathway_type: fermentation
 taxa:
-  - id: NCBITaxon:2336
-    label: Thermotoga maritima
+- id: NCBITaxon:2336
+  label: Thermotoga maritima
 participants:
-  - id: EC:2.3.1.8
-    label: phosphate acetyltransferase
-  - id: EC:2.7.2.1
-    label: acetate kinase
-  - id: CHEBI:57288
-    label: acetyl-CoA
-  - id: CHEBI:43474
-    label: phosphate
-  - id: CHEBI:22191
-    label: acetyl phosphate
-  - id: CHEBI:57287
-    label: CoA
-  - id: CHEBI:456216
-    label: ADP
-  - id: CHEBI:30089
-    label: acetate
-  - id: CHEBI:30616
-    label: ATP
+- id: EC:2.3.1.8
+  label: phosphate acetyltransferase
+  category: molecular_activity
+- id: EC:2.7.2.1
+  label: acetate kinase
+  category: molecular_activity
+- id: CHEBI:57288
+  label: acetyl-CoA
+  category: small_molecule
+- id: CHEBI:43474
+  label: phosphate
+  category: small_molecule
+- id: CHEBI:22191
+  label: acetyl phosphate
+  category: small_molecule
+- id: CHEBI:57287
+  label: CoA
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP
+  category: small_molecule
+- id: CHEBI:30089
+  label: acetate
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP
+  category: small_molecule
+- id: UniProtKB:Q9WYB1
+  label: Acetate kinase
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: UniProtKB:Q9X0L4
+  label: Phosphate acetyltransferase
+  category: protein
 reactions:
-  - id: RHEA:19522
-    label: phosphate acetyltransferase reaction
-  - id: RHEA:11354
-    label: acetate kinase reaction
+- id: RHEA:19522
+  label: phosphate acetyltransferase reaction
+  direction: left_to_right
+- id: RHEA:11354
+  label: acetate kinase reaction
+  direction: right_to_left
 mechanistic_edges:
-  - id: edge-001
-    subject: EC:2.3.1.8
-    predicate: catalyzes
-    object: RHEA:19522
-    evidence:
-      - reference_id: RHEA:19521
-        quote: "EC 2.3.1.8 phosphate acetyltransferase"
-      - reference_id: PMID:10074080
-        quote: >-
-          Phosphate acetyltransferase (PTA) and acetate kinase (AK) of the
-          hyperthermophilic eubacterium Thermotoga maritima have been purified
-          1,500- and 250-fold, respectively, to apparent homogeneity.
-  - id: edge-002
-    subject: CHEBI:57288
-    predicate: consumes
-    object: RHEA:19522
-    evidence:
-      - reference_id: RHEA:19522
-        quote: "RHEA:19522 acetyl-CoA + phosphate => acetyl phosphate + CoA"
-  - id: edge-003
-    subject: CHEBI:43474
-    predicate: consumes
-    object: RHEA:19522
-    evidence:
-      - reference_id: RHEA:19522
-        quote: "RHEA:19522 acetyl-CoA + phosphate => acetyl phosphate + CoA"
-  - id: edge-004
-    subject: RHEA:19522
-    predicate: produces
-    object: CHEBI:22191
-    evidence:
-      - reference_id: RHEA:19522
-        quote: "RHEA:19522 acetyl-CoA + phosphate => acetyl phosphate + CoA"
-  - id: edge-005
-    subject: RHEA:19522
-    predicate: produces
-    object: CHEBI:57287
-    evidence:
-      - reference_id: RHEA:19522
-        quote: "RHEA:19522 acetyl-CoA + phosphate => acetyl phosphate + CoA"
-  - id: edge-006
-    subject: RHEA:19522
-    predicate: precedes
-    object: RHEA:11354
-    evidence:
-      - reference_id: RHEA:19522
-        quote: "RHEA:19522 acetyl-CoA + phosphate => acetyl phosphate + CoA"
-      - reference_id: RHEA:11354
-        quote: "RHEA:11354 acetyl phosphate + ADP => acetate + ATP"
-      - reference_id: PMID:10074080
-        quote: >-
-          The kinetic constants of the reversible enzyme reaction (acetyl-CoA +
-          Pi -->/<-- acetyl phosphate + CoA) were determined at the pH optimum
-          of pH 6.5.
-      - reference_id: PMID:10074080
-        quote: >-
-          The kinetic constants of the reversible enzyme reaction (acetyl
-          phosphate + ADP -->/<-- acetate + ATP) were determined at the pH
-          optimum of pH 7.0.
-  - id: edge-007
-    subject: EC:2.7.2.1
-    predicate: catalyzes
-    object: RHEA:11354
-    evidence:
-      - reference_id: RHEA:11352
-        quote: "EC 2.7.2.1 acetate kinase"
-      - reference_id: PMID:10074080
-        quote: >-
-          Phosphate acetyltransferase (PTA) and acetate kinase (AK) of the
-          hyperthermophilic eubacterium Thermotoga maritima have been purified
-          1,500- and 250-fold, respectively, to apparent homogeneity.
-  - id: edge-008
-    subject: CHEBI:22191
-    predicate: consumes
-    object: RHEA:11354
-    evidence:
-      - reference_id: RHEA:11354
-        quote: "RHEA:11354 acetyl phosphate + ADP => acetate + ATP"
-  - id: edge-009
-    subject: CHEBI:456216
-    predicate: consumes
-    object: RHEA:11354
-    evidence:
-      - reference_id: RHEA:11354
-        quote: "RHEA:11354 acetyl phosphate + ADP => acetate + ATP"
-  - id: edge-010
-    subject: RHEA:11354
-    predicate: produces
-    object: CHEBI:30089
-    evidence:
-      - reference_id: RHEA:11354
-        quote: "RHEA:11354 acetyl phosphate + ADP => acetate + ATP"
-  - id: edge-011
-    subject: RHEA:11354
-    predicate: produces
-    object: CHEBI:30616
-    evidence:
-      - reference_id: RHEA:11354
-        quote: "RHEA:11354 acetyl phosphate + ADP => acetate + ATP"
+- id: edge-001
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:19522
+  evidence:
+  - reference_id: RHEA:19522
+    source_assertion: Rhea lists CHEBI:43474 on the substrates side of RHEA:19522 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19522']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
+  subject: CHEBI:57288
+  predicate: consumes
+  object: RHEA:19522
+  evidence:
+  - reference_id: RHEA:19522
+    source_assertion: Rhea lists CHEBI:57288 on the substrates side of RHEA:19522 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19522']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
+  subject: RHEA:19522
+  predicate: produces
+  object: CHEBI:22191
+  evidence:
+  - reference_id: RHEA:19522
+    source_assertion: Rhea lists CHEBI:22191 on the products side of RHEA:19522 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19522']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
+  subject: RHEA:19522
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:19522
+    source_assertion: Rhea lists CHEBI:57287 on the products side of RHEA:19522 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19522']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: CHEBI:22191
+  predicate: consumes
+  object: RHEA:11354
+  evidence:
+  - reference_id: RHEA:11354
+    source_assertion: Rhea lists CHEBI:22191 on the substrates side of RHEA:11354 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11354']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:456216
+  predicate: consumes
+  object: RHEA:11354
+  evidence:
+  - reference_id: RHEA:11354
+    source_assertion: Rhea lists CHEBI:456216 on the substrates side of RHEA:11354 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11354']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:11354
+  predicate: produces
+  object: CHEBI:30089
+  evidence:
+  - reference_id: RHEA:11354
+    source_assertion: Rhea lists CHEBI:30089 on the products side of RHEA:11354 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11354']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:11354
+  predicate: produces
+  object: CHEBI:30616
+  evidence:
+  - reference_id: RHEA:11354
+    source_assertion: Rhea lists CHEBI:30616 on the products side of RHEA:11354 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11354']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: EC:2.3.1.8
+  predicate: catalyzes
+  object: RHEA:19522
+  evidence:
+  - reference_id: RHEA:19521
+    source_assertion: Rhea associates EC:2.3.1.8 with the reaction family containing RHEA:19522.
+    source_locator: rh:ec
+  - reference_id: PMID:10074080
+    quote: Phosphate acetyltransferase (PTA) and acetate kinase (AK) of the hyperthermophilic eubacterium
+      Thermotoga maritima have been purified 1,500- and 250-fold, respectively, to apparent homogeneity.
+    source_locator: PubMed Abstract
+- id: edge-010
+  subject: EC:2.7.2.1
+  predicate: catalyzes
+  object: RHEA:11354
+  evidence:
+  - reference_id: RHEA:11352
+    source_assertion: Rhea associates EC:2.7.2.1 with the reaction family containing RHEA:11354.
+    source_locator: rh:ec
+  - reference_id: PMID:10074080
+    quote: Phosphate acetyltransferase (PTA) and acetate kinase (AK) of the hyperthermophilic eubacterium
+      Thermotoga maritima have been purified 1,500- and 250-fold, respectively, to apparent homogeneity.
+    source_locator: PubMed Abstract
+- id: edge-011
+  subject: RHEA:19522
+  predicate: precedes
+  object: RHEA:11354
+  evidence:
+  - reference_id: MetaCyc:PWY0-1312
+    source_assertion: 'MetaCyc pathway ordering places RHEA:19522 before RHEA:11354 in this pathway. Shared
+      intermediate: CHEBI:22191.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-012
+  subject: UniProtKB:Q9WYB1
+  predicate: enables
+  object: RHEA:11354
+  evidence:
+  - reference_id: UniProtKB:Q9WYB1
+    source_assertion: 'UniProt annotates UniProtKB:Q9WYB1 with catalytic activity for the reaction family
+      of RHEA:11354. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:243274.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-013
+  subject: UniProtKB:Q9WYB1
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:Q9WYB1
+    source_assertion: 'UniProt locates UniProtKB:Q9WYB1 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-014
+  subject: UniProtKB:Q9WYB1
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:Q9WYB1
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:Q9WYB1 (evidence: ECO:0000255,
+      ECO:0000269). Mg(2+). Can also accept Mn(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-015
+  subject: UniProtKB:Q9WYB1
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:Q9WYB1
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:Q9WYB1 (evidence: ECO:0000255,
+      ECO:0000269). Mg(2+). Can also accept Mn(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-016
+  subject: UniProtKB:Q9X0L4
+  predicate: enables
+  object: RHEA:19522
+  evidence:
+  - reference_id: UniProtKB:Q9X0L4
+    source_assertion: 'UniProt annotates UniProtKB:Q9X0L4 with catalytic activity for the reaction family
+      of RHEA:19522. Annotation evidence: curated source annotation; organism taxon: NCBITaxon:243274.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-017
+  subject: UniProtKB:Q9X0L4
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:Q9X0L4
+    source_assertion: 'UniProt locates UniProtKB:Q9X0L4 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
 references:
-  - id: MetaCyc:PWY0-1312
-    title: MetaCyc acetate and ATP formation from acetyl-CoA I pathway
-  - id: RHEA:19521
-    title: Rhea phosphate acetyltransferase reaction
-  - id: RHEA:19522
-    title: Rhea left-to-right phosphate acetyltransferase direction
-  - id: RHEA:11352
-    title: Rhea acetate kinase reaction
-  - id: RHEA:11354
-    title: Rhea acetyl phosphate-to-acetate kinase direction
-  - id: PMID:10074080
-    citation: Bock et al., Journal of Bacteriology, 1999
+- id: MetaCyc:PWY0-1312
+  title: MetaCyc acetate and ATP formation from acetyl-CoA I pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:PWY0-1312&detail=full
+  source_version: '22.5'
+  source_sha256: a0839116193214c280c3e61b52b5599ec5aee54b619e83d1e9b3205e046431ef
+- id: RHEA:19521
+  title: Rhea phosphate acetyltransferase reaction
+  url: https://www.rhea-db.org/rhea/19521
+  source_version: '139'
+- id: RHEA:19522
+  title: Rhea left-to-right phosphate acetyltransferase direction
+  url: https://www.rhea-db.org/rhea/19522
+  source_version: '139'
+- id: RHEA:11352
+  title: Rhea acetate kinase reaction
+  url: https://www.rhea-db.org/rhea/11352
+  source_version: '139'
+- id: RHEA:11354
+  title: Rhea acetyl phosphate-to-acetate kinase direction
+  url: https://www.rhea-db.org/rhea/11354
+  source_version: '139'
+- id: PMID:10074080
+  citation: Bock et al., Journal of Bacteriology, 1999
+  url: https://pubmed.ncbi.nlm.nih.gov/10074080/
+- id: UniProtKB:Q9WYB1
+  title: UniProtKB:Q9WYB1 authority record
+  url: https://rest.uniprot.org/uniprotkb/Q9WYB1.json
+  source_version: '2026_03'
+- id: UniProtKB:Q9X0L4
+  title: UniProtKB:Q9X0L4 authority record
+  url: https://rest.uniprot.org/uniprotkb/Q9X0L4.json
+  source_version: '2026_03'

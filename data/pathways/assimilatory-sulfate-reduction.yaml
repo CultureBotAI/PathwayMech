@@ -1,7 +1,7 @@
 id: gomodel:YeastPathways_SO4ASSIM-PWY
 label: assimilatory sulfate reduction I
-description: Saccharomyces cerevisiae S288C assimilatory sulfate reduction route that
-  converts sulfate to hydrogen sulfide through adenosine 5'-phosphosulfate, 3'-phosphoadenylyl-sulfate,
+description: Saccharomyces cerevisiae S288C assimilatory sulfate reduction route that converts
+  sulfate to hydrogen sulfide through adenosine 5'-phosphosulfate, 3'-phosphoadenylyl-sulfate,
   and sulfite.
 pathway_type: metabolic
 taxa:
@@ -10,309 +10,648 @@ taxa:
 participants:
 - id: CHEBI:16136
   label: hydrogen sulfide
+  category: small_molecule
 - id: SGD:S000001484
   label: MET14 Scer
+  category: protein
 - id: CHEBI:57783
   label: NADPH(4-)
+  category: small_molecule
 - id: CHEBI:15377
   label: water
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: SGD:S000003771
   label: MET3 Scer
+  category: protein
 - id: CHEBI:17359
   label: sulfite
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0000103
+  label: sulfate assimilation
+  category: biological_process
 - id: SGD:S000217821
   label: CPX-3163 Scer
+  category: complex
 - id: CHEBI:58349
   label: NADP(3-)
+  category: small_molecule
 - id: CHEBI:58243
   label: 5'-adenylyl sulfate(2-)
+  category: small_molecule
+- id: SGD:S000001926
+  label: MET10 Scer
+  category: protein
 - id: CHEBI:15033
   label: thioredoxin
+  category: protein
 - id: CHEBI:58343
   label: adenosine 3',5'-bismonophosphate(4-)
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP(4-)
+  category: small_molecule
 - id: CHEBI:58339
   label: 3'-phosphonato-5'-adenylyl sulfate(4-)
+  category: small_molecule
+- id: SGD:S000003898
+  label: MET5 Scer
+  category: protein
 - id: CHEBI:16189
   label: sulfate
+  category: small_molecule
 - id: CHEBI:29888
   label: diphosphoric acid
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP(3-)
+  category: small_molecule
 - id: SGD:S000006371
   label: MET16 Scer
+  category: protein
+- id: CHEBI:64607
+  label: Fe4S4 iron-sulfur cluster
+  category: cofactor
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: CHEBI:58210
+  label: FMN(3-)
+  category: cofactor
+- id: CHEBI:28599
+  label: siroheme
+  category: cofactor
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:60052
+  label: siroheme(8-)
+  category: cofactor
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
 reactions:
-- id: gomodel:SULFITE-REDUCT-RXN
-  label: hydrogen sulfide + 3 NADP<sup>+</sup> + 3 H<sub>2</sub>O <- sulfite + 3 NADPH
-    + 5 H<SUP>+</SUP>
-- id: gomodel:ADENYLYLSULFKIN-RXN
-  label: adenosine 5'-phosphosulfate + ATP <=> 3'-phosphoadenylyl-sulfate + ADP +
-    H<SUP>+</SUP>
-- id: gomodel:SULFATE-ADENYLYLTRANS-RXN
-  label: sulfate + ATP + H<SUP>+</SUP> <=> adenosine 5'-phosphosulfate + diphosphate
 - id: gomodel:1.8.4.8-RXN
   label: adenosine 3',5'-bisphosphate + sulfite + an oxidized thioredoxin + 2 H<SUP>+</SUP>
     <=> 3'-phosphoadenylyl-sulfate + a reduced thioredoxin
+  category: molecular_activity
+- id: gomodel:ADENYLYLSULFKIN-RXN
+  label: adenosine 5'-phosphosulfate + ATP <=> 3'-phosphoadenylyl-sulfate + ADP + H<SUP>+</SUP>
+  category: molecular_activity
+- id: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  label: sulfate + ATP + H<SUP>+</SUP> <=> adenosine 5'-phosphosulfate + diphosphate
+  category: molecular_activity
+- id: gomodel:SULFITE-REDUCT-RXN
+  label: hydrogen sulfide + 3 NADP<sup>+</sup> + 3 H<sub>2</sub>O <- sulfite + 3 NADPH + 5
+    H<SUP>+</SUP>
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:SULFITE-REDUCT-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:16136
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16136_SULFITE-REDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_16136_SULFITE-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:16136"'
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002234 gomodel:CHEBI_16136_SULFITE-REDUCT-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/0; endpoint types: /individuals/22/type;
+      /individuals/6/type'
 - id: edge-002
   subject: SGD:S000001484
   predicate: enables
   object: gomodel:ADENYLYLSULFKIN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL001C-MONOMER_ADENYLYLSULFKIN-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:YKL001C-MONOMER_ADENYLYLSULFKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000001484"'
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002333 gomodel:YKL001C-MONOMER_ADENYLYLSULFKIN-RXN_controller.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/1; endpoint types: /individuals/0/type;
+      /individuals/24/type'
 - id: edge-003
-  subject: CHEBI:57783
-  predicate: consumes
-  object: gomodel:SULFITE-REDUCT-RXN
+  subject: gomodel:SULFITE-REDUCT-RXN
+  predicate: has_input
+  object: CHEBI:57783
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_SULFITE-REDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_57783_SULFITE-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:57783"'
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002233 gomodel:CHEBI_57783_SULFITE-REDUCT-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/2; endpoint types: /individuals/22/type;
+      /individuals/13/type'
 - id: edge-004
   subject: gomodel:SULFITE-REDUCT-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15377
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_SULFITE-REDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_15377_SULFITE-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002234 gomodel:CHEBI_15377_SULFITE-REDUCT-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/3; endpoint types: /individuals/22/type;
+      /individuals/1/type'
 - id: edge-005
   subject: gomodel:ADENYLYLSULFKIN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_ADENYLYLSULFKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_15378_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002234 gomodel:CHEBI_15378_ADENYLYLSULFKIN-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/4; endpoint types: /individuals/0/type;
+      /individuals/3/type'
 - id: edge-006
   subject: SGD:S000003771
   predicate: enables
   object: gomodel:SULFATE-ADENYLYLTRANS-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJR010W-MONOMER_SULFATE-ADENYLYLTRANS-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:YJR010W-MONOMER_SULFATE-ADENYLYLTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000003771"'
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002333 gomodel:YJR010W-MONOMER_SULFATE-ADENYLYLTRANS-RXN_controller.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/5; endpoint types: /individuals/21/type;
+      /individuals/23/type'
 - id: edge-007
   subject: gomodel:1.8.4.8-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:17359
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17359_1.8.4.8-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_17359_1.8.4.8-RXN","type":[{"type":"class","id":"CHEBI:17359"'
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002234 gomodel:CHEBI_17359_1.8.4.8-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/6; endpoint types: /individuals/60/type;
+      /individuals/8/type'
 - id: edge-008
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  subject: gomodel:1.8.4.8-RXN
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SULFATE-ADENYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_15378_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN BFO:0000066 gomodel:reaction_1.8.4.8-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/7; endpoint types: /individuals/60/type;
+      /individuals/56/type'
 - id: edge-009
   subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
-  predicate: precedes
-  object: gomodel:ADENYLYLSULFKIN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:ADENYLYLSULFKIN-RXN"'
-- id: edge-010
-  subject: gomodel:1.8.4.8-RXN
-  predicate: produces
+  predicate: has_input
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_1.8.4.8-RXN"'
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002233 gomodel:CHEBI_15378_SULFATE-ADENYLYLTRANS-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/8; endpoint types: /individuals/21/type;
+      /individuals/4/type'
+- id: edge-010
+  subject: gomodel:1.8.4.8-RXN
+  predicate: part_of
+  object: GO:0000103
+  evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_15378_1.8.4.8-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN BFO:0000050 gomodel:YeastPathways_SO4ASSIM-PWY/YeastPathways_SO4ASSIM-PWY.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/9; endpoint types: /individuals/60/type;
+      /individuals/61/type'
 - id: edge-011
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: provides_input_for
+  object: gomodel:ADENYLYLSULFKIN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002413 gomodel:ADENYLYLSULFKIN-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/10; endpoint types: /individuals/21/type;
+      /individuals/0/type'
+- id: edge-012
+  subject: gomodel:1.8.4.8-RXN
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002234 gomodel:CHEBI_15378_1.8.4.8-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/11; endpoint types: /individuals/60/type;
+      /individuals/2/type'
+- id: edge-013
+  subject: gomodel:SULFITE-REDUCT-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN BFO:0000066 gomodel:reaction_SULFITE-REDUCT-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/12; endpoint types: /individuals/22/type;
+      /individuals/59/type'
+- id: edge-014
   subject: SGD:S000217821
   predicate: enables
   object: gomodel:SULFITE-REDUCT-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:CPLX3O-23_SULFITE-REDUCT-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CPLX3O-23_SULFITE-REDUCT-RXN_controller","type":[{"type":"class","id":"SGD:S000217821"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002333 gomodel:CPLX3O-23_SULFITE-REDUCT-RXN_controller.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/13; endpoint types: /individuals/22/type;
+      /individuals/18/type'
+- id: edge-015
   subject: gomodel:SULFITE-REDUCT-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58349
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_SULFITE-REDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_58349_SULFITE-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:58349"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002234 gomodel:CHEBI_58349_SULFITE-REDUCT-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/14; endpoint types: /individuals/22/type;
+      /individuals/17/type'
+- id: edge-016
   subject: gomodel:ADENYLYLSULFKIN-RXN
-  predicate: precedes
+  predicate: provides_input_for
   object: gomodel:1.8.4.8-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:1.8.4.8-RXN"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002413 gomodel:1.8.4.8-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/15; endpoint types: /individuals/0/type;
+      /individuals/60/type'
+- id: edge-017
   subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58243
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58243"'
-- id: edge-015
-  subject: CHEBI:17359
-  predicate: consumes
-  object: gomodel:SULFITE-REDUCT-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17359_1.8.4.8-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_17359_1.8.4.8-RXN","type":[{"type":"class","id":"CHEBI:17359"'
-- id: edge-016
-  subject: CHEBI:15033
-  predicate: consumes
-  object: gomodel:1.8.4.8-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_SO4ASSIM-PWY/6a4c244800003900"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:YeastPathways_SO4ASSIM-PWY/6a4c244800003900","type":[{"type":"class","id":"CHEBI:15033"'
-- id: edge-017
-  subject: gomodel:1.8.4.8-RXN
-  predicate: produces
-  object: CHEBI:58343
-  evidence:
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58343_1.8.4.8-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_58343_1.8.4.8-RXN","type":[{"type":"class","id":"CHEBI:58343"'
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002234 gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/16; endpoint types: /individuals/21/type;
+      /individuals/14/type'
 - id: edge-018
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  subject: SGD:S000217821
+  predicate: has_part
+  object: SGD:S000001926
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_SULFATE-ADENYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_30616_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+    source_assertion: The model asserts gomodel:CPLX3O-23_SULFITE-REDUCT-RXN_controller BFO:0000051
+      gomodel:SGD_S000001926_CPLX3O-23_component.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/17; endpoint types: /individuals/18/type;
+      /individuals/19/type'
 - id: edge-019
+  subject: gomodel:SULFITE-REDUCT-RXN
+  predicate: has_input
+  object: CHEBI:17359
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002233 gomodel:CHEBI_17359_1.8.4.8-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/18; endpoint types: /individuals/22/type;
+      /individuals/8/type'
+- id: edge-020
   subject: gomodel:1.8.4.8-RXN
-  predicate: produces
+  predicate: has_input
   object: CHEBI:15033
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_SO4ASSIM-PWY/6a4c244800003901"'
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002233 gomodel:YeastPathways_SO4ASSIM-PWY/6a4c244800003900.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/19; endpoint types: /individuals/60/type;
+      /individuals/62/type'
+- id: edge-021
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:YeastPathways_SO4ASSIM-PWY/6a4c244800003901","type":[{"type":"class","id":"CHEBI:15033"'
-- id: edge-020
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN BFO:0000066 gomodel:reaction_SULFATE-ADENYLYLTRANS-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/20; endpoint types: /individuals/21/type;
+      /individuals/58/type'
+- id: edge-022
+  subject: gomodel:1.8.4.8-RXN
+  predicate: has_output
+  object: CHEBI:58343
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002234 gomodel:CHEBI_58343_1.8.4.8-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/21; endpoint types: /individuals/60/type;
+      /individuals/16/type'
+- id: edge-023
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002233 gomodel:CHEBI_30616_SULFATE-ADENYLYLTRANS-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/22; endpoint types: /individuals/21/type;
+      /individuals/11/type'
+- id: edge-024
+  subject: gomodel:1.8.4.8-RXN
+  predicate: has_output
+  object: CHEBI:15033
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002234 gomodel:YeastPathways_SO4ASSIM-PWY/6a4c244800003901.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/23; endpoint types: /individuals/60/type;
+      /individuals/63/type'
+- id: edge-025
   subject: gomodel:ADENYLYLSULFKIN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58339
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:58339"'
-- id: edge-021
-  subject: CHEBI:58243
-  predicate: consumes
-  object: gomodel:ADENYLYLSULFKIN-RXN
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002234 gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/24; endpoint types: /individuals/0/type;
+      /individuals/15/type'
+- id: edge-026
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58243"'
-- id: edge-022
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:SULFITE-REDUCT-RXN
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN BFO:0000066 gomodel:reaction_ADENYLYLSULFKIN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/25; endpoint types: /individuals/0/type;
+      /individuals/57/type'
+- id: edge-027
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: has_input
+  object: CHEBI:58243
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFITE-REDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SULFITE-REDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_15378_SULFITE-REDUCT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-023
-  subject: CHEBI:16189
-  predicate: consumes
-  object: gomodel:SULFATE-ADENYLYLTRANS-RXN
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002233 gomodel:CHEBI_58243_SULFATE-ADENYLYLTRANS-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/26; endpoint types: /individuals/0/type;
+      /individuals/14/type'
+- id: edge-028
+  subject: SGD:S000217821
+  predicate: has_part
+  object: SGD:S000003898
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16189_SULFATE-ADENYLYLTRANS-RXN"'
+    source_assertion: The model asserts gomodel:CPLX3O-23_SULFITE-REDUCT-RXN_controller BFO:0000051
+      gomodel:SGD_S000003898_CPLX3O-23_component.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/27; endpoint types: /individuals/18/type;
+      /individuals/20/type'
+- id: edge-029
+  subject: gomodel:SULFITE-REDUCT-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_16189_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:16189"'
-- id: edge-024
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN RO:0002233 gomodel:CHEBI_15378_SULFITE-REDUCT-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/28; endpoint types: /individuals/22/type;
+      /individuals/5/type'
+- id: edge-030
   subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
-  predicate: produces
+  predicate: has_input
+  object: CHEBI:16189
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002233 gomodel:CHEBI_16189_SULFATE-ADENYLYLTRANS-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/29; endpoint types: /individuals/21/type;
+      /individuals/7/type'
+- id: edge-031
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: part_of
+  object: GO:0000103
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN BFO:0000050 gomodel:YeastPathways_SO4ASSIM-PWY/YeastPathways_SO4ASSIM-PWY.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/30; endpoint types: /individuals/0/type;
+      /individuals/61/type'
+- id: edge-032
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: has_output
   object: CHEBI:29888
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:SULFATE-ADENYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_SULFATE-ADENYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_29888_SULFATE-ADENYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:29888"'
-- id: edge-025
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN RO:0002234 gomodel:CHEBI_29888_SULFATE-ADENYLYLTRANS-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/31; endpoint types: /individuals/21/type;
+      /individuals/9/type'
+- id: edge-033
   subject: gomodel:ADENYLYLSULFKIN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_ADENYLYLSULFKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_456216_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-026
-  subject: CHEBI:58339
-  predicate: consumes
-  object: gomodel:1.8.4.8-RXN
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002234 gomodel:CHEBI_456216_ADENYLYLSULFKIN-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/32; endpoint types: /individuals/0/type;
+      /individuals/12/type'
+- id: edge-034
+  subject: gomodel:1.8.4.8-RXN
+  predicate: has_input
+  object: CHEBI:58339
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:58339"'
-- id: edge-027
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:ADENYLYLSULFKIN-RXN
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002233 gomodel:CHEBI_58339_ADENYLYLSULFKIN-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/33; endpoint types: /individuals/60/type;
+      /individuals/15/type'
+- id: edge-035
+  subject: gomodel:ADENYLYLSULFKIN-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:ADENYLYLSULFKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_ADENYLYLSULFKIN-RXN"'
+    source_assertion: The model asserts gomodel:ADENYLYLSULFKIN-RXN RO:0002233 gomodel:CHEBI_30616_ADENYLYLSULFKIN-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/34; endpoint types: /individuals/0/type;
+      /individuals/10/type'
+- id: edge-036
+  subject: gomodel:SULFATE-ADENYLYLTRANS-RXN
+  predicate: part_of
+  object: GO:0000103
+  evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:CHEBI_30616_ADENYLYLSULFKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-028
+    source_assertion: The model asserts gomodel:SULFATE-ADENYLYLTRANS-RXN BFO:0000050 gomodel:YeastPathways_SO4ASSIM-PWY/YeastPathways_SO4ASSIM-PWY.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/35; endpoint types: /individuals/21/type;
+      /individuals/61/type'
+- id: edge-037
   subject: SGD:S000006371
   predicate: enables
   object: gomodel:1.8.4.8-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPR167C-MONOMER_1.8.4.8-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"id":"gomodel:YPR167C-MONOMER_1.8.4.8-RXN_controller","type":[{"type":"class","id":"SGD:S000006371"'
-- id: edge-029
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002333 gomodel:YPR167C-MONOMER_1.8.4.8-RXN_controller.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/36; endpoint types: /individuals/60/type;
+      /individuals/25/type'
+- id: edge-038
   subject: gomodel:1.8.4.8-RXN
-  predicate: precedes
+  predicate: provides_input_for
   object: gomodel:SULFITE-REDUCT-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
-    quote: '"subject":"gomodel:1.8.4.8-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:SULFITE-REDUCT-RXN"'
+    source_assertion: The model asserts gomodel:1.8.4.8-RXN RO:0002413 gomodel:SULFITE-REDUCT-RXN.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/37; endpoint types: /individuals/60/type;
+      /individuals/22/type'
+- id: edge-039
+  subject: gomodel:SULFITE-REDUCT-RXN
+  predicate: part_of
+  object: GO:0000103
+  evidence:
+  - reference_id: gomodel:YeastPathways_SO4ASSIM-PWY
+    source_assertion: The model asserts gomodel:SULFITE-REDUCT-RXN BFO:0000050 gomodel:YeastPathways_SO4ASSIM-PWY/YeastPathways_SO4ASSIM-PWY.
+    source_locator: './YeastPathways_SO4ASSIM-PWY.json#/facts/38; endpoint types: /individuals/22/type;
+      /individuals/61/type'
+- id: complex-bad15bc0cd24
+  subject: SGD:S000217821
+  predicate: has_part
+  object: CHEBI:64607
+  description: 'ECO:0005547: inferred by curator; source stoichiometry minValue: 2, maxValue:
+    2'
+  evidence:
+  - reference_id: SGD:S000217821
+    source_assertion: 'Complex Portal CPX-3163 lists CHEBI:64607 as a small molecule component;
+      complex evidence is ECO:0005547: inferred by curator.'
+    source_locator: 'Complex Portal JSON #/participants/2; /evidenceType'
+- id: complex-5707ce058ccc
+  subject: SGD:S000217821
+  predicate: has_part
+  object: CHEBI:57692
+  description: 'ECO:0005547: inferred by curator; source stoichiometry minValue: 2, maxValue:
+    2'
+  evidence:
+  - reference_id: SGD:S000217821
+    source_assertion: 'Complex Portal CPX-3163 lists CHEBI:57692 as a small molecule component;
+      complex evidence is ECO:0005547: inferred by curator.'
+    source_locator: 'Complex Portal JSON #/participants/3; /evidenceType'
+- id: complex-5ba5f370baee
+  subject: SGD:S000217821
+  predicate: has_part
+  object: CHEBI:58210
+  description: 'ECO:0005547: inferred by curator; source stoichiometry minValue: 2, maxValue:
+    2'
+  evidence:
+  - reference_id: SGD:S000217821
+    source_assertion: 'Complex Portal CPX-3163 lists CHEBI:58210 as a small molecule component;
+      complex evidence is ECO:0005547: inferred by curator.'
+    source_locator: 'Complex Portal JSON #/participants/4; /evidenceType'
+- id: complex-3f892f504f59
+  subject: SGD:S000217821
+  predicate: has_part
+  object: CHEBI:28599
+  description: 'ECO:0005547: inferred by curator; source stoichiometry minValue: 2, maxValue:
+    2'
+  evidence:
+  - reference_id: SGD:S000217821
+    source_assertion: 'Complex Portal CPX-3163 lists CHEBI:28599 as a small molecule component;
+      complex evidence is ECO:0005547: inferred by curator.'
+    source_locator: 'Complex Portal JSON #/participants/5; /evidenceType'
+- id: complex-1fcc96fac5a7
+  subject: SGD:S000217821
+  predicate: located_in
+  object: GO:0005737
+  description: Complex location from the independent composition source; original GO-CAM activity
+    locations are retained with their own provenance.
+  evidence:
+  - reference_id: SGD:S000217821
+    source_assertion: 'Complex Portal CPX-3163 records cellular location GO:0005737 (cytoplasm);
+      its evidence classification is ECO:0005547: inferred by curator.'
+    source_locator: 'Complex Portal JSON #/crossReferences/1; /evidenceType'
+- id: location-99241a05b311
+  subject: SGD:S000003771
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000255 (HAMAP-Rule:MF_03106);
+    ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P08536
+    source_assertion: UniProtKB:P08536 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/211/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P08536
+    source_assertion: UniProtKB:P08536 has the exact SGD cross-reference SGD:S000003771.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/211/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-5553ee0c946f
+  subject: SGD:S000003898
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P47169
+    source_assertion: UniProtKB:P47169 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1984/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P47169
+    source_assertion: UniProtKB:P47169 has the exact SGD cross-reference SGD:S000003898.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1984/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-4193d639ed35
+  subject: SGD:S000001926
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    Binds 1 FAD per subunit. UniProt note evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P39692
+    source_assertion: UniProtKB:P39692 annotates CHEBI:57692 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3677/comments/0/cofactors/0;
+      /results/3677/comments/0/note'
+  - reference_id: UniProtKB:P39692
+    source_assertion: UniProtKB:P39692 has the exact SGD cross-reference SGD:S000001926.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3677/uniProtKBCrossReferences/0'
+- id: cofactor-5c1742e090c6
+  subject: SGD:S000001926
+  predicate: has_cofactor
+  object: CHEBI:58210
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    Binds 1 FMN per subunit. UniProt note evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P39692
+    source_assertion: UniProtKB:P39692 annotates CHEBI:58210 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3677/comments/1/cofactors/0;
+      /results/3677/comments/1/note'
+  - reference_id: UniProtKB:P39692
+    source_assertion: UniProtKB:P39692 has the exact SGD cross-reference SGD:S000001926.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3677/uniProtKBCrossReferences/0'
+- id: cofactor-9d46cfed5fbc
+  subject: SGD:S000003898
+  predicate: has_cofactor
+  object: CHEBI:60052
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    Binds 1 siroheme per subunit. UniProt note evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P47169
+    source_assertion: UniProtKB:P47169 annotates CHEBI:60052 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1984/comments/0/cofactors/0;
+      /results/1984/comments/0/note'
+  - reference_id: UniProtKB:P47169
+    source_assertion: UniProtKB:P47169 has the exact SGD cross-reference SGD:S000003898.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1984/uniProtKBCrossReferences/0'
+- id: cofactor-935db9962dc9
+  subject: SGD:S000003898
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    Binds 1 [4Fe-4S] cluster per subunit. UniProt note evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P47169
+    source_assertion: UniProtKB:P47169 annotates CHEBI:49883 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1984/comments/1/cofactors/0;
+      /results/1984/comments/1/note'
+  - reference_id: UniProtKB:P47169
+    source_assertion: UniProtKB:P47169 has the exact SGD cross-reference SGD:S000003898.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1984/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_SO4ASSIM-PWY
-  title: 'SGD GO-CAM assimilatory sulfate reduction I - imported from: Saccharomyces
-    Genome Database'
+  title: 'SGD GO-CAM assimilatory sulfate reduction I - imported from: Saccharomyces Genome
+    Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-15; member ./YeastPathways_SO4ASSIM-PWY.json
+- id: SGD:S000217821
+  title: 'Complex Portal CPX-3163: Sulfite reductase complex (NADPH)'
+  url: https://www.ebi.ac.uk/intact/complex-ws/complex/CPX-3163
+  source_version: Inspected API snapshot 2026-10-05; release dates 2014-10-16
+  source_sha256: 0fcb89604504093cdb01bb1dbd77394bf0bd9c3488dfeedbabeb1434c49ed4e8
+- id: UniProtKB:P39692
+  title: Reviewed UniProtKB P39692 SGD cross-reference
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 2ad9b6d84d565238960a053870fa90a6033bc212bbe1a4c9923fd55d7e7d7fc1
+- id: UniProtKB:P47169
+  title: Reviewed UniProtKB P47169 SGD cross-reference
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 2ad9b6d84d565238960a053870fa90a6033bc212bbe1a4c9923fd55d7e7d7fc1
+- id: UniProtKB:P08536
+  title: Reviewed UniProtKB P08536 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger. Reviewed exact Complex Portal composition, source evidence grades, and
+    independent physical complex locations.
+  llm_assisted: true
+- timestamp: '2026-10-05T06:17:04Z'
+  curator: Codex
+  action: review-complex-composition
+  changes: Reviewed exact Complex Portal composition, source evidence grades, and independent
+    physical complex locations; reused existing proteins through reviewed UniProt SGD cross-references.
+  llm_assisted: true

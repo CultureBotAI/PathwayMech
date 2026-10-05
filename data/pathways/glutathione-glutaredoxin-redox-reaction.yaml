@@ -1,9 +1,10 @@
 id: WikiPathways:WP392
 label: Glutathione-glutaredoxin redox reaction
-description: Glutathione-glutaredoxin redox reaction in Saccharomyces cerevisiae links
-  glutathione/glutathione disulfide recycling through GLR1 to glutathione consumption
-  by GTT1/GTT2 and GPX1/GPX2/HYR1-catalyzed glutathione oxidation in the WP392 GPML
-  diagram.
+description: Glutathione-glutaredoxin redox reaction in Saccharomyces cerevisiae links glutathione/glutathione
+  disulfide recycling through GLR1 to glutathione consumption by GTT1/GTT2 and GPX1/GPX2/HYR1-catalyzed
+  glutathione oxidation in the WP392 GPML diagram. The unresolved glutaredoxin redox partner
+  is not specified; peroxidase assignments retain the diagram scope and do not establish glutathione
+  as the exclusive physiological donor.
 pathway_type: glutathione-redox
 taxa:
 - id: NCBITaxon:4932
@@ -11,134 +12,246 @@ taxa:
 participants:
 - id: CHEBI:57925
   label: glutathione
-- id: CHEBI:58297
-  label: glutathione disulfide
+  category: small_molecule
 - id: CHEBI:16240
   label: H2O2
-- id: SGD:S000006012
-  label: GLR1
-- id: SGD:S000001509
-  label: GPX1
-- id: SGD:S000000448
-  label: GPX2
-- id: SGD:S000001476
-  label: HYR1
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:58297
+  label: glutathione disulfide
+  category: small_molecule
+- id: CHEBI:17021
+  label: S-substituted glutathione
+  category: small_molecule
 - id: SGD:S000003983
   label: GTT2
+  category: protein
 - id: SGD:S000001477
   label: GTT1
+  category: protein
+- id: SGD:S000001509
+  label: GPX1
+  category: protein
+- id: SGD:S000000448
+  label: GPX2
+  category: protein
+- id: SGD:S000006012
+  label: GLR1
+  category: protein
+- id: SGD:S000001476
+  label: HYR1
+  category: protein
+- id: CHEBI:16474
+  label: NADPH
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
 reactions:
 - id: WikiPathways:WP392/id3206f739
   label: glutathione disulfide to glutathione GPML interaction
+  direction: left_to_right
+  category: molecular_activity
 - id: WikiPathways:WP392/id8cc08cdf
   label: glutathione to glutathione-S-conjugate GPML interaction
-- id: WikiPathways:WP392/id8fe92484
-  label: glutathione to glutathione disulfide GPML interaction
+  direction: left_to_right
+  category: molecular_activity
 - id: WikiPathways:WP392/idb13bbbe
   label: glutathione to glutathione disulfide GPML interaction
+  direction: left_to_right
+  category: molecular_activity
 mechanistic_edges:
-- id: edge-001
+- id: causal-review-1
   subject: CHEBI:58297
   predicate: consumes
   object: WikiPathways:WP392/id3206f739
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: glutathione disulfide is consumed by glutathione disulfide to glutathione
-      GPML interaction.
-- id: edge-002
+    source_assertion: GPML id3206f739 connects normalized CHEBI:58297 as an input of interaction
+      id3206f739.
+    source_locator: /Pathway/Interaction[@GraphId='id3206f739']/Graphics; /Pathway/DataNode[@GraphId='fc211']
+- id: causal-review-2
   subject: WikiPathways:WP392/id3206f739
   predicate: produces
   object: CHEBI:57925
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: glutathione disulfide to glutathione GPML interaction produces glutathione.
-- id: edge-003
-  subject: SGD:S000006012
-  predicate: catalyzes
-  object: WikiPathways:WP392/id3206f739
-  evidence:
-  - reference_id: WikiPathways:WP392
-    quote: GLR1 catalyzes glutathione disulfide to glutathione GPML interaction.
-- id: edge-004
+    source_assertion: GPML id3206f739 connects normalized CHEBI:57925 as an output of interaction
+      id3206f739.
+    source_locator: /Pathway/Interaction[@GraphId='id3206f739']/Graphics; /Pathway/DataNode[@GraphId='a20fb']
+- id: causal-review-3
   subject: CHEBI:57925
   predicate: consumes
   object: WikiPathways:WP392/id8cc08cdf
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: glutathione is consumed by glutathione to glutathione-S-conjugate GPML
-      interaction.
-- id: edge-005
-  subject: SGD:S000003983
-  predicate: catalyzes
-  object: WikiPathways:WP392/id8cc08cdf
-  evidence:
-  - reference_id: WikiPathways:WP392
-    quote: GTT2 catalyzes glutathione to glutathione-S-conjugate GPML interaction.
-- id: edge-006
-  subject: SGD:S000001477
-  predicate: catalyzes
-  object: WikiPathways:WP392/id8cc08cdf
-  evidence:
-  - reference_id: WikiPathways:WP392
-    quote: GTT1 catalyzes glutathione to glutathione-S-conjugate GPML interaction.
-- id: edge-007
-  subject: CHEBI:57925
-  predicate: consumes
-  object: WikiPathways:WP392/id8fe92484
-  evidence:
-  - reference_id: WikiPathways:WP392
-    quote: glutathione is consumed by glutathione to glutathione disulfide GPML interaction.
-- id: edge-008
-  subject: WikiPathways:WP392/id8fe92484
+    source_assertion: GPML id8cc08cdf connects normalized CHEBI:57925 as an input of interaction
+      id8cc08cdf.
+    source_locator: /Pathway/Interaction[@GraphId='id8cc08cdf']/Graphics; /Pathway/DataNode[@GraphId='a20fb']
+- id: causal-review-4
+  subject: WikiPathways:WP392/id8cc08cdf
   predicate: produces
-  object: CHEBI:58297
+  object: CHEBI:17021
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: glutathione to glutathione disulfide GPML interaction produces glutathione
-      disulfide.
-- id: edge-009
+    source_assertion: GPML id8cc08cdf connects normalized CHEBI:17021 as an output of interaction
+      id8cc08cdf.
+    source_locator: /Pathway/Interaction[@GraphId='id8cc08cdf']/Graphics; /Pathway/DataNode[@GraphId='a3d26']
+- id: causal-review-5
   subject: CHEBI:57925
   predicate: consumes
   object: WikiPathways:WP392/idb13bbbe
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: glutathione is consumed by glutathione to glutathione disulfide GPML interaction.
-- id: edge-010
+    source_assertion: GPML idb13bbbe connects normalized CHEBI:57925 as an input of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='idb13bbbe']/Graphics; /Pathway/DataNode[@GraphId='a20fb']
+- id: causal-review-6
   subject: WikiPathways:WP392/idb13bbbe
   predicate: produces
   object: CHEBI:58297
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: glutathione to glutathione disulfide GPML interaction produces glutathione
-      disulfide.
-- id: edge-014
-  subject: CHEBI:16240
-  predicate: consumes
-  object: WikiPathways:WP392/idb13bbbe
+    source_assertion: GPML idb13bbbe connects normalized CHEBI:58297 as an output of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='idb13bbbe']/Graphics; /Pathway/DataNode[@GraphId='fc211']
+- id: causal-review-7
+  subject: SGD:S000006012
+  predicate: catalyzes
+  object: WikiPathways:WP392/id3206f739
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: H2O2 is consumed by glutathione to glutathione disulfide GPML interaction.
-- id: edge-011
+    source_assertion: GPML id7dd40452 connects normalized SGD:S000006012 as a catalyst of
+      interaction id3206f739.
+    source_locator: /Pathway/Interaction[@GraphId='id7dd40452']/Graphics; /Pathway/DataNode[@GraphId='f19']
+- id: causal-review-8
   subject: SGD:S000001509
   predicate: catalyzes
   object: WikiPathways:WP392/idb13bbbe
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: GPX1 catalyzes glutathione to glutathione disulfide GPML interaction.
-- id: edge-012
+    source_assertion: GPML ida03687f connects normalized SGD:S000001509 as a catalyst of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='ida03687f']/Graphics; /Pathway/DataNode[@GraphId='dc7']
+- id: causal-review-9
   subject: SGD:S000000448
   predicate: catalyzes
   object: WikiPathways:WP392/idb13bbbe
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: GPX2 catalyzes glutathione to glutathione disulfide GPML interaction.
-- id: edge-013
+    source_assertion: GPML ida03687f connects normalized SGD:S000000448 as a catalyst of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='ida03687f']/Graphics; /Pathway/DataNode[@GraphId='e13']
+- id: causal-review-10
   subject: SGD:S000001476
   predicate: catalyzes
   object: WikiPathways:WP392/idb13bbbe
   evidence:
   - reference_id: WikiPathways:WP392
-    quote: HYR1 catalyzes glutathione to glutathione disulfide GPML interaction.
+    source_assertion: GPML ida03687f connects normalized SGD:S000001476 as a catalyst of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='ida03687f']/Graphics; /Pathway/DataNode[@GraphId='fb3']
+- id: causal-review-11
+  subject: WikiPathways:WP392/idb13bbbe
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML idc27704ba connects normalized CHEBI:15377 as an output of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='idc27704ba']/Graphics; /Pathway/DataNode[@GraphId='f6c66']
+- id: causal-review-12
+  subject: SGD:S000003983
+  predicate: catalyzes
+  object: WikiPathways:WP392/id8cc08cdf
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML idd278a2e5 connects normalized SGD:S000003983 as a catalyst of
+      interaction id8cc08cdf.
+    source_locator: /Pathway/Interaction[@GraphId='idd278a2e5']/Graphics; /Pathway/DataNode[@GraphId='bfc']
+- id: causal-review-13
+  subject: SGD:S000001477
+  predicate: catalyzes
+  object: WikiPathways:WP392/id8cc08cdf
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML idd278a2e5 connects normalized SGD:S000001477 as a catalyst of
+      interaction id8cc08cdf.
+    source_locator: /Pathway/Interaction[@GraphId='idd278a2e5']/Graphics; /Pathway/DataNode[@GraphId='c00']
+- id: causal-review-14
+  subject: WikiPathways:WP392/id3206f739
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML idd919a6a connects normalized CHEBI:58349 as an output of interaction
+      id3206f739.
+    source_locator: /Pathway/Interaction[@GraphId='idd919a6a']/Graphics; /Pathway/DataNode[@GraphId='e4820']
+- id: causal-review-15
+  subject: CHEBI:16474
+  predicate: consumes
+  object: WikiPathways:WP392/id3206f739
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML id50af4865 connects normalized CHEBI:16474 as an input of interaction
+      id3206f739.
+    source_locator: /Pathway/Interaction[@GraphId='id50af4865']/Graphics; /Pathway/DataNode[@GraphId='fe0']
+  description: Direction resolved from the source pathway redox description, not an unheaded
+    line alone.
+- id: causal-review-16
+  subject: CHEBI:15378
+  predicate: consumes
+  object: WikiPathways:WP392/id3206f739
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML id50af4865 connects normalized CHEBI:15378 as an input of interaction
+      id3206f739.
+    source_locator: /Pathway/Interaction[@GraphId='id50af4865']/Graphics; /Pathway/DataNode[@GraphId='efa82']
+  description: Direction resolved from the source pathway redox description, not an unheaded
+    line alone.
+- id: causal-review-17
+  subject: CHEBI:16240
+  predicate: consumes
+  object: WikiPathways:WP392/idb13bbbe
+  evidence:
+  - reference_id: WikiPathways:WP392
+    source_assertion: GPML id3cdb2e84 connects normalized CHEBI:16240 as an input of interaction
+      idb13bbbe.
+    source_locator: /Pathway/Interaction[@GraphId='id3cdb2e84']/Graphics; /Pathway/DataNode[@GraphId='d804d']
+  description: Direction resolved from the source pathway redox description, not an unheaded
+    line alone.
+- id: cofactor-4e6bdc0b70d4
+  subject: SGD:S000006012
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:17554778) Binds 1 FAD per subunit. UniProt note evidence: ECO:0000269 (PubMed:17554778)'
+  evidence:
+  - reference_id: UniProtKB:P41921
+    source_assertion: UniProtKB:P41921 annotates CHEBI:57692 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1831/comments/0/cofactors/0;
+      /results/1831/comments/0/note'
+  - reference_id: UniProtKB:P41921
+    source_assertion: UniProtKB:P41921 has the exact SGD cross-reference SGD:S000006012.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1831/uniProtKBCrossReferences/0'
 references:
 - id: WikiPathways:WP392
-  title: WikiPathways Glutathione-glutaredoxin redox reaction GPML pathway WP392_r140627
+  title: WP392 native structured pathway source
+  url: https://www.wikipathways.org/wikipathways-assets/pathways/WP392/WP392.gpml
+  source_version: WP392_r20261002122028
+  source_sha256: 484f2685c03edd87cecc84c83c4b5f7fdf882fc46d040f3d43a7dd10f1d8ab9e
+- id: UniProtKB:P41921
+  title: UniProtKB P41921 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4

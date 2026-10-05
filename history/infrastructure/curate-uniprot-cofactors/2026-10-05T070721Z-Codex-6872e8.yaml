@@ -1,0 +1,23 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/curate_uniprot_cofactors.py
+  slug: curate-uniprot-cofactors
+session:
+  id: 2026-10-05T070721Z-Codex-6872e8
+  timestamp: '2026-10-05T07:07:21Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt-6
+    agent_tool: codex
+events:
+- type: EDIT
+  outcome: changed
+  summary: Apply independently sourced enzyme cofactors across reviewed graphs
+  details: Checked all152 current records after source and catalytic corrections;93 records
+    enriched with exact protein/cofactor assertions. Preserved existing curated overrides,
+    evidence codes, conditional or covalent roles, native protein joins and source cautions.
+    Complete per-record audit, source hashes and projections are in reports/causal_graph_review/uniprot-cofactor-plan.json
+    and uniprot-source-projection.json. Focused cofactor tests passed; final integration gate
+    results are recorded in the final corpus report.

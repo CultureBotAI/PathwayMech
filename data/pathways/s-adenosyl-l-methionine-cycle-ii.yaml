@@ -1,272 +1,593 @@
 id: gomodel:YeastPathways_PWY-5041
 label: S-adenosyl-L-methionine cycle II
-description: >-
-  The SGD S-adenosyl-L-methionine cycle II GO-CAM for Saccharomyces cerevisiae
-  S288C models MET6-enabled 5-methyltetrahydropteroyltriglutamate-homocysteine
-  S-methyltransferase, SAM1- and SAM2-enabled methionine adenosyltransferase,
-  and SAH1-enabled adenosylhomocysteinase activities.
+description: The SGD S-adenosyl-L-methionine cycle II GO-CAM for Saccharomyces cerevisiae
+  S288C models MET6-enabled 5-methyltetrahydropteroyltriglutamate-homocysteine S-methyltransferase,
+  SAM1- and SAM2-enabled methionine adenosyltransferase, and SAH1-enabled adenosylhomocysteinase
+  activities. The source also models the generic SAM-dependent methyl transfer step without
+  assigning an enabling protein.
 pathway_type: amino-acid-metabolism
 taxa:
-  - id: NCBITaxon:559292
-    label: Saccharomyces cerevisiae S288C
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
 participants:
-  - id: SGD:S000000893
-    label: MET6 Scer
-  - id: SGD:S000004170
-    label: SAM1 Scer
-  - id: SGD:S000000845
-    label: SAH1 Scer
-  - id: SGD:S000002910
-    label: SAM2 Scer
-  - id: CHEBI:58199
-    label: L-homocysteine zwitterion
-  - id: CHEBI:58207
-    label: 5-methyltetrahydropteroyltri-L-glutamate(4-)
-  - id: CHEBI:57844
-    label: L-methionine zwitterion
-  - id: CHEBI:58140
-    label: tetrahydropteroyltri-L-glutamate(4-)
-  - id: CHEBI:30616
-    label: ATP(4-)
-  - id: CHEBI:15377
-    label: water
-  - id: CHEBI:59789
-    label: S-adenosyl-L-methionine zwitterion
-  - id: CHEBI:29888
-    label: diphosphoric acid
-  - id: CHEBI:43474
-    label: hydrogenphosphate
-  - id: CHEBI:57856
-    label: S-adenosyl-L-homocysteine zwitterion
-  - id: CHEBI:16335
-    label: adenosine
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0033353
+  label: L-methionine cycle
+  category: biological_process
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:16335
+  label: adenosine
+  category: small_molecule
+- id: SGD:S000000893
+  label: MET6 Scer
+  category: protein
+- id: SGD:S000004170
+  label: SAM1 Scer
+  category: protein
+- id: CHEBI:57856
+  label: S-adenosyl-L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:29888
+  label: diphosphoric acid
+  category: small_molecule
+- id: CHEBI:58199
+  label: L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:142491
+  label: R-H
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605
+  label: a methylated methyl donor
+- id: CHEBI:58207
+  label: 5-methyltetrahydropteroyltri-L-glutamate(4-)
+  category: small_molecule
+- id: SGD:S000000845
+  label: SAH1 Scer
+  category: protein
+- id: SGD:S000002910
+  label: SAM2 Scer
+  category: protein
+- id: CHEBI:58140
+  label: tetrahydropteroyltri-L-glutamate(4-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29103
+  label: potassium(1+)
+  category: cofactor
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: cofactor
 reactions:
-  - id: gomodel:HOMOCYSMET-RXN
-    label: 5-methyltetrahydropteroyltriglutamate-homocysteine S-methyltransferase
-      activity
-  - id: gomodel:S-ADENMETSYN-RXN
-    label: methionine adenosyltransferase activity
-  - id: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
-    label: adenosylhomocysteinase activity
-  - id: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    label: SAM2 methionine adenosyltransferase activity
+- id: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  label: adenosylhomocysteinase activity
+  category: molecular_activity
+- id: gomodel:HOMOCYSMET-RXN
+  label: 5-methyltetrahydropteroyltriglutamate-homocysteine S-methyltransferase activity
+  category: molecular_activity
+- id: gomodel:RXN-7605
+  label: S-methyltransferase activity
+  category: molecular_activity
+- id: gomodel:S-ADENMETSYN-RXN
+  label: methionine adenosyltransferase activity
+  category: molecular_activity
+- id: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  label: SAM2 methionine adenosyltransferase activity
+  category: molecular_activity
 mechanistic_edges:
-  - id: edge-001
-    subject: SGD:S000000893
-    predicate: enables
-    object: gomodel:HOMOCYSMET-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:HOMOCYSMET-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"SGD:S000000893","type":"EnabledByGeneProductAssociation"'
-  - id: edge-002
-    subject: CHEBI:58199
-    predicate: consumes
-    object: gomodel:HOMOCYSMET-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:HOMOCYSMET-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:58199","type":"MoleculeAssociation"'
-  - id: edge-003
-    subject: CHEBI:58207
-    predicate: consumes
-    object: gomodel:HOMOCYSMET-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:HOMOCYSMET-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:58207","type":"MoleculeAssociation"'
-  - id: edge-004
-    subject: gomodel:HOMOCYSMET-RXN
-    predicate: produces
-    object: CHEBI:57844
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:HOMOCYSMET-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:57844","type":"MoleculeAssociation"'
-  - id: edge-005
-    subject: gomodel:HOMOCYSMET-RXN
-    predicate: produces
-    object: CHEBI:58140
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:HOMOCYSMET-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:58140","type":"MoleculeAssociation"'
-  - id: edge-006
-    subject: SGD:S000004170
-    predicate: enables
-    object: gomodel:S-ADENMETSYN-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"SGD:S000004170","type":"EnabledByGeneProductAssociation"'
-  - id: edge-007
-    subject: CHEBI:30616
-    predicate: consumes
-    object: gomodel:S-ADENMETSYN-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:30616","type":"MoleculeAssociation"'
-  - id: edge-008
-    subject: CHEBI:15377
-    predicate: consumes
-    object: gomodel:S-ADENMETSYN-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:15377","type":"MoleculeAssociation"'
-  - id: edge-009
-    subject: CHEBI:57844
-    predicate: consumes
-    object: gomodel:S-ADENMETSYN-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:57844","type":"MoleculeAssociation"'
-  - id: edge-010
-    subject: gomodel:S-ADENMETSYN-RXN
-    predicate: produces
-    object: CHEBI:59789
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:59789","type":"MoleculeAssociation"'
-  - id: edge-011
-    subject: gomodel:S-ADENMETSYN-RXN
-    predicate: produces
-    object: CHEBI:29888
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:29888","type":"MoleculeAssociation"'
-  - id: edge-012
-    subject: gomodel:S-ADENMETSYN-RXN
-    predicate: produces
-    object: CHEBI:43474
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:S-ADENMETSYN-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:43474","type":"MoleculeAssociation"'
-  - id: edge-013
-    subject: SGD:S000000845
-    predicate: enables
-    object: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:ADENOSYLHOMOCYSTEINASE-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"SGD:S000000845","type":"EnabledByGeneProductAssociation"'
-  - id: edge-014
-    subject: CHEBI:57856
-    predicate: consumes
-    object: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:ADENOSYLHOMOCYSTEINASE-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:57856","type":"MoleculeAssociation"'
-  - id: edge-015
-    subject: CHEBI:15377
-    predicate: consumes
-    object: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:ADENOSYLHOMOCYSTEINASE-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:15377","type":"MoleculeAssociation"'
-  - id: edge-016
-    subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
-    predicate: produces
-    object: CHEBI:16335
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:ADENOSYLHOMOCYSTEINASE-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:16335","type":"MoleculeAssociation"'
-  - id: edge-017
-    subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
-    predicate: produces
-    object: CHEBI:58199
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:ADENOSYLHOMOCYSTEINASE-RXN"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:58199","type":"MoleculeAssociation"'
-  - id: edge-018
-    subject: SGD:S000002910
-    predicate: enables
-    object: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"SGD:S000002910","type":"EnabledByGeneProductAssociation"'
-  - id: edge-019
-    subject: CHEBI:57844
-    predicate: consumes
-    object: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:57844","type":"MoleculeAssociation"'
-  - id: edge-020
-    subject: CHEBI:15377
-    predicate: consumes
-    object: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:15377","type":"MoleculeAssociation"'
-  - id: edge-021
-    subject: CHEBI:30616
-    predicate: consumes
-    object: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:30616","type":"MoleculeAssociation"'
-  - id: edge-022
-    subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    predicate: produces
-    object: CHEBI:59789
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:59789","type":"MoleculeAssociation"'
-  - id: edge-023
-    subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    predicate: produces
-    object: CHEBI:43474
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:43474","type":"MoleculeAssociation"'
-  - id: edge-024
-    subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
-    predicate: produces
-    object: CHEBI:29888
-    evidence:
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"id":"gomodel:YeastPathways_PWY-5041/6a2b236300005409"'
-      - reference_id: gomodel:YeastPathways_PWY-5041
-        quote: '"term":"CHEBI:29888","type":"MoleculeAssociation"'
+- id: edge-001
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: has_output
+  object: CHEBI:59789
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002234 gomodel:CHEBI_59789_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/0; endpoint types: /individuals/17/type;
+      /individuals/14/type'
+- id: edge-002
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 BFO:0000066
+      gomodel:YeastPathways_PWY-5041/6a2b236300005416.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/1; endpoint types: /individuals/53/type;
+      /individuals/59/type'
+- id: edge-003
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: has_output
+  object: CHEBI:59789
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002234
+      gomodel:CHEBI_59789_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/2; endpoint types: /individuals/53/type;
+      /individuals/14/type'
+- id: edge-004
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: part_of
+  object: GO:0033353
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN BFO:0000050 gomodel:YeastPathways_PWY-5041/YeastPathways_PWY-5041.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/3; endpoint types: /individuals/17/type;
+      /individuals/52/type'
+- id: edge-005
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: part_of
+  object: GO:0033353
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 BFO:0000050
+      gomodel:YeastPathways_PWY-5041/YeastPathways_PWY-5041.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/4; endpoint types: /individuals/53/type;
+      /individuals/52/type'
+- id: edge-006
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: has_input
+  object: CHEBI:57844
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002233
+      gomodel:CHEBI_57844_HOMOCYSMET-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/5; endpoint types: /individuals/53/type;
+      /individuals/9/type'
+- id: edge-007
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002233 gomodel:CHEBI_30616_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/6; endpoint types: /individuals/17/type;
+      /individuals/7/type'
+- id: edge-008
+  subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  predicate: has_output
+  object: CHEBI:16335
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN RO:0002234 gomodel:CHEBI_16335_ADENOSYLHOMOCYSTEINASE-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/7; endpoint types: /individuals/0/type;
+      /individuals/5/type'
+- id: edge-009
+  subject: SGD:S000000893
+  predicate: enables
+  object: gomodel:HOMOCYSMET-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN RO:0002333 gomodel:YER091C-MONOMER_HOMOCYSMET-RXN_controller.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/8; endpoint types: /individuals/15/type;
+      /individuals/19/type'
+- id: edge-010
+  subject: SGD:S000004170
+  predicate: enables
+  object: gomodel:S-ADENMETSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002333 gomodel:YLR180W-MONOMER_S-ADENMETSYN-RXN_controller.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/9; endpoint types: /individuals/17/type;
+      /individuals/20/type'
+- id: edge-011
+  subject: gomodel:RXN-7605
+  predicate: has_output
+  object: CHEBI:57856
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 RO:0002234 gomodel:CHEBI_57856_RXN-7605.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/10; endpoint types: /individuals/16/type;
+      /individuals/10/type'
+- id: edge-012
+  subject: gomodel:HOMOCYSMET-RXN
+  predicate: part_of
+  object: GO:0033353
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN BFO:0000050 gomodel:YeastPathways_PWY-5041/YeastPathways_PWY-5041.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/11; endpoint types: /individuals/15/type;
+      /individuals/52/type'
+- id: edge-013
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002233 gomodel:CHEBI_15377_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/12; endpoint types: /individuals/17/type;
+      /individuals/3/type'
+- id: edge-014
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: has_output
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002234
+      gomodel:YeastPathways_PWY-5041/6a2b236300005413.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/13; endpoint types: /individuals/53/type;
+      /individuals/57/type'
+- id: edge-015
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: has_output
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002234
+      gomodel:YeastPathways_PWY-5041/6a2b236300005412.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/14; endpoint types: /individuals/53/type;
+      /individuals/56/type'
+- id: edge-016
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN BFO:0000066 gomodel:reaction_S-ADENMETSYN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/15; endpoint types: /individuals/17/type;
+      /individuals/51/type'
+- id: edge-017
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: has_output
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002234 gomodel:CHEBI_29888_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/16; endpoint types: /individuals/17/type;
+      /individuals/6/type'
+- id: edge-018
+  subject: gomodel:HOMOCYSMET-RXN
+  predicate: has_input
+  object: CHEBI:58199
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN RO:0002233 gomodel:CHEBI_58199_ADENOSYLHOMOCYSTEINASE-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/17; endpoint types: /individuals/15/type;
+      /individuals/12/type'
+- id: edge-019
+  subject: gomodel:RXN-7605
+  predicate: has_input
+  object: CHEBI:142491
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 RO:0002233 gomodel:CHEBI_142491_RXN-7605.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/18; endpoint types: /individuals/16/type;
+      /individuals/1/type'
+- id: edge-020
+  subject: gomodel:RXN-7605
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 RO:0002234 gomodel:CHEBI_15378_RXN-7605.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/19; endpoint types: /individuals/16/type;
+      /individuals/4/type'
+- id: edge-021
+  subject: gomodel:RXN-7605
+  predicate: part_of
+  object: GO:0033353
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 BFO:0000050 gomodel:YeastPathways_PWY-5041/YeastPathways_PWY-5041.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/20; endpoint types: /individuals/16/type;
+      /individuals/52/type'
+- id: edge-022
+  subject: gomodel:RXN-7605
+  predicate: has_output
+  object: gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 RO:0002234 gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/21; endpoint types: /individuals/16/type;
+      /individuals/21/type'
+- id: edge-023
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: has_input
+  object: CHEBI:57844
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002233 gomodel:CHEBI_57844_HOMOCYSMET-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/22; endpoint types: /individuals/17/type;
+      /individuals/9/type'
+- id: edge-024
+  subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN BFO:0000066 gomodel:reaction_ADENOSYLHOMOCYSTEINASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/23; endpoint types: /individuals/0/type;
+      /individuals/48/type'
+- id: edge-025
+  subject: gomodel:RXN-7605
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 BFO:0000066 gomodel:reaction_RXN-7605_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/24; endpoint types: /individuals/16/type;
+      /individuals/50/type'
+- id: edge-026
+  subject: gomodel:HOMOCYSMET-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN BFO:0000066 gomodel:reaction_HOMOCYSMET-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/25; endpoint types: /individuals/15/type;
+      /individuals/49/type'
+- id: edge-027
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002233
+      gomodel:YeastPathways_PWY-5041/6a2b236300005411.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/26; endpoint types: /individuals/53/type;
+      /individuals/55/type'
+- id: edge-028
+  subject: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002233
+      gomodel:YeastPathways_PWY-5041/6a2b236300005410.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/27; endpoint types: /individuals/53/type;
+      /individuals/54/type'
+- id: edge-029
+  subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  predicate: has_input
+  object: CHEBI:57856
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN RO:0002233 gomodel:CHEBI_57856_RXN-7605.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/28; endpoint types: /individuals/0/type;
+      /individuals/10/type'
+- id: edge-030
+  subject: gomodel:RXN-7605
+  predicate: has_input
+  object: CHEBI:59789
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:RXN-7605 RO:0002233 gomodel:CHEBI_59789_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/29; endpoint types: /individuals/16/type;
+      /individuals/14/type'
+- id: edge-031
+  subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  predicate: has_output
+  object: CHEBI:58199
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN RO:0002234 gomodel:CHEBI_58199_ADENOSYLHOMOCYSTEINASE-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/30; endpoint types: /individuals/0/type;
+      /individuals/12/type'
+- id: edge-032
+  subject: gomodel:HOMOCYSMET-RXN
+  predicate: has_output
+  object: CHEBI:57844
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN RO:0002234 gomodel:CHEBI_57844_HOMOCYSMET-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/31; endpoint types: /individuals/15/type;
+      /individuals/9/type'
+- id: edge-033
+  subject: gomodel:HOMOCYSMET-RXN
+  predicate: has_input
+  object: CHEBI:58207
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN RO:0002233 gomodel:CHEBI_58207_HOMOCYSMET-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/32; endpoint types: /individuals/15/type;
+      /individuals/13/type'
+- id: edge-034
+  subject: SGD:S000000845
+  predicate: enables
+  object: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN RO:0002333 gomodel:YER043C-MONOMER_ADENOSYLHOMOCYSTEINASE-RXN_controller.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/33; endpoint types: /individuals/0/type;
+      /individuals/18/type'
+- id: edge-035
+  subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN RO:0002233 gomodel:CHEBI_15377_ADENOSYLHOMOCYSTEINASE-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/34; endpoint types: /individuals/0/type;
+      /individuals/2/type'
+- id: edge-036
+  subject: SGD:S000002910
+  predicate: enables
+  object: gomodel:YeastPathways_PWY-5041/6a2b236300005409
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5041/6a2b236300005409 RO:0002333
+      gomodel:YeastPathways_PWY-5041/6a2b236300005415.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/35; endpoint types: /individuals/53/type;
+      /individuals/58/type'
+- id: edge-037
+  subject: gomodel:ADENOSYLHOMOCYSTEINASE-RXN
+  predicate: part_of
+  object: GO:0033353
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:ADENOSYLHOMOCYSTEINASE-RXN BFO:0000050 gomodel:YeastPathways_PWY-5041/YeastPathways_PWY-5041.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/36; endpoint types: /individuals/0/type;
+      /individuals/52/type'
+- id: edge-038
+  subject: gomodel:HOMOCYSMET-RXN
+  predicate: has_output
+  object: CHEBI:58140
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:HOMOCYSMET-RXN RO:0002234 gomodel:CHEBI_58140_HOMOCYSMET-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/37; endpoint types: /individuals/15/type;
+      /individuals/11/type'
+- id: edge-039
+  subject: gomodel:S-ADENMETSYN-RXN
+  predicate: has_output
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5041
+    source_assertion: The model asserts gomodel:S-ADENMETSYN-RXN RO:0002234 gomodel:CHEBI_43474_S-ADENMETSYN-RXN.
+    source_locator: './YeastPathways_PWY-5041.json#/facts/38; endpoint types: /individuals/17/type;
+      /individuals/8/type'
+- id: cofactor-31a055859ea5
+  subject: SGD:S000000893
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P05694
+    source_assertion: UniProtKB:P05694 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3234/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P05694
+    source_assertion: UniProtKB:P05694 has the exact SGD cross-reference SGD:S000000893.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3234/uniProtKBCrossReferences/0'
+- id: cofactor-fe984036de0f
+  subject: SGD:S000004170
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P13444) Binds 2 magnesium ions per subunit. The magnesium ions interact primarily
+    with the substrate. UniProt note evidence: ECO:0000250 (UniProtKB:P13444)'
+  evidence:
+  - reference_id: UniProtKB:P10659
+    source_assertion: UniProtKB:P10659 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/310/comments/0/cofactors/0;
+      /results/310/comments/0/note'
+  - reference_id: UniProtKB:P10659
+    source_assertion: UniProtKB:P10659 has the exact SGD cross-reference SGD:S000004170.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/310/uniProtKBCrossReferences/0'
+- id: cofactor-b1e8d3e04819
+  subject: SGD:S000004170
+  predicate: has_cofactor
+  object: CHEBI:29103
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P13444) Binds 1 potassium ion per subunit. The potassium ion interacts primarily
+    with the substrate. UniProt note evidence: ECO:0000250 (UniProtKB:P13444)'
+  evidence:
+  - reference_id: UniProtKB:P10659
+    source_assertion: UniProtKB:P10659 annotates CHEBI:29103 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/310/comments/1/cofactors/0;
+      /results/310/comments/1/note'
+  - reference_id: UniProtKB:P10659
+    source_assertion: UniProtKB:P10659 has the exact SGD cross-reference SGD:S000004170.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/310/uniProtKBCrossReferences/0'
+- id: cofactor-70a779ec4bd1
+  subject: SGD:S000000845
+  predicate: has_cofactor
+  object: CHEBI:57540
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified
+    Binds 1 NAD(+) per subunit.'
+  evidence:
+  - reference_id: UniProtKB:P39954
+    source_assertion: UniProtKB:P39954 annotates CHEBI:57540 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3692/comments/0/cofactors/0;
+      /results/3692/comments/0/note'
+  - reference_id: UniProtKB:P39954
+    source_assertion: UniProtKB:P39954 has the exact SGD cross-reference SGD:S000000845.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3692/uniProtKBCrossReferences/0'
+- id: cofactor-415b482f5e06
+  subject: SGD:S000002910
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P13444) Binds 2 magnesium ions per subunit. The magnesium ions interact primarily
+    with the substrate. UniProt note evidence: ECO:0000250 (UniProtKB:P13444)'
+  evidence:
+  - reference_id: UniProtKB:P19358
+    source_assertion: UniProtKB:P19358 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/496/comments/0/cofactors/0;
+      /results/496/comments/0/note'
+  - reference_id: UniProtKB:P19358
+    source_assertion: UniProtKB:P19358 has the exact SGD cross-reference SGD:S000002910.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/496/uniProtKBCrossReferences/0'
+- id: cofactor-402dbb6ac4b9
+  subject: SGD:S000002910
+  predicate: has_cofactor
+  object: CHEBI:29103
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P13444) Binds 1 potassium ion per subunit. The potassium ion interacts primarily
+    with the substrate. UniProt note evidence: ECO:0000250 (UniProtKB:P13444)'
+  evidence:
+  - reference_id: UniProtKB:P19358
+    source_assertion: UniProtKB:P19358 annotates CHEBI:29103 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/496/comments/1/cofactors/0;
+      /results/496/comments/1/note'
+  - reference_id: UniProtKB:P19358
+    source_assertion: UniProtKB:P19358 has the exact SGD cross-reference SGD:S000002910.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/496/uniProtKBCrossReferences/0'
 references:
-  - id: gomodel:YeastPathways_PWY-5041
-    title: GO-CAM S-adenosyl-L-methionine cycle II model YeastPathways_PWY-5041
+- id: gomodel:YeastPathways_PWY-5041
+  title: GO-CAM S-adenosyl-L-methionine cycle II model YeastPathways_PWY-5041
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-02; member ./YeastPathways_PWY-5041.json
+- id: UniProtKB:P05694
+  title: UniProtKB P05694 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P10659
+  title: UniProtKB P10659 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P39954
+  title: UniProtKB P39954 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P19358
+  title: UniProtKB P19358 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

@@ -35,7 +35,12 @@ def checker():
 
 @pytest.fixture(scope="module")
 def record() -> dict:
-    return yaml.safe_load(RECORDS[0].read_text(encoding="utf-8"))
+    fixture = yaml.safe_load(RECORDS[0].read_text(encoding="utf-8"))
+    evidence = fixture["mechanistic_edges"][0]["evidence"][0]
+    fixture["mechanistic_edges"][0]["evidence"] = [{
+        "reference_id": evidence["reference_id"], "quote": "Verbatim quotation fixture.",
+    }]
+    return fixture
 
 
 def test_every_record_validates_in_closed_mode() -> None:
@@ -101,11 +106,11 @@ def test_the_schema_documents_consumes_and_produces_direction() -> None:
 
     assert (
         enum.permissible_values["consumes"].description
-        == "The subject participant is consumed by the object reaction."
+        == "The subject participant is consumed by the object reaction or pathway."
     )
     assert (
         enum.permissible_values["produces"].description
-        == "The subject reaction produces the object participant."
+        == "The subject reaction or pathway produces the object participant."
     )
 
 
@@ -255,13 +260,15 @@ EXPECTED_REQUIRED = (
     }
     | {("MechanisticEdge", slot) for slot in ("id", "subject", "predicate", "object", "evidence")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("Reference", "id"),
-       ("EvidenceItem", "reference_id"), ("EvidenceItem", "quote"),
+       ("EvidenceItem", "reference_id"),
        ("CurationEvent", "timestamp")}
 )
 EXPECTED_NON_BLANK = (
     {("PathwayRecord", slot) for slot in ("id", "label", "description", "pathway_type")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("MechanisticEdge", "id"),
        ("EvidenceItem", "quote"), ("Reference", "id"), ("Reference", "title"),
+       ("EvidenceItem", "source_assertion"), ("EvidenceItem", "source_locator"),
+       ("Reference", "url"), ("Reference", "source_version"), ("Reference", "source_sha256"),
        ("Reference", "citation"), ("CurationEvent", "timestamp")}
     | {("GeneCluster", slot) for slot in ("id", "label", "products",
                                           "biosynthetic_classes")}

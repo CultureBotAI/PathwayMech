@@ -1,9 +1,8 @@
 id: MetaCyc:RHAMCAT-PWY
 label: L-rhamnose degradation I
-description: L-rhamnose degradation I converts alpha-L-rhamnose to beta-L-rhamnose,
-  isomerizes L-rhamnopyranose to L-rhamnulose, cyclizes keto-L-rhamnulose to L-rhamnulofuranose,
-  phosphorylates L-rhamnulose with ATP, and cleaves L-rhamnulose 1-phosphate to (S)-lactaldehyde
-  and dihydroxyacetone phosphate.
+description: L-rhamnose degradation I converts alpha-L-rhamnose to beta-L-rhamnose, isomerizes L-rhamnopyranose
+  to L-rhamnulose, cyclizes keto-L-rhamnulose to L-rhamnulofuranose, phosphorylates L-rhamnulose with
+  ATP, and cleaves L-rhamnulose 1-phosphate to (S)-lactaldehyde and dihydroxyacetone phosphate.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:2
@@ -11,235 +10,300 @@ taxa:
 participants:
 - id: EC:5.1.3.32
   label: L-rhamnose mutarotase
+  category: molecular_activity
 - id: EC:5.3.1.14
   label: L-rhamnose isomerase
+  category: molecular_activity
 - id: EC:2.7.1.5
   label: rhamnulokinase
+  category: molecular_activity
 - id: EC:4.1.2.19
   label: rhamnulose-1-phosphate aldolase
+  category: molecular_activity
 - id: CHEBI:27907
   label: alpha-L-rhamnose
+  category: small_molecule
 - id: CHEBI:27586
   label: beta-L-rhamnose
+  category: small_molecule
 - id: CHEBI:62346
   label: L-rhamnopyranose
+  category: small_molecule
 - id: CHEBI:17897
   label: L-rhamnulose
+  category: small_molecule
 - id: MetaCyc:CPD-16567
   label: L-rhamnulofuranose
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:58313
   label: L-rhamnulose 1-phosphate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:18041
   label: (S)-lactaldehyde
+  category: small_molecule
 - id: CHEBI:57642
   label: dihydroxyacetone phosphate
+  category: small_molecule
 reactions:
-- id: RHEA:25587
-  label: L-rhamnose mutarotase reaction
-- id: RHEA:23163
-  label: L-rhamnose isomerase reaction
 - id: MetaCyc:RXN-15356
   label: keto-L-rhamnulose cyclization reaction
+  direction: left_to_right
 - id: RHEA:20118
   label: rhamnulokinase reaction
-- id: RHEA:19692
+  direction: left_to_right
+- id: RHEA:25585
+  label: L-rhamnose mutarotase reaction
+  direction: left_to_right
+- id: RHEA:23161
+  label: L-rhamnose isomerase reaction
+  direction: left_to_right
+- id: RHEA:19690
   label: rhamnulose-1-phosphate aldolase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:5.1.3.32
-  predicate: catalyzes
-  object: RHEA:25587
-  evidence:
-  - reference_id: RHEA:25584
-    quote: EC 5.1.3.32 L-rhamnose mutarotase
-- id: edge-002
-  subject: CHEBI:27907
-  predicate: consumes
-  object: RHEA:25587
-  evidence:
-  - reference_id: RHEA:25587
-    quote: RHEA:25587 alpha-L-rhamnose <=> beta-L-rhamnose
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: alpha-L-rhamnose is consumed by L-rhamnose mutarotase reaction.
-- id: edge-003
-  subject: RHEA:25587
-  predicate: produces
-  object: CHEBI:27586
-  evidence:
-  - reference_id: RHEA:25587
-    quote: RHEA:25587 alpha-L-rhamnose <=> beta-L-rhamnose
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnose mutarotase reaction produces beta-L-rhamnose.
-- id: edge-004
-  subject: RHEA:25587
-  predicate: precedes
-  object: RHEA:23163
-  evidence:
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnose mutarotase reaction precedes L-rhamnose isomerase reaction.
-- id: edge-005
-  subject: EC:5.3.1.14
-  predicate: catalyzes
-  object: RHEA:23163
-  evidence:
-  - reference_id: RHEA:23160
-    quote: EC 5.3.1.14 L-rhamnose isomerase
-- id: edge-006
-  subject: CHEBI:62346
-  predicate: consumes
-  object: RHEA:23163
-  evidence:
-  - reference_id: RHEA:23163
-    quote: RHEA:23163 L-rhamnopyranose <=> L-rhamnulose
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnopyranose is consumed by L-rhamnose isomerase reaction.
-- id: edge-007
-  subject: RHEA:23163
-  predicate: produces
-  object: CHEBI:17897
-  evidence:
-  - reference_id: RHEA:23163
-    quote: RHEA:23163 L-rhamnopyranose <=> L-rhamnulose
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnose isomerase reaction produces L-rhamnulose.
-- id: edge-008
-  subject: RHEA:23163
-  predicate: precedes
-  object: MetaCyc:RXN-15356
-  evidence:
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnose isomerase reaction precedes keto-L-rhamnulose cyclization reaction.
-- id: edge-009
   subject: CHEBI:17897
   predicate: consumes
   object: MetaCyc:RXN-15356
   evidence:
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnulose is consumed by keto-L-rhamnulose cyclization reaction.
-- id: edge-010
+  - reference_id: MetaCyc:RXN-15356
+    source_assertion: MetaCyc assigns CHEBI:17897 consumes MetaCyc:RXN-15356 in the spontaneous rhamnulose
+      cyclization.
+    source_locator: Reaction[@frameid='RXN-15356']/left|right; native compound cross-references
+- id: edge-002
   subject: MetaCyc:RXN-15356
   predicate: produces
   object: MetaCyc:CPD-16567
   evidence:
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: keto-L-rhamnulose cyclization reaction produces L-rhamnulofuranose.
-- id: edge-011
-  subject: MetaCyc:RXN-15356
-  predicate: precedes
-  object: RHEA:20118
-  evidence:
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: keto-L-rhamnulose cyclization reaction precedes rhamnulokinase reaction.
-- id: edge-012
-  subject: EC:2.7.1.5
-  predicate: catalyzes
-  object: RHEA:20118
-  evidence:
-  - reference_id: RHEA:20117
-    quote: rhamnulokinase catalyzes rhamnulokinase reaction.
-- id: edge-013
+  - reference_id: MetaCyc:RXN-15356
+    source_assertion: MetaCyc assigns MetaCyc:RXN-15356 produces MetaCyc:CPD-16567 in the spontaneous
+      rhamnulose cyclization.
+    source_locator: Reaction[@frameid='RXN-15356']/left|right; native compound cross-references
+- id: edge-003
   subject: CHEBI:17897
   predicate: consumes
   object: RHEA:20118
   evidence:
   - reference_id: RHEA:20118
-    quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-- id: edge-014
+    source_assertion: Rhea lists CHEBI:17897 on the substrates side of RHEA:20118 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20118']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-004
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:20118
   evidence:
   - reference_id: RHEA:20118
-    quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-- id: edge-015
-  subject: RHEA:20118
-  predicate: produces
-  object: CHEBI:58313
-  evidence:
-  - reference_id: RHEA:20118
-    quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-- id: edge-016
-  subject: RHEA:20118
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:20118
-    quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-- id: edge-017
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:20118 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20118']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-005
   subject: RHEA:20118
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:20118
-    quote: RHEA:20118 L-rhamnulose + ATP => L-rhamnulose 1-phosphate + ADP + H(+)
-- id: edge-018
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:20118 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20118']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-006
   subject: RHEA:20118
-  predicate: precedes
-  object: RHEA:19692
+  predicate: produces
+  object: CHEBI:456216
   evidence:
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: rhamnulokinase reaction precedes rhamnulose-1-phosphate aldolase reaction.
-- id: edge-019
-  subject: EC:4.1.2.19
-  predicate: catalyzes
-  object: RHEA:19692
+  - reference_id: RHEA:20118
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:20118 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20118']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:20118
+  predicate: produces
+  object: CHEBI:58313
   evidence:
-  - reference_id: RHEA:19689
-    quote: rhamnulose-1-phosphate aldolase catalyzes rhamnulose-1-phosphate aldolase
-      reaction.
-- id: edge-020
+  - reference_id: RHEA:20118
+    source_assertion: Rhea lists CHEBI:58313 on the products side of RHEA:20118 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20118']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: CHEBI:27907
+  predicate: consumes
+  object: RHEA:25585
+  evidence:
+  - reference_id: RHEA:25585
+    source_assertion: Rhea lists CHEBI:27907 on the substrates side of RHEA:25585 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25585']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: RHEA:25585
+  predicate: produces
+  object: CHEBI:27586
+  evidence:
+  - reference_id: RHEA:25585
+    source_assertion: Rhea lists CHEBI:27586 on the products side of RHEA:25585 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25585']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: CHEBI:62346
+  predicate: consumes
+  object: RHEA:23161
+  evidence:
+  - reference_id: RHEA:23161
+    source_assertion: Rhea lists CHEBI:62346 on the substrates side of RHEA:23161 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23161']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-011
+  subject: RHEA:23161
+  predicate: produces
+  object: CHEBI:17897
+  evidence:
+  - reference_id: RHEA:23161
+    source_assertion: Rhea lists CHEBI:17897 on the products side of RHEA:23161 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23161']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-012
   subject: CHEBI:58313
   predicate: consumes
-  object: RHEA:19692
+  object: RHEA:19690
   evidence:
-  - reference_id: RHEA:19692
-    quote: RHEA:19692 L-rhamnulose 1-phosphate <=> (S)-lactaldehyde + dihydroxyacetone
-      phosphate
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: L-rhamnulose 1-phosphate is consumed by rhamnulose-1-phosphate aldolase
-      reaction.
-- id: edge-021
-  subject: RHEA:19692
+  - reference_id: RHEA:19690
+    source_assertion: Rhea lists CHEBI:58313 on the substrates side of RHEA:19690 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19690']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-013
+  subject: RHEA:19690
   predicate: produces
   object: CHEBI:18041
   evidence:
-  - reference_id: RHEA:19692
-    quote: RHEA:19692 L-rhamnulose 1-phosphate <=> (S)-lactaldehyde + dihydroxyacetone
-      phosphate
-  - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: rhamnulose-1-phosphate aldolase reaction produces (S)-lactaldehyde.
-- id: edge-022
-  subject: RHEA:19692
+  - reference_id: RHEA:19690
+    source_assertion: Rhea lists CHEBI:18041 on the products side of RHEA:19690 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19690']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-014
+  subject: RHEA:19690
   predicate: produces
   object: CHEBI:57642
   evidence:
-  - reference_id: RHEA:19692
-    quote: RHEA:19692 L-rhamnulose 1-phosphate <=> (S)-lactaldehyde + dihydroxyacetone
-      phosphate
+  - reference_id: RHEA:19690
+    source_assertion: Rhea lists CHEBI:57642 on the products side of RHEA:19690 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19690']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-015
+  subject: EC:5.1.3.32
+  predicate: catalyzes
+  object: RHEA:25585
+  evidence:
+  - reference_id: RHEA:25584
+    source_assertion: Rhea associates EC:5.1.3.32 with the reaction family containing RHEA:25585.
+    source_locator: rh:ec
+- id: edge-016
+  subject: EC:5.3.1.14
+  predicate: catalyzes
+  object: RHEA:23161
+  evidence:
+  - reference_id: RHEA:23160
+    source_assertion: Rhea associates EC:5.3.1.14 with the reaction family containing RHEA:23161.
+    source_locator: rh:ec
+- id: edge-017
+  subject: EC:2.7.1.5
+  predicate: catalyzes
+  object: RHEA:20118
+  evidence:
+  - reference_id: RHEA:20117
+    source_assertion: Rhea associates EC:2.7.1.5 with the reaction family containing RHEA:20118.
+    source_locator: rh:ec
+- id: edge-018
+  subject: EC:4.1.2.19
+  predicate: catalyzes
+  object: RHEA:19690
+  evidence:
+  - reference_id: RHEA:19689
+    source_assertion: Rhea associates EC:4.1.2.19 with the reaction family containing RHEA:19690.
+    source_locator: rh:ec
+- id: edge-019
+  subject: MetaCyc:RXN-15356
+  predicate: precedes
+  object: RHEA:20118
+  evidence:
   - reference_id: MetaCyc:RHAMCAT-PWY
-    quote: rhamnulose-1-phosphate aldolase reaction produces dihydroxyacetone phosphate.
+    source_assertion: MetaCyc pathway ordering places MetaCyc:RXN-15356 before RHEA:20118 in this pathway.
+      The source ordering may bridge anomer-specific and broader substrate classes.
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-020
+  subject: RHEA:20118
+  predicate: precedes
+  object: RHEA:19690
+  evidence:
+  - reference_id: MetaCyc:RHAMCAT-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:20118 before RHEA:19690 in this pathway. Shared
+      intermediate: CHEBI:58313.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-021
+  subject: RHEA:23161
+  predicate: precedes
+  object: MetaCyc:RXN-15356
+  evidence:
+  - reference_id: MetaCyc:RHAMCAT-PWY
+    source_assertion: MetaCyc pathway ordering places RHEA:23161 before MetaCyc:RXN-15356 in this pathway.
+      The source ordering may bridge anomer-specific and broader substrate classes.
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-022
+  subject: RHEA:25585
+  predicate: precedes
+  object: RHEA:23161
+  evidence:
+  - reference_id: MetaCyc:RHAMCAT-PWY
+    source_assertion: MetaCyc pathway ordering places RHEA:25585 before RHEA:23161 in this pathway. The
+      source ordering may bridge anomer-specific and broader substrate classes.
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 references:
 - id: MetaCyc:RHAMCAT-PWY
   title: MetaCyc L-rhamnose degradation I
+  url: https://pathway.yeastgenome.org/getxml?id=META:RHAMCAT-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 86cba25f1b5cc26b86ecb496925e20e0ec205ce6b824f3b9bdbb95def16843b5
 - id: RHEA:25584
   title: Rhea L-rhamnose mutarotase reaction
+  url: https://www.rhea-db.org/rhea/25584
+  source_version: '139'
 - id: RHEA:25587
   title: Rhea bidirectional L-rhamnose mutarotase reaction
+  url: https://www.rhea-db.org/rhea/25587
+  source_version: '139'
 - id: RHEA:23160
   title: Rhea L-rhamnose isomerase reaction
+  url: https://www.rhea-db.org/rhea/23160
+  source_version: '139'
 - id: RHEA:23163
   title: Rhea bidirectional L-rhamnose isomerase reaction
+  url: https://www.rhea-db.org/rhea/23163
+  source_version: '139'
 - id: RHEA:20117
   title: Rhea generic rhamnulokinase reaction
+  url: https://www.rhea-db.org/rhea/20117
+  source_version: '139'
 - id: RHEA:20118
   title: Rhea L-rhamnulose-1-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/20118
+  source_version: '139'
 - id: RHEA:19689
   title: Rhea generic rhamnulose-1-phosphate aldolase reaction
+  url: https://www.rhea-db.org/rhea/19689
+  source_version: '139'
 - id: RHEA:19692
   title: Rhea bidirectional rhamnulose-1-phosphate aldolase reaction
+  url: https://www.rhea-db.org/rhea/19692
+  source_version: '139'
+- id: MetaCyc:RXN-15356
+  title: MetaCyc:RXN-15356 authority record
+  url: https://pathway.yeastgenome.org/getxml?id=META:RXN-15356&detail=full
+  source_version: '22.5'
+  source_sha256: 15b4a7a238f233f6f2bb18c6f6b7c3a0d1ec18f5976a22254184c50d94c25b08
+- id: RHEA:25585
+  title: RHEA:25585 authority record
+  url: https://www.rhea-db.org/rhea/25585
+  source_version: '139'
+- id: RHEA:23161
+  title: RHEA:23161 authority record
+  url: https://www.rhea-db.org/rhea/23161
+  source_version: '139'
+- id: RHEA:19690
+  title: RHEA:19690 authority record
+  url: https://www.rhea-db.org/rhea/19690
+  source_version: '139'

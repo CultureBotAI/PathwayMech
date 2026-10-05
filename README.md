@@ -19,6 +19,8 @@ into a pathway-specific schema:
 
 - every mechanistic edge must cite a local `references` entry;
 - every evidence quote must be short enough for review;
+- structured source assertions carry exact source locations and are displayed
+  separately from verbatim quotations;
 - graph edge endpoints must resolve to the pathway itself, a participant, or a
   reaction in the same record;
 - record identifiers must use explicit CURIE-style prefixes;

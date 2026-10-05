@@ -8,147 +8,362 @@ taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
-- id: CHEBI:4170
-  label: D-glucopyranose 6-phosphate
-- id: SGD:S000003689
-  label: INO1 Scer
 - id: CHEBI:58401
   label: 1D-myo-inositol 3-phosphate(2-)
-- id: SGD:S000002695
-  label: INM2 Scer
-- id: CHEBI:15377
-  label: water
-- id: CHEBI:43474
-  label: hydrogenphosphate
+  category: small_molecule
+- id: GO:0006021
+  label: inositol biosynthetic process
+  category: biological_process
 - id: CHEBI:17268
   label: myo-inositol
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: SGD:S000003689
+  label: INO1 Scer
+  category: protein
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:4170
+  label: D-glucopyranose 6-phosphate
+  category: small_molecule
+- id: SGD:S000002695
+  label: INM2 Scer
+  category: protein
 - id: SGD:S000001088
   label: INM1 Scer
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
 - id: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
   label: inositol-3-phosphate synthase activity
-- id: gomodel:YeastPathways_PWY-2301/6a2b236300005397
-  label: inositol monophosphate 1-phosphatase activity (INM2)
+  category: molecular_activity
 - id: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
   label: inositol monophosphate 1-phosphatase activity (INM1)
+  category: molecular_activity
+- id: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  label: inositol monophosphate 1-phosphatase activity (INM2)
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
-  subject: CHEBI:4170
-  predicate: consumes
-  object: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
+  subject: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
+  predicate: has_output
+  object: CHEBI:58401
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_4170_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_4170_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:4170"'
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN RO:0002234
+      gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/0; endpoint types: /individuals/5/type;
+      /individuals/4/type'
 - id: edge-002
+  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  predicate: part_of
+  object: GO:0006021
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN BFO:0000050
+      gomodel:YeastPathways_PWY-2301/YeastPathways_PWY-2301.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/1; endpoint types: /individuals/6/type;
+      /individuals/19/type'
+- id: edge-003
+  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  predicate: has_output
+  object: CHEBI:17268
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN RO:0002234
+      gomodel:CHEBI_17268_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/2; endpoint types: /individuals/6/type;
+      /individuals/1/type'
+- id: edge-004
+  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  predicate: has_input
+  object: CHEBI:58401
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 RO:0002233
+      gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/3; endpoint types: /individuals/20/type;
+      /individuals/4/type'
+- id: edge-005
+  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 BFO:0000066
+      gomodel:YeastPathways_PWY-2301/6a2b236300005403.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/4; endpoint types: /individuals/20/type;
+      /individuals/25/type'
+- id: edge-006
   subject: SGD:S000003689
   predicate: enables
   object: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-2301/654d809000001026"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:YeastPathways_PWY-2301/654d809000001026","type":[{"type":"class","id":"SGD:S000003689"'
-- id: edge-003
-  subject: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
-  predicate: produces
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN RO:0002333
+      gomodel:YeastPathways_PWY-2301/654d809000001026.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/5; endpoint types: /individuals/5/type;
+      /individuals/31/type'
+- id: edge-007
+  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  predicate: has_input
   object: CHEBI:58401
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN"'
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN RO:0002233
+      gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/6; endpoint types: /individuals/6/type;
+      /individuals/4/type'
+- id: edge-008
+  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  predicate: has_output
+  object: CHEBI:43474
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:58401"'
-- id: edge-004
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 RO:0002234
+      gomodel:YeastPathways_PWY-2301/6a2b236300005400.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/7; endpoint types: /individuals/20/type;
+      /individuals/23/type'
+- id: edge-009
+  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 RO:0002233
+      gomodel:YeastPathways_PWY-2301/6a2b236300005398.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/8; endpoint types: /individuals/20/type;
+      /individuals/21/type'
+- id: edge-010
+  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  predicate: has_output
+  object: CHEBI:17268
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 RO:0002234
+      gomodel:YeastPathways_PWY-2301/6a2b236300005399.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/9; endpoint types: /individuals/20/type;
+      /individuals/22/type'
+- id: edge-011
+  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN RO:0002233
+      gomodel:CHEBI_15377_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/10; endpoint types: /individuals/6/type;
+      /individuals/0/type'
+- id: edge-012
+  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
+  predicate: part_of
+  object: GO:0006021
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 BFO:0000050
+      gomodel:YeastPathways_PWY-2301/YeastPathways_PWY-2301.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/11; endpoint types: /individuals/20/type;
+      /individuals/19/type'
+- id: edge-013
+  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN BFO:0000066
+      gomodel:reaction_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/12; endpoint types: /individuals/6/type;
+      /individuals/18/type'
+- id: edge-014
+  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  predicate: has_output
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN RO:0002234
+      gomodel:CHEBI_43474_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/13; endpoint types: /individuals/6/type;
+      /individuals/3/type'
+- id: edge-015
+  subject: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
+  predicate: has_input
+  object: CHEBI:4170
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN RO:0002233
+      gomodel:CHEBI_4170_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/14; endpoint types: /individuals/5/type;
+      /individuals/2/type'
+- id: edge-016
+  subject: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
+  predicate: part_of
+  object: GO:0006021
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN BFO:0000050
+      gomodel:YeastPathways_PWY-2301/YeastPathways_PWY-2301.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/15; endpoint types: /individuals/5/type;
+      /individuals/19/type'
+- id: edge-017
+  subject: gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-2301
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN BFO:0000066
+      gomodel:reaction_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/16; endpoint types: /individuals/5/type;
+      /individuals/17/type'
+- id: edge-018
   subject: SGD:S000002695
   predicate: enables
   object: gomodel:YeastPathways_PWY-2301/6a2b236300005397
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:YeastPathways_PWY-2301/6a2b236300005397","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-2301/6a2b236300005401"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:YeastPathways_PWY-2301/6a2b236300005401","type":[{"type":"class","id":"SGD:S000002695"'
-- id: edge-005
-  subject: CHEBI:58401
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-2301/6a2b236300005397
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:YeastPathways_PWY-2301/6a2b236300005397","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:58401"'
-- id: edge-006
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-2301/6a2b236300005397
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:YeastPathways_PWY-2301/6a2b236300005397","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-2301/6a2b236300005398"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:YeastPathways_PWY-2301/6a2b236300005398","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-007
-  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
-  predicate: produces
-  object: CHEBI:43474
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:YeastPathways_PWY-2301/6a2b236300005397","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-2301/6a2b236300005400"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:YeastPathways_PWY-2301/6a2b236300005400","type":[{"type":"class","id":"CHEBI:43474"'
-- id: edge-008
-  subject: gomodel:YeastPathways_PWY-2301/6a2b236300005397
-  predicate: produces
-  object: CHEBI:17268
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:YeastPathways_PWY-2301/6a2b236300005397","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-2301/6a2b236300005399"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:YeastPathways_PWY-2301/6a2b236300005399","type":[{"type":"class","id":"CHEBI:17268"'
-- id: edge-009
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-2301/6a2b236300005397 RO:0002333
+      gomodel:YeastPathways_PWY-2301/6a2b236300005401.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/17; endpoint types: /individuals/20/type;
+      /individuals/24/type'
+- id: edge-019
   subject: SGD:S000001088
   predicate: enables
   object: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR046C-MONOMER_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:YHR046C-MONOMER_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN_controller","type":[{"type":"class","id":"SGD:S000001088"'
-- id: edge-010
-  subject: CHEBI:58401
-  predicate: consumes
-  object: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+    source_assertion: The model asserts gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN RO:0002333
+      gomodel:YHR046C-MONOMER_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN_controller.
+    source_locator: './YeastPathways_PWY-2301.json#/facts/18; endpoint types: /individuals/6/type;
+      /individuals/7/type'
+- id: location-81e87f71ac03
+  subject: SGD:S000003689
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_58401_MYO-INOSITOL-1-PHOSPHATE-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:58401"'
-- id: edge-011
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
+  - reference_id: UniProtKB:P11986
+    source_assertion: UniProtKB:P11986 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/341/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P11986
+    source_assertion: UniProtKB:P11986 has the exact SGD cross-reference SGD:S000003689.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/341/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-e7a26860ae9f
+  subject: SGD:S000001088
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_15377_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-012
-  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
-  predicate: produces
-  object: CHEBI:17268
+  - reference_id: UniProtKB:P38710
+    source_assertion: UniProtKB:P38710 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1417/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P38710
+    source_assertion: UniProtKB:P38710 has the exact SGD cross-reference SGD:S000001088.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1417/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-64bda3d62f6b
+  subject: SGD:S000001088
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17268_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_17268_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:17268"'
-- id: edge-013
-  subject: gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN
-  predicate: produces
-  object: CHEBI:43474
+  - reference_id: UniProtKB:P38710
+    source_assertion: UniProtKB:P38710 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1417/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P38710
+    source_assertion: UniProtKB:P38710 has the exact SGD cross-reference SGD:S000001088.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1417/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-49696fa98d23
+  subject: SGD:S000003689
+  predicate: has_cofactor
+  object: CHEBI:57540
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:11779862); ECO:0000269 (PubMed:12832758); ECO:0000269 (PubMed:12836703); ECO:0000269
+    (PubMed:14684747); ECO:0000269 (Reference:Ref.6)'
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"subject":"gomodel:MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-2301
-    quote: '"id":"gomodel:CHEBI_43474_MYO-INOSITOL-1OR-4-MONOPHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+  - reference_id: UniProtKB:P11986
+    source_assertion: UniProtKB:P11986 annotates CHEBI:57540 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/341/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P11986
+    source_assertion: UniProtKB:P11986 has the exact SGD cross-reference SGD:S000003689.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/341/uniProtKBCrossReferences/0'
+- id: cofactor-07dfa3a89aea
+  subject: SGD:S000002695
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:Q05533
+    source_assertion: UniProtKB:Q05533 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/4150/comments/0/cofactors/0'
+  - reference_id: UniProtKB:Q05533
+    source_assertion: UniProtKB:Q05533 has the exact SGD cross-reference SGD:S000002695.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/4150/uniProtKBCrossReferences/0'
+- id: cofactor-0901c1c8d7b7
+  subject: SGD:S000001088
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:P38710
+    source_assertion: UniProtKB:P38710 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1417/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P38710
+    source_assertion: UniProtKB:P38710 has the exact SGD cross-reference SGD:S000001088.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1417/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-2301
   title: GO-CAM myo-inositol biosynthesis model YeastPathways_PWY-2301
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-02; member ./YeastPathways_PWY-2301.json
+- id: UniProtKB:P11986
+  title: Reviewed UniProtKB P11986 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P38710
+  title: Reviewed UniProtKB P38710 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:Q05533
+  title: UniProtKB Q05533 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

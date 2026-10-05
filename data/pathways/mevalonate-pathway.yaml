@@ -1,6 +1,9 @@
 id: gomodel:YeastPathways_IPPSYN-PWY
 label: mevalonate pathway
-description: The mevalonate pathway in Saccharomyces cerevisiae S288C condenses acetyl-CoA to acetoacetyl-CoA, forms 3-hydroxy-3-methylglutaryl-CoA and mevalonate, phosphorylates mevalonate to 5-diphosphomevalonate, decarboxylates that intermediate to isopentenyl diphosphate, and isomerizes it to prenyl diphosphate.
+description: The mevalonate pathway in Saccharomyces cerevisiae S288C condenses acetyl-CoA
+  to acetoacetyl-CoA, forms 3-hydroxy-3-methylglutaryl-CoA and mevalonate, phosphorylates
+  mevalonate to 5-diphosphomevalonate, decarboxylates that intermediate to isopentenyl diphosphate,
+  and isomerizes it to prenyl diphosphate.
 pathway_type: lipid-biosynthesis
 taxa:
 - id: NCBITaxon:559292
@@ -8,430 +11,805 @@ taxa:
 participants:
 - id: CHEBI:57287
   label: coenzyme A(4-)
+  category: small_molecule
 - id: CHEBI:36464
   label: (R)-mevalonate
+  category: small_molecule
 - id: SGD:S000005949
   label: ERG10 Scer
+  category: protein
 - id: CHEBI:43074
   label: (3S)-3-hydroxy-3-methylglutaryl-CoA(5-)
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: SGD:S000004821
   label: ERG12 Scer
+  category: protein
 - id: CHEBI:128769
   label: isopentenyl diphosphate(3-)
+  category: small_molecule
 - id: CHEBI:57557
   label: (R)-5-diphosphonatomevalonate(4-)
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0008299
+  label: isoprenoid biosynthetic process
+  category: biological_process
 - id: CHEBI:456216
   label: ADP(3-)
+  category: small_molecule
 - id: SGD:S000005326
   label: MVD1 Scer
+  category: protein
 - id: SGD:S000006038
   label: IDI1 Scer
+  category: protein
 - id: CHEBI:43474
   label: hydrogenphosphate
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP(4-)
+  category: small_molecule
 - id: CHEBI:57288
   label: acetyl-CoA(4-)
+  category: small_molecule
 - id: CHEBI:58146
   label: (R)-5-phosphonatomevalonate(3-)
+  category: small_molecule
 - id: SGD:S000004442
   label: HMG2 Scer
+  category: protein
 - id: CHEBI:57286
   label: acetoacetyl-CoA(4-)
+  category: small_molecule
 - id: SGD:S000004833
   label: ERG8 Scer
+  category: protein
 - id: SGD:S000004540
   label: HMG1 Scer
+  category: protein
 - id: CHEBI:58349
   label: NADP(3-)
+  category: small_molecule
 - id: CHEBI:57783
   label: NADPH(4-)
+  category: small_molecule
 - id: CHEBI:57623
   label: prenyl diphosphate(3-)
+  category: small_molecule
 - id: SGD:S000004595
   label: ERG13 Scer
+  category: protein
 - id: CHEBI:16526
   label: carbon dioxide
+  category: small_molecule
 - id: CHEBI:15377
   label: water
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005789
+  label: endoplasmic reticulum membrane
+  category: cellular_component
+- id: GO:0005635
+  label: nuclear envelope
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
-- id: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
-  label: hydroxymethylglutaryl-CoA synthase activity
-- id: gomodel:MEVALONATE-KINASE-RXN
-  label: mevalonate kinase activity
-- id: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
-  label: acetyl-CoA C-acetyltransferase activity
 - id: gomodel:1.1.1.34-RXN
   label: hydroxymethylglutaryl-CoA reductase (NADPH) activity
+  category: molecular_activity
+- id: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  label: acetyl-CoA C-acetyltransferase activity
+  category: molecular_activity
 - id: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
   label: diphosphomevalonate decarboxylase activity
-- id: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
-  label: phosphomevalonate kinase activity
+  category: molecular_activity
+- id: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  label: hydroxymethylglutaryl-CoA synthase activity
+  category: molecular_activity
 - id: gomodel:IPPISOM-RXN
   label: isopentenyl-diphosphate delta-isomerase activity
+  category: molecular_activity
+- id: gomodel:MEVALONATE-KINASE-RXN
+  label: mevalonate kinase activity
+  category: molecular_activity
+- id: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  label: phosphomevalonate kinase activity
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57287
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57287_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:57287"'
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002234
+      gomodel:CHEBI_57287_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/0; endpoint types: /individuals/28/type;
+      /individuals/19/type'
 - id: edge-002
-  subject: CHEBI:36464
-  predicate: consumes
-  object: gomodel:MEVALONATE-KINASE-RXN
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: has_input
+  object: CHEBI:36464
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_36464_1.1.1.34-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_36464_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:36464"'
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN RO:0002233 gomodel:CHEBI_36464_1.1.1.34-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/1; endpoint types: /individuals/30/type;
+      /individuals/10/type'
 - id: edge-003
   subject: SGD:S000005949
   predicate: enables
   object: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL028W-MONOMER_ACETYL-COA-ACETYLTRANSFER-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YPL028W-MONOMER_ACETYL-COA-ACETYLTRANSFER-RXN_controller","type":[{"type":"class","id":"SGD:S000005949"'
+    source_assertion: The model asserts gomodel:ACETYL-COA-ACETYLTRANSFER-RXN RO:0002333 gomodel:YPL028W-MONOMER_ACETYL-COA-ACETYLTRANSFER-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/2; endpoint types: /individuals/0/type;
+      /individuals/38/type'
 - id: edge-004
-  subject: CHEBI:43074
-  predicate: consumes
-  object: gomodel:1.1.1.34-RXN
+  subject: gomodel:1.1.1.34-RXN
+  predicate: has_input
+  object: CHEBI:43074
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:43074"'
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002233 gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/3; endpoint types: /individuals/94/type;
+      /individuals/11/type'
 - id: edge-005
   subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_15378_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002234
+      gomodel:CHEBI_15378_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/4; endpoint types: /individuals/28/type;
+      /individuals/4/type'
 - id: edge-006
   subject: SGD:S000004821
   predicate: enables
   object: gomodel:MEVALONATE-KINASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR208W-MONOMER_MEVALONATE-KINASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YMR208W-MONOMER_MEVALONATE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004821"'
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN RO:0002333 gomodel:YMR208W-MONOMER_MEVALONATE-KINASE-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/5; endpoint types: /individuals/30/type;
+      /individuals/35/type'
 - id: edge-007
   subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:128769
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002234
+      gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/6; endpoint types: /individuals/27/type;
+      /individuals/1/type'
 - id: edge-008
-  subject: CHEBI:57557
-  predicate: consumes
-  object: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:57557"'
-- id: edge-009
-  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
-  predicate: produces
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: has_input
   object: CHEBI:57557
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002233
+      gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/7; endpoint types: /individuals/27/type;
+      /individuals/22/type'
+- id: edge-009
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:57557"'
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN BFO:0000066 gomodel:reaction_PHOSPHOMEVALONATE-KINASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/8; endpoint types: /individuals/31/type;
+      /individuals/93/type'
 - id: edge-010
+  subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    source_assertion: The model asserts gomodel:ACETYL-COA-ACETYLTRANSFER-RXN BFO:0000050
+      gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/9; endpoint types: /individuals/0/type;
+      /individuals/95/type'
+- id: edge-011
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: has_output
+  object: CHEBI:57557
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN RO:0002234 gomodel:CHEBI_57557_PHOSPHOMEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/10; endpoint types: /individuals/31/type;
+      /individuals/22/type'
+- id: edge-012
+  subject: gomodel:IPPISOM-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    source_assertion: The model asserts gomodel:IPPISOM-RXN BFO:0000050 gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/11; endpoint types: /individuals/29/type;
+      /individuals/95/type'
+- id: edge-013
   subject: gomodel:MEVALONATE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_MEVALONATE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN RO:0002234 gomodel:CHEBI_456216_MEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/12; endpoint types: /individuals/30/type;
+      /individuals/14/type'
+- id: edge-014
+  subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_456216_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-011
+    source_assertion: The model asserts gomodel:ACETYL-COA-ACETYLTRANSFER-RXN BFO:0000066
+      gomodel:reaction_ACETYL-COA-ACETYLTRANSFER-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/13; endpoint types: /individuals/0/type;
+      /individuals/88/type'
+- id: edge-016
   subject: SGD:S000005326
   predicate: enables
   object: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNR043W-MONOMER_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YNR043W-MONOMER_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN_controller","type":[{"type":"class","id":"SGD:S000005326"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002333
+      gomodel:YNR043W-MONOMER_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/15; endpoint types: /individuals/27/type;
+      /individuals/37/type'
+- id: edge-017
   subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:43074
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002234
+      gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/16; endpoint types: /individuals/28/type;
+      /individuals/11/type'
+- id: edge-018
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_43074_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:43074"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN BFO:0000050
+      gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/17; endpoint types: /individuals/27/type;
+      /individuals/95/type'
+- id: edge-019
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN BFO:0000066
+      gomodel:reaction_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/18; endpoint types: /individuals/28/type;
+      /individuals/90/type'
+- id: edge-020
   subject: gomodel:1.1.1.34-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57287
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_1.1.1.34-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57287_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:57287"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002234 gomodel:CHEBI_57287_1.1.1.34-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/19; endpoint types: /individuals/94/type;
+      /individuals/17/type'
+- id: edge-021
   subject: SGD:S000006038
   predicate: enables
   object: gomodel:IPPISOM-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller","type":[{"type":"class","id":"SGD:S000006038"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002333 gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/20; endpoint types: /individuals/29/type;
+      /individuals/39/type'
+- id: edge-022
   subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:43474
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_43474_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:43474"'
-- id: edge-016
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:MEVALONATE-KINASE-RXN
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002234
+      gomodel:CHEBI_43474_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/21; endpoint types: /individuals/27/type;
+      /individuals/12/type'
+- id: edge-023
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_MEVALONATE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_30616_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-017
-  subject: CHEBI:57288
-  predicate: consumes
-  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN RO:0002233 gomodel:CHEBI_30616_MEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/22; endpoint types: /individuals/30/type;
+      /individuals/8/type'
+- id: edge-024
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: has_input
+  object: CHEBI:57288
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57288_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57288_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:57288"'
-- id: edge-018
-  subject: CHEBI:58146
-  predicate: consumes
-  object: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002233
+      gomodel:CHEBI_57288_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/23; endpoint types: /individuals/28/type;
+      /individuals/21/type'
+- id: edge-025
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: has_input
+  object: CHEBI:58146
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:58146"'
-- id: edge-019
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN RO:0002233 gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/24; endpoint types: /individuals/31/type;
+      /individuals/25/type'
+- id: edge-026
   subject: SGD:S000004442
   predicate: enables
   object: gomodel:1.1.1.34-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR450W-MONOMER_1.1.1.34-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YLR450W-MONOMER_1.1.1.34-RXN_controller","type":[{"type":"class","id":"SGD:S000004442"'
-- id: edge-020
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002333 gomodel:YLR450W-MONOMER_1.1.1.34-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/25; endpoint types: /individuals/94/type;
+      /individuals/32/type'
+- id: edge-027
   subject: gomodel:MEVALONATE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_MEVALONATE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_15378_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-021
-  subject: CHEBI:57286
-  predicate: consumes
-  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN RO:0002234 gomodel:CHEBI_15378_MEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/26; endpoint types: /individuals/30/type;
+      /individuals/5/type'
+- id: edge-028
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: has_input
+  object: CHEBI:57286
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57286"'
-- id: edge-022
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002233
+      gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/27; endpoint types: /individuals/28/type;
+      /individuals/16/type'
+- id: edge-029
   subject: SGD:S000004833
   predicate: enables
   object: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR220W-MONOMER_PHOSPHOMEVALONATE-KINASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YMR220W-MONOMER_PHOSPHOMEVALONATE-KINASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004833"'
-- id: edge-023
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN RO:0002333 gomodel:YMR220W-MONOMER_PHOSPHOMEVALONATE-KINASE-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/28; endpoint types: /individuals/31/type;
+      /individuals/36/type'
+- id: edge-030
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_PHOSPHOMEVALONATE-KINASE-RXN"'
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN RO:0002233 gomodel:CHEBI_30616_PHOSPHOMEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/29; endpoint types: /individuals/31/type;
+      /individuals/9/type'
+- id: edge-031
+  subject: gomodel:IPPISOM-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_30616_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-024
+    source_assertion: The model asserts gomodel:IPPISOM-RXN BFO:0000066 gomodel:reaction_IPPISOM-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/30; endpoint types: /individuals/29/type;
+      /individuals/91/type'
+- id: edge-032
   subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57286
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN"'
+    source_assertion: The model asserts gomodel:ACETYL-COA-ACETYLTRANSFER-RXN RO:0002234 gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/31; endpoint types: /individuals/0/type;
+      /individuals/16/type'
+- id: edge-033
+  subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57286_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57286"'
-- id: edge-025
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN BFO:0000050 gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/32; endpoint types: /individuals/31/type;
+      /individuals/95/type'
+- id: edge-034
   subject: SGD:S000004540
   predicate: enables
   object: gomodel:1.1.1.34-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YML075C-MONOMER_1.1.1.34-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YML075C-MONOMER_1.1.1.34-RXN_controller","type":[{"type":"class","id":"SGD:S000004540"'
-- id: edge-026
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002333 gomodel:YML075C-MONOMER_1.1.1.34-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/33; endpoint types: /individuals/94/type;
+      /individuals/33/type'
+- id: edge-035
   subject: gomodel:PHOSPHOMEVALONATE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:PHOSPHOMEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_PHOSPHOMEVALONATE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_456216_PHOSPHOMEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-027
-  subject: CHEBI:57288
-  predicate: consumes
-  object: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+    source_assertion: The model asserts gomodel:PHOSPHOMEVALONATE-KINASE-RXN RO:0002234 gomodel:CHEBI_456216_PHOSPHOMEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/34; endpoint types: /individuals/31/type;
+      /individuals/15/type'
+- id: edge-036
+  subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
+  predicate: has_input
+  object: CHEBI:57288
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57288_ACETYL-COA-ACETYLTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57288_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57288"'
-- id: edge-028
+    source_assertion: The model asserts gomodel:ACETYL-COA-ACETYLTRANSFER-RXN RO:0002233 gomodel:CHEBI_57288_ACETYL-COA-ACETYLTRANSFER-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/35; endpoint types: /individuals/0/type;
+      /individuals/20/type'
+- id: edge-037
   subject: gomodel:1.1.1.34-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:36464
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_36464_1.1.1.34-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_36464_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:36464"'
-- id: edge-029
-  subject: CHEBI:128769
-  predicate: consumes
-  object: gomodel:IPPISOM-RXN
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002234 gomodel:CHEBI_36464_1.1.1.34-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/36; endpoint types: /individuals/94/type;
+      /individuals/10/type'
+- id: edge-038
+  subject: gomodel:IPPISOM-RXN
+  predicate: has_input
+  object: CHEBI:128769
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:128769"'
-- id: edge-030
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002233 gomodel:CHEBI_128769_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/37; endpoint types: /individuals/29/type;
+      /individuals/1/type'
+- id: edge-039
   subject: gomodel:1.1.1.34-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58349
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_1.1.1.34-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_58349_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:58349"'
-- id: edge-031
-  subject: CHEBI:57783
-  predicate: consumes
-  object: gomodel:1.1.1.34-RXN
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002234 gomodel:CHEBI_58349_1.1.1.34-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/38; endpoint types: /individuals/94/type;
+      /individuals/26/type'
+- id: edge-040
+  subject: gomodel:1.1.1.34-RXN
+  predicate: has_input
+  object: CHEBI:57783
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_1.1.1.34-RXN"'
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002233 gomodel:CHEBI_57783_1.1.1.34-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/39; endpoint types: /individuals/94/type;
+      /individuals/24/type'
+- id: edge-041
+  subject: gomodel:1.1.1.34-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57783_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:57783"'
-- id: edge-032
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN BFO:0000050 gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/40; endpoint types: /individuals/94/type;
+      /individuals/95/type'
+- id: edge-042
   subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_456216_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-033
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002234
+      gomodel:CHEBI_456216_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/41; endpoint types: /individuals/27/type;
+      /individuals/13/type'
+- id: edge-043
   subject: gomodel:ACETYL-COA-ACETYLTRANSFER-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57287
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:ACETYL-COA-ACETYLTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57287_ACETYL-COA-ACETYLTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57287_ACETYL-COA-ACETYLTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57287"'
-- id: edge-034
+    source_assertion: The model asserts gomodel:ACETYL-COA-ACETYLTRANSFER-RXN RO:0002234 gomodel:CHEBI_57287_ACETYL-COA-ACETYLTRANSFER-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/42; endpoint types: /individuals/0/type;
+      /individuals/18/type'
+- id: edge-044
   subject: gomodel:IPPISOM-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57623
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57623_IPPISOM-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_57623_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:57623"'
-- id: edge-035
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:1.1.1.34-RXN
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002234 gomodel:CHEBI_57623_IPPISOM-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/43; endpoint types: /individuals/29/type;
+      /individuals/23/type'
+- id: edge-045
+  subject: gomodel:1.1.1.34-RXN
+  predicate: has_input
+  object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:1.1.1.34-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_1.1.1.34-RXN"'
+    source_assertion: The model asserts gomodel:1.1.1.34-RXN RO:0002233 gomodel:CHEBI_15378_1.1.1.34-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/44; endpoint types: /individuals/94/type;
+      /individuals/3/type'
+- id: edge-046
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_15378_1.1.1.34-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-036
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN BFO:0000066 gomodel:reaction_MEVALONATE-KINASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/45; endpoint types: /individuals/30/type;
+      /individuals/92/type'
+- id: edge-047
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN BFO:0000066
+      gomodel:reaction_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/46; endpoint types: /individuals/27/type;
+      /individuals/89/type'
+- id: edge-048
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
+  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN BFO:0000050
+      gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/47; endpoint types: /individuals/28/type;
+      /individuals/95/type'
+- id: edge-049
   subject: SGD:S000004595
   predicate: enables
   object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YML126C-MONOMER_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN_controller"'
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002333
+      gomodel:YML126C-MONOMER_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN_controller.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/48; endpoint types: /individuals/28/type;
+      /individuals/34/type'
+- id: edge-050
+  subject: gomodel:MEVALONATE-KINASE-RXN
+  predicate: part_of
+  object: GO:0008299
+  evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:YML126C-MONOMER_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004595"'
-- id: edge-037
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN BFO:0000050 gomodel:YeastPathways_IPPSYN-PWY/YeastPathways_IPPSYN-PWY.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/49; endpoint types: /individuals/30/type;
+      /individuals/95/type'
+- id: edge-051
   subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:16526
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_16526_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:16526"'
-- id: edge-038
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002234
+      gomodel:CHEBI_16526_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/50; endpoint types: /individuals/27/type;
+      /individuals/6/type'
+- id: edge-052
   subject: gomodel:MEVALONATE-KINASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58146
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:MEVALONATE-KINASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN","type":[{"type":"class","id":"CHEBI:58146"'
-- id: edge-039
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+    source_assertion: The model asserts gomodel:MEVALONATE-KINASE-RXN RO:0002234 gomodel:CHEBI_58146_MEVALONATE-KINASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/51; endpoint types: /individuals/30/type;
+      /individuals/25/type'
+- id: edge-053
+  subject: gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN
+  predicate: has_input
+  object: CHEBI:15377
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_15377_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-040
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+    source_assertion: The model asserts gomodel:HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN RO:0002233
+      gomodel:CHEBI_15377_HYDROXYMETHYLGLUTARYL-COA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/52; endpoint types: /individuals/28/type;
+      /individuals/2/type'
+- id: edge-054
+  subject: gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"subject":"gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_IPPSYN-PWY
-    quote: '"id":"gomodel:CHEBI_30616_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+    source_assertion: The model asserts gomodel:DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN RO:0002233
+      gomodel:CHEBI_30616_DIPHOSPHOMEVALONTE-DECARBOXYLASE-RXN.
+    source_locator: './YeastPathways_IPPSYN-PWY.json#/facts/53; endpoint types: /individuals/27/type;
+      /individuals/7/type'
+- id: location-0805ea80ed30
+  subject: SGD:S000005949
+  predicate: located_in
+  object: GO:0005829
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:5571830)
+  evidence:
+  - reference_id: UniProtKB:P41338
+    source_assertion: UniProtKB:P41338 annotates location Cytoplasm, cytosol (SL-0091).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1800/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P41338
+    source_assertion: UniProtKB:P41338 has the exact SGD cross-reference SGD:S000005949.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1800/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4225850d44ad
+  subject: SGD:S000004821
+  predicate: located_in
+  object: GO:0005829
+  description: Physical protein location from reviewed UniProt. ECO:0000305 (PubMed:1645230)
+  evidence:
+  - reference_id: UniProtKB:P07277
+    source_assertion: UniProtKB:P07277 annotates location Cytoplasm, cytosol (SL-0091).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/183/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P07277
+    source_assertion: UniProtKB:P07277 has the exact SGD cross-reference SGD:S000004821.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/183/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-ef91d336c5e1
+  subject: SGD:S000006038
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000305
+  evidence:
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/417/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 has the exact SGD cross-reference SGD:S000006038.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/417/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-0d20eb3ad577
+  subject: SGD:S000004442
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:8744950) Topology: Multi-pass membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P12684
+    source_assertion: UniProtKB:P12684 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/347/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P12684
+    source_assertion: UniProtKB:P12684 has the exact SGD cross-reference SGD:S000004442.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/347/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-0889dab48415
+  subject: SGD:S000004442
+  predicate: located_in
+  object: GO:0005635
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P12684
+    source_assertion: UniProtKB:P12684 annotates location Nucleus envelope (SL-0178).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/347/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P12684
+    source_assertion: UniProtKB:P12684 has the exact SGD cross-reference SGD:S000004442.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/347/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-22ffdd18424b
+  subject: SGD:S000004833
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000305 (PubMed:1846667)
+  evidence:
+  - reference_id: UniProtKB:P24521
+    source_assertion: UniProtKB:P24521 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3348/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P24521
+    source_assertion: UniProtKB:P24521 has the exact SGD cross-reference SGD:S000004833.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3348/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-085d82bf8d40
+  subject: SGD:S000004540
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:8744950) Topology: Multi-pass membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P12683
+    source_assertion: UniProtKB:P12683 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/346/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P12683
+    source_assertion: UniProtKB:P12683 has the exact SGD cross-reference SGD:S000004540.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/346/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-a60fdd6fbbe8
+  subject: SGD:S000004540
+  predicate: located_in
+  object: GO:0005635
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P12683
+    source_assertion: UniProtKB:P12683 annotates location Nucleus envelope (SL-0178).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/346/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P12683
+    source_assertion: UniProtKB:P12683 has the exact SGD cross-reference SGD:S000004540.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/346/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-f1f229eca1b9
+  subject: SGD:S000004821
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P17256)'
+  evidence:
+  - reference_id: UniProtKB:P07277
+    source_assertion: UniProtKB:P07277 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/183/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P07277
+    source_assertion: UniProtKB:P07277 has the exact SGD cross-reference SGD:S000004821.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/183/uniProtKBCrossReferences/0'
+- id: cofactor-7a2ce58769da
+  subject: SGD:S000006038
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:Q46822) Binds 1 Mg(2+) ion per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:Q46822)'
+  evidence:
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/417/comments/0/cofactors/0;
+      /results/417/comments/0/note'
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 has the exact SGD cross-reference SGD:S000006038.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/417/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_IPPSYN-PWY
   title: SGD GO-CAM mevalonate pathway model
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2024-07-12; member ./YeastPathways_IPPSYN-PWY.json
+- id: UniProtKB:P41338
+  title: Reviewed UniProtKB P41338 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P07277
+  title: Reviewed UniProtKB P07277 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P15496
+  title: Reviewed UniProtKB P15496 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P12684
+  title: Reviewed UniProtKB P12684 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P24521
+  title: Reviewed UniProtKB P24521 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P12683
+  title: Reviewed UniProtKB P12683 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

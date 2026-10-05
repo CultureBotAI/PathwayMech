@@ -1,83 +1,222 @@
 id: WikiPathways:WP478
 label: Glycogen catabolism
-description: Glycogen catabolism in Saccharomyces cerevisiae covers the WikiPathways
-  GPH1 phosphorolysis branch from glycogen to glucose-1-phosphate and the downstream
-  PGM1/PGM2 phosphoglucomutase conversion to glucose-6-phosphate.
+description: Glycogen catabolism in Saccharomyces cerevisiae covers the WikiPathways GPH1
+  phosphorolysis branch from glycogen to glucose-1-phosphate and the downstream PGM1/PGM2
+  phosphoglucomutase conversion to glucose-6-phosphate.
 pathway_type: glycogen-catabolism
 taxa:
 - id: NCBITaxon:4932
   label: Saccharomyces cerevisiae
 participants:
-- id: CHEBI:16077
-  label: glucose-1-phosphate (closed form)
 - id: CHEBI:24384
   label: glycogens
-- id: CHEBI:4170
-  label: glucose-6-phosphate (closed form)
-- id: SGD:S000001610
-  label: PGM1
+  category: small_molecule
 - id: SGD:S000004711
   label: PGM2
+  category: protein
+- id: CHEBI:25140
+  label: maltodextrin
+  category: small_molecule
+- id: CHEBI:4170
+  label: glucose-6-phosphate (closed form)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: SGD:S000001610
+  label: PGM1
+  category: protein
 - id: SGD:S000006364
   label: GPH1
+  category: protein
+- id: CHEBI:16077
+  label: glucose-1-phosphate (closed form)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
 - id: WikiPathways:WP478/id16beba20
   label: glycogen phosphorolysis branch to glucose-1-phosphate
+  direction: left_to_right
+  category: molecular_activity
 - id: WikiPathways:WP478/id5442c585
   label: glucose-1-phosphate to glucose-6-phosphate
+  direction: left_to_right
+  category: molecular_activity
 mechanistic_edges:
-- id: edge-001
+- id: causal-review-1
   subject: CHEBI:24384
   predicate: consumes
   object: WikiPathways:WP478/id16beba20
   evidence:
   - reference_id: WikiPathways:WP478
-    quote: glycogens is consumed by glycogen phosphorolysis branch to glucose-1-phosphate.
-- id: edge-002
+    source_assertion: GPML id16beba20 connects normalized CHEBI:24384 as an input of interaction
+      id16beba20.
+    source_locator: /Pathway/Interaction[@GraphId='id16beba20']/Graphics; /Pathway/DataNode[@GraphId='ff246']
+- id: causal-review-2
   subject: WikiPathways:WP478/id16beba20
   predicate: produces
-  object: CHEBI:16077
+  object: CHEBI:25140
   evidence:
   - reference_id: WikiPathways:WP478
-    quote: glycogen phosphorolysis branch to glucose-1-phosphate produces glucose-1-phosphate
-      (closed form).
-- id: edge-003
-  subject: SGD:S000006364
-  predicate: catalyzes
-  object: WikiPathways:WP478/id16beba20
-  evidence:
-  - reference_id: WikiPathways:WP478
-    quote: GPH1 catalyzes glycogen phosphorolysis branch to glucose-1-phosphate.
-- id: edge-004
+    source_assertion: GPML id16beba20 connects normalized CHEBI:25140 as an output of interaction
+      id16beba20.
+    source_locator: /Pathway/Interaction[@GraphId='id16beba20']/Graphics; /Pathway/DataNode[@GraphId='c16']
+- id: causal-review-3
   subject: CHEBI:16077
   predicate: consumes
   object: WikiPathways:WP478/id5442c585
   evidence:
   - reference_id: WikiPathways:WP478
-    quote: glucose-1-phosphate (closed form) is consumed by glucose-1-phosphate to
-      glucose-6-phosphate.
-- id: edge-005
+    source_assertion: GPML id5442c585 connects normalized CHEBI:16077 as an input of interaction
+      id5442c585.
+    source_locator: /Pathway/Interaction[@GraphId='id5442c585']/Graphics; /Pathway/DataNode[@GraphId='f0d']
+- id: causal-review-4
   subject: WikiPathways:WP478/id5442c585
   predicate: produces
   object: CHEBI:4170
   evidence:
   - reference_id: WikiPathways:WP478
-    quote: glucose-1-phosphate to glucose-6-phosphate produces glucose-6-phosphate
-      (closed form).
-- id: edge-006
+    source_assertion: GPML id5442c585 connects normalized CHEBI:4170 as an output of interaction
+      id5442c585.
+    source_locator: /Pathway/Interaction[@GraphId='id5442c585']/Graphics; /Pathway/DataNode[@GraphId='c69']
+- id: causal-review-5
+  subject: CHEBI:43474
+  predicate: consumes
+  object: WikiPathways:WP478/id16beba20
+  evidence:
+  - reference_id: WikiPathways:WP478
+    source_assertion: GPML id2d319881 connects normalized CHEBI:43474 as an input of interaction
+      id16beba20.
+    source_locator: /Pathway/Interaction[@GraphId='id2d319881']/Graphics; /Pathway/DataNode[@GraphId='d18']
+- id: causal-review-6
   subject: SGD:S000004711
   predicate: catalyzes
   object: WikiPathways:WP478/id5442c585
   evidence:
   - reference_id: WikiPathways:WP478
-    quote: PGM2 catalyzes glucose-1-phosphate to glucose-6-phosphate.
-- id: edge-007
+    source_assertion: GPML id62f35795 connects normalized SGD:S000004711 as a catalyst of
+      interaction id5442c585.
+    source_locator: /Pathway/Interaction[@GraphId='id62f35795']/Graphics; /Pathway/DataNode[@GraphId='a35']
+- id: causal-review-7
   subject: SGD:S000001610
   predicate: catalyzes
   object: WikiPathways:WP478/id5442c585
   evidence:
   - reference_id: WikiPathways:WP478
-    quote: PGM1 catalyzes glucose-1-phosphate to glucose-6-phosphate.
+    source_assertion: GPML id62f35795 connects normalized SGD:S000001610 as a catalyst of
+      interaction id5442c585.
+    source_locator: /Pathway/Interaction[@GraphId='id62f35795']/Graphics; /Pathway/DataNode[@GraphId='d6a']
+- id: causal-review-8
+  subject: WikiPathways:WP478/id16beba20
+  predicate: produces
+  object: CHEBI:16077
+  evidence:
+  - reference_id: WikiPathways:WP478
+    source_assertion: GPML ida7682afa connects normalized CHEBI:16077 as an output of interaction
+      id16beba20.
+    source_locator: /Pathway/Interaction[@GraphId='ida7682afa']/Graphics; /Pathway/DataNode[@GraphId='f0d']
+- id: causal-review-9
+  subject: SGD:S000006364
+  predicate: catalyzes
+  object: WikiPathways:WP478/id16beba20
+  evidence:
+  - reference_id: WikiPathways:WP478
+    source_assertion: GPML idc3547a63 connects normalized SGD:S000006364 as a catalyst of
+      interaction id16beba20.
+    source_locator: /Pathway/Interaction[@GraphId='idc3547a63']/Graphics; /Pathway/DataNode[@GraphId='ef0']
+- id: cofactor-0945beb9b2eb
+  subject: SGD:S000004711
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:1100398); ECO:0000269 (PubMed:4628805) Binds 1 magnesium ion per subunit. Can
+    also use Zn(2+) as cofactor. UniProt note evidence: ECO:0000269 (PubMed:1100398); ECO:0000269
+    (PubMed:4628805)'
+  evidence:
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/comments/0/cofactors/0;
+      /results/1251/comments/0/note'
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 has the exact SGD cross-reference SGD:S000004711.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/uniProtKBCrossReferences/0'
+- id: cofactor-02ad2260b7d9
+  subject: SGD:S000004711
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:1100398); ECO:0000269 (PubMed:4628805) Binds 1 magnesium ion per subunit. Can
+    also use Zn(2+) as cofactor. UniProt note evidence: ECO:0000269 (PubMed:1100398); ECO:0000269
+    (PubMed:4628805)'
+  evidence:
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/comments/0/cofactors/1;
+      /results/1251/comments/0/note'
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 has the exact SGD cross-reference SGD:S000004711.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/uniProtKBCrossReferences/0'
+- id: cofactor-ad9ff5447ab5
+  subject: SGD:S000001610
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P00949) Binds 1 Mg(2+) ion per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:P00949)'
+  evidence:
+  - reference_id: UniProtKB:P33401
+    source_assertion: UniProtKB:P33401 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1085/comments/0/cofactors/0;
+      /results/1085/comments/0/note'
+  - reference_id: UniProtKB:P33401
+    source_assertion: UniProtKB:P33401 has the exact SGD cross-reference SGD:S000001610.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1085/uniProtKBCrossReferences/0'
+- id: cofactor-ad95e9a0746f
+  subject: SGD:S000006364
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:P06738
+    source_assertion: UniProtKB:P06738 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/139/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P06738
+    source_assertion: UniProtKB:P06738 has the exact SGD cross-reference SGD:S000006364.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/139/uniProtKBCrossReferences/0'
 references:
 - id: WikiPathways:WP478
-  title: WikiPathways Glycogen catabolism GPML pathway WP478_r139587
+  title: WP478 native structured pathway source
+  url: https://www.wikipathways.org/wikipathways-assets/pathways/WP478/WP478.gpml
+  source_version: WP478_r139587
+  source_sha256: c02b28bb6136df307e48c26d6b79ad15acb251555772b64f86715f8333530586
+- id: UniProtKB:P37012
+  title: UniProtKB P37012 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P33401
+  title: UniProtKB P33401 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P06738
+  title: UniProtKB P06738 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4

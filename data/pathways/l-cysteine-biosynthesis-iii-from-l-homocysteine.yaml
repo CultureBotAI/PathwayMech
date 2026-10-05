@@ -1,164 +1,277 @@
 id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
 label: L-cysteine biosynthesis III (from L-homocysteine)
-description: >-
-  L-cysteine biosynthesis III (from L-homocysteine) condenses L-homocysteine
-  with L-serine to form L-cystathionine and then cleaves L-cystathionine to
-  L-cysteine, 2-oxobutanoate, and ammonia in Saccharomyces cerevisiae S288C.
+description: L-cysteine biosynthesis III (from L-homocysteine) condenses L-homocysteine with
+  L-serine to form L-cystathionine and then cleaves L-cystathionine to L-cysteine, 2-oxobutanoate,
+  and ammonia in Saccharomyces cerevisiae S288C.
 pathway_type: amino-acid-biosynthesis
 taxa:
-  - id: NCBITaxon:559292
-    label: Saccharomyces cerevisiae S288C
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
 participants:
-  - id: SGD:S000003387
-    label: CYS4 Scer
-  - id: SGD:S000000010
-    label: CYS3 Scer
-  - id: CHEBI:58199
-    label: L-homocysteine zwitterion
-  - id: CHEBI:33384
-    label: L-serine zwitterion
-  - id: CHEBI:58161
-    label: L-cystathionine dizwitterion
-  - id: CHEBI:15377
-    label: water
-  - id: CHEBI:35235
-    label: L-cysteine zwitterion
-  - id: CHEBI:16763
-    label: 2-oxobutanoate
-  - id: CHEBI:16134
-    label: ammonia
+- id: GO:0019344
+  label: L-cysteine biosynthetic process
+  category: biological_process
+- id: CHEBI:58161
+  label: L-cystathionine dizwitterion
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:58199
+  label: L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:33384
+  label: L-serine zwitterion
+  category: small_molecule
+- id: SGD:S000003387
+  label: CYS4 Scer
+  category: protein
+- id: CHEBI:35235
+  label: L-cysteine zwitterion
+  category: small_molecule
+- id: SGD:S000000010
+  label: CYS3 Scer
+  category: protein
+- id: CHEBI:16763
+  label: 2-oxobutanoate
+  category: lipid
+- id: CHEBI:16134
+  label: ammonia
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
-  - id: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    label: cystathionine beta-synthase activity
-  - id: gomodel:CYSTAGLY-RXN
-    label: cystathionine gamma-lyase activity
+- id: gomodel:CYSTAGLY-RXN
+  label: cystathionine gamma-lyase activity
+  category: molecular_activity
+- id: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  label: cystathionine beta-synthase activity
+  category: molecular_activity
 mechanistic_edges:
-  - id: edge-001
-    subject: SGD:S000003387
-    predicate: enables
-    object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"term":"SGD:S000003387"'
-  - id: edge-002
-    subject: CHEBI:58199
-    predicate: consumes
-    object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_58199_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_58199_CYSTATHIONINE-BETA-SYNTHASE-RXN","term":"CHEBI:58199"'
-  - id: edge-003
-    subject: CHEBI:33384
-    predicate: consumes
-    object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_33384_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_33384_CYSTATHIONINE-BETA-SYNTHASE-RXN","term":"CHEBI:33384"'
-  - id: edge-004
-    subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    predicate: produces
-    object: CHEBI:58161
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN","term":"CHEBI:58161"'
-  - id: edge-005
-    subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    predicate: produces
-    object: CHEBI:15377
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_15377_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_15377_CYSTATHIONINE-BETA-SYNTHASE-RXN","term":"CHEBI:15377"'
-  - id: edge-006
-    subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
-    predicate: precedes
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002413","downstream_activity":"gomodel:CYSTAGLY-RXN"'
-  - id: edge-007
-    subject: SGD:S000000010
-    predicate: enables
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"term":"SGD:S000000010"'
-  - id: edge-008
-    subject: CHEBI:58161
-    predicate: consumes
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN","term":"CHEBI:58161"'
-  - id: edge-009
-    subject: CHEBI:15377
-    predicate: consumes
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002233","molecule":"gomodel:CHEBI_15377_CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_15377_CYSTAGLY-RXN","term":"CHEBI:15377"'
-  - id: edge-010
-    subject: gomodel:CYSTAGLY-RXN
-    predicate: produces
-    object: CHEBI:35235
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_35235_CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_35235_CYSTAGLY-RXN","term":"CHEBI:35235"'
-  - id: edge-011
-    subject: gomodel:CYSTAGLY-RXN
-    predicate: produces
-    object: CHEBI:16763
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_16763_CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_16763_CYSTAGLY-RXN","term":"CHEBI:16763"'
-  - id: edge-012
-    subject: gomodel:CYSTAGLY-RXN
-    predicate: produces
-    object: CHEBI:16134
-    evidence:
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"predicate":"RO:0002234","molecule":"gomodel:CHEBI_16134_CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-        quote: '"id":"gomodel:CHEBI_16134_CYSTAGLY-RXN","term":"CHEBI:16134"'
+- id: edge-001
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: part_of
+  object: GO:0019344
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN BFO:0000050
+      gomodel:YeastPathways_HOMOCYSDEGR-PWY-1/YeastPathways_HOMOCYSDEGR-PWY-1.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/0; endpoint types: /individuals/9/type;
+      /individuals/27/type'
+- id: edge-002
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: has_output
+  object: CHEBI:58161
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN RO:0002234
+      gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/1; endpoint types: /individuals/9/type;
+      /individuals/6/type'
+- id: edge-003
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: has_input
+  object: CHEBI:58161
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN RO:0002233 gomodel:CHEBI_58161_CYSTATHIONINE-BETA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/2; endpoint types: /individuals/8/type;
+      /individuals/6/type'
+- id: edge-004
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: provides_input_for
+  object: gomodel:CYSTAGLY-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN RO:0002413
+      gomodel:CYSTAGLY-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/3; endpoint types: /individuals/9/type;
+      /individuals/8/type'
+- id: edge-005
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN RO:0002234
+      gomodel:CHEBI_15377_CYSTATHIONINE-BETA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/4; endpoint types: /individuals/9/type;
+      /individuals/1/type'
+- id: edge-006
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN BFO:0000066
+      gomodel:reaction_CYSTATHIONINE-BETA-SYNTHASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/5; endpoint types: /individuals/9/type;
+      /individuals/26/type'
+- id: edge-007
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: part_of
+  object: GO:0019344
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN BFO:0000050 gomodel:YeastPathways_HOMOCYSDEGR-PWY-1/YeastPathways_HOMOCYSDEGR-PWY-1.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/6; endpoint types: /individuals/8/type;
+      /individuals/27/type'
+- id: edge-008
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: has_input
+  object: CHEBI:58199
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN RO:0002233
+      gomodel:CHEBI_58199_CYSTATHIONINE-BETA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/7; endpoint types: /individuals/9/type;
+      /individuals/7/type'
+- id: edge-009
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN RO:0002233 gomodel:CHEBI_15377_CYSTAGLY-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/8; endpoint types: /individuals/8/type;
+      /individuals/0/type'
+- id: edge-010
+  subject: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  predicate: has_input
+  object: CHEBI:33384
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN RO:0002233
+      gomodel:CHEBI_33384_CYSTATHIONINE-BETA-SYNTHASE-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/9; endpoint types: /individuals/9/type;
+      /individuals/4/type'
+- id: edge-011
+  subject: SGD:S000003387
+  predicate: enables
+  object: gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTATHIONINE-BETA-SYNTHASE-RXN RO:0002333
+      gomodel:YGR155W-MONOMER_CYSTATHIONINE-BETA-SYNTHASE-RXN_controller.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/10; endpoint types: /individuals/9/type;
+      /individuals/11/type'
+- id: edge-012
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: has_output
+  object: CHEBI:35235
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN RO:0002234 gomodel:CHEBI_35235_CYSTAGLY-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/11; endpoint types: /individuals/8/type;
+      /individuals/5/type'
+- id: edge-013
+  subject: SGD:S000000010
+  predicate: enables
+  object: gomodel:CYSTAGLY-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN RO:0002333 gomodel:YAL012W-MONOMER_CYSTAGLY-RXN_controller.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/12; endpoint types: /individuals/8/type;
+      /individuals/10/type'
+- id: edge-014
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: has_output
+  object: CHEBI:16763
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN RO:0002234 gomodel:CHEBI_16763_CYSTAGLY-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/13; endpoint types: /individuals/8/type;
+      /individuals/3/type'
+- id: edge-015
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: has_output
+  object: CHEBI:16134
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN RO:0002234 gomodel:CHEBI_16134_CYSTAGLY-RXN.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/14; endpoint types: /individuals/8/type;
+      /individuals/2/type'
+- id: edge-016
+  subject: gomodel:CYSTAGLY-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+    source_assertion: The model asserts gomodel:CYSTAGLY-RXN BFO:0000066 gomodel:reaction_CYSTAGLY-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_HOMOCYSDEGR-PWY-1.json#/facts/15; endpoint types: /individuals/8/type;
+      /individuals/25/type'
+- id: location-c78838968de5
+  subject: SGD:S000000010
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P31373
+    source_assertion: UniProtKB:P31373 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/839/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P31373
+    source_assertion: UniProtKB:P31373 has the exact SGD cross-reference SGD:S000000010.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/839/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-c111bc18655d
+  subject: SGD:S000003387
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:P32582
+    source_assertion: UniProtKB:P32582 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/958/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P32582
+    source_assertion: UniProtKB:P32582 has the exact SGD cross-reference SGD:S000003387.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/958/uniProtKBCrossReferences/0'
+- id: cofactor-61049165bd4d
+  subject: SGD:S000000010
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:12715888)'
+  evidence:
+  - reference_id: UniProtKB:P31373
+    source_assertion: UniProtKB:P31373 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/839/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P31373
+    source_assertion: UniProtKB:P31373 has the exact SGD cross-reference SGD:S000000010.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/839/uniProtKBCrossReferences/0'
 references:
-  - id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
-    title: GO-CAM L-cysteine biosynthesis III from L-homocysteine model YeastPathways_HOMOCYSDEGR-PWY-1
+- id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  title: GO-CAM L-cysteine biosynthesis III from L-homocysteine model YeastPathways_HOMOCYSDEGR-PWY-1
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-08-03; member ./YeastPathways_HOMOCYSDEGR-PWY-1.json
+- id: UniProtKB:P31373
+  title: Reviewed UniProtKB P31373 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P32582
+  title: UniProtKB P32582 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

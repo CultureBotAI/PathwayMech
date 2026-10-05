@@ -3,7 +3,7 @@
 
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
-gocam-tar, mibig-tar, uniprot, gpml, biopax and metacyc-html. Source files are
+gocam-tar, mibig-tar, uniprot, gpml, biopax, metacyc-html and ncbi-protein-xml. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -24,7 +24,10 @@ from xml.etree import ElementTree
 import yaml
 
 SOURCE_NAMESPACES = frozenset(
-    {"EC", "MIBiG", "MetaCyc", "Reactome", "SGD", "UniProtKB", "WikiPathways", "gomodel"}
+    {
+        "EC", "MIBiG", "MetaCyc", "NCBIProtein", "Reactome", "SGD", "UniProtKB",
+        "WikiPathways", "gomodel",
+    }
 )
 
 
@@ -70,6 +73,11 @@ def gocam_terms(model: dict[str, Any]) -> Iterator[tuple[str, str, list[str]]]:
         if labels or type_labels:
             names = labels + type_labels
             yield individual["id"], names[0], names[1:]
+        elif individual.get("id"):
+            # A native graph instance can lack a canonical biological label.
+            # Its ID still exists; source_context below prevents this native
+            # identifier from being used as a canonical name assertion.
+            yield individual["id"], individual["id"], []
         # These are SGD-submitted primary GO-CAM class annotations, not a claim
         # that their contextual display names equal SGD's canonical locus name.
         for item in individual.get("type", []):
@@ -139,6 +147,11 @@ def gpml_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str]]
             # GPML interactions have no canonical biological name. The native
             # GraphId is their source label; record prose remains contextual.
             yield identifier + "/" + node.attrib["GraphId"], node.attrib["GraphId"], []
+        elif node.tag.rsplit("}", 1)[-1] == "DataNode" and node.get("GraphId"):
+            # Keep diagram entities whose precise external grounding remains
+            # unresolved. Native existence is independent of a guessed ChEBI ID.
+            label = node.get("TextLabel") or node.attrib["GraphId"]
+            yield identifier + "/" + node.attrib["GraphId"], label, []
 
 
 def biopax_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str]]]:
@@ -199,6 +212,19 @@ def source_terms(kind: str, path: Path) -> Iterator[tuple[str, str, list[str]]]:
         yield from biopax_terms(ElementTree.parse(path).getroot())
     elif kind == "metacyc-html":
         yield from metacyc_terms(path.read_text(encoding="utf-8"))
+    elif kind == "ncbi-protein-xml":
+        for protein in ElementTree.parse(path).getroot().findall("GBSeq"):
+            accession = protein.findtext("GBSeq_accession-version")
+            label = protein.findtext("GBSeq_definition")
+            if not accession or not label:
+                raise ValueError("NCBI protein lacks an accession-version or definition")
+            synonyms = [
+                qualifier.findtext("GBQualifier_value")
+                for qualifier in protein.findall(".//GBQualifier")
+                if qualifier.findtext("GBQualifier_name") in {"gene", "product", "locus_tag"}
+                and qualifier.findtext("GBQualifier_value")
+            ]
+            yield "NCBIProtein:" + accession, label, synonyms
     else:
         raise ValueError(f"unsupported source kind: {kind}")
 

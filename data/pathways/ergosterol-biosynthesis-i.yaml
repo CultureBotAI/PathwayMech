@@ -1,376 +1,611 @@
 id: gomodel:YeastPathways_PWY-6075-1
 label: ergosterol biosynthesis I
-description: Ergosterol biosynthesis I in Saccharomyces cerevisiae S288C converts
-  zymosterol to ergosterol through ERG6, ERG2, ERG3, ERG5, and ERG4 sterol methyltransferase,
-  isomerase, desaturase, and reductase activities.
+description: Ergosterol biosynthesis I in Saccharomyces cerevisiae S288C converts zymosterol
+  to ergosterol through ERG6, ERG2, ERG3, ERG5, and ERG4 sterol methyltransferase, isomerase,
+  desaturase, and reductase activities.
 pathway_type: lipid-biosynthesis
 taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
-- id: SGD:S000004467
-  label: ERG6 Scer
-- id: CHEBI:18252
-  label: zymosterol
-- id: CHEBI:59789
-  label: S-adenosyl-L-methionine zwitterion
-- id: CHEBI:17038
-  label: fecosterol
-- id: CHEBI:15378
-  label: hydron
-- id: CHEBI:57856
-  label: S-adenosyl-L-homocysteine zwitterion
-- id: SGD:S000004815
-  label: ERG2 Scer
-- id: CHEBI:50586
-  label: 9xi-episterol
-- id: SGD:S000004046
-  label: ERG3 Scer
-- id: CHEBI:15379
-  label: dioxygen
-- id: CHEBI:57783
-  label: NADPH(4-)
-- id: CHEBI:15377
-  label: water
-- id: CHEBI:58349
-  label: NADP(3-)
-- id: CHEBI:52972
-  label: ergosta-5,7,24(28)-trien-3beta-ol
-- id: SGD:S000004617
-  label: ERG5 Scer
 - id: CHEBI:18249
   label: ergosta-5,7,22,24(28)-tetraen-3beta-ol
-- id: SGD:S000002980
-  label: ERG4 Scer
+  category: lipid
 - id: CHEBI:16933
   label: ergosterol
+  category: lipid
+- id: GO:0006696
+  label: ergosterol biosynthetic process
+  category: biological_process
+- id: CHEBI:50586
+  label: 9xi-episterol
+  category: lipid
+- id: SGD:S000004046
+  label: ERG3 Scer
+  category: protein
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: SGD:S000002980
+  label: ERG4 Scer
+  category: protein
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: SGD:S000004815
+  label: ERG2 Scer
+  category: protein
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:18252
+  label: zymosterol
+  category: lipid
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:17038
+  label: fecosterol
+  category: lipid
+- id: CHEBI:52972
+  label: ergosta-5,7,24(28)-trien-3beta-ol
+  category: lipid
+- id: SGD:S000004467
+  label: ERG6 Scer
+  category: protein
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: SGD:S000004617
+  label: ERG5 Scer
+  category: protein
+- id: CHEBI:57856
+  label: S-adenosyl-L-homocysteine zwitterion
+  category: small_molecule
+- id: GO:0005789
+  label: endoplasmic reticulum membrane
+  category: cellular_component
+- id: GO:0005739
+  label: mitochondrion
+  category: cellular_component
+- id: CHEBI:24875
+  label: iron cation
+  category: cofactor
+- id: CHEBI:30413
+  label: heme
+  category: cofactor
 reactions:
-- id: gomodel:RXN3O-178
-  label: sterol 24-C-methyltransferase activity
-- id: gomodel:RXN3O-203
-  label: C-8 sterol isomerase activity
-- id: gomodel:RXN3O-9827
-  label: delta7-sterol 5(6)-desaturase activity
-- id: gomodel:RXN3O-9828
-  label: ergosta-5,7,24(28)-trien-3beta-ol desaturation
 - id: gomodel:1.3.1.71-RXN
   label: Delta24(24-1) sterol reductase activity
+  category: molecular_activity
+- id: gomodel:RXN3O-178
+  label: sterol 24-C-methyltransferase activity
+  category: molecular_activity
+- id: gomodel:RXN3O-203
+  label: C-8 sterol isomerase activity
+  category: molecular_activity
+- id: gomodel:RXN3O-9827
+  label: delta7-sterol 5(6)-desaturase activity
+  category: molecular_activity
+- id: gomodel:RXN3O-9828
+  label: ergosta-5,7,24(28)-trien-3beta-ol desaturation
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
-  subject: SGD:S000004467
-  predicate: enables
-  object: gomodel:RXN3O-178
+  subject: gomodel:RXN3O-178
+  predicate: provides_input_for
+  object: gomodel:RXN3O-203
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-188_RXN3O-178_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:MONOMER3O-188_RXN3O-178_controller","type":[{"type":"class","id":"SGD:S000004467"'
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002413 gomodel:RXN3O-203.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/0; endpoint types: /individuals/24/type;
+      /individuals/25/type'
 - id: edge-002
-  subject: CHEBI:18252
-  predicate: consumes
-  object: gomodel:RXN3O-178
+  subject: gomodel:1.3.1.71-RXN
+  predicate: has_input
+  object: CHEBI:18249
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_18252_RXN3O-178"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_18252_RXN3O-178","type":[{"type":"class","id":"CHEBI:18252"'
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN RO:0002233 gomodel:CHEBI_18249_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/1; endpoint types: /individuals/72/type;
+      /individuals/10/type'
 - id: edge-003
-  subject: CHEBI:59789
-  predicate: consumes
-  object: gomodel:RXN3O-178
+  subject: gomodel:1.3.1.71-RXN
+  predicate: has_output
+  object: CHEBI:16933
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_59789_RXN3O-178"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_59789_RXN3O-178","type":[{"type":"class","id":"CHEBI:59789"'
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN RO:0002234 gomodel:CHEBI_16933_1.3.1.71-RXN.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/2; endpoint types: /individuals/72/type;
+      /individuals/8/type'
 - id: edge-004
-  subject: gomodel:RXN3O-178
-  predicate: produces
-  object: CHEBI:17038
+  subject: gomodel:1.3.1.71-RXN
+  predicate: part_of
+  object: GO:0006696
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17038_RXN3O-178"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_17038_RXN3O-178","type":[{"type":"class","id":"CHEBI:17038"'
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN BFO:0000050 gomodel:YeastPathways_PWY-6075-1/YeastPathways_PWY-6075-1.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/3; endpoint types: /individuals/72/type;
+      /individuals/73/type'
 - id: edge-005
-  subject: gomodel:RXN3O-178
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN3O-178"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15378_RXN3O-178","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-006
-  subject: gomodel:RXN3O-178
-  predicate: produces
-  object: CHEBI:57856
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57856_RXN3O-178"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_57856_RXN3O-178","type":[{"type":"class","id":"CHEBI:57856"'
-- id: edge-007
-  subject: gomodel:RXN3O-178
-  predicate: precedes
-  object: gomodel:RXN3O-203
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-178","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN3O-203"'
-- id: edge-008
-  subject: SGD:S000004815
-  predicate: enables
-  object: gomodel:RXN3O-203
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-203","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR202W-MONOMER_RXN3O-203_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:YMR202W-MONOMER_RXN3O-203_controller","type":[{"type":"class","id":"SGD:S000004815"'
-- id: edge-009
-  subject: CHEBI:17038
-  predicate: consumes
-  object: gomodel:RXN3O-203
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-203","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17038_RXN3O-178"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_17038_RXN3O-178","type":[{"type":"class","id":"CHEBI:17038"'
-- id: edge-010
-  subject: gomodel:RXN3O-203
-  predicate: produces
+  subject: gomodel:RXN3O-9827
+  predicate: has_input
   object: CHEBI:50586
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-203","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_50586_RXN3O-203"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_50586_RXN3O-203","type":[{"type":"class","id":"CHEBI:50586"'
-- id: edge-011
-  subject: gomodel:RXN3O-203
-  predicate: precedes
-  object: gomodel:RXN3O-9827
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-203","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN3O-9827"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002233 gomodel:CHEBI_50586_RXN3O-203.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/4; endpoint types: /individuals/26/type;
+      /individuals/12/type'
+- id: edge-006
   subject: SGD:S000004046
   predicate: enables
   object: gomodel:RXN3O-9827
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR056W-MONOMER_RXN3O-9827_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:YLR056W-MONOMER_RXN3O-9827_controller","type":[{"type":"class","id":"SGD:S000004046"'
-- id: edge-013
-  subject: CHEBI:50586
-  predicate: consumes
-  object: gomodel:RXN3O-9827
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_50586_RXN3O-203"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_50586_RXN3O-203","type":[{"type":"class","id":"CHEBI:50586"'
-- id: edge-014
-  subject: CHEBI:15379
-  predicate: consumes
-  object: gomodel:RXN3O-9827
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15379_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15379_RXN3O-9827","type":[{"type":"class","id":"CHEBI:15379"'
-- id: edge-015
-  subject: CHEBI:57783
-  predicate: consumes
-  object: gomodel:RXN3O-9827
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_57783_RXN3O-9827","type":[{"type":"class","id":"CHEBI:57783"'
-- id: edge-016
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:RXN3O-9827
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15378_RXN3O-9827","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-017
-  subject: gomodel:RXN3O-9827
-  predicate: produces
-  object: CHEBI:15377
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15377_RXN3O-9827","type":[{"type":"class","id":"CHEBI:15377"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-6075-1/654d809000002548"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:YeastPathways_PWY-6075-1/654d809000002548","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-018
-  subject: gomodel:RXN3O-9827
-  predicate: produces
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002333 gomodel:YLR056W-MONOMER_RXN3O-9827_controller.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/5; endpoint types: /individuals/26/type;
+      /individuals/29/type'
+- id: edge-007
+  subject: gomodel:1.3.1.71-RXN
+  predicate: has_output
   object: CHEBI:58349
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_58349_RXN3O-9827","type":[{"type":"class","id":"CHEBI:58349"'
-- id: edge-019
-  subject: gomodel:RXN3O-9827
-  predicate: produces
-  object: CHEBI:52972
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_52972_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_52972_RXN3O-9827","type":[{"type":"class","id":"CHEBI:52972"'
-- id: edge-020
-  subject: gomodel:RXN3O-9827
-  predicate: precedes
-  object: gomodel:RXN3O-9828
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9827","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN3O-9828"'
-- id: edge-021
-  subject: SGD:S000004617
-  predicate: enables
-  object: gomodel:RXN3O-9828
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-232_RXN3O-9828_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:MONOMER3O-232_RXN3O-9828_controller","type":[{"type":"class","id":"SGD:S000004617"'
-- id: edge-022
-  subject: CHEBI:57783
-  predicate: consumes
-  object: gomodel:RXN3O-9828
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_57783_RXN3O-9828","type":[{"type":"class","id":"CHEBI:57783"'
-- id: edge-023
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:RXN3O-9828
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15378_RXN3O-9828","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-024
-  subject: CHEBI:52972
-  predicate: consumes
-  object: gomodel:RXN3O-9828
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_52972_RXN3O-9827"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_52972_RXN3O-9827","type":[{"type":"class","id":"CHEBI:52972"'
-- id: edge-025
-  subject: CHEBI:15379
-  predicate: consumes
-  object: gomodel:RXN3O-9828
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15379_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15379_RXN3O-9828","type":[{"type":"class","id":"CHEBI:15379"'
-- id: edge-026
-  subject: gomodel:RXN3O-9828
-  predicate: produces
-  object: CHEBI:58349
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_58349_RXN3O-9828","type":[{"type":"class","id":"CHEBI:58349"'
-- id: edge-027
-  subject: gomodel:RXN3O-9828
-  predicate: produces
-  object: CHEBI:18249
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_18249_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_18249_RXN3O-9828","type":[{"type":"class","id":"CHEBI:18249"'
-- id: edge-028
-  subject: gomodel:RXN3O-9828
-  predicate: produces
-  object: CHEBI:15377
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-6075-1/654d809000002553"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:YeastPathways_PWY-6075-1/654d809000002553","type":[{"type":"class","id":"CHEBI:15377"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15377_RXN3O-9828","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-029
-  subject: gomodel:RXN3O-9828
-  predicate: precedes
-  object: gomodel:1.3.1.71-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:RXN3O-9828","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:1.3.1.71-RXN"'
-- id: edge-030
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN RO:0002234 gomodel:CHEBI_58349_1.3.1.71-RXN.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/6; endpoint types: /individuals/72/type;
+      /individuals/18/type'
+- id: edge-009
   subject: SGD:S000002980
   predicate: enables
   object: gomodel:1.3.1.71-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:1.3.1.71-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGL012W-MONOMER_1.3.1.71-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:YGL012W-MONOMER_1.3.1.71-RXN_controller","type":[{"type":"class","id":"SGD:S000002980"'
-- id: edge-031
-  subject: CHEBI:18249
-  predicate: consumes
-  object: gomodel:1.3.1.71-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:1.3.1.71-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_18249_RXN3O-9828"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_18249_RXN3O-9828","type":[{"type":"class","id":"CHEBI:18249"'
-- id: edge-032
-  subject: CHEBI:57783
-  predicate: consumes
-  object: gomodel:1.3.1.71-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:1.3.1.71-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_1.3.1.71-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_57783_1.3.1.71-RXN","type":[{"type":"class","id":"CHEBI:57783"'
-- id: edge-033
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:1.3.1.71-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:1.3.1.71-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_1.3.1.71-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_15378_1.3.1.71-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-034
-  subject: gomodel:1.3.1.71-RXN
-  predicate: produces
-  object: CHEBI:16933
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:1.3.1.71-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16933_1.3.1.71-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_16933_1.3.1.71-RXN","type":[{"type":"class","id":"CHEBI:16933"'
-- id: edge-035
-  subject: gomodel:1.3.1.71-RXN
-  predicate: produces
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN RO:0002333 gomodel:YGL012W-MONOMER_1.3.1.71-RXN_controller.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/8; endpoint types: /individuals/72/type;
+      /individuals/28/type'
+- id: edge-010
+  subject: gomodel:RXN3O-9828
+  predicate: has_output
   object: CHEBI:58349
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"subject":"gomodel:1.3.1.71-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_1.3.1.71-RXN"'
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002234 gomodel:CHEBI_58349_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/9; endpoint types: /individuals/27/type;
+      /individuals/20/type'
+- id: edge-011
+  subject: gomodel:RXN3O-9828
+  predicate: part_of
+  object: GO:0006696
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-6075-1
-    quote: '"id":"gomodel:CHEBI_58349_1.3.1.71-RXN","type":[{"type":"class","id":"CHEBI:58349"'
+    source_assertion: The model asserts gomodel:RXN3O-9828 BFO:0000050 gomodel:YeastPathways_PWY-6075-1/YeastPathways_PWY-6075-1.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/10; endpoint types: /individuals/27/type;
+      /individuals/73/type'
+- id: edge-012
+  subject: gomodel:RXN3O-9827
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002234 gomodel:CHEBI_15377_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/11; endpoint types: /individuals/26/type;
+      /individuals/0/type'
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002234 gomodel:YeastPathways_PWY-6075-1/654d809000002548.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/21; endpoint types: /individuals/26/type;
+      /individuals/78/type'
+- id: edge-013
+  subject: SGD:S000004815
+  predicate: enables
+  object: gomodel:RXN3O-203
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-203 RO:0002333 gomodel:YMR202W-MONOMER_RXN3O-203_controller.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/12; endpoint types: /individuals/25/type;
+      /individuals/30/type'
+- id: edge-014
+  subject: gomodel:RXN3O-9827
+  predicate: has_input
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002233 gomodel:CHEBI_15379_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/13; endpoint types: /individuals/26/type;
+      /individuals/6/type'
+- id: edge-015
+  subject: gomodel:RXN3O-9827
+  predicate: has_input
+  object: CHEBI:57783
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002233 gomodel:CHEBI_57783_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/14; endpoint types: /individuals/26/type;
+      /individuals/15/type'
+- id: edge-016
+  subject: gomodel:RXN3O-9828
+  predicate: has_input
+  object: CHEBI:57783
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002233 gomodel:CHEBI_57783_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/15; endpoint types: /individuals/27/type;
+      /individuals/16/type'
+- id: edge-017
+  subject: gomodel:RXN3O-178
+  predicate: has_input
+  object: CHEBI:18252
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002233 gomodel:CHEBI_18252_RXN3O-178.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/16; endpoint types: /individuals/24/type;
+      /individuals/11/type'
+- id: edge-018
+  subject: gomodel:RXN3O-9828
+  predicate: has_output
+  object: CHEBI:18249
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002234 gomodel:CHEBI_18249_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/17; endpoint types: /individuals/27/type;
+      /individuals/10/type'
+- id: edge-019
+  subject: gomodel:RXN3O-9828
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002234 gomodel:YeastPathways_PWY-6075-1/654d809000002553.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/18; endpoint types: /individuals/27/type;
+      /individuals/80/type'
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002234 gomodel:CHEBI_15377_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/34; endpoint types: /individuals/27/type;
+      /individuals/1/type'
+- id: edge-020
+  subject: gomodel:RXN3O-9828
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002233 gomodel:CHEBI_15378_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/19; endpoint types: /individuals/27/type;
+      /individuals/5/type'
+- id: edge-021
+  subject: gomodel:1.3.1.71-RXN
+  predicate: has_input
+  object: CHEBI:57783
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN RO:0002233 gomodel:CHEBI_57783_1.3.1.71-RXN.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/20; endpoint types: /individuals/72/type;
+      /individuals/14/type'
+- id: edge-022
+  subject: gomodel:RXN3O-9828
+  predicate: provides_input_for
+  object: gomodel:1.3.1.71-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002413 gomodel:1.3.1.71-RXN.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/22; endpoint types: /individuals/27/type;
+      /individuals/72/type'
+- id: edge-024
+  subject: gomodel:RXN3O-203
+  predicate: part_of
+  object: GO:0006696
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-203 BFO:0000050 gomodel:YeastPathways_PWY-6075-1/YeastPathways_PWY-6075-1.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/24; endpoint types: /individuals/25/type;
+      /individuals/73/type'
+- id: edge-026
+  subject: gomodel:RXN3O-178
+  predicate: has_output
+  object: CHEBI:17038
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002234 gomodel:CHEBI_17038_RXN3O-178.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/26; endpoint types: /individuals/24/type;
+      /individuals/9/type'
+- id: edge-027
+  subject: gomodel:RXN3O-9827
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002233 gomodel:CHEBI_15378_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/27; endpoint types: /individuals/26/type;
+      /individuals/4/type'
+- id: edge-028
+  subject: gomodel:RXN3O-9827
+  predicate: has_output
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002234 gomodel:CHEBI_58349_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/28; endpoint types: /individuals/26/type;
+      /individuals/19/type'
+- id: edge-029
+  subject: gomodel:RXN3O-9827
+  predicate: part_of
+  object: GO:0006696
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 BFO:0000050 gomodel:YeastPathways_PWY-6075-1/YeastPathways_PWY-6075-1.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/29; endpoint types: /individuals/26/type;
+      /individuals/73/type'
+- id: edge-030
+  subject: gomodel:1.3.1.71-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:1.3.1.71-RXN RO:0002233 gomodel:CHEBI_15378_1.3.1.71-RXN.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/30; endpoint types: /individuals/72/type;
+      /individuals/2/type'
+- id: edge-032
+  subject: gomodel:RXN3O-9828
+  predicate: has_input
+  object: CHEBI:52972
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002233 gomodel:CHEBI_52972_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/32; endpoint types: /individuals/27/type;
+      /individuals/13/type'
+- id: edge-033
+  subject: gomodel:RXN3O-9828
+  predicate: has_input
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002233 gomodel:CHEBI_15379_RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/33; endpoint types: /individuals/27/type;
+      /individuals/7/type'
+- id: edge-034
+  subject: gomodel:RXN3O-203
+  predicate: has_output
+  object: CHEBI:50586
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-203 RO:0002234 gomodel:CHEBI_50586_RXN3O-203.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/35; endpoint types: /individuals/25/type;
+      /individuals/12/type'
+- id: edge-035
+  subject: gomodel:RXN3O-178
+  predicate: part_of
+  object: GO:0006696
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 BFO:0000050 gomodel:YeastPathways_PWY-6075-1/YeastPathways_PWY-6075-1.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/36; endpoint types: /individuals/24/type;
+      /individuals/73/type'
+- id: edge-036
+  subject: SGD:S000004467
+  predicate: enables
+  object: gomodel:RXN3O-178
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002333 gomodel:MONOMER3O-188_RXN3O-178_controller.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/37; endpoint types: /individuals/24/type;
+      /individuals/22/type'
+- id: edge-037
+  subject: gomodel:RXN3O-203
+  predicate: has_input
+  object: CHEBI:17038
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-203 RO:0002233 gomodel:CHEBI_17038_RXN3O-178.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/38; endpoint types: /individuals/25/type;
+      /individuals/9/type'
+- id: edge-039
+  subject: gomodel:RXN3O-9827
+  predicate: provides_input_for
+  object: gomodel:RXN3O-9828
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002413 gomodel:RXN3O-9828.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/40; endpoint types: /individuals/26/type;
+      /individuals/27/type'
+- id: edge-040
+  subject: gomodel:RXN3O-203
+  predicate: provides_input_for
+  object: gomodel:RXN3O-9827
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-203 RO:0002413 gomodel:RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/41; endpoint types: /individuals/25/type;
+      /individuals/26/type'
+- id: edge-041
+  subject: gomodel:RXN3O-9827
+  predicate: has_output
+  object: CHEBI:52972
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9827 RO:0002234 gomodel:CHEBI_52972_RXN3O-9827.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/42; endpoint types: /individuals/26/type;
+      /individuals/13/type'
+- id: edge-042
+  subject: gomodel:RXN3O-178
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002234 gomodel:CHEBI_15378_RXN3O-178.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/43; endpoint types: /individuals/24/type;
+      /individuals/3/type'
+- id: edge-043
+  subject: gomodel:RXN3O-178
+  predicate: has_input
+  object: CHEBI:59789
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002233 gomodel:CHEBI_59789_RXN3O-178.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/44; endpoint types: /individuals/24/type;
+      /individuals/21/type'
+- id: edge-044
+  subject: SGD:S000004617
+  predicate: enables
+  object: gomodel:RXN3O-9828
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-9828 RO:0002333 gomodel:MONOMER3O-232_RXN3O-9828_controller.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/45; endpoint types: /individuals/27/type;
+      /individuals/23/type'
+- id: edge-045
+  subject: gomodel:RXN3O-178
+  predicate: has_output
+  object: CHEBI:57856
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6075-1
+    source_assertion: The model asserts gomodel:RXN3O-178 RO:0002234 gomodel:CHEBI_57856_RXN3O-178.
+    source_locator: './YeastPathways_PWY-6075-1.json#/facts/46; endpoint types: /individuals/24/type;
+      /individuals/17/type'
+- id: location-bf8ac449fd99
+  subject: SGD:S000004046
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000305 Topology: Multi-pass
+    membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P32353
+    source_assertion: UniProtKB:P32353 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/885/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32353
+    source_assertion: UniProtKB:P32353 has the exact SGD cross-reference SGD:S000004046.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/885/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-ef548de791a6
+  subject: SGD:S000002980
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:10722850)
+    Topology: Multi-pass membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P25340
+    source_assertion: UniProtKB:P25340 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/671/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P25340
+    source_assertion: UniProtKB:P25340 has the exact SGD cross-reference SGD:S000002980.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/671/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4cbfcf3c8151
+  subject: SGD:S000004815
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:15716577)
+    Topology: Single-pass membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P32352
+    source_assertion: UniProtKB:P32352 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/884/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32352
+    source_assertion: UniProtKB:P32352 has the exact SGD cross-reference SGD:S000004815.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/884/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-889f87298f00
+  subject: SGD:S000004467
+  predicate: located_in
+  object: GO:0005739
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:6363386)
+  evidence:
+  - reference_id: UniProtKB:P25087
+    source_assertion: UniProtKB:P25087 annotates location Mitochondrion (SL-0173).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/658/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P25087
+    source_assertion: UniProtKB:P25087 has the exact SGD cross-reference SGD:S000004467.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/658/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-08ef9a74682d
+  subject: SGD:S000004617
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000305 Topology: Single-pass
+    membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P54781
+    source_assertion: UniProtKB:P54781 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2328/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P54781
+    source_assertion: UniProtKB:P54781 has the exact SGD cross-reference SGD:S000004617.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2328/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-a4874d9a4ef3
+  subject: SGD:S000004046
+  predicate: has_cofactor
+  object: CHEBI:24875
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P53045)'
+  evidence:
+  - reference_id: UniProtKB:P32353
+    source_assertion: UniProtKB:P32353 annotates CHEBI:24875 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/885/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P32353
+    source_assertion: UniProtKB:P32353 has the exact SGD cross-reference SGD:S000004046.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/885/uniProtKBCrossReferences/0'
+- id: cofactor-a50dafd38e6a
+  subject: SGD:S000004617
+  predicate: has_cofactor
+  object: CHEBI:30413
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P04798)'
+  evidence:
+  - reference_id: UniProtKB:P54781
+    source_assertion: UniProtKB:P54781 annotates CHEBI:30413 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2328/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P54781
+    source_assertion: UniProtKB:P54781 has the exact SGD cross-reference SGD:S000004617.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2328/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-6075-1
   title: GO-CAM ergosterol biosynthesis I model YeastPathways_PWY-6075-1
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-08-03; member ./YeastPathways_PWY-6075-1.json
+- id: UniProtKB:P32353
+  title: Reviewed UniProtKB P32353 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P25340
+  title: Reviewed UniProtKB P25340 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P32352
+  title: Reviewed UniProtKB P32352 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P25087
+  title: Reviewed UniProtKB P25087 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P54781
+  title: Reviewed UniProtKB P54781 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

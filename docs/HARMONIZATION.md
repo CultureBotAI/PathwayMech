@@ -6,8 +6,10 @@ Reactome, PathBank, MetaCyc, KEGG, PMN, ModelSEED, BiGG, BV-BRC, ChEBI, LIPID
 MAPS, CAS, ChemSpider, HMDB, PubChem, EC, UniProtKB, Ensembl, Entrez Gene,
 NCBI Protein, TubercuList, and SGD records into a single pathway mechanism module.
 
-Prefer stable external identifiers over local identifiers. Local identifiers
-must be temporary and must be documented in `curation/decisions.tsv`.
+Prefer stable external identifiers. Preserve source-native instance identifiers
+when a source distinguishes physical states or has no exact external grounding;
+verify those instances against the source graph. Project-minted temporary
+identifiers must be documented in `curation/decisions.tsv`.
 
 The blocking [identifier and label gate](IDENTIFIERS.md) checks named pathway,
 taxon, participant, and reaction IDs against independent authority snapshots.
@@ -19,11 +21,12 @@ and preserves SGD and GO_REF CURIEs when the upstream model uses Saccharomyces
 Genome Database gene products or GO evidence references.
 
 WikiPathways GPML ingestion keeps the `WikiPathways` pathway ID and interaction
-graph IDs in draft reaction CURIEs. DataNodes are imported only when their Xref
-database can be mapped to a supported biological CURIE, including native
+graph IDs in draft reaction CURIEs. DataNodes retain supported biological Xrefs, including native
 LIPIDMAPS, CAS, ChemSpider, HMDB, PubChem, Ensembl, Entrez, NCBIProtein, and
 TubercuList accessions that do not yet have a checked ChEBI, Rhea, or UniProtKB
-mapping.
+mapping. Otherwise preserve an inspected DataNode's native pathway/GraphId
+identity instead of guessing an external accession. Group membership does not
+make each protein subunit an independent catalyst.
 
 When a ChEBI cross-reference normalizes a WikiPathways GPML or KEGG KGML
 chemical accession to a final ChEBI CURIE, draft records retain a
@@ -44,8 +47,9 @@ Reactome, PathBank, and PANTHER BioPAX ingestion share an importer that reads Bi
 biochemical reactions, grounds reaction-side small molecules through ChEBI, and
 grounds enzyme catalysts through UniProtKB `Catalysis` controllers. BioPAX
 ingestion also preserves source pathway and reaction stable identifiers, taxa
-from `BioSource` nodes, and reaction-scoped PubMed evidence when present
-without allowing long BioPAX comments to exceed the local evidence-quote limit.
+from `BioSource` nodes, physical complexes and compartments, and explicit source
+reaction directions. Structured assertions cite native BioPAX objects with
+locators; a database comment is not a quotation from its cited PMID.
 BioPAX prefix normalizations such as `UniProt` to `UniProtKB` are retained as
 the same `source_mappings` rows when the normalized participant remains in the
 draft mechanism graph.

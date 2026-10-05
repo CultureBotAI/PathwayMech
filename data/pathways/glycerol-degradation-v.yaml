@@ -1,8 +1,7 @@
 id: MetaCyc:GLYCEROLMETAB-PWY
 label: glycerol degradation V
-description: glycerol degradation V oxidizes glycerol with NAD(+) to dihydroxyacetone,
-  then phosphorylates dihydroxyacetone with phosphoenolpyruvate to form dihydroxyacetone
-  phosphate and pyruvate.
+description: glycerol degradation V oxidizes glycerol with NAD(+) to dihydroxyacetone, then phosphorylates
+  dihydroxyacetone with phosphoenolpyruvate to form dihydroxyacetone phosphate and pyruvate.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:511145
@@ -10,141 +9,162 @@ taxa:
 participants:
 - id: EC:1.1.1.6
   label: glycerol dehydrogenase
+  category: molecular_activity
 - id: EC:2.7.1.121
   label: dihydroxyacetone kinase
+  category: molecular_activity
 - id: CHEBI:17754
   label: glycerol
+  category: small_molecule
 - id: CHEBI:57540
   label: NAD(+)
+  category: small_molecule
 - id: CHEBI:16016
   label: dihydroxyacetone
+  category: small_molecule
 - id: CHEBI:57945
   label: NADH
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:58702
   label: phosphoenolpyruvate
+  category: small_molecule
 - id: CHEBI:57642
   label: dihydroxyacetone phosphate
+  category: small_molecule
 - id: CHEBI:15361
   label: pyruvate
+  category: small_molecule
 reactions:
-- id: RHEA:13772
-  label: glycerol dehydrogenase reaction
 - id: RHEA:18382
   label: dihydroxyacetone kinase reaction
+  direction: left_to_right
+- id: RHEA:13770
+  label: glycerol dehydrogenase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:1.1.1.6
-  predicate: catalyzes
-  object: RHEA:13772
-  evidence:
-  - reference_id: RHEA:13769
-    quote: glycerol dehydrogenase catalyzes glycerol dehydrogenase reaction.
-- id: edge-002
-  subject: CHEBI:17754
-  predicate: consumes
-  object: RHEA:13772
-  evidence:
-  - reference_id: RHEA:13772
-    quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
-  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
-    quote: glycerol is consumed by glycerol dehydrogenase reaction.
-- id: edge-003
-  subject: CHEBI:57540
-  predicate: consumes
-  object: RHEA:13772
-  evidence:
-  - reference_id: RHEA:13772
-    quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
-  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
-    quote: NAD(+) is consumed by glycerol dehydrogenase reaction.
-- id: edge-004
-  subject: RHEA:13772
-  predicate: produces
-  object: CHEBI:16016
-  evidence:
-  - reference_id: RHEA:13772
-    quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
-  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
-    quote: glycerol dehydrogenase reaction produces dihydroxyacetone.
-- id: edge-005
-  subject: RHEA:13772
-  predicate: produces
-  object: CHEBI:57945
-  evidence:
-  - reference_id: RHEA:13772
-    quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
-  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
-    quote: glycerol dehydrogenase reaction produces NADH.
-- id: edge-006
-  subject: RHEA:13772
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: RHEA:13772
-    quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
-  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
-    quote: glycerol dehydrogenase reaction produces H(+).
-- id: edge-007
-  subject: RHEA:13772
-  predicate: precedes
-  object: RHEA:18382
-  evidence:
-  - reference_id: RHEA:13772
-    quote: RHEA:13772 glycerol + NAD(+) <=> dihydroxyacetone + NADH + H(+)
-  - reference_id: RHEA:18382
-    quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate
-      + pyruvate
-  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
-    quote: glycerol dehydrogenase reaction precedes dihydroxyacetone kinase reaction.
-- id: edge-008
-  subject: EC:2.7.1.121
-  predicate: catalyzes
-  object: RHEA:18382
-  evidence:
-  - reference_id: RHEA:18381
-    quote: dihydroxyacetone kinase catalyzes dihydroxyacetone kinase reaction.
-- id: edge-009
   subject: CHEBI:16016
   predicate: consumes
   object: RHEA:18382
   evidence:
   - reference_id: RHEA:18382
-    quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate
-      + pyruvate
-- id: edge-010
+    source_assertion: Rhea lists CHEBI:16016 on the substrates side of RHEA:18382 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18382']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:58702
   predicate: consumes
   object: RHEA:18382
   evidence:
   - reference_id: RHEA:18382
-    quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate
-      + pyruvate
-- id: edge-011
-  subject: RHEA:18382
-  predicate: produces
-  object: CHEBI:57642
-  evidence:
-  - reference_id: RHEA:18382
-    quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate
-      + pyruvate
-- id: edge-012
+    source_assertion: Rhea lists CHEBI:58702 on the substrates side of RHEA:18382 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18382']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
   subject: RHEA:18382
   predicate: produces
   object: CHEBI:15361
   evidence:
   - reference_id: RHEA:18382
-    quote: RHEA:18382 dihydroxyacetone + phosphoenolpyruvate => dihydroxyacetone phosphate
-      + pyruvate
+    source_assertion: Rhea lists CHEBI:15361 on the products side of RHEA:18382 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18382']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
+  subject: RHEA:18382
+  predicate: produces
+  object: CHEBI:57642
+  evidence:
+  - reference_id: RHEA:18382
+    source_assertion: Rhea lists CHEBI:57642 on the products side of RHEA:18382 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18382']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: CHEBI:17754
+  predicate: consumes
+  object: RHEA:13770
+  evidence:
+  - reference_id: RHEA:13770
+    source_assertion: Rhea lists CHEBI:17754 on the substrates side of RHEA:13770 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13770']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:13770
+  evidence:
+  - reference_id: RHEA:13770
+    source_assertion: Rhea lists CHEBI:57540 on the substrates side of RHEA:13770 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13770']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:13770
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:13770
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:13770 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13770']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:13770
+  predicate: produces
+  object: CHEBI:16016
+  evidence:
+  - reference_id: RHEA:13770
+    source_assertion: Rhea lists CHEBI:16016 on the products side of RHEA:13770 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13770']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: RHEA:13770
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: RHEA:13770
+    source_assertion: Rhea lists CHEBI:57945 on the products side of RHEA:13770 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13770']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: EC:1.1.1.6
+  predicate: catalyzes
+  object: RHEA:13770
+  evidence:
+  - reference_id: RHEA:13769
+    source_assertion: Rhea associates EC:1.1.1.6 with the reaction family containing RHEA:13770.
+    source_locator: rh:ec
+- id: edge-011
+  subject: EC:2.7.1.121
+  predicate: catalyzes
+  object: RHEA:18382
+  evidence:
+  - reference_id: RHEA:18381
+    source_assertion: Rhea associates EC:2.7.1.121 with the reaction family containing RHEA:18382.
+    source_locator: rh:ec
+- id: edge-012
+  subject: RHEA:13770
+  predicate: precedes
+  object: RHEA:18382
+  evidence:
+  - reference_id: MetaCyc:GLYCEROLMETAB-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:13770 before RHEA:18382 in this pathway. Shared
+      intermediate: CHEBI:16016.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 references:
 - id: MetaCyc:GLYCEROLMETAB-PWY
   title: MetaCyc glycerol degradation V
+  url: https://pathway.yeastgenome.org/getxml?id=META:GLYCEROLMETAB-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 151d0a826a544e5c30a0e1252ff0a8d77fbdc8be3ca220332abc10665936037b
 - id: RHEA:13769
   title: Rhea glycerol dehydrogenase reaction
+  url: https://www.rhea-db.org/rhea/13769
+  source_version: '139'
 - id: RHEA:13772
   title: Rhea bidirectional glycerol dehydrogenase reaction
+  url: https://www.rhea-db.org/rhea/13772
+  source_version: '139'
 - id: RHEA:18381
   title: Rhea dihydroxyacetone kinase reaction
+  url: https://www.rhea-db.org/rhea/18381
+  source_version: '139'
 - id: RHEA:18382
   title: Rhea dihydroxyacetone-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/18382
+  source_version: '139'
+- id: RHEA:13770
+  title: RHEA:13770 authority record
+  url: https://www.rhea-db.org/rhea/13770
+  source_version: '139'
