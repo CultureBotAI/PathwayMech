@@ -359,13 +359,18 @@ def test_pathway_index_lists_records_pages_and_protein_participants() -> None:
 
 
 def test_rendered_site_publishes_the_index_and_it_is_current() -> None:
+    import json
+
     root = Path(__file__).resolve().parents[1]
     published = root / "pages" / "pathway_index.json"
     from pathwaymech.cli import render_site
     from pathwaymech.yaml_io import load_pathway_records
 
     records = load_pathway_records(root / "data" / "pathways")
-    assert published.read_text(encoding="utf-8") == render_site(records)["pathway_index.json"]
+    rendered = render_site(records)
+    assert published.read_text(encoding="utf-8") == rendered["pathway_index.json"]
+    for row in json.loads(rendered["pathway_index.json"])["records"]:
+        assert row["page"] in rendered, row["id"]
 
 
 def test_page_gate_detects_and_renderer_repairs_a_stale_pathway_index(tmp_path: Path,

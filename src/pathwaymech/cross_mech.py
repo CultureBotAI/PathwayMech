@@ -504,7 +504,8 @@ def scan_sibling(
     With ``ref``, records are read from that commit's git objects instead of the
     working tree. With ``spec.prefilter``, a file is parsed only when its text
     names one of ``prefilter_terms`` (PathwayMech accessions) or PathwayMech
-    itself, so the inventory of a very large corpus is restricted to what can join.
+    itself. This selects an accession-overlap and link subset; reaction-only
+    leads outside that subset remain unknown.
     """
     loader = loader or _load_yaml
     proteins: list[SiblingProtein] = []
