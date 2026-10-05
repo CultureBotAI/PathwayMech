@@ -228,6 +228,8 @@ def test_participant_annotations_let_records_without_reactions_match(sibling, sp
 
 
 def test_cli_writes_tables_and_fails_on_broken_links(tmp_path: Path, sibling) -> None:
+    # This test isolates broken links; scan failures have their own CLI test.
+    (sibling / "data" / "antibiotics" / "broken.yaml").unlink()
     root = tmp_path / "PathwayMech"
     write_yaml(root / "data" / "pathways" / "wp5060.yaml", PATHWAY)
     write_yaml(root / "data" / "pathways" / "zymosterol.yaml", YEAST)
@@ -359,10 +361,28 @@ def test_pathway_index_lists_records_pages_and_protein_participants() -> None:
 def test_rendered_site_publishes_the_index_and_it_is_current() -> None:
     root = Path(__file__).resolve().parents[1]
     published = root / "pages" / "pathway_index.json"
+    from pathwaymech.cli import render_site
     from pathwaymech.yaml_io import load_pathway_records
 
     records = load_pathway_records(root / "data" / "pathways")
-    assert published.read_text(encoding="utf-8") == pathway_index_json(records)
+    assert published.read_text(encoding="utf-8") == render_site(records)["pathway_index.json"]
+
+
+def test_page_gate_detects_and_renderer_repairs_a_stale_pathway_index(tmp_path: Path,
+                                                                   capsys) -> None:
+    from pathwaymech.cli import check_pages_main, render_pages_main
+
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "style.css").write_text("", encoding="utf-8")
+    (pages / ".nojekyll").write_text("", encoding="utf-8")
+    assert render_pages_main([], root=tmp_path) == 0
+    assert check_pages_main(root=tmp_path) == 0
+    (pages / "pathway_index.json").write_text('{"records": []}', encoding="utf-8")
+    assert check_pages_main(root=tmp_path) == 1
+    assert "pages/pathway_index.json: not what its record renders to" in capsys.readouterr().err
+    assert render_pages_main([], root=tmp_path) == 0
+    assert check_pages_main(root=tmp_path) == 0
 
 
 def test_repository_config_loads_and_names_real_slots() -> None:
@@ -373,3 +393,178 @@ def test_repository_config_loads_and_names_real_slots() -> None:
         "CellStructureMech"}
     for spec in specs:
         assert spec.protein_slots, f"{spec.name} declares no protein slot"
+
+
+def test_bad_timestamp_is_recorded_as_a_scan_error(tmp_path, spec):
+    path = tmp_path / "data/antibiotics/date.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text("identifier: a\nretrieved: 2026-02-30\n")
+    _, _, errors = scan_sibling(tmp_path, spec)
+    assert len(errors) == 1 and "date.yaml" in errors[0]
+
+
+def test_empty_reports_keep_headers_and_remove_stale_full_tables(tmp_path, index):
+    from pathwaymech.cross_mech import write_report
+
+    report = build_report(index, {"Mech": ([], [], [])})
+    write_report(report, tmp_path, full=True)
+    assert (tmp_path / "overlaps.tsv").read_text().startswith("mech\t")
+    write_report(report, tmp_path)
+    assert not (tmp_path / "overlaps.tsv").exists()
+    assert not (tmp_path / "sibling_proteins.tsv").exists()
+    assert (tmp_path / "link_checks.tsv").read_text().strip().endswith("status")
+
+
+def test_unsupported_globs_cannot_diverge_between_working_and_ref_modes():
+    from pathwaymech.cross_mech import glob_regex
+
+    for pattern in ("data/[ab].yaml", "data/**.yaml", "data/**"):
+        with pytest.raises(ValueError, match="unsupported record glob"):
+            glob_regex(pattern)
+
+
+def test_annotation_coverage_distinguishes_unknown_from_no_reactions(index, sibling, spec):
+    from pathwaymech.cross_mech import ScanCoverage, render_summary
+
+    coverage = {"AntibioticMech": ScanCoverage()}
+    report = build_report(index, {"AntibioticMech": scan_sibling(sibling, spec)},
+                          {"P0A749": {"rhea": []}}, coverage=coverage)
+    assert coverage["AntibioticMech"].distinct_accessions == 3
+    assert coverage["AntibioticMech"].annotated_accessions == 1
+    assert "Missing annotation entries are unknown" in render_summary(report)
+
+
+def test_when_match_only_selects_the_declared_corpus():
+    slot = SlotSpec("trait_relations[]", when_match={"relation_source": r"PathwayMech\b.*"})
+    assert slot.selects({"relation_source": "PathwayMech abc123"})
+    assert not slot.selects({"relation_source": "Complex Portal"})
+    assert not slot.selects({"relation_source": "PathwayMechExtra"})
+
+
+def test_stray_urls_accept_host_case_but_still_check_the_whole_path(tmp_path, index):
+    from pathwaymech.cross_mech import MechSpec
+
+    url = "HTTPS://CultureBotAI.github.io/PathwayMech/pages/records/WikiPathways_WP5060.html"
+    write_yaml(tmp_path / "record.yaml", {"identifier": "x", "notes": f"{url} {url}.bak"})
+    scan = scan_sibling(tmp_path, MechSpec("Mech", ["*.yaml"]))
+    report = build_report(index, {"Mech": scan})
+    assert [row["status"] for row in report.link_checks] == ["ok", "unknown_record"]
+
+
+def test_uniprot_batches_do_not_drop_boundary_accessions():
+    import urllib.parse
+
+    accessions = ["P0A749", "P0A6B4", "P10614", "P06115", "P06169"]
+    requested = []
+
+    def fetch(url):
+        query = urllib.parse.parse_qs(urllib.parse.urlsplit(url).query)["query"][0]
+        batch = [value.removeprefix("accession:") for value in query.split(" OR ")]
+        requested.append(batch)
+        return "Entry\tRhea ID\n" + "".join(f"{value}\t\n" for value in batch)
+
+    assert set(fetch_uniprot_annotations(accessions, fetch=fetch, batch=2)) == set(accessions)
+    assert [len(batch) for batch in requested] == [2, 2, 1]
+
+
+@pytest.mark.parametrize("suffix", [".bak", "/extra"])
+def test_page_urls_require_the_exact_published_path(index, suffix: str) -> None:
+    url = record_url(PATHWAY["id"])
+    assert resolve_target(index, url + suffix) is None
+    assert resolve_target(index, url.replace("WikiPathways_WP5060", "wikipathways_wp5060")) is None
+    assert resolve_target(index, url + "?source=sibling#proteins") == PATHWAY["id"]
+    assert resolve_target(index, "prose " + url) is None
+
+
+def test_stray_urls_report_malformed_suffixes_and_trim_prose_punctuation(tmp_path: Path) -> None:
+    from pathwaymech.cross_mech import MechSpec
+
+    url = record_url(PATHWAY["id"])
+    write_yaml(tmp_path / "r.yaml", {"notes": f"See ({url}). Also {url}.bak"})
+    index = build_pathway_index([PATHWAY])
+    scan = scan_sibling(tmp_path, MechSpec(name="X", records=["*.yaml"]))
+    report = build_report(index, {"X": scan})
+    assert [(row["target"], row["status"]) for row in report.link_checks] == [
+        (url, "ok"), (url + ".bak", "unknown_record")]
+
+
+@pytest.mark.parametrize("option", ["--sgd-map", "--annotations", "--rhea-directions"])
+def test_cli_rejects_missing_explicit_json_inputs(tmp_path: Path, option: str, capsys) -> None:
+    config = tmp_path / "config.yaml"
+    config.write_text(SPEC_YAML, encoding="utf-8")
+    missing = tmp_path / "missing.json"
+    with pytest.raises(SystemExit) as error:
+        main(["--config", str(config), option, str(missing)], tmp_path)
+    assert error.value.code == 2
+    assert str(missing) in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("check_links", [False, True])
+def test_cli_fails_on_unreadable_sibling_records(tmp_path: Path, check_links: bool,
+                                               capsys) -> None:
+    config = tmp_path / "config.yaml"
+    config.write_text(SPEC_YAML, encoding="utf-8")
+    sibling = tmp_path / "AntibioticMech"
+    write_yaml(sibling / "data" / "antibiotics" / "valid.yaml", {"identifier": "CHEBI:1"})
+    (sibling / "data" / "antibiotics" / "broken.yaml").write_text("a: [", encoding="utf-8")
+    args = ["--config", str(config), "--mech", f"AntibioticMech={sibling}"]
+    if check_links:
+        args.append("--check-links")
+    assert main(args, tmp_path) == 1
+    output = capsys.readouterr()
+    assert "inventory is incomplete: 1 scan error(s)" in output.err
+    assert "| AntibioticMech | full | incomplete | 2 | 1 | 0 | 1 | 1 |" in output.out
+
+
+def test_check_links_fails_when_only_some_configured_siblings_are_available(tmp_path: Path,
+                                                                          capsys) -> None:
+    config = tmp_path / "config.yaml"
+    data = yaml.safe_load(SPEC_YAML)
+    data["mechs"]["MissingMech"] = data["mechs"]["AntibioticMech"].copy()
+    write_yaml(config, data)
+    write_yaml(tmp_path / "AntibioticMech" / "data" / "antibiotics" / "r.yaml",
+               {"identifier": "CHEBI:1"})
+    args = ["--config", str(config), "--mechs-root", str(tmp_path)]
+    assert main(args, tmp_path) == 0  # An exploratory inventory can inspect a subset.
+    assert main([*args, "--check-links"], tmp_path) == 1
+    output = capsys.readouterr()
+    assert "MissingMech | full | missing checkout" in output.out
+    assert "1 required checkout(s) unavailable" in output.err
+    assert main([*args, "--check-links", "--only", "AntibioticMech"], tmp_path) == 0
+
+
+def test_cli_rejects_unknown_mech_override(tmp_path: Path, capsys) -> None:
+    config = tmp_path / "config.yaml"
+    config.write_text(SPEC_YAML, encoding="utf-8")
+    with pytest.raises(SystemExit) as error:
+        main(["--config", str(config), "--mech", f"TypoMech={tmp_path}"], tmp_path)
+    assert error.value.code == 2
+    assert "TypoMech" in capsys.readouterr().err
+
+
+def test_cli_records_prefilter_coverage_in_summary_and_tsv(tmp_path: Path) -> None:
+    import csv
+
+    config = tmp_path / "config.yaml"
+    data = yaml.safe_load(SPEC_YAML)
+    data["mechs"]["AntibioticMech"]["prefilter"] = True
+    write_yaml(config, data)
+    root = tmp_path / "PathwayMech"
+    write_yaml(root / "data" / "pathways" / "p.yaml", PATHWAY)
+    sibling = tmp_path / "AntibioticMech"
+    for name, accession in [("matched", "P0A749"), ("filtered", "Q00000")]:
+        write_yaml(sibling / "data" / "antibiotics" / f"{name}.yaml", {
+            "identifier": name,
+            "molecular_targets": [{"protein_examples": [{"uniprot_id": accession}]}],
+        })
+    out = tmp_path / "report"
+    assert main(["--config", str(config), "--mech", f"AntibioticMech={sibling}",
+                 "--out", str(out)], root) == 0
+    summary = (out / "summary.md").read_text(encoding="utf-8")
+    assert "not a complete sibling protein inventory" in summary
+    assert "reaction-only matches" in summary
+    assert "| AntibioticMech | accession-prefiltered | complete | 2 | 1 | 1 | 0 | 0 |" in summary
+    with (out / "coverage.tsv").open(encoding="utf-8", newline="") as stream:
+        row, = csv.DictReader(stream, delimiter="\t")
+    assert row["scope"] == "accession-prefiltered"
+    assert (row["files_seen"], row["files_parsed"], row["files_filtered"]) == ("2", "1", "1")

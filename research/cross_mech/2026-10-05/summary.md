@@ -1,5 +1,23 @@
 # Cross-Mech protein inventory
 
+## Coverage
+
+Counts below describe the parsed records. An accession-prefiltered scan is not a complete sibling protein inventory; reaction-only matches, held proteins and example availability outside that subset are unknown.
+
+| Mech | Scope | Status | Files considered | Parsed | Filtered out | Unreadable | Errors | Accessions annotated / held |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| AntibioticMech | full | complete | 2939 | 2939 | 0 | 0 | 0 | 84 / 88 |
+| CellStructureMech | full | complete | 889 | 889 | 0 | 0 | 0 | 329 / 329 |
+| NaturalProductMech | full | complete | 3115 | 3115 | 0 | 0 | 0 | 445 / 445 |
+| ProteinTraitsMech | accession-prefiltered | complete | 429293 | 1975 | 427318 | 0 | 0 | 379 / 3256 |
+| TraitMech | full | complete | 1009 | 1009 | 0 | 0 | 0 | 112 / 112 |
+
+Missing annotation entries are unknown, not negative reaction evidence.
+
+Rhea comparisons normalize covered directional identifiers to their master reaction using the supplied mapping.
+
+## Protein and link counts
+
 | Mech | Protein slot values | Distinct accessions | In a PathwayMech pathway | Record-pathway pairs | Unlinked pairs | PathwayMech links | Broken links |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | AntibioticMech | 278 | 88 | 0 | 0 | 0 | 0 | 0 |

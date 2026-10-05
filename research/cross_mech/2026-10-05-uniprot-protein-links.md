@@ -29,17 +29,20 @@ HabitatMech hold no curated UniProtKB protein. Each was checked with an
 ignore-independent `grep -r`. DUFMech's accessions appear only as InterPro
 description text in its worklists. MediaIngredientMech's appear only in
 literature notes under `research/`. CommunityMech and HabitatMech do model
-pathway-level processes, so they appear in the gap ranking below. No Mech
-referenced PathwayMech in any file before this work.
+pathway-level processes, so they appear in the gap ranking below. No PathwayMech record links were detected on the configured record surfaces
+of the five inventoried siblings at the listed revisions. This is not an
+assertion about every file or every Mech repository.
 
 ## Method
 
 ```bash
-just cross-mech-proteins --mechs-root <dir holding the Mech checkouts> \
-  --sgd-map research/cross_mech/2026-10-05/inputs/sgd_uniprot.json \
-  --annotations research/cross_mech/2026-10-05/inputs/uniprot_annotations.json \
-  --out research/cross_mech/2026-10-05
+uv run python research/cross_mech/2026-10-05/reproduce.py \
+  --mechs-root <dir holding the Mech checkouts>
 ```
+
+This reads the exact sibling commits listed above using git objects, even if
+the checkouts have since moved. It uses the committed SGD/UniProt inputs and
+Rhea quartet projection.
 
 The `just cross-mech-proteins` command reads the protein slots listed in
 `conf/sibling_mechs.yaml`, and only those. Each slot's meaning was read from that
@@ -71,12 +74,19 @@ Rhea reaction. That is the case for the 86 GO-CAM yeast records.
 
 For ProteinTraitsMech, only records whose text names one of the 377 PathwayMech
 accessions were parsed, out of 429,293 trait records. Its 351 shared proteins
-appear as canonical examples on 2,468 trait records. Most of those records are
+appear as canonical examples on 1,879 distinct trait records, yielding 2,468
+record–pathway pairs. Most of those records are
 domain, family and structure traits, which should not link to a pathway.
 
 `pairs.tsv` lists every record and pathway sharing a protein.
-`reaction_matches.tsv` lists 237 slot values that share a Rhea reaction or a
-complete EC number with a pathway. `example_candidates.tsv` lists PathwayMech
+`reaction_matches.tsv` lists protein-slot–pathway matches that share a Rhea
+chemical transformation or a complete EC number. A slot can match multiple
+pathways, so its row count is not a count of distinct slots. The original
+237 rows represented 202 slots and 117 record–pathway pairs; the corrected
+Rhea normalization and retaining chemistry leads for other records even when
+a protein directly overlaps one record yield 854 rows: 587 distinct slots
+and 640 record–pathway pairs. Of these, 323 use `record_rhea`.
+They remain unreviewed curation leads, including known rejected examples. `example_candidates.tsv` lists PathwayMech
 proteins of overlapping pathways that a sibling does not hold.
 `proteintraitsmech_pathway_trait_links.tsv` gives the exact
 ProteinTraitsMech joins described below. `link_checks.tsv` is empty: no sibling
@@ -89,11 +99,11 @@ and evidence that the sibling's own rules require before it is written there.
 
 ### ProteinTraitsMech
 
-There are 73 exact pairs: 67 GO biological-process traits carry a MetaCyc
+There are 73 exact cross-reference joins (not assertions of pathway equivalence): 67 GO biological-process traits carry a MetaCyc
 xref equal to a PathwayMech record id. The xref matches either a `MetaCyc:` id
 directly, or the frame inside `gomodel:YeastPathways_<frame>`. In 30 pairs,
 PathwayMech names proteins that are not yet examples of the trait. In 14
-pairs, the trait has no microbial example at all, only human, mouse, plant,
+pairs (12 distinct traits), the trait has no microbial example at all, only human, mouse, plant,
 fly or worm proteins. Examples:
 
 - removal of superoxide radicals (GO:0019430) ↔ superoxide radicals degradation
@@ -244,15 +254,17 @@ Data issues found:
 
 - `WikiPathways:WP5060` names MrdA as UniProtKB:Q2TL65, an unreviewed
   species-level E. coli entry. The reviewed K-12 entry is P0AD65, which
-  CellStructureMech uses.
+  CellStructureMech uses. This is a reconciliation candidate, not an established
+  error: an unreviewed species-level entry is not inherently invalid.
 - AntibioticMech nevirapine lists UniProtKB:P06633 (S. cerevisiae
   imidazoleglycerol-phosphate dehydratase, His3) as a target example labelled
   HIV-1. This is a BindingDB artifact. It is the only route by which nevirapine
   matched `MetaCyc:HISTSYN-PWY`.
-- UniProt has deleted six accessions that sit in AntibioticMech BindingDB
-  target-example slots: Q9WJQ1 on etravirine and nevirapine, R4ML78 on mafenide
+- Four distinct accessions were unresolved by the audit lookup in six
+  AntibioticMech BindingDB target-example slots (a failed lookup alone does
+  not establish deletion): Q9WJQ1 on etravirine and nevirapine, R4ML78 on mafenide
   and sulfanilamide, A0A045J7I4 on sulfanilamide, and A0A0E3A638 on α-mangostin.
-  The 99 deleted accessions in TraitMech occur only in curation-history text,
+  The 99 unresolved historical accessions in TraitMech occur only in curation-history text,
   and the one in NaturalProductMech (P24247, formycin A) only in notes.
 
 ## Gaps
@@ -260,15 +272,15 @@ Data issues found:
 1. **New PathwayMech records are blocked by the identifier gate's snapshot
    refresh.**
    - `scripts/build_source_identifier_snapshot.py` rebuilds all 71 manifest
-     sources at once, and no cache of them exists.
-   - The Reactome BioPAX exporter fails today, and the GO-CAM tarball is a
+     sources at once. The original session did not locate a complete cache.
+   - The Reactome BioPAX exporter failed during the original audit; the GO-CAM tarball is a
      moving file.
    - The ontology snapshot needs pinned ChEBI 255, GO 2026-07-26 and Rhea 139
      databases. The local ChEBI and GO databases are different releases, and no
-     Rhea database is present.
-   - A refresh that rebuilds only named sources would unblock the gap list
-     without weakening verification.
-2. **No sibling has a PathwayMech link slot except NaturalProductMech.**
+     matching Rhea database was found in that session.
+   - The user chose to wait for a complete refresh of all 71 sources. No
+     partial-refresh implementation or identifier-gate exception is included.
+2. **At the audit baseline, only NaturalProductMech had a cross-corpus link slot.**
    - NaturalProductMech's `related_records` is computed by its seeder from a
      pinned sibling inventory and must not be hand-edited.
    - TraitMech, AntibioticMech and CellStructureMech need a schema change. The
@@ -286,3 +298,24 @@ Sibling checks can verify a PathwayMech link against
 `pages/pathway_index.json`, published with the PathwayMech pages from this
 change on. It lists each record's id, label, page, taxa, protein participants
 and reactions.
+
+## Review corrections and remaining work
+
+Rhea reactions are grouped using the independently downloaded upstream
+`rhea-directions.tsv`, projected into `conf/rhea_directions.json` with the
+complete input SHA-256 and retrieval timestamp. Directional and master IDs
+can now join on their common chemical transformation; this does not assert
+a physiological reaction direction. See the [Rhea direction contract](https://www.rhea-db.org/help/reaction-side-direction).
+
+ProteinTraitsMech remains a prefiltered inventory: its counts are lower
+bounds for the whole corpus, and annotation coverage is separate from parsed
+record coverage. No sibling link asserts equivalence solely from a shared
+protein, EC number, or MetaCyc cross-reference. In particular, antibacterial
+DHFR claims and antifungal target claims may concern different organisms from
+the linked yeast pathway and must retain that qualification.
+
+The selected continuation is a governed CrossCorpusLink class in claw, fleet
+repins, and local changes in AntibioticMech, TraitMech, CellStructureMech, and
+NaturalProductMech. ProteinTraitsMech domain changes stay with its concurrent
+session. The user selected a full authority refresh before new PathwayMech
+records; the 17 ranked gaps remain deferred.

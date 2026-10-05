@@ -37,16 +37,18 @@ import urllib.parse
 import urllib.request
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
 import yaml
 
+from pathwaymech.rhea_directions import master_ids
+
 PATHWAYMECH_RECORD_URL = "https://culturebotai.github.io/PathwayMech/pages/records/{slug}.html"
 # Matches a link to a PathwayMech record page wherever a sibling writes one.
 PATHWAYMECH_URL = re.compile(
-    r"https?://culturebotai\.github\.io/PathwayMech/pages/records/([A-Za-z0-9._~%-]+)\.html"
+    r"(?i:https?://culturebotai\.github\.io)/PathwayMech/pages/records/[^\s<>\"']+"
 )
 # UniProtKB accession grammar (https://www.uniprot.org/help/accession_numbers),
 # optionally followed by an isoform suffix.
@@ -77,8 +79,9 @@ def pathway_index_json(records: Iterable[Any]) -> str:
 
     Sibling Mechs check a PathwayMech link against this file (record id, label
     and page) instead of cloning the repository. It lists each record's
-    protein and activity participants and reaction ids, so a sibling can also
-    confirm that a linked protein is a participant. It is rendered with the
+    protein and activity participants and reaction ids in their native namespaces.
+    Confirming a UniProt protein against an SGD participant needs a separate
+    provenance-bearing SGD mapping. It is rendered with the
     pages, so `just check-pages` fails while it is stale.
     """
     rows = []
@@ -149,6 +152,7 @@ class PathwayIndex:
     participant_rhea: dict[str, set[str]] = field(default_factory=dict)
     participant_ec: dict[str, set[str]] = field(default_factory=dict)
     unmapped_sgd: set[str] = field(default_factory=set)
+    rhea_directions: dict[str, str] = field(default_factory=dict)
 
     def records_for(self, accession: str) -> list[str]:
         return sorted({protein.record_id for protein in self.proteins.get(accession, [])})
@@ -158,6 +162,7 @@ def build_pathway_index(
     records: Iterable[dict[str, Any]],
     sgd_to_uniprot: dict[str, list[str]] | None = None,
     annotations: dict[str, dict[str, list[str]]] | None = None,
+    rhea_directions: dict[str, str] | None = None,
 ) -> PathwayIndex:
     """Index PathwayMech records by protein accession, Rhea reaction and EC number.
 
@@ -169,17 +174,17 @@ def build_pathway_index(
     """
     sgd_to_uniprot = sgd_to_uniprot or {}
     annotations = annotations or {}
-    index = PathwayIndex()
+    index = PathwayIndex(rhea_directions=rhea_directions or {})
     proteins: dict[str, list[PathwayProtein]] = defaultdict(list)
     for record in records:
         record_id = record["id"]
         index.labels[record_id] = record["label"]
         index.slugs[record_slug(record_id).casefold()] = record_id
-        index.rhea[record_id] = {
+        index.rhea[record_id] = master_ids({
             reaction["id"].split(":", 1)[1]
             for reaction in record.get("reactions") or []
             if str(reaction.get("id", "")).startswith("RHEA:")
-        }
+        }, index.rhea_directions)
         index.ec[record_id] = {
             participant["id"].split(":", 1)[1]
             for participant in record.get("participants") or []
@@ -210,7 +215,7 @@ def build_pathway_index(
     index.proteins = dict(proteins)
     for accession, entries in index.proteins.items():
         annotation = annotations.get(accession) or {}
-        rhea = {value.split(":")[-1] for value in annotation.get("rhea", [])}
+        rhea = master_ids(annotation.get("rhea", []), index.rhea_directions)
         ec = {value for value in annotation.get("ec", []) if _COMPLETE_EC.match(value)}
         for entry in entries:
             index.participant_rhea.setdefault(entry.record_id, set()).update(rhea)
@@ -223,9 +228,22 @@ def resolve_target(index: PathwayIndex, target: str) -> str | None:
     target = target.strip()
     if target in index.labels:
         return target
-    match = PATHWAYMECH_URL.search(target)
-    slug = urllib.parse.unquote(match.group(1)) if match else target
-    return index.slugs.get(slug.casefold())
+    if target.lower().startswith(("http://", "https://")):
+        try:
+            parsed = urllib.parse.urlsplit(target)
+        except ValueError:
+            return None
+        if parsed.netloc.lower() != "culturebotai.github.io":
+            return None
+        match = re.fullmatch(r"/PathwayMech/pages/records/([^/]+)\.html", parsed.path)
+        if not match:
+            return None
+        slug = urllib.parse.unquote(match.group(1))
+        record_id = index.slugs.get(slug.casefold())
+        # Published paths are case-sensitive, even when the local filesystem
+        # is not. A forgiving slug lookup must not bless a broken page URL.
+        return record_id if record_id and record_slug(record_id) == slug else None
+    return index.slugs.get(target.casefold())
 
 
 # --------------------------------------------------------------------------
@@ -290,6 +308,23 @@ class SiblingLink:
     label: str | None
 
 
+@dataclass
+class ScanCoverage:
+    """The part of a sibling checkout actually inspected by an inventory."""
+
+    scope: str = "full"
+    status: str = "complete"
+    source: str = "working tree"
+    commit: str = ""
+    files_seen: int = 0
+    files_parsed: int = 0
+    files_filtered: int = 0
+    unreadable_files: int = 0
+    distinct_accessions: int = 0
+    annotated_accessions: int = 0
+    errors: int = 0
+
+
 def load_config(path: Path) -> list[MechSpec]:
     """Read ``conf/sibling_mechs.yaml``."""
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -302,6 +337,8 @@ def load_config(path: Path) -> list[MechSpec]:
             records = [records]
         if not records:
             raise ValueError(f"{path}: {name} declares no record globs")
+        for pattern in records:
+            glob_regex(pattern)  # reject unsupported shapes in both scan modes
         specs.append(
             MechSpec(
                 name=name,
@@ -384,6 +421,10 @@ def sibling_files(root: Path, spec: MechSpec) -> list[Path]:
 
 def glob_regex(pattern: str) -> re.Pattern[str]:
     """A repository-relative glob as pathlib reads it: ``**/`` spans zero or more dirs."""
+    if (any(char in pattern for char in "[]")
+            or any("**" in part and part != "**" for part in pattern.split("/"))
+            or pattern.endswith("**")):
+        raise ValueError(f"unsupported record glob: {pattern!r}")
     out, i = [], 0
     while i < len(pattern):
         if pattern.startswith("**/", i):
@@ -456,6 +497,7 @@ def scan_sibling(
     loader: Callable[[Path], Any] | None = None,
     prefilter_terms: Iterable[str] = (),
     ref: str | None = None,
+    coverage: ScanCoverage | None = None,
 ) -> tuple[list[SiblingProtein], list[SiblingLink], list[str]]:
     """Inventory one sibling Mech checkout: protein slots, PathwayMech links, errors.
 
@@ -468,6 +510,8 @@ def scan_sibling(
     proteins: list[SiblingProtein] = []
     links: list[SiblingLink] = []
     errors: list[str] = []
+    coverage = coverage if coverage is not None else ScanCoverage()
+    coverage.scope = "accession-prefiltered" if spec.prefilter else "full"
     terms = sorted(set(prefilter_terms))
     screen = (re.compile("|".join(["PathwayMech", "PATHWAYMECH",
                                    *(re.escape(term) for term in terms)]))
@@ -478,21 +522,29 @@ def scan_sibling(
     else:
         sources = git_documents(root, ref, spec)
     for relative, source in sources:
+        coverage.files_seen += 1
         try:
             if isinstance(source, bytes):
                 text = source.decode("utf-8")
                 if screen is not None and not screen.search(text):
+                    coverage.files_filtered += 1
                     continue
                 document = yaml.load(text, Loader=_YAML_LOADER)  # noqa: S506 - safe loader
             else:
                 if screen is not None and not screen.search(source.read_text(encoding="utf-8")):
+                    coverage.files_filtered += 1
                     continue
                 document = loader(source)
-        except (OSError, UnicodeDecodeError, yaml.YAMLError) as error:
+        except (OSError, UnicodeDecodeError, yaml.YAMLError, ValueError, TypeError,
+                RecursionError) as error:
+            coverage.unreadable_files += 1
             errors.append(f"{spec.name}:{relative}: unreadable: {error}")
             continue
         if not isinstance(document, dict):
+            coverage.unreadable_files += 1
+            errors.append(f"{spec.name}:{relative}: expected a YAML record mapping")
             continue
+        coverage.files_parsed += 1
         record_id = str(document.get(spec.id_key, ""))
         record_label = str(document.get(spec.label_key, ""))
         for slot in spec.protein_slots:
@@ -525,8 +577,12 @@ def scan_sibling(
         for concrete, value in _strings(document, ""):
             for match in PATHWAYMECH_URL.finditer(value):
                 if not any(concrete.startswith(slot_path) for slot_path, _ in seen):
+                    target = match.group(0).rstrip(".,;:)]}")
                     links.append(SiblingLink(spec.name, relative, record_id, record_label,
-                                             concrete, match.group(0), None))
+                                             concrete, target, None))
+    coverage.errors = len(errors)
+    if errors:
+        coverage.status = "incomplete"
     return proteins, links, errors
 
 
@@ -565,6 +621,8 @@ class Report:
     reaction_matches: list[dict[str, Any]]
     example_candidates: list[dict[str, Any]]
     unmapped_sgd: list[str]
+    coverage: dict[str, ScanCoverage] = field(default_factory=dict)
+    rhea_normalized: bool = False
 
     @property
     def broken_links(self) -> list[dict[str, Any]]:
@@ -575,10 +633,17 @@ def build_report(
     index: PathwayIndex,
     scans: dict[str, tuple[list[SiblingProtein], list[SiblingLink], list[str]]],
     annotations: dict[str, dict[str, list[str]]] | None = None,
+    *,
+    coverage: dict[str, ScanCoverage] | None = None,
+    rhea_normalized: bool = False,
 ) -> Report:
     """Join sibling inventories with the PathwayMech index."""
     annotations = annotations or {}
     proteins = [protein for found, _, _ in scans.values() for protein in found]
+    for mech, details in (coverage or {}).items():
+        accessions = {protein.accession for protein in proteins if protein.mech == mech}
+        details.distinct_accessions = len(accessions)
+        details.annotated_accessions = len(accessions & annotations.keys())
     links = [link for _, found, _ in scans.values() for link in found]
     errors = [error for _, _, found in scans.values() for error in found]
 
@@ -612,14 +677,15 @@ def build_report(
 
     reaction_matches = []
     for protein in proteins:
-        if protein.accession in index.proteins:
-            continue
+        direct_records = set(index.records_for(protein.accession))
         annotation = annotations.get(protein.accession) or {}
-        rhea = {value.split(":")[-1] for value in annotation.get("rhea", [])}
+        rhea = master_ids(annotation.get("rhea", []), index.rhea_directions)
         ec = {value for value in annotation.get("ec", []) if _COMPLETE_EC.match(value)}
         if not rhea and not ec:
             continue
         for record_id in sorted(index.labels):
+            if record_id in direct_records:
+                continue
             stated_rhea = rhea & index.rhea.get(record_id, set())
             stated_ec = ec & index.ec.get(record_id, set())
             via_rhea = (rhea & index.participant_rhea.get(record_id, set())) - stated_rhea
@@ -675,6 +741,8 @@ def build_report(
         reaction_matches=reaction_matches,
         example_candidates=candidates,
         unmapped_sgd=sorted(index.unmapped_sgd),
+        coverage=coverage or {},
+        rhea_normalized=rhea_normalized,
     )
 
 
@@ -718,14 +786,19 @@ def write_report(report: Report, out: Path, full: bool = False) -> list[Path]:
         "link_checks.tsv": report.link_checks,
         "reaction_matches.tsv": report.reaction_matches,
         "example_candidates.tsv": report.example_candidates,
+        "coverage.tsv": [{"mech": mech, **asdict(coverage)}
+                         for mech, coverage in sorted(report.coverage.items())],
     }
     if full:
         tables["sibling_proteins.tsv"] = [asdict(row) for row in report.sibling_proteins]
         tables["overlaps.tsv"] = report.overlaps
+    else:
+        for name in ("sibling_proteins.tsv", "overlaps.tsv"):
+            (out / name).unlink(missing_ok=True)
     written = []
     for name, rows in tables.items():
         path = out / name
-        _write_tsv(path, rows)
+        _write_tsv(path, rows, TABLE_COLUMNS[name])
         written.append(path)
     summary = out / "summary.md"
     summary.write_text(render_summary(report), encoding="utf-8")
@@ -733,8 +806,25 @@ def write_report(report: Report, out: Path, full: bool = False) -> list[Path]:
     return written
 
 
-def _write_tsv(path: Path, rows: list[dict[str, Any]]) -> None:
-    columns: list[str] = []
+_PROTEIN_COLUMNS = [item.name for item in fields(SiblingProtein)]
+TABLE_COLUMNS = {
+    "pairs.tsv": ["mech", "file", "record_id", "record_label", "pathway_record",
+                  "pathway_label", "accessions", "roles", "slot_values", "record_links_pathway"],
+    "link_checks.tsv": [item.name for item in fields(SiblingLink)] + [
+        "resolved_record", "pathwaymech_label", "status"],
+    "reaction_matches.tsv": _PROTEIN_COLUMNS + ["pathway_record", "pathway_label", "shared_rhea",
+                                               "shared_ec", "basis", "record_links_pathway"],
+    "example_candidates.tsv": ["mech", "pathway_record", "pathway_label", "accession",
+                               "participant_id", "participant_label"],
+    "sibling_proteins.tsv": _PROTEIN_COLUMNS,
+    "overlaps.tsv": _PROTEIN_COLUMNS + ["pathway_record", "pathway_label", "pathway_participant",
+                                       "pathway_url", "record_links_pathway"],
+    "coverage.tsv": ["mech"] + [item.name for item in fields(ScanCoverage)],
+}
+
+
+def _write_tsv(path: Path, rows: list[dict[str, Any]], columns: list[str]) -> None:
+    columns = list(columns)
     for row in rows:
         columns.extend(key for key in row if key not in columns)
     with path.open("w", encoding="utf-8", newline="") as stream:
@@ -750,6 +840,25 @@ SUMMARY_LIST_LIMIT = 25
 
 def render_summary(report: Report, list_limit: int = SUMMARY_LIST_LIMIT) -> str:
     lines = ["# Cross-Mech protein inventory", ""]
+    if report.coverage:
+        lines += ["## Coverage", "",
+                  "Counts below describe the parsed records. An accession-prefiltered scan "
+                  "is not a complete sibling protein inventory; reaction-only matches, "
+                  "held proteins and example availability outside that subset are unknown.", "",
+                  "| Mech | Scope | Status | Files considered | Parsed | Filtered out "
+                  "| Unreadable | Errors | Accessions annotated / held |",
+                  "|---|---|---|---:|---:|---:|---:|---:|---:|",]
+        for mech, coverage in sorted(report.coverage.items()):
+            lines.append(f"| {mech} | {coverage.scope} | {coverage.status} "
+                         f"| {coverage.files_seen} | {coverage.files_parsed} "
+                         f"| {coverage.files_filtered} | {coverage.unreadable_files} "
+                         f"| {coverage.errors} | {coverage.annotated_accessions} / "
+                         f"{coverage.distinct_accessions} |")
+        lines += ["", "Missing annotation entries are unknown, not negative reaction evidence."]
+        lines += ["", "Rhea comparisons normalize covered directional identifiers to their "
+                  "master reaction using the supplied mapping." if report.rhea_normalized else
+                  "Rhea comparisons use identifiers as supplied; no direction mapping was loaded.",
+                  "", "## Protein and link counts", ""]
     lines.append("| Mech | Protein slot values | Distinct accessions | In a PathwayMech pathway "
                  "| Record-pathway pairs | Unlinked pairs | PathwayMech links | Broken links |")
     lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
@@ -856,9 +965,12 @@ def fetch_uniprot_annotations(
 
 
 def load_json(path: Path | None) -> dict[str, Any]:
-    if path is None or not path.exists():
+    if path is None:
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: expected a JSON object")
+    return data
 
 
 def _write_json(path: Path, data: Any) -> None:
@@ -904,46 +1016,85 @@ def main(argv: list[str] | None, root: Path) -> int:
     parser.add_argument("--fetch-annotations", action="store_true",
                         help="fetch --annotations for every sibling and PathwayMech "
                              "accession from UniProt")
+    parser.add_argument("--rhea-directions", type=Path,
+                        help="JSON directional-to-master Rhea mapping "
+                             "(defaults to conf/rhea_directions.json when available)")
     parser.add_argument("--out", type=Path, help="write TSV tables and summary.md here")
     parser.add_argument("--full-tables", action="store_true",
                         help="also write the per-slot sibling_proteins.tsv and overlaps.tsv")
     parser.add_argument("--check-links", action="store_true",
-                        help="exit 1 when a sibling PathwayMech link does not resolve")
+                        help="exit nonzero for unresolved links or mismatched labels "
+                             "or a selected sibling checkout could not be checked")
     args = parser.parse_args(argv)
 
     if (args.fetch_sgd_map and not args.sgd_map) or (args.fetch_annotations
                                                        and not args.annotations):
         parser.error("--fetch-sgd-map needs --sgd-map; --fetch-annotations needs --annotations")
-    specs = load_config(args.config)
+    try:
+        specs = load_config(args.config)
+    except (OSError, ValueError, yaml.YAMLError) as error:
+        parser.error(str(error))
     overrides = {}
     for value in args.mech:
         name, sep, path = value.partition("=")
         if not sep or not path:
             parser.error(f"--mech expects NAME=PATH, got {value!r}")
         overrides[name] = Path(path)
+    unknown_overrides = sorted(set(overrides) - {spec.name for spec in specs})
+    if unknown_overrides:
+        parser.error(f"--mech names Mechs missing from {args.config}: "
+                     f"{', '.join(unknown_overrides)}")
     if args.only:
         unknown = sorted(set(args.only) - {spec.name for spec in specs})
         if unknown:
             parser.error(f"--only names Mechs missing from {args.config}: {', '.join(unknown)}")
         specs = [spec for spec in specs if spec.name in args.only]
 
+    try:
+        sgd_map = {} if args.fetch_sgd_map else load_json(args.sgd_map)
+        annotations = {} if args.fetch_annotations else load_json(args.annotations)
+        from pathwaymech.rhea_directions import load_rhea_directions
+
+        rhea_path = args.rhea_directions
+        if rhea_path is None and (root / "conf" / "rhea_directions.json").exists():
+            rhea_path = root / "conf" / "rhea_directions.json"
+        rhea_directions = load_rhea_directions(rhea_path) if rhea_path is not None else {}
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
+
     if args.fetch_sgd_map:
-        _write_json(args.sgd_map, fetch_sgd_uniprot_map())
+        sgd_map = fetch_sgd_uniprot_map()
+        _write_json(args.sgd_map, sgd_map)
         print(f"wrote {args.sgd_map}")
     records = [load_yaml_file(path) for path in pathway_files(root / "data" / "pathways")]
-    index = build_pathway_index(records, load_json(args.sgd_map))
+    index = build_pathway_index(records, sgd_map, rhea_directions=rhea_directions)
 
     scans = {}
+    coverage = {}
+    missing_required = []
     for spec in specs:
+        coverage[spec.name] = ScanCoverage(
+            scope="accession-prefiltered" if spec.prefilter else "full",
+            source=f"ref {args.ref}" if args.ref else "working tree",
+        )
         checkout = overrides.get(spec.name) or (args.mechs_root / spec.name
                                                 if args.mechs_root else None)
         if checkout is None or not checkout.is_dir():
+            coverage[spec.name].status = "missing checkout"
+            if args.check_links or spec.name in overrides or spec.name in args.only:
+                missing_required.append(spec.name)
             print(f"skipped {spec.name}: no checkout (pass --mechs-root or --mech)",
                   file=sys.stderr)
             continue
-        scans[spec.name] = scan_sibling(checkout, spec, prefilter_terms=index.proteins,
-                                        ref=args.ref)
-        print(f"read {spec.name} at {commit_of(checkout, args.ref or 'HEAD') or 'unknown'}"
+        coverage[spec.name].commit = commit_of(checkout, args.ref or "HEAD")
+        try:
+            scans[spec.name] = scan_sibling(checkout, spec, prefilter_terms=index.proteins,
+                                            ref=args.ref, coverage=coverage[spec.name])
+        except OSError as error:
+            coverage[spec.name].status = "incomplete"
+            coverage[spec.name].errors += 1
+            scans[spec.name] = ([], [], [f"{spec.name}: {error}"])
+        print(f"read {spec.name} at {coverage[spec.name].commit or 'unknown'}"
               f" ({'ref ' + args.ref if args.ref else 'working tree'})", file=sys.stderr)
     if not scans:
         print("no sibling checkout was found; nothing to inventory", file=sys.stderr)
@@ -952,19 +1103,27 @@ def main(argv: list[str] | None, root: Path) -> int:
     if args.fetch_annotations:
         accessions = {protein.accession for found, _, _ in scans.values() for protein in found}
         accessions.update(index.proteins)
-        _write_json(args.annotations, fetch_uniprot_annotations(accessions))
+        annotations = fetch_uniprot_annotations(accessions)
+        _write_json(args.annotations, annotations)
         print(f"wrote {args.annotations}")
-    annotations = load_json(args.annotations)
     if annotations:
-        index = build_pathway_index(records, load_json(args.sgd_map), annotations)
-    report = build_report(index, scans, annotations)
+        index = build_pathway_index(records, sgd_map, annotations,
+                                    rhea_directions=rhea_directions)
+    report = build_report(index, scans, annotations, coverage=coverage,
+                          rhea_normalized=bool(rhea_directions))
     if args.out:
         for path in write_report(report, args.out, full=args.full_tables):
             print(f"wrote {path}")
     else:
         print(render_summary(report))
+    if report.errors or missing_required:
+        print("inventory is incomplete: "
+              f"{len(report.errors)} scan error(s), "
+              f"{len(missing_required)} required checkout(s) unavailable", file=sys.stderr)
+        return 1
     if args.check_links and report.broken_links:
-        print(f"{len(report.broken_links)} sibling PathwayMech link(s) do not resolve",
+        print(f"{len(report.broken_links)} sibling PathwayMech link(s) failed validation "
+              "(unknown record or label mismatch)",
               file=sys.stderr)
         return 1
     return 0
