@@ -32,7 +32,7 @@ All sixteen complete records were examined against native GPML/BioPAX/archive ob
 | triglyceride-biosynthesis | WP266 | 10 | 28 |
 | ubiquinol-6-biosynthesis-from-4-hydroxybenzoate | WP287 | 16 | 48 |
 
-The precise native objects examined, excluded objects, identity corrections, and before/after counts are in [the exhaustive ledger](../causal-graph-diagram-review.json). The reproducible migration is `scripts/curate_diagram_causal_graphs.py`, tied to the recorded baseline commit. It must not be replayed over subsequent manual enrichment.
+The precise native objects examined, excluded objects, identity corrections, and before/after counts are in [the exhaustive ledger](../causal-graph-diagram-review.json). The reproducible migration is `scripts/curate_diagram_causal_graphs.py`, tied to the recorded baseline commit. It now rejects targets changed since that baseline, previews by default, and requires `--apply` for record writes. Follow [the isolated reproduction instructions](../../docs/CURATION_MIGRATIONS.md) and use a new report destination to preserve the applied ledger.
 
 ## Validation
 

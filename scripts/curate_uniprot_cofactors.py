@@ -18,6 +18,7 @@ from pathlib import Path
 
 import yaml
 
+from pathwaymech.curation import publish_curation
 from pathwaymech.schema import validate_record
 
 DEFAULT_DECISIONS = (
@@ -31,6 +32,14 @@ GOCAM_ARCHIVE_SHA256 = "7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc7956
 def caution_digest(cautions: list) -> str:
     return hashlib.sha256(
         json.dumps(cautions, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def cofactor_digest(protein: dict) -> str:
+    """Pin a reviewed cofactor decision even when UniProt has no CAUTION."""
+    comments = [c for c in protein.get("comments", []) if c["commentType"] == "COFACTOR"]
+    return hashlib.sha256(
+        json.dumps(comments, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
 
 
@@ -220,6 +229,9 @@ def curate(
             if comment["commentType"] == "CAUTION"
         ]
         decision = decisions.get("decisions", {}).get(accession, {})
+        expected_cofactors = decision.get("cofactor_sha256")
+        if expected_cofactors and expected_cofactors != cofactor_digest(protein):
+            raise ValueError(f"Unreviewed cofactor annotation for semantic decision: {accession}")
         if annotations and cautions and decision.get("caution_sha256") != caution_digest(cautions):
             report["needs_caution_review"].append(
                 {
@@ -237,7 +249,7 @@ def curate(
                     {
                         "protein": accession,
                         "cofactor": cofactor,
-                        "action": "excluded_tentative",
+                        "action": decision.get("exclusion_action", "excluded_tentative"),
                         "reason": decision["rationale"],
                     }
                 )
@@ -507,22 +519,22 @@ def main():
             pending.append((path, record))
     if args.apply and any(report["needs_caution_review"] for report in reports):
         raise ValueError("unreviewed source cautions remain; no corpus enrichment was written")
-    if args.apply:
-        for path, record in pending:
-            path.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=88))
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(
-        json.dumps(
-            {
-                "applied": args.apply,
-                "sources": sources,
-                "records": reports,
-                "native_mappings": native_mappings,
-                "decisions_sha256": hashlib.sha256(args.decisions.read_bytes()).hexdigest(),
-            },
-            indent=2,
-        )
-        + "\n"
+    publish_curation(
+        pending,
+        args.report,
+        {
+            "sources": sources,
+            "records": reports,
+            "native_mappings": native_mappings,
+            "decisions_sha256": hashlib.sha256(args.decisions.read_bytes()).hexdigest(),
+        },
+        apply=args.apply,
+        serialize=lambda record: yaml.safe_dump(
+            record,
+            sort_keys=False,
+            allow_unicode=True,
+            width=88,
+        ),
     )
     print(f"{len(reports)} records checked; {len(pending)} records gain cofactor annotations")
 

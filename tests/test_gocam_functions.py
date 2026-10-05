@@ -126,6 +126,17 @@ def test_thiamine_preserves_protein_bound_suicide_substrates_and_phosphate_routi
     edge(rec, kinase, "has_input", "CHEBI:58354")
     edge(rec, kinase2, "has_input", "CHEBI:58354")
     edge(rec, "SGD:S000003376", "enables", "gomodel:RXNQT-4301")
+    for predicate, chemical in (
+        ("has_input", "CHEBI:29034"),
+        ("has_output", "CHEBI:29033"),
+        ("has_output", "CHEBI:33190"),
+        ("has_input", "CHEBI:15377"),
+        ("has_output", "CHEBI:15378"),
+        ("has_output", "CHEBI:157692"),
+        ("has_output", "CHEBI:29969"),
+    ):
+        rec["participants"].append({"id": chemical, "label": chemical})
+        edge(rec, thi13, predicate, chemical)
     labels = {
         f"CHEBI:{x}": f"chemical {x}"
         for x in [
@@ -149,13 +160,37 @@ def test_thiamine_preserves_protein_bound_suicide_substrates_and_phosphate_routi
     }
     sources = {**source("Q07748"), **source("P32318")}
     result, ledger = MODULE.curate(rec, sources, labels)
-    assert "CHEBI:29979" in endpoints(result, thi13, "has_input")
-    assert "CHEBI:58354" in endpoints(result, thi13, "has_output")
+    assert endpoints(result, thi13, "has_input") == {"CHEBI:143915", "CHEBI:29979"}
+    assert endpoints(result, thi13, "has_output") == {"CHEBI:58354"}
     assert endpoints(result, thi13, "provides_input_for") == {kinase, kinase2}
     assert "CHEBI:29950" in endpoints(result, thi4, "has_input")
     assert "CHEBI:90873" in endpoints(result, thi4, "has_output")
     assert any(x["edge"]["predicate"] == "enables" for x in ledger["superseded_edges"])
     assert not endpoints(result, "SGD:S000003376", "enables")
+    assert not (
+        {"CHEBI:29034", "CHEBI:29033", "CHEBI:33190", "CHEBI:15379"}
+        & (endpoints(result, thi13, "has_input") | endpoints(result, thi13, "has_output"))
+    )
+    quarantined = {
+        item["edge"]["object"]
+        for item in ledger["superseded_edges"]
+        if item["edge"]["subject"] == thi13
+    }
+    assert {
+        "CHEBI:29034", "CHEBI:29033", "CHEBI:33190", "CHEBI:15377",
+        "CHEBI:15378", "CHEBI:157692", "CHEBI:29969",
+    } <= quarantined
+    chemistry = [
+        e
+        for e in result["mechanistic_edges"]
+        if e["subject"] == thi13 and e["predicate"] in {"has_input", "has_output"}
+    ]
+    assert all("Candida albicans" in e["description"] for e in chemistry)
+    assert all("not direct evidence" in e["description"] for e in chemistry)
+    assert all("remain unresolved" in e["description"] for e in chemistry)
+    assert any(ref["id"] == "PMID:35675507" for ref in result["references"])
+    assert not any("Equation coefficients" in e["description"] for e in chemistry)
+    assert MODULE.curate(result, sources, labels)[0] == result
 
 
 def test_removing_unsupported_ethanol_isozymes_preserves_other_activity():

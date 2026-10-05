@@ -3,6 +3,7 @@ import io
 import json
 import tarfile
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
@@ -205,6 +206,41 @@ def test_tentative_crystal_ion_is_reported_without_positive_edge():
     report = curate(record, proteins, identifier_index(proteins), {}, sources, decisions)
     assert not record["mechanistic_edges"]
     assert report["semantic_decisions"][0]["action"] == "excluded_tentative"
+
+
+def test_arg82_crystal_calcium_is_excluded_without_a_uniprot_caution():
+    record, proteins, sources = fixture()
+    item = proteins.pop("P12345")
+    proteins["P07250"] = item
+    protein = item["protein"]
+    protein["primaryAccession"] = "P07250"
+    protein["comments"] = [
+        {
+            "commentType": "COFACTOR",
+            "cofactors": [
+                {
+                    "name": "Ca(2+)",
+                    "evidences": [
+                        {"evidenceCode": "ECO:0000269", "source": "PubMed", "id": "17050532"}
+                    ],
+                    "cofactorCrossReference": {"database": "ChEBI", "id": "CHEBI:29108"},
+                }
+            ],
+        }
+    ]
+    decisions = json.loads(
+        (Path(__file__).parents[1] / "reports/causal_graph_review/uniprot-cofactor-decisions.json")
+        .read_text()
+    )
+    report = curate(record, proteins, identifier_index(proteins), {}, sources, decisions)
+    assert not record["mechanistic_edges"]
+    assert report["semantic_decisions"][0]["action"] == "excluded_crystal_contact"
+    assert not report["needs_caution_review"]
+
+    # This reviewed exclusion must not silently apply to changed source evidence.
+    protein["comments"][0]["cofactors"][0]["evidences"][0]["id"] = "99999999"
+    with pytest.raises(ValueError, match="Unreviewed cofactor annotation"):
+        curate(record, proteins, identifier_index(proteins), {}, sources, decisions)
 
 
 def test_note_only_experimental_evidence_is_preserved_without_upgrading_cofactor_row():

@@ -22,6 +22,8 @@ from xml.etree import ElementTree as ET
 import yaml
 from audit_metacyc_causal_graphs import read_pathway, read_rhea
 
+from pathwaymech.curation import CAUSAL_REVIEW_BASELINE, guard_baseline, publish_curation
+
 EXPANSIONS = {
     "RHEA:22109": ["RHEA:40676", "RHEA:39968", "RHEA:39976"],
     "RHEA:32289": ["RHEA:16295", "RHEA:10678"],
@@ -163,7 +165,9 @@ def main():
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument(
-        "--baseline-ref", help="Read records at an explicit Git revision for repeatable migration"
+        "--baseline-ref",
+        default=CAUSAL_REVIEW_BASELINE,
+        help="Reviewed Git baseline; current targets must match before reconstruction",
     )
     args = parser.parse_args()
     records = []
@@ -182,6 +186,8 @@ def main():
             records.append((path, record))
     if len(records) != 50:
         raise ValueError(f"This reviewed migration expects 50 MetaCyc records, got {len(records)}")
+    targets = [path for path, _ in records]
+    guard_baseline(targets, args.baseline_ref, args.root)
     selected = {
         node["id"].split(":")[1]
         for _, r in records
@@ -238,7 +244,7 @@ def main():
         for protein in json.loads(artifact.read_text())["results"]:
             proteins["UniProtKB:" + protein["primaryAccession"]] = protein
             protein_sources["UniProtKB:" + protein["primaryAccession"]] = source
-    ledger = []
+    ledger, pending = [], []
     identifiers = set()
     for path, record in records:
         before = json.loads(json.dumps(record))
@@ -989,14 +995,8 @@ def main():
             "inferred merely from a pathway name."
         )
         identifiers.update(n["id"] for k in ("participants", "reactions") for n in record[k])
-        if args.apply:
-            path.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=100))
+        pending.append((path, record))
         ledger.append(review)
-    args.report_dir.mkdir(parents=True, exist_ok=True)
-    (args.report_dir / "metacyc-review.json").write_text(
-        json.dumps({"records": ledger}, indent=2) + "\n"
-    )
-    (args.report_dir / "metacyc-identifiers.txt").write_text("\n".join(sorted(identifiers)) + "\n")
     manifest = {
         "rhea_rdf": {
             "url": "https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz",
@@ -1036,7 +1036,17 @@ def main():
             for p in sorted(args.metacyc_dir.glob("*.xml"))
         },
     }
-    (args.report_dir / "metacyc-sources.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    publish_curation(
+        pending,
+        args.report_dir / "metacyc-review.json",
+        {"records": ledger},
+        apply=args.apply,
+        extra_reports={
+            args.report_dir / "metacyc-sources.json": json.dumps(manifest, indent=2) + "\n",
+            args.report_dir / "metacyc-identifiers.txt": "\n".join(sorted(identifiers)) + "\n",
+        },
+        baseline=(targets, args.baseline_ref, args.root),
+    )
     print(
         f"{'Updated' if args.apply else 'Reviewed'} {len(ledger)} "
         f"MetaCyc records; ledger: {args.report_dir}"

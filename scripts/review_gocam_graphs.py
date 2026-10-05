@@ -19,6 +19,7 @@ from pathlib import Path
 
 import yaml
 
+from pathwaymech.curation import CAUSAL_REVIEW_BASELINE, guard_baseline, publish_curation
 from pathwaymech.gocam_native import activity_ids, annotation_values, project_native_model
 from pathwaymech.schema import validate_record
 
@@ -271,6 +272,8 @@ def main() -> None:
         if record["id"].startswith("gomodel:"):
             records.append((path, record))
     wanted = {record["id"] for _, record in records}
+    targets = [path for path, _ in records]
+    guard_baseline(targets, CAUSAL_REVIEW_BASELINE)
     models = {}
     with tarfile.open(args.archive) as archive:
         for member in archive:
@@ -414,7 +417,6 @@ def main() -> None:
         }
         ledger.append(row)
         pending.append((path, record))
-    args.report_dir.mkdir(parents=True, exist_ok=True)
     report = {
         "timestamp": timestamp,
         "source": {"url": ARCHIVE_URL, "sha256": ARCHIVE_SHA256},
@@ -439,14 +441,20 @@ def main() -> None:
             "record": "gomodel:YeastPathways_THREOCAT2-PWY",
             "entry": "UniProtKB:P37303",
         }
-    (args.report_dir / "gocam-causal-review.json").write_text(json.dumps(report, indent=2) + "\n")
-    if args.write:
-        for path, record in pending:
-            path.write_text(
-                yaml.dump(
-                    record, Dumper=IndentedDumper, sort_keys=False, allow_unicode=True, width=100
-                )
-            )
+    publish_curation(
+        pending,
+        args.report_dir / "gocam-causal-review.json",
+        report,
+        apply=args.write,
+        serialize=lambda record: yaml.dump(
+            record,
+            Dumper=IndentedDumper,
+            sort_keys=False,
+            allow_unicode=True,
+            width=100,
+        ),
+        baseline=(targets, CAUSAL_REVIEW_BASELINE, None),
+    )
     print(
         json.dumps(
             {

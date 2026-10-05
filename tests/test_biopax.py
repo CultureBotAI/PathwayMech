@@ -225,3 +225,105 @@ def test_biopax_conflicting_explicit_directions_are_not_silently_overridden() ->
     ElementTree.SubElement(catalysis, ns + "catalysisDirection").text = "LEFT-TO-RIGHT"
     with pytest.raises(ValueError, match="contradictory direction"):
         biopax_to_pathway_record(root, "Reactome:R-TEST")
+
+
+def _add_direction(root, element_name, property_name, direction):
+    ns = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    element = next(e for e in root if e.tag == ns + element_name)
+    ElementTree.SubElement(element, ns + property_name).text = direction
+
+
+def _add_pathway_step(root, direction):
+    ns = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    step = ElementTree.SubElement(root, ns + "BiochemicalPathwayStep", {rdf + "ID": "step"})
+    ElementTree.SubElement(step, ns + "stepConversion", {rdf + "resource": "#r"})
+    ElementTree.SubElement(step, ns + "stepDirection").text = direction
+
+
+def test_biopax_catalysis_orients_reversible_conversion_and_preserves_both_sources():
+    root = _native_biopax("REVERSIBLE")
+    _add_direction(root, "Catalysis", "catalysisDirection", "RIGHT-TO-LEFT")
+
+    record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
+    assert record.reactions[0]["direction"] == "reversible"
+    edge = next(e for e in record.mechanistic_edges if e["predicate"] == "consumes")
+    assert edge["subject"] == "Reactome:R-TEST/b"
+    evidence = edge["evidence"][0]
+    assert "displayed orientation is RIGHT-TO-LEFT" in evidence["source_assertion"]
+    assert "#r/bp:conversionDirection" in evidence["source_locator"]
+    assert "#cat/bp:catalysisDirection" in evidence["source_locator"]
+
+
+@pytest.mark.parametrize("conversion", [None, "REVERSIBLE"])
+@pytest.mark.parametrize("catalysis", [None, "RIGHT-TO-LEFT"])
+def test_biopax_accepts_reversible_pathway_step(conversion, catalysis):
+    root = _native_biopax(conversion)
+    _add_pathway_step(root, "REVERSIBLE")
+    if catalysis:
+        _add_direction(root, "Catalysis", "catalysisDirection", catalysis)
+
+    record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
+    assert record.reactions[0]["direction"] == "reversible"
+    edge = next(e for e in record.mechanistic_edges if e["predicate"] == "consumes")
+    assert edge["subject"] == f"Reactome:R-TEST/{'b' if catalysis else 'a'}"
+    locator = edge["evidence"][0]["source_locator"]
+    assert "#step/bp:stepDirection" in locator
+    if conversion:
+        assert "#r/bp:conversionDirection" in locator
+    if catalysis:
+        assert "#cat/bp:catalysisDirection" in locator
+
+
+def test_biopax_rejects_opposing_catalysis_and_pathway_step_orientations():
+    root = _native_biopax("REVERSIBLE")
+    _add_pathway_step(root, "LEFT-TO-RIGHT")
+    _add_direction(root, "Catalysis", "catalysisDirection", "RIGHT-TO-LEFT")
+    with pytest.raises(ValueError, match="contradictory direction"):
+        biopax_to_pathway_record(root, "Reactome:R-TEST")
+
+
+def test_biopax_unknown_controller_retains_conversion_and_catalysis_direction():
+    root = _native_biopax("REVERSIBLE")
+    catalysis = next(e for e in root if e.tag.endswith("}Catalysis"))
+    catalysis.remove(next(e for e in catalysis if e.tag.endswith("}controller")))
+    _add_direction(root, "Catalysis", "catalysisDirection", "RIGHT-TO-LEFT")
+
+    record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
+    assert not any(e["predicate"] == "catalyzes" for e in record.mechanistic_edges)
+    edge = next(e for e in record.mechanistic_edges if e["predicate"] == "consumes")
+    assert edge["subject"] == "Reactome:R-TEST/b"
+    assert "#cat/bp:catalysisDirection" in edge["evidence"][0]["source_locator"]
+
+
+@pytest.mark.parametrize("resource", [None, "#missing", "#r"])
+def test_biopax_explicit_unresolved_controller_still_fails(resource):
+    root = _native_biopax()
+    controller = next(e for e in root.iter() if e.tag.endswith("}controller"))
+    controller.attrib.clear()
+    if resource is not None:
+        controller.set("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource", resource)
+    with pytest.raises(ValueError, match="unresolved controller"):
+        biopax_to_pathway_record(root, "Reactome:R-TEST")
+
+
+@pytest.mark.parametrize("kind, category", [
+    ("Rna", "rna"), ("RnaRegion", "rna"), ("Dna", "dna"), ("DnaRegion", "dna"),
+    ("SmallMolecule", "small_molecule"), ("PhysicalEntity", None),
+])
+def test_biopax_physical_catalyst_is_not_restricted_to_protein(kind, category):
+    root = _native_biopax()
+    ns = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    catalyst = ElementTree.SubElement(root, ns + kind, {rdf + "ID": "catalyst"})
+    ElementTree.SubElement(catalyst, ns + "displayName").text = "Source-supported catalyst"
+    controller = next(e for e in root.iter() if e.tag.endswith("}controller"))
+    controller.set(rdf + "resource", "#catalyst")
+
+    record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
+    node = next(n for n in record.participants if n["id"] == "Reactome:R-TEST/catalyst")
+    assert node.get("category") == category
+    edge = next(e for e in record.mechanistic_edges if e["predicate"] == "catalyzes")
+    assert edge["subject"] == node["id"]
+    assert edge["object"] == "Reactome:R-TEST/r"
+    assert "#cat/bp:controller/#catalyst" in edge["evidence"][0]["source_locator"]

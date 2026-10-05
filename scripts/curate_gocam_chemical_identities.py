@@ -17,6 +17,7 @@ from pathlib import Path
 
 import yaml
 
+from pathwaymech.curation import publish_curation
 from pathwaymech.schema import validate_record
 
 
@@ -290,11 +291,18 @@ def curate(
         "chemistry from ECI1 monoene isomerization.",
     )
 
-    report.parent.mkdir(parents=True, exist_ok=True)
-    report.write_text(json.dumps({"source": metadata, "records": ledger}, indent=2) + "\n")
-    if apply:
-        for path, record in pending:
-            path.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=88))
+    publish_curation(
+        pending,
+        report,
+        {"source": metadata, "records": ledger},
+        apply=apply,
+        serialize=lambda record: yaml.safe_dump(
+            record,
+            sort_keys=False,
+            allow_unicode=True,
+            width=88,
+        ),
+    )
     return ledger
 
 

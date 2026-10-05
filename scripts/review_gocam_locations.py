@@ -20,6 +20,7 @@ from pathlib import Path
 import yaml
 from review_gocam_graphs import IndentedDumper
 
+from pathwaymech.curation import publish_curation
 from pathwaymech.schema import validate_record
 
 SOURCE_SHA = "95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d"
@@ -488,15 +489,19 @@ def main():
             ),
         },
     }
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(result, indent=2) + "\n")
-    if args.write:
-        for path, record in pending:
-            path.write_text(
-                yaml.dump(
-                    record, Dumper=IndentedDumper, sort_keys=False, allow_unicode=True, width=100
-                )
-            )
+    publish_curation(
+        pending,
+        args.report,
+        result,
+        apply=args.write,
+        serialize=lambda record: yaml.dump(
+            record,
+            Dumper=IndentedDumper,
+            sort_keys=False,
+            allow_unicode=True,
+            width=100,
+        ),
+    )
     print(json.dumps(result["summary"], indent=2))
 
 

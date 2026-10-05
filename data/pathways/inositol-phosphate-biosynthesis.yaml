@@ -1295,21 +1295,6 @@ mechanistic_edges:
     source_assertion: UniProtKB:Q99321 has the exact SGD cross-reference SGD:S000005689.
     source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
       [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3200/uniProtKBCrossReferences/0'
-- id: cofactor-5078997717d3
-  subject: SGD:S000002580
-  predicate: has_cofactor
-  object: CHEBI:29108
-  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
-    (PubMed:17050532)'
-  evidence:
-  - reference_id: UniProtKB:P07250
-    source_assertion: UniProtKB:P07250 annotates CHEBI:29108 as a cofactor of this protein.
-    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
-      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/164/comments/0/cofactors/0'
-  - reference_id: UniProtKB:P07250
-    source_assertion: UniProtKB:P07250 has the exact SGD cross-reference SGD:S000002580.
-    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
-      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/164/uniProtKBCrossReferences/0'
 - id: cofactor-8c1e5281d7cf
   subject: SGD:S000006189
   predicate: has_cofactor
@@ -1378,6 +1363,10 @@ references:
   url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
   source_version: '2026_03'
   source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: PMID:17050532
+  title: Crystal Structure of Inositol Phosphate Multikinase 2 and Implications for Substrate
+    Specificity
+  url: https://doi.org/10.1074/jbc.M606883200
 curation_history:
 - timestamp: '2026-10-05T06:05:08Z'
   curator: Codex
@@ -1386,4 +1375,11 @@ curation_history:
     membership and complex-part relations with traceable structured source evidence. Kept
     distinct generic physical instances and recorded source-scope exclusions in the cohort
     review ledger.
+  llm_assisted: true
+- timestamp: '2026-10-05T19:29:52Z'
+  curator: Codex
+  action: adversarial-scientific-correction
+  changes: Excluded ARG82 calcium cofactor assertion after primary PMID:17050532 crystal-contact
+    review. Retained the original assertion in the scientific correction ledger and the independently
+    supported PLC1 calcium relation. No replacement metal is inferred.
   llm_assisted: true

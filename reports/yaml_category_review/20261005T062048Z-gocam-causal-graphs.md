@@ -53,15 +53,19 @@ The scientifically supported edits above are applied. Additional enzyme/cofactor
 
 ## Follow-up Checks
 
-Reproduce the native stage from the exact external artifacts (hashes are checked; changed source releases require a new review):
+Reproduce the native stage from the exact external artifacts in an isolated
+checkout of the recorded baseline, following [the migration instructions](../../docs/CURATION_MIGRATIONS.md).
+Run the current scripts from the current repository; source hashes are checked.
+Changed source releases require a new review. The native stage refuses later
+curated target records.
 
 ```bash
 PYTHONPATH=src .venv/bin/python scripts/review_gocam_graphs.py \
   --archive "$CACHE/noctua-models-json.tgz" \
   --chebi "$CACHE/chebi.obo" \
   --gly1-uniprot "$CACHE/gly1-uniprot.json" \
-  --records data/pathways \
-  --report-dir reports/yaml_category_review/20261005-gocam-causal-graphs \
+  --records /tmp/pathwaymech-reproduction/data/pathways \
+  --report-dir /tmp/pathwaymech-reproduction-reports/native \
   --write
 
 PYTHONPATH=src:scripts .venv/bin/python scripts/review_gocam_complexes.py \
@@ -69,12 +73,18 @@ PYTHONPATH=src:scripts .venv/bin/python scripts/review_gocam_complexes.py \
   --uniprot-json "$CACHE/uniprot-yeast-reviewed-cofactors.json" \
   --uniprot-provenance "$CACHE/uniprot-yeast-reviewed-cofactors.provenance.json" \
   --chebi "$CACHE/chebi.obo" \
-  --records data/pathways \
-  --report reports/yaml_category_review/20261005-gocam-causal-graphs/complex-composition-review.json \
+  --records /tmp/pathwaymech-reproduction/data/pathways \
+  --report /tmp/pathwaymech-reproduction-reports/complex-composition-review.json \
   --write
 ```
 
-Without `--write` both commands validate candidate records and write only a report. No partial record publication occurs before every candidate validates. `CACHE` is a user-supplied external source directory. Obtain raw artifacts from the URLs in the ledger and source constants, preserving exact bytes; the current URL may later serve different bytes. The reviewed UniProt proteome provenance must match the supplied raw JSON SHA-256.
+Omit `--write` to preview before applying. Both commands validate every candidate
+and may write a new preview report; applied and legacy reports are preserved.
+All outputs are staged before per-file publication. `CACHE` is a user-supplied
+external source directory. Obtain raw artifacts from the URLs in the ledger
+and source constants, preserving exact bytes; the current URL may later serve
+different bytes. The reviewed UniProt proteome provenance must match the
+supplied raw JSON SHA-256.
 
 ## Additional Notes
 

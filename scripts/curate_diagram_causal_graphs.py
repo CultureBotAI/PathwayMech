@@ -15,12 +15,14 @@ import hashlib
 import json
 import sqlite3
 import subprocess
+from functools import cache
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import yaml
 
 from pathwaymech import biopax as bp
+from pathwaymech.curation import CAUSAL_REVIEW_BASELINE, guard_baseline, publish_curation, require
 from pathwaymech.wikipathways import DATABASE_PREFIXES
 
 WP = [
@@ -113,7 +115,7 @@ def directed(p):
 
 
 def assertion(ref, text, locator):
-    assert len(text) <= 400, text
+    require(len(text) <= 400, text)
     return {"reference_id": ref, "source_assertion": text, "source_locator": locator}
 
 
@@ -126,7 +128,10 @@ def edge(s, p, o, ref, text, locator, description=None):
 
 def source_reference(key, ref, manifest, cache):
     m = manifest[key]
-    assert hashlib.sha256((cache / m["path"]).read_bytes()).hexdigest() == m["sha256"]
+    require(
+        hashlib.sha256((cache / m["path"]).read_bytes()).hexdigest() == m["sha256"],
+        'Migration precondition failed: hashlib.sha256((cache / m["path"]).read_bytes()).hexdigest() == m["sha256"]',
+    )
     return {
         "id": ref,
         "title": f"{key} native structured pathway source",
@@ -160,6 +165,19 @@ def finish(r, participants, reactions, edges):
         r["source_mappings"] = [m for m in r["source_mappings"] if m["object_id"] in used]
         if not r["source_mappings"]:
             del r["source_mappings"]
+
+
+@cache
+def chemical_category(conn, identifier):
+    """Use ChEBI is_a ancestry, never a name substring, for lipid identity."""
+    row = conn.execute(
+        "WITH RECURSIVE ancestors(term) AS (SELECT ? UNION "
+        "SELECT s.object FROM ancestors CROSS JOIN statements s ON s.subject=ancestors.term "
+        "WHERE s.predicate='rdfs:subClassOf' AND s.object LIKE 'CHEBI:%') "
+        "SELECT 1 FROM ancestors WHERE term='CHEBI:18059' LIMIT 1",
+        (identifier,),
+    ).fetchone()
+    return "lipid" if row else "small_molecule"
 
 
 def gpml(r, cache, manifest, conn, sgd, xrefs):
@@ -215,11 +233,7 @@ def gpml(r, cache, manifest, conn, sgd, xrefs):
             if not row:
                 raise ValueError(ident)
             label = row[0]
-            category = "small_molecule"
-            if acc in ["WP266", "WP71"] and any(
-                s in label.lower() for s in ["glycer", "phosphatid", "choline"]
-            ):
-                category = "lipid"
+            category = chemical_category(conn, ident)
         else:
             category = "small_molecule" if ident.startswith("WikiPathways:") else "protein"
         nodes[gid] = {
@@ -452,7 +466,7 @@ def biopax(r, cache, manifest, conn):
         n["category"] = "protein" if k.startswith("Protein") else "small_molecule"
     for e in bp._elements(x, "Complex"):
         ident = bp._source_xref(e, xx, "Reactome")
-        assert ident
+        require(ident, "Migration precondition failed: ident")
         nodes[bp._element_ref(e)] = {
             "id": ident,
             "label": bp._text_child(e, "displayName"),
@@ -475,7 +489,10 @@ def biopax(r, cache, manifest, conn):
         rmap[native] = rid
         label = bp._text_child(e, "displayName")
         direction = bp._text_child(e, "conversionDirection")
-        assert direction == "LEFT-TO-RIGHT"
+        require(
+            direction == "LEFT-TO-RIGHT",
+            'Migration precondition failed: direction == "LEFT-TO-RIGHT"',
+        )
         reactions.append(
             {
                 "id": rid,
@@ -506,7 +523,7 @@ def biopax(r, cache, manifest, conn):
     for e in bp._elements(x, "Catalysis"):
         c = bp._resource_child(e, "controller")
         target = bp._resource_child(e, "controlled")
-        assert c in nodes
+        require(c in nodes, "Migration precondition failed: c in nodes")
         description = (
             "The native zinc-bound Mca assembly represents the aerobic purified form; Fe2+ is favored under physiological anaerobic conditions (PMID:26044118)."
             if nodes[c]["id"] == "Reactome:R-MTU-879260"
@@ -870,6 +887,8 @@ def main():
     ap.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--chebi-db", type=Path, required=True)
+    ap.add_argument("--report", type=Path, help="New preview or applied ledger destination")
+    ap.add_argument("--apply", action="store_true")
     args = ap.parse_args()
     root = args.root
     manifest = {
@@ -905,7 +924,7 @@ def main():
         sorted(wanted),
     ):
         xrefs.setdefault(v, set()).add(s)
-    ledger = []
+    ledger, pending, targets = [], [], []
     for p in sorted((root / "data/pathways").glob("*.yaml")):
         if p.name not in [
             "2-phenylethanol-biosynthesis.yaml",
@@ -926,6 +945,9 @@ def main():
             "ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml",
         ]:
             continue
+        targets.append(p)
+    guard_baseline(targets, CAUSAL_REVIEW_BASELINE, root)
+    for p in targets:
         r = yaml.safe_load(
             subprocess.check_output(
                 [
@@ -955,28 +977,27 @@ def main():
                 "entity_scope": "All source objects, cofactors, proteins, metabolites and available compartments inspected. DNA/RNA nodes are added only when a native causal event supports them; pathway diagrams do not imply transcriptional regulation.",
             }
         )
-        p.write_text(yaml.safe_dump(r, sort_keys=False, allow_unicode=True, width=100))
+        pending.append((p, r))
         ledger.append(review)
         print(p.name, before, "->", after)
-    assert len(ledger) == 16
-    target = root / "reports/causal-graph-diagram-review.json"
-    target.parent.mkdir(exist_ok=True)
-    target.write_text(
-        json.dumps(
-            {
-                "scope": "12 WikiPathways + 3 Reactome + 1 MIBiG, every record",
-                "baseline_commit": "88744403c934a84828d373cfccb8cdaa7507ad77",
-                "sgd_crosswalk": {
-                    "url": "https://downloads.yeastgenome.org/curation/chromosomal_feature/SGD_features.tab",
-                    "sha256": hashlib.sha256(
-                        (args.cache / "SGD_features.tab").read_bytes()
-                    ).hexdigest(),
-                },
-                "records": ledger,
+    require(len(ledger) == 16, "Migration precondition failed: len(ledger) == 16")
+    target = args.report or root / "reports/causal-graph-diagram-review.json"
+    publish_curation(
+        pending,
+        target,
+        {
+            "scope": "12 WikiPathways + 3 Reactome + 1 MIBiG, every record",
+            "baseline_commit": "88744403c934a84828d373cfccb8cdaa7507ad77",
+            "sgd_crosswalk": {
+                "url": "https://downloads.yeastgenome.org/curation/chromosomal_feature/SGD_features.tab",
+                "sha256": hashlib.sha256(
+                    (args.cache / "SGD_features.tab").read_bytes()
+                ).hexdigest(),
             },
-            indent=2,
-        )
-        + "\n"
+            "records": ledger,
+        },
+        apply=args.apply,
+        baseline=(targets, CAUSAL_REVIEW_BASELINE, root),
     )
 
 

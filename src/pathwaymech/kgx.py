@@ -133,8 +133,14 @@ def kgx_nodes(records: list[PathwayRecord]) -> list[KgxNode]:
             _add_node(nodes, node["id"], node["label"], _category(node["id"]),
                       context={"record_id": record.id, "collection": "taxa", **node})
         for node in record.participants:
+            category = _category(node["id"])
+            # Native graph namespaces contain physical instances as well as
+            # reactions. An unresolved participant must not acquire a process
+            # identity merely from its namespace.
+            if category == "biolink:BiochemicalReaction":
+                category = "biolink:NamedThing"
             _add_node(nodes, node["id"], node["label"],
-                      EXPLICIT_CATEGORIES.get(node.get("category"), _category(node["id"])),
+                      EXPLICIT_CATEGORIES.get(node.get("category"), category),
                       source_category=node.get("category", ""),
                       context={"record_id": record.id, "collection": "participants", **node})
         for node in record.reactions:

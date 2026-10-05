@@ -17,6 +17,7 @@ from pathlib import Path
 import yaml
 from review_gocam_graphs import IndentedDumper
 
+from pathwaymech.curation import publish_curation
 from pathwaymech.schema import validate_record
 
 BATCH_SHA = "9600fe7f1e55a4f51554b244607a706b1604904dc71de8960b2f399bf75b0c7c"
@@ -89,7 +90,7 @@ def activity_audit(record, proteins):
     return reviewed
 
 
-def curate(root: Path, source_dir: Path, chebi_db: Path, rhea_db: Path, apply=False):
+def curate(root: Path, source_dir: Path, chebi_db: Path, rhea_db: Path, apply=False, report=None):
     raw = (source_dir / "uniprot-yeast-reviewed-catalysis.json").read_bytes()
     meta = json.loads((source_dir / "uniprot-yeast-reviewed-catalysis.provenance.json").read_text())
     if hashlib.sha256(raw).hexdigest() != BATCH_SHA or meta["sha256"] != BATCH_SHA:
@@ -512,21 +513,19 @@ def curate(root: Path, source_dir: Path, chebi_db: Path, rhea_db: Path, apply=Fa
             }
         )
         pending.append((path, record))
-    if apply:
-        for path, record in pending:
-            path.write_text(
-                yaml.dump(
-                    record, Dumper=IndentedDumper, sort_keys=False, allow_unicode=True, width=100
-                )
-            )
-    report = root / "reports/causal_graph_review/folate-inositol-chemistry-review.json"
-    report.parent.mkdir(parents=True, exist_ok=True)
-    report.write_text(
-        json.dumps(
-            {"uniprot_sha256": BATCH_SHA, "primary_xml_sha256": PAPER_SHA, "records": ledger},
-            indent=2,
-        )
-        + "\n"
+    report = report or root / "reports/causal_graph_review/folate-inositol-chemistry-review.json"
+    publish_curation(
+        pending,
+        report,
+        {"uniprot_sha256": BATCH_SHA, "primary_xml_sha256": PAPER_SHA, "records": ledger},
+        apply=apply,
+        serialize=lambda record: yaml.dump(
+            record,
+            Dumper=IndentedDumper,
+            sort_keys=False,
+            allow_unicode=True,
+            width=100,
+        ),
     )
     return ledger
 
@@ -538,9 +537,13 @@ if __name__ == "__main__":
     parser.add_argument("--chebi-db", type=Path, required=True)
     parser.add_argument("--rhea-db", type=Path, required=True)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--report", type=Path)
     args = parser.parse_args()
     print(
         json.dumps(
-            curate(args.root, args.source_dir, args.chebi_db, args.rhea_db, args.apply), indent=2
+            curate(
+                args.root, args.source_dir, args.chebi_db, args.rhea_db, args.apply, args.report
+            ),
+            indent=2,
         )
     )

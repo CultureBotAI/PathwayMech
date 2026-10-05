@@ -1,0 +1,37 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/biopax.py
+  slug: biopax-direction-and-controller-semantics
+session:
+  id: 2026-10-05T192456Z-Codex-16637b
+  timestamp: '2026-10-05T19:24:56Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/269
+  - https://github.com/CultureBotAI/PathwayMech/issues/270
+  urls:
+  - https://www.biopax.org/owldoc/Level3/dataproperties/stepDirection___-332215364.html
+  - https://www.biopax.org/owldoc/Level3/dataproperties/catalysisDirection___-862529821.html
+  - https://www.biopax.org/owldoc/Level3/classes/Catalysis___1017669966.html
+events:
+- type: EDIT
+  outcome: changed
+  summary: Honor contextual BioPAX directions and optional physical catalysts
+  details: 'Checked the primary BioPAX Level 3 OWL documentation: stepDirection includes REVERSIBLE,
+    catalysisDirection is directed, and Catalysis permits any PhysicalEntity controller or
+    an absent controller when the catalyst is unknown. Preserved conversion reversibility
+    while honoring an explicit catalytic orientation, accepted reversible pathway steps, retained
+    all contributing direction locators, and rejected opposing directed assertions. Missing
+    controllers no longer discard valid conversions; explicit empty, dangling, or nonphysical
+    controller references still fail. Source-declared RNA, DNA, small-molecule, and generic
+    physical catalysts are retained without inventing a protein identity. Thirteen new BioPAX
+    regression cases failed against the unchanged production code; the joint pre-fix KGX/BioPAX
+    run had 21 failures and 21 passes. After fixes, 68 focused BioPAX, KGX, and graph-context
+    tests passed, with focused ruff and git diff --check clean. No governed files or corpus
+    records were edited.'

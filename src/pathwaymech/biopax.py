@@ -171,12 +171,15 @@ def biopax_to_pathway_record(
         if controlled not in reaction_by_ref:
             continue
         controller = _resource_child(catalysis, "controller")
+        # BioPAX permits Catalysis without a controller when the catalyst is
+        # unknown. Its direction can still orient the conversion above.
+        # An explicit empty or dangling reference remains an import error.
+        if controller is None:
+            continue
         if controller not in participants:
             raise ValueError(f"BioPAX catalysis has unresolved controller {controller}")
-        if _local_name(elements[controller].tag) not in {"Protein", "Complex"}:
-            raise ValueError(
-                f"BioPAX catalysis controller {controller} is not a protein or complex"
-            )
+        # The source asserts catalysis by a PhysicalEntity, which may also be
+        # RNA (a ribozyme) or another supported physical kind.
         used_refs.add(controller)
         edges.append(
             _edge(
@@ -269,25 +272,38 @@ def _conversion_direction(
     directed = {"LEFT-TO-RIGHT", "RIGHT-TO-LEFT"}
     if conversion is not None and conversion not in directed | {"REVERSIBLE"}:
         raise ValueError(f"BioPAX {native} has invalid conversion direction {conversion}")
-    contextual = set(controls.values()) | set(steps.values())
-    if not contextual <= directed:
+    control_values = set(controls.values())
+    step_values = set(steps.values())
+    if not control_values <= directed or not step_values <= directed | {"REVERSIBLE"}:
         raise ValueError(f"BioPAX {native} has invalid contextual direction")
+    contextual = control_values | step_values
     if conversion in directed and contextual - {conversion}:
         raise ValueError(f"BioPAX {native} has contradictory direction assertions")
-    if len(set(steps.values())) > 1:
+    if len(step_values) > 1:
         raise ValueError(f"BioPAX {native} has conflicting pathway-step directions")
-    if steps:
-        orientation = next(iter(steps.values()))
-        locator = "; ".join(f"#{step}/bp:stepDirection" for step in steps)
-        return conversion or orientation, orientation, locator
-    if conversion is not None:
-        orientation = "LEFT-TO-RIGHT" if conversion == "REVERSIBLE" else conversion
-        return conversion, orientation, f"#{native}/bp:conversionDirection"
-    if len(set(controls.values())) == 1:
-        direction = next(iter(controls.values()))
-        locator = "; ".join(f"#{control}/bp:catalysisDirection" for control in controls)
-        return direction, direction, locator
-    raise ValueError(f"BioPAX {native} needs an explicit conversion direction")
+    step_direction = next(iter(step_values), None)
+    if step_direction in directed and control_values - {step_direction}:
+        raise ValueError(f"BioPAX {native} has contradictory direction assertions")
+
+    # Conversion reversibility and the physiological orientation asserted by a
+    # catalyst or pathway step are separate facts. Keep the former while using
+    # a directed contextual assertion to assign reactants and products.
+    if len(control_values) == 1:
+        orientation = next(iter(control_values))
+    elif step_direction in directed:
+        orientation = step_direction
+    elif conversion in directed:
+        orientation = conversion
+    elif conversion == "REVERSIBLE" or step_direction == "REVERSIBLE":
+        # Either orientation can display an explicitly reversible conversion.
+        orientation = "LEFT-TO-RIGHT"
+    else:
+        raise ValueError(f"BioPAX {native} needs an explicit conversion direction")
+    direction = conversion or step_direction or orientation
+    locators = [f"#{native}/bp:conversionDirection"] if conversion else []
+    locators.extend(f"#{step}/bp:stepDirection" for step in steps)
+    locators.extend(f"#{control}/bp:catalysisDirection" for control in controls)
+    return direction, orientation, "; ".join(locators)
 
 
 def _unification_xrefs(root: ElementTree.Element) -> dict[str, NormalizedXref]:

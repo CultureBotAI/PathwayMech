@@ -1,0 +1,28 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/curate_diagram_causal_graphs.py
+  slug: diagram-chemical-categories
+session:
+  id: 2026-10-05T193451Z-Codex-bc8609
+  timestamp: '2026-10-05T19:34:51Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt-6-astra
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/264
+events:
+- type: EDIT
+  outcome: changed
+  summary: Classify GPML chemical participants through ChEBI is_a ancestry
+  details: Replaced chemical-name substring lipid classification with recursive named ChEBI
+    rdfs:subClassOf ancestry to CHEBI:18059. ChEBI 255 source OBO SHA-256 6cd3c7f18d8b22c577e110e00008fb288d8f5b34424bbe5011858747062f9dd9
+    distinguishes choline CHEBI:15354 and sn-glycerol 3-phosphate CHEBI:57597 from lipids;
+    verified paths preserve pyruvate CHEBI:16763 and 4-methyl-2-oxopentanoate CHEBI:11851
+    as lipid descendants through fatty-acid-anion classes. Four GPML fixture cases verify
+    both corrected nonlipids and retained ontology-backed lipid ancestry. Scientific record
+    changes are documented separately; no baseline migration was replayed over the maintained
+    corpus.

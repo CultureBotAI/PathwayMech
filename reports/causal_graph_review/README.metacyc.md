@@ -91,6 +91,7 @@ Recreate the source layout from the manifest:
 
 ```sh
 python scripts/curate_metacyc_causal_graphs.py \
+  --root /tmp/pathwaymech-reproduction \
   --baseline-ref 88744403c934a84828d373cfccb8cdaa7507ad77 \
   --rhea-rdf "$RHEA_RDF" --directions "$RHEA_DIRECTIONS" \
   --metacyc-dir "$SOURCES/metacyc" \
@@ -98,8 +99,15 @@ python scripts/curate_metacyc_causal_graphs.py \
   --pubmed-xml "$SOURCES/metacyc-pubmed.xml" \
   --additional-pubmed-xml "$SOURCES/additional-pubmed.xml" \
   --uniprot-dir "$SOURCES/uniprot/full" \
-  --report-dir reports/causal_graph_review --apply
+  --report-dir /tmp/pathwaymech-reproduction-reports/metacyc
 ```
+
+Prepare the isolated baseline checkout as described in
+[the migration instructions](../../docs/CURATION_MIGRATIONS.md). This command
+previews the changes. Add `--apply` only to publish the reviewed preview to that
+checkout. Destination records must still match `--baseline-ref`; an explicit
+revision does not bypass that guard. Use a fresh report directory to preserve
+the original applied review and source ledgers.
 
 Omit `--apply` for a source-backed review without writing pathway records.
 The separate `audit_metacyc_causal_graphs.py` command verifies current reaction

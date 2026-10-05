@@ -18,6 +18,7 @@ from pathlib import Path
 import yaml
 from review_gocam_graphs import IndentedDumper, chebi_terms, digest
 
+from pathwaymech.curation import changed_records, publish_curation
 from pathwaymech.schema import validate_record
 
 COMPLEXES = {
@@ -356,12 +357,9 @@ def main():
             result["file"] = str(path)
             reports.append(result)
             pending.append((path, record))
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(
-        json.dumps({"uniprot_source": provenance, "records": reports}, indent=2) + "\n"
-    )
+    pending = changed_records(pending)
     if args.write:
-        for path, record in pending:
+        for _path, record in pending:
             record.setdefault("curation_history", []).append(
                 {
                     "timestamp": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -375,11 +373,19 @@ def main():
                     "llm_assisted": True,
                 }
             )
-            path.write_text(
-                yaml.dump(
-                    record, Dumper=IndentedDumper, sort_keys=False, allow_unicode=True, width=100
-                )
-            )
+    publish_curation(
+        pending,
+        args.report,
+        {"uniprot_source": provenance, "records": reports},
+        apply=args.write,
+        serialize=lambda record: yaml.dump(
+            record,
+            Dumper=IndentedDumper,
+            sort_keys=False,
+            allow_unicode=True,
+            width=100,
+        ),
+    )
     print(
         json.dumps(
             {

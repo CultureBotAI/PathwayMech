@@ -18,6 +18,8 @@ from pathlib import Path
 
 import yaml
 
+from pathwaymech.curation import may_publish_report as may_publish_report
+from pathwaymech.curation import publish_curation
 from pathwaymech.schema import validate_record
 
 SOURCE_HASHES = {
@@ -44,15 +46,6 @@ def load_sources(directory: Path) -> dict:
             raise ValueError(f"Wrong reviewed protein identity: {acc}")
         sources[acc] = {"entry": entry, "provenance": meta}
     return sources
-
-
-def may_publish_report(path: Path, changed: int) -> bool:
-    """Keep the first applied ledger immutable, including on idempotent replay."""
-    if path.exists() and json.loads(path.read_text()).get("applied"):
-        if changed:
-            raise ValueError("An applied review ledger exists; choose a new report path")
-        return False
-    return True
 
 
 def evidence(sources: dict, acc: str, pointer: str, assertion: str) -> dict:
@@ -120,7 +113,9 @@ def remove_activity(record: dict, activity: str, protein: str, ledger: dict, rea
         record["participants"] = [n for n in record["participants"] if n["id"] != protein]
 
 
-def replace_chemistry(record, activity, inputs, outputs, sources, acc, labels, ledger, note):
+def replace_chemistry(
+    record, activity, inputs, outputs, sources, acc, labels, ledger, note, *, assertion=None
+):
     remove_edges(
         record,
         lambda e: e["subject"] == activity and e["predicate"] in ("has_input", "has_output"),
@@ -132,15 +127,9 @@ def replace_chemistry(record, activity, inputs, outputs, sources, acc, labels, l
     ci = next(
         i for i, c in enumerate(entry["comments"]) if c["commentType"] == "CATALYTIC ACTIVITY"
     )
-    statement = entry["comments"][ci]["reaction"]["name"]
-    # Long residue-specific equations are represented by a faithful bounded
-    # fact, with the full exact equation retained in the compact source projection.
-    if len(statement) > 330:
-        statement = (
-            "THI13 converts protein-bound PLP-lysine and histidine residues to "
-            "lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; "
-            "water and Fe(III) are inputs, Fe(II) and protons are outputs."
-        )
+    # A bounded assertion can retain only the supported portion of an inherited
+    # equation. The full source equation remains in the review ledger.
+    statement = assertion or entry["comments"][ci]["reaction"]["name"]
     ev = [evidence(sources, acc, f"/comments/{ci}/reaction", statement)]
     if acc == "P26364":
         ev.append(
@@ -232,25 +221,63 @@ def curate(record: dict, sources: dict, labels: dict) -> tuple[dict, dict]:
             "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, "
             "UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, "
             "not free histidine substrates. HMP-phosphate is the product. "
-            "Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+."
+            "The inherited exact iron redox, water/proton balance, 3-oxopropanoate and "
+            "residue-product assertions are quarantined: "
+            "PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived "
+            "products for Candida albicans THI5, and a histidine-derived alpha-ketoacid "
+            "for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are "
+            "not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, "
+            "or complete net stoichiometry, are inferred. Omitted products and balancing "
+            "species remain unresolved, rather than asserted absent."
         )
         replace_chemistry(
             record,
             activity,
-            ["CHEBI:143915", "CHEBI:29979", "CHEBI:29034", "CHEBI:15377"],
-            [
-                "CHEBI:29969",
-                "CHEBI:157692",
-                "CHEBI:58354",
-                "CHEBI:33190",
-                "CHEBI:29033",
-                "CHEBI:15378",
-            ],
+            ["CHEBI:143915", "CHEBI:29979"],
+            ["CHEBI:58354"],
             sources,
             "Q07748",
             labels,
             ledger,
             note,
+            assertion=(
+                "The THI13 annotation, inferred by similarity to THI5, uses protein-bound "
+                "PLP-lysine and histidine residues and forms HMP-phosphate. This bounded "
+                "projection retains those core endpoints of the source equation, without "
+                "asserting its exact net stoichiometry or residue and small-molecule products."
+            ),
+        )
+        if not any(ref["id"] == "PMID:35675507" for ref in record["references"]):
+            record["references"].append(
+                {
+                    "id": "PMID:35675507",
+                    "title": (
+                        "Mechanistic Studies on the Single-Turnover Yeast Thiamin "
+                        "Pyrimidine Synthase: Characterization of the Inactive Enzyme"
+                    ),
+                    "url": "https://doi.org/10.1021/jacs.2c03322",
+                }
+            )
+        ledger["decisions"].append(
+            {
+                "source_conflict": "PMID:35675507",
+                "source_locator": (
+                    "JACS 144 (2022), pp. 10711-10714, Results and Discussion; Figures 2-5"
+                ),
+                "scope": note,
+                "inherited_reaction": deepcopy(
+                    sources["Q07748"]["entry"]["comments"][1]["reaction"]
+                ),
+                "quarantined_endpoints": [
+                    "CHEBI:29034",
+                    "CHEBI:29033",
+                    "CHEBI:33190",
+                    "CHEBI:15377",
+                    "CHEBI:15378",
+                    "CHEBI:157692",
+                    "CHEBI:29969",
+                ],
+            }
         )
         remove_edges(
             record,
@@ -431,10 +458,9 @@ def main():
         if after != before:
             candidates.append((path, after))
             report["records"].append({"path": str(path), **ledger})
-    publish_report = may_publish_report(args.report, len(candidates))
     if args.apply:
         stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-        for path, record in candidates:
+        for _path, record in candidates:
             record.setdefault("curation_history", []).append(
                 {
                     "timestamp": stamp,
@@ -446,10 +472,7 @@ def main():
                     "llm_assisted": True,
                 }
             )
-            path.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=100))
-    if publish_report:
-        args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(report, indent=2) + "\n")
+    publish_curation(candidates, args.report, report, apply=args.apply)
     print(f"{len(candidates)} records {'updated' if args.apply else 'would change'}")
 
 

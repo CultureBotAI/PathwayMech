@@ -2,7 +2,8 @@
 
 Reviewed and updated all **152 maintained pathway records**, with complete source-cohort
 coverage: 86 GO-CAM, 50 MetaCyc, 12 WikiPathways, 3 Reactome and 1 MIBiG.
-Review completed 2026-10-05T07:19:59.219761+00:00. Base commit: `88744403c934a84828d373cfccb8cdaa7507ad77`.
+Initial integration completed 2026-10-05T07:19:59.219761+00:00.
+Adversarial PR corrections verified 2026-10-05T19:44:03.818446+00:00. Base commit: `88744403c934a84828d373cfccb8cdaa7507ad77`.
 
 ## Target Category
 
@@ -22,7 +23,7 @@ sampling. No pathway record was added, deleted or merged.
 - `just validate`: passed, including native and closed LinkML schemas, independent
   identifier/label resolution, history links, provenance, sources, documentation,
   research-contract checks and generated-page consistency.
-- `just test`: **531 passed, 3 skipped**.
+- `just test`: **580 passed, 3 skipped**.
 - `just lint` and `git diff --check`: passed.
 - All 18 governed files match the pinned canonical revision.
 - Pages, KGX and SSSOM were regenerated from the final records.
@@ -45,16 +46,17 @@ and context; they are not an exemption from identifier existence checks.
 
 ## Graph and Evidence Patterns
 
-The final corpus contains **3604 participant occurrences,
-814 reaction occurrences and 7142 edges** (previously
+The final corpus contains **3599 participant occurrences,
+814 reaction occurrences and 7134 edges** (previously
 4690 edges). These are per-record counts, not unique entities.
-It includes 521 enzyme/cofactor links,
+It includes 520 enzyme/cofactor links,
 585 physical-location links,
 342 activity/process-location links and
 42 complex-composition links.
 
-The final cofactor pass checked all152 records and added 371 source-backed
-links across 93 records. Exact matches, source cautions, alternative metals,
+The initial cofactor pass checked all 152 records and added 371 source-backed
+links across 93 records. Adversarial review subsequently excluded the ARG82
+calcium crystal-contact assertion; its original applied ledger is preserved. Exact matches, source cautions, alternative metals,
 covalent groups and inference grades are preserved. Source assertions have precise
 locators and are rendered separately from verbatim quotations. KGX retains full
 evidence, qualifications, provenance and each record's label/category/direction.
@@ -108,12 +110,18 @@ representations; their pinned raw inputs are cached outside the repository.
 
 ## Additional Notes
 
-No paid research, GitHub changes or remote publication was performed. Expression
-modules were not used as substitutes for direct biochemical evidence. The native
-and cohort reports describe intermediate review stages; this report records the
-final integrated result.
+The authorized PR workflow is tracked in [PR #262](https://github.com/CultureBotAI/PathwayMech/pull/262).
+Eight adversarial findings were filed as issues and addressed. No paid research
+was used. Expression modules were not used as substitutes for direct biochemical
+evidence. Native/cohort ledgers and `validation-results.json` describe the original
+integration stage; [adversarial-validation.json](adversarial-validation.json) records
+the final correction checks. THI13 retains only bounded similarity-inferred core
+chemistry; its detailed products and net balance remain unresolved.
 
 ## Evidence ledgers
+
+- [Adversarial review and issue dispositions](adversarial-pr-262.md) and
+  [scientific correction ledger](adversarial-scientific-corrections.json).
 
 - [Native GO-CAM facts](../yaml_category_review/20261005-gocam-causal-graphs/gocam-causal-review.json)
   and [complex composition](../yaml_category_review/20261005-gocam-causal-graphs/complex-composition-review.json).
@@ -189,7 +197,7 @@ final integrated result.
 | [homocysteine-and-cysteine-interconversion](../../data/pathways/homocysteine-and-cysteine-interconversion.yaml) | GO-CAM native | 20 | 4 | 39 |
 | [inosine-5-phosphate-biosynthesis-i](../../data/pathways/inosine-5-phosphate-biosynthesis-i.yaml) | MetaCyc | 28 | 6 | 44 |
 | [inosine-5-phosphate-biosynthesis-ii](../../data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml) | MetaCyc | 22 | 5 | 31 |
-| [inositol-phosphate-biosynthesis](../../data/pathways/inositol-phosphate-biosynthesis.yaml) | GO-CAM native | 33 | 15 | 118 |
+| [inositol-phosphate-biosynthesis](../../data/pathways/inositol-phosphate-biosynthesis.yaml) | GO-CAM native | 33 | 15 | 117 |
 | [isoleucine-degradation](../../data/pathways/isoleucine-degradation.yaml) | Diagrams and MIBiG | 24 | 3 | 35 |
 | [l-arabinose-degradation-i](../../data/pathways/l-arabinose-degradation-i.yaml) | MetaCyc | 17 | 3 | 23 |
 | [l-arginine-biosynthesis-i](../../data/pathways/l-arginine-biosynthesis-i.yaml) | MetaCyc | 54 | 9 | 91 |
@@ -271,7 +279,7 @@ final integrated result.
 | [tca-cycle-detailed](../../data/pathways/tca-cycle-detailed.yaml) | Diagrams and MIBiG | 49 | 9 | 75 |
 | [tetrahydrofolate-biosynthesis](../../data/pathways/tetrahydrofolate-biosynthesis.yaml) | GO-CAM native | 21 | 3 | 29 |
 | [tetrapyrrole-biosynthesis](../../data/pathways/tetrapyrrole-biosynthesis.yaml) | GO-CAM native | 21 | 4 | 32 |
-| [thiamine-biosynthesis](../../data/pathways/thiamine-biosynthesis.yaml) | GO-CAM native | 41 | 10 | 102 |
+| [thiamine-biosynthesis](../../data/pathways/thiamine-biosynthesis.yaml) | GO-CAM native | 36 | 10 | 95 |
 | [threonine-degradation](../../data/pathways/threonine-degradation.yaml) | GO-CAM native | 12 | 2 | 16 |
 | [trans-trans-farnesyl-diphosphate-biosynthesis](../../data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml) | GO-CAM native | 11 | 3 | 24 |
 | [trehalose-biosynthesis-i](../../data/pathways/trehalose-biosynthesis-i.yaml) | MetaCyc | 16 | 2 | 18 |

@@ -14,7 +14,9 @@ PathwayMech's gates and data rules to it.
 ## Data rules
 
 - One pathway per YAML file under `data/pathways/`. Every causal edge cites a
-  reference declared in the same record, with a short verbatim quote.
+  reference declared in the same record, with either a short verbatim quote or
+  a structured-source assertion and a precise source locator. Keep assertions
+  distinct from quotations; see `docs/CAUSAL_GRAPHS.md` for traceability rules.
 - After any record change, run `just render-pages` and commit `pages/` with it.
 - `conf/sources.yaml` ranks source families. A missing pathway family is a
   candidate to *recommend*, not to pick: drafting or editing a curated record
