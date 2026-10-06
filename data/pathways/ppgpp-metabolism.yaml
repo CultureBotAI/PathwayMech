@@ -1,8 +1,7 @@
 id: MetaCyc:PPGPPMET-PWY
 label: ppGpp metabolism
-description: ppGpp metabolism interconverts GDP, GTP, guanosine 3'-diphosphate 5'-triphosphate,
-  and guanosine 3',5'-bis(diphosphate) through kinase, pyrophosphokinase, and hydrolase
-  reactions.
+description: ppGpp metabolism interconverts GDP, GTP, guanosine 3'-diphosphate 5'-triphosphate, and guanosine
+  3',5'-bis(diphosphate) through kinase, pyrophosphokinase, and hydrolase reactions.
 pathway_type: metabolic-regulator-biosynthesis
 taxa:
 - id: NCBITaxon:2
@@ -10,429 +9,458 @@ taxa:
 participants:
 - id: EC:2.7.4.6
   label: nucleoside-diphosphate kinase
+  category: molecular_activity
 - id: EC:2.7.6.5
   label: GTP diphosphokinase
+  category: molecular_activity
 - id: EC:3.1.7.2
   label: guanosine-3',5'-bis(diphosphate) 3'-diphosphatase
+  category: molecular_activity
 - id: EC:3.6.1.40
   label: guanosine-5'-triphosphate,3'-diphosphate diphosphatase
+  category: molecular_activity
 - id: CHEBI:58189
   label: GDP
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:37565
   label: GTP
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:142410
   label: guanosine 3'-diphosphate 5'-triphosphate
+  category: small_molecule
 - id: CHEBI:15377
   label: H2O
+  category: small_molecule
 - id: CHEBI:33019
   label: diphosphate
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:77828
   label: guanosine 3',5'-bis(diphosphate)
+  category: small_molecule
 - id: CHEBI:456215
   label: AMP
+  category: small_molecule
 - id: CHEBI:43474
   label: phosphate
+  category: small_molecule
 reactions:
 - id: RHEA:27687
   label: GDP kinase reaction
+  direction: left_to_right
 - id: RHEA:33056
   label: guanosine 3'-diphosphate 5'-triphosphate hydrolase reaction
+  direction: left_to_right
 - id: RHEA:28099
   label: GDP pyrophosphokinase reaction
+  direction: left_to_right
 - id: RHEA:22089
   label: GTP pyrophosphokinase reaction
+  direction: left_to_right
 - id: RHEA:14254
   label: ppGpp 3'-diphosphatase reaction
+  direction: left_to_right
 - id: RHEA:13074
   label: pppGpp 5'-phosphohydrolase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:2.7.4.6
-  predicate: catalyzes
+  subject: CHEBI:30616
+  predicate: consumes
   object: RHEA:27687
   evidence:
-  - reference_id: RHEA:27686
-    quote: nucleoside-diphosphate kinase catalyzes GDP kinase reaction.
+  - reference_id: RHEA:27687
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:27687 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27687']/rh:substrates; rh:contains/rh:compound/rh:accession
 - id: edge-002
   subject: CHEBI:58189
   predicate: consumes
   object: RHEA:27687
   evidence:
   - reference_id: RHEA:27687
-    quote: RHEA:27687 GDP + ATP => GTP + ADP
+    source_assertion: Rhea lists CHEBI:58189 on the substrates side of RHEA:27687 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27687']/rh:substrates; rh:contains/rh:compound/rh:accession
 - id: edge-003
-  subject: CHEBI:30616
-  predicate: consumes
-  object: RHEA:27687
-  evidence:
-  - reference_id: RHEA:27687
-    quote: RHEA:27687 GDP + ATP => GTP + ADP
-- id: edge-004
   subject: RHEA:27687
   predicate: produces
   object: CHEBI:37565
   evidence:
   - reference_id: RHEA:27687
-    quote: RHEA:27687 GDP + ATP => GTP + ADP
-- id: edge-005
+    source_assertion: Rhea lists CHEBI:37565 on the products side of RHEA:27687 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27687']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
   subject: RHEA:27687
   predicate: produces
   object: CHEBI:456216
   evidence:
   - reference_id: RHEA:27687
-    quote: RHEA:27687 GDP + ATP => GTP + ADP
-- id: edge-006
-  subject: RHEA:27687
-  predicate: precedes
-  object: RHEA:22089
-  evidence:
-  - reference_id: RHEA:27687
-    quote: RHEA:27687 GDP + ATP => GTP + ADP
-  - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-007
-  subject: EC:3.1.7.2
-  predicate: catalyzes
-  object: RHEA:33056
-  evidence:
-  - reference_id: RHEA:33055
-    quote: guanosine-3',5'-bis(diphosphate) 3'-diphosphatase catalyzes guanosine 3'-diphosphate
-      5'-triphosphate hydrolase reaction.
-- id: edge-008
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:27687 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27687']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
   subject: CHEBI:142410
   predicate: consumes
   object: RHEA:33056
   evidence:
   - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-- id: edge-009
+    source_assertion: Rhea lists CHEBI:142410 on the substrates side of RHEA:33056 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/33056']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
   subject: CHEBI:15377
   predicate: consumes
   object: RHEA:33056
   evidence:
   - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-- id: edge-010
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:33056 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/33056']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:33056
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:33056
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:33056 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/33056']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:33056
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:33056
+    source_assertion: Rhea lists CHEBI:33019 on the products side of RHEA:33056 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/33056']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
   subject: RHEA:33056
   predicate: produces
   object: CHEBI:37565
   evidence:
   - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-- id: edge-011
-  subject: RHEA:33056
-  predicate: produces
-  object: CHEBI:33019
-  evidence:
-  - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-- id: edge-012
-  subject: RHEA:33056
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-- id: edge-013
-  subject: RHEA:33056
-  predicate: precedes
-  object: RHEA:22089
-  evidence:
-  - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-  - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-014
-  subject: EC:2.7.6.5
-  predicate: catalyzes
+    source_assertion: Rhea lists CHEBI:37565 on the products side of RHEA:33056 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/33056']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: CHEBI:30616
+  predicate: consumes
   object: RHEA:28099
   evidence:
   - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-  - reference_id: MetaCyc:GDPPYPHOSKIN-RXN
-    quote: 'Enzymatic activity: GDP pyrophosphokinase (GDP/GTP pyrophosphokinase)'
-  - reference_id: MetaCyc:GDPPYPHOSKIN-RXN
-    quote: EC Number 2.7.6.5
-- id: edge-015
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:28099 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28099']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-011
   subject: CHEBI:58189
   predicate: consumes
   object: RHEA:28099
   evidence:
   - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-- id: edge-016
-  subject: CHEBI:30616
-  predicate: consumes
-  object: RHEA:28099
-  evidence:
-  - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-- id: edge-017
-  subject: RHEA:28099
-  predicate: produces
-  object: CHEBI:77828
-  evidence:
-  - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-- id: edge-018
+    source_assertion: Rhea lists CHEBI:58189 on the substrates side of RHEA:28099 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28099']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
   subject: RHEA:28099
   predicate: produces
   object: CHEBI:456215
   evidence:
   - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-- id: edge-019
+    source_assertion: Rhea lists CHEBI:456215 on the products side of RHEA:28099 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28099']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-013
   subject: RHEA:28099
-  predicate: precedes
-  object: RHEA:14254
+  predicate: produces
+  object: CHEBI:77828
   evidence:
   - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-  - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-020
-  subject: EC:2.7.6.5
-  predicate: catalyzes
+    source_assertion: Rhea lists CHEBI:77828 on the products side of RHEA:28099 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28099']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-014
+  subject: CHEBI:30616
+  predicate: consumes
   object: RHEA:22089
   evidence:
-  - reference_id: RHEA:22088
-    quote: GTP diphosphokinase catalyzes GTP pyrophosphokinase reaction.
-- id: edge-021
+  - reference_id: RHEA:22089
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:22089 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22089']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-015
   subject: CHEBI:37565
   predicate: consumes
   object: RHEA:22089
   evidence:
   - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-- id: edge-022
-  subject: CHEBI:30616
-  predicate: consumes
-  object: RHEA:22089
-  evidence:
-  - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-- id: edge-023
+    source_assertion: Rhea lists CHEBI:37565 on the substrates side of RHEA:22089 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22089']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-016
   subject: RHEA:22089
   predicate: produces
   object: CHEBI:142410
   evidence:
   - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-- id: edge-024
+    source_assertion: Rhea lists CHEBI:142410 on the products side of RHEA:22089 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22089']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-017
   subject: RHEA:22089
   predicate: produces
   object: CHEBI:456215
   evidence:
   - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-- id: edge-025
-  subject: RHEA:22089
-  predicate: precedes
-  object: RHEA:33056
-  evidence:
-  - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-  - reference_id: RHEA:33056
-    quote: RHEA:33056 guanosine 3'-diphosphate 5'-triphosphate + H2O => GTP + diphosphate
-      + H(+)
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-026
-  subject: RHEA:22089
-  predicate: precedes
-  object: RHEA:13074
-  evidence:
-  - reference_id: RHEA:22089
-    quote: RHEA:22089 GTP + ATP => guanosine 3'-diphosphate 5'-triphosphate + AMP
-  - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-027
-  subject: EC:3.1.7.2
-  predicate: catalyzes
+    source_assertion: Rhea lists CHEBI:456215 on the products side of RHEA:22089 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22089']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-018
+  subject: CHEBI:15377
+  predicate: consumes
   object: RHEA:14254
   evidence:
-  - reference_id: RHEA:14253
-    quote: guanosine-3',5'-bis(diphosphate) 3'-diphosphatase catalyzes ppGpp 3'-diphosphatase
-      reaction.
-- id: edge-028
+  - reference_id: RHEA:14254
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:14254 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14254']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-019
   subject: CHEBI:77828
   predicate: consumes
   object: RHEA:14254
   evidence:
   - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-- id: edge-029
-  subject: CHEBI:15377
-  predicate: consumes
-  object: RHEA:14254
-  evidence:
-  - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-- id: edge-030
+    source_assertion: Rhea lists CHEBI:77828 on the substrates side of RHEA:14254 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14254']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-020
   subject: RHEA:14254
   predicate: produces
-  object: CHEBI:58189
+  object: CHEBI:15378
   evidence:
   - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-- id: edge-031
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:14254 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14254']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-021
   subject: RHEA:14254
   predicate: produces
   object: CHEBI:33019
   evidence:
   - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-- id: edge-032
+    source_assertion: Rhea lists CHEBI:33019 on the products side of RHEA:14254 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14254']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-022
   subject: RHEA:14254
   predicate: produces
-  object: CHEBI:15378
+  object: CHEBI:58189
   evidence:
   - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-- id: edge-033
-  subject: RHEA:14254
-  predicate: precedes
-  object: RHEA:27687
-  evidence:
-  - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-  - reference_id: RHEA:27687
-    quote: RHEA:27687 GDP + ATP => GTP + ADP
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-034
-  subject: RHEA:14254
-  predicate: precedes
-  object: RHEA:28099
-  evidence:
-  - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
-  - reference_id: RHEA:28099
-    quote: RHEA:28099 GDP + ATP => guanosine 3',5'-bis(diphosphate) + AMP
-  - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
-- id: edge-035
-  subject: EC:3.6.1.40
-  predicate: catalyzes
-  object: RHEA:13074
-  evidence:
-  - reference_id: RHEA:13073
-    quote: guanosine-5'-triphosphate,3'-diphosphate diphosphatase catalyzes pppGpp
-      5'-phosphohydrolase reaction.
-- id: edge-036
+    source_assertion: Rhea lists CHEBI:58189 on the products side of RHEA:14254 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14254']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-023
   subject: CHEBI:142410
   predicate: consumes
   object: RHEA:13074
   evidence:
   - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-- id: edge-037
+    source_assertion: Rhea lists CHEBI:142410 on the substrates side of RHEA:13074 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13074']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-024
   subject: CHEBI:15377
   predicate: consumes
   object: RHEA:13074
   evidence:
   - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-- id: edge-038
-  subject: RHEA:13074
-  predicate: produces
-  object: CHEBI:77828
-  evidence:
-  - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-- id: edge-039
-  subject: RHEA:13074
-  predicate: produces
-  object: CHEBI:43474
-  evidence:
-  - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-- id: edge-040
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:13074 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13074']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-025
   subject: RHEA:13074
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-- id: edge-041
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:13074 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13074']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-026
+  subject: RHEA:13074
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:13074
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:13074 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13074']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-027
+  subject: RHEA:13074
+  predicate: produces
+  object: CHEBI:77828
+  evidence:
+  - reference_id: RHEA:13074
+    source_assertion: Rhea lists CHEBI:77828 on the products side of RHEA:13074 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13074']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-028
+  subject: EC:2.7.4.6
+  predicate: catalyzes
+  object: RHEA:27687
+  evidence:
+  - reference_id: RHEA:27686
+    source_assertion: Rhea associates EC:2.7.4.6 with the reaction family containing RHEA:27687.
+    source_locator: rh:ec
+- id: edge-029
+  subject: EC:3.1.7.2
+  predicate: catalyzes
+  object: RHEA:33056
+  evidence:
+  - reference_id: RHEA:33055
+    source_assertion: Rhea associates EC:3.1.7.2 with the reaction family containing RHEA:33056.
+    source_locator: rh:ec
+- id: edge-030
+  subject: EC:2.7.6.5
+  predicate: catalyzes
+  object: RHEA:28099
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: The native pathway assigns EC:2.7.6.5 activity to the enzymatic step represented
+      by RHEA:28099; this is a component step when the EC definition is an overall reaction.
+    source_locator: Pathway/reaction-layout; Reaction/enzymatic-reaction and component-reaction relationships
+- id: edge-031
+  subject: EC:2.7.6.5
+  predicate: catalyzes
+  object: RHEA:22089
+  evidence:
+  - reference_id: RHEA:22088
+    source_assertion: Rhea associates EC:2.7.6.5 with the reaction family containing RHEA:22089.
+    source_locator: rh:ec
+- id: edge-032
+  subject: EC:3.1.7.2
+  predicate: catalyzes
+  object: RHEA:14254
+  evidence:
+  - reference_id: RHEA:14253
+    source_assertion: Rhea associates EC:3.1.7.2 with the reaction family containing RHEA:14254.
+    source_locator: rh:ec
+- id: edge-033
+  subject: EC:3.6.1.40
+  predicate: catalyzes
+  object: RHEA:13074
+  evidence:
+  - reference_id: RHEA:13073
+    source_assertion: Rhea associates EC:3.6.1.40 with the reaction family containing RHEA:13074.
+    source_locator: rh:ec
+- id: edge-034
   subject: RHEA:13074
   predicate: precedes
   object: RHEA:14254
   evidence:
-  - reference_id: RHEA:13074
-    quote: RHEA:13074 guanosine 3'-diphosphate 5'-triphosphate + H2O => guanosine
-      3',5'-bis(diphosphate) + phosphate + H(+)
-  - reference_id: RHEA:14254
-    quote: RHEA:14254 guanosine 3',5'-bis(diphosphate) + H2O => GDP + diphosphate
-      + H(+)
   - reference_id: MetaCyc:PPGPPMET-PWY
-    quote: GDPKIN-RXN // RXN0-6427 // GDPPYPHOSKIN-RXN // GTPPYPHOSKIN-RXN // PPGPPSYN-RXN
-      // PPPGPPHYDRO-RXN
+    source_assertion: 'MetaCyc pathway ordering places RHEA:13074 before RHEA:14254 in this pathway. Shared
+      intermediate: CHEBI:77828.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-035
+  subject: RHEA:14254
+  predicate: precedes
+  object: RHEA:27687
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:14254 before RHEA:27687 in this pathway. Shared
+      intermediate: CHEBI:58189.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-036
+  subject: RHEA:14254
+  predicate: precedes
+  object: RHEA:28099
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:14254 before RHEA:28099 in this pathway. Shared
+      intermediate: CHEBI:58189.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-037
+  subject: RHEA:22089
+  predicate: precedes
+  object: RHEA:13074
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:22089 before RHEA:13074 in this pathway. Shared
+      intermediate: CHEBI:142410.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-038
+  subject: RHEA:22089
+  predicate: precedes
+  object: RHEA:33056
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:22089 before RHEA:33056 in this pathway. Shared
+      intermediate: CHEBI:142410.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-039
+  subject: RHEA:27687
+  predicate: precedes
+  object: RHEA:22089
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:27687 before RHEA:22089 in this pathway. Shared
+      intermediate: CHEBI:37565.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-040
+  subject: RHEA:28099
+  predicate: precedes
+  object: RHEA:14254
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:28099 before RHEA:14254 in this pathway. Shared
+      intermediate: CHEBI:77828.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-041
+  subject: RHEA:33056
+  predicate: precedes
+  object: RHEA:22089
+  evidence:
+  - reference_id: MetaCyc:PPGPPMET-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:33056 before RHEA:22089 in this pathway. Shared
+      intermediate: CHEBI:37565.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 references:
 - id: MetaCyc:PPGPPMET-PWY
   title: MetaCyc ppGpp metabolism pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:PPGPPMET-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 5889d67922e973f3777b470f2d9ea185b6f7c16ce6b9f66d43c342dad33ab883
 - id: RHEA:27686
   title: Rhea GDP kinase reaction
+  url: https://www.rhea-db.org/rhea/27686
+  source_version: '139'
 - id: RHEA:27687
   title: Rhea GTP-forming direction
+  url: https://www.rhea-db.org/rhea/27687
+  source_version: '139'
 - id: RHEA:33055
   title: Rhea guanosine 3'-diphosphate 5'-triphosphate hydrolase reaction
+  url: https://www.rhea-db.org/rhea/33055
+  source_version: '139'
 - id: RHEA:33056
   title: Rhea GTP-forming pppGpp hydrolase direction
+  url: https://www.rhea-db.org/rhea/33056
+  source_version: '139'
 - id: RHEA:28099
   title: Rhea ppGpp-forming GDP pyrophosphokinase direction
+  url: https://www.rhea-db.org/rhea/28099
+  source_version: '139'
 - id: MetaCyc:GDPPYPHOSKIN-RXN
   title: MetaCyc GDP pyrophosphokinase reaction
+  url: https://pathway.yeastgenome.org/getxml?id=META:GDPPYPHOSKIN-RXN&detail=full
+  source_version: '22.5'
+  source_sha256: 57a33503b1adff3efbf0fc3b26ae233f760eaedfca3515da10aa4896eb9c449f
 - id: RHEA:22088
   title: Rhea GTP pyrophosphokinase reaction
+  url: https://www.rhea-db.org/rhea/22088
+  source_version: '139'
 - id: RHEA:22089
   title: Rhea pppGpp-forming direction
+  url: https://www.rhea-db.org/rhea/22089
+  source_version: '139'
 - id: RHEA:14253
   title: Rhea ppGpp 3'-diphosphatase reaction
+  url: https://www.rhea-db.org/rhea/14253
+  source_version: '139'
 - id: RHEA:14254
   title: Rhea GDP-forming ppGpp hydrolase direction
+  url: https://www.rhea-db.org/rhea/14254
+  source_version: '139'
 - id: RHEA:13073
   title: Rhea pppGpp 5'-phosphohydrolase reaction
+  url: https://www.rhea-db.org/rhea/13073
+  source_version: '139'
 - id: RHEA:13074
   title: Rhea ppGpp-forming pppGpp hydrolase direction
+  url: https://www.rhea-db.org/rhea/13074
+  source_version: '139'

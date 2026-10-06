@@ -1,8 +1,7 @@
 id: MetaCyc:XYLCAT-PWY
 label: D-xylose degradation I
-description: D-xylose degradation I isomerizes alpha-D-xylose to alpha-D-xylulofuranose,
-  then phosphorylates D-xylulose with ATP to form D-xylulose 5-phosphate for entry
-  into the pentose phosphate pathway.
+description: D-xylose degradation I isomerizes alpha-D-xylose to alpha-D-xylulofuranose, then phosphorylates
+  D-xylulose with ATP to form D-xylulose 5-phosphate for entry into the pentose phosphate pathway.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:562
@@ -10,110 +9,200 @@ taxa:
 participants:
 - id: EC:5.3.1.5
   label: xylose isomerase
+  category: molecular_activity
 - id: EC:2.7.1.17
   label: xylulokinase
+  category: molecular_activity
 - id: CHEBI:28518
   label: alpha-D-xylose
+  category: small_molecule
 - id: CHEBI:188998
   label: alpha-D-xylulofuranose
+  category: small_molecule
 - id: CHEBI:17140
   label: D-xylulose
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:57737
   label: D-xylulose 5-phosphate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
+- id: UniProtKB:P00944
+  label: Xylose isomerase
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: UniProtKB:P09099
+  label: Xylulose kinase
+  category: protein
 reactions:
-- id: RHEA:22819
-  label: xylose isomerase reaction
 - id: RHEA:10965
   label: xylulokinase reaction
+  direction: left_to_right
+- id: RHEA:22817
+  label: xylose isomerase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:5.3.1.5
-  predicate: catalyzes
-  object: RHEA:22819
-  evidence:
-  - reference_id: RHEA:22816
-    quote: xylose isomerase catalyzes xylose isomerase reaction.
-- id: edge-002
-  subject: CHEBI:28518
-  predicate: consumes
-  object: RHEA:22819
-  evidence:
-  - reference_id: RHEA:22819
-    quote: RHEA:22819 alpha-D-xylose <=> alpha-D-xylulofuranose
-- id: edge-003
-  subject: RHEA:22819
-  predicate: produces
-  object: CHEBI:188998
-  evidence:
-  - reference_id: RHEA:22819
-    quote: RHEA:22819 alpha-D-xylose <=> alpha-D-xylulofuranose
-- id: edge-004
-  subject: RHEA:22819
-  predicate: precedes
-  object: RHEA:10965
-  evidence:
-  - reference_id: RHEA:22819
-    quote: RHEA:22819 alpha-D-xylose <=> alpha-D-xylulofuranose
-  - reference_id: RHEA:10965
-    quote: RHEA:10965 D-xylulose + ATP => D-xylulose 5-phosphate + ADP + H(+)
-  - reference_id: MetaCyc:XYLCAT-PWY
-    quote: XYLISOM-RXN // XYLULOKIN-RXN
-- id: edge-005
-  subject: EC:2.7.1.17
-  predicate: catalyzes
-  object: RHEA:10965
-  evidence:
-  - reference_id: RHEA:10964
-    quote: xylulokinase catalyzes xylulokinase reaction.
-- id: edge-006
   subject: CHEBI:17140
   predicate: consumes
   object: RHEA:10965
   evidence:
   - reference_id: RHEA:10965
-    quote: RHEA:10965 D-xylulose + ATP => D-xylulose 5-phosphate + ADP + H(+)
-- id: edge-007
+    source_assertion: Rhea lists CHEBI:17140 on the substrates side of RHEA:10965 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10965']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:10965
   evidence:
   - reference_id: RHEA:10965
-    quote: RHEA:10965 D-xylulose + ATP => D-xylulose 5-phosphate + ADP + H(+)
-- id: edge-008
-  subject: RHEA:10965
-  predicate: produces
-  object: CHEBI:57737
-  evidence:
-  - reference_id: RHEA:10965
-    quote: RHEA:10965 D-xylulose + ATP => D-xylulose 5-phosphate + ADP + H(+)
-- id: edge-009
-  subject: RHEA:10965
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:10965
-    quote: RHEA:10965 D-xylulose + ATP => D-xylulose 5-phosphate + ADP + H(+)
-- id: edge-010
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:10965 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10965']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
   subject: RHEA:10965
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:10965
-    quote: RHEA:10965 D-xylulose + ATP => D-xylulose 5-phosphate + ADP + H(+)
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:10965 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10965']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
+  subject: RHEA:10965
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:10965
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:10965 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10965']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: RHEA:10965
+  predicate: produces
+  object: CHEBI:57737
+  evidence:
+  - reference_id: RHEA:10965
+    source_assertion: Rhea lists CHEBI:57737 on the products side of RHEA:10965 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10965']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:28518
+  predicate: consumes
+  object: RHEA:22817
+  evidence:
+  - reference_id: RHEA:22817
+    source_assertion: Rhea lists CHEBI:28518 on the substrates side of RHEA:22817 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22817']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:22817
+  predicate: produces
+  object: CHEBI:188998
+  evidence:
+  - reference_id: RHEA:22817
+    source_assertion: Rhea lists CHEBI:188998 on the products side of RHEA:22817 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22817']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: EC:5.3.1.5
+  predicate: catalyzes
+  object: RHEA:22817
+  evidence:
+  - reference_id: RHEA:22816
+    source_assertion: Rhea associates EC:5.3.1.5 with the reaction family containing RHEA:22817.
+    source_locator: rh:ec
+- id: edge-009
+  subject: EC:2.7.1.17
+  predicate: catalyzes
+  object: RHEA:10965
+  evidence:
+  - reference_id: RHEA:10964
+    source_assertion: Rhea associates EC:2.7.1.17 with the reaction family containing RHEA:10965.
+    source_locator: rh:ec
+- id: edge-010
+  subject: RHEA:22817
+  predicate: precedes
+  object: RHEA:10965
+  evidence:
+  - reference_id: MetaCyc:XYLCAT-PWY
+    source_assertion: MetaCyc pathway ordering places RHEA:22817 before RHEA:10965 in this pathway. The
+      source ordering may bridge anomer-specific and broader substrate classes.
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-011
+  subject: UniProtKB:P00944
+  predicate: enables
+  object: RHEA:22817
+  evidence:
+  - reference_id: UniProtKB:P00944
+    source_assertion: 'UniProt annotates UniProtKB:P00944 with catalytic activity for the reaction family
+      of RHEA:22817. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-012
+  subject: UniProtKB:P00944
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P00944
+    source_assertion: 'UniProt locates UniProtKB:P00944 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: curated source annotation.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-013
+  subject: UniProtKB:P00944
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P00944
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P00944 (evidence: ECO:0000250).
+      Binds 2 magnesium ions per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-014
+  subject: UniProtKB:P09099
+  predicate: enables
+  object: RHEA:10965
+  evidence:
+  - reference_id: UniProtKB:P09099
+    source_assertion: 'UniProt annotates UniProtKB:P09099 with catalytic activity for the reaction family
+      of RHEA:10965. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
 references:
 - id: MetaCyc:XYLCAT-PWY
   title: MetaCyc D-xylose degradation I
+  url: https://pathway.yeastgenome.org/getxml?id=META:XYLCAT-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: b540c84eb891c236fa15ea61560eaf9d0a4bdb28bae7c2fd43e27791ff6ea2d4
 - id: RHEA:22816
   title: Rhea xylose isomerase reaction
+  url: https://www.rhea-db.org/rhea/22816
+  source_version: '139'
 - id: RHEA:22819
   title: Rhea bidirectional xylose isomerase reaction
+  url: https://www.rhea-db.org/rhea/22819
+  source_version: '139'
 - id: RHEA:10964
   title: Rhea xylulokinase reaction
+  url: https://www.rhea-db.org/rhea/10964
+  source_version: '139'
 - id: RHEA:10965
   title: Rhea D-xylulose-5-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/10965
+  source_version: '139'
+- id: RHEA:22817
+  title: RHEA:22817 authority record
+  url: https://www.rhea-db.org/rhea/22817
+  source_version: '139'
+- id: UniProtKB:P00944
+  title: UniProtKB:P00944 authority record
+  url: https://rest.uniprot.org/uniprotkb/P00944.json
+  source_version: '2026_03'
+- id: UniProtKB:P09099
+  title: UniProtKB:P09099 authority record
+  url: https://rest.uniprot.org/uniprotkb/P09099.json
+  source_version: '2026_03'

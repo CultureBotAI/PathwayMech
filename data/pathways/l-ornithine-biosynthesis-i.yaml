@@ -1,8 +1,7 @@
 id: MetaCyc:GLUTORN-PWY
 label: L-ornithine biosynthesis I
-description: L-ornithine biosynthesis I converts L-glutamate to L-ornithine through
-  N-acetyl-L-glutamate, N-acetyl-L-glutamyl 5-phosphate, N-acetyl-L-glutamate 5-semialdehyde,
-  and N(2)-acetyl-L-ornithine.
+description: L-ornithine biosynthesis I converts L-glutamate to L-ornithine through N-acetyl-L-glutamate,
+  N-acetyl-L-glutamyl 5-phosphate, N-acetyl-L-glutamate 5-semialdehyde, and N(2)-acetyl-L-ornithine.
 pathway_type: amino-acid-biosynthesis
 taxa:
 - id: NCBITaxon:562
@@ -10,346 +9,581 @@ taxa:
 participants:
 - id: EC:2.3.1.1
   label: N-acetylglutamate synthase
+  category: molecular_activity
 - id: EC:2.7.2.8
   label: acetylglutamate kinase
+  category: molecular_activity
 - id: EC:1.2.1.38
   label: N-acetyl-gamma-glutamyl-phosphate reductase
+  category: molecular_activity
 - id: EC:2.6.1.11
   label: acetylornithine aminotransferase
+  category: molecular_activity
 - id: EC:3.5.1.16
   label: acetylornithine deacetylase
+  category: molecular_activity
 - id: CHEBI:29985
   label: L-glutamate
+  category: small_molecule
 - id: CHEBI:57288
   label: acetyl-CoA
+  category: small_molecule
 - id: CHEBI:44337
   label: N-acetyl-L-glutamate
+  category: small_molecule
 - id: CHEBI:57287
   label: CoA
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:57936
   label: N-acetyl-L-glutamyl 5-phosphate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:57783
   label: NADPH
+  category: small_molecule
 - id: CHEBI:29123
   label: N-acetyl-L-glutamate 5-semialdehyde
+  category: small_molecule
 - id: CHEBI:43474
   label: phosphate
+  category: small_molecule
 - id: CHEBI:58349
   label: NADP(+)
+  category: small_molecule
 - id: CHEBI:57805
   label: N(2)-acetyl-L-ornithine
+  category: small_molecule
 - id: CHEBI:16810
   label: 2-oxoglutarate
+  category: small_molecule
 - id: CHEBI:15377
   label: H2O
+  category: small_molecule
 - id: CHEBI:46911
   label: L-ornithine
+  category: small_molecule
 - id: CHEBI:30089
   label: acetate
+  category: small_molecule
+- id: UniProtKB:P0A6C5
+  label: Amino-acid acetyltransferase
+  category: protein
+- id: CHEBI:32682
+  label: L-argininium(1+)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: UniProtKB:P0A6C8
+  label: Acetylglutamate kinase
+  category: protein
+- id: UniProtKB:P11446
+  label: N-acetyl-gamma-glutamyl-phosphate reductase
+  category: protein
+- id: UniProtKB:P18335
+  label: Acetylornithine/succinyldiaminopimelate aminotransferase
+  category: protein
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
+- id: UniProtKB:P23908
+  label: Acetylornithine deacetylase
+  category: protein
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:57925
+  label: glutathionate(1-)
+  category: cofactor
 reactions:
 - id: RHEA:24293
   label: N-acetylglutamate synthase reaction
+  direction: left_to_right
 - id: RHEA:14630
   label: N-acetylglutamate kinase reaction
+  direction: left_to_right
 - id: RHEA:21590
   label: N-acetylglutamyl-phosphate reductase reaction
+  direction: right_to_left
 - id: RHEA:18051
   label: acetylornithine aminotransferase reaction
+  direction: right_to_left
 - id: RHEA:15942
   label: acetylornithine deacetylase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:2.3.1.1
-  predicate: catalyzes
-  object: RHEA:24293
-  evidence:
-  - reference_id: RHEA:24292
-    quote: N-acetylglutamate synthase catalyzes N-acetylglutamate synthase reaction.
-- id: edge-002
   subject: CHEBI:29985
   predicate: consumes
   object: RHEA:24293
   evidence:
   - reference_id: RHEA:24293
-    quote: RHEA:24293 L-glutamate + acetyl-CoA => N-acetyl-L-glutamate + CoA + H(+)
-- id: edge-003
+    source_assertion: Rhea lists CHEBI:29985 on the substrates side of RHEA:24293 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24293']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:57288
   predicate: consumes
   object: RHEA:24293
   evidence:
   - reference_id: RHEA:24293
-    quote: RHEA:24293 L-glutamate + acetyl-CoA => N-acetyl-L-glutamate + CoA + H(+)
+    source_assertion: Rhea lists CHEBI:57288 on the substrates side of RHEA:24293 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24293']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
+  subject: RHEA:24293
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:24293
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:24293 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24293']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-004
   subject: RHEA:24293
   predicate: produces
   object: CHEBI:44337
   evidence:
   - reference_id: RHEA:24293
-    quote: RHEA:24293 L-glutamate + acetyl-CoA => N-acetyl-L-glutamate + CoA + H(+)
+    source_assertion: Rhea lists CHEBI:44337 on the products side of RHEA:24293 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24293']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-005
   subject: RHEA:24293
   predicate: produces
   object: CHEBI:57287
   evidence:
   - reference_id: RHEA:24293
-    quote: RHEA:24293 L-glutamate + acetyl-CoA => N-acetyl-L-glutamate + CoA + H(+)
+    source_assertion: Rhea lists CHEBI:57287 on the products side of RHEA:24293 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24293']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-006
-  subject: RHEA:24293
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: RHEA:24293
-    quote: RHEA:24293 L-glutamate + acetyl-CoA => N-acetyl-L-glutamate + CoA + H(+)
-- id: edge-007
-  subject: RHEA:24293
-  predicate: precedes
-  object: RHEA:14630
-  evidence:
-  - reference_id: RHEA:24293
-    quote: RHEA:24293 L-glutamate + acetyl-CoA => N-acetyl-L-glutamate + CoA + H(+)
-  - reference_id: RHEA:14630
-    quote: RHEA:14630 N-acetyl-L-glutamate + ATP => N-acetyl-L-glutamyl 5-phosphate
-      + ADP
-  - reference_id: MetaCyc:GLUTORN-PWY
-    quote: ACETYLORNDEACET-RXN // ACETYLORNTRANSAM-RXN // N-ACETYLGLUTPREDUCT-RXN
-      // ACETYLGLUTKIN-RXN // N-ACETYLTRANSFER-RXN
-- id: edge-008
-  subject: EC:2.7.2.8
-  predicate: catalyzes
-  object: RHEA:14630
-  evidence:
-  - reference_id: RHEA:14629
-    quote: acetylglutamate kinase catalyzes N-acetylglutamate kinase reaction.
-- id: edge-009
-  subject: CHEBI:44337
-  predicate: consumes
-  object: RHEA:14630
-  evidence:
-  - reference_id: RHEA:14630
-    quote: RHEA:14630 N-acetyl-L-glutamate + ATP => N-acetyl-L-glutamyl 5-phosphate
-      + ADP
-- id: edge-010
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:14630
   evidence:
   - reference_id: RHEA:14630
-    quote: RHEA:14630 N-acetyl-L-glutamate + ATP => N-acetyl-L-glutamyl 5-phosphate
-      + ADP
-- id: edge-011
-  subject: RHEA:14630
-  predicate: produces
-  object: CHEBI:57936
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:14630 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14630']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: CHEBI:44337
+  predicate: consumes
+  object: RHEA:14630
   evidence:
   - reference_id: RHEA:14630
-    quote: RHEA:14630 N-acetyl-L-glutamate + ATP => N-acetyl-L-glutamyl 5-phosphate
-      + ADP
-- id: edge-012
+    source_assertion: Rhea lists CHEBI:44337 on the substrates side of RHEA:14630 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14630']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-008
   subject: RHEA:14630
   predicate: produces
   object: CHEBI:456216
   evidence:
   - reference_id: RHEA:14630
-    quote: RHEA:14630 N-acetyl-L-glutamate + ATP => N-acetyl-L-glutamyl 5-phosphate
-      + ADP
-- id: edge-013
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:14630 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14630']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
   subject: RHEA:14630
-  predicate: precedes
-  object: RHEA:21590
+  predicate: produces
+  object: CHEBI:57936
   evidence:
   - reference_id: RHEA:14630
-    quote: RHEA:14630 N-acetyl-L-glutamate + ATP => N-acetyl-L-glutamyl 5-phosphate
-      + ADP
-  - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-  - reference_id: MetaCyc:GLUTORN-PWY
-    quote: ACETYLORNDEACET-RXN // ACETYLORNTRANSAM-RXN // N-ACETYLGLUTPREDUCT-RXN
-      // ACETYLGLUTKIN-RXN // N-ACETYLTRANSFER-RXN
-- id: edge-014
-  subject: EC:1.2.1.38
-  predicate: catalyzes
-  object: RHEA:21590
-  evidence:
-  - reference_id: RHEA:21588
-    quote: N-acetyl-gamma-glutamyl-phosphate reductase catalyzes N-acetylglutamyl-phosphate
-      reductase reaction.
-- id: edge-015
-  subject: CHEBI:57936
-  predicate: consumes
-  object: RHEA:21590
-  evidence:
-  - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-- id: edge-016
-  subject: CHEBI:57783
-  predicate: consumes
-  object: RHEA:21590
-  evidence:
-  - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-- id: edge-017
+    source_assertion: Rhea lists CHEBI:57936 on the products side of RHEA:14630 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14630']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
   subject: CHEBI:15378
   predicate: consumes
   object: RHEA:21590
   evidence:
   - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-- id: edge-018
+    source_assertion: Rhea lists CHEBI:15378 on the substrates side of RHEA:21590 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21590']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-011
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:21590
+  evidence:
+  - reference_id: RHEA:21590
+    source_assertion: Rhea lists CHEBI:57783 on the substrates side of RHEA:21590 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21590']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
+  subject: CHEBI:57936
+  predicate: consumes
+  object: RHEA:21590
+  evidence:
+  - reference_id: RHEA:21590
+    source_assertion: Rhea lists CHEBI:57936 on the substrates side of RHEA:21590 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21590']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-013
   subject: RHEA:21590
   predicate: produces
   object: CHEBI:29123
   evidence:
   - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-- id: edge-019
+    source_assertion: Rhea lists CHEBI:29123 on the products side of RHEA:21590 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21590']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-014
   subject: RHEA:21590
   predicate: produces
   object: CHEBI:43474
   evidence:
   - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-- id: edge-020
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:21590 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21590']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-015
   subject: RHEA:21590
   predicate: produces
   object: CHEBI:58349
   evidence:
   - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-- id: edge-021
-  subject: RHEA:21590
-  predicate: precedes
-  object: RHEA:18051
-  evidence:
-  - reference_id: RHEA:21590
-    quote: RHEA:21590 N-acetyl-L-glutamyl 5-phosphate + NADPH + H(+) => N-acetyl-L-glutamate
-      5-semialdehyde + phosphate + NADP(+)
-  - reference_id: RHEA:18051
-    quote: RHEA:18051 N-acetyl-L-glutamate 5-semialdehyde + L-glutamate => N(2)-acetyl-L-ornithine
-      + 2-oxoglutarate
-  - reference_id: MetaCyc:GLUTORN-PWY
-    quote: ACETYLORNDEACET-RXN // ACETYLORNTRANSAM-RXN // N-ACETYLGLUTPREDUCT-RXN
-      // ACETYLGLUTKIN-RXN // N-ACETYLTRANSFER-RXN
-- id: edge-022
-  subject: EC:2.6.1.11
-  predicate: catalyzes
-  object: RHEA:18051
-  evidence:
-  - reference_id: RHEA:18049
-    quote: acetylornithine aminotransferase catalyzes acetylornithine aminotransferase
-      reaction.
-- id: edge-023
+    source_assertion: Rhea lists CHEBI:58349 on the products side of RHEA:21590 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21590']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-016
   subject: CHEBI:29123
   predicate: consumes
   object: RHEA:18051
   evidence:
   - reference_id: RHEA:18051
-    quote: RHEA:18051 N-acetyl-L-glutamate 5-semialdehyde + L-glutamate => N(2)-acetyl-L-ornithine
-      + 2-oxoglutarate
-- id: edge-024
+    source_assertion: Rhea lists CHEBI:29123 on the substrates side of RHEA:18051 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18051']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-017
   subject: CHEBI:29985
   predicate: consumes
   object: RHEA:18051
   evidence:
   - reference_id: RHEA:18051
-    quote: RHEA:18051 N-acetyl-L-glutamate 5-semialdehyde + L-glutamate => N(2)-acetyl-L-ornithine
-      + 2-oxoglutarate
-- id: edge-025
-  subject: RHEA:18051
-  predicate: produces
-  object: CHEBI:57805
-  evidence:
-  - reference_id: RHEA:18051
-    quote: RHEA:18051 N-acetyl-L-glutamate 5-semialdehyde + L-glutamate => N(2)-acetyl-L-ornithine
-      + 2-oxoglutarate
-- id: edge-026
+    source_assertion: Rhea lists CHEBI:29985 on the substrates side of RHEA:18051 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18051']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-018
   subject: RHEA:18051
   predicate: produces
   object: CHEBI:16810
   evidence:
   - reference_id: RHEA:18051
-    quote: RHEA:18051 N-acetyl-L-glutamate 5-semialdehyde + L-glutamate => N(2)-acetyl-L-ornithine
-      + 2-oxoglutarate
-- id: edge-027
+    source_assertion: Rhea lists CHEBI:16810 on the products side of RHEA:18051 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18051']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-019
   subject: RHEA:18051
-  predicate: precedes
-  object: RHEA:15942
+  predicate: produces
+  object: CHEBI:57805
   evidence:
   - reference_id: RHEA:18051
-    quote: RHEA:18051 N-acetyl-L-glutamate 5-semialdehyde + L-glutamate => N(2)-acetyl-L-ornithine
-      + 2-oxoglutarate
+    source_assertion: Rhea lists CHEBI:57805 on the products side of RHEA:18051 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18051']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-020
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:15942
+  evidence:
   - reference_id: RHEA:15942
-    quote: RHEA:15942 N(2)-acetyl-L-ornithine + H2O => L-ornithine + acetate
-  - reference_id: MetaCyc:GLUTORN-PWY
-    quote: ACETYLORNDEACET-RXN // ACETYLORNTRANSAM-RXN // N-ACETYLGLUTPREDUCT-RXN
-      // ACETYLGLUTKIN-RXN // N-ACETYLTRANSFER-RXN
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:15942 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15942']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-021
+  subject: CHEBI:57805
+  predicate: consumes
+  object: RHEA:15942
+  evidence:
+  - reference_id: RHEA:15942
+    source_assertion: Rhea lists CHEBI:57805 on the substrates side of RHEA:15942 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15942']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-022
+  subject: RHEA:15942
+  predicate: produces
+  object: CHEBI:30089
+  evidence:
+  - reference_id: RHEA:15942
+    source_assertion: Rhea lists CHEBI:30089 on the products side of RHEA:15942 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15942']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-023
+  subject: RHEA:15942
+  predicate: produces
+  object: CHEBI:46911
+  evidence:
+  - reference_id: RHEA:15942
+    source_assertion: Rhea lists CHEBI:46911 on the products side of RHEA:15942 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15942']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-024
+  subject: EC:2.3.1.1
+  predicate: catalyzes
+  object: RHEA:24293
+  evidence:
+  - reference_id: RHEA:24292
+    source_assertion: Rhea associates EC:2.3.1.1 with the reaction family containing RHEA:24293.
+    source_locator: rh:ec
+- id: edge-025
+  subject: EC:2.7.2.8
+  predicate: catalyzes
+  object: RHEA:14630
+  evidence:
+  - reference_id: RHEA:14629
+    source_assertion: Rhea associates EC:2.7.2.8 with the reaction family containing RHEA:14630.
+    source_locator: rh:ec
+- id: edge-026
+  subject: EC:1.2.1.38
+  predicate: catalyzes
+  object: RHEA:21590
+  evidence:
+  - reference_id: RHEA:21588
+    source_assertion: Rhea associates EC:1.2.1.38 with the reaction family containing RHEA:21590.
+    source_locator: rh:ec
+- id: edge-027
+  subject: EC:2.6.1.11
+  predicate: catalyzes
+  object: RHEA:18051
+  evidence:
+  - reference_id: RHEA:18049
+    source_assertion: Rhea associates EC:2.6.1.11 with the reaction family containing RHEA:18051.
+    source_locator: rh:ec
 - id: edge-028
   subject: EC:3.5.1.16
   predicate: catalyzes
   object: RHEA:15942
   evidence:
   - reference_id: RHEA:15941
-    quote: acetylornithine deacetylase catalyzes acetylornithine deacetylase reaction.
+    source_assertion: Rhea associates EC:3.5.1.16 with the reaction family containing RHEA:15942.
+    source_locator: rh:ec
 - id: edge-029
-  subject: CHEBI:57805
-  predicate: consumes
-  object: RHEA:15942
+  subject: RHEA:14630
+  predicate: precedes
+  object: RHEA:21590
   evidence:
-  - reference_id: RHEA:15942
-    quote: RHEA:15942 N(2)-acetyl-L-ornithine + H2O => L-ornithine + acetate
+  - reference_id: MetaCyc:GLUTORN-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:14630 before RHEA:21590 in this pathway. Shared
+      intermediate: CHEBI:57936.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-030
-  subject: CHEBI:15377
-  predicate: consumes
+  subject: RHEA:18051
+  predicate: precedes
   object: RHEA:15942
   evidence:
-  - reference_id: RHEA:15942
-    quote: RHEA:15942 N(2)-acetyl-L-ornithine + H2O => L-ornithine + acetate
+  - reference_id: MetaCyc:GLUTORN-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:18051 before RHEA:15942 in this pathway. Shared
+      intermediate: CHEBI:57805.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-031
-  subject: RHEA:15942
-  predicate: produces
-  object: CHEBI:46911
+  subject: RHEA:21590
+  predicate: precedes
+  object: RHEA:18051
   evidence:
-  - reference_id: RHEA:15942
-    quote: RHEA:15942 N(2)-acetyl-L-ornithine + H2O => L-ornithine + acetate
+  - reference_id: MetaCyc:GLUTORN-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:21590 before RHEA:18051 in this pathway. Shared
+      intermediate: CHEBI:29123.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-032
-  subject: RHEA:15942
-  predicate: produces
-  object: CHEBI:30089
+  subject: RHEA:24293
+  predicate: precedes
+  object: RHEA:14630
   evidence:
-  - reference_id: RHEA:15942
-    quote: RHEA:15942 N(2)-acetyl-L-ornithine + H2O => L-ornithine + acetate
+  - reference_id: MetaCyc:GLUTORN-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:24293 before RHEA:14630 in this pathway. Shared
+      intermediate: CHEBI:44337.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-033
+  subject: UniProtKB:P0A6C5
+  predicate: enables
+  object: RHEA:24293
+  evidence:
+  - reference_id: UniProtKB:P0A6C5
+    source_assertion: 'UniProt annotates UniProtKB:P0A6C5 with catalytic activity for the reaction family
+      of RHEA:24293. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-034
+  subject: CHEBI:32682
+  predicate: inhibits
+  object: UniProtKB:P0A6C5
+  evidence:
+  - reference_id: UniProtKB:P0A6C5
+    source_assertion: 'UniProt activity-regulation annotation: Feedback inhibition by L-arginine'
+    source_locator: comments[commentType='ACTIVITY REGULATION'].texts
+- id: edge-035
+  subject: UniProtKB:P0A6C5
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P0A6C5
+    source_assertion: 'UniProt locates UniProtKB:P0A6C5 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-036
+  subject: UniProtKB:P0A6C8
+  predicate: enables
+  object: RHEA:14630
+  evidence:
+  - reference_id: UniProtKB:P0A6C8
+    source_assertion: 'UniProt annotates UniProtKB:P0A6C8 with catalytic activity for the reaction family
+      of RHEA:14630. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-037
+  subject: UniProtKB:P0A6C8
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P0A6C8
+    source_assertion: 'UniProt locates UniProtKB:P0A6C8 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-038
+  subject: UniProtKB:P11446
+  predicate: enables
+  object: RHEA:21590
+  evidence:
+  - reference_id: UniProtKB:P11446
+    source_assertion: 'UniProt annotates UniProtKB:P11446 with catalytic activity for the reaction family
+      of RHEA:21590. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-039
+  subject: UniProtKB:P11446
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P11446
+    source_assertion: 'UniProt locates UniProtKB:P11446 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-040
+  subject: UniProtKB:P18335
+  predicate: enables
+  object: RHEA:18051
+  evidence:
+  - reference_id: UniProtKB:P18335
+    source_assertion: 'UniProt annotates UniProtKB:P18335 with catalytic activity for the reaction family
+      of RHEA:18051. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-041
+  subject: UniProtKB:P18335
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P18335
+    source_assertion: 'UniProt locates UniProtKB:P18335 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255, ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-042
+  subject: UniProtKB:P18335
+  predicate: has_cofactor
+  object: CHEBI:597326
+  evidence:
+  - reference_id: UniProtKB:P18335
+    source_assertion: 'UniProt lists CHEBI:597326 as a cofactor of UniProtKB:P18335 (evidence: ECO:0000255,
+      ECO:0000305). Binds 1 pyridoxal phosphate per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-043
+  subject: UniProtKB:P23908
+  predicate: enables
+  object: RHEA:15942
+  evidence:
+  - reference_id: UniProtKB:P23908
+    source_assertion: 'UniProt annotates UniProtKB:P23908 with catalytic activity for the reaction family
+      of RHEA:15942. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-044
+  subject: UniProtKB:P23908
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P23908
+    source_assertion: 'UniProt locates UniProtKB:P23908 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255, ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-045
+  subject: UniProtKB:P23908
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P23908
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P23908 (evidence: ECO:0000255,
+      ECO:0000269). Binds 2 Zn(2+) or Co(2+) ions per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-046
+  subject: UniProtKB:P23908
+  predicate: has_cofactor
+  object: CHEBI:48828
+  evidence:
+  - reference_id: UniProtKB:P23908
+    source_assertion: 'UniProt lists CHEBI:48828 as a cofactor of UniProtKB:P23908 (evidence: ECO:0000255,
+      ECO:0000269). Binds 2 Zn(2+) or Co(2+) ions per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-047
+  subject: UniProtKB:P23908
+  predicate: has_cofactor
+  object: CHEBI:57925
+  evidence:
+  - reference_id: UniProtKB:P23908
+    source_assertion: 'UniProt lists CHEBI:57925 as a cofactor of UniProtKB:P23908 (evidence: ECO:0000255). '
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
 references:
 - id: MetaCyc:GLUTORN-PWY
   title: MetaCyc L-ornithine biosynthesis I pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:GLUTORN-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 717cb07e72c85572038477c4130f22fa16d964161fc7e82dc069eb9c4a057de2
 - id: RHEA:24292
   title: Rhea N-acetylglutamate synthase reaction
+  url: https://www.rhea-db.org/rhea/24292
+  source_version: '139'
 - id: RHEA:24293
   title: Rhea N-acetyl-L-glutamate-forming direction
+  url: https://www.rhea-db.org/rhea/24293
+  source_version: '139'
 - id: RHEA:14629
   title: Rhea N-acetylglutamate kinase reaction
+  url: https://www.rhea-db.org/rhea/14629
+  source_version: '139'
 - id: RHEA:14630
   title: Rhea N-acetylglutamyl 5-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/14630
+  source_version: '139'
 - id: RHEA:21588
   title: Rhea N-acetylglutamyl-phosphate reductase reaction
+  url: https://www.rhea-db.org/rhea/21588
+  source_version: '139'
 - id: RHEA:21590
   title: Rhea N-acetylglutamate 5-semialdehyde-forming direction
+  url: https://www.rhea-db.org/rhea/21590
+  source_version: '139'
 - id: RHEA:18049
   title: Rhea acetylornithine aminotransferase reaction
+  url: https://www.rhea-db.org/rhea/18049
+  source_version: '139'
 - id: RHEA:18051
   title: Rhea N(2)-acetyl-L-ornithine-forming direction
+  url: https://www.rhea-db.org/rhea/18051
+  source_version: '139'
 - id: RHEA:15941
   title: Rhea acetylornithine deacetylase reaction
+  url: https://www.rhea-db.org/rhea/15941
+  source_version: '139'
 - id: RHEA:15942
   title: Rhea L-ornithine-forming direction
+  url: https://www.rhea-db.org/rhea/15942
+  source_version: '139'
+- id: UniProtKB:P0A6C5
+  title: UniProtKB:P0A6C5 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0A6C5.json
+  source_version: '2026_03'
+- id: UniProtKB:P0A6C8
+  title: UniProtKB:P0A6C8 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0A6C8.json
+  source_version: '2026_03'
+- id: UniProtKB:P11446
+  title: UniProtKB:P11446 authority record
+  url: https://rest.uniprot.org/uniprotkb/P11446.json
+  source_version: '2026_03'
+- id: UniProtKB:P18335
+  title: UniProtKB:P18335 authority record
+  url: https://rest.uniprot.org/uniprotkb/P18335.json
+  source_version: '2026_03'
+- id: UniProtKB:P23908
+  title: UniProtKB:P23908 authority record
+  url: https://rest.uniprot.org/uniprotkb/P23908.json
+  source_version: '2026_03'

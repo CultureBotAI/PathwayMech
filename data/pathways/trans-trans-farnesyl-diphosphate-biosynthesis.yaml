@@ -1,9 +1,9 @@
 id: gomodel:YeastPathways_PWY-5123
 label: trans, trans-farnesyl diphosphate biosynthesis
-description: trans, trans-farnesyl diphosphate biosynthesis in Saccharomyces cerevisiae
-  S288C isomerizes isopentenyl diphosphate to dimethylallyl diphosphate, condenses
-  dimethylallyl diphosphate with isopentenyl diphosphate to geranyl diphosphate, and
-  condenses geranyl diphosphate with isopentenyl diphosphate to (2E,6E)-farnesyl diphosphate.
+description: trans, trans-farnesyl diphosphate biosynthesis in Saccharomyces cerevisiae S288C
+  isomerizes isopentenyl diphosphate to dimethylallyl diphosphate, condenses dimethylallyl
+  diphosphate with isopentenyl diphosphate to geranyl diphosphate, and condenses geranyl diphosphate
+  with isopentenyl diphosphate to (2E,6E)-farnesyl diphosphate.
 pathway_type: lipid-biosynthesis
 taxa:
 - id: NCBITaxon:559292
@@ -11,27 +11,48 @@ taxa:
 participants:
 - id: SGD:S000003703
   label: ERG20 Scer
+  category: protein
 - id: CHEBI:57623
   label: prenyl diphosphate(3-)
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
 - id: CHEBI:58057
   label: geranyl diphosphate(3-)
+  category: small_molecule
+- id: GO:0045337
+  label: trans, trans-farnesyl diphosphate biosynthetic process
+  category: biological_process
 - id: SGD:S000006038
   label: IDI1 Scer
+  category: protein
 - id: CHEBI:128769
   label: isopentenyl diphosphate(3-)
+  category: small_molecule
 - id: CHEBI:29888
   label: diphosphoric acid
+  category: small_molecule
 - id: CHEBI:175763
   label: 2-trans,6-trans-farnesyl diphosphate(3-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
-- id: gomodel:GPPSYN-RXN
-  label: dimethylallyl diphosphate + isopentenyl diphosphate -> geranyl diphosphate
-    + diphosphate
 - id: gomodel:FPPSYN-RXN
-  label: geranyl diphosphate + isopentenyl diphosphate -> (2<i>E</i>,6<i>E</i>)-farnesyl
-    diphosphate + diphosphate
+  label: geranyl diphosphate + isopentenyl diphosphate -> (2<i>E</i>,6<i>E</i>)-farnesyl diphosphate
+    + diphosphate
+  category: molecular_activity
+- id: gomodel:GPPSYN-RXN
+  label: dimethylallyl diphosphate + isopentenyl diphosphate -> geranyl diphosphate + diphosphate
+  category: molecular_activity
 - id: gomodel:IPPISOM-RXN
   label: isopentenyl diphosphate <=> dimethylallyl diphosphate
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: SGD:S000003703
@@ -39,131 +60,259 @@ mechanistic_edges:
   object: gomodel:GPPSYN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL167W-MONOMER_GPPSYN-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:YJL167W-MONOMER_GPPSYN-RXN_controller","type":[{"type":"class","id":"SGD:S000003703"'
+    source_assertion: The model asserts gomodel:GPPSYN-RXN RO:0002333 gomodel:YJL167W-MONOMER_GPPSYN-RXN_controller.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/0; endpoint types: /individuals/9/type;
+      /individuals/12/type'
 - id: edge-002
-  subject: CHEBI:57623
-  predicate: consumes
-  object: gomodel:GPPSYN-RXN
+  subject: gomodel:GPPSYN-RXN
+  predicate: has_input
+  object: CHEBI:57623
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57623_IPPISOM-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_57623_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:57623"'
+    source_assertion: The model asserts gomodel:GPPSYN-RXN RO:0002233 gomodel:CHEBI_57623_IPPISOM-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/1; endpoint types: /individuals/9/type;
+      /individuals/6/type'
 - id: edge-003
   subject: SGD:S000003703
   predicate: enables
   object: gomodel:FPPSYN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL167W-MONOMER_FPPSYN-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:YJL167W-MONOMER_FPPSYN-RXN_controller","type":[{"type":"class","id":"SGD:S000003703"'
+    source_assertion: The model asserts gomodel:FPPSYN-RXN RO:0002333 gomodel:YJL167W-MONOMER_FPPSYN-RXN_controller.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/2; endpoint types: /individuals/8/type;
+      /individuals/11/type'
 - id: edge-004
-  subject: CHEBI:58057
-  predicate: consumes
-  object: gomodel:FPPSYN-RXN
+  subject: gomodel:FPPSYN-RXN
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58057_GPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_58057_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:58057"'
+    source_assertion: The model asserts gomodel:FPPSYN-RXN BFO:0000066 gomodel:reaction_FPPSYN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/3; endpoint types: /individuals/8/type;
+      /individuals/30/type'
 - id: edge-005
+  subject: gomodel:FPPSYN-RXN
+  predicate: has_input
+  object: CHEBI:58057
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:FPPSYN-RXN RO:0002233 gomodel:CHEBI_58057_GPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/4; endpoint types: /individuals/8/type;
+      /individuals/7/type'
+- id: edge-006
+  subject: gomodel:FPPSYN-RXN
+  predicate: part_of
+  object: GO:0045337
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:FPPSYN-RXN BFO:0000050 gomodel:YeastPathways_PWY-5123/YeastPathways_PWY-5123.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/5; endpoint types: /individuals/8/type;
+      /individuals/33/type'
+- id: edge-007
+  subject: gomodel:IPPISOM-RXN
+  predicate: part_of
+  object: GO:0045337
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:IPPISOM-RXN BFO:0000050 gomodel:YeastPathways_PWY-5123/YeastPathways_PWY-5123.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/6; endpoint types: /individuals/10/type;
+      /individuals/33/type'
+- id: edge-008
   subject: SGD:S000006038
   predicate: enables
   object: gomodel:IPPISOM-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller","type":[{"type":"class","id":"SGD:S000006038"'
-- id: edge-006
-  subject: CHEBI:128769
-  predicate: consumes
-  object: gomodel:FPPSYN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_FPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_128769_FPPSYN-RXN","type":[{"type":"class","id":"CHEBI:128769"'
-- id: edge-007
-  subject: gomodel:IPPISOM-RXN
-  predicate: precedes
-  object: gomodel:GPPSYN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:GPPSYN-RXN"'
-- id: edge-008
-  subject: CHEBI:128769
-  predicate: consumes
-  object: gomodel:GPPSYN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_GPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_128769_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:128769"'
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002333 gomodel:YPL117C-MONOMER_IPPISOM-RXN_controller.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/7; endpoint types: /individuals/10/type;
+      /individuals/13/type'
 - id: edge-009
+  subject: gomodel:FPPSYN-RXN
+  predicate: has_input
+  object: CHEBI:128769
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:FPPSYN-RXN RO:0002233 gomodel:CHEBI_128769_FPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/8; endpoint types: /individuals/8/type;
+      /individuals/0/type'
+- id: edge-010
+  subject: gomodel:IPPISOM-RXN
+  predicate: provides_input_for
+  object: gomodel:GPPSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002413 gomodel:GPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/9; endpoint types: /individuals/10/type;
+      /individuals/9/type'
+- id: edge-011
   subject: gomodel:GPPSYN-RXN
-  predicate: produces
+  predicate: has_input
+  object: CHEBI:128769
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:GPPSYN-RXN RO:0002233 gomodel:CHEBI_128769_GPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/10; endpoint types: /individuals/9/type;
+      /individuals/1/type'
+- id: edge-012
+  subject: gomodel:GPPSYN-RXN
+  predicate: has_output
   object: CHEBI:29888
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_GPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_29888_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:GPPSYN-RXN RO:0002234 gomodel:CHEBI_29888_GPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/11; endpoint types: /individuals/9/type;
+      /individuals/5/type'
+- id: edge-013
   subject: gomodel:GPPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58057
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58057_GPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_58057_GPPSYN-RXN","type":[{"type":"class","id":"CHEBI:58057"'
-- id: edge-011
-  subject: CHEBI:128769
-  predicate: consumes
-  object: gomodel:IPPISOM-RXN
+    source_assertion: The model asserts gomodel:GPPSYN-RXN RO:0002234 gomodel:CHEBI_58057_GPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/12; endpoint types: /individuals/9/type;
+      /individuals/7/type'
+- id: edge-014
+  subject: gomodel:IPPISOM-RXN
+  predicate: has_input
+  object: CHEBI:128769
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_128769_IPPISOM-RXN"'
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002233 gomodel:CHEBI_128769_IPPISOM-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/13; endpoint types: /individuals/10/type;
+      /individuals/2/type'
+- id: edge-015
+  subject: gomodel:GPPSYN-RXN
+  predicate: part_of
+  object: GO:0045337
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_128769_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:128769"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:GPPSYN-RXN BFO:0000050 gomodel:YeastPathways_PWY-5123/YeastPathways_PWY-5123.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/14; endpoint types: /individuals/9/type;
+      /individuals/33/type'
+- id: edge-016
   subject: gomodel:FPPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:29888
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_FPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_29888_FPPSYN-RXN","type":[{"type":"class","id":"CHEBI:29888"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:FPPSYN-RXN RO:0002234 gomodel:CHEBI_29888_FPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/15; endpoint types: /individuals/8/type;
+      /individuals/4/type'
+- id: edge-017
   subject: gomodel:IPPISOM-RXN
-  predicate: produces
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:IPPISOM-RXN BFO:0000066 gomodel:reaction_IPPISOM-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/16; endpoint types: /individuals/10/type;
+      /individuals/32/type'
+- id: edge-018
+  subject: gomodel:IPPISOM-RXN
+  predicate: has_output
   object: CHEBI:57623
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:IPPISOM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57623_IPPISOM-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_57623_IPPISOM-RXN","type":[{"type":"class","id":"CHEBI:57623"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:IPPISOM-RXN RO:0002234 gomodel:CHEBI_57623_IPPISOM-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/17; endpoint types: /individuals/10/type;
+      /individuals/6/type'
+- id: edge-019
   subject: gomodel:GPPSYN-RXN
-  predicate: precedes
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5123
+    source_assertion: The model asserts gomodel:GPPSYN-RXN BFO:0000066 gomodel:reaction_GPPSYN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/18; endpoint types: /individuals/9/type;
+      /individuals/31/type'
+- id: edge-020
+  subject: gomodel:GPPSYN-RXN
+  predicate: provides_input_for
   object: gomodel:FPPSYN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:GPPSYN-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:FPPSYN-RXN"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:GPPSYN-RXN RO:0002413 gomodel:FPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/19; endpoint types: /individuals/9/type;
+      /individuals/8/type'
+- id: edge-021
   subject: gomodel:FPPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:175763
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"subject":"gomodel:FPPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_175763_FPPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5123
-    quote: '"id":"gomodel:CHEBI_175763_FPPSYN-RXN","type":[{"type":"class","id":"CHEBI:175763"'
+    source_assertion: The model asserts gomodel:FPPSYN-RXN RO:0002234 gomodel:CHEBI_175763_FPPSYN-RXN.
+    source_locator: './YeastPathways_PWY-5123.json#/facts/20; endpoint types: /individuals/8/type;
+      /individuals/3/type'
+- id: location-ef91d336c5e1
+  subject: SGD:S000006038
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000305
+  evidence:
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/417/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 has the exact SGD cross-reference SGD:S000006038.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/417/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-73954f3c0fc0
+  subject: SGD:S000003703
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:Q12051) Binds 2 Mg(2+) ions per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:Q12051)'
+  evidence:
+  - reference_id: UniProtKB:P08524
+    source_assertion: UniProtKB:P08524 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/209/comments/0/cofactors/0;
+      /results/209/comments/0/note'
+  - reference_id: UniProtKB:P08524
+    source_assertion: UniProtKB:P08524 has the exact SGD cross-reference SGD:S000003703.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/209/uniProtKBCrossReferences/0'
+- id: cofactor-7a2ce58769da
+  subject: SGD:S000006038
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:Q46822) Binds 1 Mg(2+) ion per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:Q46822)'
+  evidence:
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/417/comments/0/cofactors/0;
+      /results/417/comments/0/note'
+  - reference_id: UniProtKB:P15496
+    source_assertion: UniProtKB:P15496 has the exact SGD cross-reference SGD:S000006038.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/417/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-5123
   title: SGD GO-CAM trans, trans-farnesyl diphosphate biosynthesis pathway PWY-5123
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-08-03; member ./YeastPathways_PWY-5123.json
+- id: UniProtKB:P15496
+  title: Reviewed UniProtKB P15496 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P08524
+  title: UniProtKB P08524 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

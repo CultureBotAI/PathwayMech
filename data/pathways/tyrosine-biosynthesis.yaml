@@ -1,8 +1,8 @@
 id: gomodel:YeastPathways_PWY3O-4120
 label: tyrosine biosynthesis
-description: Tyrosine biosynthesis in Saccharomyces cerevisiae S288C uses chorismate
-  mutase, prephenate dehydrogenase, and aromatic-amino-acid transaminase activities
-  to convert chorismate through prephenate and 3-(4-hydroxyphenyl)pyruvate to L-tyrosine.
+description: Tyrosine biosynthesis in Saccharomyces cerevisiae S288C uses chorismate mutase,
+  prephenate dehydrogenase, and aromatic-amino-acid transaminase activities to convert chorismate
+  through prephenate and 3-(4-hydroxyphenyl)pyruvate to L-tyrosine.
 pathway_type: amino-acid-biosynthesis
 taxa:
 - id: NCBITaxon:559292
@@ -10,216 +10,427 @@ taxa:
 participants:
 - id: CHEBI:29934
   label: (1s,4s)-prephenate(2-)
+  category: small_molecule
 - id: CHEBI:36242
   label: 3-(4-hydroxyphenyl)pyruvate
+  category: small_molecule
 - id: CHEBI:16810
   label: 2-oxoglutarate(2-)
+  category: small_molecule
+- id: GO:0006571
+  label: L-tyrosine biosynthetic process
+  category: biological_process
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
 - id: CHEBI:58349
   label: NADP(3-)
+  category: small_molecule
 - id: CHEBI:29748
   label: chorismate(2-)
+  category: small_molecule
 - id: CHEBI:16526
   label: carbon dioxide
+  category: small_molecule
 - id: SGD:S000006264
   label: ARO7 Scer
+  category: protein
 - id: CHEBI:58315
   label: L-tyrosine zwitterion
+  category: small_molecule
 - id: CHEBI:57783
   label: NADPH(4-)
+  category: small_molecule
 - id: CHEBI:29985
   label: L-glutamate(1-)
+  category: small_molecule
 - id: SGD:S000001179
   label: ARO9 Scer
+  category: protein
 - id: CHEBI:15361
   label: pyruvate
+  category: small_molecule
 - id: SGD:S000000370
   label: TYR1 Scer
+  category: protein
 - id: CHEBI:57972
   label: L-alanine zwitterion
+  category: small_molecule
 - id: SGD:S000003170
   label: ARO8 Scer
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
 - id: gomodel:CHORISMATEMUT-RXN
   label: chorismate <=> prephenate
-- id: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
-  label: L-tyrosine + 2-oxoglutarate <=> 3-(4-hydroxyphenyl)pyruvate + L-glutamate
+  category: molecular_activity
 - id: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
-  label: prephenate + NADP<sup>+</sup> -> CO<SUB>2</SUB> + 3-(4-hydroxyphenyl)pyruvate
-    + NADPH
+  label: prephenate + NADP<sup>+</sup> -> CO<SUB>2</SUB> + 3-(4-hydroxyphenyl)pyruvate + NADPH
+  category: molecular_activity
 - id: gomodel:RXN3O-4157
   label: L-tyrosine + pyruvate <=> 3-(4-hydroxyphenyl)pyruvate + L-alanine
+  category: molecular_activity
+- id: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
+  label: L-tyrosine + 2-oxoglutarate <=> 3-(4-hydroxyphenyl)pyruvate + L-glutamate
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:CHORISMATEMUT-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:29934
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:CHORISMATEMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN","type":[{"type":"class","id":"CHEBI:29934"'
+    source_assertion: The model asserts gomodel:CHORISMATEMUT-RXN RO:0002234 gomodel:CHEBI_29934_CHORISMATEMUT-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/0; endpoint types: /individuals/6/type;
+      /individuals/2/type'
 - id: edge-002
-  subject: CHEBI:36242
-  predicate: consumes
-  object: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:TYROSINE-AMINOTRANSFERASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:36242"'
-- id: edge-003
   subject: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
-  predicate: produces
-  object: CHEBI:16810
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:TYROSINE-AMINOTRANSFERASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-4120/6690711d00000271"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4120/6690711d00000271","type":[{"type":"class","id":"CHEBI:16810"'
-- id: edge-004
-  subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
-  predicate: produces
+  predicate: has_input
   object: CHEBI:36242
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN"'
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN RO:0002233 gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/1; endpoint types: /individuals/8/type;
+      /individuals/3/type'
+- id: edge-003
+  subject: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
+  predicate: has_output
+  object: CHEBI:16810
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:36242"'
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN RO:0002234 gomodel:YeastPathways_PWY3O-4120/6690711d00000271.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/2; endpoint types: /individuals/8/type;
+      /individuals/33/type'
+- id: edge-004
+  subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+  predicate: has_output
+  object: CHEBI:36242
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN RO:0002234
+      gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/3; endpoint types: /individuals/28/type;
+      /individuals/3/type'
 - id: edge-005
-  subject: CHEBI:58349
-  predicate: consumes
-  object: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+  subject: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
+  predicate: part_of
+  object: GO:0006571
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58349_PREPHENATE-DEHYDROGENASE-NADP+-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_58349_PREPHENATE-DEHYDROGENASE-NADP+-RXN","type":[{"type":"class","id":"CHEBI:58349"'
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN BFO:0000050
+      gomodel:YeastPathways_PWY3O-4120/YeastPathways_PWY3O-4120.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/4; endpoint types: /individuals/8/type;
+      /individuals/30/type'
 - id: edge-006
-  subject: CHEBI:29748
-  predicate: consumes
-  object: gomodel:CHORISMATEMUT-RXN
+  subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:CHORISMATEMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_29748_CHORISMATEMUT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_29748_CHORISMATEMUT-RXN","type":[{"type":"class","id":"CHEBI:29748"'
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN BFO:0000066
+      gomodel:reaction_PREPHENATE-DEHYDROGENASE-NADP+-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/5; endpoint types: /individuals/28/type;
+      /individuals/50/type'
 - id: edge-007
   subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
-  predicate: produces
+  predicate: has_input
+  object: CHEBI:58349
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN RO:0002233
+      gomodel:CHEBI_58349_PREPHENATE-DEHYDROGENASE-NADP+-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/6; endpoint types: /individuals/28/type;
+      /individuals/27/type'
+- id: edge-008
+  subject: gomodel:CHORISMATEMUT-RXN
+  predicate: has_input
+  object: CHEBI:29748
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:CHORISMATEMUT-RXN RO:0002233 gomodel:CHEBI_29748_CHORISMATEMUT-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/7; endpoint types: /individuals/6/type;
+      /individuals/1/type'
+- id: edge-009
+  subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+  predicate: has_output
   object: CHEBI:16526
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_PREPHENATE-DEHYDROGENASE-NADP+-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_16526_PREPHENATE-DEHYDROGENASE-NADP+-RXN","type":[{"type":"class","id":"CHEBI:16526"'
-- id: edge-008
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN RO:0002234
+      gomodel:CHEBI_16526_PREPHENATE-DEHYDROGENASE-NADP+-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/8; endpoint types: /individuals/28/type;
+      /individuals/25/type'
+- id: edge-010
   subject: SGD:S000006264
   predicate: enables
   object: gomodel:CHORISMATEMUT-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:CHORISMATEMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YPR060C-MONOMER_CHORISMATEMUT-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:YPR060C-MONOMER_CHORISMATEMUT-RXN_controller","type":[{"type":"class","id":"SGD:S000006264"'
-- id: edge-009
-  subject: CHEBI:29934
-  predicate: consumes
-  object: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+    source_assertion: The model asserts gomodel:CHORISMATEMUT-RXN RO:0002333 gomodel:YPR060C-MONOMER_CHORISMATEMUT-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/9; endpoint types: /individuals/6/type;
+      /individuals/10/type'
+- id: edge-011
+  subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+  predicate: has_input
+  object: CHEBI:29934
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_29934_CHORISMATEMUT-RXN","type":[{"type":"class","id":"CHEBI:29934"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN RO:0002233
+      gomodel:CHEBI_29934_CHORISMATEMUT-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/10; endpoint types: /individuals/28/type;
+      /individuals/2/type'
+- id: edge-012
   subject: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58315
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:TYROSINE-AMINOTRANSFERASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58315_RXN3O-4157"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_58315_RXN3O-4157","type":[{"type":"class","id":"CHEBI:58315"'
-- id: edge-011
-  subject: CHEBI:36242
-  predicate: consumes
-  object: gomodel:RXN3O-4157
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN RO:0002234 gomodel:CHEBI_58315_RXN3O-4157.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/11; endpoint types: /individuals/8/type;
+      /individuals/5/type'
+- id: edge-013
+  subject: gomodel:RXN3O-4157
+  predicate: has_input
+  object: CHEBI:36242
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:RXN3O-4157","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN","type":[{"type":"class","id":"CHEBI:36242"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:RXN3O-4157 RO:0002233 gomodel:CHEBI_36242_TYROSINE-AMINOTRANSFERASE-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/12; endpoint types: /individuals/7/type;
+      /individuals/3/type'
+- id: edge-014
   subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57783
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57783_PREPHENATE-DEHYDROGENASE-NADP+-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_57783_PREPHENATE-DEHYDROGENASE-NADP+-RXN","type":[{"type":"class","id":"CHEBI:57783"'
-- id: edge-013
-  subject: CHEBI:29985
-  predicate: consumes
-  object: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN RO:0002234
+      gomodel:CHEBI_57783_PREPHENATE-DEHYDROGENASE-NADP+-RXN.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/13; endpoint types: /individuals/28/type;
+      /individuals/26/type'
+- id: edge-015
+  subject: gomodel:RXN3O-4157
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:TYROSINE-AMINOTRANSFERASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-4120/6690711d00000270"'
+    source_assertion: The model asserts gomodel:RXN3O-4157 BFO:0000066 gomodel:reaction_RXN3O-4157_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/14; endpoint types: /individuals/7/type;
+      /individuals/23/type'
+- id: edge-016
+  subject: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
+  predicate: has_input
+  object: CHEBI:29985
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4120/6690711d00000270","type":[{"type":"class","id":"CHEBI:29985"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN RO:0002233 gomodel:YeastPathways_PWY3O-4120/6690711d00000270.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/15; endpoint types: /individuals/8/type;
+      /individuals/32/type'
+- id: edge-017
   subject: SGD:S000001179
   predicate: enables
   object: gomodel:RXN3O-4157
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:RXN3O-4157","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR137W-MONOMER_RXN3O-4157_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:YHR137W-MONOMER_RXN3O-4157_controller","type":[{"type":"class","id":"SGD:S000001179"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:RXN3O-4157 RO:0002333 gomodel:YHR137W-MONOMER_RXN3O-4157_controller.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/16; endpoint types: /individuals/7/type;
+      /individuals/9/type'
+- id: edge-018
   subject: gomodel:RXN3O-4157
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15361
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:RXN3O-4157","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15361_RXN3O-4157"'
+    source_assertion: The model asserts gomodel:RXN3O-4157 RO:0002234 gomodel:CHEBI_15361_RXN3O-4157.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/17; endpoint types: /individuals/7/type;
+      /individuals/0/type'
+- id: edge-019
+  subject: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_15361_RXN3O-4157","type":[{"type":"class","id":"CHEBI:15361"'
-- id: edge-016
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN BFO:0000066
+      gomodel:reaction_TYROSINE-AMINOTRANSFERASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/18; endpoint types: /individuals/8/type;
+      /individuals/24/type'
+- id: edge-020
   subject: SGD:S000000370
   predicate: enables
   object: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR166C-MONOMER_PREPHENATE-DEHYDROGENASE-NADP+-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:YBR166C-MONOMER_PREPHENATE-DEHYDROGENASE-NADP+-RXN_controller","type":[{"type":"class","id":"SGD:S000000370"'
-- id: edge-017
-  subject: CHEBI:57972
-  predicate: consumes
-  object: gomodel:RXN3O-4157
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN RO:0002333
+      gomodel:YBR166C-MONOMER_PREPHENATE-DEHYDROGENASE-NADP+-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/19; endpoint types: /individuals/28/type;
+      /individuals/29/type'
+- id: edge-021
+  subject: gomodel:RXN3O-4157
+  predicate: has_input
+  object: CHEBI:57972
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:RXN3O-4157","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57972_RXN3O-4157"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_57972_RXN3O-4157","type":[{"type":"class","id":"CHEBI:57972"'
-- id: edge-018
+    source_assertion: The model asserts gomodel:RXN3O-4157 RO:0002233 gomodel:CHEBI_57972_RXN3O-4157.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/20; endpoint types: /individuals/7/type;
+      /individuals/4/type'
+- id: edge-022
   subject: gomodel:RXN3O-4157
-  predicate: produces
+  predicate: part_of
+  object: GO:0006571
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:RXN3O-4157 BFO:0000050 gomodel:YeastPathways_PWY3O-4120/YeastPathways_PWY3O-4120.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/21; endpoint types: /individuals/7/type;
+      /individuals/30/type'
+- id: edge-023
+  subject: gomodel:CHORISMATEMUT-RXN
+  predicate: part_of
+  object: GO:0006571
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:CHORISMATEMUT-RXN BFO:0000050 gomodel:YeastPathways_PWY3O-4120/YeastPathways_PWY3O-4120.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/22; endpoint types: /individuals/6/type;
+      /individuals/30/type'
+- id: edge-024
+  subject: gomodel:CHORISMATEMUT-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:CHORISMATEMUT-RXN BFO:0000066 gomodel:reaction_CHORISMATEMUT-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/23; endpoint types: /individuals/6/type;
+      /individuals/22/type'
+- id: edge-025
+  subject: gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN
+  predicate: part_of
+  object: GO:0006571
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-4120
+    source_assertion: The model asserts gomodel:PREPHENATE-DEHYDROGENASE-NADP+-RXN BFO:0000050
+      gomodel:YeastPathways_PWY3O-4120/YeastPathways_PWY3O-4120.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/24; endpoint types: /individuals/28/type;
+      /individuals/30/type'
+- id: edge-026
+  subject: gomodel:RXN3O-4157
+  predicate: has_output
   object: CHEBI:58315
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:RXN3O-4157","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58315_RXN3O-4157"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:CHEBI_58315_RXN3O-4157","type":[{"type":"class","id":"CHEBI:58315"'
-- id: edge-019
+    source_assertion: The model asserts gomodel:RXN3O-4157 RO:0002234 gomodel:CHEBI_58315_RXN3O-4157.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/25; endpoint types: /individuals/7/type;
+      /individuals/5/type'
+- id: edge-027
   subject: SGD:S000003170
   predicate: enables
   object: gomodel:TYROSINE-AMINOTRANSFERASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"subject":"gomodel:TYROSINE-AMINOTRANSFERASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-4120/6690711d00000272"'
-  - reference_id: gomodel:YeastPathways_PWY3O-4120
-    quote: '"id":"gomodel:YeastPathways_PWY3O-4120/6690711d00000272","type":[{"type":"class","id":"SGD:S000003170"'
+    source_assertion: The model asserts gomodel:TYROSINE-AMINOTRANSFERASE-RXN RO:0002333 gomodel:YeastPathways_PWY3O-4120/6690711d00000272.
+    source_locator: './YeastPathways_PWY3O-4120.json#/facts/26; endpoint types: /individuals/8/type;
+      /individuals/34/type'
+- id: location-b3fbf570a53d
+  subject: SGD:S000006264
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12455686)
+  evidence:
+  - reference_id: UniProtKB:P32178
+    source_assertion: UniProtKB:P32178 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/855/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32178
+    source_assertion: UniProtKB:P32178 has the exact SGD cross-reference SGD:S000006264.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/855/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-21257d2833bc
+  subject: SGD:S000001179
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P38840
+    source_assertion: UniProtKB:P38840 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1469/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P38840
+    source_assertion: UniProtKB:P38840 has the exact SGD cross-reference SGD:S000001179.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1469/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-ad4354e8d3df
+  subject: SGD:S000003170
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P53090
+    source_assertion: UniProtKB:P53090 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2112/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P53090
+    source_assertion: UniProtKB:P53090 has the exact SGD cross-reference SGD:S000003170.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2112/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-eb2a9050a8eb
+  subject: SGD:S000001179
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:O84395)'
+  evidence:
+  - reference_id: UniProtKB:P38840
+    source_assertion: UniProtKB:P38840 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1469/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P38840
+    source_assertion: UniProtKB:P38840 has the exact SGD cross-reference SGD:S000001179.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1469/uniProtKBCrossReferences/0'
+- id: cofactor-46a0dec0bfb8
+  subject: SGD:S000003170
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:23893908)'
+  evidence:
+  - reference_id: UniProtKB:P53090
+    source_assertion: UniProtKB:P53090 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2112/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P53090
+    source_assertion: UniProtKB:P53090 has the exact SGD cross-reference SGD:S000003170.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2112/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY3O-4120
   title: 'SGD GO-CAM tyrosine biosynthesis - imported from: Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2024-08-09; member ./YeastPathways_PWY3O-4120.json
+- id: UniProtKB:P32178
+  title: Reviewed UniProtKB P32178 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P38840
+  title: Reviewed UniProtKB P38840 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P53090
+  title: Reviewed UniProtKB P53090 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

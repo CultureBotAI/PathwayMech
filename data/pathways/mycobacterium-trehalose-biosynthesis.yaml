@@ -1,262 +1,534 @@
 id: Reactome:R-MTU-868688
 label: Mycobacterium tuberculosis trehalose biosynthesis
-description: >-
-  Mycobacterium tuberculosis trehalose biosynthesis forms
-  alpha,alpha-trehalose through OtsAB trehalose-6-phosphate synthesis, TreS
-  conversion of maltose, and TreYZ conversion of 1,4-alpha-glucan.
+description: Mycobacterium tuberculosis produces trehalose through OtsA/OtsB and TreY/TreZ
+  routes. TreS is reversible in vitro, but experimental physiological flux consumes trehalose
+  to produce alpha-maltose. Cytosolic catalytic assemblies include OtsA tetramer and magnesium-bound
+  OtsB.
 pathway_type: biopax-pathway
 taxa:
-  - id: NCBITaxon:1773
-    label: Mycobacterium tuberculosis
+- id: NCBITaxon:1773
+  label: Mycobacterium tuberculosis
 participants:
-  - id: UniProtKB:P9WN11
-    label: alpha,alpha-trehalose-phosphate synthase OtsA
-  - id: UniProtKB:P9WFZ5
-    label: trehalose-phosphatase OtsB2
-  - id: UniProtKB:P9WQ19
-    label: trehalose synthase TreS
-  - id: UniProtKB:P9WQ21
-    label: maltooligosyl trehalose synthase TreY
-  - id: UniProtKB:P9WQ23
-    label: maltooligosyl trehalose trehalohydrolase TreZ
-  - id: CHEBI:58885
-    label: UDP-alpha-D-glucose
-  - id: CHEBI:58225
-    label: alpha-D-glucose 6-phosphate
-  - id: CHEBI:18283
-    label: alpha,alpha-trehalose 6-phosphate
-  - id: CHEBI:58223
-    label: UDP
-  - id: CHEBI:15378
-    label: H+
-  - id: CHEBI:15377
-    label: water
-  - id: CHEBI:16551
-    label: alpha,alpha-trehalose
-  - id: CHEBI:43474
-    label: hydrogenphosphate
-  - id: CHEBI:17306
-    label: maltose
-  - id: CHEBI:15444
-    label: 1,4-alpha-glucan
-  - id: CHEBI:134401
-    label: glucanotrehalose
+- id: CHEBI:58885
+  label: UDP-Glc
+  category: small_molecule
+- id: CHEBI:58225
+  label: G6P
+  category: small_molecule
+- id: CHEBI:18283
+  label: αα-T6P
+  category: small_molecule
+- id: CHEBI:58223
+  label: UDP
+  category: small_molecule
+- id: CHEBI:15378
+  label: H+
+  category: small_molecule
+- id: CHEBI:15377
+  label: H2O
+  category: small_molecule
+- id: CHEBI:16551
+  label: alpha,alpha-trehalose
+  category: small_molecule
+- id: CHEBI:43474
+  label: Pi
+  category: small_molecule
+- id: CHEBI:18420
+  label: Mg2+
+  category: cofactor
+- id: CHEBI:15444
+  label: (1->4)-alpha-D-glucan
+  category: small_molecule
+- id: CHEBI:134401
+  label: glucanotrehalose
+  category: small_molecule
+- id: UniProtKB:P9WN11
+  label: OtsA
+  category: protein
+- id: UniProtKB:P9WFZ5
+  label: OtsB
+  category: protein
+- id: UniProtKB:P9WQ19
+  label: TreS
+  category: protein
+- id: UniProtKB:P9WQ21
+  label: TreY
+  category: protein
+- id: UniProtKB:P9WQ23
+  label: TreZ
+  category: protein
+- id: Reactome:R-MTU-868690
+  label: OtsA tetramer
+  category: complex
+- id: Reactome:R-MTU-868623
+  label: OtsB-Mg2+
+  category: complex
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:18167
+  label: alpha-maltose
+  category: small_molecule
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
 reactions:
-  - id: Reactome:R-MTU-868622
-    label: OtsA transfer of glucose from UDP-glucose to glucose-6-phosphate
-  - id: Reactome:R-MTU-868608
-    label: OtsB2 hydrolysis of trehalose-6-phosphate
-  - id: Reactome:R-MTU-868709
-    label: TreS conversion of maltose to trehalose
-  - id: Reactome:R-MTU-868658
-    label: TreY conversion of 1,4-alpha-glucan to glucanotrehalose
-  - id: Reactome:R-MTU-868657
-    label: TreZ hydrolysis of glucanotrehalose to trehalose
+- id: Reactome:R-MTU-868622
+  label: Glucose is transferred from UDP-glucose onto glucose-6-phosphate
+  category: molecular_activity
+  direction: left_to_right
+- id: Reactome:R-MTU-868608
+  label: Trehalose-6-phosphate is hydrolyzed to trehalose
+  category: molecular_activity
+  direction: left_to_right
+- id: Reactome:R-MTU-868709
+  label: TreS interconverts trehalose and alpha-maltose (physiological trehalose consumption)
+  category: molecular_activity
+  direction: reversible
+- id: Reactome:R-MTU-868658
+  label: 1,4-alpha-glucan is converted to glucanotrehalose
+  category: molecular_activity
+  direction: left_to_right
+- id: Reactome:R-MTU-868657
+  label: Glucanotrehalose is hydrolyzed to 1,4-alpha-glucan and trehalose
+  category: molecular_activity
+  direction: left_to_right
 mechanistic_edges:
-  - id: edge-001
-    subject: UniProtKB:P9WN11
-    predicate: catalyzes
-    object: Reactome:R-MTU-868622
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Trehalose phosphate synthase catalyzes the transfer of glucose from
-          UDP-glucose onto glucose-6-phosphate to form
-          alpha,alpha-trehalose-6-phosphate.
-  - id: edge-002
-    subject: CHEBI:58885
-    predicate: consumes
-    object: Reactome:R-MTU-868622
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Trehalose phosphate synthase catalyzes the transfer of glucose from
-          UDP-glucose onto glucose-6-phosphate to form
-          alpha,alpha-trehalose-6-phosphate.
-  - id: edge-003
-    subject: CHEBI:58225
-    predicate: consumes
-    object: Reactome:R-MTU-868622
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Trehalose phosphate synthase catalyzes the transfer of glucose from
-          UDP-glucose onto glucose-6-phosphate to form
-          alpha,alpha-trehalose-6-phosphate.
-  - id: edge-004
-    subject: Reactome:R-MTU-868622
-    predicate: produces
-    object: CHEBI:18283
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Trehalose phosphate synthase catalyzes the transfer of glucose from
-          UDP-glucose onto glucose-6-phosphate to form
-          alpha,alpha-trehalose-6-phosphate.
-  - id: edge-005
-    subject: Reactome:R-MTU-868622
-    predicate: produces
-    object: CHEBI:58223
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Trehalose phosphate synthase catalyzes the transfer of glucose from
-          UDP-glucose onto glucose-6-phosphate to form
-          alpha,alpha-trehalose-6-phosphate.
-  - id: edge-006
-    subject: Reactome:R-MTU-868622
-    predicate: produces
-    object: CHEBI:15378
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Trehalose phosphate synthase catalyzes the transfer of glucose from
-          UDP-glucose onto glucose-6-phosphate to form
-          alpha,alpha-trehalose-6-phosphate.
-  - id: edge-007
-    subject: UniProtKB:P9WFZ5
-    predicate: catalyzes
-    object: Reactome:R-MTU-868608
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Hydrolysis of trehalose phosphate, catalyzed by OtsB2, gives
-          trehalose.
-  - id: edge-008
-    subject: CHEBI:18283
-    predicate: consumes
-    object: Reactome:R-MTU-868608
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Hydrolysis of trehalose phosphate, catalyzed by OtsB2, gives
-          trehalose.
-  - id: edge-009
-    subject: CHEBI:15377
-    predicate: consumes
-    object: Reactome:R-MTU-868608
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Hydrolysis of trehalose phosphate, catalyzed by OtsB2, gives
-          trehalose.
-  - id: edge-010
-    subject: Reactome:R-MTU-868608
-    predicate: produces
-    object: CHEBI:16551
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Hydrolysis of trehalose phosphate, catalyzed by OtsB2, gives
-          trehalose.
-  - id: edge-011
-    subject: Reactome:R-MTU-868608
-    predicate: produces
-    object: CHEBI:43474
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Hydrolysis of trehalose phosphate, catalyzed by OtsB2, gives
-          trehalose.
-  - id: edge-012
-    subject: UniProtKB:P9WQ19
-    predicate: catalyzes
-    object: Reactome:R-MTU-868709
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Maltose is converted to trehalose. The enzymatic activity of TreS for
-          this reaction is 2-5 fold stronger than for the reverse reaction.
-  - id: edge-013
-    subject: CHEBI:17306
-    predicate: consumes
-    object: Reactome:R-MTU-868709
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Maltose is converted to trehalose. The enzymatic activity of TreS for
-          this reaction is 2-5 fold stronger than for the reverse reaction.
-  - id: edge-014
-    subject: Reactome:R-MTU-868709
-    predicate: produces
-    object: CHEBI:16551
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Maltose is converted to trehalose. The enzymatic activity of TreS for
-          this reaction is 2-5 fold stronger than for the reverse reaction.
-  - id: edge-015
-    subject: UniProtKB:P9WQ21
-    predicate: catalyzes
-    object: Reactome:R-MTU-868658
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Linear alpha-1,4-glucans are modified at one end to a
-          glucanotrehalose by the enzyme TreY.
-  - id: edge-016
-    subject: CHEBI:15444
-    predicate: consumes
-    object: Reactome:R-MTU-868658
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Linear alpha-1,4-glucans are modified at one end to a
-          glucanotrehalose by the enzyme TreY.
-  - id: edge-017
-    subject: Reactome:R-MTU-868658
-    predicate: produces
-    object: CHEBI:134401
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          Linear alpha-1,4-glucans are modified at one end to a
-          glucanotrehalose by the enzyme TreY.
-  - id: edge-018
-    subject: UniProtKB:P9WQ23
-    predicate: catalyzes
-    object: Reactome:R-MTU-868657
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          From glucanotrehalose, TreZ cleaves one molecule of trehalose,
-          leaving a linear glucan that is two sugars shorter than before.
-  - id: edge-019
-    subject: CHEBI:134401
-    predicate: consumes
-    object: Reactome:R-MTU-868657
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          From glucanotrehalose, TreZ cleaves one molecule of trehalose,
-          leaving a linear glucan that is two sugars shorter than before.
-  - id: edge-020
-    subject: CHEBI:15377
-    predicate: consumes
-    object: Reactome:R-MTU-868657
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          From glucanotrehalose, TreZ cleaves one molecule of trehalose,
-          leaving a linear glucan that is two sugars shorter than before.
-  - id: edge-021
-    subject: Reactome:R-MTU-868657
-    predicate: produces
-    object: CHEBI:15444
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          From glucanotrehalose, TreZ cleaves one molecule of trehalose,
-          leaving a linear glucan that is two sugars shorter than before.
-  - id: edge-022
-    subject: Reactome:R-MTU-868657
-    predicate: produces
-    object: CHEBI:16551
-    evidence:
-      - reference_id: PMID:10658666
-        quote: >-
-          From glucanotrehalose, TreZ cleaves one molecule of trehalose,
-          leaving a linear glucan that is two sugars shorter than before.
+- id: causal-review-1
+  subject: CHEBI:58885
+  predicate: consumes
+  object: Reactome:R-MTU-868622
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction1 lists UDP-Glc on its left side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction1/bp:left/#SmallMolecule1'
+- id: causal-review-2
+  subject: CHEBI:58225
+  predicate: consumes
+  object: Reactome:R-MTU-868622
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction1 lists G6P on its left side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction1/bp:left/#SmallMolecule2'
+- id: causal-review-3
+  subject: Reactome:R-MTU-868622
+  predicate: produces
+  object: CHEBI:18283
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction1 lists αα-T6P on its right side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction1/bp:right/#SmallMolecule3'
+- id: causal-review-4
+  subject: Reactome:R-MTU-868622
+  predicate: produces
+  object: CHEBI:58223
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction1 lists UDP on its right side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction1/bp:right/#SmallMolecule4'
+- id: causal-review-5
+  subject: Reactome:R-MTU-868622
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction1 lists H+ on its right side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction1/bp:right/#SmallMolecule5'
+- id: causal-review-6
+  subject: Reactome:R-MTU-868622
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: The physical participants of BioPAX BiochemicalReaction1 are assigned
+      to the cytosol.
+    source_locator: '#BiochemicalReaction1; participating physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-7
+  subject: CHEBI:18283
+  predicate: consumes
+  object: Reactome:R-MTU-868608
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction2 lists αα-T6P on its left side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction2/bp:left/#SmallMolecule3'
+- id: causal-review-8
+  subject: CHEBI:15377
+  predicate: consumes
+  object: Reactome:R-MTU-868608
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction2 lists H2O on its left side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction2/bp:left/#SmallMolecule6'
+- id: causal-review-9
+  subject: Reactome:R-MTU-868608
+  predicate: produces
+  object: CHEBI:16551
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction2 lists alpha,alpha-trehalose on its right
+      side with LEFT-TO-RIGHT conversionDirection.
+    source_locator: '#BiochemicalReaction2/bp:right/#SmallMolecule7'
+- id: causal-review-10
+  subject: Reactome:R-MTU-868608
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction2 lists Pi on its right side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction2/bp:right/#SmallMolecule8'
+- id: causal-review-11
+  subject: Reactome:R-MTU-868608
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: The physical participants of BioPAX BiochemicalReaction2 are assigned
+      to the cytosol.
+    source_locator: '#BiochemicalReaction2; participating physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-12
+  subject: Reactome:R-MTU-868709
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: The physical participants of BioPAX BiochemicalReaction3 are assigned
+      to the cytosol.
+    source_locator: '#BiochemicalReaction3; participating physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-13
+  subject: CHEBI:15444
+  predicate: consumes
+  object: Reactome:R-MTU-868658
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction4 lists (1,4-alpha-glycosyl)n on its left
+      side with LEFT-TO-RIGHT conversionDirection.
+    source_locator: '#BiochemicalReaction4/bp:left/#SmallMolecule11'
+- id: causal-review-14
+  subject: Reactome:R-MTU-868658
+  predicate: produces
+  object: CHEBI:134401
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction4 lists glucanotrehalose on its right side
+      with LEFT-TO-RIGHT conversionDirection.
+    source_locator: '#BiochemicalReaction4/bp:right/#SmallMolecule12'
+- id: causal-review-15
+  subject: Reactome:R-MTU-868658
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: The physical participants of BioPAX BiochemicalReaction4 are assigned
+      to the cytosol.
+    source_locator: '#BiochemicalReaction4; participating physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-16
+  subject: CHEBI:134401
+  predicate: consumes
+  object: Reactome:R-MTU-868657
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction5 lists glucanotrehalose on its left side
+      with LEFT-TO-RIGHT conversionDirection.
+    source_locator: '#BiochemicalReaction5/bp:left/#SmallMolecule12'
+- id: causal-review-17
+  subject: CHEBI:15377
+  predicate: consumes
+  object: Reactome:R-MTU-868657
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction5 lists H2O on its left side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction5/bp:left/#SmallMolecule6'
+- id: causal-review-18
+  subject: Reactome:R-MTU-868657
+  predicate: produces
+  object: CHEBI:15444
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction5 lists (1->4)-alpha-D-glucan on its right
+      side with LEFT-TO-RIGHT conversionDirection.
+    source_locator: '#BiochemicalReaction5/bp:right/#SmallMolecule13'
+- id: causal-review-19
+  subject: Reactome:R-MTU-868657
+  predicate: produces
+  object: CHEBI:16551
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX BiochemicalReaction5 lists alpha,alpha-trehalose on its right
+      side with LEFT-TO-RIGHT conversionDirection.
+    source_locator: '#BiochemicalReaction5/bp:right/#SmallMolecule7'
+- id: causal-review-20
+  subject: Reactome:R-MTU-868657
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: The physical participants of BioPAX BiochemicalReaction5 are assigned
+      to the cytosol.
+    source_locator: '#BiochemicalReaction5; participating physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-21
+  subject: Reactome:R-MTU-868690
+  predicate: catalyzes
+  object: Reactome:R-MTU-868622
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Catalysis1 identifies OtsA tetramer as the controller of BiochemicalReaction1.
+    source_locator: '#Catalysis1/bp:controller/#Complex1; bp:controlled/#BiochemicalReaction1'
+- id: causal-review-22
+  subject: Reactome:R-MTU-868623
+  predicate: catalyzes
+  object: Reactome:R-MTU-868608
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Catalysis2 identifies OtsB-Mg2+ as the controller of BiochemicalReaction2.
+    source_locator: '#Catalysis2/bp:controller/#Complex2; bp:controlled/#BiochemicalReaction2'
+- id: causal-review-23
+  subject: UniProtKB:P9WQ19
+  predicate: catalyzes
+  object: Reactome:R-MTU-868709
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Catalysis3 identifies TreS as the controller of BiochemicalReaction3.
+    source_locator: '#Catalysis3/bp:controller/#Protein3; bp:controlled/#BiochemicalReaction3'
+- id: causal-review-24
+  subject: UniProtKB:P9WQ21
+  predicate: catalyzes
+  object: Reactome:R-MTU-868658
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Catalysis4 identifies TreY as the controller of BiochemicalReaction4.
+    source_locator: '#Catalysis4/bp:controller/#Protein4; bp:controlled/#BiochemicalReaction4'
+- id: causal-review-25
+  subject: UniProtKB:P9WQ23
+  predicate: catalyzes
+  object: Reactome:R-MTU-868657
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Catalysis5 identifies TreZ as the controller of BiochemicalReaction5.
+    source_locator: '#Catalysis5/bp:controller/#Protein5; bp:controlled/#BiochemicalReaction5'
+- id: causal-review-26
+  subject: CHEBI:58885
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule1 assigns UDP-Glc to the cytosol.
+    source_locator: '#SmallMolecule1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-27
+  subject: CHEBI:58225
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule2 assigns G6P to the cytosol.
+    source_locator: '#SmallMolecule2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-28
+  subject: CHEBI:18283
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule3 assigns αα-T6P to the cytosol.
+    source_locator: '#SmallMolecule3/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-29
+  subject: CHEBI:58223
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule4 assigns UDP to the cytosol.
+    source_locator: '#SmallMolecule4/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-30
+  subject: CHEBI:15378
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule5 assigns H+ to the cytosol.
+    source_locator: '#SmallMolecule5/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-31
+  subject: CHEBI:15377
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule6 assigns H2O to the cytosol.
+    source_locator: '#SmallMolecule6/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-32
+  subject: CHEBI:16551
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule7 assigns alpha,alpha-trehalose to the cytosol.
+    source_locator: '#SmallMolecule7/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-33
+  subject: CHEBI:43474
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule8 assigns Pi to the cytosol.
+    source_locator: '#SmallMolecule8/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-34
+  subject: CHEBI:18420
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule9 assigns Mg2+ to the cytosol.
+    source_locator: '#SmallMolecule9/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-35
+  subject: CHEBI:15444
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule11 assigns (1,4-alpha-glycosyl)n to the cytosol.
+    source_locator: '#SmallMolecule11/bp:cellularLocation/#CellularLocationVocabulary1'
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule13 assigns (1->4)-alpha-D-glucan to the cytosol.
+    source_locator: '#SmallMolecule13/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-36
+  subject: CHEBI:134401
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX SmallMolecule12 assigns glucanotrehalose to the cytosol.
+    source_locator: '#SmallMolecule12/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-37
+  subject: UniProtKB:P9WN11
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Protein1 assigns OtsA to the cytosol.
+    source_locator: '#Protein1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-38
+  subject: UniProtKB:P9WFZ5
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Protein2 assigns OtsB to the cytosol.
+    source_locator: '#Protein2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-39
+  subject: UniProtKB:P9WQ19
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Protein3 assigns TreS to the cytosol.
+    source_locator: '#Protein3/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-40
+  subject: UniProtKB:P9WQ21
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Protein4 assigns TreY to the cytosol.
+    source_locator: '#Protein4/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-41
+  subject: UniProtKB:P9WQ23
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Protein5 assigns TreZ to the cytosol.
+    source_locator: '#Protein5/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-42
+  subject: Reactome:R-MTU-868690
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Complex1 assigns OtsA tetramer to the cytosol.
+    source_locator: '#Complex1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-43
+  subject: Reactome:R-MTU-868690
+  predicate: has_part
+  object: UniProtKB:P9WN11
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Complex1 includes OtsA as a component of OtsA tetramer.
+    source_locator: '#Complex1/bp:component/#Protein1'
+- id: causal-review-44
+  subject: Reactome:R-MTU-868623
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Complex2 assigns OtsB-Mg2+ to the cytosol.
+    source_locator: '#Complex2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-45
+  subject: Reactome:R-MTU-868623
+  predicate: has_part
+  object: UniProtKB:P9WFZ5
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Complex2 includes OtsB as a component of OtsB-Mg2+.
+    source_locator: '#Complex2/bp:component/#Protein2'
+- id: causal-review-46
+  subject: Reactome:R-MTU-868623
+  predicate: has_part
+  object: CHEBI:18420
+  evidence:
+  - reference_id: Reactome:R-MTU-868688
+    source_assertion: BioPAX Complex2 includes Mg2+ as a component of OtsB-Mg2+.
+    source_locator: '#Complex2/bp:component/#SmallMolecule9'
+- id: causal-review-47
+  subject: CHEBI:16551
+  predicate: consumes
+  object: Reactome:R-MTU-868709
+  evidence:
+  - reference_id: PMID:23601637
+    source_assertion: Genetic and NMR experiments support mycobacterial TreS flux from trehalose
+      to alpha-maltose; the biochemical reaction is reversible.
+    source_locator: 'Results: TreS reaction products and physiological direction; Figure 3'
+  description: Physiological direction differs from the older maltose-to-trehalose Reactome
+    diagram.
+- id: causal-review-48
+  subject: Reactome:R-MTU-868709
+  predicate: produces
+  object: CHEBI:18167
+  evidence:
+  - reference_id: PMID:23601637
+    source_assertion: Genetic and NMR experiments support mycobacterial TreS flux from trehalose
+      to alpha-maltose; the biochemical reaction is reversible.
+    source_locator: 'Results: TreS reaction products and physiological direction; Figure 3'
+  description: Physiological direction differs from the older maltose-to-trehalose Reactome
+    diagram.
+- id: cofactor-e3a2ca822621
+  subject: UniProtKB:P9WFZ5
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:15158675); ECO:0000269 (PubMed:15703182)'
+  evidence:
+  - reference_id: UniProtKB:P9WFZ5
+    source_assertion: UniProtKB:P9WFZ5 annotates CHEBI:29035 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=accession%3AP02918+OR+accession%3AP02919+OR+accession%3AP06721+OR+accession%3AP07862+OR+accession%3AP08373+OR+accession%3AP0A6B4+OR+accession%3AP0A6W3+OR+accession%3AP0A749+OR+accession%3AP0A759+OR+accession%3AP0ABG4+OR+accession%3AP0ACC7+OR+accession%3AP0AD68+OR+accession%3AP0AE16+OR+accession%3AP0AF16+OR+accession%3AP0AF18+OR+accession%3AP11880+OR+accession%3AP13016+OR+accession%3AP14900+OR+accession%3AP17169+OR+accession%3AP17443+OR+accession%3AP17952+OR+accession%3AP22188+OR+accession%3AP22634+OR+accession%3AP29012+OR+accession%3AP31120+OR+accession%3AP37773+OR+accession%3AP46022+OR+accession%3AP60932+OR+accession%3AP75949+OR+accession%3AP75959+OR+accession%3AP76008+OR+accession%3AP76535+OR+accession%3AP76577+OR+accession%3AP77272+OR+accession%3AP77570+OR+accession%3AP95189+OR+accession%3AP9WFZ5+OR+accession%3AP9WJM7+OR+accession%3AP9WJM9+OR+accession%3AP9WJN1+OR+accession%3AP9WKI1+OR+accession%3AP9WMY7+OR+accession%3AP9WN11+OR+accession%3AP9WQ19+OR+accession%3AP9WQ21+OR+accession%3AP9WQ23+OR+accession%3AQ2TL65&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:f2a2d9df603885068af58d89787438192b8c396d89a4cc931ac7bbab93a74c5c] #/results/30/comments/0/cofactors/0'
+- id: cofactor-8dcf4bdfdcc7
+  subject: UniProtKB:P9WFZ5
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:15158675); ECO:0000269 (PubMed:15703182)'
+  evidence:
+  - reference_id: UniProtKB:P9WFZ5
+    source_assertion: UniProtKB:P9WFZ5 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=accession%3AP02918+OR+accession%3AP02919+OR+accession%3AP06721+OR+accession%3AP07862+OR+accession%3AP08373+OR+accession%3AP0A6B4+OR+accession%3AP0A6W3+OR+accession%3AP0A749+OR+accession%3AP0A759+OR+accession%3AP0ABG4+OR+accession%3AP0ACC7+OR+accession%3AP0AD68+OR+accession%3AP0AE16+OR+accession%3AP0AF16+OR+accession%3AP0AF18+OR+accession%3AP11880+OR+accession%3AP13016+OR+accession%3AP14900+OR+accession%3AP17169+OR+accession%3AP17443+OR+accession%3AP17952+OR+accession%3AP22188+OR+accession%3AP22634+OR+accession%3AP29012+OR+accession%3AP31120+OR+accession%3AP37773+OR+accession%3AP46022+OR+accession%3AP60932+OR+accession%3AP75949+OR+accession%3AP75959+OR+accession%3AP76008+OR+accession%3AP76535+OR+accession%3AP76577+OR+accession%3AP77272+OR+accession%3AP77570+OR+accession%3AP95189+OR+accession%3AP9WFZ5+OR+accession%3AP9WJM7+OR+accession%3AP9WJM9+OR+accession%3AP9WJN1+OR+accession%3AP9WKI1+OR+accession%3AP9WMY7+OR+accession%3AP9WN11+OR+accession%3AP9WQ19+OR+accession%3AP9WQ21+OR+accession%3AP9WQ23+OR+accession%3AQ2TL65&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:f2a2d9df603885068af58d89787438192b8c396d89a4cc931ac7bbab93a74c5c] #/results/30/comments/0/cofactors/1'
 source_mappings:
 - subject_id: UniProt:P9WN11
   subject_label: OtsA
@@ -304,36 +576,44 @@ source_mappings:
   source_pathway_id: Reactome:R-MTU-868688
   source_element_id: Protein5
 references:
-  - id: Reactome:R-MTU-868688
-    title: Reactome pathway R-MTU-868688
-  - id: Reactome:R-MTU-868622
-    title: Reactome reaction R-MTU-868622
-  - id: Reactome:R-MTU-868608
-    title: Reactome reaction R-MTU-868608
-  - id: Reactome:R-MTU-868709
-    title: Reactome reaction R-MTU-868709
-  - id: Reactome:R-MTU-868658
-    title: Reactome reaction R-MTU-868658
-  - id: Reactome:R-MTU-868657
-    title: Reactome reaction R-MTU-868657
-  - id: PMID:10658666
-    title: Three pathways for trehalose biosynthesis in mycobacteria
-  - id: PMID:12473104
-    title: >-
-      Trehalose-phosphate synthase of Mycobacterium tuberculosis. Cloning,
-      expression and properties of the recombinant enzyme
-  - id: PMID:15158675
-    title: >-
-      Cloning and expression of the trehalose-phosphate phosphatase of
-      Mycobacterium tuberculosis: comparison to the enzyme from Mycobacterium
-      smegmatis
-  - id: PMID:19177348
-    title: Effect of trehalose on protein structure
-  - id: PMID:15703182
-    title: The OtsAB pathway is essential for trehalose biosynthesis in Mycobacterium tuberculosis
-  - id: PMID:12626396
-    title: 'New insights on trehalose: a multifunctional molecule'
-  - id: PMID:15901732
-    title: >-
-      The crucial role of trehalose and structurally related oligosaccharides
-      in the biosynthesis and transfer of mycolic acids in Corynebacterineae
+- id: Reactome:R-MTU-868622
+  title: Reactome reaction R-MTU-868622
+- id: Reactome:R-MTU-868608
+  title: Reactome reaction R-MTU-868608
+- id: Reactome:R-MTU-868709
+  title: Reactome reaction R-MTU-868709
+- id: Reactome:R-MTU-868658
+  title: Reactome reaction R-MTU-868658
+- id: Reactome:R-MTU-868657
+  title: Reactome reaction R-MTU-868657
+- id: PMID:10658666
+  title: Three pathways for trehalose biosynthesis in mycobacteria
+- id: PMID:12473104
+  title: Trehalose-phosphate synthase of Mycobacterium tuberculosis. Cloning, expression and
+    properties of the recombinant enzyme
+- id: PMID:15158675
+  title: 'Cloning and expression of the trehalose-phosphate phosphatase of Mycobacterium tuberculosis:
+    comparison to the enzyme from Mycobacterium smegmatis'
+- id: PMID:19177348
+  title: Effect of trehalose on protein structure
+- id: PMID:15703182
+  title: The OtsAB pathway is essential for trehalose biosynthesis in Mycobacterium tuberculosis
+- id: PMID:12626396
+  title: 'New insights on trehalose: a multifunctional molecule'
+- id: PMID:15901732
+  title: The crucial role of trehalose and structurally related oligosaccharides in the biosynthesis
+    and transfer of mycolic acids in Corynebacterineae
+- id: Reactome:R-MTU-868688
+  title: R-MTU-868688 native structured pathway source
+  url: https://reactome.org/ReactomeRESTfulAPI/RESTfulWS/biopaxExporter/Level3/868688
+  source_version: Reactome BioPAX 97
+  source_sha256: f758c6c82c2f242dbfd90bb477f90bc722d1ee99537d26666b5a67d9ac9252fc
+- id: PMID:23601637
+  title: Flux through Trehalose Synthase Flows from Trehalose to the Alpha Anomer of Maltose
+    in Mycobacteria
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3918855/
+- id: UniProtKB:P9WFZ5
+  title: UniProtKB P9WFZ5 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=accession%3AP02918+OR+accession%3AP02919+OR+accession%3AP06721+OR+accession%3AP07862+OR+accession%3AP08373+OR+accession%3AP0A6B4+OR+accession%3AP0A6W3+OR+accession%3AP0A749+OR+accession%3AP0A759+OR+accession%3AP0ABG4+OR+accession%3AP0ACC7+OR+accession%3AP0AD68+OR+accession%3AP0AE16+OR+accession%3AP0AF16+OR+accession%3AP0AF18+OR+accession%3AP11880+OR+accession%3AP13016+OR+accession%3AP14900+OR+accession%3AP17169+OR+accession%3AP17443+OR+accession%3AP17952+OR+accession%3AP22188+OR+accession%3AP22634+OR+accession%3AP29012+OR+accession%3AP31120+OR+accession%3AP37773+OR+accession%3AP46022+OR+accession%3AP60932+OR+accession%3AP75949+OR+accession%3AP75959+OR+accession%3AP76008+OR+accession%3AP76535+OR+accession%3AP76577+OR+accession%3AP77272+OR+accession%3AP77570+OR+accession%3AP95189+OR+accession%3AP9WFZ5+OR+accession%3AP9WJM7+OR+accession%3AP9WJM9+OR+accession%3AP9WJN1+OR+accession%3AP9WKI1+OR+accession%3AP9WMY7+OR+accession%3AP9WN11+OR+accession%3AP9WQ19+OR+accession%3AP9WQ21+OR+accession%3AP9WQ23+OR+accession%3AQ2TL65&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: f2a2d9df603885068af58d89787438192b8c396d89a4cc931ac7bbab93a74c5c

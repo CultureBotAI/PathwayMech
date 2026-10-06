@@ -1,261 +1,608 @@
 id: gomodel:YeastPathways_PWY-7220-1
 label: adenosine deoxyribonucleotides de novo biosynthesis II
-description: Adenosine deoxyribonucleotides de novo biosynthesis II in Saccharomyces cerevisiae S288C reduces ADP to dADP through CPX-1102 or CPX-1103 ribonucleoside-diphosphate reductase activity, phosphorylates dADP to dATP through YNK1-catalyzed nucleoside diphosphate kinase activity, and includes the raw GO-CAM RXN0-745 formate- and ATP-consuming route to dATP.
+description: 'Adenosine deoxyribonucleotide biosynthesis in Saccharomyces cerevisiae S288C
+  reduces ADP to dADP through the represented ribonucleoside-diphosphate reductase complexes
+  and phosphorylates dADP to dATP through YNK1. The imported formate-dependent ATP-to-dATP
+  branch has no yeast enzyme assignment and is excluded: it describes class III anaerobic
+  ribonucleotide reductase chemistry, whereas the independently characterized yeast system
+  reduces ribonucleoside diphosphates.'
 pathway_type: nucleotide-biosynthesis
 taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
-- id: SGD:S000217933
-  label: CPX-1102 Scer
 - id: CHEBI:15967
   label: thioredoxin dithiol
+  category: protein
 - id: CHEBI:456216
   label: ADP(3-)
+  category: small_molecule
 - id: CHEBI:57667
   label: dADP(3-)
+  category: small_molecule
 - id: CHEBI:18191
   label: thioredoxin disulfide
-- id: CHEBI:15377
-  label: water
-- id: SGD:S000217934
-  label: CPX-1103 Scer
-- id: SGD:S000001550
-  label: YNK1 Scer
+  category: protein
 - id: CHEBI:30616
   label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: SGD:S000217933
+  label: CPX-1102 Scer
+  category: complex
+- id: SGD:S000217934
+  label: CPX-1103 Scer
+  category: complex
+- id: SGD:S000001550
+  label: YNK1 Scer
+  category: protein
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0046085
+  label: adenosine metabolic process
+  category: biological_process
 - id: CHEBI:61404
   label: dATP(4-)
-- id: CHEBI:15740
-  label: formate
-- id: CHEBI:15378
-  label: hydron
-- id: CHEBI:16526
-  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:24875
+  label: iron cation
+  category: cofactor
+- id: UniProtKB:P21524
+  label: Ribonucleoside-diphosphate reductase large chain 1
+  category: protein
+- id: UniProtKB:P09938
+  label: Ribonucleoside-diphosphate reductase small chain 1
+  category: protein
+- id: UniProtKB:P49723
+  label: Ribonucleoside-diphosphate reductase small chain 2
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: UniProtKB:P21672
+  label: Ribonucleoside-diphosphate reductase large chain 2
+  category: protein
+- id: GO:0005758
+  label: mitochondrial intermembrane space
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
 - id: gomodel:ADPREDUCT-RXN
   label: ribonucleoside-diphosphate reductase activity, thioredoxin disulfide as acceptor
-- id: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
-  label: ribonucleoside-diphosphate reductase activity, thioredoxin disulfide as acceptor
+  category: molecular_activity
 - id: gomodel:DADPKIN-RXN
   label: nucleoside diphosphate kinase activity
-- id: gomodel:RXN0-745
-  label: formate + ATP + H<SUP>+</SUP> &rarr; CO<SUB>2</SUB> + dATP + H<sub>2</sub>O
+  category: molecular_activity
+- id: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  label: ribonucleoside-diphosphate reductase activity, thioredoxin disulfide as acceptor
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
+  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  predicate: has_input
+  object: CHEBI:15967
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      RO:0002233 gomodel:YeastPathways_PWY-7220-1/6a2b236300005373.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/0; endpoint types: /individuals/38/type;
+      /individuals/39/type'
+- id: edge-002
+  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  predicate: has_input
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      RO:0002233 gomodel:YeastPathways_PWY-7220-1/6a2b236300005374.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/1; endpoint types: /individuals/38/type;
+      /individuals/40/type'
+- id: edge-003
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: has_output
+  object: CHEBI:57667
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN RO:0002234 gomodel:CHEBI_57667_ADPREDUCT-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/2; endpoint types: /individuals/0/type;
+      /individuals/10/type'
+- id: edge-004
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: has_output
+  object: CHEBI:18191
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN RO:0002234 gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000654.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/3; endpoint types: /individuals/0/type;
+      /individuals/55/type'
+- id: edge-008
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN RO:0002234 gomodel:CHEBI_15377_ADPREDUCT-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/7; endpoint types: /individuals/0/type;
+      /individuals/1/type'
+- id: edge-009
+  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  predicate: has_output
+  object: CHEBI:57667
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      RO:0002234 gomodel:CHEBI_57667_ADPREDUCT-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/8; endpoint types: /individuals/38/type;
+      /individuals/10/type'
+- id: edge-011
   subject: SGD:S000217933
   predicate: enables
   object: gomodel:ADPREDUCT-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:ADPREDUCT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000651"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000651","type":[{"type":"class","id":"SGD:S000217933"'
-- id: edge-002
-  subject: CHEBI:15967
-  predicate: consumes
-  object: gomodel:ADPREDUCT-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:ADPREDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000653"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000653","type":[{"type":"class","id":"CHEBI:15967"'
-- id: edge-003
-  subject: CHEBI:456216
-  predicate: consumes
-  object: gomodel:ADPREDUCT-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:ADPREDUCT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_456216_ADPREDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_456216_ADPREDUCT-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-004
-  subject: gomodel:ADPREDUCT-RXN
-  predicate: produces
-  object: CHEBI:57667
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:ADPREDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57667_ADPREDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_57667_ADPREDUCT-RXN","type":[{"type":"class","id":"CHEBI:57667"'
-- id: edge-005
-  subject: gomodel:ADPREDUCT-RXN
-  predicate: produces
-  object: CHEBI:18191
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:ADPREDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000654"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000654","type":[{"type":"class","id":"CHEBI:18191"'
-- id: edge-006
-  subject: gomodel:ADPREDUCT-RXN
-  predicate: produces
-  object: CHEBI:15377
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:ADPREDUCT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_ADPREDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_15377_ADPREDUCT-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-007
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN RO:0002333 gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000651.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/10; endpoint types: /individuals/0/type;
+      /individuals/53/type'
+  - reference_id: PMID:6370695
+    source_assertion: The characterized yeast ribonucleotide reductase reduces all four natural
+      ribonucleoside diphosphates; ADP reduction yields the dADP precursor used in this route.
+    source_locator: https://pubmed.ncbi.nlm.nih.gov/6370695/#abstract
+- id: edge-012
   subject: SGD:S000217934
   predicate: enables
   object: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005372","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005378"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005378","type":[{"type":"class","id":"SGD:S000217934"'
-- id: edge-008
-  subject: CHEBI:15967
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      RO:0002333 gomodel:YeastPathways_PWY-7220-1/6a2b236300005378.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/11; endpoint types: /individuals/38/type;
+      /individuals/43/type'
+  - reference_id: PMID:6370695
+    source_assertion: The characterized yeast ribonucleotide reductase reduces all four natural
+      ribonucleoside diphosphates; ADP reduction yields the dADP precursor used in this route.
+    source_locator: https://pubmed.ncbi.nlm.nih.gov/6370695/#abstract
+- id: edge-014
+  subject: gomodel:DADPKIN-RXN
+  predicate: has_output
+  object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005372","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005373"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005373","type":[{"type":"class","id":"CHEBI:15967"'
-- id: edge-009
-  subject: CHEBI:456216
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005372","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005374"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005374","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:DADPKIN-RXN RO:0002234 gomodel:CHEBI_456216_DADPKIN-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/13; endpoint types: /individuals/13/type;
+      /individuals/9/type'
+- id: edge-015
   subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
-  predicate: produces
-  object: CHEBI:57667
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005372","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57667_ADPREDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_57667_ADPREDUCT-RXN","type":[{"type":"class","id":"CHEBI:57667"'
-- id: edge-011
-  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
-  predicate: produces
+  predicate: has_output
   object: CHEBI:18191
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005372","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005375"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005375","type":[{"type":"class","id":"CHEBI:18191"'
-- id: edge-012
-  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
-  predicate: produces
-  object: CHEBI:15377
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005372","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005376"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YeastPathways_PWY-7220-1/6a2b236300005376","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      RO:0002234 gomodel:YeastPathways_PWY-7220-1/6a2b236300005375.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/14; endpoint types: /individuals/38/type;
+      /individuals/41/type'
+- id: edge-016
   subject: SGD:S000001550
   predicate: enables
   object: gomodel:DADPKIN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:DADPKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YKL067W-MONOMER_DADPKIN-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:YKL067W-MONOMER_DADPKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000001550"'
-- id: edge-014
-  subject: CHEBI:57667
-  predicate: consumes
-  object: gomodel:DADPKIN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:DADPKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57667_ADPREDUCT-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_57667_ADPREDUCT-RXN","type":[{"type":"class","id":"CHEBI:57667"'
-- id: edge-015
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:DADPKIN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:DADPKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_DADPKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_30616_DADPKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-016
-  subject: gomodel:DADPKIN-RXN
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:DADPKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_DADPKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_456216_DADPKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+    source_assertion: The model asserts gomodel:DADPKIN-RXN RO:0002333 gomodel:YKL067W-MONOMER_DADPKIN-RXN_controller.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/15; endpoint types: /individuals/13/type;
+      /individuals/15/type'
 - id: edge-017
-  subject: gomodel:DADPKIN-RXN
-  predicate: produces
-  object: CHEBI:61404
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:DADPKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_61404_DADPKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_61404_DADPKIN-RXN","type":[{"type":"class","id":"CHEBI:61404"'
-- id: edge-018
-  subject: gomodel:DADPKIN-RXN
-  predicate: regulates
-  object: gomodel:RXN0-745
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:DADPKIN-RXN","property":"RO:0002411","property-label":"RO:0002411","object":"gomodel:RXN0-745"'
-- id: edge-019
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:RXN0-745
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:RXN0-745","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_RXN0-745"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_30616_RXN0-745","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-020
-  subject: CHEBI:15740
-  predicate: consumes
-  object: gomodel:RXN0-745
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:RXN0-745","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15740_RXN0-745"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_15740_RXN0-745","type":[{"type":"class","id":"CHEBI:15740"'
-- id: edge-021
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:RXN0-745
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:RXN0-745","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN0-745"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_15378_RXN0-745","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-022
-  subject: gomodel:RXN0-745
-  predicate: produces
-  object: CHEBI:16526
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:RXN0-745","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_RXN0-745"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_16526_RXN0-745","type":[{"type":"class","id":"CHEBI:16526"'
-- id: edge-023
-  subject: gomodel:RXN0-745
-  predicate: produces
+  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  predicate: has_output
   object: CHEBI:15377
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:RXN0-745","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_RXN0-745"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      RO:0002234 gomodel:YeastPathways_PWY-7220-1/6a2b236300005376.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/16; endpoint types: /individuals/38/type;
+      /individuals/42/type'
+- id: edge-018
+  subject: gomodel:DADPKIN-RXN
+  predicate: has_input
+  object: CHEBI:57667
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_15377_RXN0-745","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-024
-  subject: gomodel:RXN0-745
-  predicate: produces
+    source_assertion: The model asserts gomodel:DADPKIN-RXN RO:0002233 gomodel:CHEBI_57667_ADPREDUCT-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/17; endpoint types: /individuals/13/type;
+      /individuals/10/type'
+- id: edge-019
+  subject: gomodel:DADPKIN-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:DADPKIN-RXN BFO:0000066 gomodel:reaction_DADPKIN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/18; endpoint types: /individuals/13/type;
+      /individuals/35/type'
+- id: edge-020
+  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      BFO:0000066 gomodel:YeastPathways_PWY-7220-1/6a2b236300005379.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/19; endpoint types: /individuals/38/type;
+      /individuals/44/type'
+- id: edge-022
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN BFO:0000066 gomodel:reaction_ADPREDUCT-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/21; endpoint types: /individuals/0/type;
+      /individuals/34/type'
+- id: edge-023
+  subject: gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+  predicate: part_of
+  object: GO:0046085
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-7220-1/6a2b236300005372
+      BFO:0000050 gomodel:YeastPathways_PWY-7220-1/YeastPathways_PWY-7220-1.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/22; endpoint types: /individuals/38/type;
+      /individuals/37/type'
+- id: edge-025
+  subject: gomodel:DADPKIN-RXN
+  predicate: part_of
+  object: GO:0046085
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:DADPKIN-RXN BFO:0000050 gomodel:YeastPathways_PWY-7220-1/YeastPathways_PWY-7220-1.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/24; endpoint types: /individuals/13/type;
+      /individuals/37/type'
+- id: edge-026
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: part_of
+  object: GO:0046085
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN BFO:0000050 gomodel:YeastPathways_PWY-7220-1/YeastPathways_PWY-7220-1.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/25; endpoint types: /individuals/0/type;
+      /individuals/37/type'
+- id: edge-027
+  subject: gomodel:DADPKIN-RXN
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:DADPKIN-RXN RO:0002233 gomodel:CHEBI_30616_DADPKIN-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/26; endpoint types: /individuals/13/type;
+      /individuals/6/type'
+- id: edge-028
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: has_input
+  object: CHEBI:15967
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN RO:0002233 gomodel:YeastPathways_PWY-7220-1/66a3e0bb00000653.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/27; endpoint types: /individuals/0/type;
+      /individuals/54/type'
+- id: edge-030
+  subject: gomodel:ADPREDUCT-RXN
+  predicate: has_input
+  object: CHEBI:456216
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-7220-1
+    source_assertion: The model asserts gomodel:ADPREDUCT-RXN RO:0002233 gomodel:CHEBI_456216_ADPREDUCT-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/29; endpoint types: /individuals/0/type;
+      /individuals/8/type'
+- id: edge-032
+  subject: gomodel:DADPKIN-RXN
+  predicate: has_output
   object: CHEBI:61404
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"subject":"gomodel:RXN0-745","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_61404_RXN0-745"'
-  - reference_id: gomodel:YeastPathways_PWY-7220-1
-    quote: '"id":"gomodel:CHEBI_61404_RXN0-745","type":[{"type":"class","id":"CHEBI:61404"'
+    source_assertion: The model asserts gomodel:DADPKIN-RXN RO:0002234 gomodel:CHEBI_61404_DADPKIN-RXN.
+    source_locator: './YeastPathways_PWY-7220-1.json#/facts/31; endpoint types: /individuals/13/type;
+      /individuals/11/type'
+- id: complex-5603663c8d9f
+  subject: SGD:S000217933
+  predicate: has_part
+  object: CHEBI:24875
+  description: 'ECO:0000353: physical interaction evidence; source stoichiometry minValue:
+    2, maxValue: 2'
+  evidence:
+  - reference_id: SGD:S000217933
+    source_assertion: 'Complex Portal CPX-1102 lists CHEBI:24875 as a small molecule component;
+      complex evidence is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/participants/0; /evidenceType'
+- id: complex-42e98d8701be
+  subject: SGD:S000217933
+  predicate: has_part
+  object: UniProtKB:P21524
+  description: 'ECO:0000353: physical interaction evidence; source stoichiometry minValue:
+    2, maxValue: 2'
+  evidence:
+  - reference_id: SGD:S000217933
+    source_assertion: 'Complex Portal CPX-1102 lists P21524 as a protein component; complex
+      evidence is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/participants/1; /evidenceType'
+- id: complex-efa6fb5ae30b
+  subject: SGD:S000217933
+  predicate: has_part
+  object: UniProtKB:P09938
+  description: 'ECO:0000353: physical interaction evidence; source stoichiometry minValue:
+    1, maxValue: 1'
+  evidence:
+  - reference_id: SGD:S000217933
+    source_assertion: 'Complex Portal CPX-1102 lists P09938 as a protein component; complex
+      evidence is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/participants/2; /evidenceType'
+- id: complex-587f05f5e8b7
+  subject: SGD:S000217933
+  predicate: has_part
+  object: UniProtKB:P49723
+  description: 'ECO:0000353: physical interaction evidence; source stoichiometry minValue:
+    1, maxValue: 1'
+  evidence:
+  - reference_id: SGD:S000217933
+    source_assertion: 'Complex Portal CPX-1102 lists P49723 as a protein component; complex
+      evidence is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/participants/3; /evidenceType'
+- id: complex-841e721b9255
+  subject: SGD:S000217933
+  predicate: located_in
+  object: GO:0005737
+  description: Complex location from the independent composition source; original GO-CAM activity
+    locations are retained with their own provenance.
+  evidence:
+  - reference_id: SGD:S000217933
+    source_assertion: 'Complex Portal CPX-1102 records cellular location GO:0005737 (cytoplasm);
+      its evidence classification is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/crossReferences/11; /evidenceType'
+- id: complex-98c1e5c9787f
+  subject: SGD:S000217934
+  predicate: has_part
+  object: CHEBI:24875
+  description: 'ECO:0005546: inferred by paralogy; source stoichiometry minValue: 2, maxValue:
+    2'
+  evidence:
+  - reference_id: SGD:S000217934
+    source_assertion: 'Complex Portal CPX-1103 lists CHEBI:24875 as a small molecule component;
+      complex evidence is ECO:0005546: inferred by paralogy.'
+    source_locator: 'Complex Portal JSON #/participants/0; /evidenceType'
+- id: complex-93b1ae113c51
+  subject: SGD:S000217934
+  predicate: has_part
+  object: UniProtKB:P21524
+  description: 'ECO:0005546: inferred by paralogy; source stoichiometry minValue: 1, maxValue:
+    1'
+  evidence:
+  - reference_id: SGD:S000217934
+    source_assertion: 'Complex Portal CPX-1103 lists P21524 as a protein component; complex
+      evidence is ECO:0005546: inferred by paralogy.'
+    source_locator: 'Complex Portal JSON #/participants/1; /evidenceType'
+- id: complex-1912c9b0bd1d
+  subject: SGD:S000217934
+  predicate: has_part
+  object: UniProtKB:P09938
+  description: 'ECO:0005546: inferred by paralogy; source stoichiometry minValue: 1, maxValue:
+    1'
+  evidence:
+  - reference_id: SGD:S000217934
+    source_assertion: 'Complex Portal CPX-1103 lists P09938 as a protein component; complex
+      evidence is ECO:0005546: inferred by paralogy.'
+    source_locator: 'Complex Portal JSON #/participants/2; /evidenceType'
+- id: complex-1893fb368ea7
+  subject: SGD:S000217934
+  predicate: has_part
+  object: UniProtKB:P21672
+  description: 'ECO:0005546: inferred by paralogy; source stoichiometry minValue: 1, maxValue:
+    1'
+  evidence:
+  - reference_id: SGD:S000217934
+    source_assertion: 'Complex Portal CPX-1103 lists P21672 as a protein component; complex
+      evidence is ECO:0005546: inferred by paralogy.'
+    source_locator: 'Complex Portal JSON #/participants/3; /evidenceType'
+- id: complex-28539cb6b6b0
+  subject: SGD:S000217934
+  predicate: has_part
+  object: UniProtKB:P49723
+  description: 'ECO:0005546: inferred by paralogy; source stoichiometry minValue: 1, maxValue:
+    1'
+  evidence:
+  - reference_id: SGD:S000217934
+    source_assertion: 'Complex Portal CPX-1103 lists P49723 as a protein component; complex
+      evidence is ECO:0005546: inferred by paralogy.'
+    source_locator: 'Complex Portal JSON #/participants/4; /evidenceType'
+- id: complex-7e078717e822
+  subject: SGD:S000217934
+  predicate: located_in
+  object: GO:0005737
+  description: Complex location from the independent composition source; original GO-CAM activity
+    locations are retained with their own provenance.
+  evidence:
+  - reference_id: SGD:S000217934
+    source_assertion: 'Complex Portal CPX-1103 records cellular location GO:0005737 (cytoplasm);
+      its evidence classification is ECO:0005546: inferred by paralogy.'
+    source_locator: 'Complex Portal JSON #/crossReferences/5; /evidenceType'
+- id: location-77bf27fc8523
+  subject: SGD:S000001550
+  predicate: located_in
+  object: GO:0005737
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12472466)
+    Source qualification: Localizes predominantly to the cytoplasm. A small fraction is present
+    in the mitochondrial intermembrane space'
+  evidence:
+  - reference_id: UniProtKB:P36010
+    source_assertion: UniProtKB:P36010 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1183/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P36010
+    source_assertion: UniProtKB:P36010 has the exact SGD cross-reference SGD:S000001550.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1183/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-551208086c3a
+  subject: SGD:S000001550
+  predicate: located_in
+  object: GO:0005758
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12472466);
+    ECO:0000269 (PubMed:16823961); ECO:0000269 (PubMed:22984289) Source qualification: Localizes
+    predominantly to the cytoplasm. A small fraction is present in the mitochondrial intermembrane
+    space'
+  evidence:
+  - reference_id: UniProtKB:P36010
+    source_assertion: UniProtKB:P36010 annotates location Mitochondrion intermembrane space
+      (SL-0169).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1183/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P36010
+    source_assertion: UniProtKB:P36010 has the exact SGD cross-reference SGD:S000001550.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1183/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4533daa0d294
+  subject: UniProtKB:P21524
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12732713)
+  evidence:
+  - reference_id: UniProtKB:P21524
+    source_assertion: UniProtKB:P21524 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/551/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-6f9e369e4d05
+  subject: UniProtKB:P09938
+  predicate: located_in
+  object: GO:0005634
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12732713);
+    ECO:0000269 (PubMed:18851834) Source qualification: Found predominantly in the nucleus
+    under normal growth conditions and is redistributed to the cytoplasm in damaged cells
+    in a DNA replication and damage checkpoint-dependent manner. Nuclear localization is mediated
+    by DIF1'
+  evidence:
+  - reference_id: UniProtKB:P09938
+    source_assertion: UniProtKB:P09938 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/232/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4e0ffac7dcc6
+  subject: UniProtKB:P49723
+  predicate: located_in
+  object: GO:0005634
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12732713);
+    ECO:0000269 (PubMed:18851834) Source qualification: Found predominantly in the nucleus
+    under normal growth conditions and is redistributed to the cytoplasm in damaged cells
+    in a DNA replication and damage checkpoint-dependent manner. Nuclear localization is mediated
+    by DIF1'
+  evidence:
+  - reference_id: UniProtKB:P49723
+    source_assertion: UniProtKB:P49723 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2032/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4ac65d878989
+  subject: UniProtKB:P21672
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:12732713)
+  evidence:
+  - reference_id: UniProtKB:P21672
+    source_assertion: UniProtKB:P21672 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/557/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-857dafe2b77d
+  subject: SGD:S000001550
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:5793714)'
+  evidence:
+  - reference_id: UniProtKB:P36010
+    source_assertion: UniProtKB:P36010 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1183/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P36010
+    source_assertion: UniProtKB:P36010 has the exact SGD cross-reference SGD:S000001550.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1183/uniProtKBCrossReferences/0'
+- id: cofactor-c3fb132c513b
+  subject: UniProtKB:P09938
+  predicate: has_cofactor
+  object: CHEBI:24875
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified
+    Binds 2 iron ions per subunit.'
+  evidence:
+  - reference_id: UniProtKB:P09938
+    source_assertion: UniProtKB:P09938 annotates CHEBI:24875 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/232/comments/0/cofactors/0;
+      /results/232/comments/0/note'
 references:
 - id: gomodel:YeastPathways_PWY-7220-1
   title: GO-CAM adenosine deoxyribonucleotides de novo biosynthesis II model YeastPathways_PWY-7220-1
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-02; member ./YeastPathways_PWY-7220-1.json
+- id: SGD:S000217933
+  title: 'Complex Portal CPX-1102: Ribonucleoside-diphosphate reductase variant 1'
+  url: https://www.ebi.ac.uk/intact/complex-ws/complex/CPX-1102
+  source_version: Inspected API snapshot 2026-10-05; release dates 2014-10-16
+  source_sha256: 3b80bfeea3253ea8096bc19dba2bdb6a7279f9b740df221e90b4d11fc74d27b3
+- id: SGD:S000217934
+  title: 'Complex Portal CPX-1103: Ribonucleoside-diphosphate reductase variant 2'
+  url: https://www.ebi.ac.uk/intact/complex-ws/complex/CPX-1103
+  source_version: Inspected API snapshot 2026-10-05; release dates 2014-10-16
+  source_sha256: 9bb6e64da63637d23ca711307b6346300830216e362d243513a00add60d6680b
+- id: UniProtKB:P36010
+  title: Reviewed UniProtKB P36010 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P21524
+  title: Reviewed UniProtKB P21524 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P09938
+  title: Reviewed UniProtKB P09938 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P49723
+  title: Reviewed UniProtKB P49723 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P21672
+  title: Reviewed UniProtKB P21672 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: PMID:6370695
+  title: Deoxyribonucleotide biosynthesis in yeast (Saccharomyces cerevisiae). A ribonucleotide
+    reductase system of sufficient activity for DNA synthesis
+  url: https://pubmed.ncbi.nlm.nih.gov/6370695/
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger. Reviewed exact Complex Portal composition, source evidence grades, and
+    independent physical complex locations.
+  llm_assisted: true
+- timestamp: '2026-10-05T06:17:04Z'
+  curator: Codex
+  action: review-complex-composition
+  changes: Reviewed exact Complex Portal composition, source evidence grades, and independent
+    physical complex locations; reused existing proteins through reviewed UniProt SGD cross-references.
+  llm_assisted: true
+- timestamp: '2026-10-05T07:05:26Z'
+  curator: Codex
+  action: edited
+  changes: Exclude unenabled class III formate-dependent ATP reduction from the yeast graph.
+    Native source inclusion alone does not establish yeast activity; the directly characterized
+    yeast reductase and exact yeast UniProt entries support diphosphate reduction.
+  llm_assisted: true

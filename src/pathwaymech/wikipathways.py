@@ -66,7 +66,7 @@ def gpml_to_pathway_record(
     nodes_by_group_graph_id = _group_nodes(root, node_by_graph_id)
     reaction_by_anchor_id = _anchor_reactions(root, pathway_id)
     references = _publication_references(root)
-    evidence_reference = next(iter(references.values()), _fallback_reference(pathway_id))
+    evidence_reference = _fallback_reference(pathway_id)
     references.setdefault(evidence_reference["id"], evidence_reference)
 
     reactions = []
@@ -83,6 +83,12 @@ def gpml_to_pathway_record(
                     nodes_by_group_graph_id,
                     reaction_by_anchor_id,
                     evidence_reference["id"],
+                    {
+                        node_by_graph_id[n.get("GraphId")]["id"]
+                        for n in _children(root, "DataNode")
+                        if n.get("GraphId") in node_by_graph_id
+                        and n.get("Type") in {"Protein", "GeneProduct", "Complex"}
+                    },
                 )
             )
             continue
@@ -92,13 +98,17 @@ def gpml_to_pathway_record(
             node_by_graph_id,
             nodes_by_group_graph_id,
         )
-        if not sources and not targets:
-            continue
-        if not _interaction_anchors(interaction) and (not sources or not targets):
+        if not sources or not targets:
             continue
 
         reaction_id = f"{pathway_id}/{graph_id}"
-        reactions.append({"id": reaction_id, "label": f"{pathway_id} interaction {graph_id}"})
+        reactions.append(
+            {
+                "id": reaction_id,
+                "label": f"{pathway_id} interaction {graph_id}",
+                "direction": _interaction_direction(interaction),
+            }
+        )
 
         for node_id in sources:
             edges.append(
@@ -107,6 +117,7 @@ def gpml_to_pathway_record(
                     predicate="consumes",
                     obj=reaction_id,
                     evidence_reference=evidence_reference["id"],
+                    source_locator=f"/Pathway/Interaction[@GraphId='{graph_id}']/Graphics",
                 )
             )
         for node_id in targets:
@@ -116,9 +127,14 @@ def gpml_to_pathway_record(
                     predicate="produces",
                     obj=node_id,
                     evidence_reference=evidence_reference["id"],
+                    source_locator=f"/Pathway/Interaction[@GraphId='{graph_id}']/Graphics",
                 )
             )
 
+    reaction_ids = {reaction["id"] for reaction in reactions}
+    edges = [
+        edge for edge in edges if edge["subject"] in reaction_ids or edge["object"] in reaction_ids
+    ]
     record = {
         "id": pathway_id,
         "label": root.get("Name") or pathway_id,
@@ -168,11 +184,13 @@ def _data_nodes(
     for node in _children(root, "DataNode"):
         graph_id = node.get("GraphId")
         xref = _first_child(node, "Xref")
-        if not graph_id or xref is None:
+        if not graph_id:
             continue
-        source_id = _xref_curie(xref)
+        source_id = _xref_curie(xref) if xref is not None else None
         if not source_id:
-            continue
+            if not node.get("TextLabel") or node.get("Type") == "Pathway":
+                continue
+            source_id = f"{pathway_id}/{graph_id}"
         label = node.get("TextLabel") or source_id
         identifier = normalized_curie(source_id, compound_mappings)
         data_nodes[graph_id] = {
@@ -259,14 +277,28 @@ def _interaction_endpoints(
 ) -> tuple[list[str], list[str]]:
     sources: list[str] = []
     targets: list[str] = []
-    for point in _interaction_points(interaction):
+    points = [point for point in _interaction_points(interaction) if point.get("GraphRef")]
+    if (
+        len(points) != 2
+        or any(
+            (point.get("ArrowHead") or "line").lower()
+            not in {"line", "none", "arrow", "mim-conversion"}
+            for point in points
+        )
+        or not any(_is_target(point) for point in points)
+    ):
+        return [], []
+    reversible = all(_is_target(point) for point in points)
+    for index, point in enumerate(points):
         graph_ref = point.get("GraphRef")
         node_ids = _nodes_for_graph_ref(
             graph_ref,
             node_by_graph_id,
             nodes_by_group_graph_id,
         )
-        if _is_target(point):
+        if not node_ids:
+            return [], []
+        if (reversible and index == 1) or (not reversible and _is_target(point)):
             targets.extend(node_ids)
         else:
             sources.extend(node_ids)
@@ -279,6 +311,7 @@ def _anchor_edges(
     nodes_by_group_graph_id: dict[str, list[str]],
     reaction_by_anchor_id: dict[str, str],
     evidence_reference: str,
+    catalyst_ids: set[str],
 ) -> list[dict[str, Any]]:
     points = _interaction_points(interaction)
     anchor_points = [
@@ -293,6 +326,10 @@ def _anchor_edges(
     anchor_id = anchor_point.get("GraphRef", "")
     reaction_id = reaction_by_anchor_id[anchor_id]
     edges = []
+    locator = (
+        f"/Pathway/Interaction[@GraphId='{interaction.get('GraphId')}']/Graphics; "
+        f"/Pathway/Interaction/Graphics/Anchor[@GraphId='{anchor_id}']"
+    )
     for point in points:
         if point is anchor_point:
             continue
@@ -307,9 +344,14 @@ def _anchor_edges(
                 edges.append(
                     _edge(
                         subject=node_id,
-                        predicate="catalyzes",
+                        predicate=(
+                            "catalyzes"
+                            if node_id in catalyst_ids and len(node_ids) == 1
+                            else "enables"
+                        ),
                         obj=reaction_id,
                         evidence_reference=evidence_reference,
+                        source_locator=locator,
                     )
                 )
             elif _is_target(anchor_point):
@@ -319,6 +361,7 @@ def _anchor_edges(
                         predicate="consumes",
                         obj=reaction_id,
                         evidence_reference=evidence_reference,
+                        source_locator=locator,
                     )
                 )
             elif _is_target(point):
@@ -328,6 +371,7 @@ def _anchor_edges(
                         predicate="produces",
                         obj=node_id,
                         evidence_reference=evidence_reference,
+                        source_locator=locator,
                     )
                 )
     return edges
@@ -350,8 +394,7 @@ def _contains_anchor_ref(
     reaction_by_anchor_id: dict[str, str],
 ) -> bool:
     return any(
-        point.get("GraphRef") in reaction_by_anchor_id
-        for point in _interaction_points(interaction)
+        point.get("GraphRef") in reaction_by_anchor_id for point in _interaction_points(interaction)
     )
 
 
@@ -366,8 +409,14 @@ def _interaction_points(interaction: ElementTree.Element) -> list[ElementTree.El
 
 
 def _is_target(point: ElementTree.Element) -> bool:
-    arrow_head = point.get("ArrowHead")
-    return bool(arrow_head and arrow_head.lower() not in {"line", "none"})
+    return (point.get("ArrowHead") or "").lower() in {"arrow", "mim-conversion"}
+
+
+def _interaction_direction(interaction: ElementTree.Element) -> str:
+    points = [p for p in _interaction_points(interaction) if p.get("GraphRef")]
+    if all(_is_target(p) for p in points):
+        return "reversible"
+    return "right_to_left" if _is_target(points[0]) else "left_to_right"
 
 
 def _is_catalysis(point: ElementTree.Element) -> bool:
@@ -419,6 +468,7 @@ def _edge(
     predicate: str,
     obj: str,
     evidence_reference: str,
+    source_locator: str,
 ) -> dict[str, Any]:
     return {
         "subject": subject,
@@ -427,7 +477,10 @@ def _edge(
         "evidence": [
             {
                 "reference_id": evidence_reference,
-                "quote": f"WikiPathways GPML interaction cites {evidence_reference}.",
+                "source_assertion": (
+                    f"The native GPML interaction specifies {subject} {predicate} {obj}."
+                ),
+                "source_locator": source_locator,
             }
         ],
     }

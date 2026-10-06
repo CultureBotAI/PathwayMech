@@ -1,8 +1,8 @@
 id: MetaCyc:FUCCAT-PWY
 label: L-fucose degradation I
-description: L-fucose degradation I epimerizes beta-L-fucose to alpha-L-fucose, isomerizes
-  L-fucose to L-fuculose, phosphorylates L-fuculose with ATP, and cleaves L-fuculose
-  1-phosphate to (S)-lactaldehyde and dihydroxyacetone phosphate.
+description: L-fucose degradation I epimerizes beta-L-fucose to alpha-L-fucose, isomerizes L-fucose to
+  L-fuculose, phosphorylates L-fuculose with ATP, and cleaves L-fuculose 1-phosphate to (S)-lactaldehyde
+  and dihydroxyacetone phosphate.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:511145
@@ -10,215 +10,258 @@ taxa:
 participants:
 - id: EC:5.1.3.29
   label: L-fucose mutarotase
+  category: molecular_activity
 - id: EC:5.3.1.25
   label: L-fucose isomerase
+  category: molecular_activity
 - id: EC:2.7.1.51
   label: L-fuculokinase
+  category: molecular_activity
 - id: EC:4.1.2.17
   label: L-fuculose-phosphate aldolase
+  category: molecular_activity
 - id: CHEBI:42589
   label: beta-L-fucose
+  category: small_molecule
 - id: CHEBI:42548
   label: alpha-L-fucose
+  category: small_molecule
 - id: CHEBI:2181
   label: L-fucose
+  category: small_molecule
 - id: CHEBI:17617
   label: L-fuculose
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:57846
   label: L-fuculose 1-phosphate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:18041
   label: (S)-lactaldehyde
+  category: small_molecule
 - id: CHEBI:57642
   label: dihydroxyacetone phosphate
+  category: small_molecule
 reactions:
-- id: RHEA:25583
-  label: L-fucose mutarotase reaction
-- id: RHEA:17236
-  label: L-fucose isomerase reaction
 - id: RHEA:12377
   label: L-fuculokinase reaction
+  direction: left_to_right
 - id: RHEA:12934
   label: L-fuculose-phosphate aldolase reaction
+  direction: left_to_right
+- id: RHEA:25582
+  label: L-fucose mutarotase reaction
+  direction: right_to_left
+- id: RHEA:17234
+  label: L-fucose isomerase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:5.1.3.29
-  predicate: catalyzes
-  object: RHEA:25583
-  evidence:
-  - reference_id: RHEA:25580
-    quote: L-fucose mutarotase catalyzes L-fucose mutarotase reaction.
-- id: edge-002
-  subject: CHEBI:42589
-  predicate: consumes
-  object: RHEA:25583
-  evidence:
-  - reference_id: RHEA:25583
-    quote: RHEA:25583 alpha-L-fucose <=> beta-L-fucose
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: beta-L-fucose is consumed by L-fucose mutarotase reaction.
-- id: edge-003
-  subject: RHEA:25583
-  predicate: produces
-  object: CHEBI:42548
-  evidence:
-  - reference_id: RHEA:25583
-    quote: RHEA:25583 alpha-L-fucose <=> beta-L-fucose
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: L-fucose mutarotase reaction produces alpha-L-fucose.
-- id: edge-004
-  subject: RHEA:25583
-  predicate: precedes
-  object: RHEA:17236
-  evidence:
-  - reference_id: RHEA:25583
-    quote: RHEA:25583 alpha-L-fucose <=> beta-L-fucose
-  - reference_id: RHEA:17236
-    quote: RHEA:17236 L-fucose <=> L-fuculose
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: L-fucose mutarotase reaction precedes L-fucose isomerase reaction.
-- id: edge-005
-  subject: EC:5.3.1.25
-  predicate: catalyzes
-  object: RHEA:17236
-  evidence:
-  - reference_id: RHEA:17233
-    quote: L-fucose isomerase catalyzes L-fucose isomerase reaction.
-- id: edge-006
-  subject: CHEBI:2181
-  predicate: consumes
-  object: RHEA:17236
-  evidence:
-  - reference_id: RHEA:17236
-    quote: RHEA:17236 L-fucose <=> L-fuculose
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: L-fucose is consumed by L-fucose isomerase reaction.
-- id: edge-007
-  subject: RHEA:17236
-  predicate: produces
-  object: CHEBI:17617
-  evidence:
-  - reference_id: RHEA:17236
-    quote: RHEA:17236 L-fucose <=> L-fuculose
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: L-fucose isomerase reaction produces L-fuculose.
-- id: edge-008
-  subject: RHEA:17236
-  predicate: precedes
-  object: RHEA:12377
-  evidence:
-  - reference_id: RHEA:17236
-    quote: RHEA:17236 L-fucose <=> L-fuculose
-  - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: L-fucose isomerase reaction precedes L-fuculokinase reaction.
-- id: edge-009
-  subject: EC:2.7.1.51
-  predicate: catalyzes
-  object: RHEA:12377
-  evidence:
-  - reference_id: RHEA:12376
-    quote: L-fuculokinase catalyzes L-fuculokinase reaction.
-- id: edge-010
   subject: CHEBI:17617
   predicate: consumes
   object: RHEA:12377
   evidence:
   - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
-- id: edge-011
+    source_assertion: Rhea lists CHEBI:17617 on the substrates side of RHEA:12377 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12377']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:12377
   evidence:
   - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
-- id: edge-012
-  subject: RHEA:12377
-  predicate: produces
-  object: CHEBI:57846
-  evidence:
-  - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
-- id: edge-013
-  subject: RHEA:12377
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
-- id: edge-014
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:12377 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12377']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
   subject: RHEA:12377
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
-- id: edge-015
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:12377 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12377']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
   subject: RHEA:12377
-  predicate: precedes
-  object: RHEA:12934
+  predicate: produces
+  object: CHEBI:456216
   evidence:
   - reference_id: RHEA:12377
-    quote: RHEA:12377 L-fuculose + ATP => L-fuculose 1-phosphate + ADP + H(+)
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:12377 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12377']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: RHEA:12377
+  predicate: produces
+  object: CHEBI:57846
+  evidence:
+  - reference_id: RHEA:12377
+    source_assertion: Rhea lists CHEBI:57846 on the products side of RHEA:12377 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12377']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:57846
+  predicate: consumes
+  object: RHEA:12934
+  evidence:
   - reference_id: RHEA:12934
-    quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone
-      phosphate
-  - reference_id: MetaCyc:FUCCAT-PWY
-    quote: L-fuculokinase reaction precedes L-fuculose-phosphate aldolase reaction.
+    source_assertion: Rhea lists CHEBI:57846 on the substrates side of RHEA:12934 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12934']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:12934
+  predicate: produces
+  object: CHEBI:18041
+  evidence:
+  - reference_id: RHEA:12934
+    source_assertion: Rhea lists CHEBI:18041 on the products side of RHEA:12934 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12934']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:12934
+  predicate: produces
+  object: CHEBI:57642
+  evidence:
+  - reference_id: RHEA:12934
+    source_assertion: Rhea lists CHEBI:57642 on the products side of RHEA:12934 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12934']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: CHEBI:42589
+  predicate: consumes
+  object: RHEA:25582
+  evidence:
+  - reference_id: RHEA:25582
+    source_assertion: Rhea lists CHEBI:42589 on the substrates side of RHEA:25582 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25582']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: RHEA:25582
+  predicate: produces
+  object: CHEBI:42548
+  evidence:
+  - reference_id: RHEA:25582
+    source_assertion: Rhea lists CHEBI:42548 on the products side of RHEA:25582 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/25582']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-011
+  subject: CHEBI:2181
+  predicate: consumes
+  object: RHEA:17234
+  evidence:
+  - reference_id: RHEA:17234
+    source_assertion: Rhea lists CHEBI:2181 on the substrates side of RHEA:17234 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17234']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
+  subject: RHEA:17234
+  predicate: produces
+  object: CHEBI:17617
+  evidence:
+  - reference_id: RHEA:17234
+    source_assertion: Rhea lists CHEBI:17617 on the products side of RHEA:17234 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17234']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-013
+  subject: EC:5.1.3.29
+  predicate: catalyzes
+  object: RHEA:25582
+  evidence:
+  - reference_id: RHEA:25580
+    source_assertion: Rhea associates EC:5.1.3.29 with the reaction family containing RHEA:25582.
+    source_locator: rh:ec
+- id: edge-014
+  subject: EC:5.3.1.25
+  predicate: catalyzes
+  object: RHEA:17234
+  evidence:
+  - reference_id: RHEA:17233
+    source_assertion: Rhea associates EC:5.3.1.25 with the reaction family containing RHEA:17234.
+    source_locator: rh:ec
+- id: edge-015
+  subject: EC:2.7.1.51
+  predicate: catalyzes
+  object: RHEA:12377
+  evidence:
+  - reference_id: RHEA:12376
+    source_assertion: Rhea associates EC:2.7.1.51 with the reaction family containing RHEA:12377.
+    source_locator: rh:ec
 - id: edge-016
   subject: EC:4.1.2.17
   predicate: catalyzes
   object: RHEA:12934
   evidence:
   - reference_id: RHEA:12933
-    quote: L-fuculose-phosphate aldolase catalyzes L-fuculose-phosphate aldolase reaction.
+    source_assertion: Rhea associates EC:4.1.2.17 with the reaction family containing RHEA:12934.
+    source_locator: rh:ec
 - id: edge-017
-  subject: CHEBI:57846
-  predicate: consumes
+  subject: RHEA:12377
+  predicate: precedes
   object: RHEA:12934
   evidence:
-  - reference_id: RHEA:12934
-    quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone
-      phosphate
+  - reference_id: MetaCyc:FUCCAT-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:12377 before RHEA:12934 in this pathway. Shared
+      intermediate: CHEBI:57846.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-018
-  subject: RHEA:12934
-  predicate: produces
-  object: CHEBI:18041
+  subject: RHEA:17234
+  predicate: precedes
+  object: RHEA:12377
   evidence:
-  - reference_id: RHEA:12934
-    quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone
-      phosphate
+  - reference_id: MetaCyc:FUCCAT-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:17234 before RHEA:12377 in this pathway. Shared
+      intermediate: CHEBI:17617.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 - id: edge-019
-  subject: RHEA:12934
-  predicate: produces
-  object: CHEBI:57642
+  subject: RHEA:25582
+  predicate: precedes
+  object: RHEA:17234
   evidence:
-  - reference_id: RHEA:12934
-    quote: RHEA:12934 L-fuculose 1-phosphate => (S)-lactaldehyde + dihydroxyacetone
-      phosphate
+  - reference_id: MetaCyc:FUCCAT-PWY
+    source_assertion: MetaCyc pathway ordering places RHEA:25582 before RHEA:17234 in this pathway. The
+      source ordering may bridge anomer-specific and broader substrate classes.
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
 references:
 - id: MetaCyc:FUCCAT-PWY
   title: MetaCyc L-fucose degradation I
+  url: https://pathway.yeastgenome.org/getxml?id=META:FUCCAT-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: e7eb30711d47e2d28dd77ad7241bdc937641c2dd6cf1690b1ac416e6eb0a551c
 - id: RHEA:25580
   title: Rhea L-fucose mutarotase reaction
+  url: https://www.rhea-db.org/rhea/25580
+  source_version: '139'
 - id: RHEA:25583
   title: Rhea bidirectional L-fucose mutarotase reaction
+  url: https://www.rhea-db.org/rhea/25583
+  source_version: '139'
 - id: RHEA:17233
   title: Rhea L-fucose isomerase reaction
+  url: https://www.rhea-db.org/rhea/17233
+  source_version: '139'
 - id: RHEA:17236
   title: Rhea bidirectional L-fucose isomerase reaction
+  url: https://www.rhea-db.org/rhea/17236
+  source_version: '139'
 - id: RHEA:12376
   title: Rhea L-fuculokinase reaction
+  url: https://www.rhea-db.org/rhea/12376
+  source_version: '139'
 - id: RHEA:12377
   title: Rhea L-fuculose-1-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/12377
+  source_version: '139'
 - id: RHEA:12933
   title: Rhea L-fuculose-phosphate aldolase reaction
+  url: https://www.rhea-db.org/rhea/12933
+  source_version: '139'
 - id: RHEA:12934
   title: Rhea L-fuculose-1-phosphate-cleaving direction
+  url: https://www.rhea-db.org/rhea/12934
+  source_version: '139'
+- id: RHEA:25582
+  title: RHEA:25582 authority record
+  url: https://www.rhea-db.org/rhea/25582
+  source_version: '139'
+- id: RHEA:17234
+  title: RHEA:17234 authority record
+  url: https://www.rhea-db.org/rhea/17234
+  source_version: '139'

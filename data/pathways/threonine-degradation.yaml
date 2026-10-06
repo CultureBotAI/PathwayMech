@@ -1,145 +1,250 @@
 id: gomodel:YeastPathways_THREOCAT2-PWY
 label: threonine degradation
-description: >-
-  The SGD threonine degradation GO-CAM for Saccharomyces cerevisiae S288C
-  models CHA1-enabled threonine deaminase activity and CYS3-enabled
-  cystathionine gamma-lyase activity in the cytosolic L-threonine catabolic
-  process.
+description: Threonine degradation in Saccharomyces cerevisiae S288C includes CHA1-enabled
+  threonine deamination to 2-oxobutanoate and the GLY1 threonine aldolase route to glycine
+  and acetaldehyde. The broader native outline contains unassigned or neighbouring reactions;
+  KBL is absent and threonine dehydrogenase is uncertain in yeast. An unsupported reverse
+  cystathionine-condensation branch is excluded.
 pathway_type: amino-acid-degradation
 taxa:
-  - id: NCBITaxon:559292
-    label: Saccharomyces cerevisiae S288C
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
 participants:
-  - id: SGD:S000000569
-    label: CHA1 Scer
-  - id: SGD:S000000010
-    label: CYS3 Scer
-  - id: CHEBI:57926
-    label: L-threonine zwitterion
-  - id: CHEBI:15377
-    label: water
-  - id: CHEBI:16134
-    label: ammonia
-  - id: CHEBI:16763
-    label: 2-oxobutanoate
-  - id: CHEBI:35235
-    label: L-cysteine zwitterion
-  - id: CHEBI:58161
-    label: L-cystathionine dizwitterion
+- id: CHEBI:57926
+  label: L-threonine zwitterion
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0006567
+  label: L-threonine catabolic process
+  category: biological_process
+- id: CHEBI:16763
+  label: 2-oxobutanoate
+  category: lipid
+- id: CHEBI:16134
+  label: ammonia
+  category: small_molecule
+- id: SGD:S000000569
+  label: CHA1 Scer
+  category: protein
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: UniProtKB:P37303
+  label: Low specificity L-threonine aldolase
+  category: protein
+- id: CHEBI:15343
+  label: acetaldehyde
+  category: small_molecule
+- id: CHEBI:57305
+  label: glycine zwitterion
+  category: small_molecule
+- id: GO:0005739
+  label: mitochondrion
+  category: cellular_component
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
-  - id: gomodel:THREDEHYD2-RXN
-    label: threonine deaminase activity
-  - id: gomodel:CYSTAGLY-RXN
-    label: cystathionine gamma-lyase activity
+- id: gomodel:THREDEHYD2-RXN
+  label: threonine deaminase activity
+  category: molecular_activity
+- id: GO:0004793
+  label: threonine aldolase activity
+  category: molecular_activity
 mechanistic_edges:
-  - id: edge-001
-    subject: SGD:S000000569
-    predicate: enables
-    object: gomodel:THREDEHYD2-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:THREDEHYD2-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"SGD:S000000569","type":"EnabledByGeneProductAssociation"'
-  - id: edge-002
-    subject: CHEBI:57926
-    predicate: consumes
-    object: gomodel:THREDEHYD2-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:THREDEHYD2-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:57926","type":"MoleculeAssociation"'
-  - id: edge-003
-    subject: CHEBI:15377
-    predicate: consumes
-    object: gomodel:THREDEHYD2-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:THREDEHYD2-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:15377","type":"MoleculeAssociation"}],"has_output"'
-  - id: edge-004
-    subject: gomodel:THREDEHYD2-RXN
-    predicate: produces
-    object: CHEBI:16134
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:THREDEHYD2-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:16134","type":"MoleculeAssociation"},{"evidence"'
-  - id: edge-005
-    subject: gomodel:THREDEHYD2-RXN
-    predicate: produces
-    object: CHEBI:15377
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:THREDEHYD2-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:15377","type":"MoleculeAssociation"},{"evidence"'
-  - id: edge-006
-    subject: gomodel:THREDEHYD2-RXN
-    predicate: produces
-    object: CHEBI:16763
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:THREDEHYD2-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:16763","type":"MoleculeAssociation"}],"has_primary_input"'
-  - id: edge-007
-    subject: SGD:S000000010
-    predicate: enables
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"SGD:S000000010","type":"EnabledByGeneProductAssociation"'
-  - id: edge-008
-    subject: CHEBI:16763
-    predicate: consumes
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:16763","type":"MoleculeAssociation"},{"evidence"'
-  - id: edge-009
-    subject: CHEBI:35235
-    predicate: consumes
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:35235","type":"MoleculeAssociation"'
-  - id: edge-010
-    subject: CHEBI:16134
-    predicate: consumes
-    object: gomodel:CYSTAGLY-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:16134","type":"MoleculeAssociation"}],"has_output"'
-  - id: edge-011
-    subject: gomodel:CYSTAGLY-RXN
-    predicate: produces
-    object: CHEBI:58161
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:58161","type":"MoleculeAssociation"'
-  - id: edge-012
-    subject: gomodel:CYSTAGLY-RXN
-    predicate: produces
-    object: CHEBI:15377
-    evidence:
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"id":"gomodel:CYSTAGLY-RXN"'
-      - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
-        quote: '"term":"CHEBI:15377","type":"MoleculeAssociation"}],"has_primary_input"'
+- id: edge-001
+  subject: gomodel:THREDEHYD2-RXN
+  predicate: has_input
+  object: CHEBI:57926
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN RO:0002233 gomodel:CHEBI_57926_THREDEHYD2-RXN.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/7; endpoint types: /individuals/52/type;
+      /individuals/38/type'
+- id: edge-003
+  subject: gomodel:THREDEHYD2-RXN
+  predicate: part_of
+  object: GO:0006567
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN BFO:0000050 gomodel:YeastPathways_THREOCAT2-PWY/YeastPathways_THREOCAT2-PWY.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/18; endpoint types: /individuals/52/type;
+      /individuals/138/type'
+- id: edge-008
+  subject: gomodel:THREDEHYD2-RXN
+  predicate: has_output
+  object: CHEBI:16134
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN RO:0002234 gomodel:CHEBI_16134_THREDEHYD2-RXN.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/42; endpoint types: /individuals/52/type;
+      /individuals/13/type'
+- id: edge-009
+  subject: SGD:S000000569
+  predicate: enables
+  object: gomodel:THREDEHYD2-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN RO:0002333 gomodel:YCL064C-MONOMER_THREDEHYD2-RXN_controller.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/45; endpoint types: /individuals/52/type;
+      /individuals/56/type'
+- id: edge-011
+  subject: gomodel:THREDEHYD2-RXN
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN RO:0002234 gomodel:CHEBI_15377_THREDEHYD2-RXN.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/49; endpoint types: /individuals/52/type;
+      /individuals/6/type'
+- id: edge-012
+  subject: gomodel:THREDEHYD2-RXN
+  predicate: has_output
+  object: CHEBI:16763
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN RO:0002234 gomodel:CHEBI_16763_THREDEHYD2-RXN.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/60; endpoint types: /individuals/52/type;
+      /individuals/16/type'
+- id: edge-014
+  subject: gomodel:THREDEHYD2-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_THREOCAT2-PWY
+    source_assertion: The model asserts gomodel:THREDEHYD2-RXN RO:0002233 gomodel:CHEBI_15377_THREDEHYD2-RXN.
+    source_locator: './YeastPathways_THREOCAT2-PWY.json#/facts/77; endpoint types: /individuals/52/type;
+      /individuals/6/type'
+- id: edge-017
+  subject: UniProtKB:P37303
+  predicate: enables
+  object: GO:0004793
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: Reviewed GLY1 is annotated to threonine aldolase activity and catalyzes
+      L-threonine cleavage to acetaldehyde and glycine; the catalytic annotation cites experimental
+      evidence from PMID:9151955.
+    source_locator: 'UniProt JSON #/results/0/comments/1/reaction; /results/0/uniProtKBCrossReferences/38'
+- id: edge-018
+  subject: GO:0004793
+  predicate: has_input
+  object: CHEBI:57926
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: The reviewed GLY1 catalytic reaction is L-threonine = acetaldehyde +
+      glycine; its ChEBI cross-references identify L-threonine as CHEBI:57926.
+    source_locator: 'UniProt JSON #/results/0/comments/1/reaction'
+- id: edge-019
+  subject: GO:0004793
+  predicate: has_output
+  object: CHEBI:15343
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: The reviewed GLY1 catalytic reaction produces acetaldehyde, cross-referenced
+      as CHEBI:15343, from L-threonine.
+    source_locator: 'UniProt JSON #/results/0/comments/1/reaction'
+- id: edge-020
+  subject: GO:0004793
+  predicate: has_output
+  object: CHEBI:57305
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: The reviewed GLY1 catalytic reaction produces glycine, cross-referenced
+      as CHEBI:57305, from L-threonine.
+    source_locator: 'UniProt JSON #/results/0/comments/1/reaction'
+- id: edge-021
+  subject: UniProtKB:P37303
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: The reviewed GLY1 entry records a cytosol annotation (GO:0005829) with
+      IDA:SGD evidence.
+    source_locator: 'UniProt JSON #/results/0/uniProtKBCrossReferences/36'
+- id: edge-022
+  subject: GO:0004793
+  predicate: part_of
+  object: GO:0006567
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: UniProt assigns GLY1 to the single-step L-threonine degradation via
+      the aldolase pathway and records L-threonine catabolic process (GO:0006567).
+    source_locator: 'UniProt JSON #/results/0/comments/5; /results/0/uniProtKBCrossReferences/40'
+- id: location-e41cef4a1699
+  subject: SGD:S000000569
+  predicate: located_in
+  object: GO:0005739
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:16823961)
+  evidence:
+  - reference_id: UniProtKB:P25379
+    source_assertion: UniProtKB:P25379 annotates location Mitochondrion (SL-0173).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3364/comments/0/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P25379
+    source_assertion: UniProtKB:P25379 has the exact SGD cross-reference SGD:S000000569.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3364/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-d4c2864ea012
+  subject: SGD:S000000569
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P25379
+    source_assertion: UniProtKB:P25379 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3364/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P25379
+    source_assertion: UniProtKB:P25379 has the exact SGD cross-reference SGD:S000000569.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3364/uniProtKBCrossReferences/0'
+- id: cofactor-3b6386b65bf6
+  subject: UniProtKB:P37303
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:P37303
+    source_assertion: UniProtKB:P37303 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1258/comments/0/cofactors/0'
 references:
-  - id: gomodel:YeastPathways_THREOCAT2-PWY
-    title: GO-CAM threonine degradation model YeastPathways_THREOCAT2-PWY
+- id: gomodel:YeastPathways_THREOCAT2-PWY
+  title: GO-CAM threonine degradation model YeastPathways_THREOCAT2-PWY
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2024-07-30; member ./YeastPathways_THREOCAT2-PWY.json
+- id: UniProtKB:P37303
+  title: UniProt reviewed GLY1 (P37303), Saccharomyces cerevisiae S288C
+  url: https://rest.uniprot.org/uniprotkb/search?query=%28gene_exact%3AGLY1%29%20AND%20%28organism_id%3A559292%29%20AND%20%28reviewed%3Atrue%29&format=json
+  source_version: Entry 198; annotation update 2026-06-10
+  source_sha256: f66256c250243efb72e5b6108db6b8aef1acf264f0e212166aeb12dd6374e748
+- id: UniProtKB:P25379
+  title: Reviewed UniProtKB P25379 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P31373
+  title: Reviewed UniProtKB P31373 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true
+- timestamp: '2026-10-05T06:53:32Z'
+  curator: Codex
+  action: review-catalytic-function
+  changes: Reconciled native GO-CAM chemistry with independently reviewed enzyme specificity,
+    direction, physiological scope and source cautions; superseded facts remain in the function
+    review ledger.
+  llm_assisted: true

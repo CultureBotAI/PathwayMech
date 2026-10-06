@@ -1,249 +1,545 @@
 id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
 label: heme b biosynthesis I (aerobic)
-description: Aerobic heme b biosynthesis in Saccharomyces cerevisiae S288C decarboxylates uroporphyrinogen III to coproporphyrinogen III, oxidizes it through protoporphyrinogen to protoporphyrin, and inserts iron into protoporphyrin to produce ferroheme b.
+description: Aerobic heme b biosynthesis in Saccharomyces cerevisiae S288C decarboxylates
+  uroporphyrinogen III to coproporphyrinogen III, oxidizes it through protoporphyrinogen to
+  protoporphyrin, and inserts iron into protoporphyrin to produce ferroheme b.
 pathway_type: cofactor-biosynthesis
 taxa:
-  - id: NCBITaxon:559292
-    label: Saccharomyces cerevisiae S288C
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
 participants:
-  - id: SGD:S000002451
-    label: HEM13 Scer
-  - id: CHEBI:57309
-    label: coproporphyrinogen III(4-)
-  - id: CHEBI:15378
-    label: hydron
-  - id: CHEBI:15379
-    label: dioxygen
-  - id: CHEBI:15377
-    label: water
-  - id: CHEBI:16526
-    label: carbon dioxide
-  - id: CHEBI:57307
-    label: protoporphyrinogen(2-)
-  - id: SGD:S000005702
-    label: HEM15 Scer
-  - id: CHEBI:29033
-    label: iron(2+)
-  - id: CHEBI:57306
-    label: protoporphyrin(2-)
-  - id: CHEBI:17627
-    label: ferroheme b
-  - id: SGD:S000002454
-    label: HEM12 Scer
-  - id: CHEBI:57308
-    label: uroporphyrinogen III(8-)
-  - id: SGD:S000000816
-    label: HEM14 Scer
-  - id: CHEBI:16240
-    label: hydrogen peroxide
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: GO:0006783
+  label: heme biosynthetic process
+  category: biological_process
+- id: CHEBI:57309
+  label: coproporphyrinogen III(4-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: SGD:S000002451
+  label: HEM13 Scer
+  category: protein
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: SGD:S000005702
+  label: HEM15 Scer
+  category: protein
+- id: CHEBI:57307
+  label: protoporphyrinogen(2-)
+  category: small_molecule
+- id: SGD:S000002454
+  label: HEM12 Scer
+  category: protein
+- id: CHEBI:57306
+  label: protoporphyrin(2-)
+  category: small_molecule
+- id: SGD:S000000816
+  label: HEM14 Scer
+  category: protein
+- id: CHEBI:16240
+  label: hydrogen peroxide
+  category: small_molecule
+- id: CHEBI:17627
+  label: ferroheme b
+  category: small_molecule
+- id: GO:0005743
+  label: mitochondrial inner membrane
+  category: cellular_component
+- id: CHEBI:29033
+  label: iron(2+)
+  category: small_molecule
+- id: CHEBI:57308
+  label: uroporphyrinogen III(8-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
 reactions:
-  - id: gomodel:RXN0-1461
-    label: coproporphyrinogen oxidase activity
-  - id: gomodel:PROTOHEMEFERROCHELAT-RXN
-    label: protoporphyrin ferrochelatase activity
-  - id: gomodel:UROGENDECARBOX-RXN
-    label: uroporphyrinogen decarboxylase activity
-  - id: gomodel:PROTOPORGENOXI-RXN
-    label: protoporphyrinogen oxidase activity, oxygen as acceptor
+- id: gomodel:PROTOHEMEFERROCHELAT-RXN
+  label: protoporphyrin ferrochelatase activity
+  category: molecular_activity
+- id: gomodel:PROTOPORGENOXI-RXN
+  label: protoporphyrinogen oxidase activity, oxygen as acceptor
+  category: molecular_activity
+- id: gomodel:RXN0-1461
+  label: coproporphyrinogen oxidase activity
+  category: molecular_activity
+- id: gomodel:UROGENDECARBOX-RXN
+  label: uroporphyrinogen decarboxylase activity
+  category: molecular_activity
 mechanistic_edges:
-  - id: edge-001
-    subject: SGD:S000002451
-    predicate: enables
-    object: gomodel:RXN0-1461
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR044W-MONOMER_RXN0-1461_controller"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YDR044W-MONOMER_RXN0-1461_controller","type":[{"type":"class","id":"SGD:S000002451"'
-  - id: edge-002
-    subject: CHEBI:57309
-    predicate: consumes
-    object: gomodel:RXN0-1461
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57309_UROGENDECARBOX-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57309_UROGENDECARBOX-RXN","type":[{"type":"class","id":"CHEBI:57309"'
-  - id: edge-003
-    subject: CHEBI:15378
-    predicate: consumes
-    object: gomodel:RXN0-1461
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001655"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001655","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-004
-    subject: CHEBI:15379
-    predicate: consumes
-    object: gomodel:RXN0-1461
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15379_RXN0-1461"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_15379_RXN0-1461","type":[{"type":"class","id":"CHEBI:15379"'
-  - id: edge-005
-    subject: gomodel:RXN0-1461
-    predicate: produces
-    object: CHEBI:15377
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_RXN0-1461"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_15377_RXN0-1461","type":[{"type":"class","id":"CHEBI:15377"'
-  - id: edge-006
-    subject: gomodel:RXN0-1461
-    predicate: produces
-    object: CHEBI:16526
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001657"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001657","type":[{"type":"class","id":"CHEBI:16526"'
-  - id: edge-007
-    subject: gomodel:RXN0-1461
-    predicate: produces
-    object: CHEBI:57307
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:RXN0-1461","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57307_RXN0-1461"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57307_RXN0-1461","type":[{"type":"class","id":"CHEBI:57307"'
-  - id: edge-008
-    subject: SGD:S000005702
-    predicate: enables
-    object: gomodel:PROTOHEMEFERROCHELAT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOHEMEFERROCHELAT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOR176W-MONOMER_PROTOHEMEFERROCHELAT-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YOR176W-MONOMER_PROTOHEMEFERROCHELAT-RXN_controller","type":[{"type":"class","id":"SGD:S000005702"'
-  - id: edge-009
-    subject: CHEBI:29033
-    predicate: consumes
-    object: gomodel:PROTOHEMEFERROCHELAT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOHEMEFERROCHELAT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_29033_PROTOHEMEFERROCHELAT-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_29033_PROTOHEMEFERROCHELAT-RXN","type":[{"type":"class","id":"CHEBI:29033"'
-  - id: edge-010
-    subject: CHEBI:57306
-    predicate: consumes
-    object: gomodel:PROTOHEMEFERROCHELAT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOHEMEFERROCHELAT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57306_PROTOPORGENOXI-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57306_PROTOPORGENOXI-RXN","type":[{"type":"class","id":"CHEBI:57306"'
-  - id: edge-011
-    subject: gomodel:PROTOHEMEFERROCHELAT-RXN
-    predicate: produces
-    object: CHEBI:15378
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOHEMEFERROCHELAT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_PROTOHEMEFERROCHELAT-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_15378_PROTOHEMEFERROCHELAT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-012
-    subject: gomodel:PROTOHEMEFERROCHELAT-RXN
-    predicate: produces
-    object: CHEBI:17627
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOHEMEFERROCHELAT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17627_PROTOHEMEFERROCHELAT-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_17627_PROTOHEMEFERROCHELAT-RXN","type":[{"type":"class","id":"CHEBI:17627"'
-  - id: edge-013
-    subject: SGD:S000002454
-    predicate: enables
-    object: gomodel:UROGENDECARBOX-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:UROGENDECARBOX-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR047W-MONOMER_UROGENDECARBOX-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YDR047W-MONOMER_UROGENDECARBOX-RXN_controller","type":[{"type":"class","id":"SGD:S000002454"'
-  - id: edge-014
-    subject: CHEBI:15378
-    predicate: consumes
-    object: gomodel:UROGENDECARBOX-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:UROGENDECARBOX-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001647"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001647","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-015
-    subject: CHEBI:57308
-    predicate: consumes
-    object: gomodel:UROGENDECARBOX-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:UROGENDECARBOX-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57308_UROGENDECARBOX-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57308_UROGENDECARBOX-RXN","type":[{"type":"class","id":"CHEBI:57308"'
-  - id: edge-016
-    subject: gomodel:UROGENDECARBOX-RXN
-    predicate: produces
-    object: CHEBI:16526
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:UROGENDECARBOX-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_UROGENDECARBOX-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_16526_UROGENDECARBOX-RXN","type":[{"type":"class","id":"CHEBI:16526"'
-  - id: edge-017
-    subject: gomodel:UROGENDECARBOX-RXN
-    predicate: produces
-    object: CHEBI:57309
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:UROGENDECARBOX-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57309_UROGENDECARBOX-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57309_UROGENDECARBOX-RXN","type":[{"type":"class","id":"CHEBI:57309"'
-  - id: edge-018
-    subject: SGD:S000000816
-    predicate: enables
-    object: gomodel:PROTOPORGENOXI-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOPORGENOXI-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YER014W-MONOMER_PROTOPORGENOXI-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YER014W-MONOMER_PROTOPORGENOXI-RXN_controller","type":[{"type":"class","id":"SGD:S000000816"'
-  - id: edge-019
-    subject: CHEBI:15379
-    predicate: consumes
-    object: gomodel:PROTOPORGENOXI-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOPORGENOXI-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001661"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001661","type":[{"type":"class","id":"CHEBI:15379"'
-  - id: edge-020
-    subject: CHEBI:57307
-    predicate: consumes
-    object: gomodel:PROTOPORGENOXI-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOPORGENOXI-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57307_RXN0-1461"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57307_RXN0-1461","type":[{"type":"class","id":"CHEBI:57307"'
-  - id: edge-021
-    subject: gomodel:PROTOPORGENOXI-RXN
-    predicate: produces
-    object: CHEBI:57306
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOPORGENOXI-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57306_PROTOPORGENOXI-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_57306_PROTOPORGENOXI-RXN","type":[{"type":"class","id":"CHEBI:57306"'
-  - id: edge-022
-    subject: gomodel:PROTOPORGENOXI-RXN
-    predicate: produces
-    object: CHEBI:16240
-    evidence:
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"subject":"gomodel:PROTOPORGENOXI-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16240_PROTOPORGENOXI-RXN"'
-      - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-        quote: '"id":"gomodel:CHEBI_16240_PROTOPORGENOXI-RXN","type":[{"type":"class","id":"CHEBI:16240"'
+- id: edge-001
+  subject: gomodel:UROGENDECARBOX-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN BFO:0000066 gomodel:reaction_UROGENDECARBOX-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/0; endpoint types: /individuals/18/type;
+      /individuals/45/type'
+- id: edge-002
+  subject: gomodel:UROGENDECARBOX-RXN
+  predicate: has_output
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002234 gomodel:CHEBI_16526_UROGENDECARBOX-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/1; endpoint types: /individuals/18/type;
+      /individuals/8/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001653.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/39; endpoint types:
+      /individuals/18/type; /individuals/57/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001651.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/40; endpoint types:
+      /individuals/18/type; /individuals/55/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001649.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/44; endpoint types:
+      /individuals/18/type; /individuals/53/type'
+- id: edge-003
+  subject: gomodel:PROTOHEMEFERROCHELAT-RXN
+  predicate: part_of
+  object: GO:0006783
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN BFO:0000050 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/YeastPathways_HEME-BIOSYNTHESIS-II.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/2; endpoint types: /individuals/15/type;
+      /individuals/46/type'
+- id: edge-004
+  subject: gomodel:RXN0-1461
+  predicate: has_input
+  object: CHEBI:57309
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002233 gomodel:CHEBI_57309_UROGENDECARBOX-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/3; endpoint types: /individuals/17/type;
+      /individuals/14/type'
+- id: edge-005
+  subject: gomodel:RXN0-1461
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002234 gomodel:CHEBI_15377_RXN0-1461.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/4; endpoint types: /individuals/17/type;
+      /individuals/0/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001659.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/41; endpoint types:
+      /individuals/17/type; /individuals/63/type'
+- id: edge-006
+  subject: gomodel:RXN0-1461
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001655.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/5; endpoint types: /individuals/17/type;
+      /individuals/59/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002233 gomodel:CHEBI_15378_RXN0-1461.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/23; endpoint types:
+      /individuals/17/type; /individuals/2/type'
+- id: edge-007
+  subject: SGD:S000002451
+  predicate: enables
+  object: gomodel:RXN0-1461
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002333 gomodel:YDR044W-MONOMER_RXN0-1461_controller.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/6; endpoint types: /individuals/17/type;
+      /individuals/19/type'
+- id: edge-008
+  subject: gomodel:PROTOHEMEFERROCHELAT-RXN
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002234 gomodel:CHEBI_15378_PROTOHEMEFERROCHELAT-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/7; endpoint types: /individuals/15/type;
+      /individuals/1/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001686.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/30; endpoint types:
+      /individuals/15/type; /individuals/77/type'
+- id: edge-009
+  subject: gomodel:UROGENDECARBOX-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001647.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/8; endpoint types: /individuals/18/type;
+      /individuals/51/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001643.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/27; endpoint types:
+      /individuals/18/type; /individuals/47/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002233 gomodel:CHEBI_15378_UROGENDECARBOX-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/34; endpoint types:
+      /individuals/18/type; /individuals/3/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001645.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/36; endpoint types:
+      /individuals/18/type; /individuals/49/type'
+- id: edge-010
+  subject: gomodel:PROTOPORGENOXI-RXN
+  predicate: has_input
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001661.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/9; endpoint types: /individuals/16/type;
+      /individuals/65/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001663.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/12; endpoint types:
+      /individuals/16/type; /individuals/67/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002233 gomodel:CHEBI_15379_PROTOPORGENOXI-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/35; endpoint types:
+      /individuals/16/type; /individuals/4/type'
+- id: edge-011
+  subject: SGD:S000005702
+  predicate: enables
+  object: gomodel:PROTOHEMEFERROCHELAT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002333 gomodel:YOR176W-MONOMER_PROTOHEMEFERROCHELAT-RXN_controller.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/10; endpoint types:
+      /individuals/15/type; /individuals/22/type'
+- id: edge-012
+  subject: gomodel:RXN0-1461
+  predicate: has_output
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001657.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/11; endpoint types:
+      /individuals/17/type; /individuals/61/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002234 gomodel:CHEBI_16526_RXN0-1461.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/26; endpoint types:
+      /individuals/17/type; /individuals/7/type'
+- id: edge-013
+  subject: gomodel:PROTOPORGENOXI-RXN
+  predicate: has_input
+  object: CHEBI:57307
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002233 gomodel:CHEBI_57307_RXN0-1461.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/13; endpoint types:
+      /individuals/16/type; /individuals/12/type'
+- id: edge-014
+  subject: SGD:S000002454
+  predicate: enables
+  object: gomodel:UROGENDECARBOX-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002333 gomodel:YDR047W-MONOMER_UROGENDECARBOX-RXN_controller.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/14; endpoint types:
+      /individuals/18/type; /individuals/20/type'
+- id: edge-015
+  subject: gomodel:PROTOPORGENOXI-RXN
+  predicate: has_output
+  object: CHEBI:57306
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002234 gomodel:CHEBI_57306_PROTOPORGENOXI-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/15; endpoint types:
+      /individuals/16/type; /individuals/11/type'
+- id: edge-016
+  subject: SGD:S000000816
+  predicate: enables
+  object: gomodel:PROTOPORGENOXI-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002333 gomodel:YER014W-MONOMER_PROTOPORGENOXI-RXN_controller.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/16; endpoint types:
+      /individuals/16/type; /individuals/21/type'
+- id: edge-017
+  subject: gomodel:RXN0-1461
+  predicate: has_input
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002233 gomodel:CHEBI_15379_RXN0-1461.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/17; endpoint types:
+      /individuals/17/type; /individuals/5/type'
+- id: edge-018
+  subject: gomodel:PROTOPORGENOXI-RXN
+  predicate: has_output
+  object: CHEBI:16240
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002234 gomodel:CHEBI_16240_PROTOPORGENOXI-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/18; endpoint types:
+      /individuals/16/type; /individuals/6/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001665.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/19; endpoint types:
+      /individuals/16/type; /individuals/69/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN RO:0002234 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001667.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/22; endpoint types:
+      /individuals/16/type; /individuals/71/type'
+- id: edge-019
+  subject: gomodel:PROTOPORGENOXI-RXN
+  predicate: part_of
+  object: GO:0006783
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN BFO:0000050 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/YeastPathways_HEME-BIOSYNTHESIS-II.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/20; endpoint types:
+      /individuals/16/type; /individuals/46/type'
+- id: edge-020
+  subject: gomodel:PROTOHEMEFERROCHELAT-RXN
+  predicate: has_output
+  object: CHEBI:17627
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002234 gomodel:CHEBI_17627_PROTOHEMEFERROCHELAT-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/21; endpoint types:
+      /individuals/15/type; /individuals/9/type'
+- id: edge-021
+  subject: gomodel:UROGENDECARBOX-RXN
+  predicate: has_output
+  object: CHEBI:57309
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002234 gomodel:CHEBI_57309_UROGENDECARBOX-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/24; endpoint types:
+      /individuals/18/type; /individuals/14/type'
+- id: edge-022
+  subject: gomodel:PROTOHEMEFERROCHELAT-RXN
+  predicate: occurs_in
+  object: GO:0005743
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN BFO:0000066 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001691.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/25; endpoint types:
+      /individuals/15/type; /individuals/81/type'
+- id: edge-023
+  subject: gomodel:PROTOHEMEFERROCHELAT-RXN
+  predicate: has_input
+  object: CHEBI:29033
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002233 gomodel:CHEBI_29033_PROTOHEMEFERROCHELAT-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/28; endpoint types:
+      /individuals/15/type; /individuals/10/type'
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002233 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001684.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/29; endpoint types:
+      /individuals/15/type; /individuals/75/type'
+- id: edge-024
+  subject: gomodel:RXN0-1461
+  predicate: has_output
+  object: CHEBI:57307
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 RO:0002234 gomodel:CHEBI_57307_RXN0-1461.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/31; endpoint types:
+      /individuals/17/type; /individuals/12/type'
+- id: edge-025
+  subject: gomodel:RXN0-1461
+  predicate: part_of
+  object: GO:0006783
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 BFO:0000050 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/YeastPathways_HEME-BIOSYNTHESIS-II.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/32; endpoint types:
+      /individuals/17/type; /individuals/46/type'
+- id: edge-026
+  subject: gomodel:UROGENDECARBOX-RXN
+  predicate: has_input
+  object: CHEBI:57308
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN RO:0002233 gomodel:CHEBI_57308_UROGENDECARBOX-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/33; endpoint types:
+      /individuals/18/type; /individuals/13/type'
+- id: edge-027
+  subject: gomodel:PROTOPORGENOXI-RXN
+  predicate: occurs_in
+  object: GO:0005743
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOPORGENOXI-RXN BFO:0000066 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/65692e7e00001681.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/37; endpoint types:
+      /individuals/16/type; /individuals/73/type'
+- id: edge-028
+  subject: gomodel:PROTOHEMEFERROCHELAT-RXN
+  predicate: has_input
+  object: CHEBI:57306
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:PROTOHEMEFERROCHELAT-RXN RO:0002233 gomodel:CHEBI_57306_PROTOPORGENOXI-RXN.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/38; endpoint types:
+      /individuals/15/type; /individuals/11/type'
+- id: edge-029
+  subject: gomodel:UROGENDECARBOX-RXN
+  predicate: part_of
+  object: GO:0006783
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:UROGENDECARBOX-RXN BFO:0000050 gomodel:YeastPathways_HEME-BIOSYNTHESIS-II/YeastPathways_HEME-BIOSYNTHESIS-II.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/42; endpoint types:
+      /individuals/18/type; /individuals/46/type'
+- id: edge-030
+  subject: gomodel:RXN0-1461
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+    source_assertion: The model asserts gomodel:RXN0-1461 BFO:0000066 gomodel:reaction_RXN0-1461_location_lociGO_0005829.
+    source_locator: './YeastPathways_HEME-BIOSYNTHESIS-II.json#/facts/43; endpoint types:
+      /individuals/17/type; /individuals/44/type'
+- id: location-d58f8d91e9a6
+  subject: SGD:S000002451
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:3516695)
+  evidence:
+  - reference_id: UniProtKB:P11353
+    source_assertion: UniProtKB:P11353 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/324/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P11353
+    source_assertion: UniProtKB:P11353 has the exact SGD cross-reference SGD:S000002451.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/324/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4de9b56e0162
+  subject: SGD:S000005702
+  predicate: located_in
+  object: GO:0005743
+  description: 'Physical protein location from reviewed UniProt. evidence code not specified
+    by source Topology: Peripheral membrane protein. Orientation: Matrix side. Source qualification:
+    It is bound to the mitochondrial inner membrane in eukaryotic cells with its active site
+    on the matrix side of the membrane'
+  evidence:
+  - reference_id: UniProtKB:P16622
+    source_assertion: UniProtKB:P16622 annotates location Mitochondrion inner membrane (SL-0168).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/445/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P16622
+    source_assertion: UniProtKB:P16622 has the exact SGD cross-reference SGD:S000005702.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/445/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4943ad3823a1
+  subject: SGD:S000002454
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P32347
+    source_assertion: UniProtKB:P32347 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/881/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32347
+    source_assertion: UniProtKB:P32347 has the exact SGD cross-reference SGD:S000002454.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/881/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-de13db480f49
+  subject: SGD:S000002454
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:2180703)
+  evidence:
+  - reference_id: UniProtKB:P32347
+    source_assertion: UniProtKB:P32347 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/881/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32347
+    source_assertion: UniProtKB:P32347 has the exact SGD cross-reference SGD:S000002454.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/881/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-00353c58e961
+  subject: SGD:S000000816
+  predicate: located_in
+  object: GO:0005743
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:7798202)
+    Source qualification: Bound to the mitochondrial inner membrane with its active site facing
+    the cytosolic side'
+  evidence:
+  - reference_id: UniProtKB:P40012
+    source_assertion: UniProtKB:P40012 annotates location Mitochondrion inner membrane (SL-0168).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3703/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P40012
+    source_assertion: UniProtKB:P40012 has the exact SGD cross-reference SGD:S000000816.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3703/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-0aef0c961ff1
+  subject: SGD:S000000816
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified
+    Binds 1 FAD per subunit. UniProt note evidence: ECO:0000250 (UniProtKB:P32397)'
+  evidence:
+  - reference_id: UniProtKB:P40012
+    source_assertion: UniProtKB:P40012 annotates CHEBI:57692 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3703/comments/0/cofactors/0;
+      /results/3703/comments/0/note'
+  - reference_id: UniProtKB:P40012
+    source_assertion: UniProtKB:P40012 has the exact SGD cross-reference SGD:S000000816.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3703/uniProtKBCrossReferences/0'
 references:
-  - id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
-    title: GO-CAM heme b biosynthesis I aerobic model YeastPathways_HEME-BIOSYNTHESIS-II
+- id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  title: GO-CAM heme b biosynthesis I aerobic model YeastPathways_HEME-BIOSYNTHESIS-II
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2023-12-13; member ./YeastPathways_HEME-BIOSYNTHESIS-II.json
+- id: UniProtKB:P11353
+  title: Reviewed UniProtKB P11353 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P16622
+  title: Reviewed UniProtKB P16622 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P32347
+  title: Reviewed UniProtKB P32347 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P40012
+  title: Reviewed UniProtKB P40012 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

@@ -1,0 +1,725 @@
+{
+  "applied": true,
+  "reviewed_at": "2026-10-05T19:29:52Z",
+  "scope": "Bounded adversarial corrections for issues 264, 265 and 266; original cohort exclusions and earlier ledgers remain intact.",
+  "sources": {
+    "chebi": {
+      "url": "https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo",
+      "release": "255",
+      "sha256": "6cd3c7f18d8b22c577e110e00008fb288d8f5b34424bbe5011858747062f9dd9",
+      "locators": [
+        "[Term] CHEBI:15354",
+        "[Term] CHEBI:57597",
+        "[Term] CHEBI:157692",
+        "[Term] CHEBI:29979"
+      ],
+      "projection": {
+        "CHEBI:15354": {
+          "label": "choline",
+          "is_a": [
+            "CHEBI:23217"
+          ],
+          "smiles": "C[N+](C)(C)CCO",
+          "lipid_ancestor": false
+        },
+        "CHEBI:57597": {
+          "label": "sn-glycerol 3-phosphate(2-)",
+          "is_a": [
+            "CHEBI:58945"
+          ],
+          "smiles": "O=P([O-])([O-])OC[C@H](O)CO",
+          "lipid_ancestor": false
+        },
+        "CHEBI:157692": {
+          "label": "(2S)-2-amino-5-hydroxy-4-oxopentanoate residue",
+          "formula": "C5H7NO3",
+          "smiles": "*N[C@@H](CC(=O)CO)C(*)=O",
+          "monoisotopic_mass": "129.04259"
+        },
+        "CHEBI:29979": {
+          "label": "L-histidine residue",
+          "formula": "C6H7N3O",
+          "monoisotopic_mass": "137.05891"
+        }
+      },
+      "scope": "Choline and glycerol phosphate are small molecules rather than lipids. CHEBI:157692 is a hydroxy-ketone residue, not the alpha-ketoacid reported for THI5. Other ChEBI lipid descendants, including CHEBI:16763 and CHEBI:11851, were deliberately retained."
+    },
+    "PMID:17050532": {
+      "doi": "10.1074/jbc.M606883200",
+      "url": "https://doi.org/10.1074/jbc.M606883200",
+      "source_locator": "Inositol Binding Site, pp. 38114-38115; ATP Binding Site and Figure 3",
+      "finding": "The 200 mM CaCl2 crystallization condition yields a calcium bridge between crystallographically related protein molecules, potentially interfering with substrate binding. The nucleotide active-site structure contains ADP and Mn(II). This does not establish calcium as an ARG82 physiological cofactor.",
+      "inspection": "Full primary text inspected through a web view; no local source artifact digest is claimed."
+    },
+    "PMID:35675507": {
+      "doi": "10.1021/jacs.2c03322",
+      "url": "https://doi.org/10.1021/jacs.2c03322",
+      "source_locator": "JACS 144 (2022), pp. 10711-10714, Results and Discussion; Figures 2-5",
+      "finding": "Candida albicans THI5 requires Fe(II) and oxygen and yields PLP-derived fragments different from the inherited THI13 equation. The histidine modification is an alpha-ketoacid, with a +5.96 Da peptide mass shift; the article also establishes the alpha-ketoacid modification in ScTHI5 in vivo. These are homolog results, not direct THI13 measurements.",
+      "scope": "Retain the THI13 protein-bound PLP-lysine/histidine to HMP-phosphate core as a similarity inference. Quarantine exact iron redox, water/proton balance, 3-oxopropanoate and residue-product endpoints. Do not substitute Candida oxygen/product chemistry or infer complete net balance. Omitted products and balancing species remain unresolved, not absent.",
+      "residue_decision": "CHEBI:157692 would give a -8.01632 Da change from CHEBI:29979 and has a terminal alcohol/ketone structure, inconsistent with the later THI5 alpha-ketoacid assignment. The exact regenerated lysinium state is also left unresolved because the retained core does not establish PLP-fragment release from its protein linkage.",
+      "inspection": "Full primary text inspected through a web view; no local source artifact digest is claimed."
+    },
+    "UniProtKB:Q07748": {
+      "url": "https://rest.uniprot.org/uniprotkb/Q07748.json",
+      "sha256": "3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755",
+      "release": "2026_03"
+    }
+  },
+  "records": [
+    {
+      "path": "data/pathways/phospholipids-degradation.yaml",
+      "record": "WikiPathways:WP71",
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/264",
+      "before_sha256": "8f768402abcf37829703d1bfa79b005a26e9d0d2ea0ac152975df4def6d4ffcb",
+      "after_sha256": "fb0b58b847d80f1a68aac342f1974cb6f51171da44ffe3285030454221af5c19",
+      "decision": "Corrected choline CHEBI:15354 to small_molecule using ChEBI release 255 structural classification; biochemical edges and original source assertions are unchanged.",
+      "superseded_participants": [
+        {
+          "original": {
+            "id": "CHEBI:15354",
+            "label": "choline",
+            "category": "lipid"
+          },
+          "replacement": {
+            "id": "CHEBI:15354",
+            "label": "choline",
+            "category": "small_molecule"
+          }
+        }
+      ],
+      "superseded_mechanistic_edges": []
+    },
+    {
+      "path": "data/pathways/triglyceride-biosynthesis.yaml",
+      "record": "WikiPathways:WP266",
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/264",
+      "before_sha256": "5d53ce2ce1291cccdf3581bc2a8a6d33a7ef4b4e730af909aaec95094d820498",
+      "after_sha256": "0ab6fcab3fa418433fffcd68cc992090145bf43c16c1132bddd1e9834a1a6a2f",
+      "decision": "Corrected sn-glycerol 3-phosphate(2-) CHEBI:57597 to small_molecule using ChEBI release 255 structural classification; biochemical edges and original source assertions are unchanged.",
+      "superseded_participants": [
+        {
+          "original": {
+            "id": "CHEBI:57597",
+            "label": "sn-glycerol 3-phosphate",
+            "category": "lipid"
+          },
+          "replacement": {
+            "id": "CHEBI:57597",
+            "label": "sn-glycerol 3-phosphate",
+            "category": "small_molecule"
+          }
+        }
+      ],
+      "superseded_mechanistic_edges": []
+    },
+    {
+      "path": "data/pathways/inositol-phosphate-biosynthesis.yaml",
+      "record": "gomodel:YeastPathways_PWY3O-402",
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/265",
+      "before_sha256": "9572d8ea6f4e2fde5e7d64a522f21ded3b176a2418492028227df5cc543f183a",
+      "after_sha256": "add22f805f7a14a195c64a04e8b070f98c68626b30e768898e843213e7809fcc",
+      "decision": "Excluded ARG82 calcium cofactor assertion after primary PMID:17050532 crystal-contact review. Retained the original assertion in the scientific correction ledger and the independently supported PLC1 calcium relation. No replacement metal is inferred.",
+      "semantic_exclusion": {
+        "action": "exclude_crystal_contact",
+        "exclusion_action": "excluded_crystal_contact",
+        "rationale": "PMID:17050532 locates calcium at an intermolecular crystal contact in 200 mM CaCl2, not at the ADP/Mn(II) active site. The UniProt calcium annotation does not establish a physiological cofactor. No replacement metal is inferred.",
+        "excluded_cofactors": [
+          "CHEBI:29108"
+        ],
+        "cofactor_sha256": "9073207c2cd743f2692197cb66408d348a08b0ec64745112f016da2a55d10c14",
+        "source": "uniprot-yeast-reviewed-cofactors",
+        "source_index": 164,
+        "source_cofactors": [
+          {
+            "source_curie": "CHEBI:29108",
+            "comment_index": 0,
+            "cofactor_index": 0,
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "17050532"
+              }
+            ],
+            "note": ""
+          }
+        ],
+        "primary_evidence": {
+          "reference_id": "PMID:17050532",
+          "doi": "10.1074/jbc.M606883200",
+          "url": "https://doi.org/10.1074/jbc.M606883200",
+          "source_locator": "Inositol Binding Site, pp. 38114-38115; ATP Binding Site and Figure 3",
+          "finding": "Calcium forms a bridging crystal contact between crystallographically related molecules and may interfere with inositol substrate binding; the nucleotide-site structure contains ADP and Mn(II)."
+        },
+        "review_issue": "https://github.com/CultureBotAI/PathwayMech/issues/265"
+      },
+      "superseded_participants": [],
+      "superseded_mechanistic_edges": [
+        {
+          "original": {
+            "id": "cofactor-5078997717d3",
+            "subject": "SGD:S000002580",
+            "predicate": "has_cofactor",
+            "object": "CHEBI:29108",
+            "description": "UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269 (PubMed:17050532)",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P07250",
+                "source_assertion": "UniProtKB:P07250 annotates CHEBI:29108 as a cofactor of this protein.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/164/comments/0/cofactors/0"
+              },
+              {
+                "reference_id": "UniProtKB:P07250",
+                "source_assertion": "UniProtKB:P07250 has the exact SGD cross-reference SGD:S000002580.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/164/uniProtKBCrossReferences/0"
+              }
+            ]
+          },
+          "replacement": null
+        }
+      ]
+    },
+    {
+      "path": "data/pathways/thiamine-biosynthesis.yaml",
+      "record": "gomodel:YeastPathways_PWY3O-17",
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/266",
+      "before_sha256": "c6f1976d03fbe5951536a8d56c1af04523d51905e8e4ee2f0bd90f40cb907843",
+      "after_sha256": "b22273bb29300508a8446c84344cbe568a8ec56858c7d983dd951ba3fd04ca1e",
+      "decision": "Quarantined THI13 exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions after PMID:35675507 homolog-source conflict review. Retained the protein-bound PLP-lysine/histidine to HMP-phosphate core as a similarity inference; omitted products and balancing species remain unresolved. Original endpoints and source equation are preserved in the scientific correction ledger.",
+      "function_decisions": [
+        {
+          "source_conflict": "PMID:35675507",
+          "source_locator": "JACS 144 (2022), pp. 10711-10714, Results and Discussion; Figures 2-5",
+          "scope": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+          "inherited_reaction": {
+            "name": "N(6)-(pyridoxal phosphate)-L-lysyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + L-histidyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + 2 Fe(3+) + 4 H2O = L-lysyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + (2S)-2-amino-5-hydroxy-4-oxopentanoyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + 4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine + 3-oxopropanoate + 2 Fe(2+) + 2 H(+)",
+            "reactionCrossReferences": [
+              {
+                "database": "Rhea",
+                "id": "RHEA:65756"
+              },
+              {
+                "database": "Rhea",
+                "id": "RHEA-COMP:16892"
+              },
+              {
+                "database": "Rhea",
+                "id": "RHEA-COMP:16893"
+              },
+              {
+                "database": "Rhea",
+                "id": "RHEA-COMP:16894"
+              },
+              {
+                "database": "Rhea",
+                "id": "RHEA-COMP:16895"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:15377"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:15378"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:29033"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:29034"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:29969"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:29979"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:33190"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:58354"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:143915"
+              },
+              {
+                "database": "ChEBI",
+                "id": "CHEBI:157692"
+              }
+            ],
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000250",
+                "source": "UniProtKB",
+                "id": "P43534"
+              }
+            ]
+          },
+          "quarantined_endpoints": [
+            "CHEBI:29034",
+            "CHEBI:29033",
+            "CHEBI:33190",
+            "CHEBI:15377",
+            "CHEBI:15378",
+            "CHEBI:157692",
+            "CHEBI:29969"
+          ]
+        },
+        "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+        "THI4 forms ADP-thiazole using its own cysteine residue as sulfur donor, leaving a dehydroalanine residue after one turnover. The reviewed equation produces three waters and two H+; it does not identify THI4 as the enzyme for downstream ADP-thiazole hydrolysis."
+      ],
+      "inherited_thi13_reaction": {
+        "name": "N(6)-(pyridoxal phosphate)-L-lysyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + L-histidyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + 2 Fe(3+) + 4 H2O = L-lysyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + (2S)-2-amino-5-hydroxy-4-oxopentanoyl-[4-amino-5-hydroxymethyl-2-methylpyrimidine phosphate synthase] + 4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine + 3-oxopropanoate + 2 Fe(2+) + 2 H(+)",
+        "reactionCrossReferences": [
+          {
+            "database": "Rhea",
+            "id": "RHEA:65756"
+          },
+          {
+            "database": "Rhea",
+            "id": "RHEA-COMP:16892"
+          },
+          {
+            "database": "Rhea",
+            "id": "RHEA-COMP:16893"
+          },
+          {
+            "database": "Rhea",
+            "id": "RHEA-COMP:16894"
+          },
+          {
+            "database": "Rhea",
+            "id": "RHEA-COMP:16895"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:15377"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:15378"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:29033"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:29034"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:29969"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:29979"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:33190"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:58354"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:143915"
+          },
+          {
+            "database": "ChEBI",
+            "id": "CHEBI:157692"
+          }
+        ],
+        "evidences": [
+          {
+            "evidenceCode": "ECO:0000250",
+            "source": "UniProtKB",
+            "id": "P43534"
+          }
+        ]
+      },
+      "superseded_participants": [
+        {
+          "original": {
+            "id": "CHEBI:29034",
+            "label": "iron(3+)",
+            "category": "small_molecule"
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "CHEBI:29969",
+            "label": "L-lysinium residue"
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "CHEBI:157692",
+            "label": "(2S)-2-amino-5-hydroxy-4-oxopentanoate residue"
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "CHEBI:33190",
+            "label": "3-oxopropanoate",
+            "category": "small_molecule"
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "CHEBI:29033",
+            "label": "iron(2+)",
+            "category": "small_molecule"
+          },
+          "replacement": null
+        }
+      ],
+      "superseded_mechanistic_edges": [
+        {
+          "original": {
+            "id": "edge-086",
+            "subject": "SGD:S000002403",
+            "predicate": "enables",
+            "object": "gomodel:RXN3O-9804",
+            "evidence": [
+              {
+                "reference_id": "gomodel:YeastPathways_PWY3O-17",
+                "source_assertion": "The model asserts gomodel:RXN3O-9804 RO:0002333 gomodel:MONOMER3O-9145_RXN3O-9804_controller.",
+                "source_locator": "./YeastPathways_PWY3O-17.json#/facts/85; endpoint types: /individuals/33/type; /individuals/29/type"
+              },
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 uses its active-site histidine and protein-bound PLP to form HMP-phosphate in a single turnover, generating inactive enzyme; this annotation is inferred by similarity to THI5.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/0/texts/0"
+              }
+            ],
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+."
+          },
+          "replacement": {
+            "id": "edge-086",
+            "subject": "SGD:S000002403",
+            "predicate": "enables",
+            "object": "gomodel:RXN3O-9804",
+            "evidence": [
+              {
+                "reference_id": "gomodel:YeastPathways_PWY3O-17",
+                "source_assertion": "The model asserts gomodel:RXN3O-9804 RO:0002333 gomodel:MONOMER3O-9145_RXN3O-9804_controller.",
+                "source_locator": "./YeastPathways_PWY3O-17.json#/facts/85; endpoint types: /individuals/33/type; /individuals/29/type"
+              },
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 uses its active-site histidine and protein-bound PLP to form HMP-phosphate in a single turnover, generating inactive enzyme; this annotation is inferred by similarity to THI5.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/0/texts/0"
+              }
+            ],
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent."
+          }
+        },
+        {
+          "original": {
+            "id": "function-61fdd10aa59d",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_input",
+            "object": "CHEBI:143915",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": {
+            "id": "function-61fdd10aa59d",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_input",
+            "object": "CHEBI:143915",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "The THI13 annotation, inferred by similarity to THI5, uses protein-bound PLP-lysine and histidine residues and forms HMP-phosphate. This bounded projection retains those core endpoints of the source equation, without asserting its exact net stoichiometry or residue and small-molecule products.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          }
+        },
+        {
+          "original": {
+            "id": "function-d06c8b080abf",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_input",
+            "object": "CHEBI:29979",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": {
+            "id": "function-d06c8b080abf",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_input",
+            "object": "CHEBI:29979",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "The THI13 annotation, inferred by similarity to THI5, uses protein-bound PLP-lysine and histidine residues and forms HMP-phosphate. This bounded projection retains those core endpoints of the source equation, without asserting its exact net stoichiometry or residue and small-molecule products.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          }
+        },
+        {
+          "original": {
+            "id": "function-60640f3574a3",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_input",
+            "object": "CHEBI:29034",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-2f54da698c0c",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_input",
+            "object": "CHEBI:15377",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-b01abfaf0f70",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:29969",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-9729fb490121",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:157692",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-65069bb6ff1e",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:58354",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": {
+            "id": "function-65069bb6ff1e",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:58354",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "The THI13 annotation, inferred by similarity to THI5, uses protein-bound PLP-lysine and histidine residues and forms HMP-phosphate. This bounded projection retains those core endpoints of the source equation, without asserting its exact net stoichiometry or residue and small-molecule products.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          }
+        },
+        {
+          "original": {
+            "id": "function-190fa7f9db56",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:33190",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-01aad8f07e6e",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:29033",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-286fe90b6a69",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "has_output",
+            "object": "CHEBI:15378",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 converts protein-bound PLP-lysine and histidine residues to lysine and modified histidine residues, HMP-phosphate and 3-oxopropanoate; water and Fe(III) are inputs, Fe(II) and protons are outputs.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              }
+            ]
+          },
+          "replacement": null
+        },
+        {
+          "original": {
+            "id": "function-c890fae71f8d",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "provides_input_for",
+            "object": "gomodel:PYRIMSYN3-RXN",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 has HMP-phosphate as a product; it supplies the substrate of the source model's phosphomethylpyrimidine kinase activities.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              },
+              {
+                "reference_id": "gomodel:YeastPathways_PWY3O-17",
+                "source_assertion": "The model asserts gomodel:PYRIMSYN3-RXN RO:0002233 gomodel:CHEBI_58354_OHMETPYRKIN-RXN.",
+                "source_locator": "./YeastPathways_PWY3O-17.json#/facts/49; endpoint types: /individuals/31/type; /individuals/26/type"
+              }
+            ]
+          },
+          "replacement": {
+            "id": "function-c890fae71f8d",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "provides_input_for",
+            "object": "gomodel:PYRIMSYN3-RXN",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 has HMP-phosphate as a product; it supplies the substrate of the source model's phosphomethylpyrimidine kinase activities.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              },
+              {
+                "reference_id": "gomodel:YeastPathways_PWY3O-17",
+                "source_assertion": "The model asserts gomodel:PYRIMSYN3-RXN RO:0002233 gomodel:CHEBI_58354_OHMETPYRKIN-RXN.",
+                "source_locator": "./YeastPathways_PWY3O-17.json#/facts/49; endpoint types: /individuals/31/type; /individuals/26/type"
+              }
+            ]
+          }
+        },
+        {
+          "original": {
+            "id": "function-22e6814dd574",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "provides_input_for",
+            "object": "gomodel:YeastPathways_PWY3O-17/6a4c244800007677",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. Equation coefficients: 2 Fe(III), 4 water, 2 Fe(II), 2 H+.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 has HMP-phosphate as a product; it supplies the substrate of the source model's phosphomethylpyrimidine kinase activities.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              },
+              {
+                "reference_id": "gomodel:YeastPathways_PWY3O-17",
+                "source_assertion": "The model asserts gomodel:YeastPathways_PWY3O-17/6a4c244800007677 RO:0002233 gomodel:CHEBI_58354_OHMETPYRKIN-RXN.",
+                "source_locator": "./YeastPathways_PWY3O-17.json#/facts/79; endpoint types: /individuals/119/type; /individuals/26/type"
+              }
+            ]
+          },
+          "replacement": {
+            "id": "function-22e6814dd574",
+            "subject": "gomodel:RXN3O-9804",
+            "predicate": "provides_input_for",
+            "object": "gomodel:YeastPathways_PWY3O-17/6a4c244800007677",
+            "description": "Single-turnover THI13 chemistry inferred by similarity to THI5 (ECO:0000250, UniProtKB:P43534). Histidine and PLP-lysine are protein-bound residues, not free histidine substrates. HMP-phosphate is the product. The inherited exact iron redox, water/proton balance, 3-oxopropanoate and residue-product assertions are quarantined: PMID:35675507 reports Fe(II)/oxygen dependence and different PLP-derived products for Candida albicans THI5, and a histidine-derived alpha-ketoacid for both Candida THI5 and S. cerevisiae THI5. These homolog experiments are not direct evidence for S. cerevisiae THI13; no replacement oxygen or product edges, or complete net stoichiometry, are inferred. Omitted products and balancing species remain unresolved, rather than asserted absent.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:Q07748",
+                "source_assertion": "THI13 has HMP-phosphate as a product; it supplies the substrate of the source model's phosphomethylpyrimidine kinase activities.",
+                "source_locator": "https://rest.uniprot.org/uniprotkb/Q07748.json [sha256:3b3a42882440ce399581bed512ee732900b8883a786945a0ffa216a8b33a7755] #/comments/1/reaction"
+              },
+              {
+                "reference_id": "gomodel:YeastPathways_PWY3O-17",
+                "source_assertion": "The model asserts gomodel:YeastPathways_PWY3O-17/6a4c244800007677 RO:0002233 gomodel:CHEBI_58354_OHMETPYRKIN-RXN.",
+                "source_locator": "./YeastPathways_PWY3O-17.json#/facts/79; endpoint types: /individuals/119/type; /individuals/26/type"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

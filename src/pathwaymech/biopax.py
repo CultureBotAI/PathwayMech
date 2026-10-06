@@ -9,7 +9,6 @@ from xml.etree import ElementTree
 from pathwaymech.source_mapping import CurieMapping, source_mapping_row, unique_source_mappings
 
 RDF = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
-MAX_EVIDENCE_QUOTE_LENGTH = 400
 DB_PREFIXES = {
     "chebi": "CHEBI",
     "go": "GO",
@@ -38,107 +37,273 @@ def biopax_to_pathway_record(
     root: ElementTree.Element,
     fallback_id: str,
 ) -> dict[str, Any]:
+    """Preserve native conversion direction and physical catalytic assemblies.
+
+    Source comments and publication links do not establish a verbatim quotation
+    from the linked publication. Evidence therefore cites the BioPAX objects.
+    """
     source_prefix = fallback_id.split(":", 1)[0]
-    xref_by_ref = _unification_xrefs(root)
-    references, publication_reference_by_ref = _publication_references(root)
-    default_reference = next(iter(references.values()), _fallback_reference(fallback_id))
-    references.setdefault(default_reference["id"], default_reference)
-
-    pathway_id = _pathway_id(root, xref_by_ref, source_prefix) or fallback_id
-    participant_by_ref, source_mappings = _participants(root, xref_by_ref, pathway_id)
-    complex_components_by_ref = _complex_components(root)
-    reaction_by_ref = {}
-    evidence_quote_by_reaction_ref: dict[str, str | None] = {}
-    evidence_reference_by_reaction_ref: dict[str, str] = {}
-    reactions = []
-    edges: list[dict[str, Any]] = []
-    for reaction in _elements(root, "BiochemicalReaction"):
-        reaction_ref = _element_ref(reaction)
-        reaction_id = (
-            _source_xref(reaction, xref_by_ref, source_prefix)
-            or f"{pathway_id}/{reaction_ref}"
-        )
-        reaction_by_ref[reaction_ref] = reaction_id
-        reactions.append(
-            {"id": reaction_id, "label": _text_child(reaction, "displayName") or reaction_ref}
-        )
-
-        evidence_quote = _text_child(reaction, "comment")
-        evidence_reference = (
-            _publication_reference_id(reaction, publication_reference_by_ref)
-            or default_reference["id"]
-        )
-        evidence_quote_by_reaction_ref[reaction_ref] = evidence_quote
-        evidence_reference_by_reaction_ref[reaction_ref] = evidence_reference
-        for participant_id in _side_participants(reaction, "left", participant_by_ref):
-            edges.append(
-                _edge(
-                    subject=participant_id,
-                    predicate="consumes",
-                    obj=reaction_id,
-                    evidence_reference=evidence_reference,
-                    evidence_quote=evidence_quote,
-                )
-            )
-        for participant_id in _side_participants(reaction, "right", participant_by_ref):
-            edges.append(
-                _edge(
-                    subject=reaction_id,
-                    predicate="produces",
-                    obj=participant_id,
-                    evidence_reference=evidence_reference,
-                    evidence_quote=evidence_quote,
-                )
-            )
-
-    for catalysis in _elements(root, "Catalysis"):
-        reaction_ref = _resource_child(catalysis, "controlled")
-        if reaction_ref not in reaction_by_ref:
-            continue
-        for participant_id in _controller_participants(
-            _resource_child(catalysis, "controller"),
-            participant_by_ref,
-            complex_components_by_ref,
-        ):
-            if not participant_id.startswith("UniProtKB:"):
-                continue
-            edges.append(
-                _edge(
-                    subject=participant_id,
-                    predicate="catalyzes",
-                    obj=reaction_by_ref[reaction_ref],
-                    evidence_reference=evidence_reference_by_reaction_ref[reaction_ref],
-                    evidence_quote=evidence_quote_by_reaction_ref.get(reaction_ref),
-                )
-            )
-
-    used_participants = {edge["subject"] for edge in edges} | {
-        edge["object"] for edge in edges
+    xrefs = _unification_xrefs(root)
+    pathway_id = _pathway_id(root, xrefs, source_prefix) or fallback_id
+    references, _ = _publication_references(root)
+    references[pathway_id] = _fallback_reference(pathway_id)
+    participants, mappings = _participants(root, xrefs, pathway_id)
+    physical_types = {
+        "SmallMolecule": "small_molecule",
+        "Protein": "protein",
+        "Complex": "complex",
+        "Dna": "dna",
+        "DnaRegion": "dna",
+        "Rna": "rna",
+        "RnaRegion": "rna",
+        "PhysicalEntity": None,
     }
-    source_mappings = [
-        mapping for mapping in source_mappings if mapping["object_id"] in used_participants
-    ]
+    elements = {_element_ref(e): e for e in root if _local_name(e.tag) in physical_types}
+    side_refs = {
+        _resource(e)
+        for reaction in _elements(root, "BiochemicalReaction")
+        for side in ("left", "right")
+        for e in _children(reaction, side)
+    }
+    # A protein entityReference identifies a sequence, not its modification state.
+    # Distinct source physical objects must not collapse across a conversion or
+    # across cellular compartments merely because they share a database xref.
+    contexts: dict[str, set[tuple[str | None, tuple[str, ...]]]] = {}
+    for native, node in participants.items():
+        e = elements[native]
+        context = (
+            _resource_child(e, "cellularLocation"),
+            tuple(sorted(_resource(f) for f in _children(e, "feature"))),
+        )
+        contexts.setdefault(node["id"], set()).add(context)
+    for native, e in elements.items():
+        kind = _local_name(e.tag)
+        previous = participants.get(native)
+        needs_native = (
+            previous is None
+            or kind == "Complex"
+            or (kind in {"Protein", "Dna", "DnaRegion", "Rna", "RnaRegion"} and native in side_refs)
+            or len(contexts.get(previous["id"], set())) > 1
+        )
+        if needs_native:
+            identifier = _source_xref(e, xrefs, source_prefix) or f"{pathway_id}/{native}"
+            participants[native] = {
+                "id": identifier,
+                "label": _text_child(e, "displayName") or _text_child(e, "standardName") or native,
+            }
+            if physical_types[kind]:
+                participants[native]["category"] = physical_types[kind]
+    locations = {}
+    for loc in _elements(root, "CellularLocationVocabulary"):
+        identifier = _curie_with_prefix(loc, xrefs, "GO")
+        if identifier:
+            locations[_element_ref(loc)] = {
+                "id": identifier,
+                "label": _text_child(loc, "term") or identifier,
+                "category": "cellular_component",
+            }
+    edges = []
+    reactions = []
+    reaction_by_ref = {}
+    used_refs: set[str] = set()
+    for reaction in _elements(root, "BiochemicalReaction"):
+        native = _element_ref(reaction)
+        rid = _source_xref(reaction, xrefs, source_prefix) or f"{pathway_id}/{native}"
+        direction, orientation, direction_locator = _conversion_direction(root, reaction)
+        reaction_by_ref[native] = rid
+        reactions.append(
+            {
+                "id": rid,
+                "label": _text_child(reaction, "displayName") or native,
+                "direction": direction.lower().replace("-", "_"),
+            }
+        )
+        local_locations = []
+        for side in ("left", "right"):
+            for participant in _children(reaction, side):
+                pref = _resource(participant)
+                if pref not in participants:
+                    raise ValueError(
+                        f"BioPAX {native}/{side} has unresolved physical entity {pref}"
+                    )
+                used_refs.add(pref)
+                node = participants[pref]
+                consumed = (side == "left") != (orientation == "RIGHT-TO-LEFT")
+                s, p, o = (
+                    (node["id"], "consumes", rid) if consumed else (rid, "produces", node["id"])
+                )
+                edges.append(
+                    _edge(
+                        s,
+                        p,
+                        o,
+                        pathway_id,
+                        (
+                            f"BioPAX {native} places physical entity {pref} on its {side} side; "
+                            f"conversion direction is {direction}; "
+                            f"displayed orientation is {orientation}."
+                        ),
+                        f"#{native}/bp:{side}/#{pref}; {direction_locator}",
+                    )
+                )
+                local_locations.append(_resource_child(elements[pref], "cellularLocation"))
+        if local_locations and None not in local_locations and len(set(local_locations)) == 1:
+            location = locations.get(local_locations[0])
+            if location:
+                edges.append(
+                    _edge(
+                        rid,
+                        "occurs_in",
+                        location["id"],
+                        pathway_id,
+                        (
+                            f"All physical entities on both sides of BioPAX {native} "
+                            "have the same cellular location."
+                        ),
+                        (
+                            f"#{native}/bp:left|bp:right; "
+                            f"physicalEntity/bp:cellularLocation/#{local_locations[0]}"
+                        ),
+                    )
+                )
+    for catalysis in _elements(root, "Catalysis"):
+        controlled = _resource_child(catalysis, "controlled")
+        if controlled not in reaction_by_ref:
+            continue
+        controller = _resource_child(catalysis, "controller")
+        # BioPAX permits Catalysis without a controller when the catalyst is
+        # unknown. Its direction can still orient the conversion above.
+        # An explicit empty or dangling reference remains an import error.
+        if controller is None:
+            continue
+        if controller not in participants:
+            raise ValueError(f"BioPAX catalysis has unresolved controller {controller}")
+        # The source asserts catalysis by a PhysicalEntity, which may also be
+        # RNA (a ribozyme) or another supported physical kind.
+        used_refs.add(controller)
+        edges.append(
+            _edge(
+                participants[controller]["id"],
+                "catalyzes",
+                reaction_by_ref[controlled],
+                pathway_id,
+                f"BioPAX {_element_ref(catalysis)} names {controller} as its catalytic controller.",
+                (
+                    f"#{_element_ref(catalysis)}/bp:controller/#{controller}; "
+                    f"bp:controlled/#{controlled}"
+                ),
+            )
+        )
+    pending = list(used_refs)
+    visited = set()
+    while pending:
+        native = pending.pop()
+        if native in visited:
+            continue
+        visited.add(native)
+        e = elements[native]
+        for component in _children(e, "component"):
+            cref = _resource(component)
+            if cref not in participants:
+                raise ValueError(f"BioPAX complex {native} has unresolved component {cref}")
+            used_refs.add(cref)
+            pending.append(cref)
+            edges.append(
+                _edge(
+                    participants[native]["id"],
+                    "has_part",
+                    participants[cref]["id"],
+                    pathway_id,
+                    f"BioPAX complex {native} explicitly includes physical entity {cref}.",
+                    f"#{native}/bp:component/#{cref}",
+                )
+            )
+        locref = _resource_child(e, "cellularLocation")
+        if locref in locations:
+            edges.append(
+                _edge(
+                    participants[native]["id"],
+                    "located_in",
+                    locations[locref]["id"],
+                    pathway_id,
+                    f"BioPAX physical entity {native} is assigned to cellular location {locref}.",
+                    f"#{native}/bp:cellularLocation/#{locref}",
+                )
+            )
+    used_ids = {e[k] for e in edges for k in ("subject", "object")}
     record = {
         "id": pathway_id,
         "label": _pathway_label(root) or pathway_id,
         "description": f"BioPAX pathway {pathway_id}.",
         "pathway_type": "biopax-pathway",
-        "taxa": _taxa(root, xref_by_ref),
+        "taxa": _taxa(root, xrefs),
         "participants": _unique_nodes(
-            participant
-            for participant in participant_by_ref.values()
-            if participant["id"] in used_participants
+            [
+                *(participants[n] for n in participants if n in used_refs),
+                *(n for n in locations.values() if n["id"] in used_ids),
+            ]
         ),
         "reactions": reactions,
-        "mechanistic_edges": [
-            {"id": f"biopax-edge-{index}", **edge}
-            for index, edge in enumerate(edges, start=1)
-        ],
+        "mechanistic_edges": [{"id": f"biopax-edge-{i}", **e} for i, e in enumerate(edges, 1)],
         "references": list(references.values()),
     }
-    if source_mappings:
-        record["source_mappings"] = unique_source_mappings(source_mappings)
+    mappings = [m for m in mappings if m["object_id"] in used_ids]
+    if mappings:
+        record["source_mappings"] = unique_source_mappings(mappings)
     return record
+
+
+def _conversion_direction(
+    root: ElementTree.Element, reaction: ElementTree.Element
+) -> tuple[str, str, str]:
+    """BioPAX left/right are sides, not implicit reactant/product assignments."""
+    native = _element_ref(reaction)
+    conversion = _text_child(reaction, "conversionDirection")
+    controls = {
+        _element_ref(c): _text_child(c, "catalysisDirection")
+        for c in _elements(root, "Catalysis")
+        if _resource_child(c, "controlled") == native and _text_child(c, "catalysisDirection")
+    }
+    steps = {
+        _element_ref(step): _text_child(step, "stepDirection")
+        for step in _elements(root, "BiochemicalPathwayStep")
+        if _resource_child(step, "stepConversion") == native and _text_child(step, "stepDirection")
+    }
+    directed = {"LEFT-TO-RIGHT", "RIGHT-TO-LEFT"}
+    if conversion is not None and conversion not in directed | {"REVERSIBLE"}:
+        raise ValueError(f"BioPAX {native} has invalid conversion direction {conversion}")
+    control_values = set(controls.values())
+    step_values = set(steps.values())
+    if not control_values <= directed or not step_values <= directed | {"REVERSIBLE"}:
+        raise ValueError(f"BioPAX {native} has invalid contextual direction")
+    contextual = control_values | step_values
+    if conversion in directed and contextual - {conversion}:
+        raise ValueError(f"BioPAX {native} has contradictory direction assertions")
+    if len(step_values) > 1:
+        raise ValueError(f"BioPAX {native} has conflicting pathway-step directions")
+    step_direction = next(iter(step_values), None)
+    if step_direction in directed and control_values - {step_direction}:
+        raise ValueError(f"BioPAX {native} has contradictory direction assertions")
+
+    # Conversion reversibility and the physiological orientation asserted by a
+    # catalyst or pathway step are separate facts. Keep the former while using
+    # a directed contextual assertion to assign reactants and products.
+    if len(control_values) == 1:
+        orientation = next(iter(control_values))
+    elif step_direction in directed:
+        orientation = step_direction
+    elif conversion in directed:
+        orientation = conversion
+    elif conversion == "REVERSIBLE" or step_direction == "REVERSIBLE":
+        # Either orientation can display an explicitly reversible conversion.
+        orientation = "LEFT-TO-RIGHT"
+    else:
+        raise ValueError(f"BioPAX {native} needs an explicit conversion direction")
+    direction = conversion or step_direction or orientation
+    locators = [f"#{native}/bp:conversionDirection"] if conversion else []
+    locators.extend(f"#{step}/bp:stepDirection" for step in steps)
+    locators.extend(f"#{control}/bp:catalysisDirection" for control in controls)
+    return direction, orientation, "; ".join(locators)
 
 
 def _unification_xrefs(root: ElementTree.Element) -> dict[str, NormalizedXref]:
@@ -334,8 +499,7 @@ def _publication_references(
         publication_reference_by_ref[_element_ref(publication)] = reference_id
         references[reference_id] = {
             "id": reference_id,
-            "title": _text_child(publication, "title")
-            or f"BioPAX publication {reference_id}",
+            "title": _text_child(publication, "title") or f"BioPAX publication {reference_id}",
         }
     return references, publication_reference_by_ref
 
@@ -370,7 +534,8 @@ def _edge(
     predicate: str,
     obj: str,
     evidence_reference: str,
-    evidence_quote: str | None = None,
+    source_assertion: str,
+    source_locator: str,
 ) -> dict[str, Any]:
     return {
         "subject": subject,
@@ -379,17 +544,11 @@ def _edge(
         "evidence": [
             {
                 "reference_id": evidence_reference,
-                "quote": _short_evidence_quote(evidence_quote)
-                or f"BioPAX reaction cites {evidence_reference}.",
+                "source_assertion": source_assertion,
+                "source_locator": source_locator,
             }
         ],
     }
-
-
-def _short_evidence_quote(evidence_quote: str | None) -> str | None:
-    if not evidence_quote:
-        return None
-    return evidence_quote[:MAX_EVIDENCE_QUOTE_LENGTH]
 
 
 def _elements(root: ElementTree.Element, name: str) -> list[ElementTree.Element]:

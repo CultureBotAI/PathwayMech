@@ -1,0 +1,29 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/kgx.py
+  slug: kgx-native-participant-categories
+session:
+  id: 2026-10-05T192453Z-Codex-3806e6
+  timestamp: '2026-10-05T19:24:53Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/263
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve unresolved native participants without assigning a reaction category
+  details: Reproduced five native GO-CAM participant misclassifications against the independent
+    source authority snapshot, including chemical entity and methylated methyl donor instances.
+    The KGX participant fallback now uses biolink:NamedThing when a native namespace otherwise
+    guesses BiochemicalReaction, while explicit biological kinds and reaction defaults remain
+    unchanged. Five actual corpus regression cases and three native-namespace cases failed
+    against the pre-fix exporter. The joint KGX/BioPAX red run had 21 failures and 21 passes;
+    after fixes, 68 focused KGX, BioPAX, and graph-context tests passed. Focused ruff and
+    git diff --check passed. No corpus YAML, identifier authorities, or generated exports
+    were changed by this fix.

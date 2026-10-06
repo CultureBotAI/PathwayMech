@@ -1,151 +1,627 @@
 id: MetaCyc:GLYOXYLATE-BYPASS
 label: glyoxylate cycle
-description: >-
-  The glyoxylate cycle diverts D-threo-isocitrate to succinate and glyoxylate,
-  then condenses glyoxylate with acetyl-CoA and H2O to form (S)-malate.
+description: The glyoxylate cycle assimilates acetyl-CoA through citrate synthase, aconitase, isocitrate
+  lyase and malate synthase. Malate dehydrogenase regenerates oxaloacetate, closing the cycle while succinate
+  is released. Enzyme activities have been demonstrated in Mycobacterium tuberculosis.
 pathway_type: central-carbon-metabolism
 taxa:
-  - id: NCBITaxon:1773
-    label: Mycobacterium tuberculosis
+- id: NCBITaxon:1773
+  label: Mycobacterium tuberculosis
 participants:
-  - id: EC:4.1.3.1
-    label: isocitrate lyase
-  - id: EC:2.3.3.9
-    label: malate synthase
-  - id: CHEBI:15562
-    label: D-threo-isocitrate
-  - id: CHEBI:36655
-    label: glyoxylate
-  - id: CHEBI:30031
-    label: succinate
-  - id: CHEBI:57288
-    label: acetyl-CoA
-  - id: CHEBI:15377
-    label: H2O
-  - id: CHEBI:15589
-    label: (S)-malate
-  - id: CHEBI:57287
-    label: CoA
-  - id: CHEBI:15378
-    label: H+
+- id: EC:4.1.3.1
+  label: isocitrate lyase
+  category: molecular_activity
+- id: EC:2.3.3.9
+  label: malate synthase
+  category: molecular_activity
+- id: CHEBI:15562
+  label: D-threo-isocitrate
+  category: small_molecule
+- id: CHEBI:36655
+  label: glyoxylate
+  category: small_molecule
+- id: CHEBI:30031
+  label: succinate
+  category: small_molecule
+- id: CHEBI:57288
+  label: acetyl-CoA
+  category: small_molecule
+- id: CHEBI:15377
+  label: H2O
+  category: small_molecule
+- id: CHEBI:15589
+  label: (S)-malate
+  category: small_molecule
+- id: CHEBI:57287
+  label: CoA
+  category: small_molecule
+- id: CHEBI:15378
+  label: H+
+  category: small_molecule
+- id: EC:2.3.3.1
+  label: citrate (Si)-synthase
+  category: molecular_activity
+- id: EC:4.2.1.3
+  label: aconitate hydratase
+  category: molecular_activity
+- id: EC:1.1.1.37
+  label: (S)-malate dehydrogenase (NAD(+), oxaloacetate-forming)
+  category: molecular_activity
+- id: CHEBI:16452
+  label: oxaloacetate(2-)
+  category: small_molecule
+- id: CHEBI:16947
+  label: citrate(3-)
+  category: small_molecule
+- id: CHEBI:16383
+  label: cis-aconitate(3-)
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: UniProtKB:O07717
+  label: Putative isocitrate lyase subunit B
+  category: protein
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: UniProtKB:O07718
+  label: Putative isocitrate lyase subunit A
+  category: protein
+- id: UniProtKB:P9WK13
+  label: Malate dehydrogenase
+  category: protein
+- id: UniProtKB:P9WK17
+  label: Malate synthase G
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: UniProtKB:P9WKK7
+  label: Isocitrate lyase
+  category: protein
 reactions:
-  - id: RHEA:13246
-    label: isocitrate lyase reaction
-  - id: RHEA:18182
-    label: malate synthase reaction
+- id: RHEA:13246
+  label: isocitrate lyase reaction
+  direction: left_to_right
+- id: RHEA:18182
+  label: malate synthase reaction
+  direction: left_to_right
+- id: RHEA:16846
+  label: oxaloacetate + acetyl-CoA + H2O => citrate + CoA + H(+)
+  direction: left_to_right
+- id: RHEA:10229
+  label: citrate => cis-aconitate + H2O
+  direction: left_to_right
+- id: RHEA:22145
+  label: cis-aconitate + H2O => D-threo-isocitrate
+  direction: left_to_right
+- id: RHEA:21433
+  label: (S)-malate + NAD(+) => oxaloacetate + NADH + H(+)
+  direction: left_to_right
 mechanistic_edges:
-  - id: edge-001
-    subject: EC:4.1.3.1
-    predicate: catalyzes
-    object: RHEA:13246
-    evidence:
-      - reference_id: RHEA:13245
-        quote: "EC 4.1.3.1 isocitrate lyase"
-      - reference_id: PMID:10572116
-        quote: >-
-          In this study we express and purify Icl, as well as AceA proteins,
-          and show that both exhibit isocitrate lyase activity.
-  - id: edge-002
-    subject: CHEBI:15562
-    predicate: consumes
-    object: RHEA:13246
-    evidence:
-      - reference_id: RHEA:13246
-        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
-  - id: edge-003
-    subject: RHEA:13246
-    predicate: produces
-    object: CHEBI:36655
-    evidence:
-      - reference_id: RHEA:13246
-        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
-  - id: edge-004
-    subject: RHEA:13246
-    predicate: produces
-    object: CHEBI:30031
-    evidence:
-      - reference_id: RHEA:13246
-        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
-  - id: edge-005
-    subject: RHEA:13246
-    predicate: precedes
-    object: RHEA:18182
-    evidence:
-      - reference_id: RHEA:13246
-        quote: "RHEA:13246 D-threo-isocitrate => glyoxylate + succinate"
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
-      - reference_id: PMID:12393860
-        quote: >-
-          This is a bypass of the tricarboxylic acid cycle in which isocitrate
-          lyase and malate synthase (GlcB) catalyze the net incorporation of
-          carbon during growth of microorganisms on acetate or fatty acids as
-          the primary carbon source.
-  - id: edge-006
-    subject: EC:2.3.3.9
-    predicate: catalyzes
-    object: RHEA:18182
-    evidence:
-      - reference_id: RHEA:18181
-        quote: "EC 2.3.3.9 malate synthase"
-      - reference_id: PMID:12393860
-        quote: >-
-          The glcB gene from M. tuberculosis, which encodes malate synthase,
-          was cloned, and GlcB was expressed in Escherichia coli.
-  - id: edge-007
-    subject: CHEBI:36655
-    predicate: consumes
-    object: RHEA:18182
-    evidence:
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
-  - id: edge-008
-    subject: CHEBI:57288
-    predicate: consumes
-    object: RHEA:18182
-    evidence:
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
-  - id: edge-009
-    subject: CHEBI:15377
-    predicate: consumes
-    object: RHEA:18182
-    evidence:
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
-  - id: edge-010
-    subject: RHEA:18182
-    predicate: produces
-    object: CHEBI:15589
-    evidence:
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
-  - id: edge-011
-    subject: RHEA:18182
-    predicate: produces
-    object: CHEBI:57287
-    evidence:
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
-  - id: edge-012
-    subject: RHEA:18182
-    predicate: produces
-    object: CHEBI:15378
-    evidence:
-      - reference_id: RHEA:18182
-        quote: "RHEA:18182 glyoxylate + acetyl-CoA + H2O => (S)-malate + CoA + H(+)"
+- id: edge-001
+  subject: CHEBI:15562
+  predicate: consumes
+  object: RHEA:13246
+  evidence:
+  - reference_id: RHEA:13246
+    source_assertion: Rhea lists CHEBI:15562 on the substrates side of RHEA:13246 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13246']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
+  subject: RHEA:13246
+  predicate: produces
+  object: CHEBI:30031
+  evidence:
+  - reference_id: RHEA:13246
+    source_assertion: Rhea lists CHEBI:30031 on the products side of RHEA:13246 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13246']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-003
+  subject: RHEA:13246
+  predicate: produces
+  object: CHEBI:36655
+  evidence:
+  - reference_id: RHEA:13246
+    source_assertion: Rhea lists CHEBI:36655 on the products side of RHEA:13246 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13246']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:18182
+  evidence:
+  - reference_id: RHEA:18182
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:18182 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18182']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: CHEBI:36655
+  predicate: consumes
+  object: RHEA:18182
+  evidence:
+  - reference_id: RHEA:18182
+    source_assertion: Rhea lists CHEBI:36655 on the substrates side of RHEA:18182 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18182']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:57288
+  predicate: consumes
+  object: RHEA:18182
+  evidence:
+  - reference_id: RHEA:18182
+    source_assertion: Rhea lists CHEBI:57288 on the substrates side of RHEA:18182 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18182']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:18182
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:18182
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:18182 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18182']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:18182
+  predicate: produces
+  object: CHEBI:15589
+  evidence:
+  - reference_id: RHEA:18182
+    source_assertion: Rhea lists CHEBI:15589 on the products side of RHEA:18182 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18182']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: RHEA:18182
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:18182
+    source_assertion: Rhea lists CHEBI:57287 on the products side of RHEA:18182 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18182']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:16846
+  evidence:
+  - reference_id: RHEA:16846
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:16846 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16846']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-011
+  subject: CHEBI:16452
+  predicate: consumes
+  object: RHEA:16846
+  evidence:
+  - reference_id: RHEA:16846
+    source_assertion: Rhea lists CHEBI:16452 on the substrates side of RHEA:16846 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16846']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
+  subject: CHEBI:57288
+  predicate: consumes
+  object: RHEA:16846
+  evidence:
+  - reference_id: RHEA:16846
+    source_assertion: Rhea lists CHEBI:57288 on the substrates side of RHEA:16846 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16846']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-013
+  subject: RHEA:16846
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:16846
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:16846 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16846']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-014
+  subject: RHEA:16846
+  predicate: produces
+  object: CHEBI:16947
+  evidence:
+  - reference_id: RHEA:16846
+    source_assertion: Rhea lists CHEBI:16947 on the products side of RHEA:16846 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16846']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-015
+  subject: RHEA:16846
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:16846
+    source_assertion: Rhea lists CHEBI:57287 on the products side of RHEA:16846 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16846']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-016
+  subject: CHEBI:16947
+  predicate: consumes
+  object: RHEA:10229
+  evidence:
+  - reference_id: RHEA:10229
+    source_assertion: Rhea lists CHEBI:16947 on the substrates side of RHEA:10229 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10229']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-017
+  subject: RHEA:10229
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:10229
+    source_assertion: Rhea lists CHEBI:15377 on the products side of RHEA:10229 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10229']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-018
+  subject: RHEA:10229
+  predicate: produces
+  object: CHEBI:16383
+  evidence:
+  - reference_id: RHEA:10229
+    source_assertion: Rhea lists CHEBI:16383 on the products side of RHEA:10229 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10229']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-019
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:22145
+  evidence:
+  - reference_id: RHEA:22145
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:22145 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22145']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-020
+  subject: CHEBI:16383
+  predicate: consumes
+  object: RHEA:22145
+  evidence:
+  - reference_id: RHEA:22145
+    source_assertion: Rhea lists CHEBI:16383 on the substrates side of RHEA:22145 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22145']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-021
+  subject: RHEA:22145
+  predicate: produces
+  object: CHEBI:15562
+  evidence:
+  - reference_id: RHEA:22145
+    source_assertion: Rhea lists CHEBI:15562 on the products side of RHEA:22145 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22145']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-022
+  subject: CHEBI:15589
+  predicate: consumes
+  object: RHEA:21433
+  evidence:
+  - reference_id: RHEA:21433
+    source_assertion: Rhea lists CHEBI:15589 on the substrates side of RHEA:21433 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21433']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-023
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:21433
+  evidence:
+  - reference_id: RHEA:21433
+    source_assertion: Rhea lists CHEBI:57540 on the substrates side of RHEA:21433 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21433']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-024
+  subject: RHEA:21433
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:21433
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:21433 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21433']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-025
+  subject: RHEA:21433
+  predicate: produces
+  object: CHEBI:16452
+  evidence:
+  - reference_id: RHEA:21433
+    source_assertion: Rhea lists CHEBI:16452 on the products side of RHEA:21433 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21433']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-026
+  subject: RHEA:21433
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: RHEA:21433
+    source_assertion: Rhea lists CHEBI:57945 on the products side of RHEA:21433 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21433']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-027
+  subject: EC:4.1.3.1
+  predicate: catalyzes
+  object: RHEA:13246
+  evidence:
+  - reference_id: RHEA:13245
+    source_assertion: Rhea associates EC:4.1.3.1 with the reaction family containing RHEA:13246.
+    source_locator: rh:ec
+  - reference_id: PMID:10572116
+    quote: In this study we express and purify Icl, as well as AceA proteins, and show that both exhibit
+      isocitrate lyase activity.
+    source_locator: PubMed Abstract
+- id: edge-028
+  subject: EC:2.3.3.9
+  predicate: catalyzes
+  object: RHEA:18182
+  evidence:
+  - reference_id: RHEA:18181
+    source_assertion: Rhea associates EC:2.3.3.9 with the reaction family containing RHEA:18182.
+    source_locator: rh:ec
+  - reference_id: PMID:12393860
+    quote: The glcB gene from M. tuberculosis, which encodes malate synthase, was cloned, and GlcB was
+      expressed in Escherichia coli.
+    source_locator: PubMed Abstract
+- id: edge-029
+  subject: EC:2.3.3.1
+  predicate: catalyzes
+  object: RHEA:16846
+  evidence:
+  - reference_id: RHEA:16845
+    source_assertion: Rhea associates EC:2.3.3.1 with the reaction family containing RHEA:16846.
+    source_locator: rh:ec
+  - reference_id: PMID:16027371
+    source_assertion: The study measured citrate synthase, aconitase and malate dehydrogenase activities
+      in Mycobacterium tuberculosis lysates.
+    source_locator: PubMed Abstract; enzyme activity measurements
+- id: edge-030
+  subject: EC:4.2.1.3
+  predicate: catalyzes
+  object: RHEA:10229
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: The native pathway assigns EC:4.2.1.3 activity to the enzymatic step represented
+      by RHEA:10229; this is a component step when the EC definition is an overall reaction.
+    source_locator: Pathway/reaction-layout; Reaction/enzymatic-reaction and component-reaction relationships
+  - reference_id: PMID:16027371
+    source_assertion: The study measured citrate synthase, aconitase and malate dehydrogenase activities
+      in Mycobacterium tuberculosis lysates.
+    source_locator: PubMed Abstract; enzyme activity measurements
+- id: edge-031
+  subject: EC:4.2.1.3
+  predicate: catalyzes
+  object: RHEA:22145
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: The native pathway assigns EC:4.2.1.3 activity to the enzymatic step represented
+      by RHEA:22145; this is a component step when the EC definition is an overall reaction.
+    source_locator: Pathway/reaction-layout; Reaction/enzymatic-reaction and component-reaction relationships
+  - reference_id: PMID:16027371
+    source_assertion: The study measured citrate synthase, aconitase and malate dehydrogenase activities
+      in Mycobacterium tuberculosis lysates.
+    source_locator: PubMed Abstract; enzyme activity measurements
+- id: edge-032
+  subject: EC:1.1.1.37
+  predicate: catalyzes
+  object: RHEA:21433
+  evidence:
+  - reference_id: RHEA:21432
+    source_assertion: Rhea associates EC:1.1.1.37 with the reaction family containing RHEA:21433.
+    source_locator: rh:ec
+  - reference_id: PMID:16027371
+    source_assertion: The study measured citrate synthase, aconitase and malate dehydrogenase activities
+      in Mycobacterium tuberculosis lysates.
+    source_locator: PubMed Abstract; enzyme activity measurements
+- id: edge-033
+  subject: RHEA:10229
+  predicate: precedes
+  object: RHEA:22145
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: 'MetaCyc pathway ordering places RHEA:10229 before RHEA:22145 in this pathway. Shared
+      intermediate: CHEBI:16383.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-034
+  subject: RHEA:13246
+  predicate: precedes
+  object: RHEA:18182
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: 'MetaCyc pathway ordering places RHEA:13246 before RHEA:18182 in this pathway. Shared
+      intermediate: CHEBI:36655.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-035
+  subject: RHEA:16846
+  predicate: precedes
+  object: RHEA:10229
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: 'MetaCyc pathway ordering places RHEA:16846 before RHEA:10229 in this pathway. Shared
+      intermediate: CHEBI:16947.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-036
+  subject: RHEA:18182
+  predicate: precedes
+  object: RHEA:21433
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: 'MetaCyc pathway ordering places RHEA:18182 before RHEA:21433 in this pathway. Shared
+      intermediate: CHEBI:15589.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-037
+  subject: RHEA:21433
+  predicate: precedes
+  object: RHEA:16846
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: 'MetaCyc pathway ordering places RHEA:21433 before RHEA:16846 in this pathway. Shared
+      intermediate: CHEBI:16452.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-038
+  subject: RHEA:22145
+  predicate: precedes
+  object: RHEA:13246
+  evidence:
+  - reference_id: MetaCyc:GLYOXYLATE-BYPASS
+    source_assertion: 'MetaCyc pathway ordering places RHEA:22145 before RHEA:13246 in this pathway. Shared
+      intermediate: CHEBI:15562.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-039
+  subject: UniProtKB:O07717
+  predicate: enables
+  object: RHEA:13246
+  evidence:
+  - reference_id: UniProtKB:O07717
+    source_assertion: 'UniProt annotates UniProtKB:O07717 with catalytic activity for the reaction family
+      of RHEA:13246. Annotation evidence: ECO:0000250; organism taxon: NCBITaxon:83332.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-040
+  subject: UniProtKB:O07717
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:O07717
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:O07717 (evidence: ECO:0000250). '
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-041
+  subject: UniProtKB:O07718
+  predicate: enables
+  object: RHEA:13246
+  evidence:
+  - reference_id: UniProtKB:O07718
+    source_assertion: 'UniProt annotates UniProtKB:O07718 with catalytic activity for the reaction family
+      of RHEA:13246. Annotation evidence: ECO:0000250; organism taxon: NCBITaxon:83332.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-042
+  subject: UniProtKB:O07718
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:O07718
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:O07718 (evidence: ECO:0000250). '
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-043
+  subject: UniProtKB:P9WK13
+  predicate: enables
+  object: RHEA:21433
+  evidence:
+  - reference_id: UniProtKB:P9WK13
+    source_assertion: 'UniProt annotates UniProtKB:P9WK13 with catalytic activity for the reaction family
+      of RHEA:21433. Annotation evidence: ECO:0000255; organism taxon: NCBITaxon:83332.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-044
+  subject: UniProtKB:P9WK17
+  predicate: enables
+  object: RHEA:18182
+  evidence:
+  - reference_id: UniProtKB:P9WK17
+    source_assertion: 'UniProt annotates UniProtKB:P9WK17 with catalytic activity for the reaction family
+      of RHEA:18182. Annotation evidence: ECO:0000255; organism taxon: NCBITaxon:83332.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-045
+  subject: CHEBI:15589
+  predicate: inhibits
+  object: UniProtKB:P9WK17
+  evidence:
+  - reference_id: UniProtKB:P9WK17
+    source_assertion: 'UniProt activity-regulation annotation: By bromopyruvate, oxalate, and phosphoenolpyruvate.
+      Malate inhibits the activity to 50% at 1 mM concentration. Glycolate inhibits only at fairly high
+      concentrations'
+    source_locator: comments[commentType='ACTIVITY REGULATION'].texts
+- id: edge-046
+  subject: UniProtKB:P9WK17
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P9WK17
+    source_assertion: 'UniProt locates UniProtKB:P9WK17 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-047
+  subject: UniProtKB:P9WK17
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P9WK17
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P9WK17 (evidence: ECO:0000255,
+      ECO:0000269). Mg(2+). Mn(2+) is able to replace Mg(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-048
+  subject: UniProtKB:P9WK17
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:P9WK17
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P9WK17 (evidence: ECO:0000255,
+      ECO:0000269). Mg(2+). Mn(2+) is able to replace Mg(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-049
+  subject: UniProtKB:P9WKK7
+  predicate: enables
+  object: RHEA:13246
+  evidence:
+  - reference_id: UniProtKB:P9WKK7
+    source_assertion: 'UniProt annotates UniProtKB:P9WKK7 with catalytic activity for the reaction family
+      of RHEA:13246. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83332.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-050
+  subject: UniProtKB:P9WKK7
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P9WKK7
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P9WKK7 (evidence: ECO:0000269).
+      Can also use Mn(2+) ion.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
 references:
-  - id: MetaCyc:GLYOXYLATE-BYPASS
-    title: MetaCyc glyoxylate cycle pathway
-  - id: RHEA:13245
-    title: Rhea isocitrate lyase reaction
-  - id: RHEA:13246
-    title: Rhea left-to-right isocitrate lyase direction
-  - id: RHEA:18181
-    title: Rhea malate synthase reaction
-  - id: RHEA:18182
-    title: Rhea left-to-right malate synthase direction
-  - id: PMID:10572116
-    citation: Honer Zu Bentrup et al., Journal of Bacteriology, 1999
-  - id: PMID:12393860
-    citation: Smith et al., Journal of Biological Chemistry, 2003
+- id: MetaCyc:GLYOXYLATE-BYPASS
+  title: MetaCyc glyoxylate cycle pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:GLYOXYLATE-BYPASS&detail=full
+  source_version: '22.5'
+  source_sha256: 148101b2a79e1a244d2e94fc3952bec51a24d6d745fac052a4a3d081bc7026e6
+- id: RHEA:13245
+  title: Rhea isocitrate lyase reaction
+  url: https://www.rhea-db.org/rhea/13245
+  source_version: '139'
+- id: RHEA:13246
+  title: Rhea left-to-right isocitrate lyase direction
+  url: https://www.rhea-db.org/rhea/13246
+  source_version: '139'
+- id: RHEA:18181
+  title: Rhea malate synthase reaction
+  url: https://www.rhea-db.org/rhea/18181
+  source_version: '139'
+- id: RHEA:18182
+  title: Rhea left-to-right malate synthase direction
+  url: https://www.rhea-db.org/rhea/18182
+  source_version: '139'
+- id: PMID:10572116
+  citation: Honer Zu Bentrup et al., Journal of Bacteriology, 1999
+  url: https://pubmed.ncbi.nlm.nih.gov/10572116/
+- id: PMID:12393860
+  citation: Smith et al., Journal of Biological Chemistry, 2003
+  url: https://pubmed.ncbi.nlm.nih.gov/12393860/
+- id: RHEA:16846
+  title: RHEA:16846 authority record
+  url: https://www.rhea-db.org/rhea/16846
+  source_version: '139'
+- id: RHEA:10229
+  title: RHEA:10229 authority record
+  url: https://www.rhea-db.org/rhea/10229
+  source_version: '139'
+- id: RHEA:22145
+  title: RHEA:22145 authority record
+  url: https://www.rhea-db.org/rhea/22145
+  source_version: '139'
+- id: RHEA:21433
+  title: RHEA:21433 authority record
+  url: https://www.rhea-db.org/rhea/21433
+  source_version: '139'
+- id: RHEA:16845
+  title: RHEA:16845 authority record
+  url: https://www.rhea-db.org/rhea/16845
+  source_version: '139'
+- id: RHEA:21432
+  title: RHEA:21432 authority record
+  url: https://www.rhea-db.org/rhea/21432
+  source_version: '139'
+- id: PMID:16027371
+  title: PMID:16027371 authority record
+  url: https://pubmed.ncbi.nlm.nih.gov/16027371/
+- id: UniProtKB:O07717
+  title: UniProtKB:O07717 authority record
+  url: https://rest.uniprot.org/uniprotkb/O07717.json
+  source_version: '2026_03'
+- id: UniProtKB:O07718
+  title: UniProtKB:O07718 authority record
+  url: https://rest.uniprot.org/uniprotkb/O07718.json
+  source_version: '2026_03'
+- id: UniProtKB:P9WK13
+  title: UniProtKB:P9WK13 authority record
+  url: https://rest.uniprot.org/uniprotkb/P9WK13.json
+  source_version: '2026_03'
+- id: UniProtKB:P9WK17
+  title: UniProtKB:P9WK17 authority record
+  url: https://rest.uniprot.org/uniprotkb/P9WK17.json
+  source_version: '2026_03'
+- id: UniProtKB:P9WKK7
+  title: UniProtKB:P9WKK7 authority record
+  url: https://rest.uniprot.org/uniprotkb/P9WKK7.json
+  source_version: '2026_03'

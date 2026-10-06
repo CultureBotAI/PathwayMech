@@ -1,209 +1,375 @@
 id: gomodel:YeastPathways_GLYCLEAV-PWY
 label: glycine cleavage
-description: Glycine cleavage in Saccharomyces cerevisiae S288C uses GCV2 to decarboxylate glycine with lipoylprotein, GCV1 to transfer the aminomethyl group to tetrahydrofolate, and LPD1 to reoxidize dihydrolipoylprotein with NAD.
+description: Glycine cleavage in Saccharomyces cerevisiae S288C uses GCV2 to decarboxylate
+  glycine with lipoylprotein, GCV1 to transfer the aminomethyl group to tetrahydrofolate,
+  and LPD1 to reoxidize dihydrolipoylprotein with NAD.
 pathway_type: amino-acid-degradation
 taxa:
-  - id: NCBITaxon:559292
-    label: Saccharomyces cerevisiae S288C
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
 participants:
-  - id: SGD:S000004801
-    label: GCV2 Scer
-  - id: CHEBI:15378
-    label: hydron
-  - id: CHEBI:15804
-    label: lipoylprotein
-  - id: CHEBI:57305
-    label: glycine zwitterion
-  - id: CHEBI:16882
-    label: S(8)-aminomethyldihydrolipoylprotein
-  - id: CHEBI:16526
-    label: carbon dioxide
-  - id: SGD:S000002426
-    label: GCV1 Scer
-  - id: CHEBI:67016
-    label: tetrahydrofolate
-  - id: CHEBI:20502
-    label: 5,10-methylenetetrahydrofolic acid
-  - id: CHEBI:28938
-    label: ammonium
-  - id: CHEBI:16194
-    label: dihydrolipoylprotein
-  - id: SGD:S000001876
-    label: LPD1 Scer
-  - id: CHEBI:57540
-    label: NAD(1-)
-  - id: CHEBI:57945
-    label: NADH(2-)
+- id: CHEBI:20502
+  label: 5,10-methylenetetrahydrofolic acid
+  category: small_molecule
+- id: SGD:S000001876
+  label: LPD1 Scer
+  category: protein
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: GO:0019464
+  label: glycine decarboxylation via glycine cleavage system
+  category: biological_process
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:16194
+  label: dihydrolipoylprotein
+  category: protein
+- id: CHEBI:16882
+  label: S(8)-aminomethyldihydrolipoylprotein
+  category: protein
+- id: CHEBI:15804
+  label: lipoylprotein
+  category: protein
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: SGD:S000002426
+  label: GCV1 Scer
+  category: protein
+- id: CHEBI:57305
+  label: glycine zwitterion
+  category: small_molecule
+- id: CHEBI:67016
+  label: tetrahydrofolate
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: SGD:S000004801
+  label: GCV2 Scer
+  category: protein
+- id: GO:0005759
+  label: mitochondrial matrix
+  category: cellular_component
+- id: GO:0005739
+  label: mitochondrion
+  category: cellular_component
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
-  - id: gomodel:GCVP-RXN
-    label: glycine dehydrogenase (decarboxylating) activity
-  - id: gomodel:GCVT-RXN
-    label: aminomethyltransferase activity
-  - id: gomodel:RXN-8629
-    label: dihydrolipoyl dehydrogenase (NADH) activity
+- id: gomodel:GCVP-RXN
+  label: glycine dehydrogenase (decarboxylating) activity
+  category: molecular_activity
+- id: gomodel:GCVT-RXN
+  label: aminomethyltransferase activity
+  category: molecular_activity
+- id: gomodel:RXN-8629
+  label: dihydrolipoyl dehydrogenase (NADH) activity
+  category: molecular_activity
 mechanistic_edges:
-  - id: edge-001
-    subject: SGD:S000004801
-    predicate: enables
-    object: gomodel:GCVP-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YMR189W-MONOMER_GCVP-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:YMR189W-MONOMER_GCVP-RXN_controller","type":[{"type":"class","id":"SGD:S000004801"'
-  - id: edge-002
-    subject: CHEBI:15378
-    predicate: consumes
-    object: gomodel:GCVP-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_GCVP-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_15378_GCVP-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-003
-    subject: CHEBI:15804
-    predicate: consumes
-    object: gomodel:GCVP-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15804_RXN-8629"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_15804_RXN-8629","type":[{"type":"class","id":"CHEBI:15804"'
-  - id: edge-004
-    subject: CHEBI:57305
-    predicate: consumes
-    object: gomodel:GCVP-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57305_GCVP-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_57305_GCVP-RXN","type":[{"type":"class","id":"CHEBI:57305"'
-  - id: edge-005
-    subject: gomodel:GCVP-RXN
-    predicate: produces
-    object: CHEBI:16882
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16882_GCVP-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_16882_GCVP-RXN","type":[{"type":"class","id":"CHEBI:16882"'
-  - id: edge-006
-    subject: gomodel:GCVP-RXN
-    predicate: produces
-    object: CHEBI:16526
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVP-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_GCVP-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_16526_GCVP-RXN","type":[{"type":"class","id":"CHEBI:16526"'
-  - id: edge-007
-    subject: SGD:S000002426
-    predicate: enables
-    object: gomodel:GCVT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR019C-MONOMER_GCVT-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:YDR019C-MONOMER_GCVT-RXN_controller","type":[{"type":"class","id":"SGD:S000002426"'
-  - id: edge-008
-    subject: CHEBI:16882
-    predicate: consumes
-    object: gomodel:GCVT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16882_GCVP-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_16882_GCVP-RXN","type":[{"type":"class","id":"CHEBI:16882"'
-  - id: edge-009
-    subject: CHEBI:67016
-    predicate: consumes
-    object: gomodel:GCVT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_GLYCLEAV-PWY/65692e7e00001185"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:YeastPathways_GLYCLEAV-PWY/65692e7e00001185","type":[{"type":"class","id":"CHEBI:67016"'
-  - id: edge-010
-    subject: gomodel:GCVT-RXN
-    predicate: produces
-    object: CHEBI:20502
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_20502_GCVT-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_20502_GCVT-RXN","type":[{"type":"class","id":"CHEBI:20502"'
-  - id: edge-011
-    subject: gomodel:GCVT-RXN
-    predicate: produces
-    object: CHEBI:28938
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28938_GCVT-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_28938_GCVT-RXN","type":[{"type":"class","id":"CHEBI:28938"'
-  - id: edge-012
-    subject: gomodel:GCVT-RXN
-    predicate: produces
-    object: CHEBI:16194
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:GCVT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16194_GCVT-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_16194_GCVT-RXN","type":[{"type":"class","id":"CHEBI:16194"'
-  - id: edge-013
-    subject: SGD:S000001876
-    predicate: enables
-    object: gomodel:RXN-8629
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YFL018C-MONOMER_RXN-8629_controller"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:YFL018C-MONOMER_RXN-8629_controller","type":[{"type":"class","id":"SGD:S000001876"'
-  - id: edge-014
-    subject: CHEBI:16194
-    predicate: consumes
-    object: gomodel:RXN-8629
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16194_GCVT-RXN"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_16194_GCVT-RXN","type":[{"type":"class","id":"CHEBI:16194"'
-  - id: edge-015
-    subject: CHEBI:57540
-    predicate: consumes
-    object: gomodel:RXN-8629
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_RXN-8629"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_57540_RXN-8629","type":[{"type":"class","id":"CHEBI:57540"'
-  - id: edge-016
-    subject: gomodel:RXN-8629
-    predicate: produces
-    object: CHEBI:15804
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15804_RXN-8629"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_15804_RXN-8629","type":[{"type":"class","id":"CHEBI:15804"'
-  - id: edge-017
-    subject: gomodel:RXN-8629
-    predicate: produces
-    object: CHEBI:15378
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-8629"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_15378_RXN-8629","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-018
-    subject: gomodel:RXN-8629
-    predicate: produces
-    object: CHEBI:57945
-    evidence:
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"subject":"gomodel:RXN-8629","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_RXN-8629"'
-      - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
-        quote: '"id":"gomodel:CHEBI_57945_RXN-8629","type":[{"type":"class","id":"CHEBI:57945"'
+- id: edge-001
+  subject: gomodel:GCVT-RXN
+  predicate: has_output
+  object: CHEBI:20502
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN RO:0002234 gomodel:CHEBI_20502_GCVT-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/0; endpoint types: /individuals/12/type;
+      /individuals/6/type'
+- id: edge-002
+  subject: SGD:S000001876
+  predicate: enables
+  object: gomodel:RXN-8629
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 RO:0002333 gomodel:YFL018C-MONOMER_RXN-8629_controller.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/1; endpoint types: /individuals/13/type;
+      /individuals/15/type'
+- id: edge-003
+  subject: gomodel:GCVP-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN RO:0002233 gomodel:CHEBI_15378_GCVP-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/2; endpoint types: /individuals/11/type;
+      /individuals/0/type'
+- id: edge-004
+  subject: gomodel:GCVP-RXN
+  predicate: part_of
+  object: GO:0019464
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN BFO:0000050 gomodel:YeastPathways_GLYCLEAV-PWY/YeastPathways_GLYCLEAV-PWY.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/3; endpoint types: /individuals/11/type;
+      /individuals/40/type'
+- id: edge-006
+  subject: gomodel:RXN-8629
+  predicate: has_input
+  object: CHEBI:16194
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 RO:0002233 gomodel:CHEBI_16194_GCVT-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/5; endpoint types: /individuals/13/type;
+      /individuals/3/type'
+- id: edge-007
+  subject: gomodel:GCVP-RXN
+  predicate: has_output
+  object: CHEBI:16882
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN RO:0002234 gomodel:CHEBI_16882_GCVP-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/6; endpoint types: /individuals/11/type;
+      /individuals/5/type'
+- id: edge-008
+  subject: gomodel:RXN-8629
+  predicate: part_of
+  object: GO:0019464
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 BFO:0000050 gomodel:YeastPathways_GLYCLEAV-PWY/YeastPathways_GLYCLEAV-PWY.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/7; endpoint types: /individuals/13/type;
+      /individuals/40/type'
+- id: edge-009
+  subject: gomodel:RXN-8629
+  predicate: has_output
+  object: CHEBI:15804
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 RO:0002234 gomodel:CHEBI_15804_RXN-8629.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/8; endpoint types: /individuals/13/type;
+      /individuals/2/type'
+- id: edge-010
+  subject: gomodel:RXN-8629
+  predicate: has_input
+  object: CHEBI:57540
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 RO:0002233 gomodel:CHEBI_57540_RXN-8629.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/9; endpoint types: /individuals/13/type;
+      /individuals/9/type'
+- id: edge-011
+  subject: gomodel:GCVT-RXN
+  predicate: has_output
+  object: CHEBI:28938
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN RO:0002234 gomodel:CHEBI_28938_GCVT-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/10; endpoint types: /individuals/12/type;
+      /individuals/7/type'
+- id: edge-012
+  subject: gomodel:GCVT-RXN
+  predicate: part_of
+  object: GO:0019464
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN BFO:0000050 gomodel:YeastPathways_GLYCLEAV-PWY/YeastPathways_GLYCLEAV-PWY.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/11; endpoint types: /individuals/12/type;
+      /individuals/40/type'
+- id: edge-014
+  subject: gomodel:RXN-8629
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 RO:0002234 gomodel:CHEBI_15378_RXN-8629.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/13; endpoint types: /individuals/13/type;
+      /individuals/1/type'
+- id: edge-015
+  subject: gomodel:GCVP-RXN
+  predicate: has_input
+  object: CHEBI:15804
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN RO:0002233 gomodel:CHEBI_15804_RXN-8629.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/14; endpoint types: /individuals/11/type;
+      /individuals/2/type'
+- id: edge-016
+  subject: gomodel:GCVT-RXN
+  predicate: has_input
+  object: CHEBI:16882
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN RO:0002233 gomodel:CHEBI_16882_GCVP-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/15; endpoint types: /individuals/12/type;
+      /individuals/5/type'
+- id: edge-017
+  subject: gomodel:GCVT-RXN
+  predicate: has_output
+  object: CHEBI:16194
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN RO:0002234 gomodel:CHEBI_16194_GCVT-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/16; endpoint types: /individuals/12/type;
+      /individuals/3/type'
+- id: edge-018
+  subject: gomodel:RXN-8629
+  predicate: has_output
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:RXN-8629 RO:0002234 gomodel:CHEBI_57945_RXN-8629.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/17; endpoint types: /individuals/13/type;
+      /individuals/10/type'
+- id: edge-019
+  subject: SGD:S000002426
+  predicate: enables
+  object: gomodel:GCVT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN RO:0002333 gomodel:YDR019C-MONOMER_GCVT-RXN_controller.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/18; endpoint types: /individuals/12/type;
+      /individuals/14/type'
+- id: edge-021
+  subject: gomodel:GCVP-RXN
+  predicate: has_input
+  object: CHEBI:57305
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN RO:0002233 gomodel:CHEBI_57305_GCVP-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/20; endpoint types: /individuals/11/type;
+      /individuals/8/type'
+- id: edge-022
+  subject: gomodel:GCVT-RXN
+  predicate: has_input
+  object: CHEBI:67016
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVT-RXN RO:0002233 gomodel:YeastPathways_GLYCLEAV-PWY/65692e7e00001185.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/21; endpoint types: /individuals/12/type;
+      /individuals/41/type'
+- id: edge-023
+  subject: gomodel:GCVP-RXN
+  predicate: has_output
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN RO:0002234 gomodel:CHEBI_16526_GCVP-RXN.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/22; endpoint types: /individuals/11/type;
+      /individuals/4/type'
+- id: edge-024
+  subject: SGD:S000004801
+  predicate: enables
+  object: gomodel:GCVP-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_GLYCLEAV-PWY
+    source_assertion: The model asserts gomodel:GCVP-RXN RO:0002333 gomodel:YMR189W-MONOMER_GCVP-RXN_controller.
+    source_locator: './YeastPathways_GLYCLEAV-PWY.json#/facts/23; endpoint types: /individuals/11/type;
+      /individuals/16/type'
+- id: location-2dcce5c5fdd8
+  subject: SGD:S000001876
+  predicate: located_in
+  object: GO:0005759
+  description: Physical protein location from reviewed UniProt. evidence code not specified
+    by source
+  evidence:
+  - reference_id: UniProtKB:P09624
+    source_assertion: UniProtKB:P09624 annotates location Mitochondrion matrix (SL-0170).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/227/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P09624
+    source_assertion: UniProtKB:P09624 has the exact SGD cross-reference SGD:S000001876.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/227/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-f4502702bb14
+  subject: SGD:S000002426
+  predicate: located_in
+  object: GO:0005739
+  description: Physical protein location from reviewed UniProt. evidence code not specified
+    by source
+  evidence:
+  - reference_id: UniProtKB:P48015
+    source_assertion: UniProtKB:P48015 annotates location Mitochondrion (SL-0173).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3893/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P48015
+    source_assertion: UniProtKB:P48015 has the exact SGD cross-reference SGD:S000002426.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3893/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-57647ef400cc
+  subject: SGD:S000004801
+  predicate: located_in
+  object: GO:0005739
+  description: Physical protein location from reviewed UniProt. ECO:0000250
+  evidence:
+  - reference_id: UniProtKB:P49095
+    source_assertion: UniProtKB:P49095 annotates location Mitochondrion (SL-0173).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2023/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P49095
+    source_assertion: UniProtKB:P49095 has the exact SGD cross-reference SGD:S000004801.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2023/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-4fb48c2e1250
+  subject: SGD:S000001876
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:9538259); ECO:0000269 (Reference:Ref.13) Binds 1 FAD per subunit. UniProt note
+    evidence: ECO:0000269 (PubMed:9538259); ECO:0000269 (Reference:Ref.13)'
+  evidence:
+  - reference_id: UniProtKB:P09624
+    source_assertion: UniProtKB:P09624 annotates CHEBI:57692 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/227/comments/0/cofactors/0;
+      /results/227/comments/0/note'
+  - reference_id: UniProtKB:P09624
+    source_assertion: UniProtKB:P09624 has the exact SGD cross-reference SGD:S000001876.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/227/uniProtKBCrossReferences/0'
+- id: cofactor-0a859255ac59
+  subject: SGD:S000004801
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:P49095
+    source_assertion: UniProtKB:P49095 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2023/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P49095
+    source_assertion: UniProtKB:P49095 has the exact SGD cross-reference SGD:S000004801.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2023/uniProtKBCrossReferences/0'
 references:
-  - id: gomodel:YeastPathways_GLYCLEAV-PWY
-    title: GO-CAM glycine cleavage model YeastPathways_GLYCLEAV-PWY
+- id: gomodel:YeastPathways_GLYCLEAV-PWY
+  title: GO-CAM glycine cleavage model YeastPathways_GLYCLEAV-PWY
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2024-07-12; member ./YeastPathways_GLYCLEAV-PWY.json
+- id: UniProtKB:P09624
+  title: Reviewed UniProtKB P09624 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P48015
+  title: Reviewed UniProtKB P48015 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P49095
+  title: Reviewed UniProtKB P49095 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

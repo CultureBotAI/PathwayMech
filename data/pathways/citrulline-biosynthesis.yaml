@@ -1,10 +1,9 @@
 id: gomodel:YeastPathways_CITRUL-BIO2-PWY
 label: citrulline biosynthesis
-description: Citrulline biosynthesis in Saccharomyces cerevisiae S288C uses CPX-579
-  carbamoyl-phosphate synthase to form carbamoyl phosphate from L-glutamine, hydrogencarbonate,
-  water, and ATP, then ARG3 ornithine carbamoyltransferase transfers the carbamoyl
-  group to L-ornithine to form L-citrulline in the SGD GO-CAM citrulline biosynthesis
-  pathway.
+description: Citrulline biosynthesis in Saccharomyces cerevisiae S288C uses CPX-579 carbamoyl-phosphate
+  synthase to form carbamoyl phosphate from L-glutamine, hydrogencarbonate, water, and ATP,
+  then ARG3 ornithine carbamoyltransferase transfers the carbamoyl group to L-ornithine to
+  form L-citrulline in the SGD GO-CAM citrulline biosynthesis pathway.
 pathway_type: amino-acid-biosynthesis
 taxa:
 - id: NCBITaxon:559292
@@ -12,182 +11,419 @@ taxa:
 participants:
 - id: CHEBI:57743
   label: L-citrulline zwitterion
+  category: small_molecule
 - id: CHEBI:43474
   label: hydrogenphosphate
+  category: small_molecule
 - id: CHEBI:17544
   label: hydrogencarbonate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP(3-)
+  category: small_molecule
 - id: CHEBI:15377
   label: water
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0019240
+  label: L-citrulline biosynthetic process
+  category: biological_process
 - id: CHEBI:58228
   label: carbamoyl phosphate(2-)
+  category: small_molecule
 - id: SGD:S000217863
   label: CPX-579 Scer
+  category: complex
 - id: SGD:S000003624
   label: ARG3 Scer
+  category: protein
 - id: CHEBI:29985
   label: L-glutamate(1-)
+  category: small_molecule
 - id: CHEBI:58359
   label: L-glutamine zwitterion
+  category: small_molecule
 - id: CHEBI:46911
   label: L-ornithinium(1+)
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP(4-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: SGD:S000003870
+  label: CPA2 Scer
+  category: protein
+- id: SGD:S000005829
+  label: CPA1 Scer
+  category: protein
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
 reactions:
+- id: gomodel:CARBPSYN-RXN
+  label: 2 ATP + L-glutamine + hydrogencarbonate + H<sub>2</sub>O -> L-glutamate + carbamoyl
+    phosphate + 2 ADP + phosphate + 2 H<SUP>+</SUP>
+  category: molecular_activity
 - id: gomodel:ORNCARBAMTRANSFER-RXN
   label: L-ornithine + carbamoyl phosphate -> L-citrulline + phosphate + H<SUP>+</SUP>
-- id: gomodel:CARBPSYN-RXN
-  label: 2 ATP + L-glutamine + hydrogencarbonate + H<sub>2</sub>O -> L-glutamate +
-    carbamoyl phosphate + 2 ADP + phosphate + 2 H<SUP>+</SUP>
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:ORNCARBAMTRANSFER-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57743
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57743_ORNCARBAMTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_57743_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:57743"'
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN RO:0002234 gomodel:CHEBI_57743_ORNCARBAMTRANSFER-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/0; endpoint types: /individuals/14/type;
+      /individuals/11/type'
 - id: edge-002
   subject: gomodel:CARBPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:43474
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_43474_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002234 gomodel:CHEBI_43474_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/1; endpoint types: /individuals/0/type;
+      /individuals/7/type'
 - id: edge-003
-  subject: CHEBI:17544
-  predicate: consumes
-  object: gomodel:CARBPSYN-RXN
+  subject: gomodel:CARBPSYN-RXN
+  predicate: has_input
+  object: CHEBI:17544
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17544_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_17544_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:17544"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002233 gomodel:CHEBI_17544_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/2; endpoint types: /individuals/0/type;
+      /individuals/4/type'
 - id: edge-004
   subject: gomodel:CARBPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_456216_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002234 gomodel:CHEBI_456216_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/3; endpoint types: /individuals/0/type;
+      /individuals/9/type'
 - id: edge-005
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:CARBPSYN-RXN
+  subject: gomodel:CARBPSYN-RXN
+  predicate: has_input
+  object: CHEBI:15377
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_15377_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:15377"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002233 gomodel:CHEBI_15377_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/4; endpoint types: /individuals/0/type;
+      /individuals/1/type'
 - id: edge-006
   subject: gomodel:ORNCARBAMTRANSFER-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:43474
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_ORNCARBAMTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_43474_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:43474"'
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN RO:0002234 gomodel:CHEBI_43474_ORNCARBAMTRANSFER-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/5; endpoint types: /individuals/14/type;
+      /individuals/8/type'
 - id: edge-007
   subject: gomodel:ORNCARBAMTRANSFER-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_ORNCARBAMTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_15378_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN RO:0002234 gomodel:CHEBI_15378_ORNCARBAMTRANSFER-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/6; endpoint types: /individuals/14/type;
+      /individuals/3/type'
 - id: edge-008
   subject: gomodel:CARBPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_15378_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002234 gomodel:CHEBI_15378_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/7; endpoint types: /individuals/0/type;
+      /individuals/2/type'
 - id: edge-009
   subject: gomodel:CARBPSYN-RXN
-  predicate: produces
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN BFO:0000066 gomodel:reaction_CARBPSYN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/8; endpoint types: /individuals/0/type;
+      /individuals/33/type'
+- id: edge-010
+  subject: gomodel:CARBPSYN-RXN
+  predicate: part_of
+  object: GO:0019240
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN BFO:0000050 gomodel:YeastPathways_CITRUL-BIO2-PWY/YeastPathways_CITRUL-BIO2-PWY.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/9; endpoint types: /individuals/0/type;
+      /individuals/35/type'
+- id: edge-011
+  subject: gomodel:CARBPSYN-RXN
+  predicate: has_output
   object: CHEBI:58228
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58228_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_58228_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:58228"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002234 gomodel:CHEBI_58228_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/10; endpoint types: /individuals/0/type;
+      /individuals/12/type'
+- id: edge-012
   subject: SGD:S000217863
   predicate: enables
   object: gomodel:CARBPSYN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_CITRUL-BIO2-PWY/6690711d00000301"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:YeastPathways_CITRUL-BIO2-PWY/6690711d00000301","type":[{"type":"class","id":"SGD:S000217863"'
-- id: edge-011
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002333 gomodel:YeastPathways_CITRUL-BIO2-PWY/6690711d00000301.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/11; endpoint types: /individuals/0/type;
+      /individuals/36/type'
+- id: edge-013
   subject: SGD:S000003624
   predicate: enables
   object: gomodel:ORNCARBAMTRANSFER-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL088W-MONOMER_ORNCARBAMTRANSFER-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:YJL088W-MONOMER_ORNCARBAMTRANSFER-RXN_controller","type":[{"type":"class","id":"SGD:S000003624"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN RO:0002333 gomodel:YJL088W-MONOMER_ORNCARBAMTRANSFER-RXN_controller.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/12; endpoint types: /individuals/14/type;
+      /individuals/15/type'
+- id: edge-014
   subject: gomodel:CARBPSYN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:29985
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_29985_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:29985"'
-- id: edge-013
-  subject: CHEBI:58359
-  predicate: consumes
-  object: gomodel:CARBPSYN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58359_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_58359_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:58359"'
-- id: edge-014
-  subject: CHEBI:46911
-  predicate: consumes
-  object: gomodel:ORNCARBAMTRANSFER-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_46911_ORNCARBAMTRANSFER-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_46911_ORNCARBAMTRANSFER-RXN","type":[{"type":"class","id":"CHEBI:46911"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002234 gomodel:CHEBI_29985_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/13; endpoint types: /individuals/0/type;
+      /individuals/5/type'
 - id: edge-015
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:CARBPSYN-RXN
+  subject: gomodel:CARBPSYN-RXN
+  predicate: has_input
+  object: CHEBI:58359
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:CARBPSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_CARBPSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_30616_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002233 gomodel:CHEBI_58359_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/14; endpoint types: /individuals/0/type;
+      /individuals/13/type'
 - id: edge-016
-  subject: CHEBI:58228
-  predicate: consumes
-  object: gomodel:ORNCARBAMTRANSFER-RXN
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"subject":"gomodel:ORNCARBAMTRANSFER-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58228_CARBPSYN-RXN"'
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN BFO:0000066 gomodel:reaction_ORNCARBAMTRANSFER-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/15; endpoint types: /individuals/14/type;
+      /individuals/34/type'
+- id: edge-017
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: has_input
+  object: CHEBI:46911
+  evidence:
   - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-    quote: '"id":"gomodel:CHEBI_58228_CARBPSYN-RXN","type":[{"type":"class","id":"CHEBI:58228"'
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN RO:0002233 gomodel:CHEBI_46911_ORNCARBAMTRANSFER-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/16; endpoint types: /individuals/14/type;
+      /individuals/10/type'
+- id: edge-018
+  subject: gomodel:CARBPSYN-RXN
+  predicate: has_input
+  object: CHEBI:30616
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    source_assertion: The model asserts gomodel:CARBPSYN-RXN RO:0002233 gomodel:CHEBI_30616_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/17; endpoint types: /individuals/0/type;
+      /individuals/6/type'
+- id: edge-019
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: has_input
+  object: CHEBI:58228
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN RO:0002233 gomodel:CHEBI_58228_CARBPSYN-RXN.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/18; endpoint types: /individuals/14/type;
+      /individuals/12/type'
+- id: edge-020
+  subject: gomodel:ORNCARBAMTRANSFER-RXN
+  predicate: part_of
+  object: GO:0019240
+  evidence:
+  - reference_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+    source_assertion: The model asserts gomodel:ORNCARBAMTRANSFER-RXN BFO:0000050 gomodel:YeastPathways_CITRUL-BIO2-PWY/YeastPathways_CITRUL-BIO2-PWY.
+    source_locator: './YeastPathways_CITRUL-BIO2-PWY.json#/facts/19; endpoint types: /individuals/14/type;
+      /individuals/35/type'
+- id: complex-a5ebe22a52c9
+  subject: SGD:S000217863
+  predicate: has_part
+  object: SGD:S000005829
+  description: 'ECO:0000353: physical interaction evidence; source stoichiometry minValue:
+    1, maxValue: 1'
+  evidence:
+  - reference_id: SGD:S000217863
+    source_assertion: 'Complex Portal CPX-579 lists P07258 as a protein component; complex
+      evidence is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/participants/0; /evidenceType'
+  - reference_id: gomodel:YeastPathways_ARGSYNBSUB-PWY
+    source_assertion: The model asserts gomodel:CPLX3O-887_CARBPSYN-RXN_controller BFO:0000051
+      gomodel:SGD_S000005829_CPLX3O-887_component.
+    source_locator: './YeastPathways_ARGSYNBSUB-PWY.json#/facts/78; endpoint types: /individuals/44/type;
+      /individuals/50/type'
+- id: complex-061be8221b03
+  subject: SGD:S000217863
+  predicate: has_part
+  object: SGD:S000003870
+  description: 'ECO:0000353: physical interaction evidence; source stoichiometry minValue:
+    1, maxValue: 1'
+  evidence:
+  - reference_id: SGD:S000217863
+    source_assertion: 'Complex Portal CPX-579 lists P03965 as a protein component; complex
+      evidence is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/participants/1; /evidenceType'
+  - reference_id: gomodel:YeastPathways_ARGSYNBSUB-PWY
+    source_assertion: The model asserts gomodel:CPLX3O-887_CARBPSYN-RXN_controller BFO:0000051
+      gomodel:SGD_S000003870_CPLX3O-887_component.
+    source_locator: './YeastPathways_ARGSYNBSUB-PWY.json#/facts/9; endpoint types: /individuals/44/type;
+      /individuals/49/type'
+- id: complex-1dcec51f57f8
+  subject: SGD:S000217863
+  predicate: located_in
+  object: GO:0005737
+  description: Complex location from the independent composition source; original GO-CAM activity
+    locations are retained with their own provenance.
+  evidence:
+  - reference_id: SGD:S000217863
+    source_assertion: 'Complex Portal CPX-579 records cellular location GO:0005737 (cytoplasm);
+      its evidence classification is ECO:0000353: physical interaction evidence.'
+    source_locator: 'Complex Portal JSON #/crossReferences/9; /evidenceType'
+- id: location-77e173e27741
+  subject: SGD:S000003624
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. evidence code not specified
+    by source
+  evidence:
+  - reference_id: UniProtKB:P05150
+    source_assertion: UniProtKB:P05150 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/100/comments/0/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P05150
+    source_assertion: UniProtKB:P05150 has the exact SGD cross-reference SGD:S000003624.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/100/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-10342e417b5d
+  subject: SGD:S000003870
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:200419); ECO:0000269 (PubMed:205532)
+  evidence:
+  - reference_id: UniProtKB:P03965
+    source_assertion: UniProtKB:P03965 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/75/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P03965
+    source_assertion: UniProtKB:P03965 has the exact SGD cross-reference SGD:S000003870.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/75/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-e1da57d9d9b3
+  subject: SGD:S000005829
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:200419); ECO:0000269 (PubMed:205532)
+  evidence:
+  - reference_id: UniProtKB:P07258
+    source_assertion: UniProtKB:P07258 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/169/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P07258
+    source_assertion: UniProtKB:P07258 has the exact SGD cross-reference SGD:S000005829.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/169/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-9da6898b0c4d
+  subject: SGD:S000003870
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000255
+    (PROSITE-ProRule:PRU00409) Binds 4 Mg(2+) or Mn(2+) ions per subunit. UniProt note evidence:
+    ECO:0000255 (PROSITE-ProRule:PRU00409)'
+  evidence:
+  - reference_id: UniProtKB:P03965
+    source_assertion: UniProtKB:P03965 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/75/comments/0/cofactors/0;
+      /results/75/comments/0/note'
+  - reference_id: UniProtKB:P03965
+    source_assertion: UniProtKB:P03965 has the exact SGD cross-reference SGD:S000003870.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/75/uniProtKBCrossReferences/0'
+- id: cofactor-39cceffa6749
+  subject: SGD:S000003870
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000255
+    (PROSITE-ProRule:PRU00409) Binds 4 Mg(2+) or Mn(2+) ions per subunit. UniProt note evidence:
+    ECO:0000255 (PROSITE-ProRule:PRU00409)'
+  evidence:
+  - reference_id: UniProtKB:P03965
+    source_assertion: UniProtKB:P03965 annotates CHEBI:29035 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/75/comments/0/cofactors/1;
+      /results/75/comments/0/note'
+  - reference_id: UniProtKB:P03965
+    source_assertion: UniProtKB:P03965 has the exact SGD cross-reference SGD:S000003870.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/75/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_CITRUL-BIO2-PWY
-  title: 'SGD GO-CAM citrulline biosynthesis - imported from: Saccharomyces Genome
-    Database'
+  title: 'SGD GO-CAM citrulline biosynthesis - imported from: Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2024-07-12; member ./YeastPathways_CITRUL-BIO2-PWY.json
+- id: SGD:S000217863
+  title: 'Complex Portal CPX-579: Carbamoyl-phosphate synthase arginine-specific'
+  url: https://www.ebi.ac.uk/intact/complex-ws/complex/CPX-579
+  source_version: Inspected API snapshot 2026-10-05; release dates 2014-10-16
+  source_sha256: ccbb1369177abe4083a66a31055b2e69ff26d38506e4c8a7e063ed786a2194cc
+- id: gomodel:YeastPathways_ARGSYNBSUB-PWY
+  title: GO-CAM L-arginine biosynthesis II acetyl cycle model YeastPathways_ARGSYNBSUB-PWY
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-08; member ./YeastPathways_ARGSYNBSUB-PWY.json
+- id: UniProtKB:P07258
+  title: Reviewed UniProtKB P07258 SGD cross-reference
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 2ad9b6d84d565238960a053870fa90a6033bc212bbe1a4c9923fd55d7e7d7fc1
+- id: UniProtKB:P03965
+  title: Reviewed UniProtKB P03965 SGD cross-reference
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 2ad9b6d84d565238960a053870fa90a6033bc212bbe1a4c9923fd55d7e7d7fc1
+- id: UniProtKB:P05150
+  title: Reviewed UniProtKB P05150 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger. Reviewed exact Complex Portal composition, source evidence grades, and
+    independent physical complex locations.
+  llm_assisted: true
+- timestamp: '2026-10-05T06:17:04Z'
+  curator: Codex
+  action: review-complex-composition
+  changes: Reviewed exact Complex Portal composition, source evidence grades, and independent
+    physical complex locations; reused existing proteins through reviewed UniProt SGD cross-references.
+  llm_assisted: true

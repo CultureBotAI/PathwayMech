@@ -1,9 +1,8 @@
 id: MetaCyc:PANTO-PWY
 label: phosphopantothenate biosynthesis I
-description: Phosphopantothenate biosynthesis I condenses 3-methyl-2-oxobutanoate
-  with 5,10-methylene-tetrahydrofolate to form 2-dehydropantoate, reduces it to (R)-pantoate,
-  ligates (R)-pantoate with beta-alanine to form (R)-pantothenate, and phosphorylates
-  (R)-pantothenate to (R)-4'-phosphopantothenate.
+description: Phosphopantothenate biosynthesis I condenses 3-methyl-2-oxobutanoate with 5,10-methylene-tetrahydrofolate
+  to form 2-dehydropantoate, reduces it to (R)-pantoate, ligates (R)-pantoate with beta-alanine to form
+  (R)-pantothenate, and phosphorylates (R)-pantothenate to (R)-4'-phosphopantothenate.
 pathway_type: cofactor-biosynthesis
 taxa:
 - id: NCBITaxon:562
@@ -11,301 +10,515 @@ taxa:
 participants:
 - id: EC:2.1.2.11
   label: 3-methyl-2-oxobutanoate hydroxymethyltransferase
+  category: molecular_activity
 - id: EC:1.1.1.169
   label: 2-dehydropantoate reductase
+  category: molecular_activity
 - id: EC:6.3.2.1
   label: pantoate--beta-alanine ligase
+  category: molecular_activity
 - id: EC:2.7.1.33
   label: pantothenate kinase
+  category: molecular_activity
 - id: CHEBI:15636
   label: (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate
+  category: small_molecule
 - id: CHEBI:11851
   label: 3-methyl-2-oxobutanoate
+  category: small_molecule
 - id: CHEBI:15377
   label: H2O
+  category: small_molecule
 - id: CHEBI:11561
   label: 2-dehydropantoate
+  category: small_molecule
 - id: CHEBI:57453
   label: (6S)-5,6,7,8-tetrahydrofolate
+  category: small_molecule
 - id: CHEBI:57783
   label: NADPH
+  category: small_molecule
 - id: CHEBI:15378
   label: H(+)
+  category: small_molecule
 - id: CHEBI:15980
   label: (R)-pantoate
+  category: small_molecule
 - id: CHEBI:58349
   label: NADP(+)
+  category: small_molecule
 - id: CHEBI:57966
   label: beta-alanine
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP
+  category: small_molecule
 - id: CHEBI:29032
   label: (R)-pantothenate
+  category: small_molecule
 - id: CHEBI:456215
   label: AMP
+  category: small_molecule
 - id: CHEBI:33019
   label: diphosphate
+  category: small_molecule
 - id: CHEBI:10986
   label: (R)-4'-phosphopantothenate
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP
+  category: small_molecule
+- id: UniProtKB:P0A6I3
+  label: Pantothenate kinase
+  category: protein
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: UniProtKB:P0A9J4
+  label: 2-dehydropantoate 2-reductase
+  category: protein
+- id: UniProtKB:P31057
+  label: 3-methyl-2-oxobutanoate hydroxymethyltransferase
+  category: protein
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P31663
+  label: Pantothenate synthetase
+  category: protein
 reactions:
 - id: RHEA:11825
   label: 3-methyl-2-oxobutanoate hydroxymethyltransferase reaction
+  direction: left_to_right
 - id: RHEA:16235
   label: 2-dehydropantoate reductase reaction
+  direction: right_to_left
 - id: RHEA:10913
   label: pantothenate synthetase reaction
+  direction: left_to_right
 - id: RHEA:16374
   label: pantothenate kinase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:2.1.2.11
-  predicate: catalyzes
-  object: RHEA:11825
-  evidence:
-  - reference_id: RHEA:11824
-    quote: 3-methyl-2-oxobutanoate hydroxymethyltransferase catalyzes 3-methyl-2-oxobutanoate
-      hydroxymethyltransferase reaction.
-- id: edge-002
-  subject: CHEBI:15636
-  predicate: consumes
-  object: RHEA:11825
-  evidence:
-  - reference_id: RHEA:11825
-    quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate
-      + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
-- id: edge-003
   subject: CHEBI:11851
   predicate: consumes
   object: RHEA:11825
   evidence:
   - reference_id: RHEA:11825
-    quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate
-      + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
-- id: edge-004
+    source_assertion: Rhea lists CHEBI:11851 on the substrates side of RHEA:11825 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11825']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
   subject: CHEBI:15377
   predicate: consumes
   object: RHEA:11825
   evidence:
   - reference_id: RHEA:11825
-    quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate
-      + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
-- id: edge-005
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:11825 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11825']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
+  subject: CHEBI:15636
+  predicate: consumes
+  object: RHEA:11825
+  evidence:
+  - reference_id: RHEA:11825
+    source_assertion: Rhea lists CHEBI:15636 on the substrates side of RHEA:11825 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11825']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-004
   subject: RHEA:11825
   predicate: produces
   object: CHEBI:11561
   evidence:
   - reference_id: RHEA:11825
-    quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate
-      + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
-- id: edge-006
+    source_assertion: Rhea lists CHEBI:11561 on the products side of RHEA:11825 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11825']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
   subject: RHEA:11825
   predicate: produces
   object: CHEBI:57453
   evidence:
   - reference_id: RHEA:11825
-    quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate
-      + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
-- id: edge-007
-  subject: RHEA:11825
-  predicate: precedes
-  object: RHEA:16235
-  evidence:
-  - reference_id: RHEA:11825
-    quote: RHEA:11825 (6R)-5,10-methylene-5,6,7,8-tetrahydrofolate + 3-methyl-2-oxobutanoate
-      + H2O => 2-dehydropantoate + (6S)-5,6,7,8-tetrahydrofolate
-  - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-- id: edge-008
-  subject: EC:1.1.1.169
-  predicate: catalyzes
-  object: RHEA:16235
-  evidence:
-  - reference_id: RHEA:16233
-    quote: 2-dehydropantoate reductase catalyzes 2-dehydropantoate reductase reaction.
-- id: edge-009
+    source_assertion: Rhea lists CHEBI:57453 on the products side of RHEA:11825 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11825']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-006
   subject: CHEBI:11561
   predicate: consumes
   object: RHEA:16235
   evidence:
   - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-- id: edge-010
-  subject: CHEBI:57783
-  predicate: consumes
-  object: RHEA:16235
-  evidence:
-  - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-- id: edge-011
+    source_assertion: Rhea lists CHEBI:11561 on the substrates side of RHEA:16235 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16235']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
   subject: CHEBI:15378
   predicate: consumes
   object: RHEA:16235
   evidence:
   - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-- id: edge-012
+    source_assertion: Rhea lists CHEBI:15378 on the substrates side of RHEA:16235 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16235']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:16235
+  evidence:
+  - reference_id: RHEA:16235
+    source_assertion: Rhea lists CHEBI:57783 on the substrates side of RHEA:16235 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16235']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-009
   subject: RHEA:16235
   predicate: produces
   object: CHEBI:15980
   evidence:
   - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-- id: edge-013
+    source_assertion: Rhea lists CHEBI:15980 on the products side of RHEA:16235 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16235']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-010
   subject: RHEA:16235
   predicate: produces
   object: CHEBI:58349
   evidence:
   - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-- id: edge-014
-  subject: RHEA:16235
-  predicate: precedes
-  object: RHEA:10913
-  evidence:
-  - reference_id: RHEA:16235
-    quote: RHEA:16235 2-dehydropantoate + NADPH + H(+) => (R)-pantoate + NADP(+)
-  - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-015
-  subject: EC:6.3.2.1
-  predicate: catalyzes
-  object: RHEA:10913
-  evidence:
-  - reference_id: RHEA:10912
-    quote: pantoate--beta-alanine ligase catalyzes pantothenate synthetase reaction.
-- id: edge-016
+    source_assertion: Rhea lists CHEBI:58349 on the products side of RHEA:16235 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16235']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-011
   subject: CHEBI:15980
   predicate: consumes
   object: RHEA:10913
   evidence:
   - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-017
+    source_assertion: Rhea lists CHEBI:15980 on the substrates side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-012
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:10913
+  evidence:
+  - reference_id: RHEA:10913
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-013
   subject: CHEBI:57966
   predicate: consumes
   object: RHEA:10913
   evidence:
   - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-018
-  subject: CHEBI:30616
-  predicate: consumes
-  object: RHEA:10913
+    source_assertion: Rhea lists CHEBI:57966 on the substrates side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-014
+  subject: RHEA:10913
+  predicate: produces
+  object: CHEBI:15378
   evidence:
   - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-019
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-015
   subject: RHEA:10913
   predicate: produces
   object: CHEBI:29032
   evidence:
   - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-020
-  subject: RHEA:10913
-  predicate: produces
-  object: CHEBI:456215
-  evidence:
-  - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-021
+    source_assertion: Rhea lists CHEBI:29032 on the products side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-016
   subject: RHEA:10913
   predicate: produces
   object: CHEBI:33019
   evidence:
   - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-022
+    source_assertion: Rhea lists CHEBI:33019 on the products side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-017
   subject: RHEA:10913
   predicate: produces
-  object: CHEBI:15378
+  object: CHEBI:456215
   evidence:
   - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-- id: edge-023
-  subject: RHEA:10913
-  predicate: precedes
-  object: RHEA:16374
-  evidence:
-  - reference_id: RHEA:10913
-    quote: RHEA:10913 (R)-pantoate + beta-alanine + ATP => (R)-pantothenate + AMP
-      + diphosphate + H(+)
-  - reference_id: RHEA:16374
-    quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP +
-      H(+)
-- id: edge-024
-  subject: EC:2.7.1.33
-  predicate: catalyzes
-  object: RHEA:16374
-  evidence:
-  - reference_id: RHEA:16373
-    quote: pantothenate kinase catalyzes pantothenate kinase reaction.
-- id: edge-025
+    source_assertion: Rhea lists CHEBI:456215 on the products side of RHEA:10913 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10913']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-018
   subject: CHEBI:29032
   predicate: consumes
   object: RHEA:16374
   evidence:
   - reference_id: RHEA:16374
-    quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP +
-      H(+)
-- id: edge-026
+    source_assertion: Rhea lists CHEBI:29032 on the substrates side of RHEA:16374 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16374']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-019
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:16374
   evidence:
   - reference_id: RHEA:16374
-    quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP +
-      H(+)
-- id: edge-027
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:16374 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16374']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-020
   subject: RHEA:16374
   predicate: produces
   object: CHEBI:10986
   evidence:
   - reference_id: RHEA:16374
-    quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP +
-      H(+)
-- id: edge-028
-  subject: RHEA:16374
-  predicate: produces
-  object: CHEBI:456216
-  evidence:
-  - reference_id: RHEA:16374
-    quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP +
-      H(+)
-- id: edge-029
+    source_assertion: Rhea lists CHEBI:10986 on the products side of RHEA:16374 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16374']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-021
   subject: RHEA:16374
   predicate: produces
   object: CHEBI:15378
   evidence:
   - reference_id: RHEA:16374
-    quote: RHEA:16374 (R)-pantothenate + ATP => (R)-4'-phosphopantothenate + ADP +
-      H(+)
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:16374 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16374']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-022
+  subject: RHEA:16374
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:16374
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:16374 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16374']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-023
+  subject: EC:2.1.2.11
+  predicate: catalyzes
+  object: RHEA:11825
+  evidence:
+  - reference_id: RHEA:11824
+    source_assertion: Rhea associates EC:2.1.2.11 with the reaction family containing RHEA:11825.
+    source_locator: rh:ec
+- id: edge-024
+  subject: EC:1.1.1.169
+  predicate: catalyzes
+  object: RHEA:16235
+  evidence:
+  - reference_id: RHEA:16233
+    source_assertion: Rhea associates EC:1.1.1.169 with the reaction family containing RHEA:16235.
+    source_locator: rh:ec
+- id: edge-025
+  subject: EC:6.3.2.1
+  predicate: catalyzes
+  object: RHEA:10913
+  evidence:
+  - reference_id: RHEA:10912
+    source_assertion: Rhea associates EC:6.3.2.1 with the reaction family containing RHEA:10913.
+    source_locator: rh:ec
+- id: edge-026
+  subject: EC:2.7.1.33
+  predicate: catalyzes
+  object: RHEA:16374
+  evidence:
+  - reference_id: RHEA:16373
+    source_assertion: Rhea associates EC:2.7.1.33 with the reaction family containing RHEA:16374.
+    source_locator: rh:ec
+- id: edge-027
+  subject: RHEA:10913
+  predicate: precedes
+  object: RHEA:16374
+  evidence:
+  - reference_id: MetaCyc:PANTO-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:10913 before RHEA:16374 in this pathway. Shared
+      intermediate: CHEBI:29032.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-028
+  subject: RHEA:11825
+  predicate: precedes
+  object: RHEA:16235
+  evidence:
+  - reference_id: MetaCyc:PANTO-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:11825 before RHEA:16235 in this pathway. Shared
+      intermediate: CHEBI:11561.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-029
+  subject: RHEA:16235
+  predicate: precedes
+  object: RHEA:10913
+  evidence:
+  - reference_id: MetaCyc:PANTO-PWY
+    source_assertion: 'MetaCyc pathway ordering places RHEA:16235 before RHEA:10913 in this pathway. Shared
+      intermediate: CHEBI:15980.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-030
+  subject: UniProtKB:P0A6I3
+  predicate: enables
+  object: RHEA:16374
+  evidence:
+  - reference_id: UniProtKB:P0A6I3
+    source_assertion: 'UniProt annotates UniProtKB:P0A6I3 with catalytic activity for the reaction family
+      of RHEA:16374. Annotation evidence: curated source annotation; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-031
+  subject: CHEBI:57287
+  predicate: inhibits
+  object: UniProtKB:P0A6I3
+  evidence:
+  - reference_id: UniProtKB:P0A6I3
+    source_assertion: 'UniProt activity-regulation annotation: Regulated by feedback inhibition by CoA
+      and its thioesters'
+    source_locator: comments[commentType='ACTIVITY REGULATION'].texts
+- id: edge-032
+  subject: UniProtKB:P0A6I3
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P0A6I3
+    source_assertion: 'UniProt locates UniProtKB:P0A6I3 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-033
+  subject: UniProtKB:P0A9J4
+  predicate: enables
+  object: RHEA:16235
+  evidence:
+  - reference_id: UniProtKB:P0A9J4
+    source_assertion: 'UniProt annotates UniProtKB:P0A9J4 with catalytic activity for the reaction family
+      of RHEA:16235. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-034
+  subject: UniProtKB:P0A9J4
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P0A9J4
+    source_assertion: 'UniProt locates UniProtKB:P0A9J4 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-035
+  subject: UniProtKB:P31057
+  predicate: enables
+  object: RHEA:11825
+  evidence:
+  - reference_id: UniProtKB:P31057
+    source_assertion: 'UniProt annotates UniProtKB:P31057 with catalytic activity for the reaction family
+      of RHEA:11825. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-036
+  subject: UniProtKB:P31057
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P31057
+    source_assertion: 'UniProt locates UniProtKB:P31057 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+- id: edge-037
+  subject: UniProtKB:P31057
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P31057
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P31057 (evidence: ECO:0000269).
+      Binds 1 Mg(2+) ion per subunit. Can also use Mn(2+), Co(2+) and Zn(2+) to a lesser extent.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-038
+  subject: UniProtKB:P31057
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:P31057
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P31057 (evidence: ECO:0000269).
+      Binds 1 Mg(2+) ion per subunit. Can also use Mn(2+), Co(2+) and Zn(2+) to a lesser extent.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-039
+  subject: UniProtKB:P31057
+  predicate: has_cofactor
+  object: CHEBI:48828
+  evidence:
+  - reference_id: UniProtKB:P31057
+    source_assertion: 'UniProt lists CHEBI:48828 as a cofactor of UniProtKB:P31057 (evidence: ECO:0000269).
+      Binds 1 Mg(2+) ion per subunit. Can also use Mn(2+), Co(2+) and Zn(2+) to a lesser extent.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-040
+  subject: UniProtKB:P31057
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P31057
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P31057 (evidence: ECO:0000269).
+      Binds 1 Mg(2+) ion per subunit. Can also use Mn(2+), Co(2+) and Zn(2+) to a lesser extent.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-041
+  subject: UniProtKB:P31663
+  predicate: enables
+  object: RHEA:10913
+  evidence:
+  - reference_id: UniProtKB:P31663
+    source_assertion: 'UniProt annotates UniProtKB:P31663 with catalytic activity for the reaction family
+      of RHEA:10913. Annotation evidence: curated source annotation; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-042
+  subject: UniProtKB:P31663
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P31663
+    source_assertion: 'UniProt locates UniProtKB:P31663 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000305.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
 references:
 - id: MetaCyc:PANTO-PWY
   title: MetaCyc phosphopantothenate biosynthesis I pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:PANTO-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: d04374c056a484ef198189fd03c8e61ddf07b9367d52ea9a89339325813e2edf
 - id: RHEA:11824
   title: Rhea 3-methyl-2-oxobutanoate hydroxymethyltransferase reaction
+  url: https://www.rhea-db.org/rhea/11824
+  source_version: '139'
 - id: RHEA:11825
   title: Rhea 2-dehydropantoate-forming direction
+  url: https://www.rhea-db.org/rhea/11825
+  source_version: '139'
 - id: RHEA:16233
   title: Rhea 2-dehydropantoate reductase reaction
+  url: https://www.rhea-db.org/rhea/16233
+  source_version: '139'
 - id: RHEA:16235
   title: Rhea pantoate-forming direction
+  url: https://www.rhea-db.org/rhea/16235
+  source_version: '139'
 - id: RHEA:10912
   title: Rhea pantothenate synthetase reaction
+  url: https://www.rhea-db.org/rhea/10912
+  source_version: '139'
 - id: RHEA:10913
   title: Rhea pantothenate-forming direction
+  url: https://www.rhea-db.org/rhea/10913
+  source_version: '139'
 - id: RHEA:16373
   title: Rhea pantothenate kinase reaction
+  url: https://www.rhea-db.org/rhea/16373
+  source_version: '139'
 - id: RHEA:16374
   title: Rhea phosphopantothenate-forming direction
+  url: https://www.rhea-db.org/rhea/16374
+  source_version: '139'
+- id: UniProtKB:P0A6I3
+  title: UniProtKB:P0A6I3 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0A6I3.json
+  source_version: '2026_03'
+- id: UniProtKB:P0A9J4
+  title: UniProtKB:P0A9J4 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0A9J4.json
+  source_version: '2026_03'
+- id: UniProtKB:P31057
+  title: UniProtKB:P31057 authority record
+  url: https://rest.uniprot.org/uniprotkb/P31057.json
+  source_version: '2026_03'
+- id: UniProtKB:P31663
+  title: UniProtKB:P31663 authority record
+  url: https://rest.uniprot.org/uniprotkb/P31663.json
+  source_version: '2026_03'

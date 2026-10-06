@@ -1,143 +1,239 @@
 id: MetaCyc:PWY-6543
 label: 4-aminobenzoate biosynthesis I
-description: >-
-  4-Aminobenzoate biosynthesis I converts chorismate and L-glutamine to
-  4-aminobenzoate through 4-amino-4-deoxychorismate.
+description: 4-Aminobenzoate biosynthesis I converts chorismate and L-glutamine to 4-aminobenzoate through
+  4-amino-4-deoxychorismate.
 pathway_type: cofactor-biosynthesis
 taxa:
-  - id: NCBITaxon:562
-    label: Escherichia coli
+- id: NCBITaxon:562
+  label: Escherichia coli
 participants:
-  - id: EC:2.6.1.85
-    label: aminodeoxychorismate synthase
-  - id: EC:4.1.3.38
-    label: aminodeoxychorismate lyase
-  - id: CHEBI:29748
-    label: chorismate
-  - id: CHEBI:58359
-    label: L-glutamine
-  - id: CHEBI:58406
-    label: 4-amino-4-deoxychorismate
-  - id: CHEBI:29985
-    label: L-glutamate
-  - id: CHEBI:17836
-    label: 4-aminobenzoate
-  - id: CHEBI:15361
-    label: pyruvate
-  - id: CHEBI:15378
-    label: H+
+- id: EC:2.6.1.85
+  label: aminodeoxychorismate synthase
+  category: molecular_activity
+- id: EC:4.1.3.38
+  label: aminodeoxychorismate lyase
+  category: molecular_activity
+- id: CHEBI:29748
+  label: chorismate
+  category: small_molecule
+- id: CHEBI:58359
+  label: L-glutamine
+  category: small_molecule
+- id: CHEBI:58406
+  label: 4-amino-4-deoxychorismate
+  category: small_molecule
+- id: CHEBI:29985
+  label: L-glutamate
+  category: small_molecule
+- id: CHEBI:17836
+  label: 4-aminobenzoate
+  category: small_molecule
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15378
+  label: H+
+  category: small_molecule
+- id: UniProtKB:P00903
+  label: Aminodeoxychorismate synthase component 2
+  category: protein
+- id: UniProtKB:P05041
+  label: Aminodeoxychorismate synthase component 1
+  category: protein
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: UniProtKB:P28305
+  label: Aminodeoxychorismate lyase
+  category: protein
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
-  - id: RHEA:11673
-    label: aminodeoxychorismate synthase reaction
-  - id: RHEA:16202
-    label: aminodeoxychorismate lyase reaction
+- id: RHEA:11673
+  label: aminodeoxychorismate synthase reaction
+  direction: left_to_right
+- id: RHEA:16202
+  label: aminodeoxychorismate lyase reaction
+  direction: left_to_right
 mechanistic_edges:
-  - id: edge-001
-    subject: EC:2.6.1.85
-    predicate: catalyzes
-    object: RHEA:11673
-    evidence:
-      - reference_id: RHEA:11672
-        quote: "EC 2.6.1.85 aminodeoxychorismate synthase"
-      - reference_id: PMID:1644759
-        quote: >-
-          Aminodeoxychorismate synthase components I and II, encoded by pabB
-          and pabA, respectively, convert chorismate and glutamine to
-          4-amino-4-deoxychorismate (ADC) and glutamate, respectively.
-  - id: edge-002
-    subject: CHEBI:29748
-    predicate: consumes
-    object: RHEA:11673
-    evidence:
-      - reference_id: RHEA:11673
-        quote: "RHEA:11673 chorismate + L-glutamine => 4-amino-4-deoxychorismate + L-glutamate"
-  - id: edge-003
-    subject: CHEBI:58359
-    predicate: consumes
-    object: RHEA:11673
-    evidence:
-      - reference_id: RHEA:11673
-        quote: "RHEA:11673 chorismate + L-glutamine => 4-amino-4-deoxychorismate + L-glutamate"
-  - id: edge-004
-    subject: RHEA:11673
-    predicate: produces
-    object: CHEBI:58406
-    evidence:
-      - reference_id: RHEA:11673
-        quote: "RHEA:11673 chorismate + L-glutamine => 4-amino-4-deoxychorismate + L-glutamate"
-  - id: edge-005
-    subject: RHEA:11673
-    predicate: produces
-    object: CHEBI:29985
-    evidence:
-      - reference_id: RHEA:11673
-        quote: "RHEA:11673 chorismate + L-glutamine => 4-amino-4-deoxychorismate + L-glutamate"
-  - id: edge-006
-    subject: RHEA:11673
-    predicate: precedes
-    object: RHEA:16202
-    evidence:
-      - reference_id: RHEA:11673
-        quote: "RHEA:11673 chorismate + L-glutamine => 4-amino-4-deoxychorismate + L-glutamate"
-      - reference_id: RHEA:16202
-        quote: "RHEA:16202 4-amino-4-deoxychorismate => 4-aminobenzoate + pyruvate + H(+)"
-      - reference_id: PMID:1644759
-        quote: >-
-          Aminodeoxychorismate synthase components I and II, encoded by pabB
-          and pabA, respectively, convert chorismate and glutamine to
-          4-amino-4-deoxychorismate (ADC) and glutamate, respectively.
-  - id: edge-007
-    subject: EC:4.1.3.38
-    predicate: catalyzes
-    object: RHEA:16202
-    evidence:
-      - reference_id: RHEA:16201
-        quote: "EC 4.1.3.38 aminodeoxychorismate lyase"
-      - reference_id: PMID:2251281
-        quote: >-
-          Enzyme X shows no activity on chorismate but quantitatively converts
-          the preformed aminodeoxychorismate into p-aminobenzoate and pyruvate,
-          acting thereby as an aminodeoxychorismate lyase.
-  - id: edge-008
-    subject: CHEBI:58406
-    predicate: consumes
-    object: RHEA:16202
-    evidence:
-      - reference_id: RHEA:16202
-        quote: "RHEA:16202 4-amino-4-deoxychorismate => 4-aminobenzoate + pyruvate + H(+)"
-  - id: edge-009
-    subject: RHEA:16202
-    predicate: produces
-    object: CHEBI:17836
-    evidence:
-      - reference_id: RHEA:16202
-        quote: "RHEA:16202 4-amino-4-deoxychorismate => 4-aminobenzoate + pyruvate + H(+)"
-  - id: edge-010
-    subject: RHEA:16202
-    predicate: produces
-    object: CHEBI:15361
-    evidence:
-      - reference_id: RHEA:16202
-        quote: "RHEA:16202 4-amino-4-deoxychorismate => 4-aminobenzoate + pyruvate + H(+)"
-  - id: edge-011
-    subject: RHEA:16202
-    predicate: produces
-    object: CHEBI:15378
-    evidence:
-      - reference_id: RHEA:16202
-        quote: "RHEA:16202 4-amino-4-deoxychorismate => 4-aminobenzoate + pyruvate + H(+)"
+- id: edge-001
+  subject: CHEBI:29748
+  predicate: consumes
+  object: RHEA:11673
+  evidence:
+  - reference_id: RHEA:11673
+    source_assertion: Rhea lists CHEBI:29748 on the substrates side of RHEA:11673 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11673']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-002
+  subject: CHEBI:58359
+  predicate: consumes
+  object: RHEA:11673
+  evidence:
+  - reference_id: RHEA:11673
+    source_assertion: Rhea lists CHEBI:58359 on the substrates side of RHEA:11673 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11673']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-003
+  subject: RHEA:11673
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: RHEA:11673
+    source_assertion: Rhea lists CHEBI:29985 on the products side of RHEA:11673 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11673']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-004
+  subject: RHEA:11673
+  predicate: produces
+  object: CHEBI:58406
+  evidence:
+  - reference_id: RHEA:11673
+    source_assertion: Rhea lists CHEBI:58406 on the products side of RHEA:11673 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11673']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-005
+  subject: CHEBI:58406
+  predicate: consumes
+  object: RHEA:16202
+  evidence:
+  - reference_id: RHEA:16202
+    source_assertion: Rhea lists CHEBI:58406 on the substrates side of RHEA:16202 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16202']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: RHEA:16202
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:16202
+    source_assertion: Rhea lists CHEBI:15361 on the products side of RHEA:16202 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16202']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:16202
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:16202
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:16202 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16202']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:16202
+  predicate: produces
+  object: CHEBI:17836
+  evidence:
+  - reference_id: RHEA:16202
+    source_assertion: Rhea lists CHEBI:17836 on the products side of RHEA:16202 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16202']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: EC:2.6.1.85
+  predicate: catalyzes
+  object: RHEA:11673
+  evidence:
+  - reference_id: RHEA:11672
+    source_assertion: Rhea associates EC:2.6.1.85 with the reaction family containing RHEA:11673.
+    source_locator: rh:ec
+  - reference_id: PMID:1644759
+    quote: Aminodeoxychorismate synthase components I and II, encoded by pabB and pabA, respectively,
+      convert chorismate and glutamine to 4-amino-4-deoxychorismate (ADC) and glutamate, respectively.
+    source_locator: PubMed Abstract
+- id: edge-010
+  subject: EC:4.1.3.38
+  predicate: catalyzes
+  object: RHEA:16202
+  evidence:
+  - reference_id: RHEA:16201
+    source_assertion: Rhea associates EC:4.1.3.38 with the reaction family containing RHEA:16202.
+    source_locator: rh:ec
+  - reference_id: PMID:2251281
+    quote: Enzyme X shows no activity on chorismate but quantitatively converts the preformed aminodeoxychorismate
+      into p-aminobenzoate and pyruvate, acting thereby as an aminodeoxychorismate lyase.
+    source_locator: PubMed Abstract
+- id: edge-011
+  subject: RHEA:11673
+  predicate: precedes
+  object: RHEA:16202
+  evidence:
+  - reference_id: MetaCyc:PWY-6543
+    source_assertion: 'MetaCyc pathway ordering places RHEA:11673 before RHEA:16202 in this pathway. Shared
+      intermediate: CHEBI:58406.'
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-012
+  subject: UniProtKB:P00903
+  predicate: enables
+  object: RHEA:11673
+  evidence:
+  - reference_id: UniProtKB:P00903
+    source_assertion: 'UniProt annotates UniProtKB:P00903 with catalytic activity for the reaction family
+      of RHEA:11673. Annotation evidence: ECO:0000269, ECO:0000305; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-013
+  subject: UniProtKB:P05041
+  predicate: enables
+  object: RHEA:11673
+  evidence:
+  - reference_id: UniProtKB:P05041
+    source_assertion: 'UniProt annotates UniProtKB:P05041 with catalytic activity for the reaction family
+      of RHEA:11673. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-014
+  subject: UniProtKB:P05041
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P05041
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P05041 (evidence: ECO:0000269). '
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-015
+  subject: UniProtKB:P28305
+  predicate: enables
+  object: RHEA:16202
+  evidence:
+  - reference_id: UniProtKB:P28305
+    source_assertion: 'UniProt annotates UniProtKB:P28305 with catalytic activity for the reaction family
+      of RHEA:16202. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-016
+  subject: UniProtKB:P28305
+  predicate: has_cofactor
+  object: CHEBI:597326
+  evidence:
+  - reference_id: UniProtKB:P28305
+    source_assertion: 'UniProt lists CHEBI:597326 as a cofactor of UniProtKB:P28305 (evidence: ECO:0000269). '
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
 references:
-  - id: MetaCyc:PWY-6543
-    title: MetaCyc 4-aminobenzoate biosynthesis I pathway
-  - id: RHEA:11672
-    title: Rhea aminodeoxychorismate synthase reaction
-  - id: RHEA:11673
-    title: Rhea left-to-right aminodeoxychorismate synthase direction
-  - id: RHEA:16201
-    title: Rhea aminodeoxychorismate lyase reaction
-  - id: RHEA:16202
-    title: Rhea 4-amino-4-deoxychorismate-to-4-aminobenzoate lyase direction
-  - id: PMID:2251281
-    citation: Green and Nichols, Proceedings of the National Academy of Sciences, 1990
-  - id: PMID:1644759
-    citation: Green et al., Journal of Bacteriology, 1992
+- id: MetaCyc:PWY-6543
+  title: MetaCyc 4-aminobenzoate biosynthesis I pathway
+  url: https://pathway.yeastgenome.org/getxml?id=META:PWY-6543&detail=full
+  source_version: '22.5'
+  source_sha256: d687b1b0a70b6e7e09f6af14d499dca6dc7e68272fe3f081f4a2520129a87355
+- id: RHEA:11672
+  title: Rhea aminodeoxychorismate synthase reaction
+  url: https://www.rhea-db.org/rhea/11672
+  source_version: '139'
+- id: RHEA:11673
+  title: Rhea left-to-right aminodeoxychorismate synthase direction
+  url: https://www.rhea-db.org/rhea/11673
+  source_version: '139'
+- id: RHEA:16201
+  title: Rhea aminodeoxychorismate lyase reaction
+  url: https://www.rhea-db.org/rhea/16201
+  source_version: '139'
+- id: RHEA:16202
+  title: Rhea 4-amino-4-deoxychorismate-to-4-aminobenzoate lyase direction
+  url: https://www.rhea-db.org/rhea/16202
+  source_version: '139'
+- id: PMID:2251281
+  citation: Green and Nichols, Proceedings of the National Academy of Sciences, 1990
+  url: https://pubmed.ncbi.nlm.nih.gov/2251281/
+- id: PMID:1644759
+  citation: Green et al., Journal of Bacteriology, 1992
+  url: https://pubmed.ncbi.nlm.nih.gov/1644759/
+- id: UniProtKB:P00903
+  title: UniProtKB:P00903 authority record
+  url: https://rest.uniprot.org/uniprotkb/P00903.json
+  source_version: '2026_03'
+- id: UniProtKB:P05041
+  title: UniProtKB:P05041 authority record
+  url: https://rest.uniprot.org/uniprotkb/P05041.json
+  source_version: '2026_03'
+- id: UniProtKB:P28305
+  title: UniProtKB:P28305 authority record
+  url: https://rest.uniprot.org/uniprotkb/P28305.json
+  source_version: '2026_03'

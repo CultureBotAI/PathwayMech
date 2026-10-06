@@ -1,0 +1,189 @@
+{
+  "reviewed_utc": "2026-10-05T19:44:03.818446+00:00",
+  "pr": "https://github.com/CultureBotAI/PathwayMech/pull/262",
+  "integration_base": "d8ec2b69f7a4c615aecddff80498fef1e1fab0ce",
+  "tree_scope": "Final uncommitted PR correction tree; source/report changes committed together after validation.",
+  "checks": {
+    "render": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-render-pages"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:31:41.357353+00:00",
+      "duration_seconds": 73.18,
+      "log_sha256": "a1fb7ea8d40c33df55eb764244d0a0961bfe818d3e882c40c590beddfc26f14d"
+    },
+    "kgx": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-export-kgx"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:31:11.136639+00:00",
+      "duration_seconds": 42.82,
+      "log_sha256": "697038d02fee3ee7528a46b8afda52493b75dca694fd4554cb252f6af328784e"
+    },
+    "sssom": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-export-sssom"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:31:05.344408+00:00",
+      "duration_seconds": 37.04,
+      "log_sha256": "ed82fd15c2f3e6a15fca62ce710ad99d3b909831ff7700d353d5e9d8e06467c3"
+    },
+    "tests": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "--extra",
+        "dev",
+        "pytest",
+        "-q",
+        "-ra"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:43:30.809437+00:00",
+      "duration_seconds": 503.25,
+      "log_sha256": "40117c13f2351603dba47d942b5052ae78547ab17400dde0f47c31e9ad5c1719"
+    },
+    "lint": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "--extra",
+        "dev",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:35:07.901132+00:00",
+      "duration_seconds": 0.36,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "skills": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "scripts/validate_claude_skills.py"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:35:07.930879+00:00",
+      "duration_seconds": 0.38,
+      "log_sha256": "8e74f2b5fa8182e6833c1ac4925b7495ebb2341a0da6db52f017c87761ee3182"
+    },
+    "qc": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-run-qc"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:40:36.576905+00:00",
+      "duration_seconds": 299.29,
+      "log_sha256": "27a4d48a5b5375fbac6f3b54454cef1f03a42719314b0cc1303c9222b755e02e"
+    },
+    "diff": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-05T19:41:44.079938+00:00",
+      "duration_seconds": 0.64,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "vendored_sync": {
+      "status": "passed",
+      "governed_files": 18,
+      "command": [
+        "bash",
+        "scripts/check_vendored_sync.sh"
+      ]
+    }
+  },
+  "tests": {
+    "passed": 580,
+    "skipped": 3,
+    "skip_reason": "Three vendored skill-frontmatter parametrizations have no matching paths; local skill validator passed all7skills."
+  },
+  "corpus": {
+    "records": 152,
+    "participants": 3599,
+    "reactions": 814,
+    "edges": 7134,
+    "predicates": {
+      "consumes": 670,
+      "produces": 755,
+      "catalyzes": 341,
+      "enables": 713,
+      "has_cofactor": 520,
+      "precedes": 190,
+      "has_input": 1044,
+      "has_output": 1116,
+      "occurs_in": 342,
+      "part_of": 475,
+      "located_in": 585,
+      "provides_input_for": 290,
+      "has_part": 42,
+      "causally_upstream_of": 21,
+      "inhibits": 25,
+      "activates": 3,
+      "regulates": 2
+    },
+    "participant_categories": {
+      "small_molecule": 1749,
+      "protein": 773,
+      "cofactor": 323,
+      "molecular_activity": 212,
+      "cellular_component": 349,
+      "biological_process": 86,
+      "complex": 15,
+      "lipid": 81,
+      "unspecified": 11
+    }
+  },
+  "source_digests_verified": 93,
+  "issues_addressed": [
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270
+  ],
+  "original_failures": {
+    "kgx_biopax_regressions": 21,
+    "supplement_replay_regressions": 3,
+    "diagram_category_regressions": 4
+  },
+  "export_audit": {
+    "edges": 7134,
+    "unique_edge_ids": true,
+    "all_source_evidence_and_reference_metadata_preserved": true
+  },
+  "post_suite_focused_check": {
+    "scope": "Final ontology query join-order optimization",
+    "tests_passed": 4,
+    "full_ontology_lookups": 4,
+    "duration_seconds": 0.03083,
+    "lint": "passed"
+  }
+}

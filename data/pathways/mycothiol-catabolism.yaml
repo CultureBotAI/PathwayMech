@@ -1,76 +1,178 @@
 id: Reactome:R-MTU-879325
-label: Mycothiol catabolism
-description: >-
-  Mycobacterium tuberculosis mycothiol S-conjugate amidase cleaves mycothiol
-  and water to S-acetyl-L-cysteine and 1D-myo-inositol
-  2-amino-2-deoxy-alpha-D-glucopyranoside.
+label: mycothiol S-conjugate catabolism
+description: Mycobacterium tuberculosis Mca hydrolyzes detoxification conjugates of mycothiol
+  to an N-acetyl-L-cysteine S-conjugate and glucosaminyl-inositol. Mca binds iron under anaerobic
+  purification and zinc under aerobic purification; the native Reactome zinc complex describes
+  the latter condition.
 pathway_type: biopax-pathway
 taxa:
-  - id: NCBITaxon:1773
-    label: Mycobacterium tuberculosis
+- id: NCBITaxon:1773
+  label: Mycobacterium tuberculosis
 participants:
-  - id: UniProtKB:P9WJN1
-    label: mycothiol S-conjugate amidase Mca
-  - id: CHEBI:16768
-    label: mycothiol
-  - id: CHEBI:15377
-    label: water
-  - id: CHEBI:45563
-    label: S-acetyl-L-cysteine
-  - id: CHEBI:52283
-    label: 1D-myo-inositol 2-amino-2-deoxy-alpha-D-glucopyranoside
+- id: CHEBI:15377
+  label: H2O
+  category: small_molecule
+- id: CHEBI:29105
+  label: Zn2+
+  category: cofactor
+- id: UniProtKB:P9WJN1
+  label: mca
+  category: protein
+- id: Reactome:R-MTU-879260
+  label: mca:Zn2+
+  category: complex
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:59633
+  label: mycothiol S-conjugate
+  category: small_molecule
+- id: CHEBI:58718
+  label: S-substituted N-acetyl-L-cysteinate
+  category: small_molecule
+- id: CHEBI:58886
+  label: 1D-myo-inositol 2-ammonio-2-deoxy-alpha-D-glucopyranoside
+  category: small_molecule
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
 reactions:
-  - id: Reactome:R-MTU-879281
-    label: mycothiol cleavage to acetylcysteine and glucosaminylinositol
+- id: Reactome:R-MTU-879281
+  label: Mca hydrolyzes mycothiol S-conjugates to mercapturic-acid conjugates and glucosaminyl-inositol
+  category: molecular_activity
+  direction: left_to_right
 mechanistic_edges:
-  - id: edge-001
-    subject: UniProtKB:P9WJN1
-    predicate: catalyzes
-    object: Reactome:R-MTU-879281
-    evidence:
-      - reference_id: PMID:14556638
-        quote: >-
-          CATALYTIC ACTIVITY mycothiol S-conjugate + H2O = an
-          N-acetyl-L-cysteine-S-conjugate + 1D-myo-inositol
-          2-amino-2-deoxy-alpha-D-glucopyranoside
-  - id: edge-002
-    subject: CHEBI:16768
-    predicate: consumes
-    object: Reactome:R-MTU-879281
-    evidence:
-      - reference_id: PMID:14556638
-        quote: >-
-          The degradation of mycothiol proceeds through its cleavage into
-          acetylcysteine and glucosaminylinositol
-  - id: edge-003
-    subject: CHEBI:15377
-    predicate: consumes
-    object: Reactome:R-MTU-879281
-    evidence:
-      - reference_id: PMID:14556638
-        quote: >-
-          CATALYTIC ACTIVITY mycothiol S-conjugate + H2O = an
-          N-acetyl-L-cysteine-S-conjugate + 1D-myo-inositol
-          2-amino-2-deoxy-alpha-D-glucopyranoside
-  - id: edge-004
-    subject: Reactome:R-MTU-879281
-    predicate: produces
-    object: CHEBI:45563
-    evidence:
-      - reference_id: PMID:14556638
-        quote: >-
-          The degradation of mycothiol proceeds through its cleavage into
-          acetylcysteine and glucosaminylinositol
-  - id: edge-005
-    subject: Reactome:R-MTU-879281
-    predicate: produces
-    object: CHEBI:52283
-    evidence:
-      - reference_id: PMID:14556638
-        quote: >-
-          CATALYTIC ACTIVITY mycothiol S-conjugate + H2O = an
-          N-acetyl-L-cysteine-S-conjugate + 1D-myo-inositol
-          2-amino-2-deoxy-alpha-D-glucopyranoside
+- id: causal-review-1
+  subject: CHEBI:15377
+  predicate: consumes
+  object: Reactome:R-MTU-879281
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX BiochemicalReaction1 lists H2O on its left side with LEFT-TO-RIGHT
+      conversionDirection.
+    source_locator: '#BiochemicalReaction1/bp:left/#SmallMolecule2'
+- id: causal-review-2
+  subject: Reactome:R-MTU-879281
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: The physical participants of BioPAX BiochemicalReaction1 are assigned
+      to the cytosol.
+    source_locator: '#BiochemicalReaction1; participating physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-3
+  subject: Reactome:R-MTU-879260
+  predicate: catalyzes
+  object: Reactome:R-MTU-879281
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX Catalysis1 identifies mca:Zn2+ as the controller of BiochemicalReaction1.
+    source_locator: '#Catalysis1/bp:controller/#Complex1; bp:controlled/#BiochemicalReaction1'
+  description: The native zinc-bound Mca assembly represents the aerobic purified form; Fe2+
+    is favored under physiological anaerobic conditions (PMID:26044118).
+- id: causal-review-4
+  subject: CHEBI:15377
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX SmallMolecule2 assigns H2O to the cytosol.
+    source_locator: '#SmallMolecule2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-5
+  subject: CHEBI:29105
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX SmallMolecule5 assigns Zn2+ to the cytosol.
+    source_locator: '#SmallMolecule5/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-6
+  subject: UniProtKB:P9WJN1
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX Protein1 assigns mca to the cytosol.
+    source_locator: '#Protein1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-7
+  subject: Reactome:R-MTU-879260
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX Complex1 assigns mca:Zn2+ to the cytosol.
+    source_locator: '#Complex1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: causal-review-8
+  subject: Reactome:R-MTU-879260
+  predicate: has_part
+  object: CHEBI:29105
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX Complex1 includes Zn2+ as a component of mca:Zn2+.
+    source_locator: '#Complex1/bp:component/#SmallMolecule5'
+- id: causal-review-9
+  subject: Reactome:R-MTU-879260
+  predicate: has_part
+  object: UniProtKB:P9WJN1
+  evidence:
+  - reference_id: Reactome:R-MTU-879325
+    source_assertion: BioPAX Complex1 includes mca as a component of mca:Zn2+.
+    source_locator: '#Complex1/bp:component/#Protein1'
+- id: causal-review-10
+  subject: CHEBI:59633
+  predicate: consumes
+  object: Reactome:R-MTU-879281
+  evidence:
+  - reference_id: UniProtKB:P9WJN1
+    source_assertion: Mca hydrolyzes a mycothiol S-conjugate to an S-substituted N-acetyl-L-cysteinate
+      and glucosaminyl-inositol (RHEA:36543); the substrate is not unconjugated mycothiol.
+    source_locator: comments[commentType=CATALYTIC ACTIVITY].reaction[RHEA:36543]
+- id: causal-review-11
+  subject: Reactome:R-MTU-879281
+  predicate: produces
+  object: CHEBI:58718
+  evidence:
+  - reference_id: UniProtKB:P9WJN1
+    source_assertion: Mca hydrolyzes a mycothiol S-conjugate to an S-substituted N-acetyl-L-cysteinate
+      and glucosaminyl-inositol (RHEA:36543); the substrate is not unconjugated mycothiol.
+    source_locator: comments[commentType=CATALYTIC ACTIVITY].reaction[RHEA:36543]
+- id: causal-review-12
+  subject: Reactome:R-MTU-879281
+  predicate: produces
+  object: CHEBI:58886
+  evidence:
+  - reference_id: UniProtKB:P9WJN1
+    source_assertion: Mca hydrolyzes a mycothiol S-conjugate to an S-substituted N-acetyl-L-cysteinate
+      and glucosaminyl-inositol (RHEA:36543); the substrate is not unconjugated mycothiol.
+    source_locator: comments[commentType=CATALYTIC ACTIVITY].reaction[RHEA:36543]
+- id: causal-review-13
+  subject: CHEBI:29033
+  predicate: enables
+  object: Reactome:R-MTU-879281
+  evidence:
+  - reference_id: PMID:26044118
+    source_assertion: Mca purified under anaerobic conditions contains stoichiometric Fe2+;
+      the authors favor Fe2+-dependent activity under physiological conditions.
+    source_locator: 'Abstract: anaerobic versus aerobic Halo-Mca pull-down experiments'
+  description: 'Cofactor assignment is conditional: anaerobic Fe2+ form; the retained Reactome
+    Zn2+ complex is the aerobic form.'
+- id: cofactor-94cc0fadb93c
+  subject: UniProtKB:P9WJN1
+  predicate: has_cofactor
+  object: CHEBI:29033
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000255
+    (HAMAP-Rule:MF_01482); ECO:0000269 (PubMed:26044118) Appears to be a Fe(2+)-dependent
+    enzyme under physiological anaerobic conditions (PubMed:26044118). Binds Zn(2+) under
+    aerobic conditions; this experimental artifact could become biologically relevant under
+    oxidatively stressed conditions, such as those encountered inside activated macrophages
+    (PubMed:14556638, PubMed:26044118). UniProt note evidence: ECO:0000269 (PubMed:14556638);
+    ECO:0000269 (PubMed:26044118)'
+  evidence:
+  - reference_id: UniProtKB:P9WJN1
+    source_assertion: UniProtKB:P9WJN1 annotates CHEBI:29033 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=accession%3AP02918+OR+accession%3AP02919+OR+accession%3AP06721+OR+accession%3AP07862+OR+accession%3AP08373+OR+accession%3AP0A6B4+OR+accession%3AP0A6W3+OR+accession%3AP0A749+OR+accession%3AP0A759+OR+accession%3AP0ABG4+OR+accession%3AP0ACC7+OR+accession%3AP0AD68+OR+accession%3AP0AE16+OR+accession%3AP0AF16+OR+accession%3AP0AF18+OR+accession%3AP11880+OR+accession%3AP13016+OR+accession%3AP14900+OR+accession%3AP17169+OR+accession%3AP17443+OR+accession%3AP17952+OR+accession%3AP22188+OR+accession%3AP22634+OR+accession%3AP29012+OR+accession%3AP31120+OR+accession%3AP37773+OR+accession%3AP46022+OR+accession%3AP60932+OR+accession%3AP75949+OR+accession%3AP75959+OR+accession%3AP76008+OR+accession%3AP76535+OR+accession%3AP76577+OR+accession%3AP77272+OR+accession%3AP77570+OR+accession%3AP95189+OR+accession%3AP9WFZ5+OR+accession%3AP9WJM7+OR+accession%3AP9WJM9+OR+accession%3AP9WJN1+OR+accession%3AP9WKI1+OR+accession%3AP9WMY7+OR+accession%3AP9WN11+OR+accession%3AP9WQ19+OR+accession%3AP9WQ21+OR+accession%3AP9WQ23+OR+accession%3AQ2TL65&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:f2a2d9df603885068af58d89787438192b8c396d89a4cc931ac7bbab93a74c5c] #/results/32/comments/0/cofactors/0;
+      /results/32/comments/0/note'
 source_mappings:
 - subject_id: UniProt:P9WJN1
   subject_label: mca
@@ -82,9 +184,20 @@ source_mappings:
   source_pathway_id: Reactome:R-MTU-879325
   source_element_id: Protein1
 references:
-  - id: Reactome:R-MTU-879325
-    title: Reactome pathway R-MTU-879325
-  - id: Reactome:R-MTU-879281
-    title: Reactome reaction R-MTU-879281
-  - id: PMID:14556638
-    title: Characterization of Mycobacterium tuberculosis mycothiol S-conjugate amidase
+- id: Reactome:R-MTU-879281
+  title: Reactome reaction R-MTU-879281
+- id: PMID:14556638
+  title: Characterization of Mycobacterium tuberculosis mycothiol S-conjugate amidase
+- id: Reactome:R-MTU-879325
+  title: R-MTU-879325 native structured pathway source
+  url: https://reactome.org/ReactomeRESTfulAPI/RESTfulWS/biopaxExporter/Level3/879325
+  source_version: Reactome BioPAX 97
+  source_sha256: fa5ca6c86df3e09e7c865b24a9cf5be02a0d17820455dd7aebf8be31d5930639
+- id: UniProtKB:P9WJN1
+  title: Mycothiol S-conjugate amidase Mca; curated catalytic reaction RHEA:36543
+  url: https://www.uniprot.org/uniprotkb/P9WJN1
+  source_version: UniProt entry retrieved 2026-10-05
+- id: PMID:26044118
+  title: Identity of cofactor bound to mycothiol conjugate amidase (Mca) influenced by expression
+    and purification conditions
+  url: https://pubmed.ncbi.nlm.nih.gov/26044118/

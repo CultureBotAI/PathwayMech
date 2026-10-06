@@ -20,6 +20,9 @@ namespaces:
   MIBiG:
     snapshot: data/identifier_authorities/sources.json
     policy: canonical_or_synonym
+  NCBIProtein:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
   MetaCyc:
     snapshot: data/identifier_authorities/sources.json
     policy: canonical_or_synonym
@@ -68,13 +71,13 @@ contextual_labels:
     record_prefixes: [MetaCyc, Reactome, WikiPathways]
     reason: Pathway diagrams use gene symbols or enzyme-step names rather than the recommended protein name.
   - namespace: gomodel
-    sections: [record, reactions]
+    sections: [record, participants, reactions]
     record_prefixes: [gomodel]
-    reason: GO-CAM records use curated pathway titles and activity descriptions; display cleanup removes import annotations and diagram markup without changing native graph IDs.
+    reason: GO-CAM records use curated pathway titles, native molecular instance descriptions, and activity descriptions; display cleanup removes import annotations and diagram markup without changing native graph IDs. Untyped native instances retain identity without asserting an external chemical identity.
   - namespace: WikiPathways
-    sections: [reactions]
+    sections: [participants, reactions]
     record_prefixes: [WikiPathways]
-    reason: GPML interactions have native GraphIds but no canonical reaction names; pathway records give them readable source-context descriptions.
+    reason: GPML interactions and diagram entities have native GraphIds; pathway records preserve their source-context descriptions without claiming an unresolved external chemical identity or canonical reaction name.
   - namespace: MIBiG
     sections: [record]
     record_prefixes: [MIBiG]

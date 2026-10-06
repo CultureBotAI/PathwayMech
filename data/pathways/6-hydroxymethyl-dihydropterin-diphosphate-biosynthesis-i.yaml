@@ -1,314 +1,513 @@
 id: gomodel:YeastPathways_PWY-6147
 label: 6-hydroxymethyl-dihydropterin diphosphate biosynthesis I
-description: 6-hydroxymethyl-dihydropterin diphosphate biosynthesis I in
-  Saccharomyces cerevisiae S288C converts GTP to
-  (7,8-dihydropterin-6-yl)methyl diphosphate through FOL2-catalyzed GTP
-  cyclohydrolase I activity, 7,8-dihydroneopterin triphosphate
-  pyrophosphohydrolase, 7,8-dihydroneopterin 3'-phosphate
-  dephosphorylation, and FOL1-catalyzed aldolase and diphosphokinase
-  activities.
+description: 6-hydroxymethyl-dihydropterin diphosphate biosynthesis I in Saccharomyces cerevisiae
+  S288C converts GTP to (7,8-dihydropterin-6-yl)methyl diphosphate through FOL2-catalyzed
+  GTP cyclohydrolase I activity, 7,8-dihydroneopterin triphosphate pyrophosphohydrolase, 7,8-dihydroneopterin
+  3'-phosphate dephosphorylation, and FOL1-catalyzed aldolase and diphosphokinase activities.
 pathway_type: folate-biosynthesis
 taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
-- id: SGD:S000003499
-  label: FOL2 Scer
-- id: CHEBI:15377
-  label: water
-- id: CHEBI:37565
-  label: GTP(4-)
-- id: CHEBI:15740
-  label: formate
-- id: CHEBI:15378
-  label: hydron
-- id: CHEBI:58462
-  label: 7,8-dihydroneopterin 3'-triphosphate(4-)
-- id: CHEBI:29888
-  label: diphosphoric acid
-- id: CHEBI:58762
-  label: 7,8-dihydroneopterin 3'-phosphate(2-)
-- id: CHEBI:17001
-  label: 7,8-dihydroneopterin
-- id: CHEBI:43474
-  label: hydrogenphosphate
-- id: SGD:S000005200
-  label: FOL1 Scer
-- id: CHEBI:17071
-  label: glycolaldehyde
 - id: CHEBI:44841
   label: 2-amino-6-(hydroxymethyl)-7,8-dihydropteridin-4-one
-- id: CHEBI:30616
-  label: ATP(4-)
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:29888
+  label: diphosphoric acid
+  category: small_molecule
+- id: gomodel:YeastPathways_PWY-6147/6a6bcaed00000919
+  label: protein
+  category: protein
+- id: GO:0046656
+  label: folic acid biosynthetic process
+  category: biological_process
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:58762
+  label: 7,8-dihydroneopterin 3'-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:17001
+  label: 7,8-dihydroneopterin
+  category: small_molecule
 - id: CHEBI:73083
   label: (7,8-dihydropterin-6-yl)methyl diphosphate
+  category: small_molecule
 - id: CHEBI:456215
   label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:58462
+  label: 7,8-dihydroneopterin 3'-triphosphate(4-)
+  category: small_molecule
+- id: CHEBI:17071
+  label: glycolaldehyde
+  category: small_molecule
+- id: gomodel:YeastPathways_PWY-6147/6a6bcaed00000922
+  label: protein
+  category: protein
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: SGD:S000003499
+  label: FOL2 Scer
+  category: protein
+- id: CHEBI:15740
+  label: formate
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: SGD:S000005200
+  label: FOL1 Scer
+  category: protein
+- id: CHEBI:37565
+  label: GTP(4-)
+  category: small_molecule
+- id: GO:0031966
+  label: mitochondrial membrane
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
-- id: gomodel:GTP-CYCLOHYDRO-I-RXN
-  label: GTP cyclohydrolase I activity
-- id: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  label: dihydroneopterin triphosphate pyrophosphohydrolase activity
 - id: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
   label: hydrolase activity, acting on acid anhydrides, in phosphorus-containing anhydrides
+  category: molecular_activity
+- id: gomodel:GTP-CYCLOHYDRO-I-RXN
+  label: GTP cyclohydrolase I activity
+  category: molecular_activity
 - id: gomodel:H2NEOPTERINALDOL-RXN
   label: dihydroneopterin aldolase activity
+  category: molecular_activity
+- id: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  label: dihydroneopterin triphosphate pyrophosphohydrolase activity
+  category: molecular_activity
 - id: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
   label: 2-amino-4-hydroxy-6-hydroxymethyldihydropteridine diphosphokinase activity
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
+  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: has_input
+  object: CHEBI:44841
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN RO:0002233 gomodel:CHEBI_44841_H2NEOPTERINALDOL-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/0; endpoint types: /individuals/22/type;
+      /individuals/13/type'
+- id: edge-002
+  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN BFO:0000066
+      gomodel:reaction_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/1; endpoint types: /individuals/21/type;
+      /individuals/59/type'
+- id: edge-003
+  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  predicate: has_output
+  object: CHEBI:29888
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002234
+      gomodel:CHEBI_29888_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/2; endpoint types: /individuals/21/type;
+      /individuals/9/type'
+- id: edge-004
+  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  predicate: provides_input_for
+  object: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002413
+      gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/3; endpoint types: /individuals/21/type;
+      /individuals/18/type'
+- id: edge-005
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: provides_input_for
+  object: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002413 gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/4; endpoint types: /individuals/19/type;
+      /individuals/21/type'
+- id: edge-006
+  subject: gomodel:YeastPathways_PWY-6147/6a6bcaed00000919
+  predicate: enables
+  object: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002333
+      gomodel:YeastPathways_PWY-6147/6a6bcaed00000919.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/5; endpoint types: /individuals/21/type;
+      /individuals/66/type'
+- id: edge-007
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN BFO:0000066 gomodel:reaction_GTP-CYCLOHYDRO-I-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/6; endpoint types: /individuals/19/type;
+      /individuals/57/type'
+- id: edge-008
+  subject: gomodel:H2NEOPTERINALDOL-RXN
+  predicate: part_of
+  object: GO:0046656
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINALDOL-RXN BFO:0000050 gomodel:YeastPathways_PWY-6147/YeastPathways_PWY-6147.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/7; endpoint types: /individuals/20/type;
+      /individuals/61/type'
+- id: edge-010
+  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN RO:0002234 gomodel:CHEBI_15378_H2PTERIDINEPYROPHOSPHOKIN-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/9; endpoint types: /individuals/22/type;
+      /individuals/5/type'
+- id: edge-011
+  subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  predicate: has_input
+  object: CHEBI:58762
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN RO:0002233
+      gomodel:CHEBI_58762_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/10; endpoint types: /individuals/18/type;
+      /individuals/16/type'
+- id: edge-012
+  subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  predicate: part_of
+  object: GO:0046656
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN BFO:0000050
+      gomodel:YeastPathways_PWY-6147/YeastPathways_PWY-6147.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/11; endpoint types: /individuals/18/type;
+      /individuals/61/type'
+- id: edge-013
+  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  predicate: part_of
+  object: GO:0046656
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN BFO:0000050
+      gomodel:YeastPathways_PWY-6147/YeastPathways_PWY-6147.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/12; endpoint types: /individuals/21/type;
+      /individuals/61/type'
+- id: edge-014
+  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: part_of
+  object: GO:0046656
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN BFO:0000050
+      gomodel:YeastPathways_PWY-6147/YeastPathways_PWY-6147.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/13; endpoint types: /individuals/22/type;
+      /individuals/61/type'
+- id: edge-015
+  subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  predicate: has_output
+  object: CHEBI:17001
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN RO:0002234
+      gomodel:CHEBI_17001_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/14; endpoint types: /individuals/18/type;
+      /individuals/7/type'
+- id: edge-016
+  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: has_output
+  object: CHEBI:73083
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN RO:0002234 gomodel:CHEBI_73083_H2PTERIDINEPYROPHOSPHOKIN-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/15; endpoint types: /individuals/22/type;
+      /individuals/17/type'
+- id: edge-017
+  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: has_output
+  object: CHEBI:456215
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN RO:0002234 gomodel:CHEBI_456215_H2PTERIDINEPYROPHOSPHOKIN-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/16; endpoint types: /individuals/22/type;
+      /individuals/14/type'
+- id: edge-018
+  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  predicate: has_input
+  object: CHEBI:58462
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002233
+      gomodel:CHEBI_58462_GTP-CYCLOHYDRO-I-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/17; endpoint types: /individuals/21/type;
+      /individuals/15/type'
+- id: edge-019
+  subject: gomodel:H2NEOPTERINALDOL-RXN
+  predicate: has_output
+  object: CHEBI:17071
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINALDOL-RXN RO:0002234 gomodel:CHEBI_17071_H2NEOPTERINALDOL-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/18; endpoint types: /individuals/20/type;
+      /individuals/8/type'
+- id: edge-020
+  subject: gomodel:H2NEOPTERINALDOL-RXN
+  predicate: has_output
+  object: CHEBI:44841
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINALDOL-RXN RO:0002234 gomodel:CHEBI_44841_H2NEOPTERINALDOL-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/19; endpoint types: /individuals/20/type;
+      /individuals/13/type'
+- id: edge-021
+  subject: gomodel:YeastPathways_PWY-6147/6a6bcaed00000922
+  predicate: enables
+  object: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN RO:0002333
+      gomodel:YeastPathways_PWY-6147/6a6bcaed00000922.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/20; endpoint types: /individuals/18/type;
+      /individuals/68/type'
+- id: edge-022
+  subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  predicate: has_output
+  object: CHEBI:43474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN RO:0002234
+      gomodel:CHEBI_43474_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/21; endpoint types: /individuals/18/type;
+      /individuals/12/type'
+- id: edge-023
   subject: SGD:S000003499
   predicate: enables
   object: gomodel:GTP-CYCLOHYDRO-I-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGR267C-MONOMER_GTP-CYCLOHYDRO-I-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:YGR267C-MONOMER_GTP-CYCLOHYDRO-I-RXN_controller","type":[{"type":"class","id":"SGD:S000003499"'
-- id: edge-002
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:GTP-CYCLOHYDRO-I-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_GTP-CYCLOHYDRO-I-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15377_GTP-CYCLOHYDRO-I-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-003
-  subject: CHEBI:37565
-  predicate: consumes
-  object: gomodel:GTP-CYCLOHYDRO-I-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_37565_GTP-CYCLOHYDRO-I-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_37565_GTP-CYCLOHYDRO-I-RXN","type":[{"type":"class","id":"CHEBI:37565"'
-- id: edge-004
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002333 gomodel:YGR267C-MONOMER_GTP-CYCLOHYDRO-I-RXN_controller.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/22; endpoint types: /individuals/19/type;
+      /individuals/23/type'
+- id: edge-024
   subject: gomodel:GTP-CYCLOHYDRO-I-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15740
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15740_GTP-CYCLOHYDRO-I-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15740_GTP-CYCLOHYDRO-I-RXN","type":[{"type":"class","id":"CHEBI:15740"'
-- id: edge-005
-  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
-  predicate: produces
-  object: CHEBI:15378
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002234 gomodel:CHEBI_15740_GTP-CYCLOHYDRO-I-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/23; endpoint types: /individuals/19/type;
+      /individuals/6/type'
+- id: edge-025
+  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_GTP-CYCLOHYDRO-I-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15378_GTP-CYCLOHYDRO-I-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-006
-  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
-  predicate: produces
-  object: CHEBI:58462
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58462_GTP-CYCLOHYDRO-I-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_58462_GTP-CYCLOHYDRO-I-RXN","type":[{"type":"class","id":"CHEBI:58462"'
-- id: edge-007
-  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
-  predicate: precedes
-  object: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:GTP-CYCLOHYDRO-I-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN"'
-- id: edge-008
-  subject: CHEBI:58462
-  predicate: consumes
-  object: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58462_GTP-CYCLOHYDRO-I-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_58462_GTP-CYCLOHYDRO-I-RXN","type":[{"type":"class","id":"CHEBI:58462"'
-- id: edge-009
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15377_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN RO:0002233 gomodel:CHEBI_30616_H2PTERIDINEPYROPHOSPHOKIN-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/24; endpoint types: /individuals/22/type;
+      /individuals/10/type'
+- id: edge-026
   subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  predicate: produces
-  object: CHEBI:29888
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29888_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_29888_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","type":[{"type":"class","id":"CHEBI:29888"'
-- id: edge-011
-  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58762
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58762_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN"'
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002234
+      gomodel:CHEBI_58762_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/25; endpoint types: /individuals/21/type;
+      /individuals/16/type'
+- id: edge-027
+  subject: gomodel:H2NEOPTERINALDOL-RXN
+  predicate: provides_input_for
+  object: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_58762_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","type":[{"type":"class","id":"CHEBI:58762"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:H2NEOPTERINALDOL-RXN RO:0002413 gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/26; endpoint types: /individuals/20/type;
+      /individuals/22/type'
+- id: edge-028
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002233 gomodel:CHEBI_15377_GTP-CYCLOHYDRO-I-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/27; endpoint types: /individuals/19/type;
+      /individuals/1/type'
+- id: edge-029
   subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15378_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-013
-  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
-  predicate: precedes
-  object: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002234
+      gomodel:CHEBI_15378_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/28; endpoint types: /individuals/21/type;
+      /individuals/4/type'
+- id: edge-030
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: part_of
+  object: GO:0046656
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN"'
-- id: edge-014
-  subject: CHEBI:58762
-  predicate: consumes
-  object: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN BFO:0000050 gomodel:YeastPathways_PWY-6147/YeastPathways_PWY-6147.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/29; endpoint types: /individuals/19/type;
+      /individuals/61/type'
+- id: edge-031
+  subject: SGD:S000005200
+  predicate: enables
+  object: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58762_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_58762_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN","type":[{"type":"class","id":"CHEBI:58762"'
-- id: edge-015
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15377_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-016
+    source_assertion: The model asserts gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN RO:0002333 gomodel:YNL256W-MONOMER_H2PTERIDINEPYROPHOSPHOKIN-RXN_controller.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/30; endpoint types: /individuals/22/type;
+      /individuals/25/type'
+- id: edge-032
   subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
-  predicate: produces
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN BFO:0000066
+      gomodel:reaction_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/31; endpoint types: /individuals/18/type;
+      /individuals/56/type'
+- id: edge-033
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002234 gomodel:CHEBI_15378_GTP-CYCLOHYDRO-I-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/32; endpoint types: /individuals/19/type;
+      /individuals/3/type'
+- id: edge-034
+  subject: gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN RO:0002233
+      gomodel:CHEBI_15377_H2NEOPTERINP3PYROPHOSPHOHYDRO-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/33; endpoint types: /individuals/21/type;
+      /individuals/2/type'
+- id: edge-035
+  subject: gomodel:H2NEOPTERINALDOL-RXN
+  predicate: has_input
   object: CHEBI:17001
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17001_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_17001_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","type":[{"type":"class","id":"CHEBI:17001"'
-- id: edge-017
-  subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
-  predicate: produces
-  object: CHEBI:43474
+    source_assertion: The model asserts gomodel:H2NEOPTERINALDOL-RXN RO:0002233 gomodel:CHEBI_17001_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/34; endpoint types: /individuals/20/type;
+      /individuals/7/type'
+- id: edge-036
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: has_output
+  object: CHEBI:58462
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN"'
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002234 gomodel:CHEBI_58462_GTP-CYCLOHYDRO-I-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/35; endpoint types: /individuals/19/type;
+      /individuals/15/type'
+- id: edge-038
+  subject: gomodel:GTP-CYCLOHYDRO-I-RXN
+  predicate: has_input
+  object: CHEBI:37565
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_43474_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","type":[{"type":"class","id":"CHEBI:43474"'
-- id: edge-018
+    source_assertion: The model asserts gomodel:GTP-CYCLOHYDRO-I-RXN RO:0002233 gomodel:CHEBI_37565_GTP-CYCLOHYDRO-I-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/37; endpoint types: /individuals/19/type;
+      /individuals/11/type'
+- id: edge-039
   subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
-  predicate: precedes
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-6147
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN RO:0002233
+      gomodel:CHEBI_15377_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/38; endpoint types: /individuals/18/type;
+      /individuals/0/type'
+- id: edge-040
+  subject: gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN
+  predicate: provides_input_for
   object: gomodel:H2NEOPTERINALDOL-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:H2NEOPTERINALDOL-RXN"'
-- id: edge-019
+    source_assertion: The model asserts gomodel:DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN RO:0002413
+      gomodel:H2NEOPTERINALDOL-RXN.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/39; endpoint types: /individuals/18/type;
+      /individuals/20/type'
+- id: edge-041
   subject: SGD:S000005200
   predicate: enables
   object: gomodel:H2NEOPTERINALDOL-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINALDOL-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL256W-MONOMER_H2NEOPTERINALDOL-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:YNL256W-MONOMER_H2NEOPTERINALDOL-RXN_controller","type":[{"type":"class","id":"SGD:S000005200"'
-- id: edge-020
-  subject: CHEBI:17001
-  predicate: consumes
-  object: gomodel:H2NEOPTERINALDOL-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINALDOL-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17001_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_17001_DIHYDRONEOPTERIN-MONO-P-DEPHOS-RXN","type":[{"type":"class","id":"CHEBI:17001"'
-- id: edge-021
-  subject: gomodel:H2NEOPTERINALDOL-RXN
-  predicate: produces
-  object: CHEBI:17071
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINALDOL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17071_H2NEOPTERINALDOL-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_17071_H2NEOPTERINALDOL-RXN","type":[{"type":"class","id":"CHEBI:17071"'
-- id: edge-022
-  subject: gomodel:H2NEOPTERINALDOL-RXN
-  predicate: produces
-  object: CHEBI:44841
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINALDOL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_44841_H2NEOPTERINALDOL-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_44841_H2NEOPTERINALDOL-RXN","type":[{"type":"class","id":"CHEBI:44841"'
-- id: edge-023
-  subject: gomodel:H2NEOPTERINALDOL-RXN
-  predicate: precedes
-  object: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2NEOPTERINALDOL-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN"'
-- id: edge-024
+    source_assertion: The model asserts gomodel:H2NEOPTERINALDOL-RXN RO:0002333 gomodel:YNL256W-MONOMER_H2NEOPTERINALDOL-RXN_controller.
+    source_locator: './YeastPathways_PWY-6147.json#/facts/40; endpoint types: /individuals/20/type;
+      /individuals/24/type'
+- id: location-6a03828d3d37
   subject: SGD:S000005200
-  predicate: enables
-  object: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  predicate: located_in
+  object: GO:0031966
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14576278);
+    ECO:0000269 (PubMed:15169867)
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL256W-MONOMER_H2PTERIDINEPYROPHOSPHOKIN-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:YNL256W-MONOMER_H2PTERIDINEPYROPHOSPHOKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000005200"'
-- id: edge-025
-  subject: CHEBI:44841
-  predicate: consumes
-  object: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
+  - reference_id: UniProtKB:P53848
+    source_assertion: UniProtKB:P53848 annotates location Mitochondrion membrane (SL-0171).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2262/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P53848
+    source_assertion: UniProtKB:P53848 has the exact SGD cross-reference SGD:S000005200.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2262/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-56d69a096f5c
+  subject: SGD:S000005200
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P0AC13)'
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_44841_H2NEOPTERINALDOL-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_44841_H2NEOPTERINALDOL-RXN","type":[{"type":"class","id":"CHEBI:44841"'
-- id: edge-026
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_H2PTERIDINEPYROPHOSPHOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_30616_H2PTERIDINEPYROPHOSPHOKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-027
-  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_H2PTERIDINEPYROPHOSPHOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_15378_H2PTERIDINEPYROPHOSPHOKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-028
-  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
-  predicate: produces
-  object: CHEBI:73083
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_73083_H2PTERIDINEPYROPHOSPHOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_73083_H2PTERIDINEPYROPHOSPHOKIN-RXN","type":[{"type":"class","id":"CHEBI:73083"'
-- id: edge-029
-  subject: gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN
-  predicate: produces
-  object: CHEBI:456215
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"subject":"gomodel:H2PTERIDINEPYROPHOSPHOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456215_H2PTERIDINEPYROPHOSPHOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-6147
-    quote: '"id":"gomodel:CHEBI_456215_H2PTERIDINEPYROPHOSPHOKIN-RXN","type":[{"type":"class","id":"CHEBI:456215"'
+  - reference_id: UniProtKB:P53848
+    source_assertion: UniProtKB:P53848 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2262/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P53848
+    source_assertion: UniProtKB:P53848 has the exact SGD cross-reference SGD:S000005200.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2262/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-6147
   title: GO-CAM 6-hydroxymethyl-dihydropterin diphosphate biosynthesis I model YeastPathways_PWY-6147
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-08-05; member ./YeastPathways_PWY-6147.json
+- id: UniProtKB:P53848
+  title: Reviewed UniProtKB P53848 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

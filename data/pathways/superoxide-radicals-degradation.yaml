@@ -1,201 +1,501 @@
 id: gomodel:YeastPathways_DETOX1-PWY
 label: superoxide radicals degradation
-description: Superoxide radicals degradation in Saccharomyces cerevisiae S288C uses SOD1 and SOD2 superoxide dismutase activities to convert superoxide and hydrons into dioxygen and hydrogen peroxide, then CTA1 and CTT1 catalase activities decompose hydrogen peroxide into water and dioxygen.
+description: Superoxide radicals degradation in Saccharomyces cerevisiae S288C uses SOD1 and
+  SOD2 superoxide dismutase activities to convert superoxide and hydrons into dioxygen and
+  hydrogen peroxide, then CTA1 and CTT1 catalase activities decompose hydrogen peroxide into
+  water and dioxygen.
 pathway_type: detoxification
 taxa:
-  - id: NCBITaxon:559292
-    label: Saccharomyces cerevisiae S288C
+- id: NCBITaxon:559292
+  label: Saccharomyces cerevisiae S288C
 participants:
-  - id: SGD:S000003865
-    label: SOD1 Scer
-  - id: CHEBI:18421
-    label: superoxide
-  - id: CHEBI:15378
-    label: hydron
-  - id: CHEBI:15379
-    label: dioxygen
-  - id: CHEBI:16240
-    label: hydrogen peroxide
-  - id: SGD:S000002664
-    label: CTA1 Scer
-  - id: CHEBI:15377
-    label: water
-  - id: SGD:S000003320
-    label: CTT1 Scer
-  - id: SGD:S000001050
-    label: SOD2 Scer
+- id: GO:0019430
+  label: removal of superoxide radicals
+  category: biological_process
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: SGD:S000003865
+  label: SOD1 Scer
+  category: protein
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: SGD:S000002664
+  label: CTA1 Scer
+  category: protein
+- id: SGD:S000003320
+  label: CTT1 Scer
+  category: protein
+- id: CHEBI:18421
+  label: superoxide
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:16240
+  label: hydrogen peroxide
+  category: small_molecule
+- id: SGD:S000001050
+  label: SOD2 Scer
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005758
+  label: mitochondrial intermembrane space
+  category: cellular_component
+- id: GO:0005782
+  label: peroxisomal matrix
+  category: cellular_component
+- id: GO:0005759
+  label: mitochondrial matrix
+  category: cellular_component
+- id: CHEBI:23378
+  label: copper cation
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:30413
+  label: heme
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
 reactions:
-  - id: gomodel:SUPEROX-DISMUT-RXN
-    label: superoxide dismutase activity
-  - id: gomodel:CATAL-RXN
-    label: catalase activity
-  - id: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
-    label: catalase activity
-  - id: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
-    label: superoxide dismutase activity
+- id: gomodel:CATAL-RXN
+  label: catalase activity
+  category: molecular_activity
+- id: gomodel:SUPEROX-DISMUT-RXN
+  label: superoxide dismutase activity
+  category: molecular_activity
+- id: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  label: superoxide dismutase activity
+  category: molecular_activity
+- id: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  label: catalase activity
+  category: molecular_activity
 mechanistic_edges:
-  - id: edge-001
-    subject: SGD:S000003865
-    predicate: enables
-    object: gomodel:SUPEROX-DISMUT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:MONOMER3O-1629_SUPEROX-DISMUT-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:MONOMER3O-1629_SUPEROX-DISMUT-RXN_controller","type":[{"type":"class","id":"SGD:S000003865"'
-  - id: edge-002
-    subject: CHEBI:18421
-    predicate: consumes
-    object: gomodel:SUPEROX-DISMUT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_18421_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_18421_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:18421"'
-  - id: edge-003
-    subject: CHEBI:15378
-    predicate: consumes
-    object: gomodel:SUPEROX-DISMUT-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_15378_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-004
-    subject: gomodel:SUPEROX-DISMUT-RXN
-    predicate: produces
-    object: CHEBI:15379
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15379_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_15379_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:15379"'
-  - id: edge-005
-    subject: gomodel:SUPEROX-DISMUT-RXN
-    predicate: produces
-    object: CHEBI:16240
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:SUPEROX-DISMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
-  - id: edge-006
-    subject: SGD:S000002664
-    predicate: enables
-    object: gomodel:CATAL-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR256C-MONOMER_CATAL-RXN_controller"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YDR256C-MONOMER_CATAL-RXN_controller","type":[{"type":"class","id":"SGD:S000002664"'
-  - id: edge-007
-    subject: CHEBI:16240
-    predicate: consumes
-    object: gomodel:CATAL-RXN
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
-  - id: edge-008
-    subject: gomodel:CATAL-RXN
-    predicate: produces
-    object: CHEBI:15377
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15377_CATAL-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_15377_CATAL-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-  - id: edge-009
-    subject: gomodel:CATAL-RXN
-    predicate: produces
-    object: CHEBI:15379
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:CATAL-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15379_CATAL-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_15379_CATAL-RXN","type":[{"type":"class","id":"CHEBI:15379"'
-  - id: edge-010
-    subject: SGD:S000003320
-    predicate: enables
-    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000275"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000275","type":[{"type":"class","id":"SGD:S000003320"'
-  - id: edge-011
-    subject: CHEBI:16240
-    predicate: consumes
-    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
-  - id: edge-012
-    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
-    predicate: produces
-    object: CHEBI:15379
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000273"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000273","type":[{"type":"class","id":"CHEBI:15379"'
-  - id: edge-013
-    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
-    predicate: produces
-    object: CHEBI:15377
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000272"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000272","type":[{"type":"class","id":"CHEBI:15377"'
-  - id: edge-014
-    subject: SGD:S000001050
-    predicate: enables
-    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000262"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000262","type":[{"type":"class","id":"SGD:S000001050"'
-  - id: edge-015
-    subject: CHEBI:15378
-    predicate: consumes
-    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000258"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000258","type":[{"type":"class","id":"CHEBI:15378"'
-  - id: edge-016
-    subject: CHEBI:18421
-    predicate: consumes
-    object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000259"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000259","type":[{"type":"class","id":"CHEBI:18421"'
-  - id: edge-017
-    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
-    predicate: produces
-    object: CHEBI:15379
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000260"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000260","type":[{"type":"class","id":"CHEBI:15379"'
-  - id: edge-018
-    subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
-    predicate: produces
-    object: CHEBI:16240
-    evidence:
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"subject":"gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN"'
-      - reference_id: gomodel:YeastPathways_DETOX1-PWY
-        quote: '"id":"gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN","type":[{"type":"class","id":"CHEBI:16240"'
+- id: edge-001
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  predicate: part_of
+  object: GO:0019430
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+      BFO:0000050 gomodel:YeastPathways_DETOX1-PWY/YeastPathways_DETOX1-PWY.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/0; endpoint types: /individuals/24/type;
+      /individuals/23/type'
+- id: edge-002
+  subject: gomodel:CATAL-RXN
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:CATAL-RXN RO:0002234 gomodel:CHEBI_15377_CATAL-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/1; endpoint types: /individuals/0/type;
+      /individuals/1/type'
+- id: edge-003
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+      RO:0002233 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000258.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/2; endpoint types: /individuals/24/type;
+      /individuals/25/type'
+- id: edge-004
+  subject: SGD:S000003865
+  predicate: enables
+  object: gomodel:SUPEROX-DISMUT-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN RO:0002333 gomodel:MONOMER3O-1629_SUPEROX-DISMUT-RXN_controller.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/3; endpoint types: /individuals/8/type;
+      /individuals/7/type'
+- id: edge-005
+  subject: gomodel:CATAL-RXN
+  predicate: has_output
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:CATAL-RXN RO:0002234 gomodel:CHEBI_15379_CATAL-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/4; endpoint types: /individuals/0/type;
+      /individuals/3/type'
+- id: edge-006
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  predicate: part_of
+  object: GO:0019430
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+      BFO:0000050 gomodel:YeastPathways_DETOX1-PWY/YeastPathways_DETOX1-PWY.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/5; endpoint types: /individuals/37/type;
+      /individuals/23/type'
+- id: edge-007
+  subject: gomodel:CATAL-RXN
+  predicate: part_of
+  object: GO:0019430
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:CATAL-RXN BFO:0000050 gomodel:YeastPathways_DETOX1-PWY/YeastPathways_DETOX1-PWY.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/6; endpoint types: /individuals/0/type;
+      /individuals/23/type'
+- id: edge-008
+  subject: SGD:S000002664
+  predicate: enables
+  object: gomodel:CATAL-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:CATAL-RXN RO:0002333 gomodel:YDR256C-MONOMER_CATAL-RXN_controller.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/7; endpoint types: /individuals/0/type;
+      /individuals/9/type'
+- id: edge-009
+  subject: SGD:S000003320
+  predicate: enables
+  object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+      RO:0002333 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000275.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/8; endpoint types: /individuals/37/type;
+      /individuals/40/type'
+- id: edge-010
+  subject: gomodel:SUPEROX-DISMUT-RXN
+  predicate: part_of
+  object: GO:0019430
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN BFO:0000050 gomodel:YeastPathways_DETOX1-PWY/YeastPathways_DETOX1-PWY.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/9; endpoint types: /individuals/8/type;
+      /individuals/23/type'
+- id: edge-011
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  predicate: has_output
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+      RO:0002234 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000273.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/10; endpoint types: /individuals/37/type;
+      /individuals/39/type'
+- id: edge-012
+  subject: gomodel:SUPEROX-DISMUT-RXN
+  predicate: has_input
+  object: CHEBI:18421
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN RO:0002233 gomodel:CHEBI_18421_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/11; endpoint types: /individuals/8/type;
+      /individuals/6/type'
+- id: edge-013
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  predicate: has_input
+  object: CHEBI:18421
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+      RO:0002233 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000259.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/12; endpoint types: /individuals/24/type;
+      /individuals/26/type'
+- id: edge-014
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+      BFO:0000066 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000276.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/13; endpoint types: /individuals/37/type;
+      /individuals/41/type'
+- id: edge-015
+  subject: gomodel:SUPEROX-DISMUT-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN RO:0002233 gomodel:CHEBI_15378_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/14; endpoint types: /individuals/8/type;
+      /individuals/2/type'
+- id: edge-016
+  subject: gomodel:SUPEROX-DISMUT-RXN
+  predicate: has_output
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN RO:0002234 gomodel:CHEBI_15379_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/15; endpoint types: /individuals/8/type;
+      /individuals/4/type'
+- id: edge-017
+  subject: gomodel:SUPEROX-DISMUT-RXN
+  predicate: has_output
+  object: CHEBI:16240
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN RO:0002234 gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/16; endpoint types: /individuals/8/type;
+      /individuals/5/type'
+- id: edge-019
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  predicate: has_input
+  object: CHEBI:16240
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+      RO:0002233 gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/18; endpoint types: /individuals/37/type;
+      /individuals/5/type'
+- id: edge-020
+  subject: gomodel:CATAL-RXN
+  predicate: has_input
+  object: CHEBI:16240
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:CATAL-RXN RO:0002233 gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/19; endpoint types: /individuals/0/type;
+      /individuals/5/type'
+- id: edge-021
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  predicate: has_output
+  object: CHEBI:15379
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+      RO:0002234 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000260.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/20; endpoint types: /individuals/24/type;
+      /individuals/27/type'
+- id: edge-023
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+  predicate: has_output
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000271
+      RO:0002234 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000272.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/22; endpoint types: /individuals/37/type;
+      /individuals/38/type'
+- id: edge-024
+  subject: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  predicate: has_output
+  object: CHEBI:16240
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+      RO:0002234 gomodel:CHEBI_16240_SUPEROX-DISMUT-RXN.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/23; endpoint types: /individuals/24/type;
+      /individuals/5/type'
+- id: edge-025
+  subject: SGD:S000001050
+  predicate: enables
+  object: gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_DETOX1-PWY/6a4c244800000257
+      RO:0002333 gomodel:YeastPathways_DETOX1-PWY/6a4c244800000262.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/24; endpoint types: /individuals/24/type;
+      /individuals/28/type'
+- id: edge-026
+  subject: gomodel:SUPEROX-DISMUT-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_DETOX1-PWY
+    source_assertion: The model asserts gomodel:SUPEROX-DISMUT-RXN BFO:0000066 gomodel:reaction_SUPEROX-DISMUT-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_DETOX1-PWY.json#/facts/25; endpoint types: /individuals/8/type;
+      /individuals/22/type'
+- id: location-8ef34cdb9d4a
+  subject: SGD:S000003865
+  predicate: located_in
+  object: GO:0005737
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:11500508)
+    Source qualification: A small percentage (around 1-5 percent) localizes to the mitochondrial
+    intermembrane space'
+  evidence:
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/32/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 has the exact SGD cross-reference SGD:S000003865.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/32/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-19486e8c1bc2
+  subject: SGD:S000003865
+  predicate: located_in
+  object: GO:0005758
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:11500508);
+    ECO:0000269 (PubMed:22984289) Source qualification: A small percentage (around 1-5 percent)
+    localizes to the mitochondrial intermembrane space'
+  evidence:
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 annotates location Mitochondrion intermembrane space
+      (SL-0169).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/32/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 has the exact SGD cross-reference SGD:S000003865.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/32/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-91328db19db7
+  subject: SGD:S000002664
+  predicate: located_in
+  object: GO:0005782
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:1986244)
+  evidence:
+  - reference_id: UniProtKB:P15202
+    source_assertion: UniProtKB:P15202 annotates location Peroxisome matrix (SL-0202).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/408/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P15202
+    source_assertion: UniProtKB:P15202 has the exact SGD cross-reference SGD:S000002664.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/408/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-64ac878c92c3
+  subject: SGD:S000003320
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P06115
+    source_assertion: UniProtKB:P06115 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3239/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P06115
+    source_assertion: UniProtKB:P06115 has the exact SGD cross-reference SGD:S000003320.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3239/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-3c9cc3c8afab
+  subject: SGD:S000001050
+  predicate: located_in
+  object: GO:0005759
+  description: Physical protein location from reviewed UniProt. ECO:0000250 (UniProtKB:Q9UQX0)
+  evidence:
+  - reference_id: UniProtKB:P00447
+    source_assertion: UniProtKB:P00447 annotates location Mitochondrion matrix (SL-0170).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3217/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P00447
+    source_assertion: UniProtKB:P00447 has the exact SGD cross-reference SGD:S000001050.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3217/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-b4b37f5a48fd
+  subject: SGD:S000003865
+  predicate: has_cofactor
+  object: CHEBI:23378
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:10026301); ECO:0000269 (PubMed:36630448); ECO:0000269 (PubMed:8652572) Binds 1
+    copper ion per subunit. UniProt note evidence: ECO:0000269 (PubMed:10026301); ECO:0000269
+    (PubMed:8652572)'
+  evidence:
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 annotates CHEBI:23378 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/32/comments/0/cofactors/0;
+      /results/32/comments/0/note'
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 has the exact SGD cross-reference SGD:S000003865.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/32/uniProtKBCrossReferences/0'
+- id: cofactor-24d56d9c917e
+  subject: SGD:S000003865
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:10026301); ECO:0000269 (PubMed:11524675) Binds 1 zinc ion per subunit. UniProt
+    note evidence: ECO:0000269 (PubMed:10026301); ECO:0000269 (PubMed:11524675)'
+  evidence:
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/32/comments/1/cofactors/0;
+      /results/32/comments/1/note'
+  - reference_id: UniProtKB:P00445
+    source_assertion: UniProtKB:P00445 has the exact SGD cross-reference SGD:S000003865.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/32/uniProtKBCrossReferences/0'
+- id: cofactor-5c3c0cf6f4fa
+  subject: SGD:S000002664
+  predicate: has_cofactor
+  object: CHEBI:30413
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:9931255)'
+  evidence:
+  - reference_id: UniProtKB:P15202
+    source_assertion: UniProtKB:P15202 annotates CHEBI:30413 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/408/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P15202
+    source_assertion: UniProtKB:P15202 has the exact SGD cross-reference SGD:S000002664.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/408/uniProtKBCrossReferences/0'
+- id: cofactor-3dd8f5fd90b4
+  subject: SGD:S000003320
+  predicate: has_cofactor
+  object: CHEBI:30413
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:P06115
+    source_assertion: UniProtKB:P06115 annotates CHEBI:30413 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3239/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P06115
+    source_assertion: UniProtKB:P06115 has the exact SGD cross-reference SGD:S000003320.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3239/uniProtKBCrossReferences/0'
+- id: cofactor-b8aa1e3a2c24
+  subject: SGD:S000001050
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:Q9UQX0) Binds 1 Mn(2+) ion per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:Q9UQX0)'
+  evidence:
+  - reference_id: UniProtKB:P00447
+    source_assertion: UniProtKB:P00447 annotates CHEBI:29035 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3217/comments/0/cofactors/0;
+      /results/3217/comments/0/note'
+  - reference_id: UniProtKB:P00447
+    source_assertion: UniProtKB:P00447 has the exact SGD cross-reference SGD:S000001050.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3217/uniProtKBCrossReferences/0'
 references:
-  - id: gomodel:YeastPathways_DETOX1-PWY
-    title: GO-CAM superoxide radicals degradation model YeastPathways_DETOX1-PWY
+- id: gomodel:YeastPathways_DETOX1-PWY
+  title: GO-CAM superoxide radicals degradation model YeastPathways_DETOX1-PWY
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-07; member ./YeastPathways_DETOX1-PWY.json
+- id: UniProtKB:P00445
+  title: Reviewed UniProtKB P00445 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P15202
+  title: Reviewed UniProtKB P15202 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P06115
+  title: Reviewed UniProtKB P06115 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P00447
+  title: Reviewed UniProtKB P00447 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

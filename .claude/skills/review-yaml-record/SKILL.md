@@ -61,6 +61,10 @@ Use `.claude/skills/add-pathway/SKILL.md`, `docs/CURATION.md`, and
   a claim.
 - Keep direct quotations short and exact. Interpretation belongs in notes or in
   the review report, not inside quoted snippets.
+- For structured database statements, verify `source_assertion` against the
+  exact native object or triple in `source_locator`; it is not a quotation from
+  a paper cited by that database. Follow `docs/CAUSAL_GRAPHS.md` for component
+  roles, cofactors, compartments, reaction directions, and evidence limitations.
 - Preserve scope. Evidence about one strain, enzyme isoform, condition, or
   pathway variant is not evidence for a broader route unless the source makes
   that generalization.
