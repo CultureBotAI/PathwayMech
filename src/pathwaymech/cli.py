@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
+import json
+import re
 import subprocess
 import sys
 from collections.abc import Callable
@@ -22,7 +25,7 @@ from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
 from pathwaymech.identifiers import identifier_errors
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
-from pathwaymech.kgx import write_kgx
+from pathwaymech.kgx import render_kgx, write_kgx
 from pathwaymech.mibig import (
     load_mibig_json,
     mibig_cluster,
@@ -37,6 +40,15 @@ from pathwaymech.pathway_tools import (
 )
 from pathwaymech.rhea import load_rhea_tsv, rhea_seed_rows
 from pathwaymech.schema import ValidationError, validate_record
+from pathwaymech.site_display import (
+    evidence_html,
+    history_html,
+    label_html,
+    load_site_history,
+    plain_label,
+    record_kind,
+    record_metadata,
+)
 from pathwaymech.sources import (
     SourceInventoryError,
     load_source_inventory,
@@ -160,12 +172,13 @@ class SiteError(ValueError):
     """The records cannot be rendered to one unambiguous site."""
 
 
-def render_site(records: list, source_paths: dict[str, str] | None = None) -> dict[str, str]:
+def render_site(records: list, source_paths: dict[str, str] | None = None,
+                histories: dict[str, list[dict]] | None = None) -> dict[str, str]:
     """Every file the renderer owns under pages/, keyed by its path there."""
     files: dict[str, str] = {}
     claimed: dict[str, str] = {}
     rows = []
-    for record in records:
+    for record in sorted(records, key=lambda r: (plain_label(r.label).casefold(), r.id)):
         slug = _slug(record.id)
         # Compared without case: on a case-insensitive filesystem two slugs that
         # differ only in case are one file, and one record would never publish.
@@ -174,23 +187,40 @@ def render_site(records: list, source_paths: dict[str, str] | None = None) -> di
             raise SiteError(
                 f"{other} and {record.id} both render to pages/records/{slug}.html"
             )
+        search = html.escape(f"{plain_label(record.label)} {record.id}", quote=True)
         rows.append(
-            f'<li><a href="records/{slug}.html"><strong>{html.escape(record.label)}</strong>'
-            f"<span>{html.escape(record.id)} - "
-            f"{len(record.mechanistic_edges)} mechanistic edges</span></a></li>"
+            f'<li data-search="{search}"><a href="records/{slug}.html">'
+            f'<strong>{label_html(record.label)}</strong>'
+            f"<span>{html.escape(record.id)} — {record_kind(record)}</span></a></li>"
         )
-        files[f"records/{slug}.html"] = _record_page(record, (source_paths or {}).get(record.id))
+        source_path = (source_paths or {}).get(record.id)
+        files[f"records/{slug}.html"] = _record_page(
+            record, source_path, (histories or {}).get(source_path, [])
+        )
 
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
     files["browse.html"] = _page(
         "PathwayMech records",
         _browse_controls() + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
     )
-    files["index.html"] = _home_page(records)
+    exports = render_kgx(records)
+    fingerprint = hashlib.sha256("".join(exports.values()).encode()).hexdigest()
+    for name, text in exports.items():
+        files[f"downloads/{name}"] = text
+    manifest = {
+        "format": "KGX TSV", "pathway_records": len(records),
+        "version": "sha256:" + fingerprint,
+        "data_license": "CC-BY-4.0", "third_party_terms": "Upstream source terms still apply.",
+        "files": {name: {"sha256": hashlib.sha256(text.encode()).hexdigest(),
+                          "rows": len(text.splitlines()) - 1}
+                  for name, text in exports.items()},
+    }
+    files["downloads/manifest.json"] = json.dumps(manifest, indent=2) + "\n"
+    files["index.html"] = _home_page(records, fingerprint)
     return files
 
 
-def _home_page(records: list) -> str:
+def _home_page(records: list, version: str = "") -> str:
     """Describe the same published records that populate the pathway browser."""
     metrics = [
         (len(records), "Pathway records"),
@@ -242,6 +272,16 @@ def _home_page(records: list) -> str:
         </article>
       </div>
     </section>
+    <section aria-labelledby="downloads-title">
+      <h2 id="downloads-title">Download the complete pathway graph</h2>
+      <p>KGX TSV exports from the same {len(records):,} pathway records shown here:
+        <a href="downloads/nodes.tsv" download>All nodes (TSV)</a> and
+        <a href="downloads/edges.tsv" download>All edges (TSV)</a>.
+        <a href="downloads/manifest.json">Version, row counts and file checksums</a>.</p>
+      <p>Graph version: <code>{version or "See download manifest"}</code>.
+        Data: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>;
+        upstream source terms still apply.</p>
+    </section>
     <footer class="home-footer">Part of the CultureBotAI Mech knowledge bases.
       <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a>
     </footer>"""
@@ -289,7 +329,7 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
             yaml.safe_load(path.read_text())["id"]: path.relative_to(root).as_posix()
             for path in pathway_files(root / "data" / "pathways")
         }
-        expected = render_site(records, source_paths)
+        expected = render_site(records, source_paths, load_site_history(root))
     except SiteError as error:
         print(str(error), file=sys.stderr)
         return 1
@@ -315,6 +355,7 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
         (pages / path).unlink()
     (pages / "records").mkdir(parents=True, exist_ok=True)
     for path, text in expected.items():
+        (pages / path).parent.mkdir(parents=True, exist_ok=True)
         (pages / path).write_bytes(text.encode("utf-8"))
     print(f"rendered {len(records)} pathway records" + (
         f"; removed {len(orphaned)} orphaned page(s)" if orphaned else ""
@@ -773,13 +814,13 @@ def _page(
 ) -> str:
     site_root = html.escape(stylesheet_href.removesuffix("style.css"))
     body_class = ' class="home-page"' if homepage else ""
-    heading = "" if homepage else f"    <h1>{html.escape(title)}</h1>"
+    heading = "" if homepage else f"    <h1>{label_html(title)}</h1>"
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{html.escape(title)}</title>
+  <title>{html.escape(plain_label(title))}</title>
   <link rel="stylesheet" href="{html.escape(stylesheet_href)}">
 </head>
 <body{body_class}>
@@ -814,19 +855,30 @@ document.addEventListener('DOMContentLoaded', function () {
   function filter() {
     const term = query.value.trim().toLowerCase();
     let count = 0;
-    rows.forEach(row => { row.hidden = !row.textContent.toLowerCase().includes(term);
+    rows.forEach(row => { row.hidden = !row.dataset.search.toLowerCase().includes(term);
       if (!row.hidden) count += 1; });
     document.getElementById('pathway-status').textContent =
       count + ' of ' + rows.length + ' pathways match';
     document.getElementById('pathway-empty').hidden = count !== 0;
   }
-  query.addEventListener('input', filter);
+  function remember() {
+    const url = new URL(window.location.href);
+    if (query.value) url.searchParams.set('q', query.value); else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+    filter();
+  }
+  function restore() {
+    query.value = new URLSearchParams(window.location.search).get('q') || '';
+    filter();
+  }
+  query.addEventListener('input', remember);
+  window.addEventListener('pageshow', restore);
   form.addEventListener('submit', event => { event.preventDefault(); filter(); });
   form.addEventListener('reset', event => {
-    event.preventDefault(); query.value = ''; filter(); query.focus();
+    event.preventDefault(); query.value = ''; remember(); query.focus();
   });
   form.hidden = false;
-  filter();
+  restore();
 });
 </script>"""
 
@@ -840,10 +892,21 @@ def _reference_url(identifier: str) -> str | None:
         return "https://doi.org/" + quote(local_id, safe="/")
     if prefix == "RHEA" and local_id.isdigit():
         return f"https://www.rhea-db.org/rhea/{local_id}"
+    if prefix == "WikiPathways" and re.fullmatch(r"WP[0-9]+", local_id):
+        return f"https://www.wikipathways.org/instance/{local_id}"
+    if prefix == "MIBiG" and re.fullmatch(r"BGC[0-9]+(?:\.[0-9]+)?", local_id):
+        return f"https://mibig.secondarymetabolites.org/go/{local_id}"
+    if prefix == "Reactome" and re.fullmatch(r"R-[A-Z]+-[0-9]+(?:\.[0-9]+)?", local_id):
+        return f"https://reactome.org/content/detail/{local_id}"
+    if prefix == "MetaCyc" and re.fullmatch(r"[A-Za-z0-9_.-]+", local_id):
+        return f"https://metacyc.org/META/NEW-IMAGE?type=PATHWAY&object={local_id}"
+    if prefix == "gomodel" and re.fullmatch(r"[A-Za-z0-9_.-]+", local_id):
+        return f"https://model.geneontology.org/{local_id}"
     return None
 
 
-def _record_page(record: object, source_path: str | None = None) -> str:
+def _record_page(record: object, source_path: str | None = None,
+                 sessions: list[dict] | None = None) -> str:
     """Publish the declared endpoints and evidence without interpreting them."""
     labels: dict[str, set[str]] = {}
     for field in ("taxa", "participants", "reactions", "gene_clusters"):
@@ -854,7 +917,7 @@ def _record_page(record: object, source_path: str | None = None) -> str:
 
     def endpoint(identifier: str) -> str:
         label = nodes.get(identifier, identifier)
-        return (f"{html.escape(label)}<br><code>{html.escape(identifier)}</code>"
+        return (f"{label_html(label)}<br><code>{html.escape(identifier)}</code>"
                 if label != identifier else f"<code>{html.escape(identifier)}</code>")
 
     references = getattr(record, "references", [])
@@ -866,7 +929,8 @@ def _record_page(record: object, source_path: str | None = None) -> str:
             reference = html.escape(evidence["reference_id"])
             anchor = ref_anchors.get(evidence["reference_id"])
             citation = f'<a href="#{anchor}">{reference}</a>' if anchor else reference
-            citations.append(f"<li>{citation}<blockquote>{html.escape(evidence['quote'])}</blockquote></li>")
+            detail = evidence_html(evidence["reference_id"], evidence["quote"])
+            citations.append(f"<li>{citation}{detail}</li>")
         description = html.escape(edge.get("description", ""))
         rows.append(f"<tr><td>{endpoint(edge['subject'])}</td>"
                     f"<td>{html.escape(edge['predicate'])}<p>{description}</p></td>"
@@ -878,10 +942,12 @@ def _record_page(record: object, source_path: str | None = None) -> str:
              '<th scope="col">Object</th><th scope="col">Evidence</th></tr></thead>'
              f"<tbody>{''.join(rows)}</tbody></table></div>")
     if not rows:
-        edges = '<p>No mechanistic edges recorded.</p>'
+        edges = ('<p>Source cluster summary: this record contains cluster metadata and references, '
+                 'but no curated mechanistic edges.</p>' if getattr(record, 'gene_clusters', [])
+                 else '<p>No mechanistic edges recorded.</p>')
     cited = []
     for ref in references:
-        details = " — ".join(html.escape(ref[field])
+        details = " — ".join(label_html(ref[field])
                              for field in ("title", "citation") if ref.get(field))
         identifier = html.escape(ref["id"])
         source_url = _reference_url(ref["id"])
@@ -896,8 +962,9 @@ def _record_page(record: object, source_path: str | None = None) -> str:
     identifier = html.escape(getattr(record, "id", ""))
     return _page(
         record.label,
-        f"<p><code>{identifier}</code></p><p>{html.escape(record.description)}</p>"
-        f"{provenance}<h2>Mechanistic edges</h2>{edges}{clusters}{reference_section}",
+        f"<p><code>{identifier}</code></p><p>{label_html(record.description)}</p>"
+        f"{record_metadata(record)}{provenance}<h2>Mechanistic edges</h2>"
+        f"{edges}{clusters}{reference_section}{history_html(record, sessions or [])}",
         stylesheet_href="../style.css",
     )
 
@@ -935,7 +1002,7 @@ def _gene_clusters(clusters: list[dict[str, object]]) -> str:
         details = "".join(f"<li>{item}</li>" for item in detail_items)
         rendered.append(
             "<li>"
-            f"<strong>{html.escape(str(cluster['label']))}</strong>"
+            f"<strong>{label_html(str(cluster['label']))}</strong>"
             f"<span>{html.escape(str(cluster['id']))}</span>"
             f"<ul>{details}</ul>"
             "</li>"

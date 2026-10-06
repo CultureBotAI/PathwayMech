@@ -81,7 +81,7 @@ def mibig_pathway_record(cluster: MibigCluster) -> dict[str, Any]:
     record: dict[str, Any] = {
         "id": cluster.id,
         "label": cluster_label,
-        "description": f"Experimentally characterized MIBiG {cluster.id} gene cluster.",
+        "description": f"Experimentally characterized {cluster.id} gene cluster.",
         "pathway_type": "biosynthetic-gene-cluster",
         "taxa": [],
         "participants": [],
