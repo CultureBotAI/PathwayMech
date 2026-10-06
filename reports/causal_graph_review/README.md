@@ -23,12 +23,19 @@ sampling. No pathway record was added, deleted or merged.
 - `just validate`: passed, including native and closed LinkML schemas, independent
   identifier/label resolution, history links, provenance, sources, documentation,
   research-contract checks and generated-page consistency.
-- `just test`: **580 passed, 3 skipped**.
+- Tests: **587 passed, 3 skipped** across the integrated suite and browser recheck;
+  see [main integration validation](main-integration-validation.json) for the resolved
+  page-generation race and exact results. The initial adversarial pass had 580 passing tests.
 - `just lint` and `git diff --check`: passed.
 - All 18 governed files match the pinned canonical revision.
 - Pages, KGX and SSSOM were regenerated from the final records.
 - All **93** distinct byte hashes cited in final references or source locators
   match retained raw artifacts: [digest audit](source-digest-verification.json).
+
+Main integration on 2026-10-06 retains PR #271's metadata, history, navigation, and
+complete downloads. The published graph contains 2,495 nodes and all 7,134 edges;
+published downloads byte-match the CLI exports and preserve every source evidence
+and reference array. The integration did not alter any reviewed pathway YAML.
 
 ## Lump and Split Review
 
