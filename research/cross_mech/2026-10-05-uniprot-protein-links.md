@@ -41,8 +41,11 @@ uv run python research/cross_mech/2026-10-05/reproduce.py \
 ```
 
 This reads the exact sibling commits listed above using git objects, even if
-the checkouts have since moved. It uses the committed SGD/UniProt inputs and
-Rhea quartet projection.
+the checkouts have since moved. Pathway records, sibling configuration, SGD/UniProt
+inputs, and the corrected Rhea quartet projection are read from the reviewed audit
+revision `e53cf3f159e918a0737bb43c1a64a77a2466df68`. Its Pathway records are identical
+to the PathwayMech revision in the table. Later curation and working-tree edits do
+not change these dated inputs. Use `--out` to reproduce into a separate directory.
 
 The `just cross-mech-proteins` command reads the protein slots listed in
 `conf/sibling_mechs.yaml`, and only those. Each slot's meaning was read from that
