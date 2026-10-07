@@ -1,0 +1,124 @@
+id: MIBiG:BGC0000852
+label: Sporosarcina pasteurii ectoine biosynthetic gene cluster
+description: The ectABC operon from Sporosarcina pasteurii DSM 33 (ATCC 11859; named Bacillus pasteurii
+  in the study) supports ectoine production. This cluster record preserves all three deposited gene products
+  and the observed pathway output. Individual enzyme functions follow sequence-based assignments; detailed
+  reaction, cofactor and localization claims are outside this record.
+pathway_type: biosynthetic-gene-cluster
+taxa:
+- id: NCBITaxon:1474
+  label: Sporosarcina pasteurii
+participants:
+- id: NCBIProtein:AAK12083.1
+  label: EctA
+  category: protein
+- id: NCBIProtein:AAK12084.1
+  label: EctB
+  category: protein
+- id: NCBIProtein:AAK12085.1
+  label: EctC
+  category: protein
+- id: CHEBI:27592
+  label: ectoine
+  category: small_molecule
+reactions: []
+mechanistic_edges:
+- id: edge-001
+  subject: NCBIProtein:AAK12083.1
+  predicate: enables
+  object: MIBiG:BGC0000852
+  description: Gene-role assignment follows the deposited similarity annotation. Whole-operon functional
+    support is recorded on the cluster-output edge; individual enzyme activity was not tested.
+  evidence:
+  - reference_id: NCBIProtein:AAK12083.1
+    source_assertion: AAK12083.1 is annotated as EctA, similar to acetyltransferase, and its CDS is assigned
+      to ectA at AF316874.1:416..958. This is a similarity-based gene-product assignment.
+    source_locator: GBSet/GBSeq[GBSeq_accession-version='AAK12083.1']/GBSeq_feature-table/GBFeature[GBFeature_key='Protein'
+      or GBFeature_key='CDS']/GBFeature_quals
+  - reference_id: MIBiG:BGC0000852
+    source_assertion: BGC0000852 identifies AF316874.1 as its locus and ectoine as its product; locus
+      boundaries are unspecified (zero values).
+    source_locator: $.loci[0].accession; $.loci[0].location; $.compounds[0].name
+- id: edge-002
+  subject: NCBIProtein:AAK12084.1
+  predicate: enables
+  object: MIBiG:BGC0000852
+  description: Gene-role assignment follows the deposited similarity annotation. Whole-operon functional
+    support is recorded on the cluster-output edge; individual enzyme activity was not tested.
+  evidence:
+  - reference_id: NCBIProtein:AAK12084.1
+    source_assertion: AAK12084.1 is annotated as EctB, similar to transaminase, and its CDS is assigned
+      to ectB at AF316874.1:1010..2290. This is a similarity-based gene-product assignment.
+    source_locator: GBSet/GBSeq[GBSeq_accession-version='AAK12084.1']/GBSeq_feature-table/GBFeature[GBFeature_key='Protein'
+      or GBFeature_key='CDS']/GBFeature_quals
+  - reference_id: MIBiG:BGC0000852
+    source_assertion: BGC0000852 identifies AF316874.1 as its locus and ectoine as its product; locus
+      boundaries are unspecified (zero values).
+    source_locator: $.loci[0].accession; $.loci[0].location; $.compounds[0].name
+- id: edge-003
+  subject: NCBIProtein:AAK12085.1
+  predicate: enables
+  object: MIBiG:BGC0000852
+  description: Gene-role assignment follows the deposited similarity annotation. Whole-operon functional
+    support is recorded on the cluster-output edge; individual enzyme activity was not tested.
+  evidence:
+  - reference_id: NCBIProtein:AAK12085.1
+    source_assertion: AAK12085.1 is annotated as EctC, similar to ectoine synthase, and its CDS is assigned
+      to ectC at AF316874.1:2450..2854. This is a similarity-based gene-product assignment.
+    source_locator: GBSet/GBSeq[GBSeq_accession-version='AAK12085.1']/GBSeq_feature-table/GBFeature[GBFeature_key='Protein'
+      or GBFeature_key='CDS']/GBFeature_quals
+  - reference_id: MIBiG:BGC0000852
+    source_assertion: BGC0000852 identifies AF316874.1 as its locus and ectoine as its product; locus
+      boundaries are unspecified (zero values).
+    source_locator: $.loci[0].accession; $.loci[0].location; $.compounds[0].name
+- id: edge-004
+  subject: MIBiG:BGC0000852
+  predicate: produces
+  object: CHEBI:27592
+  description: Product detected after induced expression of the complete ectABC operon; native-promoter
+    constructs did not produce detectable ectoine in the tested heterologous hosts.
+  evidence:
+  - reference_id: PMID:11823218
+    quote: their heterologous expression in B. subtilis led to the production of ectoine.
+gene_clusters:
+- id: MIBiG:BGC0000852
+  label: Sporosarcina pasteurii ectABC cluster
+  products:
+  - ectoine
+  biosynthetic_classes:
+  - other:other
+  genes:
+  - id: NCBIProtein:AAK12083.1
+    label: ectA
+  - id: NCBIProtein:AAK12084.1
+    label: ectB
+  - id: NCBIProtein:AAK12085.1
+    label: ectC
+  loci:
+  - accession: AF316874.1
+references:
+- id: MIBiG:BGC0000852
+  title: MIBiG ectoine cluster BGC0000852, entry version 5
+  url: https://mibig.secondarymetabolites.org/repository/BGC0000852.5/annotations.json
+  source_version: MIBiG 4.0; entry version 5
+  source_sha256: 61115740b57cd32f8f98dd10e2c4bb876aa3e445e07ef458b8afaf7cf01ab23d
+- id: PMID:11823218
+  title: Osmotically Regulated Synthesis of the Compatible Solute Ectoine in Bacillus pasteurii and Related
+    Bacillus spp.
+  citation: Kuhlmann AU and Bremer E. Applied and Environmental Microbiology 68:772-783 (2002).
+  url: https://doi.org/10.1128/AEM.68.2.772-783.2002
+- id: NCBIProtein:AAK12083.1
+  title: 'GenBank AAK12083.1: EctA from Sporosarcina pasteurii'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAK12083.1,AAK12084.1,AAK12085.1&rettype=gb&retmode=xml
+  source_version: AAK12083.1; AAK12084.1; AAK12085.1 (protein GBSet batch)
+  source_sha256: cc2c6c9a232cadf29ad33f7a7da80a01abfed2a4a12c9d836532c8e19b6be1c7
+- id: NCBIProtein:AAK12084.1
+  title: 'GenBank AAK12084.1: EctB from Sporosarcina pasteurii'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAK12083.1,AAK12084.1,AAK12085.1&rettype=gb&retmode=xml
+  source_version: AAK12083.1; AAK12084.1; AAK12085.1 (protein GBSet batch)
+  source_sha256: cc2c6c9a232cadf29ad33f7a7da80a01abfed2a4a12c9d836532c8e19b6be1c7
+- id: NCBIProtein:AAK12085.1
+  title: 'GenBank AAK12085.1: EctC from Sporosarcina pasteurii'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAK12083.1,AAK12084.1,AAK12085.1&rettype=gb&retmode=xml
+  source_version: AAK12083.1; AAK12084.1; AAK12085.1 (protein GBSet batch)
+  source_sha256: cc2c6c9a232cadf29ad33f7a7da80a01abfed2a4a12c9d836532c8e19b6be1c7

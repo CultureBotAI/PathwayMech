@@ -1,0 +1,133 @@
+{
+  "selected": {
+    "id": "MIBiG:BGC0000852",
+    "label": "Sporosarcina pasteurii ectoine biosynthetic gene cluster",
+    "native_source_status": {
+      "quality": "questionable",
+      "status": "active",
+      "completeness": "unknown"
+    },
+    "decision": "curate bounded BGC gene-to-pathway support and observed output using primary experiment plus independent deposited sequence; do not change native source quality/completeness",
+    "taxon": {
+      "id": "NCBITaxon:1474",
+      "native": "Sporosarcina pasteurii",
+      "paper_name": "Bacillus pasteurii DSM 33",
+      "deposit_name": "Sporosarcina pasteurii ATCC 11859",
+      "same_strain_authority": "https://www.dsmz.de/collection/catalogue/details/culture/DSM-33"
+    },
+    "source_genes": [
+      {
+        "id": "NCBIProtein:AAK12083.1",
+        "gene": "ectA",
+        "location": "416..958",
+        "disposition": "retained as EctA; individual role assigned by sequence comparison"
+      },
+      {
+        "id": "NCBIProtein:AAK12084.1",
+        "gene": "ectB",
+        "location": "1010..2290",
+        "disposition": "retained as EctB; individual role assigned by sequence comparison"
+      },
+      {
+        "id": "NCBIProtein:AAK12085.1",
+        "gene": "ectC",
+        "location": "2450..2854",
+        "disposition": "retained as EctC; individual role assigned by sequence comparison"
+      }
+    ],
+    "mechanistic_scope": [
+      "Retain three enables edges with explicit sequence-based individual assignments and whole-operon experimental support.",
+      "Retain observed ectoine output after induced operon expression.",
+      "No isolated-enzyme catalyzes claims, elementary reactions, cofactor edges, cellular compartment or osmotic-regulator nodes.",
+      "Do not copy Halomonas EctB cofactor or oligomerization assertions to Sporosarcina; the primary paper distinguishes those species.",
+      "Retain native locus accession without invented boundaries: source JSON uses zero coordinates, which importer treats as unknown. CDS coordinates above document individual proteins, not a complete regulatory interval."
+    ],
+    "chemical_grounding": {
+      "id": "CHEBI:27592",
+      "label": "ectoine",
+      "basis": "Source MIBiG structure CC1=NCC[C@H](N1)C(=O)O with C6H10N2O2; ChEBI neutral stereochemical entry. CHEBI:58515 is ectoine zwitterion and must not be substituted merely because already in corpus."
+    }
+  },
+  "deferred": [
+    {
+      "id": "MIBiG:BGC0000829",
+      "label": "violacein",
+      "native_version": 5,
+      "native_sha256": "8582cb5e8fa698cd21acc3e9e2a4da91da60c35ad5ee9159ec56848442078f49",
+      "reasons": [
+        "Native AF172851.1 annotation contains vioA-D; PMID:16874749 and PMID:17176066 require VioE for the full pathway. Exact same-scope VioE accession not established in this scan.",
+        "PMID:17925955 corrects intermediate identity and distinguishes nonenzymatic final chemistry; avoid simply replaying earlier pathway prose."
+      ],
+      "followup": "Resolve missing VioE on the deposited locus and scope before a complete biosynthetic canary."
+    },
+    {
+      "id": "MIBiG:BGC0002887",
+      "label": "radicicol",
+      "native_version": 1,
+      "native_sha256": "8f7e0b648d9fd9d3dbda04e4976644234f4c7a4364d0324c1546c85d03e32c97",
+      "native_quality": "high",
+      "native_status": "pending",
+      "reasons": [
+        "Source locus evidence is explicitly homology-based prediction and genomic/metabolomic correlation; individual same-strain gene causality has not been established in this bounded review."
+      ],
+      "followup": "Inspect DOI:10.1016/j.mycres.2009.10.001 and DOI:10.1186/s12864-016-2546-0 for exact strain/gene validation; do not equate high quality flag with experimentally tested gene roles."
+    },
+    {
+      "id": "MIBiG:BGC0003126",
+      "label": "kotanin",
+      "native_version": 1,
+      "native_sha256": "d3cbff199d9074c8fc2cf1e485af37bcaa19ee4b8a010f124cc1d38311267ca1",
+      "native_quality": "high",
+      "native_status": "pending",
+      "reasons": [
+        "Native source contains five genes; KtnD catalytic role is explicitly unresolved in later primary study DOI:10.3389/fmicb.2020.00931.",
+        "Native CBS513.88 locus and original knockout-study strain FGSC A1180 need explicit identity/scope reconciliation. Original 2012 paper full text was unavailable in this scan."
+      ],
+      "followup": "Inspect DOI:10.1002/anie.201203603 and reconcile strain/native IDs. Unknown KtnD role can remain metadata; not a reason to invent a catalytic edge."
+    }
+  ],
+  "deduplication": {
+    "searched_roots": [
+      "Entire integration checkout, including ignored and hidden files except Git internals and the virtual environment",
+      "Original user checkout reports/ directory, including ignored and hidden files"
+    ],
+    "command": "rg --no-ignore --hidden -l -i <exact accessions, labels, genes, PMID/DOI patterns> <roots> -g !**/.git/** -g !**/.venv/**",
+    "ignored_hidden_included": true,
+    "exact_selected_patterns": [
+      "BGC0000852",
+      "AF316874",
+      "AAK12083",
+      "AAK12084",
+      "AAK12085",
+      "11823218",
+      "10.1128/AEM.68.2.772-783.2002",
+      "Sporosarcina pasteurii",
+      "Bacillus pasteurii"
+    ],
+    "exact_selected_result": "no matches before drafting",
+    "related_match": {
+      "path": "data/pathways/ectoine-biosynthesis.yaml",
+      "id": "MetaCyc:P101-PWY",
+      "taxon": "Halomonas elongata (NCBITaxon:2746)",
+      "decision": "Related chemistry but distinct taxon, native BGC, experimental paper and proteins; preserve both scopes."
+    },
+    "cache_inventory": "Filename-only inventory located the preserved official mibig_json_4.0.tar.gz authority archive; no broad sensitive-content cache search."
+  },
+  "validation": {
+    "semantic": "pathwaymech.schema.validate_record passed for draft",
+    "remaining": [
+      "Closed LinkML validation",
+      "Authority refresh for all six named IDs",
+      "Generated pages/KGX and complete repository QC"
+    ]
+  },
+  "record_path": "data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml",
+  "record_sha256": "0c2e4ef99740885129888a71cf927b1ac8af45e7061c3e3b55ac0913d68dc224",
+  "adversarial_review": {
+    "biological_review": "Independent review confirmed strain, source proteins, neutral product and qualified whole-operon scope.",
+    "evidence_contract_issue": "https://github.com/CultureBotAI/PathwayMech/issues/281",
+    "resolution": "Replace narrative literature source_assertion items with inspected GenBank XML annotations and MIBiG locus/product statements, plus one short verbatim primary-paper production quote. This does not strengthen the gene-specific evidence beyond similarity annotations.",
+    "production_quote_locator": "Abstract, sentence following the three Ect protein names. Exact substring independently inspected at https://journals.asm.org/doi/10.1128/aem.68.2.772-783.2002 and present in cached PMID11823218.xml.",
+    "protein_length_caution": "Article protein lengths and deposited sequence lengths differ slightly; no record assertion relies on lengths."
+  }
+}

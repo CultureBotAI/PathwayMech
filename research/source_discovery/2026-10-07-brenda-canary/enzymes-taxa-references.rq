@@ -1,0 +1,4 @@
+PREFIX d3o: <https://purl.dsmz.de/schema/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT DISTINCT ?reaction ?enzyme ?ec ?organism ?taxid ?identifier ?reference ?pmid WHERE { <https://purl.dsmz.de/brenda/pathway/76> d3o:hasReaction ?reaction . ?reaction d3o:catalyzedBy ?enzyme . OPTIONAL { ?enzyme d3o:isClassifiedAs ?ec } OPTIONAL { ?enzyme d3o:foundIn ?organism . OPTIONAL { ?organism dcterms:hasTaxID ?taxid } } OPTIONAL { ?enzyme d3o:hasIdentifier ?identifier } OPTIONAL { ?enzyme d3o:hasReference ?reference . OPTIONAL { ?reference d3o:hasPubMedID ?pmid } } } ORDER BY ?reaction ?enzyme ?organism ?reference LIMIT 1000

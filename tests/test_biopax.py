@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+import subprocess
+import sys
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -76,6 +79,58 @@ def test_biopax_seed_yaml_round_trips_as_pathbank_record() -> None:
 
     assert validate_record(yaml.safe_load(text)).id == "PathBank:SMP0000001"
     assert "id: PathBank:SMP0000001/reaction" in text
+
+
+@pytest.mark.parametrize("native_xref", [False, True])
+@pytest.mark.parametrize(
+    "feature_type", ["ModificationFeature", "CovalentBindingFeature", "FragmentFeature"]
+)
+def test_biopax_preserves_single_modified_catalyst_state(
+    native_xref: bool, feature_type: str
+) -> None:
+    root = load_biopax(FIXTURE)
+    bp = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    enzyme = next(e for e in root if e.get(rdf + "ID") == "mini_enzyme")
+    ElementTree.SubElement(enzyme, bp + "feature", {rdf + "resource": "#plp"})
+    ElementTree.SubElement(root, bp + feature_type, {rdf + "ID": "plp"})
+    expected = "Reactome:R-TEST-12345/mini_enzyme"
+    if native_xref:
+        ElementTree.SubElement(enzyme, bp + "xref", {rdf + "resource": "#state_xref"})
+        xref = ElementTree.SubElement(root, bp + "UnificationXref", {rdf + "ID": "state_xref"})
+        ElementTree.SubElement(xref, bp + "db").text = "Reactome"
+        ElementTree.SubElement(xref, bp + "id").text = "R-TEST-22222"
+        expected = "Reactome:R-TEST-22222"
+
+    record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
+    assert expected in {n["id"] for n in record.participants}
+    assert "UniProtKB:P12345" not in {n["id"] for n in record.participants}
+    assert any(
+        e["predicate"] == "has_part" and e["object"] == expected
+        for e in record.mechanistic_edges
+    )
+    assert not any(m["object_id"] == "UniProtKB:P12345" for m in record.source_mappings)
+
+
+def test_biopax_cleaved_catalyst_keeps_fragment_identity() -> None:
+    root = load_biopax(FIXTURE)
+    bp = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    enzyme = next(e for e in root if e.get(rdf + "ID") == "mini_enzyme")
+    ElementTree.SubElement(enzyme, bp + "feature", {rdf + "resource": "#fragment"})
+    fragment = ElementTree.SubElement(root, bp + "FragmentFeature", {rdf + "ID": "fragment"})
+    ElementTree.SubElement(fragment, bp + "featureLocation", {rdf + "resource": "#interval"})
+    interval = ElementTree.SubElement(root, bp + "SequenceInterval", {rdf + "ID": "interval"})
+    for name, position in (("Begin", 2), ("End", 100)):
+        key = name.lower()
+        ElementTree.SubElement(
+            interval, bp + "sequenceInterval" + name, {rdf + "resource": "#" + key}
+        )
+        site = ElementTree.SubElement(root, bp + "SequenceSite", {rdf + "ID": key})
+        ElementTree.SubElement(site, bp + "sequencePosition").text = str(position)
+    record = validate_record(biopax_to_pathway_record(root, "Reactome:R-TEST"))
+    assert "Reactome:R-TEST-12345/mini_enzyme" in {n["id"] for n in record.participants}
+    assert "UniProtKB:P12345" not in {n["id"] for n in record.participants}
 
 
 def test_biopax_accepts_panther_pathway_xrefs() -> None:
@@ -169,6 +224,26 @@ def test_biopax_reverses_sides_and_preserves_metal_bound_catalyst() -> None:
     assert ("Reactome:R-TEST/p", "catalyzes", "Reactome:R-TEST/r") not in triples
     assert not any(s == "Reactome:R-TEST/zinc" and p == "consumes" for s, p, _ in triples)
     assert record.reactions[0]["direction"] == "right_to_left"
+
+
+def test_biopax_context_edges_are_reproducible_across_processes(tmp_path: Path) -> None:
+    source = tmp_path / "physical-states.owl"
+    ElementTree.ElementTree(_native_biopax()).write(source)
+    script = (
+        "import json,sys; from pathlib import Path; "
+        "from pathwaymech.biopax import load_biopax,biopax_to_pathway_record; "
+        "print(json.dumps(biopax_to_pathway_record(load_biopax(Path(sys.argv[1])),"
+        "'Reactome:R-TEST'),sort_keys=True))"
+    )
+    outputs = [
+        subprocess.check_output(
+            [sys.executable, "-c", script, str(source)],
+            env={**os.environ, "PYTHONHASHSEED": str(seed)},
+            text=True,
+        )
+        for seed in (1, 2, 3)
+    ]
+    assert outputs[0] == outputs[1] == outputs[2]
 
 
 def test_biopax_reversible_conversion_is_explicit() -> None:
