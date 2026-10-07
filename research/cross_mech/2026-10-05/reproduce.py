@@ -2,6 +2,7 @@
 
 import argparse
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import yaml
 
@@ -21,6 +22,10 @@ from pathwaymech.rhea_directions import load_rhea_directions
 # The pathway cohort is just as historical as the sibling inputs. Reading the
 # working tree here would silently replace this audit's 152-record cohort.
 PATHWAY_PIN = "aa305727458c44ab05614901334540e2c87a9f3a"
+# This reviewed revision has the same cohort plus the corrected Rhea projection
+# and offline evidence inputs. Freeze every input, including sibling slot config.
+AUDIT_REF = "e53cf3f159e918a0737bb43c1a64a77a2466df68"
+AUDIT_PATH = Path("research/cross_mech/2026-10-05")
 
 PINS = {
     "TraitMech": "9dea24521a32e92c3425449321fc36b1dbc621f1",
@@ -31,12 +36,43 @@ PINS = {
 }
 
 
-def pathway_records(root: Path) -> list[dict]:
+def pathway_records(root: Path, ref: str | None = None) -> list[dict]:
+    source_ref = PATHWAY_PIN if ref is None else ref
     spec = MechSpec("PathwayMech", ["data/pathways/**/*.yaml"])
-    records = [yaml.safe_load(payload) for _, payload in git_documents(root, PATHWAY_PIN, spec)]
+    records = []
+    for name, payload in git_documents(root, source_ref, spec):
+        record = yaml.safe_load(payload)
+        if record is None:
+            record = {}
+        if not isinstance(record, dict):
+            raise ValueError(f"{name} must contain a YAML mapping")
+        records.append(record)
     if not records:
-        raise ValueError("the pinned PathwayMech audit cohort is empty")
+        raise ValueError(f"No PathwayMech records at audit revision {source_ref}")
     return records
+
+
+def load_audit_inputs(root: Path, ref: str = AUDIT_REF):
+    records = pathway_records(root, ref)
+    spec = MechSpec("PathwayMech audit inputs", records=[
+        "conf/sibling_mechs.yaml",
+        "conf/rhea_directions.json",
+        f"{AUDIT_PATH}/inputs/*.json",
+    ])
+    with TemporaryDirectory(prefix="pathwaymech-dated-audit-") as temporary:
+        snapshot = Path(temporary)
+        for name, content in git_documents(root, ref, spec):
+            path = snapshot / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(content)
+        inputs = snapshot / AUDIT_PATH / "inputs"
+        return (
+            records,
+            load_json(inputs / "uniprot_annotations.json"),
+            load_rhea_directions(snapshot / "conf/rhea_directions.json"),
+            load_json(inputs / "sgd_uniprot.json"),
+            load_config(snapshot / "conf/sibling_mechs.yaml"),
+        )
 
 
 def main():
@@ -46,13 +82,11 @@ def main():
     args = parser.parse_args()
     audit = Path(__file__).resolve().parent
     root = audit.parents[2]
-    records = pathway_records(root)
-    annotations = load_json(audit / "inputs/uniprot_annotations.json")
-    directions = load_rhea_directions(root / "conf/rhea_directions.json")
-    index = build_pathway_index(records, load_json(audit / "inputs/sgd_uniprot.json"),
-                                annotations, directions)
+    records, annotations, directions, sgd_map, specs = load_audit_inputs(root)
+    print(f"read PathwayMech audit inputs at {AUDIT_REF}", flush=True)
+    index = build_pathway_index(records, sgd_map, annotations, directions)
     scans, coverage = {}, {}
-    for spec in load_config(root / "conf/sibling_mechs.yaml"):
+    for spec in specs:
         pin = PINS[spec.name]
         coverage[spec.name] = ScanCoverage(commit=pin, source="pinned audit git objects")
         scans[spec.name] = scan_sibling(args.mechs_root / spec.name, spec,
