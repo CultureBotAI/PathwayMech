@@ -111,4 +111,4 @@ Never edit one here. Change it in claw and re-pin. `just vendored-check` (the
 data rules for the backlog loop are in `prompts/backlog-loop-local.md`.
 
 The deterministic merge workflows use the native queue, independently of model-agent
-cron profiles. See the [canonical merge automation guide](https://github.com/CultureBotAI/culturebotai-claw/blob/f27502fe02b73460af7b9c86d9fa97f72ac67933/docs/guides/MERGE_QUEUES.md) for admission, retry, cache coordination, pause controls, and tree verification.
+cron profiles. See the [canonical merge automation guide](https://github.com/CultureBotAI/culturebotai-claw/blob/7c516fd6d694915a1c2c5829c201251c4d04ac69/docs/guides/MERGE_QUEUES.md) for admission, retry, cache coordination, pause controls, and tree verification.
