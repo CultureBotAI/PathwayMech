@@ -179,3 +179,19 @@ def test_pinned_blob_reader_preserves_duplicate_blobs_and_unusual_paths(tmp_path
     spec = cross.MechSpec("Sibling", ["data/**/*.yaml"])
     actual = list(cross.git_documents(tmp_path, "HEAD", spec))
     assert actual == [(name, payload) for name in names]
+
+
+@pytest.mark.parametrize(("text", "selected"), [
+    ("unrelated text", False), ("P0A749", True), ("p0a749", False),
+    ("prefixP0A749suffix", True), ("PathwayMech", True),
+    ("pathwaymech", True), ("PaThWaYmEcH", True),
+])
+def test_prefilter_preserves_literal_corpus_and_accession_matching(tmp_path, text, selected):
+    (tmp_path / "record.yaml").write_text(yaml.safe_dump({"identifier": "example", "notes": text}))
+    coverage = cross.ScanCoverage()
+    spec = cross.MechSpec("Sibling", ["*.yaml"], prefilter=True)
+    _, _, errors = cross.scan_sibling(tmp_path, spec, prefilter_terms=["P0A749"], coverage=coverage)
+    assert not errors
+    assert coverage.files_parsed == int(selected)
+    assert coverage.files_filtered == int(not selected)
+    assert coverage.status == "complete"

@@ -528,9 +528,13 @@ def scan_sibling(
     coverage = coverage if coverage is not None else ScanCoverage()
     coverage.scope = "accession-prefiltered" if spec.prefilter else "full"
     terms = sorted(set(prefilter_terms))
-    screen = (re.compile("|".join([r"(?i:PathwayMech)",
-                                   *(re.escape(term) for term in terms)]))
-              if spec.prefilter else None)
+    screen = re.compile("|".join(re.escape(term) for term in terms)) if terms else None
+
+    def selected(text: str) -> bool:
+        # Keep the literal corpus marker separate: mixing an ignore-case
+        # alternative into hundreds of accessions disables the regex fast path.
+        return ("pathwaymech" in text.casefold()
+                or (screen is not None and screen.search(text) is not None))
     if ref is None:
         sources: Iterable[tuple[str, Any]] = (
             (path.relative_to(root).as_posix(), path) for path in sibling_files(root, spec))
@@ -541,12 +545,12 @@ def scan_sibling(
         try:
             if isinstance(source, bytes):
                 text = source.decode("utf-8")
-                if screen is not None and not screen.search(text):
+                if spec.prefilter and not selected(text):
                     coverage.files_filtered += 1
                     continue
                 document = yaml.load(text, Loader=_YAML_LOADER)  # noqa: S506 - safe loader
             else:
-                if screen is not None and not screen.search(source.read_text(encoding="utf-8")):
+                if spec.prefilter and not selected(source.read_text(encoding="utf-8")):
                     coverage.files_filtered += 1
                     continue
                 document = loader(source)

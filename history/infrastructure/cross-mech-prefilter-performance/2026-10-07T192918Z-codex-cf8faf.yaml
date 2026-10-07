@@ -1,0 +1,29 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/cross_mech.py
+  slug: cross-mech-prefilter-performance
+session:
+  id: 2026-10-07T192918Z-codex-cf8faf
+  timestamp: '2026-10-07T19:29:18Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/287
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/249
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve case-insensitive URL detection without slowing accession prefilter scans
+  details: Separate the casefolded PathwayMech literal marker from the case-sensitive accession
+    regex. A bounded benchmark with 377 actual accession terms and ten 10050-character nonmatching
+    inputs measured 0.136 seconds for the combined ignore-case regex versus 0.00144 seconds
+    for the separated checks. The literal corpus and accession substring selection semantics
+    are unchanged and covered by explicit regressions. This supports complete replay of the
+    historical 429293-record ProteinTraitsMech source without sampling or modifying its preserved
+    inputs/results.
