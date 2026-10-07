@@ -466,7 +466,8 @@ def test_uniprot_batches_do_not_drop_boundary_accessions():
         query = urllib.parse.parse_qs(urllib.parse.urlsplit(url).query)["query"][0]
         batch = [value.removeprefix("accession:") for value in query.split(" OR ")]
         requested.append(batch)
-        return "Entry\tRhea ID\n" + "".join(f"{value}\t\n" for value in batch)
+        return ("Entry\tReviewed\tOrganism (ID)\tEC number\tRhea ID\tPathway\n"
+                + "".join(f"{value}\treviewed\t559292\t\t\t\n" for value in batch))
 
     assert set(fetch_uniprot_annotations(accessions, fetch=fetch, batch=2)) == set(accessions)
     assert [len(batch) for batch in requested] == [2, 2, 1]
@@ -507,6 +508,7 @@ def test_cli_rejects_missing_explicit_json_inputs(tmp_path: Path, option: str, c
 @pytest.mark.parametrize("check_links", [False, True])
 def test_cli_fails_on_unreadable_sibling_records(tmp_path: Path, check_links: bool,
                                                capsys) -> None:
+    write_yaml(tmp_path / "data" / "pathways" / "p.yaml", PATHWAY)
     config = tmp_path / "config.yaml"
     config.write_text(SPEC_YAML, encoding="utf-8")
     sibling = tmp_path / "AntibioticMech"
@@ -523,6 +525,7 @@ def test_cli_fails_on_unreadable_sibling_records(tmp_path: Path, check_links: bo
 
 def test_check_links_fails_when_only_some_configured_siblings_are_available(tmp_path: Path,
                                                                           capsys) -> None:
+    write_yaml(tmp_path / "data" / "pathways" / "p.yaml", PATHWAY)
     config = tmp_path / "config.yaml"
     data = yaml.safe_load(SPEC_YAML)
     data["mechs"]["MissingMech"] = data["mechs"]["AntibioticMech"].copy()

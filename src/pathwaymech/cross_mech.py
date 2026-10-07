@@ -48,7 +48,7 @@ from pathwaymech.rhea_directions import master_ids
 PATHWAYMECH_RECORD_URL = "https://culturebotai.github.io/PathwayMech/pages/records/{slug}.html"
 # Matches a link to a PathwayMech record page wherever a sibling writes one.
 PATHWAYMECH_URL = re.compile(
-    r"(?i:https?://culturebotai\.github\.io)/PathwayMech/pages/records/[^\s<>\"']+"
+    r"(?i:https?://culturebotai\.github\.io/PathwayMech/pages/records/)[^\s<>\"']+"
 )
 # UniProtKB accession grammar (https://www.uniprot.org/help/accession_numbers),
 # optionally followed by an isoform suffix.
@@ -174,6 +174,8 @@ def build_pathway_index(
     """
     sgd_to_uniprot = sgd_to_uniprot or {}
     annotations = annotations or {}
+    validate_sgd_map(sgd_to_uniprot)
+    validate_annotations(annotations)
     index = PathwayIndex(rhea_directions=rhea_directions or {})
     proteins: dict[str, list[PathwayProtein]] = defaultdict(list)
     for record in records:
@@ -472,18 +474,30 @@ def git_documents(root: Path, ref: str, spec: MechSpec) -> Iterator[tuple[str, b
     if not commit:
         raise OSError(f"{root}: {ref!r} is not a commit")
     patterns = [glob_regex(pattern) for pattern in spec.records]
-    names = [name for name in _git(root, "ls-tree", "-r", "-z", "--name-only", commit)
-             .decode("utf-8").split("\0") if name and any(p.match(name) for p in patterns)]
-    names.sort()
-    for start in range(0, len(names), 2000):
-        chunk = names[start:start + 2000]
-        request = "".join(f"{commit}:{name}\n" for name in chunk).encode("utf-8")
+    entries = []
+    for entry in _git(root, "ls-tree", "-r", "-z", commit).split(b"\0"):
+        if not entry:
+            continue
+        header, raw_name = entry.split(b"\t", 1)
+        name = raw_name.decode("utf-8")
+        if not any(pattern.match(name) for pattern in patterns):
+            continue
+        _, kind, oid = header.split()
+        if kind != b"blob":
+            raise OSError(f"{root}: {name} is not a record blob at {commit}")
+        entries.append((name, oid))
+    entries.sort()
+    for start in range(0, len(entries), 2000):
+        chunk = entries[start:start + 2000]
+        # Resolve paths once in ls-tree. Repeating commit:path lookups for
+        # hundreds of thousands of records repeatedly scans the same trees.
+        request = b"".join(oid + b"\n" for _, oid in chunk)
         stream = _git(root, "cat-file", "--batch", data=request)
         offset = 0
-        for name in chunk:
+        for name, oid in chunk:
             header_end = stream.index(b"\n", offset)
             header = stream[offset:header_end].split()
-            if len(header) != 3 or header[1] != b"blob":
+            if len(header) != 3 or header[0] != oid or header[1] != b"blob":
                 raise OSError(f"{root}: cannot read {name} at {commit}")
             size = int(header[2])
             body_start = header_end + 1
@@ -514,7 +528,7 @@ def scan_sibling(
     coverage = coverage if coverage is not None else ScanCoverage()
     coverage.scope = "accession-prefiltered" if spec.prefilter else "full"
     terms = sorted(set(prefilter_terms))
-    screen = (re.compile("|".join(["PathwayMech", "PATHWAYMECH",
+    screen = (re.compile("|".join([r"(?i:PathwayMech)",
                                    *(re.escape(term) for term in terms)]))
               if spec.prefilter else None)
     if ref is None:
@@ -574,6 +588,9 @@ def scan_sibling(
                     links.append(SiblingLink(spec.name, relative, record_id, record_label,
                                              concrete, target.strip(),
                                              label if isinstance(label, str) else None))
+                else:
+                    errors.append(f"{spec.name}:{relative}:{concrete}: "
+                                  "configured PathwayMech link has no nonempty string target")
         # A page URL written anywhere else in the record is still a PathwayMech link.
         for concrete, value in _strings(document, ""):
             for match in PATHWAYMECH_URL.finditer(value):
@@ -581,6 +598,8 @@ def scan_sibling(
                     target = match.group(0).rstrip(".,;:)]}")
                     links.append(SiblingLink(spec.name, relative, record_id, record_label,
                                              concrete, target, None))
+    if coverage.files_seen == 0:
+        errors.append(f"{spec.name}: no records match configured globs: {spec.records!r}")
     coverage.errors = len(errors)
     if errors:
         coverage.status = "incomplete"
@@ -640,6 +659,7 @@ def build_report(
 ) -> Report:
     """Join sibling inventories with the PathwayMech index."""
     annotations = annotations or {}
+    validate_annotations(annotations)
     proteins = [protein for found, _, _ in scans.values() for protein in found]
     for mech, details in (coverage or {}).items():
         accessions = {protein.accession for protein in proteins if protein.mech == mech}
@@ -922,6 +942,44 @@ def _http_get(url: str) -> str:
     raise AssertionError("unreachable")
 
 
+def _uniprot_rows(text: str, columns: set[str]) -> Iterator[dict[str, str]]:
+    """Reject transport/error pages and malformed rows before publishing inputs."""
+    reader = csv.DictReader(io.StringIO(text), delimiter="\t")
+    if (not reader.fieldnames or set(reader.fieldnames) != columns
+            or len(reader.fieldnames) != len(columns)):
+        raise ValueError("unexpected UniProt TSV headers")
+    seen = set()
+    for row in reader:
+        if None in row or any(value is None for value in row.values()):
+            raise ValueError("malformed UniProt TSV row")
+        accession = row["Entry"]
+        if not accession or normalize_accession(accession) != accession or accession in seen:
+            raise ValueError(f"invalid or duplicate UniProt TSV accession: {accession!r}")
+        seen.add(accession)
+        yield row
+
+
+def validate_sgd_map(mapping: dict) -> None:
+    for identifier, accessions in mapping.items():
+        if (not isinstance(identifier, str) or not re.fullmatch(r"SGD:S\d{9}", identifier)
+                or not isinstance(accessions, list)
+                or any(not isinstance(value, str) or not value
+                       or normalize_accession(value) != value for value in accessions)):
+            raise ValueError(f"invalid SGD-to-UniProt mapping: {identifier!r}")
+
+
+def validate_annotations(annotations: dict) -> None:
+    for accession, annotation in annotations.items():
+        if (not isinstance(accession, str) or not accession
+                or normalize_accession(accession) != accession or not isinstance(annotation, dict)
+                or any(not isinstance(values, list)
+                       or any(not isinstance(value, str) for value in values)
+                       for values in annotation.values())
+                or any(not re.fullmatch(r"(?:RHEA:)?\d+", value)
+                       for value in annotation.get("rhea", []))):
+            raise ValueError(f"invalid UniProt annotation mapping: {accession!r}")
+
+
 def fetch_sgd_uniprot_map(fetch: Fetcher = _http_get) -> dict[str, list[str]]:
     """Map SGD gene ids to reviewed S. cerevisiae S288C UniProtKB accessions."""
     query = urllib.parse.urlencode({
@@ -930,12 +988,14 @@ def fetch_sgd_uniprot_map(fetch: Fetcher = _http_get) -> dict[str, list[str]]:
         "format": "tsv",
     })
     mapping: dict[str, list[str]] = defaultdict(list)
-    for row in csv.DictReader(io.StringIO(fetch(f"{UNIPROT_REST}?{query}")), delimiter="\t"):
+    for row in _uniprot_rows(fetch(f"{UNIPROT_REST}?{query}"), {"Entry", "SGD"}):
         for sgd in (row.get("SGD") or "").split(";"):
             sgd = sgd.strip()
             if sgd:
                 mapping[f"SGD:{sgd}"].append(row["Entry"])
-    return {key: sorted(set(values)) for key, values in sorted(mapping.items())}
+    result = {key: sorted(set(values)) for key, values in sorted(mapping.items())}
+    validate_sgd_map(result)
+    return result
 
 
 def fetch_uniprot_annotations(
@@ -943,6 +1003,8 @@ def fetch_uniprot_annotations(
 ) -> dict[str, dict[str, list[str]]]:
     """Rhea, EC and pathway annotations for accessions that UniProt still serves."""
     wanted = sorted(set(accessions))
+    if batch < 1 or any(not value or normalize_accession(value) != value for value in wanted):
+        raise ValueError("annotation queries require valid accessions and a positive batch size")
     annotations: dict[str, dict[str, list[str]]] = {}
     for start in range(0, len(wanted), batch):
         chunk = wanted[start:start + batch]
@@ -951,8 +1013,14 @@ def fetch_uniprot_annotations(
             "fields": "accession,reviewed,organism_id,ec,rhea,cc_pathway",
             "format": "tsv",
         })
-        for row in csv.DictReader(io.StringIO(fetch(f"{UNIPROT_REST}?{query}")),
-                                  delimiter="\t"):
+        for row in _uniprot_rows(fetch(f"{UNIPROT_REST}?{query}"), {
+            "Entry", "Reviewed", "Organism (ID)", "EC number", "Rhea ID", "Pathway",
+        }):
+            if row["Entry"] not in chunk:
+                raise ValueError("UniProt returned an accession outside the requested batch")
+            if (row["Reviewed"] not in {"reviewed", "unreviewed"}
+                    or not row["Organism (ID)"].isdigit()):
+                raise ValueError("invalid UniProt review status or organism identifier")
             annotations[row["Entry"]] = {
                 "reviewed": [row.get("Reviewed", "")],
                 "organism": [row.get("Organism (ID)", "")],
@@ -962,6 +1030,7 @@ def fetch_uniprot_annotations(
                          if value.strip()],
                 "pathway": [row.get("Pathway", "").strip()] if row.get("Pathway") else [],
             }
+    validate_annotations(annotations)
     return annotations
 
 
@@ -1054,6 +1123,8 @@ def main(argv: list[str] | None, root: Path) -> int:
     try:
         sgd_map = {} if args.fetch_sgd_map else load_json(args.sgd_map)
         annotations = {} if args.fetch_annotations else load_json(args.annotations)
+        validate_sgd_map(sgd_map)
+        validate_annotations(annotations)
         from pathwaymech.rhea_directions import load_rhea_directions
 
         rhea_path = args.rhea_directions
@@ -1064,10 +1135,13 @@ def main(argv: list[str] | None, root: Path) -> int:
         parser.error(str(error))
 
     if args.fetch_sgd_map:
-        sgd_map = fetch_sgd_uniprot_map()
-        _write_json(args.sgd_map, sgd_map)
-        print(f"wrote {args.sgd_map}")
+        try:
+            sgd_map = fetch_sgd_uniprot_map()
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
     records = [load_yaml_file(path) for path in pathway_files(root / "data" / "pathways")]
+    if not records:
+        parser.error("no PathwayMech records found in data/pathways")
     index = build_pathway_index(records, sgd_map, rhea_directions=rhea_directions)
 
     scans = {}
@@ -1104,27 +1178,36 @@ def main(argv: list[str] | None, root: Path) -> int:
     if args.fetch_annotations:
         accessions = {protein.accession for found, _, _ in scans.values() for protein in found}
         accessions.update(index.proteins)
-        annotations = fetch_uniprot_annotations(accessions)
-        _write_json(args.annotations, annotations)
-        print(f"wrote {args.annotations}")
+        try:
+            annotations = fetch_uniprot_annotations(accessions)
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
     if annotations:
         index = build_pathway_index(records, sgd_map, annotations,
                                     rhea_directions=rhea_directions)
     report = build_report(index, scans, annotations, coverage=coverage,
                           rhea_normalized=bool(rhea_directions))
-    if args.out:
-        for path in write_report(report, args.out, full=args.full_tables):
-            print(f"wrote {path}")
-    else:
-        print(render_summary(report))
     if report.errors or missing_required:
+        print(render_summary(report))
         print("inventory is incomplete: "
               f"{len(report.errors)} scan error(s), "
               f"{len(missing_required)} required checkout(s) unavailable", file=sys.stderr)
         return 1
     if args.check_links and report.broken_links:
+        print(render_summary(report))
         print(f"{len(report.broken_links)} sibling PathwayMech link(s) failed validation "
               "(unknown record or label mismatch)",
               file=sys.stderr)
         return 1
+    if args.fetch_sgd_map:
+        _write_json(args.sgd_map, sgd_map)
+        print(f"wrote {args.sgd_map}")
+    if args.fetch_annotations:
+        _write_json(args.annotations, annotations)
+        print(f"wrote {args.annotations}")
+    if args.out:
+        for path in write_report(report, args.out, full=args.full_tables):
+            print(f"wrote {path}")
+    else:
+        print(render_summary(report))
     return 0

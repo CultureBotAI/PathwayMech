@@ -1,0 +1,33 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/cross_mech.py
+  slug: cross-mech-input-validation
+session:
+  id: 2026-10-07T191043Z-codex-52ff50
+  timestamp: '2026-10-07T19:10:43Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/285
+  - https://github.com/CultureBotAI/PathwayMech/issues/286
+  - https://github.com/CultureBotAI/PathwayMech/issues/287
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/249
+events:
+- type: EDIT
+  outcome: changed
+  summary: Reject malformed cross-Mech evidence inputs, empty scans and omitted invalid links
+  details: 'Address independent review findings R1 through R5: validate UniProt TSV headers,
+    rows and identifiers plus typed SGD/annotation JSON before matching; fail empty pathway
+    cohorts and zero-file sibling selections; reject selected links without targets and report
+    incorrectly cased record URLs. Defer refreshed cache and report publication until validation
+    succeeds. Twenty-five new regressions fail on the reviewed ad2f7c2 implementation and
+    pass after repair. Read pinned Git blobs by tree-resolved object ID to avoid repeated
+    path lookup while retaining ordered file identities and exact bytes; cover duplicate blobs
+    and unusual filenames. Existing pathway records and historical audit inputs/results remain
+    unchanged.'
