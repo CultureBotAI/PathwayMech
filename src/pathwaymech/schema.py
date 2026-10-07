@@ -77,6 +77,20 @@ ALLOWED_EDGE_PREDICATES = {
     "precedes",
     "produces",
     "regulates",
+    "causally_upstream_of",
+    "has_input",
+    "has_output",
+    "occurs_in",
+    "located_in",
+    "part_of",
+    "has_part",
+    "provides_input_for",
+    "has_cofactor",
+}
+
+NODE_CATEGORIES = {
+    "small_molecule", "lipid", "protein", "gene", "dna", "rna", "cofactor",
+    "complex", "cellular_component", "molecular_activity", "biological_process",
 }
 
 
@@ -101,6 +115,7 @@ class PathwayRecord:
     references: list[dict[str, Any]]
     gene_clusters: list[dict[str, Any]] = dataclass_field(default_factory=list)
     source_mappings: list[dict[str, Any]] = dataclass_field(default_factory=list)
+    curation_history: list[dict[str, Any]] = dataclass_field(default_factory=list)
 
 
 def validate_records(records: list[dict[str, Any]]) -> list[PathwayRecord]:
@@ -155,6 +170,13 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         reactions,
         references,
         errors,
+        record_id=record.get("id"),
+        categories={
+            node.get("id"): node.get("category")
+            for field in ("participants", "reactions")
+            for node in (record.get(field) if isinstance(record.get(field), list) else [])
+            if isinstance(node, dict) and isinstance(node.get("id"), str)
+        },
     )
     if "curation_history" in record:
         _validate_curation_history(record["curation_history"], errors)
@@ -174,6 +196,7 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         source_mappings=source_mappings,
         mechanistic_edges=edges,
         references=record["references"],
+        curation_history=record.get("curation_history", []),
     )
 
 
@@ -197,6 +220,16 @@ def _validate_named_nodes(value: Any, field: str, errors: list[str]) -> set[str]
             ids.add(node_id)
         if not isinstance(label, str) or not label.strip():
             errors.append(f"{path}.label must be a non-empty string")
+        if "category" in item and (
+            not isinstance(item["category"], str) or item["category"] not in NODE_CATEGORIES
+        ):
+            errors.append(f"{path}.category is not supported: {item['category']!r}")
+        if "direction" in item and (
+            field != "reactions"
+            or not isinstance(item["direction"], str)
+            or item["direction"] not in {"left_to_right", "right_to_left", "reversible"}
+        ):
+            errors.append(f"{path}.direction must describe a reaction direction")
     return ids
 
 
@@ -314,6 +347,15 @@ def _validate_references(value: Any, errors: list[str]) -> set[str]:
             ids.add(reference_id)
         if not item.get("title") and not item.get("citation"):
             errors.append(f"{path} must include title or citation")
+        for field, pattern in (
+            ("url", r"https?://[^\s]+"),
+            ("source_version", r"[\s\S]*\S[\s\S]*"),
+            ("source_sha256", r"[0-9a-f]{64}"),
+        ):
+            if field in item and (
+                not isinstance(item[field], str) or not re.fullmatch(pattern, item[field])
+            ):
+                errors.append(f"{path}.{field} is invalid")
     return ids
 
 
@@ -397,6 +439,9 @@ def _validate_edges(
     reaction_ids: set[str],
     reference_ids: set[str],
     errors: list[str],
+    *,
+    record_id: str | None = None,
+    categories: dict[str, str | None] | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         errors.append("mechanistic_edges must be a list")
@@ -430,6 +475,8 @@ def _validate_edges(
                 participant_ids,
                 reaction_ids,
                 errors,
+                record_id=record_id,
+                categories=categories or {},
             )
         _validate_evidence(item.get("evidence"), reference_ids, f"{path}.evidence", errors)
     return value
@@ -443,15 +490,63 @@ def _validate_edge_endpoint_types(
     participant_ids: set[str],
     reaction_ids: set[str],
     errors: list[str],
+    *,
+    record_id: str | None,
+    categories: dict[str, str | None],
 ) -> None:
-    if predicate == "consumes" and (subject not in participant_ids or obj not in reaction_ids):
+    processes = reaction_ids | {record_id}
+    context_categories = {"cellular_component", "biological_process", "molecular_activity"}
+    if predicate == "consumes" and (subject not in participant_ids or obj not in processes):
         errors.append(
-            f"{path} consumes edges must point from a participant subject to a reaction object"
+            f"{path} consumes edges must point from a participant subject "
+            "to a reaction or pathway object"
         )
-    if predicate == "produces" and (subject not in reaction_ids or obj not in participant_ids):
+    if predicate == "produces" and (subject not in processes or obj not in participant_ids):
         errors.append(
-            f"{path} produces edges must point from a reaction subject to a participant object"
+            f"{path} produces edges must point from a reaction or pathway subject "
+            "to a participant object"
         )
+    physical_endpoint = subject if predicate == "consumes" else obj
+    if predicate in {"consumes", "produces"} and (
+        categories.get(physical_endpoint) in context_categories
+    ):
+        errors.append(
+            f"{path} {predicate} cannot treat an activity or context node as a metabolite"
+        )
+    if predicate in {"has_input", "has_output"} and (
+        subject not in processes or obj not in participant_ids
+    ):
+        errors.append(f"{path} {predicate} must point from an activity or pathway to a participant")
+    if predicate in {"causally_upstream_of", "provides_input_for"} and (
+        subject not in reaction_ids or obj not in reaction_ids
+    ):
+        errors.append(f"{path} {predicate} must connect two activities")
+    if predicate == "has_cofactor" and (
+        subject not in participant_ids or obj not in participant_ids
+        or categories.get(obj) != "cofactor"
+    ):
+        errors.append(f"{path} has_cofactor must connect a participant to a cofactor participant")
+    if predicate == "has_cofactor":
+        kind = categories.get(subject)
+        known_nonenzymes = {
+            "CHEBI", "CAS", "ChemSpider", "HMDB", "LIPIDMAPS", "PubChem", "EC", "NCBITaxon",
+        }
+        if (kind is not None and kind not in {"protein", "complex"}) or (
+            kind is None and subject.split(":", 1)[0] in known_nonenzymes
+        ):
+            errors.append(f"{path} has_cofactor subject must be an enzyme protein or complex")
+    if predicate in {"occurs_in", "located_in"}:
+        if obj not in participant_ids or categories.get(obj) != "cellular_component":
+            errors.append(f"{path} {predicate} object must be a cellular_component participant")
+        if predicate == "occurs_in" and (
+            subject not in processes and categories.get(subject) != "biological_process"
+        ):
+            errors.append(f"{path} occurs_in subject must be an activity or process")
+        if predicate == "located_in" and (
+            subject not in participant_ids
+            or categories.get(subject) in {"biological_process", "molecular_activity"}
+        ):
+            errors.append(f"{path} located_in subject must be a physical participant")
 
 
 def _validate_evidence(
@@ -473,12 +568,22 @@ def _validate_evidence(
         if reference_id not in reference_ids:
             errors.append(f"{item_path}.reference_id is not declared: {reference_id!r}")
         quote = item.get("quote")
-        if not isinstance(quote, str) or not quote.strip():
-            errors.append(f"{item_path}.quote must be a non-empty string")
-        elif len(quote) > 400:
-            errors.append(f"{item_path}.quote must be 400 characters or fewer")
-        elif _is_source_xml_quote(quote):
-            errors.append(f"{item_path}.quote must be human-readable, not raw source XML")
+        assertion = item.get("source_assertion")
+        if ("quote" in item) == ("source_assertion" in item):
+            errors.append(f"{item_path} needs exactly one quote or source_assertion")
+        for field, value in (("quote", quote), ("source_assertion", assertion)):
+            if field not in item:
+                continue
+            if not isinstance(value, str) or not value.strip():
+                errors.append(f"{item_path}.{field} must be a non-empty string")
+            elif len(value) > 400:
+                errors.append(f"{item_path}.{field} must be 400 characters or fewer")
+            elif _is_source_xml_quote(value):
+                errors.append(f"{item_path}.{field} must be human-readable, not raw source XML")
+        if "source_assertion" in item or "source_locator" in item:
+            locator = item.get("source_locator")
+            if not isinstance(locator, str) or not locator.strip():
+                errors.append(f"{item_path}.source_locator must identify the source statement")
 
 
 def _validate_curie(value: Any, path: str, errors: list[str]) -> None:

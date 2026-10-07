@@ -55,7 +55,11 @@ Each `mechanistic_edges` entry must:
 - use a predicate from the local schema;
 - connect nodes declared in the same record;
 - cite at least one `references` entry by `reference_id`;
-- quote only short supporting snippets.
+- use short verbatim quotations or traceable structured-source assertions.
+
+See `docs/CAUSAL_GRAPHS.md` for component scope, cofactor and compartment
+relations, source coverage, and the distinction between quotations and
+structured database assertions.
 
 Records must fit the closed LinkML schema in
 `src/pathwaymech/schema/pathwaymech.yaml`: a key it does not declare is an
@@ -111,4 +115,4 @@ Never edit one here. Change it in claw and re-pin. `just vendored-check` (the
 data rules for the backlog loop are in `prompts/backlog-loop-local.md`.
 
 The deterministic merge workflows use the native queue, independently of model-agent
-cron profiles. See the [canonical merge automation guide](https://github.com/CultureBotAI/culturebotai-claw/blob/34fa72446c7c8cbcdf0ac084d604d4c8ea0e2c5d/docs/guides/MERGE_QUEUES.md) for admission, retry, cache coordination, pause controls, and tree verification.
+cron profiles. See the [canonical merge automation guide](https://github.com/CultureBotAI/culturebotai-claw/blob/59aead1ba791d1b1840a263a41260a0717115870/docs/guides/MERGE_QUEUES.md) for admission, retry, cache coordination, pause controls, and tree verification.

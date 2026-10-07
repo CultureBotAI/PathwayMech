@@ -1,8 +1,8 @@
 id: gomodel:YeastPathways_PWY3O-8
 label: xylose metabolism
-description: Xylose metabolism in Saccharomyces cerevisiae S288C uses GRE3 aldose
-  reductase to reduce D-xylopyranose to xylitol with NADPH, and XYL2 xylitol dehydrogenase
-  to oxidize xylitol to D-xylulose with NAD+ in the SGD GO-CAM xylose metabolism pathway.
+description: Xylose metabolism in Saccharomyces cerevisiae S288C uses GRE3 aldose reductase
+  to reduce D-xylopyranose to xylitol with NADPH, and XYL2 xylitol dehydrogenase to oxidize
+  xylitol to D-xylulose with NAD+ in the SGD GO-CAM xylose metabolism pathway.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:559292
@@ -10,138 +10,267 @@ taxa:
 participants:
 - id: CHEBI:57783
   label: NADPH(4-)
+  category: small_molecule
 - id: SGD:S000004060
   label: XYL2 Scer
+  category: protein
 - id: CHEBI:53455
   label: D-xylopyranose
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0042732
+  label: D-xylose metabolic process
+  category: biological_process
 - id: SGD:S000001146
   label: GRE3 Scer
+  category: protein
 - id: CHEBI:17151
   label: xylitol
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: CHEBI:57945
   label: NADH(2-)
+  category: small_molecule
 - id: CHEBI:17140
   label: D-xylulose
+  category: small_molecule
 - id: CHEBI:57540
   label: NAD(1-)
+  category: small_molecule
 - id: CHEBI:58349
   label: NADP(3-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
 reactions:
-- id: gomodel:RXN-8773
-  label: xylitol + NADP<sup>+</sup> <=> D-xylopyranose + NADPH + H<SUP>+</SUP>
 - id: gomodel:D-XYLULOSE-REDUCTASE-RXN
   label: xylitol + NAD<sup>+</sup> -> D-xylulose + NADH + H<SUP>+</SUP>
+  category: molecular_activity
+- id: gomodel:RXN-8773
+  label: xylitol + NADP<sup>+</sup> <=> D-xylopyranose + NADPH + H<SUP>+</SUP>
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
-  subject: CHEBI:57783
-  predicate: consumes
-  object: gomodel:RXN-8773
+  subject: gomodel:RXN-8773
+  predicate: has_input
+  object: CHEBI:57783
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57783_RXN-8773"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_57783_RXN-8773","type":[{"type":"class","id":"CHEBI:57783"'
+    source_assertion: The model asserts gomodel:RXN-8773 RO:0002233 gomodel:CHEBI_57783_RXN-8773.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/0; endpoint types: /individuals/10/type;
+      /individuals/6/type'
 - id: edge-002
   subject: SGD:S000004060
   predicate: enables
   object: gomodel:D-XYLULOSE-REDUCTASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YLR070C-MONOMER_D-XYLULOSE-REDUCTASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:YLR070C-MONOMER_D-XYLULOSE-REDUCTASE-RXN_controller","type":[{"type":"class","id":"SGD:S000004060"'
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN RO:0002333 gomodel:YLR070C-MONOMER_D-XYLULOSE-REDUCTASE-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/1; endpoint types: /individuals/9/type;
+      /individuals/12/type'
 - id: edge-003
-  subject: CHEBI:53455
-  predicate: consumes
-  object: gomodel:RXN-8773
+  subject: gomodel:RXN-8773
+  predicate: has_input
+  object: CHEBI:53455
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_53455_RXN-8773"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_53455_RXN-8773","type":[{"type":"class","id":"CHEBI:53455"'
+    source_assertion: The model asserts gomodel:RXN-8773 RO:0002233 gomodel:CHEBI_53455_RXN-8773.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/2; endpoint types: /individuals/10/type;
+      /individuals/4/type'
 - id: edge-004
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN BFO:0000066 gomodel:reaction_D-XYLULOSE-REDUCTASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/3; endpoint types: /individuals/9/type;
+      /individuals/27/type'
+- id: edge-005
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: part_of
+  object: GO:0042732
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN BFO:0000050 gomodel:YeastPathways_PWY3O-8/YeastPathways_PWY3O-8.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/4; endpoint types: /individuals/9/type;
+      /individuals/29/type'
+- id: edge-006
   subject: SGD:S000001146
   predicate: enables
   object: gomodel:RXN-8773
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YHR104W-MONOMER_RXN-8773_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:YHR104W-MONOMER_RXN-8773_controller","type":[{"type":"class","id":"SGD:S000001146"'
-- id: edge-005
-  subject: CHEBI:17151
-  predicate: consumes
-  object: gomodel:D-XYLULOSE-REDUCTASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17151_RXN-8773"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_17151_RXN-8773","type":[{"type":"class","id":"CHEBI:17151"'
-- id: edge-006
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:RXN-8773
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_RXN-8773"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_15378_RXN-8773","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:RXN-8773 RO:0002333 gomodel:YHR104W-MONOMER_RXN-8773_controller.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/5; endpoint types: /individuals/10/type;
+      /individuals/11/type'
 - id: edge-007
   subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
-  predicate: produces
-  object: CHEBI:57945
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_D-XYLULOSE-REDUCTASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_57945_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:57945"'
-- id: edge-008
-  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
-  predicate: produces
-  object: CHEBI:17140
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17140_D-XYLULOSE-REDUCTASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_17140_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:17140"'
-- id: edge-009
-  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
-  predicate: produces
-  object: CHEBI:15378
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_D-XYLULOSE-REDUCTASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_15378_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-010
-  subject: gomodel:RXN-8773
-  predicate: produces
+  predicate: has_input
   object: CHEBI:17151
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17151_RXN-8773"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_17151_RXN-8773","type":[{"type":"class","id":"CHEBI:17151"'
-- id: edge-011
-  subject: CHEBI:57540
-  predicate: consumes
-  object: gomodel:D-XYLULOSE-REDUCTASE-RXN
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN RO:0002233 gomodel:CHEBI_17151_RXN-8773.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/6; endpoint types: /individuals/9/type;
+      /individuals/3/type'
+- id: edge-008
+  subject: gomodel:RXN-8773
+  predicate: has_input
+  object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:D-XYLULOSE-REDUCTASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_D-XYLULOSE-REDUCTASE-RXN"'
+    source_assertion: The model asserts gomodel:RXN-8773 RO:0002233 gomodel:CHEBI_15378_RXN-8773.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/7; endpoint types: /individuals/10/type;
+      /individuals/1/type'
+- id: edge-009
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: has_output
+  object: CHEBI:57945
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_57540_D-XYLULOSE-REDUCTASE-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN RO:0002234 gomodel:CHEBI_57945_D-XYLULOSE-REDUCTASE-RXN.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/8; endpoint types: /individuals/9/type;
+      /individuals/7/type'
+- id: edge-010
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: has_output
+  object: CHEBI:17140
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN RO:0002234 gomodel:CHEBI_17140_D-XYLULOSE-REDUCTASE-RXN.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/9; endpoint types: /individuals/9/type;
+      /individuals/2/type'
+- id: edge-011
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN RO:0002234 gomodel:CHEBI_15378_D-XYLULOSE-REDUCTASE-RXN.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/10; endpoint types: /individuals/9/type;
+      /individuals/0/type'
 - id: edge-012
   subject: gomodel:RXN-8773
-  predicate: produces
+  predicate: part_of
+  object: GO:0042732
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:RXN-8773 BFO:0000050 gomodel:YeastPathways_PWY3O-8/YeastPathways_PWY3O-8.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/11; endpoint types: /individuals/10/type;
+      /individuals/29/type'
+- id: edge-013
+  subject: gomodel:RXN-8773
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:RXN-8773 BFO:0000066 gomodel:reaction_RXN-8773_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/12; endpoint types: /individuals/10/type;
+      /individuals/28/type'
+- id: edge-014
+  subject: gomodel:RXN-8773
+  predicate: has_output
+  object: CHEBI:17151
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:RXN-8773 RO:0002234 gomodel:CHEBI_17151_RXN-8773.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/13; endpoint types: /individuals/10/type;
+      /individuals/3/type'
+- id: edge-015
+  subject: gomodel:D-XYLULOSE-REDUCTASE-RXN
+  predicate: has_input
+  object: CHEBI:57540
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-8
+    source_assertion: The model asserts gomodel:D-XYLULOSE-REDUCTASE-RXN RO:0002233 gomodel:CHEBI_57540_D-XYLULOSE-REDUCTASE-RXN.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/14; endpoint types: /individuals/9/type;
+      /individuals/5/type'
+- id: edge-016
+  subject: gomodel:RXN-8773
+  predicate: has_output
   object: CHEBI:58349
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"subject":"gomodel:RXN-8773","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58349_RXN-8773"'
-  - reference_id: gomodel:YeastPathways_PWY3O-8
-    quote: '"id":"gomodel:CHEBI_58349_RXN-8773","type":[{"type":"class","id":"CHEBI:58349"'
+    source_assertion: The model asserts gomodel:RXN-8773 RO:0002234 gomodel:CHEBI_58349_RXN-8773.
+    source_locator: './YeastPathways_PWY3O-8.json#/facts/15; endpoint types: /individuals/10/type;
+      /individuals/8/type'
+- id: location-6aa4c935b5e1
+  subject: SGD:S000001146
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P38715
+    source_assertion: UniProtKB:P38715 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1421/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P38715
+    source_assertion: UniProtKB:P38715 has the exact SGD cross-reference SGD:S000001146.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1421/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-ac22ef3cd0b1
+  subject: SGD:S000001146
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P38715
+    source_assertion: UniProtKB:P38715 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1421/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P38715
+    source_assertion: UniProtKB:P38715 has the exact SGD cross-reference SGD:S000001146.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1421/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-0dc40bfc7f52
+  subject: SGD:S000004060
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    Binds 1 zinc ion per subunit. UniProt note evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:Q07993
+    source_assertion: UniProtKB:Q07993 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/5004/comments/0/cofactors/0;
+      /results/5004/comments/0/note'
+  - reference_id: UniProtKB:Q07993
+    source_assertion: UniProtKB:Q07993 has the exact SGD cross-reference SGD:S000004060.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/5004/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY3O-8
   title: 'SGD GO-CAM xylose metabolism - imported from: Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2024-07-15; member ./YeastPathways_PWY3O-8.json
+- id: UniProtKB:P38715
+  title: Reviewed UniProtKB P38715 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:Q07993
+  title: UniProtKB Q07993 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

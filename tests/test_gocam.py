@@ -30,19 +30,26 @@ def test_gocam_model_converts_to_valid_pathway_record() -> None:
     ]
     assert [edge["predicate"] for edge in record.mechanistic_edges] == [
         "enables",
-        "consumes",
-        "produces",
-        "precedes",
+        "has_input",
+        "has_output",
+        "provides_input_for",
         "enables",
-        "consumes",
-        "produces",
+        "has_input",
+        "has_output",
     ]
     assert record.references == [
+        {
+            "id": "gomodel:YeastPathways_GLYCOLYSIS",
+            "title": "GO-CAM source model gomodel:YeastPathways_GLYCOLYSIS",
+        },
         {
             "id": "GO_REF:0000123",
             "title": "GO-CAM evidence reference GO_REF:0000123",
         }
     ]
+    assert all("quote" not in evidence for edge in record.mechanistic_edges
+               for evidence in edge["evidence"])
+    assert record.mechanistic_edges[1]["subject"] == "gomodel:PHOSGLYPHOS-RXN"
 
 
 def test_gocam_seed_yaml_round_trips_as_pathway_record() -> None:

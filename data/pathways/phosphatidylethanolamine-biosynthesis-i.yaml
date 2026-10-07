@@ -8,178 +8,552 @@ taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
-- id: SGD:S000000828
-  label: CHO1 Scer
-- id: CHEBI:33384
-  label: L-serine zwitterion
-- id: CHEBI:17962
-  label: CDP-diacylglycerol
-- id: CHEBI:11750
-  label: 3-sn-phosphatidyl-L-serine
-- id: CHEBI:60377
-  label: cytidine 5'-monophosphate(2-)
-- id: CHEBI:15378
-  label: hydron
-- id: SGD:S000003402
-  label: PSD2 Scer
 - id: CHEBI:16526
   label: carbon dioxide
+  category: small_molecule
+- id: GO:0006646
+  label: phosphatidylethanolamine biosynthetic process
+  category: biological_process
+- id: CHEBI:33384
+  label: L-serine zwitterion
+  category: small_molecule
 - id: CHEBI:16038
   label: phosphatidylethanolamine
+  category: lipid
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:11750
+  label: 3-sn-phosphatidyl-L-serine
+  category: lipid
+- id: CHEBI:17962
+  label: CDP-diacylglycerol
+  category: lipid
+- id: SGD:S000003402
+  label: PSD2 Scer
+  category: protein
+- id: CHEBI:60377
+  label: cytidine 5'-monophosphate(2-)
+  category: small_molecule
+- id: SGD:S000000828
+  label: CHO1 Scer
+  category: protein
 - id: SGD:S000005113
   label: PSD1 Scer
+  category: protein
+- id: GO:0000139
+  label: Golgi membrane
+  category: cellular_component
+- id: GO:0010008
+  label: endosome membrane
+  category: cellular_component
+- id: GO:0005789
+  label: endoplasmic reticulum membrane
+  category: cellular_component
+- id: GO:0005741
+  label: mitochondrial outer membrane
+  category: cellular_component
+- id: GO:0005743
+  label: mitochondrial inner membrane
+  category: cellular_component
+- id: GO:0005811
+  label: lipid droplet
+  category: cellular_component
+- id: GO:0005739
+  label: mitochondrion
+  category: cellular_component
+- id: CHEBI:45360
+  label: pyruvoyl group
+  category: cofactor
+- id: CHEBI:29108
+  label: calcium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
-- id: gomodel:PHOSPHASERSYN-RXN
-  label: CDP-diacylglycerol-serine O-phosphatidyltransferase activity
-- id: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
-  label: phosphatidylserine decarboxylase activity (PSD2)
 - id: gomodel:PHOSPHASERDECARB-RXN
   label: phosphatidylserine decarboxylase activity
+  category: molecular_activity
+- id: gomodel:PHOSPHASERSYN-RXN
+  label: CDP-diacylglycerol-serine O-phosphatidyltransferase activity
+  category: molecular_activity
+- id: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  label: phosphatidylserine decarboxylase activity (PSD2)
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
-  subject: SGD:S000000828
-  predicate: enables
-  object: gomodel:PHOSPHASERSYN-RXN
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: has_output
+  object: CHEBI:16526
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YER026C-MONOMER_PHOSPHASERSYN-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:YER026C-MONOMER_PHOSPHASERSYN-RXN_controller","type":[{"type":"class","id":"SGD:S000000828"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5669/6a46ef0600000808 RO:0002234
+      gomodel:YeastPathways_PWY-5669/6a46ef0600000810.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/0; endpoint types: /individuals/28/type;
+      /individuals/30/type'
 - id: edge-002
-  subject: CHEBI:33384
-  predicate: consumes
-  object: gomodel:PHOSPHASERSYN-RXN
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: part_of
+  object: GO:0006646
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_33384_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_33384_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:33384"'
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN BFO:0000050 gomodel:YeastPathways_PWY-5669/YeastPathways_PWY-5669.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/1; endpoint types: /individuals/9/type;
+      /individuals/27/type'
 - id: edge-003
-  subject: CHEBI:17962
-  predicate: consumes
-  object: gomodel:PHOSPHASERSYN-RXN
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: has_input
+  object: CHEBI:33384
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17962_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_17962_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:17962"'
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN RO:0002233 gomodel:CHEBI_33384_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/2; endpoint types: /individuals/9/type;
+      /individuals/6/type'
 - id: edge-004
-  subject: gomodel:PHOSPHASERSYN-RXN
-  predicate: produces
-  object: CHEBI:11750
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: has_output
+  object: CHEBI:16038
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:11750"'
-- id: edge-005
-  subject: gomodel:PHOSPHASERSYN-RXN
-  predicate: produces
-  object: CHEBI:60377
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_60377_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_60377_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:60377"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5669/6a46ef0600000808 RO:0002234
+      gomodel:YeastPathways_PWY-5669/6a46ef0600000811.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/3; endpoint types: /individuals/28/type;
+      /individuals/31/type'
 - id: edge-006
-  subject: gomodel:PHOSPHASERSYN-RXN
-  predicate: produces
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: has_input
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERSYN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_15378_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5669/6a46ef0600000808 RO:0002233
+      gomodel:YeastPathways_PWY-5669/6a46ef0600000809.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/5; endpoint types: /individuals/28/type;
+      /individuals/29/type'
 - id: edge-007
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: has_output
+  object: CHEBI:11750
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN RO:0002234 gomodel:CHEBI_11750_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/6; endpoint types: /individuals/9/type;
+      /individuals/0/type'
+- id: edge-008
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: part_of
+  object: GO:0006646
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERDECARB-RXN BFO:0000050 gomodel:YeastPathways_PWY-5669/YeastPathways_PWY-5669.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/7; endpoint types: /individuals/8/type;
+      /individuals/27/type'
+- id: edge-009
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERDECARB-RXN RO:0002233 gomodel:CHEBI_15378_PHOSPHASERDECARB-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/8; endpoint types: /individuals/8/type;
+      /individuals/1/type'
+- id: edge-010
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: has_output
+  object: CHEBI:16526
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERDECARB-RXN RO:0002234 gomodel:CHEBI_16526_PHOSPHASERDECARB-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/9; endpoint types: /individuals/8/type;
+      /individuals/4/type'
+- id: edge-012
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: has_input
+  object: CHEBI:17962
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN RO:0002233 gomodel:CHEBI_17962_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/11; endpoint types: /individuals/9/type;
+      /individuals/5/type'
+- id: edge-013
   subject: SGD:S000003402
   predicate: enables
   object: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000812"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000812","type":[{"type":"class","id":"SGD:S000003402"'
-- id: edge-008
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000809"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000809","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-009
-  subject: CHEBI:11750
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:11750"'
-- id: edge-010
-  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
-  predicate: produces
-  object: CHEBI:16526
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000810"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000810","type":[{"type":"class","id":"CHEBI:16526"'
-- id: edge-011
-  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
-  predicate: produces
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5669/6a46ef0600000808 RO:0002333
+      gomodel:YeastPathways_PWY-5669/6a46ef0600000812.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/12; endpoint types: /individuals/28/type;
+      /individuals/32/type'
+- id: edge-014
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: has_output
   object: CHEBI:16038
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:YeastPathways_PWY-5669/6a46ef0600000808","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-5669/6a46ef0600000811"'
+    source_assertion: The model asserts gomodel:PHOSPHASERDECARB-RXN RO:0002234 gomodel:CHEBI_16038_PHOSPHASERDECARB-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/13; endpoint types: /individuals/8/type;
+      /individuals/3/type'
+- id: edge-016
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: has_output
+  object: CHEBI:60377
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:YeastPathways_PWY-5669/6a46ef0600000811","type":[{"type":"class","id":"CHEBI:16038"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN RO:0002234 gomodel:CHEBI_60377_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/15; endpoint types: /individuals/9/type;
+      /individuals/7/type'
+- id: edge-017
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: part_of
+  object: GO:0006646
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5669/6a46ef0600000808 BFO:0000050
+      gomodel:YeastPathways_PWY-5669/YeastPathways_PWY-5669.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/16; endpoint types: /individuals/28/type;
+      /individuals/27/type'
+- id: edge-018
+  subject: SGD:S000000828
+  predicate: enables
+  object: gomodel:PHOSPHASERSYN-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN RO:0002333 gomodel:YER026C-MONOMER_PHOSPHASERSYN-RXN_controller.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/17; endpoint types: /individuals/9/type;
+      /individuals/10/type'
+- id: edge-019
+  subject: gomodel:PHOSPHASERDECARB-RXN
+  predicate: has_input
+  object: CHEBI:11750
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-5669
+    source_assertion: The model asserts gomodel:PHOSPHASERDECARB-RXN RO:0002233 gomodel:CHEBI_11750_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/18; endpoint types: /individuals/8/type;
+      /individuals/0/type'
+- id: edge-020
   subject: SGD:S000005113
   predicate: enables
   object: gomodel:PHOSPHASERDECARB-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YNL169C-MONOMER_PHOSPHASERDECARB-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:YNL169C-MONOMER_PHOSPHASERDECARB-RXN_controller","type":[{"type":"class","id":"SGD:S000005113"'
-- id: edge-013
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:PHOSPHASERDECARB-RXN
+    source_assertion: The model asserts gomodel:PHOSPHASERDECARB-RXN RO:0002333 gomodel:YNL169C-MONOMER_PHOSPHASERDECARB-RXN_controller.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/19; endpoint types: /individuals/8/type;
+      /individuals/11/type'
+- id: edge-021
+  subject: gomodel:PHOSPHASERSYN-RXN
+  predicate: has_output
+  object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_PHOSPHASERDECARB-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_15378_PHOSPHASERDECARB-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-014
-  subject: CHEBI:11750
-  predicate: consumes
-  object: gomodel:PHOSPHASERDECARB-RXN
+    source_assertion: The model asserts gomodel:PHOSPHASERSYN-RXN RO:0002234 gomodel:CHEBI_15378_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/20; endpoint types: /individuals/9/type;
+      /individuals/2/type'
+- id: edge-022
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: has_input
+  object: CHEBI:11750
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_11750_PHOSPHASERSYN-RXN","type":[{"type":"class","id":"CHEBI:11750"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-5669/6a46ef0600000808 RO:0002233
+      gomodel:CHEBI_11750_PHOSPHASERSYN-RXN.
+    source_locator: './YeastPathways_PWY-5669.json#/facts/21; endpoint types: /individuals/28/type;
+      /individuals/0/type'
+- id: location-56e56579324d
+  subject: SGD:S000003402
+  predicate: located_in
+  object: GO:0000139
+  description: 'Physical protein location from reviewed UniProt. ECO:0000255 (HAMAP-Rule:MF_03209);
+    ECO:0000269 (PubMed:7890739) Topology: Peripheral membrane protein. Orientation: Cytoplasmic
+    side.'
+  evidence:
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 annotates location Golgi apparatus membrane (SL-0134).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2090/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 has the exact SGD cross-reference SGD:S000003402.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2090/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-6207f3362a39
+  subject: SGD:S000003402
+  predicate: located_in
+  object: GO:0010008
+  description: 'Physical protein location from reviewed UniProt. ECO:0000255 (HAMAP-Rule:MF_03209);
+    ECO:0000269 (PubMed:20016005) Topology: Peripheral membrane protein. Orientation: Cytoplasmic
+    side.'
+  evidence:
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 annotates location Endosome membrane (SL-0100).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2090/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 has the exact SGD cross-reference SGD:S000003402.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2090/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-6585f7696d57
+  subject: SGD:S000000828
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. evidence code not specified
+    by source Topology: Multi-pass membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/205/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 has the exact SGD cross-reference SGD:S000000828.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/205/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-558857e0f0ad
+  subject: SGD:S000000828
+  predicate: located_in
+  object: GO:0005741
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:3005242)
+    Topology: Multi-pass membrane protein.'
+  evidence:
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 annotates location Mitochondrion outer membrane (SL-0172).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/205/comments/1/subcellularLocations/2;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 has the exact SGD cross-reference SGD:S000000828.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/205/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-0e11315efbd5
+  subject: SGD:S000005113
+  predicate: located_in
+  object: GO:0005743
+  description: 'Physical protein location from reviewed UniProt. ECO:0000255 (HAMAP-Rule:MF_03208);
+    ECO:0000269 (PubMed:14576278); ECO:0000269 (PubMed:22984266); ECO:0000269 (PubMed:23124206);
+    ECO:0000269 (PubMed:29290583); ECO:0000269 (PubMed:3005242); ECO:0000269 (PubMed:33718843);
+    ECO:0000305 (PubMed:34818062); molecular form: Phosphatidylserine decarboxylase 1 beta
+    chain. Topology: Single-pass membrane protein. Orientation: Intermembrane side.'
+  evidence:
+  - reference_id: UniProtKB:P39006
+    source_assertion: 'UniProtKB:P39006 annotates location Mitochondrion inner membrane (SL-0168);
+      molecular form: Phosphatidylserine decarboxylase 1 beta chain.'
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 has the exact SGD cross-reference SGD:S000005113.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P39006
+    source_assertion: 'UniProtKB:P39006 annotates location Mitochondrion inner membrane (SL-0168);
+      molecular form: Phosphatidylserine decarboxylase 1 alpha chain.'
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/comments/2/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-03ed1a7e29e9
+  subject: SGD:S000005113
+  predicate: located_in
+  object: GO:0005811
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:34818062)
+    Source qualification: Localizes to sites of lipid droplet formation on the endoplasmic
+    reticulum membrane'
+  evidence:
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 annotates location Lipid droplet (SL-0154).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/comments/3/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 has the exact SGD cross-reference SGD:S000005113.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-31e0ba4b0e8a
+  subject: SGD:S000005113
+  predicate: located_in
+  object: GO:0005789
+  description: 'Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:29290583);
+    ECO:0000269 (PubMed:34818062) Source qualification: Localizes to sites of lipid droplet
+    formation on the endoplasmic reticulum membrane'
+  evidence:
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 annotates location Endoplasmic reticulum membrane (SL-0097).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/comments/3/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 has the exact SGD cross-reference SGD:S000005113.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-8b23f76d01f7
   subject: gomodel:PHOSPHASERDECARB-RXN
-  predicate: produces
-  object: CHEBI:16526
+  predicate: occurs_in
+  object: GO:0005739
+  description: Activity compartment supported by an inspected functional annotation. ECO:0000255
+    (HAMAP-Rule:MF_03208); ECO:0000269 (PubMed:11294902); ECO:0000269 (PubMed:17976194); ECO:0000269
+    (PubMed:23045528); ECO:0000269 (PubMed:23124206); ECO:0000269 (PubMed:25829489); ECO:0000269
+    (PubMed:29290583); ECO:0000269 (PubMed:30926815); ECO:0000269 (PubMed:34818062); ECO:0000269
+    (PubMed:8227017); ECO:0000269 (PubMed:8407984); ECO:0000269 (PubMed:8530379). Alternative
+    isoenzymes may function elsewhere.
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_PHOSPHASERDECARB-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_16526_PHOSPHASERDECARB-RXN","type":[{"type":"class","id":"CHEBI:16526"'
-- id: edge-016
-  subject: gomodel:PHOSPHASERDECARB-RXN
-  predicate: produces
-  object: CHEBI:16038
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 describes the corresponding catalytic function in the
+      mitochondrion; this projection applies to the activity enabled by SGD:S000005113.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1539/comments/0/texts/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-c431bce40b2d
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: occurs_in
+  object: GO:0000139
+  description: Activity compartment supported by an inspected functional annotation. ECO:0000255
+    (HAMAP-Rule:MF_03209); ECO:0000269 (PubMed:11294902); ECO:0000269 (PubMed:20016005); ECO:0000269
+    (PubMed:24366873); ECO:0000269 (PubMed:7890739); ECO:0000269 (PubMed:7890740). Alternative
+    isoenzymes may function elsewhere.
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"subject":"gomodel:PHOSPHASERDECARB-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16038_PHOSPHASERDECARB-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-5669
-    quote: '"id":"gomodel:CHEBI_16038_PHOSPHASERDECARB-RXN","type":[{"type":"class","id":"CHEBI:16038"'
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 describes the corresponding catalytic function in the
+      Golgi membrane; this projection applies to the activity enabled by SGD:S000003402.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2090/comments/0/texts/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-86fd5bd6cd03
+  subject: gomodel:YeastPathways_PWY-5669/6a46ef0600000808
+  predicate: occurs_in
+  object: GO:0010008
+  description: Activity compartment supported by an inspected functional annotation. ECO:0000255
+    (HAMAP-Rule:MF_03209); ECO:0000269 (PubMed:11294902); ECO:0000269 (PubMed:20016005); ECO:0000269
+    (PubMed:24366873); ECO:0000269 (PubMed:7890739); ECO:0000269 (PubMed:7890740). Alternative
+    isoenzymes may function elsewhere.
+  evidence:
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 describes the corresponding catalytic function in the
+      endosome membrane; this projection applies to the activity enabled by SGD:S000003402.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2090/comments/0/texts/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-05e8264b38ea
+  subject: SGD:S000003402
+  predicate: has_cofactor
+  object: CHEBI:45360
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. Reviewed source qualification:
+    The cofactor note explicitly describes a covalently bound pyruvoyl group; use the exact
+    group class rather than free pyruvate. UniProt evidence: ECO:0000250 (UniProtKB:P0A8K1);
+    ECO:0000255 (HAMAP-Rule:MF_03209) Binds 1 pyruvoyl group covalently per subunit. UniProt
+    note evidence: ECO:0000250 (UniProtKB:P0A8K1); ECO:0000255 (HAMAP-Rule:MF_03209)'
+  evidence:
+  - reference_id: CHEBI:45360
+    source_assertion: ChEBI labels CHEBI:45360 as pyruvoyl group.
+    source_locator: 'chebi.obo [Term] id: CHEBI:45360; name: pyruvoyl group'
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 cross-references CHEBI:15361, but its note specifies
+      a covalently bound pyruvoyl group; that group is projected to CHEBI:45360.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2090/comments/0/cofactors/0;
+      /results/2090/comments/0/note'
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 has the exact SGD cross-reference SGD:S000003402.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2090/uniProtKBCrossReferences/0'
+- id: cofactor-789dceaf9d43
+  subject: SGD:S000003402
+  predicate: has_cofactor
+  object: CHEBI:29108
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. Reviewed source qualification:
+    The cofactor note explicitly describes a covalently bound pyruvoyl group; use the exact
+    group class rather than free pyruvate. UniProt evidence: ECO:0000255 (PROSITE-ProRule:PRU00041)'
+  evidence:
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 annotates CHEBI:29108 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2090/comments/1/cofactors/0'
+  - reference_id: UniProtKB:P53037
+    source_assertion: UniProtKB:P53037 has the exact SGD cross-reference SGD:S000003402.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2090/uniProtKBCrossReferences/0'
+- id: cofactor-2a3454b9a114
+  subject: SGD:S000000828
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:6088519); ECO:0000269 (PubMed:6274497) Divalent metal cations; Mn(2+) or Mg(2+).
+    UniProt note evidence: ECO:0000269 (PubMed:6088519)'
+  evidence:
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 annotates CHEBI:29035 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/205/comments/0/cofactors/0;
+      /results/205/comments/0/note'
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 has the exact SGD cross-reference SGD:S000000828.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/205/uniProtKBCrossReferences/0'
+- id: cofactor-827c72dec25c
+  subject: SGD:S000000828
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:6088519) Divalent metal cations; Mn(2+) or Mg(2+). UniProt note evidence: ECO:0000269
+    (PubMed:6088519)'
+  evidence:
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/205/comments/0/cofactors/1;
+      /results/205/comments/0/note'
+  - reference_id: UniProtKB:P08456
+    source_assertion: UniProtKB:P08456 has the exact SGD cross-reference SGD:S000000828.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/205/uniProtKBCrossReferences/0'
+- id: cofactor-4f48b265fa2b
+  subject: SGD:S000005113
+  predicate: has_cofactor
+  object: CHEBI:45360
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. Reviewed source qualification:
+    The cofactor note explicitly describes a covalently bound pyruvoyl group; use the exact
+    group class rather than free pyruvate. UniProt evidence: ECO:0000255 (HAMAP-Rule:MF_03208)
+    Binds 1 pyruvoyl group covalently per subunit. UniProt note evidence: ECO:0000255 (HAMAP-Rule:MF_03208)'
+  evidence:
+  - reference_id: CHEBI:45360
+    source_assertion: ChEBI labels CHEBI:45360 as pyruvoyl group.
+    source_locator: 'chebi.obo [Term] id: CHEBI:45360; name: pyruvoyl group'
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 cross-references CHEBI:15361, but its note specifies
+      a covalently bound pyruvoyl group; that group is projected to CHEBI:45360.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1539/comments/0/cofactors/0;
+      /results/1539/comments/0/note'
+  - reference_id: UniProtKB:P39006
+    source_assertion: UniProtKB:P39006 has the exact SGD cross-reference SGD:S000005113.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1539/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-5669
   title: GO-CAM phosphatidylethanolamine biosynthesis model YeastPathways_PWY-5669
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-06; member ./YeastPathways_PWY-5669.json
+- id: UniProtKB:P53037
+  title: Reviewed UniProtKB P53037 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P08456
+  title: Reviewed UniProtKB P08456 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P39006
+  title: Reviewed UniProtKB P39006 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: CHEBI:45360
+  title: 'ChEBI CHEBI:45360: pyruvoyl group'
+  url: https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo
+  source_version: ChEBI release 255
+  source_sha256: 6cd3c7f18d8b22c577e110e00008fb288d8f5b34424bbe5011858747062f9dd9
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

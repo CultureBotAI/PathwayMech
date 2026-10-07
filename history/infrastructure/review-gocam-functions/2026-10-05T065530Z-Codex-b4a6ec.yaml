@@ -1,0 +1,28 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/review_gocam_functions.py
+  slug: review-gocam-functions
+session:
+  id: 2026-10-05T065530Z-Codex-b4a6ec
+  timestamp: '2026-10-05T06:55:30Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt-6
+    agent_tool: codex
+events:
+- type: EDIT
+  outcome: changed
+  summary: Reconcile six GO-CAM records against independent enzyme-function counterexamples
+  details: Reviewed all 40 flagged UniProt FUNCTION/CAUTION entries against actual graph substrates
+    and products; preserved every accession disposition with exact raw-source hash and JSON
+    pointer. Removed unsupported ADH4/ADH5 ethanol-catabolism branches and the reversed neighbouring
+    CYS3 branch in threonine degradation; corrected ADK2 GTP donor, yeast CRD1 CMP-forming
+    chemistry, THI13 phosphorylated product and protein-bound residue substrates, THI4 protein-bound
+    sulfur donation, and qualified disputed URA6 CMP phosphorylation. THI4 is no longer assigned
+    to the unresolved ADP-thiazole hydrolysis bridge. Four focused regression tests pass,
+    correction dry run is idempotent, and all modified records validate. Exact superseded
+    edges and compact source projections are retained in reports/causal_graph_review/gocam-function-review.json;
+    all40 dispositions in gocam-function-dispositions.json. This migration follows native
+    reconstruction and compartment review and precedes cofactor enrichment.

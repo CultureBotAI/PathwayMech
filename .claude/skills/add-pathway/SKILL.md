@@ -42,6 +42,8 @@ or mechanistic edge.
 - `CLAUDE.md` for the record contract.
 - `docs/CURATION.md` for the curation surface and provenance rule.
 - `docs/HARMONIZATION.md` for the identifier sources this corpus harmonizes.
+- `docs/CAUSAL_GRAPHS.md` for biological component roles, source directions,
+  cofactor conditions, and structured evidence.
 - `templates/pathway_mechanism_research.md` for research reports that can seed
   the first draft.
 - `conf/sources.yaml` for sources already considered for ingestion.
@@ -84,7 +86,8 @@ Choose the record `id` from the narrowest exact external pathway identifier:
 Declare every node used by an edge in one of the local node lists:
 
 - `taxa`: microbial scope with `NCBITaxon` or `GTDB` identifiers;
-- `participants`: small molecules, cofactors, enzymes, or proteins with
+- `participants`: small molecules, lipids, cofactors, enzymes, proteins,
+  complexes, DNA, RNA, or cellular components as supported by the mechanism, with
   `CHEBI`, `LIPIDMAPS`, `EC`, `UniProtKB`, or native pathway-diagram xref
   identifiers such as `CAS`, `ChemSpider`, `HMDB`, `PubChem`, `Ensembl`,
   `Entrez`, `NCBIProtein`, or `TubercuList`;
@@ -104,13 +107,15 @@ Every edge must:
 - set `subject` and `object` to the record id or a locally declared taxon,
   participant, or reaction id;
 - cite at least one local `references` entry by `reference_id`;
-- quote only exact text, at most 400 characters.
+- use either a verbatim `quote` or a faithful `source_assertion`, at most 400
+  characters; a structured assertion also requires its exact `source_locator`.
 
-Attach evidence to the narrowest edge it supports. A database page can support
-identifier equivalence or pathway membership; a primary paper should support
-an organism-specific enzyme, reaction direction, regulatory step, or causal
-edge. Preserve conflicts by omitting the edge or naming the gap in research,
-not by picking whichever source makes the draft complete.
+Attach evidence to the narrowest edge it supports. An inspected structured
+database statement may support its explicit mechanism assertion; preserve its
+evidence codes and inference limits. A database's citation of a paper does not
+make generated database prose a quotation from that paper. Preserve conflicting
+directions, cofactor conditions, and biological scope in the record and review
+ledger instead of silently choosing a convenient source.
 
 ## Write and Verify
 

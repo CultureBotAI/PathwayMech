@@ -1,8 +1,8 @@
 id: MetaCyc:GLUAMCAT-PWY
 label: N-acetylglucosamine degradation I
-description: N-acetylglucosamine degradation I deacetylates N-acetyl-D-glucosamine
-  6-phosphate to D-glucosamine 6-phosphate and acetate, then deaminates alpha-D-glucosamine
-  6-phosphate to beta-D-fructose 6-phosphate and ammonium.
+description: N-acetylglucosamine degradation I deacetylates N-acetyl-D-glucosamine 6-phosphate to D-glucosamine
+  6-phosphate and acetate, then deaminates alpha-D-glucosamine 6-phosphate to beta-D-fructose 6-phosphate
+  and ammonium.
 pathway_type: carbohydrate-degradation
 taxa:
 - id: NCBITaxon:562
@@ -10,129 +10,292 @@ taxa:
 participants:
 - id: EC:3.5.1.25
   label: N-acetylglucosamine-6-phosphate deacetylase
+  category: molecular_activity
 - id: EC:3.5.99.6
   label: glucosamine-6-phosphate deaminase
+  category: molecular_activity
 - id: CHEBI:57513
   label: N-acetyl-D-glucosamine 6-phosphate
+  category: small_molecule
 - id: CHEBI:15377
   label: H2O
+  category: small_molecule
 - id: CHEBI:58725
   label: D-glucosamine 6-phosphate
+  category: small_molecule
 - id: CHEBI:30089
   label: acetate
+  category: small_molecule
 - id: CHEBI:75989
   label: alpha-D-glucosamine 6-phosphate
+  category: small_molecule
 - id: CHEBI:57634
   label: beta-D-fructose 6-phosphate
+  category: small_molecule
 - id: CHEBI:28938
   label: NH4(+)
+  category: small_molecule
+- id: UniProtKB:P0A759
+  label: Glucosamine-6-phosphate deaminase
+  category: protein
+- id: UniProtKB:P0AF18
+  label: N-acetylglucosamine-6-phosphate deacetylase
+  category: protein
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:48775
+  label: cadmium(2+)
+  category: cofactor
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
 reactions:
 - id: RHEA:22937
   label: N-acetylglucosamine-6-phosphate deacetylase reaction
-- id: RHEA:12175
+  direction: left_to_right
+- id: RHEA:12173
   label: glucosamine-6-phosphate deaminase reaction
+  direction: left_to_right
 mechanistic_edges:
 - id: edge-001
-  subject: EC:3.5.1.25
-  predicate: catalyzes
+  subject: CHEBI:15377
+  predicate: consumes
   object: RHEA:22937
   evidence:
-  - reference_id: RHEA:22936
-    quote: N-acetylglucosamine-6-phosphate deacetylase catalyzes N-acetylglucosamine-6-phosphate
-      deacetylase reaction.
+  - reference_id: RHEA:22937
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:22937 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22937']/rh:substrates; rh:contains/rh:compound/rh:accession
 - id: edge-002
   subject: CHEBI:57513
   predicate: consumes
   object: RHEA:22937
   evidence:
   - reference_id: RHEA:22937
-    quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate
-      + acetate
+    source_assertion: Rhea lists CHEBI:57513 on the substrates side of RHEA:22937 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22937']/rh:substrates; rh:contains/rh:compound/rh:accession
 - id: edge-003
-  subject: CHEBI:15377
-  predicate: consumes
-  object: RHEA:22937
+  subject: RHEA:22937
+  predicate: produces
+  object: CHEBI:30089
   evidence:
   - reference_id: RHEA:22937
-    quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate
-      + acetate
+    source_assertion: Rhea lists CHEBI:30089 on the products side of RHEA:22937 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22937']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-004
   subject: RHEA:22937
   predicate: produces
   object: CHEBI:58725
   evidence:
   - reference_id: RHEA:22937
-    quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate
-      + acetate
+    source_assertion: Rhea lists CHEBI:58725 on the products side of RHEA:22937 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22937']/rh:products; rh:contains/rh:compound/rh:accession
 - id: edge-005
-  subject: RHEA:22937
-  predicate: produces
-  object: CHEBI:30089
-  evidence:
-  - reference_id: RHEA:22937
-    quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate
-      + acetate
-- id: edge-006
-  subject: RHEA:22937
-  predicate: precedes
-  object: RHEA:12175
-  evidence:
-  - reference_id: MetaCyc:GLUAMCAT-PWY
-    quote: NAG6PDEACET-RXN // GLUCOSAMINE-6-P-DEAMIN-RXN
-  - reference_id: RHEA:22937
-    quote: RHEA:22937 N-acetyl-D-glucosamine 6-phosphate + H2O => D-glucosamine 6-phosphate
-      + acetate
-  - reference_id: RHEA:12175
-    quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate
-      + NH4(+)
-- id: edge-007
-  subject: EC:3.5.99.6
-  predicate: catalyzes
-  object: RHEA:12175
-  evidence:
-  - reference_id: RHEA:12172
-    quote: glucosamine-6-phosphate deaminase catalyzes glucosamine-6-phosphate deaminase
-      reaction.
-- id: edge-008
-  subject: CHEBI:75989
-  predicate: consumes
-  object: RHEA:12175
-  evidence:
-  - reference_id: RHEA:12175
-    quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate
-      + NH4(+)
-- id: edge-009
   subject: CHEBI:15377
   predicate: consumes
-  object: RHEA:12175
+  object: RHEA:12173
   evidence:
-  - reference_id: RHEA:12175
-    quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate
-      + NH4(+)
-- id: edge-010
-  subject: RHEA:12175
-  predicate: produces
-  object: CHEBI:57634
+  - reference_id: RHEA:12173
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:12173 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12173']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-006
+  subject: CHEBI:75989
+  predicate: consumes
+  object: RHEA:12173
   evidence:
-  - reference_id: RHEA:12175
-    quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate
-      + NH4(+)
-- id: edge-011
-  subject: RHEA:12175
+  - reference_id: RHEA:12173
+    source_assertion: Rhea lists CHEBI:75989 on the substrates side of RHEA:12173 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12173']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: edge-007
+  subject: RHEA:12173
   predicate: produces
   object: CHEBI:28938
   evidence:
-  - reference_id: RHEA:12175
-    quote: RHEA:12175 alpha-D-glucosamine 6-phosphate + H2O <=> beta-D-fructose 6-phosphate
-      + NH4(+)
+  - reference_id: RHEA:12173
+    source_assertion: Rhea lists CHEBI:28938 on the products side of RHEA:12173 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12173']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-008
+  subject: RHEA:12173
+  predicate: produces
+  object: CHEBI:57634
+  evidence:
+  - reference_id: RHEA:12173
+    source_assertion: Rhea lists CHEBI:57634 on the products side of RHEA:12173 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12173']/rh:products; rh:contains/rh:compound/rh:accession
+- id: edge-009
+  subject: EC:3.5.1.25
+  predicate: catalyzes
+  object: RHEA:22937
+  evidence:
+  - reference_id: RHEA:22936
+    source_assertion: Rhea associates EC:3.5.1.25 with the reaction family containing RHEA:22937.
+    source_locator: rh:ec
+- id: edge-010
+  subject: EC:3.5.99.6
+  predicate: catalyzes
+  object: RHEA:12173
+  evidence:
+  - reference_id: RHEA:12172
+    source_assertion: Rhea associates EC:3.5.99.6 with the reaction family containing RHEA:12173.
+    source_locator: rh:ec
+- id: edge-011
+  subject: RHEA:22937
+  predicate: precedes
+  object: RHEA:12173
+  evidence:
+  - reference_id: MetaCyc:GLUAMCAT-PWY
+    source_assertion: MetaCyc pathway ordering places RHEA:22937 before RHEA:12173 in this pathway. The
+      source ordering may bridge anomer-specific and broader substrate classes.
+    source_locator: Pathway/reaction-ordering and reaction-layout; Rhea-to-MetaCyc cross-references
+- id: edge-012
+  subject: UniProtKB:P0A759
+  predicate: enables
+  object: RHEA:12173
+  evidence:
+  - reference_id: UniProtKB:P0A759
+    source_assertion: 'UniProt annotates UniProtKB:P0A759 with catalytic activity for the reaction family
+      of RHEA:12173. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-013
+  subject: CHEBI:57513
+  predicate: activates
+  object: UniProtKB:P0A759
+  evidence:
+  - reference_id: UniProtKB:P0A759
+    source_assertion: 'UniProt activity-regulation annotation: Allosterically activated by N-acetylglucosamine
+      6-phosphate (GlcNAc6P). Competitively inhibited by 2-amino-2-deoxy-D-glucitol-6-phosphate (GlcN-ol-6P)'
+    source_locator: comments[commentType='ACTIVITY REGULATION'].texts
+- id: edge-014
+  subject: UniProtKB:P0AF18
+  predicate: enables
+  object: RHEA:22937
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt annotates UniProtKB:P0AF18 with catalytic activity for the reaction family
+      of RHEA:22937. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+- id: edge-015
+  subject: CHEBI:58725
+  predicate: inhibits
+  object: UniProtKB:P0AF18
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt activity-regulation annotation: Inhibited by high substrate concentration
+      and by products glucosamine 6-phosphate and acetate. Completely inactivated by the treatment with
+      5,5''-dithio-bis(2-nitrobenzoate) or 2,2''-dithio-pyridine (2-DPDS). Inhibited by 1,10-phenanthroline
+      and EDTA'
+    source_locator: comments[commentType='ACTIVITY REGULATION'].texts
+- id: edge-016
+  subject: CHEBI:30089
+  predicate: inhibits
+  object: UniProtKB:P0AF18
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt activity-regulation annotation: Inhibited by high substrate concentration
+      and by products glucosamine 6-phosphate and acetate. Completely inactivated by the treatment with
+      5,5''-dithio-bis(2-nitrobenzoate) or 2,2''-dithio-pyridine (2-DPDS). Inhibited by 1,10-phenanthroline
+      and EDTA'
+    source_locator: comments[commentType='ACTIVITY REGULATION'].texts
+- id: edge-017
+  subject: UniProtKB:P0AF18
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P0AF18 (evidence: ECO:0000269).
+      Binds 1 divalent metal cation per subunit. The highest efficient metals are Zn(2+) and Co(2+), followed
+      by Mn(2+), Cd(2+), Fe(2+) and Ni(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-018
+  subject: UniProtKB:P0AF18
+  predicate: has_cofactor
+  object: CHEBI:48828
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt lists CHEBI:48828 as a cofactor of UniProtKB:P0AF18 (evidence: ECO:0000269).
+      Binds 1 divalent metal cation per subunit. The highest efficient metals are Zn(2+) and Co(2+), followed
+      by Mn(2+), Cd(2+), Fe(2+) and Ni(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-019
+  subject: UniProtKB:P0AF18
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P0AF18 (evidence: ECO:0000269).
+      Binds 1 divalent metal cation per subunit. The highest efficient metals are Zn(2+) and Co(2+), followed
+      by Mn(2+), Cd(2+), Fe(2+) and Ni(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-020
+  subject: UniProtKB:P0AF18
+  predicate: has_cofactor
+  object: CHEBI:48775
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt lists CHEBI:48775 as a cofactor of UniProtKB:P0AF18 (evidence: ECO:0000269).
+      Binds 1 divalent metal cation per subunit. The highest efficient metals are Zn(2+) and Co(2+), followed
+      by Mn(2+), Cd(2+), Fe(2+) and Ni(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-021
+  subject: UniProtKB:P0AF18
+  predicate: has_cofactor
+  object: CHEBI:29033
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt lists CHEBI:29033 as a cofactor of UniProtKB:P0AF18 (evidence: ECO:0000269).
+      Binds 1 divalent metal cation per subunit. The highest efficient metals are Zn(2+) and Co(2+), followed
+      by Mn(2+), Cd(2+), Fe(2+) and Ni(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+- id: edge-022
+  subject: UniProtKB:P0AF18
+  predicate: has_cofactor
+  object: CHEBI:49786
+  evidence:
+  - reference_id: UniProtKB:P0AF18
+    source_assertion: 'UniProt lists CHEBI:49786 as a cofactor of UniProtKB:P0AF18 (evidence: ECO:0000269).
+      Binds 1 divalent metal cation per subunit. The highest efficient metals are Zn(2+) and Co(2+), followed
+      by Mn(2+), Cd(2+), Fe(2+) and Ni(2+).'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
 references:
 - id: MetaCyc:GLUAMCAT-PWY
   title: MetaCyc N-acetylglucosamine degradation I
+  url: https://pathway.yeastgenome.org/getxml?id=META:GLUAMCAT-PWY&detail=full
+  source_version: '22.5'
+  source_sha256: 11452cd9c22c0e02e920a9ca35a34de859024477093384c036cfe92366a58856
 - id: RHEA:22936
   title: Rhea N-acetylglucosamine-6-phosphate deacetylase reaction
+  url: https://www.rhea-db.org/rhea/22936
+  source_version: '139'
 - id: RHEA:22937
   title: Rhea D-glucosamine-6-phosphate-forming direction
+  url: https://www.rhea-db.org/rhea/22937
+  source_version: '139'
 - id: RHEA:12172
   title: Rhea glucosamine-6-phosphate deaminase reaction
+  url: https://www.rhea-db.org/rhea/12172
+  source_version: '139'
 - id: RHEA:12175
   title: Rhea bidirectional glucosamine-6-phosphate deaminase reaction
+  url: https://www.rhea-db.org/rhea/12175
+  source_version: '139'
+- id: RHEA:12173
+  title: RHEA:12173 authority record
+  url: https://www.rhea-db.org/rhea/12173
+  source_version: '139'
+- id: UniProtKB:P0A759
+  title: UniProtKB:P0A759 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0A759.json
+  source_version: '2026_03'
+- id: UniProtKB:P0AF18
+  title: UniProtKB:P0AF18 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0AF18.json
+  source_version: '2026_03'

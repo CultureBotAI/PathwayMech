@@ -86,7 +86,7 @@ def test_consumes_edges_point_from_participants_to_reactions() -> None:
 
     assert raised.value.errors == [
         "mechanistic_edges[0] consumes edges must point from a participant subject "
-        "to a reaction object"
+        "to a reaction or pathway object"
     ]
 
 
@@ -98,7 +98,7 @@ def test_produces_edges_point_from_reactions_to_participants() -> None:
         validate_record(record)
 
     assert raised.value.errors == [
-        "mechanistic_edges[0] produces edges must point from a reaction subject "
+        "mechanistic_edges[0] produces edges must point from a reaction or pathway subject "
         "to a participant object"
     ]
 

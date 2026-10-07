@@ -1,0 +1,190 @@
+{
+  "reviewed_utc": "2026-10-06T01:46:00.478859+00:00",
+  "pr": "https://github.com/CultureBotAI/PathwayMech/pull/262",
+  "previous_reviewed_head": "36263df8d89f778ab607e601fa62f469e367151b",
+  "integration_base": "97be03bd4a04fcfc7d7d2486d59a5376f9d4cdd9",
+  "tree_scope": "Resolved merge tree; source, generated artifacts and this report committed together after validation.",
+  "checks": {
+    "render": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-render-pages"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:42:00.097390+00:00",
+      "duration_seconds": 39.96,
+      "log_sha256": "a1fb7ea8d40c33df55eb764244d0a0961bfe818d3e882c40c590beddfc26f14d"
+    },
+    "kgx": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-export-kgx"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:41:58.786320+00:00",
+      "duration_seconds": 20.85,
+      "log_sha256": "697038d02fee3ee7528a46b8afda52493b75dca694fd4554cb252f6af328784e"
+    },
+    "tests": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "--extra",
+        "dev",
+        "pytest",
+        "-q",
+        "-ra"
+      ],
+      "exit_code": 1,
+      "completed_utc": "2026-10-06T01:45:37.535267+00:00",
+      "duration_seconds": 239.67,
+      "log_sha256": "d6f64a9ce5f0350e03f0c7c2a98c5abbf8ac6aa89346d68c60ce19d969bb599e"
+    },
+    "browse_recheck": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "--extra",
+        "dev",
+        "pytest",
+        "-q",
+        "tests/test_browse_interaction.py"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:43:40.218648+00:00",
+      "duration_seconds": 1.03,
+      "log_sha256": "93c97c10af4fc8b54296201243c032c5e8295479ca6b4adc06019033d6f9e282"
+    },
+    "lint": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "--extra",
+        "dev",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:41:38.204099+00:00",
+      "duration_seconds": 0.3,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "skills": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "scripts/validate_claude_skills.py"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:42:21.328844+00:00",
+      "duration_seconds": 0.28,
+      "log_sha256": "8e74f2b5fa8182e6833c1ac4925b7495ebb2341a0da6db52f017c87761ee3182"
+    },
+    "qc": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pathwaymech-run-qc"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:44:06.242655+00:00",
+      "duration_seconds": 105.22,
+      "log_sha256": "02d46a5b86abf4de2f396014ed5bb3013b03001a2407a3e4c1b1d9fc2f7f9784"
+    },
+    "diff": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "completed_utc": "2026-10-06T01:42:22.037270+00:00",
+      "duration_seconds": 0.54,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "tests": {
+    "passed_across_suite_and_recheck": 587,
+    "skipped": 3,
+    "initial_suite_failures": 1,
+    "initial_failure": "The full suite started before page generation completed; the browser harness encountered unresolved merge markers in the not-yet-regenerated browse page. The regenerated page passes the complete browser interaction test.",
+    "rechecked_test": "tests/test_browse_interaction.py::test_shipped_search_matches_ascii_identifiers_in_any_locale",
+    "skip_reason": "Three vendored skill-frontmatter parametrizations have no matching paths; all seven local skills pass validation."
+  },
+  "independent_review": {
+    "focused_tests_passed": 47,
+    "integration_defects_found": 0
+  },
+  "governed_files": {
+    "command": [
+      "bash",
+      "scripts/check_vendored_sync.sh"
+    ],
+    "status": "passed",
+    "count": 18
+  },
+  "pathway_records_unchanged_from_previous_reviewed_head": true,
+  "download_audit": {
+    "manifest_records": 152,
+    "downloads": {
+      "nodes.tsv": {
+        "bytes": 1144858,
+        "rows": 2495,
+        "columns": [
+          "id",
+          "name",
+          "category",
+          "provided_by",
+          "source_category",
+          "direction",
+          "source_contexts"
+        ],
+        "equal_standalone": true,
+        "count_matches_manifest": true,
+        "checksum_matches_manifest": true
+      },
+      "edges.tsv": {
+        "bytes": 7285072,
+        "rows": 7134,
+        "columns": [
+          "id",
+          "subject",
+          "predicate",
+          "object",
+          "category",
+          "primary_knowledge_source",
+          "knowledge_level",
+          "agent_type",
+          "source_records",
+          "description",
+          "evidence",
+          "reference_metadata"
+        ],
+        "equal_standalone": true,
+        "count_matches_manifest": true,
+        "checksum_matches_manifest": true
+      }
+    },
+    "edge_checks": {
+      "source_records": 152,
+      "source_edges_checked": 7134,
+      "published_edges": 7134,
+      "published_ids_unique": true,
+      "evidence_and_reference_arrays_exact": true
+    },
+    "errors": [],
+    "version_matches_concatenated_downloads": true
+  },
+  "history_records_validated": 188
+}

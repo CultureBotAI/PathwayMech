@@ -38,15 +38,16 @@ def test_gpml_converts_to_valid_pathway_record() -> None:
         {
             "id": "WikiPathways:WP9999/interaction",
             "label": "WikiPathways:WP9999 interaction interaction",
+            "direction": "left_to_right",
         },
         {
             "id": "WikiPathways:WP9999/anchored",
             "label": "WikiPathways:WP9999 interaction anchored",
+            "direction": "left_to_right",
         },
     ]
     assert [
-        (edge["subject"], edge["predicate"], edge["object"])
-        for edge in record.mechanistic_edges
+        (edge["subject"], edge["predicate"], edge["object"]) for edge in record.mechanistic_edges
     ] == [
         ("CHEBI:58272", "consumes", "WikiPathways:WP9999/interaction"),
         ("WikiPathways:WP9999/interaction", "produces", "CHEBI:58289"),
@@ -57,7 +58,8 @@ def test_gpml_converts_to_valid_pathway_record() -> None:
         ("SGD:S000000001", "catalyzes", "WikiPathways:WP9999/anchored"),
     ]
     assert record.references == [
-        {"id": "PMID:12345678", "title": "WikiPathways publication PMID:12345678"}
+        {"id": "PMID:12345678", "title": "WikiPathways publication PMID:12345678"},
+        {"id": "WikiPathways:WP9999", "title": "WikiPathways source pathway WikiPathways:WP9999"},
     ]
 
 
@@ -218,3 +220,68 @@ def test_gpml_can_map_native_chemical_xrefs_to_chebi() -> None:
     )
 
     assert record.participants == [{"id": "CHEBI:17154", "label": "hmdb"}]
+
+
+def _native_gpml(interactions: str) -> ElementTree.Element:
+    return ElementTree.fromstring(f"""<Pathway xmlns="http://pathvisio.org/GPML/2013a">
+      <DataNode GraphId="a" TextLabel="substrate" Type="Metabolite">
+        <Xref Database="ChEBI" ID="15377"/></DataNode>
+      <DataNode GraphId="b" TextLabel="product" Type="Metabolite">
+        <Xref Database="ChEBI" ID="15378"/></DataNode>
+      <DataNode GraphId="enzyme" TextLabel="enzyme" Type="Protein">
+        <Xref Database="UniProt" ID="P12345"/></DataNode>
+      <DataNode GraphId="metal" TextLabel="zinc" Type="Metabolite">
+        <Xref Database="ChEBI" ID="29105"/></DataNode>
+      {interactions}</Pathway>""")
+
+
+def test_gpml_reversible_and_right_to_left_are_not_two_products() -> None:
+    for first_arrow, second_arrow, direction, substrate, product in [
+        ("Arrow", "Arrow", "reversible", "CHEBI:15377", "CHEBI:15378"),
+        ("Arrow", "Line", "right_to_left", "CHEBI:15378", "CHEBI:15377"),
+    ]:
+        root = _native_gpml(f'''<Interaction GraphId="r"><Graphics>
+          <Point GraphRef="a" ArrowHead="{first_arrow}"/>
+          <Point GraphRef="b" ArrowHead="{second_arrow}"/>
+        </Graphics></Interaction>''')
+        record = gpml_to_pathway_record(root, "WikiPathways:WP9999")
+        assert record["reactions"][0]["direction"] == direction
+        assert {
+            (e["subject"], e["predicate"], e["object"]) for e in record["mechanistic_edges"]
+        } == {
+            (substrate, "consumes", "WikiPathways:WP9999/r"),
+            ("WikiPathways:WP9999/r", "produces", product),
+        }
+
+
+def test_gpml_inhibition_is_not_a_product_and_orphan_anchor_is_not_a_reaction() -> None:
+    root = _native_gpml("""<Interaction GraphId="inhibition"><Graphics>
+      <Point GraphRef="a"/><Point GraphRef="b" ArrowHead="mim-inhibition"/>
+      <Anchor GraphId="anchor"/></Graphics></Interaction>
+      <Interaction GraphId="controller"><Graphics><Point GraphRef="enzyme"/>
+      <Point GraphRef="anchor" ArrowHead="mim-catalysis"/></Graphics></Interaction>""")
+    record = gpml_to_pathway_record(root, "WikiPathways:WP9999")
+    assert record["reactions"] == []
+    assert record["mechanistic_edges"] == []
+
+
+def test_gpml_native_unknown_metabolite_and_anchored_cofactor_survive() -> None:
+    root = _native_gpml("""
+      <DataNode GraphId="unmapped" TextLabel="source-local muropeptide" Type="Metabolite"/>
+      <Interaction GraphId="r"><Graphics><Point GraphRef="unmapped"/>
+      <Point GraphRef="b" ArrowHead="Arrow"/><Anchor GraphId="anchor"/>
+      </Graphics></Interaction>
+      <Interaction GraphId="water"><Graphics><Point GraphRef="a"/>
+      <Point GraphRef="anchor" ArrowHead="Arrow"/></Graphics></Interaction>
+      <Interaction GraphId="metal-support"><Graphics><Point GraphRef="metal"/>
+      <Point GraphRef="anchor" ArrowHead="mim-catalysis"/></Graphics></Interaction>""")
+    record = validate_record(gpml_to_pathway_record(root, "WikiPathways:WP9999"))
+    triples = {(e["subject"], e["predicate"], e["object"]) for e in record.mechanistic_edges}
+    assert ("WikiPathways:WP9999/unmapped", "consumes", "WikiPathways:WP9999/r") in triples
+    assert ("CHEBI:15377", "consumes", "WikiPathways:WP9999/r") in triples
+    assert ("CHEBI:29105", "enables", "WikiPathways:WP9999/r") in triples
+    assert not any(s == "CHEBI:29105" and p == "catalyzes" for s, p, _ in triples)
+    for edge in record.mechanistic_edges:
+        assert edge["evidence"][0]["reference_id"] == record.id
+        assert "source_locator" in edge["evidence"][0]
+        assert "quote" not in edge["evidence"][0]

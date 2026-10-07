@@ -42,7 +42,7 @@ def test_mibig_cluster_builds_bgc_shaped_pathway_record() -> None:
     assert yaml.safe_load(yaml.safe_dump(record)) == {
         "id": "MIBiG:BGC0000001",
         "label": "mini metabolite biosynthetic gene cluster",
-        "description": "Experimentally characterized MIBiG MIBiG:BGC0000001 gene cluster.",
+        "description": "Experimentally characterized MIBiG:BGC0000001 gene cluster.",
         "pathway_type": "biosynthetic-gene-cluster",
         "taxa": [{"id": "NCBITaxon:12345", "label": "Mini test microbe"}],
         "participants": [],

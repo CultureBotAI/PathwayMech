@@ -1,8 +1,8 @@
 id: gomodel:YeastPathways_PWY3O-48
 label: glycerol biosynthesis
-description: Glycerol biosynthesis in Saccharomyces cerevisiae S288C uses GPD1 and
-  GPD2 glycerol-3-phosphate dehydrogenase activities with GPP1 and GPP2 glycerol-1-phosphatase
-  activities to convert glycerone phosphate to glycerol via sn-glycerol 3-phosphate.
+description: Glycerol biosynthesis in Saccharomyces cerevisiae S288C uses GPD1 and GPD2 glycerol-3-phosphate
+  dehydrogenase activities with GPP1 and GPP2 glycerol-1-phosphatase activities to convert
+  glycerone phosphate to glycerol via sn-glycerol 3-phosphate.
 pathway_type: glycerol-biosynthesis
 taxa:
 - id: NCBITaxon:559292
@@ -10,267 +10,579 @@ taxa:
 participants:
 - id: CHEBI:57597
   label: sn-glycerol 3-phosphate(2-)
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
 - id: CHEBI:57945
   label: NADH(2-)
+  category: small_molecule
+- id: GO:0006114
+  label: glycerol biosynthetic process
+  category: biological_process
 - id: CHEBI:17754
   label: glycerol
+  category: small_molecule
 - id: CHEBI:43474
   label: hydrogenphosphate
+  category: small_molecule
 - id: CHEBI:15377
   label: water
+  category: small_molecule
 - id: CHEBI:231935
   label: glycerol 1-phosphate(2-)
+  category: small_molecule
 - id: SGD:S000002180
   label: GPD1 Scer
+  category: protein
 - id: CHEBI:57540
   label: NAD(1-)
+  category: small_molecule
 - id: CHEBI:57642
   label: glycerone phosphate(2-)
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: SGD:S000005420
   label: GPD2 Scer
+  category: protein
 - id: SGD:S000001315
   label: GPP1 Scer
+  category: protein
 - id: SGD:S000000864
   label: GPP2 Scer
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005777
+  label: peroxisome
+  category: cellular_component
+- id: GO:0005739
+  label: mitochondrion
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
 reactions:
-- id: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
-  label: glycerol-3-phosphate dehydrogenase [NAD(P)+] activity
 - id: gomodel:1.1.1.8-RXN
-  label: <i>sn</i>-glycerol 3-phosphate + NAD<sup>+</sup> <- glycerone phosphate +
-    NADH + H<SUP>+</SUP>
+  label: <i>sn</i>-glycerol 3-phosphate + NAD<sup>+</sup> <- glycerone phosphate + NADH +
+    H<SUP>+</SUP>
+  category: molecular_activity
 - id: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
   label: glycerol 1-phosphate + H<sub>2</sub>O -> glycerol + phosphate
+  category: molecular_activity
 - id: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
   label: sn-glycerol 1-phosphatase activity
+  category: molecular_activity
+- id: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  label: glycerol-3-phosphate dehydrogenase [NAD(P)+] activity
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57597
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000502"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000502","type":[{"type":"class","id":"CHEBI:57597"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002234
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000502.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/0; endpoint types: /individuals/45/type;
+      /individuals/49/type'
 - id: edge-002
   subject: gomodel:1.1.1.8-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57597
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57597_1.1.1.8-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_57597_1.1.1.8-RXN","type":[{"type":"class","id":"CHEBI:57597"'
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002234 gomodel:CHEBI_57597_1.1.1.8-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/1; endpoint types: /individuals/28/type;
+      /individuals/6/type'
 - id: edge-003
-  subject: CHEBI:57945
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  subject: gomodel:1.1.1.8-RXN
+  predicate: occurs_in
+  object: GO:0005829
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000499"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000499","type":[{"type":"class","id":"CHEBI:57945"'
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN BFO:0000066 gomodel:reaction_1.1.1.8-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/2; endpoint types: /individuals/28/type;
+      /individuals/26/type'
 - id: edge-004
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  predicate: has_input
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002233
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000499.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/3; endpoint types: /individuals/45/type;
+      /individuals/46/type'
+- id: edge-005
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  predicate: part_of
+  object: GO:0006114
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 BFO:0000050
+      gomodel:YeastPathways_PWY3O-48/YeastPathways_PWY3O-48.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/4; endpoint types: /individuals/45/type;
+      /individuals/29/type'
+- id: edge-006
   subject: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:17754
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_17754_GLYCEROL-1-PHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_17754_GLYCEROL-1-PHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:17754"'
-- id: edge-005
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN RO:0002234 gomodel:CHEBI_17754_GLYCEROL-1-PHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/5; endpoint types: /individuals/9/type;
+      /individuals/2/type'
+- id: edge-007
   subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
-  predicate: produces
+  predicate: has_output
   object: CHEBI:43474
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000486"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000486","type":[{"type":"class","id":"CHEBI:43474"'
-- id: edge-006
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 RO:0002234
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000486.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/6; endpoint types: /individuals/30/type;
+      /individuals/34/type'
+- id: edge-008
   subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
-  predicate: produces
+  predicate: has_output
   object: CHEBI:17754
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000485"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000485","type":[{"type":"class","id":"CHEBI:17754"'
-- id: edge-007
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000483"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000483","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-008
-  subject: CHEBI:57945
-  predicate: consumes
-  object: gomodel:1.1.1.8-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57945_1.1.1.8-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_57945_1.1.1.8-RXN","type":[{"type":"class","id":"CHEBI:57945"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 RO:0002234
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000485.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/7; endpoint types: /individuals/30/type;
+      /individuals/33/type'
 - id: edge-009
-  subject: CHEBI:231935
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
+  subject: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
+  predicate: part_of
+  object: GO:0006114
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000484"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000484","type":[{"type":"class","id":"CHEBI:231935"'
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN BFO:0000050 gomodel:YeastPathways_PWY3O-48/YeastPathways_PWY3O-48.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/8; endpoint types: /individuals/9/type;
+      /individuals/29/type'
 - id: edge-010
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 RO:0002233
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000483.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/9; endpoint types: /individuals/30/type;
+      /individuals/31/type'
+- id: edge-011
+  subject: gomodel:1.1.1.8-RXN
+  predicate: has_input
+  object: CHEBI:57945
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002233 gomodel:CHEBI_57945_1.1.1.8-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/10; endpoint types: /individuals/28/type;
+      /individuals/8/type'
+- id: edge-012
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
+  predicate: has_input
+  object: CHEBI:231935
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 RO:0002233
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000484.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/11; endpoint types: /individuals/30/type;
+      /individuals/32/type'
+- id: edge-013
   subject: SGD:S000002180
   predicate: enables
   object: gomodel:1.1.1.8-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDL022W-MONOMER_1.1.1.8-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YDL022W-MONOMER_1.1.1.8-RXN_controller","type":[{"type":"class","id":"SGD:S000002180"'
-- id: edge-011
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002333 gomodel:YDL022W-MONOMER_1.1.1.8-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/12; endpoint types: /individuals/28/type;
+      /individuals/10/type'
+- id: edge-014
   subject: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:43474
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_43474_GLYCEROL-1-PHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_43474_GLYCEROL-1-PHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:43474"'
-- id: edge-012
-  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
-  predicate: regulates
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002411","property-label":"RO:0002411","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482"'
-- id: edge-013
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_GLYCEROL-1-PHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_15377_GLYCEROL-1-PHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-014
-  subject: gomodel:1.1.1.8-RXN
-  predicate: regulates
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002411","property-label":"RO:0002411","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482"'
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN RO:0002234 gomodel:CHEBI_43474_GLYCEROL-1-PHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/13; endpoint types: /individuals/9/type;
+      /individuals/4/type'
 - id: edge-015
-  subject: CHEBI:231935
-  predicate: consumes
-  object: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_231935_GLYCEROL-1-PHOSPHATASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_231935_GLYCEROL-1-PHOSPHATASE-RXN","type":[{"type":"class","id":"CHEBI:231935"'
-- id: edge-016
   subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
-  predicate: produces
-  object: CHEBI:57540
+  predicate: causally_upstream_of
+  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000503"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002411
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000482.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/14; endpoint types: /individuals/45/type;
+      /individuals/30/type'
+- id: edge-016
+  subject: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000503","type":[{"type":"class","id":"CHEBI:57540"'
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN RO:0002233 gomodel:CHEBI_15377_GLYCEROL-1-PHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/15; endpoint types: /individuals/9/type;
+      /individuals/0/type'
 - id: edge-017
   subject: gomodel:1.1.1.8-RXN
-  predicate: regulates
-  object: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
+  predicate: causally_upstream_of
+  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002411","property-label":"RO:0002411","object":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN"'
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002411 gomodel:YeastPathways_PWY3O-48/6a4c244800000482.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/16; endpoint types: /individuals/28/type;
+      /individuals/30/type'
 - id: edge-018
-  subject: CHEBI:57642
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  subject: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
+  predicate: has_input
+  object: CHEBI:231935
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000501"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000501","type":[{"type":"class","id":"CHEBI:57642"'
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN RO:0002233 gomodel:CHEBI_231935_GLYCEROL-1-PHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/17; endpoint types: /individuals/9/type;
+      /individuals/3/type'
 - id: edge-019
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000500"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000500","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-020
-  subject: CHEBI:15378
-  predicate: consumes
-  object: gomodel:1.1.1.8-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15378_1.1.1.8-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_15378_1.1.1.8-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-021
   subject: gomodel:1.1.1.8-RXN
-  predicate: produces
+  predicate: part_of
+  object: GO:0006114
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN BFO:0000050 gomodel:YeastPathways_PWY3O-48/YeastPathways_PWY3O-48.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/18; endpoint types: /individuals/28/type;
+      /individuals/29/type'
+- id: edge-020
+  subject: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN BFO:0000066 gomodel:reaction_GLYCEROL-1-PHOSPHATASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/19; endpoint types: /individuals/9/type;
+      /individuals/27/type'
+- id: edge-021
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  predicate: has_output
   object: CHEBI:57540
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57540_1.1.1.8-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_57540_1.1.1.8-RXN","type":[{"type":"class","id":"CHEBI:57540"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002234
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000503.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/20; endpoint types: /individuals/45/type;
+      /individuals/50/type'
 - id: edge-022
-  subject: CHEBI:57642
-  predicate: consumes
-  object: gomodel:1.1.1.8-RXN
+  subject: gomodel:1.1.1.8-RXN
+  predicate: causally_upstream_of
+  object: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:1.1.1.8-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57642_1.1.1.8-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:CHEBI_57642_1.1.1.8-RXN","type":[{"type":"class","id":"CHEBI:57642"'
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002411 gomodel:GLYCEROL-1-PHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/21; endpoint types: /individuals/28/type;
+      /individuals/9/type'
 - id: edge-023
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  predicate: has_input
+  object: CHEBI:57642
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002233
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000501.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/22; endpoint types: /individuals/45/type;
+      /individuals/48/type'
+- id: edge-024
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002233
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000500.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/23; endpoint types: /individuals/45/type;
+      /individuals/47/type'
+- id: edge-025
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 BFO:0000066
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000489.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/24; endpoint types: /individuals/30/type;
+      /individuals/36/type'
+- id: edge-026
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
+  predicate: part_of
+  object: GO:0006114
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 BFO:0000050
+      gomodel:YeastPathways_PWY3O-48/YeastPathways_PWY3O-48.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/25; endpoint types: /individuals/30/type;
+      /individuals/29/type'
+- id: edge-027
+  subject: gomodel:1.1.1.8-RXN
+  predicate: has_input
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002233 gomodel:CHEBI_15378_1.1.1.8-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/26; endpoint types: /individuals/28/type;
+      /individuals/1/type'
+- id: edge-028
+  subject: gomodel:1.1.1.8-RXN
+  predicate: has_output
+  object: CHEBI:57540
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002234 gomodel:CHEBI_57540_1.1.1.8-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/27; endpoint types: /individuals/28/type;
+      /individuals/5/type'
+- id: edge-029
+  subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 BFO:0000066
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000506.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/28; endpoint types: /individuals/45/type;
+      /individuals/52/type'
+- id: edge-030
+  subject: gomodel:1.1.1.8-RXN
+  predicate: has_input
+  object: CHEBI:57642
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY3O-48
+    source_assertion: The model asserts gomodel:1.1.1.8-RXN RO:0002233 gomodel:CHEBI_57642_1.1.1.8-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/29; endpoint types: /individuals/28/type;
+      /individuals/7/type'
+- id: edge-031
   subject: SGD:S000005420
   predicate: enables
   object: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000504"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000504","type":[{"type":"class","id":"SGD:S000005420"'
-- id: edge-024
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002333
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000504.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/30; endpoint types: /individuals/45/type;
+      /individuals/51/type'
+- id: edge-032
   subject: gomodel:YeastPathways_PWY3O-48/6a4c244800000498
-  predicate: regulates
+  predicate: causally_upstream_of
   object: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000498","property":"RO:0002411","property-label":"RO:0002411","object":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN"'
-- id: edge-025
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000498 RO:0002411
+      gomodel:GLYCEROL-1-PHOSPHATASE-RXN.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/31; endpoint types: /individuals/45/type;
+      /individuals/9/type'
+- id: edge-033
   subject: SGD:S000001315
   predicate: enables
   object: gomodel:GLYCEROL-1-PHOSPHATASE-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:GLYCEROL-1-PHOSPHATASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YIL053W-MONOMER_GLYCEROL-1-PHOSPHATASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YIL053W-MONOMER_GLYCEROL-1-PHOSPHATASE-RXN_controller","type":[{"type":"class","id":"SGD:S000001315"'
-- id: edge-026
+    source_assertion: The model asserts gomodel:GLYCEROL-1-PHOSPHATASE-RXN RO:0002333 gomodel:YIL053W-MONOMER_GLYCEROL-1-PHOSPHATASE-RXN_controller.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/32; endpoint types: /individuals/9/type;
+      /individuals/11/type'
+- id: edge-034
   subject: SGD:S000000864
   predicate: enables
   object: gomodel:YeastPathways_PWY3O-48/6a4c244800000482
   evidence:
   - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"subject":"gomodel:YeastPathways_PWY3O-48/6a4c244800000482","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY3O-48/6a4c244800000487"'
-  - reference_id: gomodel:YeastPathways_PWY3O-48
-    quote: '"id":"gomodel:YeastPathways_PWY3O-48/6a4c244800000487","type":[{"type":"class","id":"SGD:S000000864"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY3O-48/6a4c244800000482 RO:0002333
+      gomodel:YeastPathways_PWY3O-48/6a4c244800000487.
+    source_locator: './YeastPathways_PWY3O-48.json#/facts/33; endpoint types: /individuals/30/type;
+      /individuals/35/type'
+- id: location-806bfe23c20b
+  subject: SGD:S000002180
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:15210723)
+  evidence:
+  - reference_id: UniProtKB:Q00055
+    source_assertion: UniProtKB:Q00055 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2362/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q00055
+    source_assertion: UniProtKB:Q00055 has the exact SGD cross-reference SGD:S000002180.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2362/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-39ebc920cefa
+  subject: SGD:S000002180
+  predicate: located_in
+  object: GO:0005777
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095);
+    ECO:0000269 (PubMed:15210723)
+  evidence:
+  - reference_id: UniProtKB:Q00055
+    source_assertion: UniProtKB:Q00055 annotates location Peroxisome (SL-0204).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2362/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q00055
+    source_assertion: UniProtKB:Q00055 has the exact SGD cross-reference SGD:S000002180.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2362/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-4d73746c3f4d
+  subject: SGD:S000005420
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. evidence code not specified
+    by source
+  evidence:
+  - reference_id: UniProtKB:P41911
+    source_assertion: UniProtKB:P41911 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1828/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P41911
+    source_assertion: UniProtKB:P41911 has the exact SGD cross-reference SGD:S000005420.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1828/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-f948293c7864
+  subject: SGD:S000005420
+  predicate: located_in
+  object: GO:0005739
+  description: Physical protein location from reviewed UniProt. evidence code not specified
+    by source
+  evidence:
+  - reference_id: UniProtKB:P41911
+    source_assertion: UniProtKB:P41911 annotates location Mitochondrion (SL-0173).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1828/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P41911
+    source_assertion: UniProtKB:P41911 has the exact SGD cross-reference SGD:S000005420.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1828/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-dcf1853a7941
+  subject: SGD:S000001315
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P41277
+    source_assertion: UniProtKB:P41277 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1798/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P41277
+    source_assertion: UniProtKB:P41277 has the exact SGD cross-reference SGD:S000001315.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1798/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-34466a2c0a27
+  subject: SGD:S000001315
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P41277
+    source_assertion: UniProtKB:P41277 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1798/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P41277
+    source_assertion: UniProtKB:P41277 has the exact SGD cross-reference SGD:S000001315.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1798/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-aa6dc1a6a1c1
+  subject: SGD:S000000864
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P40106
+    source_assertion: UniProtKB:P40106 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1669/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P40106
+    source_assertion: UniProtKB:P40106 has the exact SGD cross-reference SGD:S000000864.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1669/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-6ffb4ceefa77
+  subject: SGD:S000000864
+  predicate: located_in
+  object: GO:0005634
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P40106
+    source_assertion: UniProtKB:P40106 annotates location Nucleus (SL-0191).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1669/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P40106
+    source_assertion: UniProtKB:P40106 has the exact SGD cross-reference SGD:S000000864.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1669/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-6c7564e59fad
+  subject: SGD:S000001315
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000305
+    (PubMed:8662716)'
+  evidence:
+  - reference_id: UniProtKB:P41277
+    source_assertion: UniProtKB:P41277 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1798/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P41277
+    source_assertion: UniProtKB:P41277 has the exact SGD cross-reference SGD:S000001315.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1798/uniProtKBCrossReferences/0'
+- id: cofactor-d1a805ef7369
+  subject: SGD:S000000864
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000305
+    (PubMed:8662716)'
+  evidence:
+  - reference_id: UniProtKB:P40106
+    source_assertion: UniProtKB:P40106 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1669/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P40106
+    source_assertion: UniProtKB:P40106 has the exact SGD cross-reference SGD:S000000864.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1669/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY3O-48
   title: 'SGD GO-CAM glycerol biosynthesis - imported from: Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-07; member ./YeastPathways_PWY3O-48.json
+- id: UniProtKB:Q00055
+  title: Reviewed UniProtKB Q00055 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P41911
+  title: Reviewed UniProtKB P41911 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P41277
+  title: Reviewed UniProtKB P41277 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P40106
+  title: Reviewed UniProtKB P40106 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

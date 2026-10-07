@@ -8,8 +8,8 @@ ALLOWED_RO_PREDICATES = {
     "RO:0002211": "regulates",
     "RO:0002212": "inhibits",
     "RO:0002213": "activates",
-    "RO:0002411": "regulates",
-    "RO:0002413": "precedes",
+    "RO:0002411": "causally_upstream_of",
+    "RO:0002413": "provides_input_for",
 }
 
 
@@ -26,7 +26,9 @@ def gocam_to_pathway_record(model: dict[str, Any]) -> dict[str, Any]:
     label_by_id = _object_labels(model)
     participants: dict[str, dict[str, str]] = {}
     reactions: dict[str, dict[str, str]] = {}
-    references: dict[str, dict[str, str]] = {}
+    references: dict[str, dict[str, str]] = {
+        model_id: {"id": model_id, "title": f"GO-CAM source model {model_id}"},
+    }
     edges: list[dict[str, Any]] = []
 
     def add_participant(identifier: str) -> None:
@@ -44,7 +46,9 @@ def gocam_to_pathway_record(model: dict[str, Any]) -> dict[str, Any]:
             },
         )
 
-    def make_evidence(raw_evidence: list[dict[str, Any]]) -> list[dict[str, str]]:
+    def make_evidence(
+        raw_evidence: list[dict[str, Any]], assertion: str, locator: str,
+    ) -> list[dict[str, str]]:
         evidence = []
         for item in raw_evidence:
             reference_id = item.get("reference")
@@ -54,8 +58,11 @@ def gocam_to_pathway_record(model: dict[str, Any]) -> dict[str, Any]:
             add_reference(reference_id)
             evidence.append(
                 {
-                    "reference_id": reference_id,
-                    "quote": f"GO-CAM evidence {evidence_code} cites {reference_id}.",
+                    "reference_id": model_id,
+                    "source_assertion": (
+                        f"{assertion} Source attribution: {evidence_code}, {reference_id}."
+                    ),
+                    "source_locator": locator,
                 }
             )
         return evidence
@@ -76,7 +83,10 @@ def gocam_to_pathway_record(model: dict[str, Any]) -> dict[str, Any]:
         enabled_by = activity.get("enabled_by")
         if isinstance(enabled_by, dict):
             enabler_id = enabled_by.get("term")
-            evidence = make_evidence(_evidence(enabled_by))
+            evidence = make_evidence(
+                _evidence(enabled_by), f"{activity_id} enabled_by {enabler_id}.",
+                f"activities[id={activity_id}]/enabled_by",
+            )
             if isinstance(enabler_id, str) and evidence:
                 add_participant(enabler_id)
                 edges.append(
@@ -88,38 +98,48 @@ def gocam_to_pathway_record(model: dict[str, Any]) -> dict[str, Any]:
                     )
                 )
 
-        for association in _molecule_associations(activity, "has_input"):
+        for index, association in enumerate(_molecule_associations(activity, "has_input")):
             term = association.get("term")
-            evidence = make_evidence(_evidence(association))
-            if isinstance(term, str) and evidence:
-                add_participant(term)
-                edges.append(
-                    _edge(
-                        subject=term,
-                        predicate="consumes",
-                        obj=activity_id,
-                        evidence=evidence,
-                    )
-                )
-
-        for association in _molecule_associations(activity, "has_output"):
-            term = association.get("term")
-            evidence = make_evidence(_evidence(association))
+            evidence = make_evidence(
+                _evidence(association), f"{activity_id} has_input {term}.",
+                f"activities[id={activity_id}]/has_input/{index}",
+            )
             if isinstance(term, str) and evidence:
                 add_participant(term)
                 edges.append(
                     _edge(
                         subject=activity_id,
-                        predicate="produces",
+                        predicate="has_input",
                         obj=term,
                         evidence=evidence,
                     )
                 )
 
-        for association in _causal_associations(activity):
+        for index, association in enumerate(_molecule_associations(activity, "has_output")):
+            term = association.get("term")
+            evidence = make_evidence(
+                _evidence(association), f"{activity_id} has_output {term}.",
+                f"activities[id={activity_id}]/has_output/{index}",
+            )
+            if isinstance(term, str) and evidence:
+                add_participant(term)
+                edges.append(
+                    _edge(
+                        subject=activity_id,
+                        predicate="has_output",
+                        obj=term,
+                        evidence=evidence,
+                    )
+                )
+
+        for index, association in enumerate(_causal_associations(activity)):
             downstream_activity = association.get("downstream_activity")
             predicate = ALLOWED_RO_PREDICATES.get(str(association.get("predicate")))
-            evidence = make_evidence(_evidence(association))
+            evidence = make_evidence(
+                _evidence(association),
+                f"{activity_id} {association.get('predicate')} {downstream_activity}.",
+                f"activities[id={activity_id}]/causal_associations/{index}",
+            )
             if isinstance(downstream_activity, str) and predicate and evidence:
                 reactions.setdefault(
                     downstream_activity,

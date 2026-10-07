@@ -1,73 +1,264 @@
 id: WikiPathways:WP556
 label: Glutamate degradation I
-description: Glutamate degradation I converts L-glutamate to 4-aminobutanoate, succinate
-  semialdehyde, and then succinate in Saccharomyces cerevisiae.
+description: Glutamate degradation I converts L-glutamate to 4-aminobutanoate, succinate semialdehyde,
+  and then succinate in Saccharomyces cerevisiae.
 pathway_type: amino-acid-degradation
 taxa:
 - id: NCBITaxon:4932
   label: Saccharomyces cerevisiae
 participants:
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
 - id: CHEBI:29985
   label: L-glutamate
-- id: CHEBI:59888
-  label: 4-aminobutanoate
+  category: small_molecule
+- id: SGD:S000000210
+  label: UGA2
+  category: protein
 - id: CHEBI:57706
   label: succinate semialdehyde
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:16810
+  label: 2-oxoglutarate(2-)
+  category: small_molecule
+- id: CHEBI:13392
+  label: NAD(P)H
+  category: small_molecule
+- id: SGD:S000004862
+  label: GAD1
+  category: protein
+- id: CHEBI:59888
+  label: 4-aminobutanoate
+  category: small_molecule
 - id: CHEBI:30031
   label: succinate
+  category: small_molecule
+- id: CHEBI:13390
+  label: NAD(P)(+)
+  category: small_molecule
+- id: SGD:S000003251
+  label: UGA1
+  category: protein
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
-- id: WikiPathways:WP556/id1356da06
-  label: L-glutamate to 4-aminobutanoate GPML interaction
-- id: WikiPathways:WP556/b960c
-  label: 4-aminobutanoate to succinate semialdehyde GPML interaction
 - id: WikiPathways:WP556/adc8e
   label: succinate semialdehyde to succinate GPML interaction
+  direction: left_to_right
+  category: molecular_activity
+- id: WikiPathways:WP556/b960c
+  label: 4-aminobutanoate to succinate semialdehyde GPML interaction
+  direction: left_to_right
+  category: molecular_activity
+- id: WikiPathways:WP556/id1356da06
+  label: L-glutamate to 4-aminobutanoate GPML interaction
+  direction: left_to_right
+  category: molecular_activity
 mechanistic_edges:
-- id: edge-001
-  subject: CHEBI:29985
-  predicate: consumes
-  object: WikiPathways:WP556/id1356da06
-  evidence:
-  - reference_id: WikiPathways:WP556
-    quote: L-glutamate is consumed by L-glutamate to 4-aminobutanoate GPML interaction.
-- id: edge-002
-  subject: WikiPathways:WP556/id1356da06
-  predicate: produces
-  object: CHEBI:59888
-  evidence:
-  - reference_id: WikiPathways:WP556
-    quote: L-glutamate to 4-aminobutanoate GPML interaction produces 4-aminobutanoate.
-- id: edge-003
-  subject: CHEBI:59888
-  predicate: consumes
-  object: WikiPathways:WP556/b960c
-  evidence:
-  - reference_id: WikiPathways:WP556
-    quote: 4-aminobutanoate is consumed by 4-aminobutanoate to succinate semialdehyde
-      GPML interaction.
-- id: edge-004
-  subject: WikiPathways:WP556/b960c
-  predicate: produces
-  object: CHEBI:57706
-  evidence:
-  - reference_id: WikiPathways:WP556
-    quote: 4-aminobutanoate to succinate semialdehyde GPML interaction produces succinate
-      semialdehyde.
-- id: edge-005
+- id: causal-review-1
   subject: CHEBI:57706
   predicate: consumes
   object: WikiPathways:WP556/adc8e
   evidence:
   - reference_id: WikiPathways:WP556
-    quote: succinate semialdehyde is consumed by succinate semialdehyde to succinate
-      GPML interaction.
-- id: edge-006
+    source_assertion: GPML adc8e connects normalized CHEBI:57706 as an input of interaction
+      adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='adc8e']/Graphics; /Pathway/DataNode[@GraphId='a723b']
+- id: causal-review-2
   subject: WikiPathways:WP556/adc8e
   predicate: produces
   object: CHEBI:30031
   evidence:
   - reference_id: WikiPathways:WP556
-    quote: succinate semialdehyde to succinate GPML interaction produces succinate.
+    source_assertion: GPML adc8e connects normalized CHEBI:30031 as an output of interaction
+      adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='adc8e']/Graphics; /Pathway/DataNode[@GraphId='da8fc']
+- id: causal-review-3
+  subject: CHEBI:59888
+  predicate: consumes
+  object: WikiPathways:WP556/b960c
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML b960c connects normalized CHEBI:59888 as an input of interaction
+      b960c.
+    source_locator: /Pathway/Interaction[@GraphId='b960c']/Graphics; /Pathway/DataNode[@GraphId='d8b29']
+- id: causal-review-4
+  subject: WikiPathways:WP556/b960c
+  predicate: produces
+  object: CHEBI:57706
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML b960c connects normalized CHEBI:57706 as an output of interaction
+      b960c.
+    source_locator: /Pathway/Interaction[@GraphId='b960c']/Graphics; /Pathway/DataNode[@GraphId='a723b']
+- id: causal-review-5
+  subject: CHEBI:29985
+  predicate: consumes
+  object: WikiPathways:WP556/id1356da06
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id1356da06 connects normalized CHEBI:29985 as an input of interaction
+      id1356da06.
+    source_locator: /Pathway/Interaction[@GraphId='id1356da06']/Graphics; /Pathway/DataNode[@GraphId='dd2e6']
+- id: causal-review-6
+  subject: WikiPathways:WP556/id1356da06
+  predicate: produces
+  object: CHEBI:59888
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id1356da06 connects normalized CHEBI:59888 as an output of interaction
+      id1356da06.
+    source_locator: /Pathway/Interaction[@GraphId='id1356da06']/Graphics; /Pathway/DataNode[@GraphId='d8b29']
+- id: causal-review-7
+  subject: CHEBI:15377
+  predicate: consumes
+  object: WikiPathways:WP556/adc8e
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id38174c4f connects normalized CHEBI:15377 as an input of interaction
+      adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='id38174c4f']/Graphics; /Pathway/DataNode[@GraphId='a17a6']
+- id: causal-review-8
+  subject: CHEBI:13390
+  predicate: consumes
+  object: WikiPathways:WP556/adc8e
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id38174c4f connects normalized CHEBI:13390 as an input of interaction
+      adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='id38174c4f']/Graphics; /Pathway/DataNode[@GraphId='de987']
+- id: causal-review-9
+  subject: WikiPathways:WP556/id1356da06
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id5fc21733 connects normalized CHEBI:16526 as an output of interaction
+      id1356da06.
+    source_locator: /Pathway/Interaction[@GraphId='id5fc21733']/Graphics; /Pathway/DataNode[@GraphId='c50ae']
+- id: causal-review-10
+  subject: CHEBI:16810
+  predicate: consumes
+  object: WikiPathways:WP556/b960c
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id76efa8ad connects normalized CHEBI:16810 as an input of interaction
+      b960c.
+    source_locator: /Pathway/Interaction[@GraphId='id76efa8ad']/Graphics; /Pathway/DataNode[@GraphId='c7eed']
+- id: causal-review-11
+  subject: SGD:S000003251
+  predicate: catalyzes
+  object: WikiPathways:WP556/b960c
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML id77422312 connects normalized SGD:S000003251 as a catalyst of
+      interaction b960c.
+    source_locator: /Pathway/Interaction[@GraphId='id77422312']/Graphics; /Pathway/DataNode[@GraphId='e9564']
+- id: causal-review-12
+  subject: CHEBI:15378
+  predicate: consumes
+  object: WikiPathways:WP556/id1356da06
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML idad51913f connects normalized CHEBI:15378 as an input of interaction
+      id1356da06.
+    source_locator: /Pathway/Interaction[@GraphId='idad51913f']/Graphics; /Pathway/DataNode[@GraphId='f9274']
+- id: causal-review-13
+  subject: SGD:S000000210
+  predicate: catalyzes
+  object: WikiPathways:WP556/adc8e
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML idc91f98e3 connects normalized SGD:S000000210 as a catalyst of
+      interaction adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='idc91f98e3']/Graphics; /Pathway/DataNode[@GraphId='a67d0']
+- id: causal-review-14
+  subject: WikiPathways:WP556/b960c
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML ide9dea94f connects normalized CHEBI:29985 as an output of interaction
+      b960c.
+    source_locator: /Pathway/Interaction[@GraphId='ide9dea94f']/Graphics; /Pathway/DataNode[@GraphId='a55ec']
+- id: causal-review-15
+  subject: SGD:S000004862
+  predicate: catalyzes
+  object: WikiPathways:WP556/id1356da06
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML idf2f34343 connects normalized SGD:S000004862 as a catalyst of
+      interaction id1356da06.
+    source_locator: /Pathway/Interaction[@GraphId='idf2f34343']/Graphics; /Pathway/DataNode[@GraphId='d1e']
+- id: causal-review-16
+  subject: WikiPathways:WP556/adc8e
+  predicate: produces
+  object: CHEBI:13392
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML e831d connects normalized CHEBI:13392 as an output of interaction
+      adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='e831d']/Graphics; /Pathway/DataNode[@GraphId='cb0a1']
+- id: causal-review-17
+  subject: WikiPathways:WP556/adc8e
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: WikiPathways:WP556
+    source_assertion: GPML e831d connects normalized CHEBI:15378 as an output of interaction
+      adc8e.
+    source_locator: /Pathway/Interaction[@GraphId='e831d']/Graphics; /Pathway/DataNode[@GraphId='c9d82'];
+      /Pathway/DataNode[@GraphId='f708d']
+- id: cofactor-fcb2daae135a
+  subject: SGD:S000004862
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250'
+  evidence:
+  - reference_id: UniProtKB:Q04792
+    source_assertion: UniProtKB:Q04792 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/4938/comments/0/cofactors/0'
+  - reference_id: UniProtKB:Q04792
+    source_assertion: UniProtKB:Q04792 has the exact SGD cross-reference SGD:S000004862.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/4938/uniProtKBCrossReferences/0'
+- id: cofactor-2a5c0a452713
+  subject: SGD:S000003251
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:17355287)'
+  evidence:
+  - reference_id: UniProtKB:P17649
+    source_assertion: UniProtKB:P17649 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/468/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P17649
+    source_assertion: UniProtKB:P17649 has the exact SGD cross-reference SGD:S000003251.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/468/uniProtKBCrossReferences/0'
 references:
 - id: WikiPathways:WP556
-  title: WikiPathways Glutamate degradation I GPML pathway WP556_r140475
+  title: WP556 native structured pathway source
+  url: https://www.wikipathways.org/wikipathways-assets/pathways/WP556/WP556.gpml
+  source_version: WP556_r140475
+  source_sha256: 314f01ffb49864cf442ff1269bd6c6161feee3f0c2c419c1b547ede70e5e6a43
+- id: UniProtKB:Q04792
+  title: UniProtKB Q04792 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P17649
+  title: UniProtKB P17649 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4

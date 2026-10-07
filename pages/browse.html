@@ -30,172 +30,187 @@ document.addEventListener('DOMContentLoaded', function () {
   function filter() {
     const term = query.value.trim().toLowerCase();
     let count = 0;
-    rows.forEach(row => { row.hidden = !row.textContent.toLowerCase().includes(term);
+    rows.forEach(row => { row.hidden = !row.dataset.search.toLowerCase().includes(term);
       if (!row.hidden) count += 1; });
     document.getElementById('pathway-status').textContent =
       count + ' of ' + rows.length + ' pathways match';
     document.getElementById('pathway-empty').hidden = count !== 0;
   }
-  query.addEventListener('input', filter);
+  function remember() {
+    const url = new URL(window.location.href);
+    if (query.value) url.searchParams.set('q', query.value); else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+    filter();
+  }
+  function restore() {
+    query.value = new URLSearchParams(window.location.search).get('q') || '';
+    filter();
+  }
+  query.addEventListener('input', remember);
+  window.addEventListener('pageshow', restore);
   form.addEventListener('submit', event => { event.preventDefault(); filter(); });
   form.addEventListener('reset', event => {
-    event.preventDefault(); query.value = ''; filter(); query.focus();
+    event.preventDefault(); query.value = ''; remember(); query.focus();
   });
   form.hidden = false;
-  filter();
+  restore();
 });
-</script><ul class="record-list" id="pathway-list"><li><a href="records/WikiPathways_WP5587.html"><strong>2-phenylethanol biosynthesis</strong><span>WikiPathways:WP5587 - 15 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY-6543.html"><strong>4-aminobenzoate biosynthesis I</strong><span>MetaCyc:PWY-6543 - 11 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_YEAST-4AMINOBUTMETAB-PWY.html"><strong>4-aminobutyrate degradation</strong><span>gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY-6121.html"><strong>5-aminoimidazole ribonucleotide biosynthesis I</strong><span>MetaCyc:PWY-6121 - 42 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY-6122.html"><strong>5-aminoimidazole ribonucleotide biosynthesis II</strong><span>MetaCyc:PWY-6122 - 44 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-6147.html"><strong>6-hydroxymethyl-dihydropterin diphosphate biosynthesis I</strong><span>gomodel:YeastPathways_PWY-6147 - 29 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY0-1312.html"><strong>acetate and ATP formation from acetyl-CoA I</strong><span>MetaCyc:PWY0-1312 - 11 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP5019.html"><strong>Acetogenesis</strong><span>WikiPathways:WP5019 - 26 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-7220-1.html"><strong>adenosine deoxyribonucleotides de novo biosynthesis II</strong><span>gomodel:YeastPathways_PWY-7220-1 - 24 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-7219.html"><strong>adenosine ribonucleotides de novo biosynthesis</strong><span>gomodel:YeastPathways_PWY-7219 - 20 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_AERO-GLYCEROL-CAT-PWY.html"><strong>aerobic glycerol degradation</strong><span>gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5694.html"><strong>allantoin degradation to glyoxylate I</strong><span>gomodel:YeastPathways_PWY-5694 - 14 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5697.html"><strong>allantoin degradation to ureidoglycolate I (urea producing)</strong><span>gomodel:YeastPathways_PWY-5697 - 11 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_ASPBIO-PWY.html"><strong>aspartate biosynthesis</strong><span>gomodel:YeastPathways_ASPBIO-PWY - 26 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_SO4ASSIM-PWY.html"><strong>assimilatory sulfate reduction I</strong><span>gomodel:YeastPathways_SO4ASSIM-PWY - 29 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5760-1.html"><strong>beta-alanine biosynthesis IV</strong><span>gomodel:YeastPathways_PWY-5760-1 - 19 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4.html"><strong>carnitine shuttle</strong><span>gomodel:YeastPathways_PWY3O-4 - 22 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-15.html"><strong>chitin biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-15 - 21 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_ARO-PWY.html"><strong>chorismate biosynthesis I</strong><span>MetaCyc:ARO-PWY - 41 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_CITRUL-BIO2-PWY.html"><strong>citrulline biosynthesis</strong><span>gomodel:YeastPathways_CITRUL-BIO2-PWY - 16 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_COA-PWY.html"><strong>coenzyme A biosynthesis I (prokaryotic)</strong><span>MetaCyc:COA-PWY - 28 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_DARABCAT-PWY.html"><strong>D-arabinose degradation I</strong><span>MetaCyc:DARABCAT-PWY - 10 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GALACTUROCAT-PWY.html"><strong>D-galacturonate degradation I</strong><span>MetaCyc:GALACTUROCAT-PWY - 27 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GLUCARDEG-PWY.html"><strong>D-glucarate degradation I</strong><span>MetaCyc:GLUCARDEG-PWY - 30 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_XYLCAT-PWY.html"><strong>D-xylose degradation I</strong><span>MetaCyc:XYLCAT-PWY - 10 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-1565.html"><strong>dolichyl glucosyl phosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-1565 - 29 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-123.html"><strong>dolichyl phosphate D-mannose biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-123 - 20 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_P101-PWY.html"><strong>ectoine biosynthesis</strong><span>MetaCyc:P101-PWY - 31 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5670-1.html"><strong>epoxysqualene biosynthesis</strong><span>gomodel:YeastPathways_PWY-5670-1 - 16 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-6075-1.html"><strong>ergosterol biosynthesis I</strong><span>gomodel:YeastPathways_PWY-6075-1 - 35 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4300.html"><strong>ethanol degradation</strong><span>gomodel:YeastPathways_PWY3O-4300 - 58 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_FASYN-ELONG2-PWY.html"><strong>fatty acid elongation</strong><span>gomodel:YeastPathways_FASYN-ELONG2-PWY - 53 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_YEAST-FAO-PWY.html"><strong>fatty acid oxidation pathway</strong><span>gomodel:YeastPathways_YEAST-FAO-PWY - 76 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_RIBOSYN2-PWY.html"><strong>flavin biosynthesis I</strong><span>MetaCyc:RIBOSYN2-PWY - 61 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-697.html"><strong>folate interconversions</strong><span>gomodel:YeastPathways_PWY3O-697 - 103 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-1801-1.html"><strong>formaldehyde oxidation II (glutathione-dependent)</strong><span>gomodel:YeastPathways_PWY-1801-1 - 23 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_YEAST-GALACT-METAB-PWY.html"><strong>galactose degradation</strong><span>gomodel:YeastPathways_YEAST-GALACT-METAB-PWY - 23 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_GLUCONEO-PWY-1.html"><strong>gluconeogenesis I</strong><span>gomodel:YeastPathways_GLUCONEO-PWY-1 - 108 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP556.html"><strong>Glutamate degradation I</strong><span>WikiPathways:WP556 - 6 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GLUTATHIONESYN-PWY.html"><strong>glutathione biosynthesis</strong><span>MetaCyc:GLUTATHIONESYN-PWY - 17 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWYQT-4432.html"><strong>glutathione degradation</strong><span>gomodel:YeastPathways_PWYQT-4432 - 11 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP392.html"><strong>Glutathione-glutaredoxin redox reaction</strong><span>WikiPathways:WP392 - 14 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-48.html"><strong>glycerol biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-48 - 26 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GLYCEROLMETAB-PWY.html"><strong>glycerol degradation V</strong><span>MetaCyc:GLYCEROLMETAB-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_GLYCLEAV-PWY.html"><strong>glycine cleavage</strong><span>gomodel:YeastPathways_GLYCLEAV-PWY - 18 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP478.html"><strong>Glycogen catabolism</strong><span>WikiPathways:WP478 - 7 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_GLYCOLYSIS.html"><strong>glycolysis I (from glucose 6-phosphate)</strong><span>gomodel:YeastPathways_GLYCOLYSIS - 91 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GLYOXYLATE-BYPASS.html"><strong>glyoxylate cycle</strong><span>MetaCyc:GLYOXYLATE-BYPASS - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-7221.html"><strong>guanosine ribonucleotides de novo biosynthesis</strong><span>gomodel:YeastPathways_PWY-7221 - 41 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_HEME-BIOSYNTHESIS-II.html"><strong>heme b biosynthesis I (aerobic)</strong><span>gomodel:YeastPathways_HEME-BIOSYNTHESIS-II - 22 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_HEXPPSYN-PWY-2.html"><strong>hexaprenyl diphosphate biosynthesis</strong><span>gomodel:YeastPathways_HEXPPSYN-PWY-2 - 28 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_HOMOCYS-CYS-CONVERT.html"><strong>homocysteine and cysteine interconversion</strong><span>gomodel:YeastPathways_HOMOCYS-CYS-CONVERT - 22 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY-6123.html"><strong>inosine-5&#x27;-phosphate biosynthesis I</strong><span>MetaCyc:PWY-6123 - 38 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY-6124.html"><strong>inosine-5&#x27;-phosphate biosynthesis II</strong><span>MetaCyc:PWY-6124 - 30 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-402.html"><strong>inositol phosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-402 - 73 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP178.html"><strong>Isoleucine degradation</strong><span>WikiPathways:WP178 - 6 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_ARABCAT-PWY.html"><strong>L-arabinose degradation I</strong><span>MetaCyc:ARABCAT-PWY - 14 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_ARGSYN-PWY.html"><strong>L-arginine biosynthesis I (via L-ornithine)</strong><span>MetaCyc:ARGSYN-PWY - 53 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_ARGSYNBSUB-PWY.html"><strong>L-arginine biosynthesis II (acetyl cycle)</strong><span>gomodel:YeastPathways_ARGSYNBSUB-PWY - 63 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_AST-PWY.html"><strong>L-arginine degradation II (AST pathway)</strong><span>MetaCyc:AST-PWY - 34 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_ARGDEG-III-PWY.html"><strong>L-arginine degradation IV (arginine decarboxylase/agmatine deiminase pathway)</strong><span>MetaCyc:ARGDEG-III-PWY - 19 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_ARGDEGRAD-PWY.html"><strong>L-arginine degradation V (arginine deiminase pathway)</strong><span>MetaCyc:ARGDEGRAD-PWY - 21 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_ASPARAGINE-BIOSYNTHESIS-1.html"><strong>L-asparagine biosynthesis I</strong><span>gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1 - 34 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_ASPARAGINE-DEG2-PWY.html"><strong>asparagine degradation</strong><span>gomodel:YeastPathways_ASPARAGINE-DEG2-PWY - 35 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_CYSTSYN-PWY.html"><strong>L-cysteine biosynthesis I</strong><span>MetaCyc:CYSTSYN-PWY - 11 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_HOMOCYSDEGR-PWY-1.html"><strong>L-cysteine biosynthesis III (from L-homocysteine)</strong><span>gomodel:YeastPathways_HOMOCYSDEGR-PWY-1 - 12 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_FUCCAT-PWY.html"><strong>L-fucose degradation I</strong><span>MetaCyc:FUCCAT-PWY - 19 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_HISTSYN-PWY.html"><strong>L-histidine biosynthesis</strong><span>MetaCyc:HISTSYN-PWY - 61 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5344.html"><strong>L-homocysteine biosynthesis</strong><span>gomodel:YeastPathways_PWY-5344 - 12 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_HOMOSERSYN-PWY.html"><strong>L-homoserine biosynthesis</strong><span>MetaCyc:HOMOSERSYN-PWY - 20 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_ILEUSYN-PWY.html"><strong>L-isoleucine biosynthesis I (from threonine)</strong><span>MetaCyc:ILEUSYN-PWY - 29 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_LEUSYN-PWY.html"><strong>L-leucine biosynthesis</strong><span>MetaCyc:LEUSYN-PWY - 24 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_DAPLYSINESYN-PWY.html"><strong>L-lysine biosynthesis I</strong><span>MetaCyc:DAPLYSINESYN-PWY - 66 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_LYSINE-AMINOAD-PWY-2.html"><strong>L-lysine biosynthesis IV</strong><span>gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2 - 56 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_HOMOSER-METSYN-PWY.html"><strong>L-methionine biosynthesis I</strong><span>MetaCyc:HOMOSER-METSYN-PWY - 31 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GLUTORN-PWY.html"><strong>L-ornithine biosynthesis I</strong><span>MetaCyc:GLUTORN-PWY - 32 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PHESYN.html"><strong>L-phenylalanine biosynthesis I</strong><span>MetaCyc:PHESYN - 16 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PROSYN-PWY.html"><strong>L-proline biosynthesis I (from L-glutamate)</strong><span>MetaCyc:PROSYN-PWY - 25 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PROUT-PWY.html"><strong>L-proline degradation</strong><span>gomodel:YeastPathways_PROUT-PWY - 17 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_RHAMCAT-PWY.html"><strong>L-rhamnose degradation I</strong><span>MetaCyc:RHAMCAT-PWY - 22 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_SERSYN-PWY.html"><strong>L-serine biosynthesis I</strong><span>MetaCyc:SERSYN-PWY - 18 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_HOMOSER-THRESYN-PWY.html"><strong>L-threonine biosynthesis</strong><span>MetaCyc:HOMOSER-THRESYN-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_TRPSYN-PWY.html"><strong>L-tryptophan biosynthesis</strong><span>MetaCyc:TRPSYN-PWY - 31 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5651.html"><strong>L-tryptophan degradation to 2-amino-3-carboxymuconate semialdehyde</strong><span>gomodel:YeastPathways_PWY-5651 - 35 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_TYRSYN.html"><strong>L-tyrosine biosynthesis I</strong><span>MetaCyc:TYRSYN - 16 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4108.html"><strong>L-tyrosine degradation III</strong><span>gomodel:YeastPathways_PWY3O-4108 - 76 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_VALSYN-PWY.html"><strong>L-valine biosynthesis</strong><span>MetaCyc:VALSYN-PWY - 23 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4112.html"><strong>leucine degradation</strong><span>gomodel:YeastPathways_PWY3O-4112 - 44 mechanistic edges</span></a></li>
-<li><a href="records/MIBiG_BGC0002072.html"><strong>linearmycin A and related metabolites biosynthetic gene cluster</strong><span>MIBiG:BGC0002072 - 0 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_6882d2b800000609.html"><strong>lipid IV(A) biosynthesis pathway</strong><span>gomodel:6882d2b800000609 - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-1743.html"><strong>mannose degradation</strong><span>gomodel:YeastPathways_PWY3O-1743 - 21 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-64.html"><strong>methionine salvage pathway</strong><span>gomodel:YeastPathways_PWY3O-64 - 44 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-901.html"><strong>methylglyoxal catabolism</strong><span>gomodel:YeastPathways_PWY-901 - 16 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_IPPSYN-PWY.html"><strong>mevalonate pathway</strong><span>gomodel:YeastPathways_IPPSYN-PWY - 40 mechanistic edges</span></a></li>
-<li><a href="records/Reactome_R-MTU-868688.html"><strong>Mycobacterium tuberculosis trehalose biosynthesis</strong><span>Reactome:R-MTU-868688 - 22 mechanistic edges</span></a></li>
-<li><a href="records/Reactome_R-MTU-879299.html"><strong>Mycothiol biosynthesis</strong><span>Reactome:R-MTU-879299 - 31 mechanistic edges</span></a></li>
-<li><a href="records/Reactome_R-MTU-879325.html"><strong>Mycothiol catabolism</strong><span>Reactome:R-MTU-879325 - 5 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-2301.html"><strong>myo-inositol biosynthesis</strong><span>gomodel:YeastPathways_PWY-2301 - 13 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_GLUAMCAT-PWY.html"><strong>N-acetylglucosamine degradation I</strong><span>MetaCyc:GLUAMCAT-PWY - 11 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5653.html"><strong>NAD biosynthesis from 2-amino-3-carboxymuconate semialdehyde</strong><span>gomodel:YeastPathways_PWY-5653 - 32 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PYRIDNUCSYN-PWY.html"><strong>NAD de novo biosynthesis I (from aspartate)</strong><span>MetaCyc:PYRIDNUCSYN-PWY - 48 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PYRIDNUCSAL-PWY.html"><strong>NAD salvage pathway I (PNC VI cycle)</strong><span>MetaCyc:PYRIDNUCSAL-PWY - 48 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4106.html"><strong>NAD salvage pathway IV (from nicotinamide riboside)</strong><span>gomodel:YeastPathways_PWY3O-4106 - 18 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP171.html"><strong>NAD salvage pathway V</strong><span>WikiPathways:WP171 - 26 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-5268.html"><strong>oleate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-5268 - 10 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-1801.html"><strong>palmitoleate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-1801 - 13 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_NONOXIPENT-PWY.html"><strong>pentose phosphate pathway (non-oxidative branch) I</strong><span>MetaCyc:NONOXIPENT-PWY - 26 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_OXIDATIVEPENT-PWY.html"><strong>pentose phosphate pathway (oxidative branch) I</strong><span>MetaCyc:OXIDATIVEPENT-PWY - 19 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP5060.html"><strong>Peptidoglycan cytoplasmic synthesis and recycling pathways</strong><span>WikiPathways:WP5060 - 89 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PERIPLASMA-NAD-DEGRADATION.html"><strong>periplasmic NAD degradation</strong><span>gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION - 11 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4153.html"><strong>phenylalanine biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-4153 - 19 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-6407.html"><strong>phosphatidate biosynthesis I (the dihydroxyacetone pathway)</strong><span>gomodel:YeastPathways_PWY3O-6407 - 21 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-6499.html"><strong>phosphatidate biosynthesis II (the glycerol-3-phosphate pathway)</strong><span>gomodel:YeastPathways_PWY3O-6499 - 27 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-450.html"><strong>phosphatidylcholine biosynthesis I</strong><span>gomodel:YeastPathways_PWY3O-450 - 18 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5669.html"><strong>phosphatidylethanolamine biosynthesis I</strong><span>gomodel:YeastPathways_PWY-5669 - 16 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-242.html"><strong>phosphatidylinositol phosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-242 - 180 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-259.html"><strong>phospholipid biosynthesis II (Kennedy pathway)</strong><span>gomodel:YeastPathways_PWY3O-259 - 18 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PHOSLIPSYN2-PWY-1.html"><strong>phospholipid biosynthesis</strong><span>gomodel:YeastPathways_PHOSLIPSYN2-PWY-1 - 56 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP71.html"><strong>Phospholipids degradation</strong><span>WikiPathways:WP71 - 6 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PANTO-PWY.html"><strong>phosphopantothenate biosynthesis I</strong><span>MetaCyc:PANTO-PWY - 29 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PPGPPMET-PWY.html"><strong>ppGpp metabolism</strong><span>MetaCyc:PPGPPMET-PWY - 41 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PYRIDOXSYN-PWY.html"><strong>pyridoxal 5&#x27;-phosphate biosynthesis I</strong><span>MetaCyc:PYRIDOXSYN-PWY - 48 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PLPSAL-PWY.html"><strong>pyridoxal 5&#x27;-phosphate salvage I</strong><span>MetaCyc:PLPSAL-PWY - 32 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PYRUVDEHYD-PWY.html"><strong>pyruvate decarboxylation to acetyl CoA</strong><span>gomodel:YeastPathways_PYRUVDEHYD-PWY - 23 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-440.html"><strong>pyruvate fermentation to acetoin III</strong><span>gomodel:YeastPathways_PWY3O-440 - 51 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5041.html"><strong>S-adenosyl-L-methionine cycle II</strong><span>gomodel:YeastPathways_PWY-5041 - 24 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_YEAST-RNT-SALV.html"><strong>salvage pathways of pyrimidine ribonucleotides</strong><span>gomodel:YeastPathways_YEAST-RNT-SALV - 49 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5194-1.html"><strong>siroheme biosynthesis</strong><span>gomodel:YeastPathways_PWY-5194-1 - 19 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_BSUBPOLYAMSYN-PWY.html"><strong>spermidine biosynthesis I</strong><span>gomodel:YeastPathways_BSUBPOLYAMSYN-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_ARGSPECAT-PWY.html"><strong>spermine biosynthesis</strong><span>gomodel:YeastPathways_ARGSPECAT-PWY - 11 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_SPHINGOLIPID-SYN-PWY-1.html"><strong>sphingolipid biosynthesis (yeast)</strong><span>gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1 - 148 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5340.html"><strong>sulfate activation (for sulfonation)</strong><span>gomodel:YeastPathways_PWY-5340 - 13 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_DETOX1-PWY.html"><strong>superoxide radicals degradation</strong><span>gomodel:YeastPathways_DETOX1-PWY - 18 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP296.html"><strong>TCA cycle - detailed</strong><span>WikiPathways:WP296 - 51 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-6614.html"><strong>tetrahydrofolate biosynthesis</strong><span>gomodel:YeastPathways_PWY-6614 - 20 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-50.html"><strong>tetrapyrrole biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-50 - 21 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-17.html"><strong>thiamine biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-17 - 67 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_THREOCAT2-PWY.html"><strong>threonine degradation</strong><span>gomodel:YeastPathways_THREOCAT2-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5123.html"><strong>trans, trans-farnesyl diphosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY-5123 - 15 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_TRESYN-PWY.html"><strong>trehalose biosynthesis I</strong><span>MetaCyc:TRESYN-PWY - 12 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP266.html"><strong>Triglyceride biosynthesis</strong><span>WikiPathways:WP266 - 10 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-214.html"><strong>tryptophan degradation</strong><span>gomodel:YeastPathways_PWY3O-214 - 66 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4120.html"><strong>tyrosine biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-4120 - 19 mechanistic edges</span></a></li>
-<li><a href="records/WikiPathways_WP287.html"><strong>Ubiquinol-6 biosynthesis from 4-hydroxybenzoate</strong><span>WikiPathways:WP287 - 16 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_UDPNAGSYN-YEAST-PWY.html"><strong>UDP-N-acetylglucosamine biosynthesis</strong><span>gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY - 23 mechanistic edges</span></a></li>
-<li><a href="records/MetaCyc_PWY-5686.html"><strong>UMP biosynthesis I</strong><span>MetaCyc:PWY-5686 - 41 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5703.html"><strong>urea degradation I</strong><span>gomodel:YeastPathways_PWY-5703 - 16 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-7176.html"><strong>UTP and CTP de novo biosynthesis</strong><span>gomodel:YeastPathways_PWY-7176 - 30 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-4105.html"><strong>valine degradation</strong><span>gomodel:YeastPathways_PWY3O-4105 - 76 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-5080-1.html"><strong>very long chain fatty acid biosynthesis I</strong><span>gomodel:YeastPathways_PWY-5080-1 - 27 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY3O-8.html"><strong>xylose metabolism</strong><span>gomodel:YeastPathways_PWY3O-8 - 12 mechanistic edges</span></a></li>
-<li><a href="records/gomodel_YeastPathways_PWY-6074-1.html"><strong>zymosterol biosynthesis</strong><span>gomodel:YeastPathways_PWY-6074-1 - 81 mechanistic edges</span></a></li></ul>
+</script><ul class="record-list" id="pathway-list"><li data-search="2-phenylethanol biosynthesis WikiPathways:WP5587"><a href="records/WikiPathways_WP5587.html"><strong>2-phenylethanol biosynthesis</strong><span>WikiPathways:WP5587 — 38 mechanistic edges</span></a></li>
+<li data-search="4-aminobenzoate biosynthesis I MetaCyc:PWY-6543"><a href="records/MetaCyc_PWY-6543.html"><strong>4-aminobenzoate biosynthesis I</strong><span>MetaCyc:PWY-6543 — 16 mechanistic edges</span></a></li>
+<li data-search="4-aminobutyrate degradation gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY"><a href="records/gomodel_YeastPathways_YEAST-4AMINOBUTMETAB-PWY.html"><strong>4-aminobutyrate degradation</strong><span>gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY — 19 mechanistic edges</span></a></li>
+<li data-search="5-aminoimidazole ribonucleotide biosynthesis I MetaCyc:PWY-6121"><a href="records/MetaCyc_PWY-6121.html"><strong>5-aminoimidazole ribonucleotide biosynthesis I</strong><span>MetaCyc:PWY-6121 — 52 mechanistic edges</span></a></li>
+<li data-search="5-aminoimidazole ribonucleotide biosynthesis II MetaCyc:PWY-6122"><a href="records/MetaCyc_PWY-6122.html"><strong>5-aminoimidazole ribonucleotide biosynthesis II</strong><span>MetaCyc:PWY-6122 — 54 mechanistic edges</span></a></li>
+<li data-search="6-hydroxymethyl-dihydropterin diphosphate biosynthesis I gomodel:YeastPathways_PWY-6147"><a href="records/gomodel_YeastPathways_PWY-6147.html"><strong>6-hydroxymethyl-dihydropterin diphosphate biosynthesis I</strong><span>gomodel:YeastPathways_PWY-6147 — 41 mechanistic edges</span></a></li>
+<li data-search="acetate and ATP formation from acetyl-CoA I MetaCyc:PWY0-1312"><a href="records/MetaCyc_PWY0-1312.html"><strong>acetate and ATP formation from acetyl-CoA I</strong><span>MetaCyc:PWY0-1312 — 17 mechanistic edges</span></a></li>
+<li data-search="Acetogenesis WikiPathways:WP5019"><a href="records/WikiPathways_WP5019.html"><strong>Acetogenesis</strong><span>WikiPathways:WP5019 — 60 mechanistic edges</span></a></li>
+<li data-search="adenosine deoxyribonucleotides de novo biosynthesis II gomodel:YeastPathways_PWY-7220-1"><a href="records/gomodel_YeastPathways_PWY-7220-1.html"><strong>adenosine deoxyribonucleotides de novo biosynthesis II</strong><span>gomodel:YeastPathways_PWY-7220-1 — 42 mechanistic edges</span></a></li>
+<li data-search="adenosine ribonucleotides de novo biosynthesis gomodel:YeastPathways_PWY-7219"><a href="records/gomodel_YeastPathways_PWY-7219.html"><strong>adenosine ribonucleotides de novo biosynthesis</strong><span>gomodel:YeastPathways_PWY-7219 — 33 mechanistic edges</span></a></li>
+<li data-search="aerobic glycerol degradation gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY"><a href="records/gomodel_YeastPathways_AERO-GLYCEROL-CAT-PWY.html"><strong>aerobic glycerol degradation</strong><span>gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY — 19 mechanistic edges</span></a></li>
+<li data-search="allantoin degradation to glyoxylate I gomodel:YeastPathways_PWY-5694"><a href="records/gomodel_YeastPathways_PWY-5694.html"><strong>allantoin degradation to glyoxylate I</strong><span>gomodel:YeastPathways_PWY-5694 — 21 mechanistic edges</span></a></li>
+<li data-search="allantoin degradation to ureidoglycolate I (urea producing) gomodel:YeastPathways_PWY-5697"><a href="records/gomodel_YeastPathways_PWY-5697.html"><strong>allantoin degradation to ureidoglycolate I (urea producing)</strong><span>gomodel:YeastPathways_PWY-5697 — 16 mechanistic edges</span></a></li>
+<li data-search="asparagine degradation gomodel:YeastPathways_ASPARAGINE-DEG2-PWY"><a href="records/gomodel_YeastPathways_ASPARAGINE-DEG2-PWY.html"><strong>asparagine degradation</strong><span>gomodel:YeastPathways_ASPARAGINE-DEG2-PWY — 58 mechanistic edges</span></a></li>
+<li data-search="aspartate biosynthesis gomodel:YeastPathways_ASPBIO-PWY"><a href="records/gomodel_YeastPathways_ASPBIO-PWY.html"><strong>aspartate biosynthesis</strong><span>gomodel:YeastPathways_ASPBIO-PWY — 44 mechanistic edges</span></a></li>
+<li data-search="assimilatory sulfate reduction I gomodel:YeastPathways_SO4ASSIM-PWY"><a href="records/gomodel_YeastPathways_SO4ASSIM-PWY.html"><strong>assimilatory sulfate reduction I</strong><span>gomodel:YeastPathways_SO4ASSIM-PWY — 50 mechanistic edges</span></a></li>
+<li data-search="beta-alanine biosynthesis IV gomodel:YeastPathways_PWY-5760-1"><a href="records/gomodel_YeastPathways_PWY-5760-1.html"><strong>beta-alanine biosynthesis IV</strong><span>gomodel:YeastPathways_PWY-5760-1 — 28 mechanistic edges</span></a></li>
+<li data-search="carnitine shuttle gomodel:YeastPathways_PWY3O-4"><a href="records/gomodel_YeastPathways_PWY3O-4.html"><strong>carnitine shuttle</strong><span>gomodel:YeastPathways_PWY3O-4 — 32 mechanistic edges</span></a></li>
+<li data-search="chitin biosynthesis gomodel:YeastPathways_PWY3O-15"><a href="records/gomodel_YeastPathways_PWY3O-15.html"><strong>chitin biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-15 — 29 mechanistic edges</span></a></li>
+<li data-search="chorismate biosynthesis I MetaCyc:ARO-PWY"><a href="records/MetaCyc_ARO-PWY.html"><strong>chorismate biosynthesis I</strong><span>MetaCyc:ARO-PWY — 66 mechanistic edges</span></a></li>
+<li data-search="citrulline biosynthesis gomodel:YeastPathways_CITRUL-BIO2-PWY"><a href="records/gomodel_YeastPathways_CITRUL-BIO2-PWY.html"><strong>citrulline biosynthesis</strong><span>gomodel:YeastPathways_CITRUL-BIO2-PWY — 28 mechanistic edges</span></a></li>
+<li data-search="coenzyme A biosynthesis I (prokaryotic) MetaCyc:COA-PWY"><a href="records/MetaCyc_COA-PWY.html"><strong>coenzyme A biosynthesis I (prokaryotic)</strong><span>MetaCyc:COA-PWY — 38 mechanistic edges</span></a></li>
+<li data-search="Cysteine synthesis from O-acetylserine Reactome:R-MTU-936721"><a href="records/Reactome_R-MTU-936721.html"><strong>Cysteine synthesis from O-acetylserine</strong><span>Reactome:R-MTU-936721 — 69 mechanistic edges</span></a></li>
+<li data-search="Cysteine synthesis from O-phosphoserine Reactome:R-MTU-936654"><a href="records/Reactome_R-MTU-936654.html"><strong>Cysteine synthesis from O-phosphoserine</strong><span>Reactome:R-MTU-936654 — 28 mechanistic edges</span></a></li>
+<li data-search="D-arabinose degradation I MetaCyc:DARABCAT-PWY"><a href="records/MetaCyc_DARABCAT-PWY.html"><strong>D-arabinose degradation I</strong><span>MetaCyc:DARABCAT-PWY — 10 mechanistic edges</span></a></li>
+<li data-search="D-galacturonate degradation I MetaCyc:GALACTUROCAT-PWY"><a href="records/MetaCyc_GALACTUROCAT-PWY.html"><strong>D-galacturonate degradation I</strong><span>MetaCyc:GALACTUROCAT-PWY — 27 mechanistic edges</span></a></li>
+<li data-search="D-glucarate degradation I MetaCyc:GLUCARDEG-PWY"><a href="records/MetaCyc_GLUCARDEG-PWY.html"><strong>D-glucarate degradation I</strong><span>MetaCyc:GLUCARDEG-PWY — 30 mechanistic edges</span></a></li>
+<li data-search="D-xylose degradation I MetaCyc:XYLCAT-PWY"><a href="records/MetaCyc_XYLCAT-PWY.html"><strong>D-xylose degradation I</strong><span>MetaCyc:XYLCAT-PWY — 14 mechanistic edges</span></a></li>
+<li data-search="dolichyl glucosyl phosphate biosynthesis gomodel:YeastPathways_PWY3O-1565"><a href="records/gomodel_YeastPathways_PWY3O-1565.html"><strong>dolichyl glucosyl phosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-1565 — 45 mechanistic edges</span></a></li>
+<li data-search="dolichyl phosphate D-mannose biosynthesis gomodel:YeastPathways_PWY3O-123"><a href="records/gomodel_YeastPathways_PWY3O-123.html"><strong>dolichyl phosphate D-mannose biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-123 — 35 mechanistic edges</span></a></li>
+<li data-search="ectoine biosynthesis MetaCyc:P101-PWY"><a href="records/MetaCyc_P101-PWY.html"><strong>ectoine biosynthesis</strong><span>MetaCyc:P101-PWY — 38 mechanistic edges</span></a></li>
+<li data-search="epoxysqualene biosynthesis gomodel:YeastPathways_PWY-5670-1"><a href="records/gomodel_YeastPathways_PWY-5670-1.html"><strong>epoxysqualene biosynthesis</strong><span>gomodel:YeastPathways_PWY-5670-1 — 26 mechanistic edges</span></a></li>
+<li data-search="ergosterol biosynthesis I gomodel:YeastPathways_PWY-6075-1"><a href="records/gomodel_YeastPathways_PWY-6075-1.html"><strong>ergosterol biosynthesis I</strong><span>gomodel:YeastPathways_PWY-6075-1 — 47 mechanistic edges</span></a></li>
+<li data-search="ethanol degradation gomodel:YeastPathways_PWY3O-4300"><a href="records/gomodel_YeastPathways_PWY3O-4300.html"><strong>ethanol degradation</strong><span>gomodel:YeastPathways_PWY3O-4300 — 68 mechanistic edges</span></a></li>
+<li data-search="fatty acid elongation gomodel:YeastPathways_FASYN-ELONG2-PWY"><a href="records/gomodel_YeastPathways_FASYN-ELONG2-PWY.html"><strong>fatty acid elongation</strong><span>gomodel:YeastPathways_FASYN-ELONG2-PWY — 70 mechanistic edges</span></a></li>
+<li data-search="fatty acid oxidation pathway gomodel:YeastPathways_YEAST-FAO-PWY"><a href="records/gomodel_YeastPathways_YEAST-FAO-PWY.html"><strong>fatty acid oxidation pathway</strong><span>gomodel:YeastPathways_YEAST-FAO-PWY — 109 mechanistic edges</span></a></li>
+<li data-search="flavin biosynthesis I MetaCyc:RIBOSYN2-PWY"><a href="records/MetaCyc_RIBOSYN2-PWY.html"><strong>flavin biosynthesis I</strong><span>MetaCyc:RIBOSYN2-PWY — 84 mechanistic edges</span></a></li>
+<li data-search="folate interconversions gomodel:YeastPathways_PWY3O-697"><a href="records/gomodel_YeastPathways_PWY3O-697.html"><strong>folate interconversions</strong><span>gomodel:YeastPathways_PWY3O-697 — 138 mechanistic edges</span></a></li>
+<li data-search="formaldehyde oxidation II (glutathione-dependent) gomodel:YeastPathways_PWY-1801-1"><a href="records/gomodel_YeastPathways_PWY-1801-1.html"><strong>formaldehyde oxidation II (glutathione-dependent)</strong><span>gomodel:YeastPathways_PWY-1801-1 — 37 mechanistic edges</span></a></li>
+<li data-search="galactose degradation gomodel:YeastPathways_YEAST-GALACT-METAB-PWY"><a href="records/gomodel_YeastPathways_YEAST-GALACT-METAB-PWY.html"><strong>galactose degradation</strong><span>gomodel:YeastPathways_YEAST-GALACT-METAB-PWY — 42 mechanistic edges</span></a></li>
+<li data-search="gluconeogenesis I gomodel:YeastPathways_GLUCONEO-PWY-1"><a href="records/gomodel_YeastPathways_GLUCONEO-PWY-1.html"><strong>gluconeogenesis I</strong><span>gomodel:YeastPathways_GLUCONEO-PWY-1 — 158 mechanistic edges</span></a></li>
+<li data-search="Glutamate degradation I WikiPathways:WP556"><a href="records/WikiPathways_WP556.html"><strong>Glutamate degradation I</strong><span>WikiPathways:WP556 — 19 mechanistic edges</span></a></li>
+<li data-search="glutathione biosynthesis MetaCyc:GLUTATHIONESYN-PWY"><a href="records/MetaCyc_GLUTATHIONESYN-PWY.html"><strong>glutathione biosynthesis</strong><span>MetaCyc:GLUTATHIONESYN-PWY — 22 mechanistic edges</span></a></li>
+<li data-search="glutathione degradation gomodel:YeastPathways_PWYQT-4432"><a href="records/gomodel_YeastPathways_PWYQT-4432.html"><strong>glutathione degradation</strong><span>gomodel:YeastPathways_PWYQT-4432 — 20 mechanistic edges</span></a></li>
+<li data-search="Glutathione-glutaredoxin redox reaction WikiPathways:WP392"><a href="records/WikiPathways_WP392.html"><strong>Glutathione-glutaredoxin redox reaction</strong><span>WikiPathways:WP392 — 18 mechanistic edges</span></a></li>
+<li data-search="glycerol biosynthesis gomodel:YeastPathways_PWY3O-48"><a href="records/gomodel_YeastPathways_PWY3O-48.html"><strong>glycerol biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-48 — 44 mechanistic edges</span></a></li>
+<li data-search="glycerol degradation V MetaCyc:GLYCEROLMETAB-PWY"><a href="records/MetaCyc_GLYCEROLMETAB-PWY.html"><strong>glycerol degradation V</strong><span>MetaCyc:GLYCEROLMETAB-PWY — 12 mechanistic edges</span></a></li>
+<li data-search="glycine cleavage gomodel:YeastPathways_GLYCLEAV-PWY"><a href="records/gomodel_YeastPathways_GLYCLEAV-PWY.html"><strong>glycine cleavage</strong><span>gomodel:YeastPathways_GLYCLEAV-PWY — 26 mechanistic edges</span></a></li>
+<li data-search="Glycogen catabolism WikiPathways:WP478"><a href="records/WikiPathways_WP478.html"><strong>Glycogen catabolism</strong><span>WikiPathways:WP478 — 13 mechanistic edges</span></a></li>
+<li data-search="glycolysis I (from glucose 6-phosphate) gomodel:YeastPathways_GLYCOLYSIS"><a href="records/gomodel_YeastPathways_GLYCOLYSIS.html"><strong>glycolysis I (from glucose 6-phosphate)</strong><span>gomodel:YeastPathways_GLYCOLYSIS — 148 mechanistic edges</span></a></li>
+<li data-search="glyoxylate cycle MetaCyc:GLYOXYLATE-BYPASS"><a href="records/MetaCyc_GLYOXYLATE-BYPASS.html"><strong>glyoxylate cycle</strong><span>MetaCyc:GLYOXYLATE-BYPASS — 50 mechanistic edges</span></a></li>
+<li data-search="guanosine ribonucleotides de novo biosynthesis gomodel:YeastPathways_PWY-7221"><a href="records/gomodel_YeastPathways_PWY-7221.html"><strong>guanosine ribonucleotides de novo biosynthesis</strong><span>gomodel:YeastPathways_PWY-7221 — 64 mechanistic edges</span></a></li>
+<li data-search="heme b biosynthesis I (aerobic) gomodel:YeastPathways_HEME-BIOSYNTHESIS-II"><a href="records/gomodel_YeastPathways_HEME-BIOSYNTHESIS-II.html"><strong>heme b biosynthesis I (aerobic)</strong><span>gomodel:YeastPathways_HEME-BIOSYNTHESIS-II — 36 mechanistic edges</span></a></li>
+<li data-search="hexaprenyl diphosphate biosynthesis gomodel:YeastPathways_HEXPPSYN-PWY-2"><a href="records/gomodel_YeastPathways_HEXPPSYN-PWY-2.html"><strong>hexaprenyl diphosphate biosynthesis</strong><span>gomodel:YeastPathways_HEXPPSYN-PWY-2 — 44 mechanistic edges</span></a></li>
+<li data-search="homocysteine and cysteine interconversion gomodel:YeastPathways_HOMOCYS-CYS-CONVERT"><a href="records/gomodel_YeastPathways_HOMOCYS-CYS-CONVERT.html"><strong>homocysteine and cysteine interconversion</strong><span>gomodel:YeastPathways_HOMOCYS-CYS-CONVERT — 39 mechanistic edges</span></a></li>
+<li data-search="inosine-5&#x27;-phosphate biosynthesis I MetaCyc:PWY-6123"><a href="records/MetaCyc_PWY-6123.html"><strong>inosine-5&#x27;-phosphate biosynthesis I</strong><span>MetaCyc:PWY-6123 — 44 mechanistic edges</span></a></li>
+<li data-search="inosine-5&#x27;-phosphate biosynthesis II MetaCyc:PWY-6124"><a href="records/MetaCyc_PWY-6124.html"><strong>inosine-5&#x27;-phosphate biosynthesis II</strong><span>MetaCyc:PWY-6124 — 31 mechanistic edges</span></a></li>
+<li data-search="inositol phosphate biosynthesis gomodel:YeastPathways_PWY3O-402"><a href="records/gomodel_YeastPathways_PWY3O-402.html"><strong>inositol phosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-402 — 117 mechanistic edges</span></a></li>
+<li data-search="Isoleucine degradation WikiPathways:WP178"><a href="records/WikiPathways_WP178.html"><strong>Isoleucine degradation</strong><span>WikiPathways:WP178 — 35 mechanistic edges</span></a></li>
+<li data-search="L-arabinose degradation I MetaCyc:ARABCAT-PWY"><a href="records/MetaCyc_ARABCAT-PWY.html"><strong>L-arabinose degradation I</strong><span>MetaCyc:ARABCAT-PWY — 23 mechanistic edges</span></a></li>
+<li data-search="L-arginine biosynthesis I (via L-ornithine) MetaCyc:ARGSYN-PWY"><a href="records/MetaCyc_ARGSYN-PWY.html"><strong>L-arginine biosynthesis I (via L-ornithine)</strong><span>MetaCyc:ARGSYN-PWY — 91 mechanistic edges</span></a></li>
+<li data-search="L-arginine biosynthesis II (acetyl cycle) gomodel:YeastPathways_ARGSYNBSUB-PWY"><a href="records/gomodel_YeastPathways_ARGSYNBSUB-PWY.html"><strong>L-arginine biosynthesis II (acetyl cycle)</strong><span>gomodel:YeastPathways_ARGSYNBSUB-PWY — 91 mechanistic edges</span></a></li>
+<li data-search="L-arginine degradation II (AST pathway) MetaCyc:AST-PWY"><a href="records/MetaCyc_AST-PWY.html"><strong>L-arginine degradation II (AST pathway)</strong><span>MetaCyc:AST-PWY — 43 mechanistic edges</span></a></li>
+<li data-search="L-arginine degradation IV (arginine decarboxylase/agmatine deiminase pathway) MetaCyc:ARGDEG-III-PWY"><a href="records/MetaCyc_ARGDEG-III-PWY.html"><strong>L-arginine degradation IV (arginine decarboxylase/agmatine deiminase pathway)</strong><span>MetaCyc:ARGDEG-III-PWY — 23 mechanistic edges</span></a></li>
+<li data-search="L-arginine degradation V (arginine deiminase pathway) MetaCyc:ARGDEGRAD-PWY"><a href="records/MetaCyc_ARGDEGRAD-PWY.html"><strong>L-arginine degradation V (arginine deiminase pathway)</strong><span>MetaCyc:ARGDEGRAD-PWY — 28 mechanistic edges</span></a></li>
+<li data-search="L-asparagine biosynthesis I gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1"><a href="records/gomodel_YeastPathways_ASPARAGINE-BIOSYNTHESIS-1.html"><strong>L-asparagine biosynthesis I</strong><span>gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1 — 46 mechanistic edges</span></a></li>
+<li data-search="L-cysteine biosynthesis I MetaCyc:CYSTSYN-PWY"><a href="records/MetaCyc_CYSTSYN-PWY.html"><strong>L-cysteine biosynthesis I</strong><span>MetaCyc:CYSTSYN-PWY — 18 mechanistic edges</span></a></li>
+<li data-search="L-cysteine biosynthesis III (from L-homocysteine) gomodel:YeastPathways_HOMOCYSDEGR-PWY-1"><a href="records/gomodel_YeastPathways_HOMOCYSDEGR-PWY-1.html"><strong>L-cysteine biosynthesis III (from L-homocysteine)</strong><span>gomodel:YeastPathways_HOMOCYSDEGR-PWY-1 — 19 mechanistic edges</span></a></li>
+<li data-search="L-fucose degradation I MetaCyc:FUCCAT-PWY"><a href="records/MetaCyc_FUCCAT-PWY.html"><strong>L-fucose degradation I</strong><span>MetaCyc:FUCCAT-PWY — 19 mechanistic edges</span></a></li>
+<li data-search="L-histidine biosynthesis MetaCyc:HISTSYN-PWY"><a href="records/MetaCyc_HISTSYN-PWY.html"><strong>L-histidine biosynthesis</strong><span>MetaCyc:HISTSYN-PWY — 85 mechanistic edges</span></a></li>
+<li data-search="L-homocysteine biosynthesis gomodel:YeastPathways_PWY-5344"><a href="records/gomodel_YeastPathways_PWY-5344.html"><strong>L-homocysteine biosynthesis</strong><span>gomodel:YeastPathways_PWY-5344 — 19 mechanistic edges</span></a></li>
+<li data-search="L-homoserine biosynthesis MetaCyc:HOMOSERSYN-PWY"><a href="records/MetaCyc_HOMOSERSYN-PWY.html"><strong>L-homoserine biosynthesis</strong><span>MetaCyc:HOMOSERSYN-PWY — 28 mechanistic edges</span></a></li>
+<li data-search="L-isoleucine biosynthesis I (from threonine) MetaCyc:ILEUSYN-PWY"><a href="records/MetaCyc_ILEUSYN-PWY.html"><strong>L-isoleucine biosynthesis I (from threonine)</strong><span>MetaCyc:ILEUSYN-PWY — 57 mechanistic edges</span></a></li>
+<li data-search="L-leucine biosynthesis MetaCyc:LEUSYN-PWY"><a href="records/MetaCyc_LEUSYN-PWY.html"><strong>L-leucine biosynthesis</strong><span>MetaCyc:LEUSYN-PWY — 49 mechanistic edges</span></a></li>
+<li data-search="L-lysine biosynthesis I MetaCyc:DAPLYSINESYN-PWY"><a href="records/MetaCyc_DAPLYSINESYN-PWY.html"><strong>L-lysine biosynthesis I</strong><span>MetaCyc:DAPLYSINESYN-PWY — 90 mechanistic edges</span></a></li>
+<li data-search="L-lysine biosynthesis IV gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2"><a href="records/gomodel_YeastPathways_LYSINE-AMINOAD-PWY-2.html"><strong>L-lysine biosynthesis IV</strong><span>gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2 — 89 mechanistic edges</span></a></li>
+<li data-search="L-methionine biosynthesis I MetaCyc:HOMOSER-METSYN-PWY"><a href="records/MetaCyc_HOMOSER-METSYN-PWY.html"><strong>L-methionine biosynthesis I</strong><span>MetaCyc:HOMOSER-METSYN-PWY — 50 mechanistic edges</span></a></li>
+<li data-search="L-ornithine biosynthesis I MetaCyc:GLUTORN-PWY"><a href="records/MetaCyc_GLUTORN-PWY.html"><strong>L-ornithine biosynthesis I</strong><span>MetaCyc:GLUTORN-PWY — 47 mechanistic edges</span></a></li>
+<li data-search="L-phenylalanine biosynthesis I MetaCyc:PHESYN"><a href="records/MetaCyc_PHESYN.html"><strong>L-phenylalanine biosynthesis I</strong><span>MetaCyc:PHESYN — 22 mechanistic edges</span></a></li>
+<li data-search="L-proline biosynthesis I (from L-glutamate) MetaCyc:PROSYN-PWY"><a href="records/MetaCyc_PROSYN-PWY.html"><strong>L-proline biosynthesis I (from L-glutamate)</strong><span>MetaCyc:PROSYN-PWY — 33 mechanistic edges</span></a></li>
+<li data-search="L-proline degradation gomodel:YeastPathways_PROUT-PWY"><a href="records/gomodel_YeastPathways_PROUT-PWY.html"><strong>L-proline degradation</strong><span>gomodel:YeastPathways_PROUT-PWY — 25 mechanistic edges</span></a></li>
+<li data-search="L-rhamnose degradation I MetaCyc:RHAMCAT-PWY"><a href="records/MetaCyc_RHAMCAT-PWY.html"><strong>L-rhamnose degradation I</strong><span>MetaCyc:RHAMCAT-PWY — 22 mechanistic edges</span></a></li>
+<li data-search="L-serine biosynthesis I MetaCyc:SERSYN-PWY"><a href="records/MetaCyc_SERSYN-PWY.html"><strong>L-serine biosynthesis I</strong><span>MetaCyc:SERSYN-PWY — 28 mechanistic edges</span></a></li>
+<li data-search="L-threonine biosynthesis MetaCyc:HOMOSER-THRESYN-PWY"><a href="records/MetaCyc_HOMOSER-THRESYN-PWY.html"><strong>L-threonine biosynthesis</strong><span>MetaCyc:HOMOSER-THRESYN-PWY — 16 mechanistic edges</span></a></li>
+<li data-search="L-tryptophan biosynthesis MetaCyc:TRPSYN-PWY"><a href="records/MetaCyc_TRPSYN-PWY.html"><strong>L-tryptophan biosynthesis</strong><span>MetaCyc:TRPSYN-PWY — 48 mechanistic edges</span></a></li>
+<li data-search="L-tryptophan degradation to 2-amino-3-carboxymuconate semialdehyde gomodel:YeastPathways_PWY-5651"><a href="records/gomodel_YeastPathways_PWY-5651.html"><strong>L-tryptophan degradation to 2-amino-3-carboxymuconate semialdehyde</strong><span>gomodel:YeastPathways_PWY-5651 — 47 mechanistic edges</span></a></li>
+<li data-search="L-tyrosine biosynthesis I MetaCyc:TYRSYN"><a href="records/MetaCyc_TYRSYN.html"><strong>L-tyrosine biosynthesis I</strong><span>MetaCyc:TYRSYN — 22 mechanistic edges</span></a></li>
+<li data-search="L-tyrosine degradation III gomodel:YeastPathways_PWY3O-4108"><a href="records/gomodel_YeastPathways_PWY3O-4108.html"><strong>L-tyrosine degradation III</strong><span>gomodel:YeastPathways_PWY3O-4108 — 121 mechanistic edges</span></a></li>
+<li data-search="L-valine biosynthesis MetaCyc:VALSYN-PWY"><a href="records/MetaCyc_VALSYN-PWY.html"><strong>L-valine biosynthesis</strong><span>MetaCyc:VALSYN-PWY — 44 mechanistic edges</span></a></li>
+<li data-search="leucine degradation gomodel:YeastPathways_PWY3O-4112"><a href="records/gomodel_YeastPathways_PWY3O-4112.html"><strong>leucine degradation</strong><span>gomodel:YeastPathways_PWY3O-4112 — 81 mechanistic edges</span></a></li>
+<li data-search="linearmycin A and related metabolites biosynthetic gene cluster MIBiG:BGC0002072"><a href="records/MIBiG_BGC0002072.html"><strong>linearmycin A and related metabolites biosynthetic gene cluster</strong><span>MIBiG:BGC0002072 — 4 mechanistic edges</span></a></li>
+<li data-search="lipid IV(A) biosynthesis pathway gomodel:6882d2b800000609"><a href="records/gomodel_6882d2b800000609.html"><strong>lipid IV(A) biosynthesis pathway</strong><span>gomodel:6882d2b800000609 — 33 mechanistic edges</span></a></li>
+<li data-search="mannose degradation gomodel:YeastPathways_PWY3O-1743"><a href="records/gomodel_YeastPathways_PWY3O-1743.html"><strong>mannose degradation</strong><span>gomodel:YeastPathways_PWY3O-1743 — 31 mechanistic edges</span></a></li>
+<li data-search="methionine salvage pathway gomodel:YeastPathways_PWY3O-64"><a href="records/gomodel_YeastPathways_PWY3O-64.html"><strong>methionine salvage pathway</strong><span>gomodel:YeastPathways_PWY3O-64 — 82 mechanistic edges</span></a></li>
+<li data-search="methylglyoxal catabolism gomodel:YeastPathways_PWY-901"><a href="records/gomodel_YeastPathways_PWY-901.html"><strong>methylglyoxal catabolism</strong><span>gomodel:YeastPathways_PWY-901 — 26 mechanistic edges</span></a></li>
+<li data-search="mevalonate pathway gomodel:YeastPathways_IPPSYN-PWY"><a href="records/gomodel_YeastPathways_IPPSYN-PWY.html"><strong>mevalonate pathway</strong><span>gomodel:YeastPathways_IPPSYN-PWY — 63 mechanistic edges</span></a></li>
+<li data-search="Mycobacterium tuberculosis trehalose biosynthesis Reactome:R-MTU-868688"><a href="records/Reactome_R-MTU-868688.html"><strong>Mycobacterium tuberculosis trehalose biosynthesis</strong><span>Reactome:R-MTU-868688 — 50 mechanistic edges</span></a></li>
+<li data-search="Mycothiol biosynthesis Reactome:R-MTU-879299"><a href="records/Reactome_R-MTU-879299.html"><strong>Mycothiol biosynthesis</strong><span>Reactome:R-MTU-879299 — 78 mechanistic edges</span></a></li>
+<li data-search="mycothiol S-conjugate catabolism Reactome:R-MTU-879325"><a href="records/Reactome_R-MTU-879325.html"><strong>mycothiol S-conjugate catabolism</strong><span>Reactome:R-MTU-879325 — 14 mechanistic edges</span></a></li>
+<li data-search="myo-inositol biosynthesis gomodel:YeastPathways_PWY-2301"><a href="records/gomodel_YeastPathways_PWY-2301.html"><strong>myo-inositol biosynthesis</strong><span>gomodel:YeastPathways_PWY-2301 — 25 mechanistic edges</span></a></li>
+<li data-search="N-acetylglucosamine degradation I MetaCyc:GLUAMCAT-PWY"><a href="records/MetaCyc_GLUAMCAT-PWY.html"><strong>N-acetylglucosamine degradation I</strong><span>MetaCyc:GLUAMCAT-PWY — 22 mechanistic edges</span></a></li>
+<li data-search="NAD biosynthesis from 2-amino-3-carboxymuconate semialdehyde gomodel:YeastPathways_PWY-5653"><a href="records/gomodel_YeastPathways_PWY-5653.html"><strong>NAD biosynthesis from 2-amino-3-carboxymuconate semialdehyde</strong><span>gomodel:YeastPathways_PWY-5653 — 48 mechanistic edges</span></a></li>
+<li data-search="NAD de novo biosynthesis I (from aspartate) MetaCyc:PYRIDNUCSYN-PWY"><a href="records/MetaCyc_PYRIDNUCSYN-PWY.html"><strong>NAD de novo biosynthesis I (from aspartate)</strong><span>MetaCyc:PYRIDNUCSYN-PWY — 48 mechanistic edges</span></a></li>
+<li data-search="NAD salvage pathway I (PNC VI cycle) MetaCyc:PYRIDNUCSAL-PWY"><a href="records/MetaCyc_PYRIDNUCSAL-PWY.html"><strong>NAD salvage pathway I (PNC VI cycle)</strong><span>MetaCyc:PYRIDNUCSAL-PWY — 48 mechanistic edges</span></a></li>
+<li data-search="NAD salvage pathway IV (from nicotinamide riboside) gomodel:YeastPathways_PWY3O-4106"><a href="records/gomodel_YeastPathways_PWY3O-4106.html"><strong>NAD salvage pathway IV (from nicotinamide riboside)</strong><span>gomodel:YeastPathways_PWY3O-4106 — 28 mechanistic edges</span></a></li>
+<li data-search="NAD salvage pathway V WikiPathways:WP171"><a href="records/WikiPathways_WP171.html"><strong>NAD salvage pathway V</strong><span>WikiPathways:WP171 — 41 mechanistic edges</span></a></li>
+<li data-search="oleate biosynthesis gomodel:YeastPathways_PWY3O-5268"><a href="records/gomodel_YeastPathways_PWY3O-5268.html"><strong>oleate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-5268 — 19 mechanistic edges</span></a></li>
+<li data-search="palmitoleate biosynthesis gomodel:YeastPathways_PWY3O-1801"><a href="records/gomodel_YeastPathways_PWY3O-1801.html"><strong>palmitoleate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-1801 — 20 mechanistic edges</span></a></li>
+<li data-search="pentose phosphate pathway (non-oxidative branch) I MetaCyc:NONOXIPENT-PWY"><a href="records/MetaCyc_NONOXIPENT-PWY.html"><strong>pentose phosphate pathway (non-oxidative branch) I</strong><span>MetaCyc:NONOXIPENT-PWY — 49 mechanistic edges</span></a></li>
+<li data-search="pentose phosphate pathway (oxidative branch) I MetaCyc:OXIDATIVEPENT-PWY"><a href="records/MetaCyc_OXIDATIVEPENT-PWY.html"><strong>pentose phosphate pathway (oxidative branch) I</strong><span>MetaCyc:OXIDATIVEPENT-PWY — 22 mechanistic edges</span></a></li>
+<li data-search="Peptidoglycan cytoplasmic synthesis and recycling pathways WikiPathways:WP5060"><a href="records/WikiPathways_WP5060.html"><strong>Peptidoglycan cytoplasmic synthesis and recycling pathways</strong><span>WikiPathways:WP5060 — 127 mechanistic edges</span></a></li>
+<li data-search="periplasmic NAD degradation gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION"><a href="records/gomodel_YeastPathways_PERIPLASMA-NAD-DEGRADATION.html"><strong>periplasmic NAD degradation</strong><span>gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION — 19 mechanistic edges</span></a></li>
+<li data-search="phenylalanine biosynthesis gomodel:YeastPathways_PWY3O-4153"><a href="records/gomodel_YeastPathways_PWY3O-4153.html"><strong>phenylalanine biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-4153 — 33 mechanistic edges</span></a></li>
+<li data-search="phosphatidate biosynthesis I (the dihydroxyacetone pathway) gomodel:YeastPathways_PWY3O-6407"><a href="records/gomodel_YeastPathways_PWY3O-6407.html"><strong>phosphatidate biosynthesis I (the dihydroxyacetone pathway)</strong><span>gomodel:YeastPathways_PWY3O-6407 — 33 mechanistic edges</span></a></li>
+<li data-search="phosphatidate biosynthesis II (the glycerol-3-phosphate pathway) gomodel:YeastPathways_PWY3O-6499"><a href="records/gomodel_YeastPathways_PWY3O-6499.html"><strong>phosphatidate biosynthesis II (the glycerol-3-phosphate pathway)</strong><span>gomodel:YeastPathways_PWY3O-6499 — 43 mechanistic edges</span></a></li>
+<li data-search="phosphatidylcholine biosynthesis I gomodel:YeastPathways_PWY3O-450"><a href="records/gomodel_YeastPathways_PWY3O-450.html"><strong>phosphatidylcholine biosynthesis I</strong><span>gomodel:YeastPathways_PWY3O-450 — 28 mechanistic edges</span></a></li>
+<li data-search="phosphatidylethanolamine biosynthesis I gomodel:YeastPathways_PWY-5669"><a href="records/gomodel_YeastPathways_PWY-5669.html"><strong>phosphatidylethanolamine biosynthesis I</strong><span>gomodel:YeastPathways_PWY-5669 — 34 mechanistic edges</span></a></li>
+<li data-search="phosphatidylinositol phosphate biosynthesis gomodel:YeastPathways_PWY3O-242"><a href="records/gomodel_YeastPathways_PWY3O-242.html"><strong>phosphatidylinositol phosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-242 — 239 mechanistic edges</span></a></li>
+<li data-search="phospholipid biosynthesis gomodel:YeastPathways_PHOSLIPSYN2-PWY-1"><a href="records/gomodel_YeastPathways_PHOSLIPSYN2-PWY-1.html"><strong>phospholipid biosynthesis</strong><span>gomodel:YeastPathways_PHOSLIPSYN2-PWY-1 — 89 mechanistic edges</span></a></li>
+<li data-search="phospholipid biosynthesis II (Kennedy pathway) gomodel:YeastPathways_PWY3O-259"><a href="records/gomodel_YeastPathways_PWY3O-259.html"><strong>phospholipid biosynthesis II (Kennedy pathway)</strong><span>gomodel:YeastPathways_PWY3O-259 — 28 mechanistic edges</span></a></li>
+<li data-search="Phospholipids degradation WikiPathways:WP71"><a href="records/WikiPathways_WP71.html"><strong>Phospholipids degradation</strong><span>WikiPathways:WP71 — 6 mechanistic edges</span></a></li>
+<li data-search="phosphopantothenate biosynthesis I MetaCyc:PANTO-PWY"><a href="records/MetaCyc_PANTO-PWY.html"><strong>phosphopantothenate biosynthesis I</strong><span>MetaCyc:PANTO-PWY — 42 mechanistic edges</span></a></li>
+<li data-search="ppGpp metabolism MetaCyc:PPGPPMET-PWY"><a href="records/MetaCyc_PPGPPMET-PWY.html"><strong>ppGpp metabolism</strong><span>MetaCyc:PPGPPMET-PWY — 41 mechanistic edges</span></a></li>
+<li data-search="pyridoxal 5&#x27;-phosphate biosynthesis I MetaCyc:PYRIDOXSYN-PWY"><a href="records/MetaCyc_PYRIDOXSYN-PWY.html"><strong>pyridoxal 5&#x27;-phosphate biosynthesis I</strong><span>MetaCyc:PYRIDOXSYN-PWY — 67 mechanistic edges</span></a></li>
+<li data-search="pyridoxal 5&#x27;-phosphate salvage I MetaCyc:PLPSAL-PWY"><a href="records/MetaCyc_PLPSAL-PWY.html"><strong>pyridoxal 5&#x27;-phosphate salvage I</strong><span>MetaCyc:PLPSAL-PWY — 42 mechanistic edges</span></a></li>
+<li data-search="pyruvate decarboxylation to acetyl CoA gomodel:YeastPathways_PYRUVDEHYD-PWY"><a href="records/gomodel_YeastPathways_PYRUVDEHYD-PWY.html"><strong>pyruvate decarboxylation to acetyl CoA</strong><span>gomodel:YeastPathways_PYRUVDEHYD-PWY — 36 mechanistic edges</span></a></li>
+<li data-search="pyruvate fermentation to acetoin III gomodel:YeastPathways_PWY3O-440"><a href="records/gomodel_YeastPathways_PWY3O-440.html"><strong>pyruvate fermentation to acetoin III</strong><span>gomodel:YeastPathways_PWY3O-440 — 80 mechanistic edges</span></a></li>
+<li data-search="S-adenosyl-L-methionine cycle II gomodel:YeastPathways_PWY-5041"><a href="records/gomodel_YeastPathways_PWY-5041.html"><strong>S-adenosyl-L-methionine cycle II</strong><span>gomodel:YeastPathways_PWY-5041 — 45 mechanistic edges</span></a></li>
+<li data-search="salvage pathways of pyrimidine ribonucleotides gomodel:YeastPathways_YEAST-RNT-SALV"><a href="records/gomodel_YeastPathways_YEAST-RNT-SALV.html"><strong>salvage pathways of pyrimidine ribonucleotides</strong><span>gomodel:YeastPathways_YEAST-RNT-SALV — 82 mechanistic edges</span></a></li>
+<li data-search="siroheme biosynthesis gomodel:YeastPathways_PWY-5194-1"><a href="records/gomodel_YeastPathways_PWY-5194-1.html"><strong>siroheme biosynthesis</strong><span>gomodel:YeastPathways_PWY-5194-1 — 25 mechanistic edges</span></a></li>
+<li data-search="spermidine biosynthesis I gomodel:YeastPathways_BSUBPOLYAMSYN-PWY"><a href="records/gomodel_YeastPathways_BSUBPOLYAMSYN-PWY.html"><strong>spermidine biosynthesis I</strong><span>gomodel:YeastPathways_BSUBPOLYAMSYN-PWY — 17 mechanistic edges</span></a></li>
+<li data-search="spermine biosynthesis gomodel:YeastPathways_ARGSPECAT-PWY"><a href="records/gomodel_YeastPathways_ARGSPECAT-PWY.html"><strong>spermine biosynthesis</strong><span>gomodel:YeastPathways_ARGSPECAT-PWY — 16 mechanistic edges</span></a></li>
+<li data-search="sphingolipid biosynthesis (yeast) gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1"><a href="records/gomodel_YeastPathways_SPHINGOLIPID-SYN-PWY-1.html"><strong>sphingolipid biosynthesis (yeast)</strong><span>gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1 — 207 mechanistic edges</span></a></li>
+<li data-search="Sporosarcina pasteurii ectoine biosynthetic gene cluster MIBiG:BGC0000852"><a href="records/MIBiG_BGC0000852.html"><strong>Sporosarcina pasteurii ectoine biosynthetic gene cluster</strong><span>MIBiG:BGC0000852 — 4 mechanistic edges</span></a></li>
+<li data-search="sulfate activation (for sulfonation) gomodel:YeastPathways_PWY-5340"><a href="records/gomodel_YeastPathways_PWY-5340.html"><strong>sulfate activation (for sulfonation)</strong><span>gomodel:YeastPathways_PWY-5340 — 18 mechanistic edges</span></a></li>
+<li data-search="Sulfate assimilation Reactome:R-MTU-936635"><a href="records/Reactome_R-MTU-936635.html"><strong>Sulfate assimilation</strong><span>Reactome:R-MTU-936635 — 72 mechanistic edges</span></a></li>
+<li data-search="superoxide radicals degradation gomodel:YeastPathways_DETOX1-PWY"><a href="records/gomodel_YeastPathways_DETOX1-PWY.html"><strong>superoxide radicals degradation</strong><span>gomodel:YeastPathways_DETOX1-PWY — 34 mechanistic edges</span></a></li>
+<li data-search="TCA cycle - detailed WikiPathways:WP296"><a href="records/WikiPathways_WP296.html"><strong>TCA cycle - detailed</strong><span>WikiPathways:WP296 — 75 mechanistic edges</span></a></li>
+<li data-search="tetrahydrofolate biosynthesis gomodel:YeastPathways_PWY-6614"><a href="records/gomodel_YeastPathways_PWY-6614.html"><strong>tetrahydrofolate biosynthesis</strong><span>gomodel:YeastPathways_PWY-6614 — 29 mechanistic edges</span></a></li>
+<li data-search="tetrapyrrole biosynthesis gomodel:YeastPathways_PWY3O-50"><a href="records/gomodel_YeastPathways_PWY3O-50.html"><strong>tetrapyrrole biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-50 — 32 mechanistic edges</span></a></li>
+<li data-search="thiamine biosynthesis gomodel:YeastPathways_PWY3O-17"><a href="records/gomodel_YeastPathways_PWY3O-17.html"><strong>thiamine biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-17 — 95 mechanistic edges</span></a></li>
+<li data-search="threonine degradation gomodel:YeastPathways_THREOCAT2-PWY"><a href="records/gomodel_YeastPathways_THREOCAT2-PWY.html"><strong>threonine degradation</strong><span>gomodel:YeastPathways_THREOCAT2-PWY — 16 mechanistic edges</span></a></li>
+<li data-search="trans, trans-farnesyl diphosphate biosynthesis gomodel:YeastPathways_PWY-5123"><a href="records/gomodel_YeastPathways_PWY-5123.html"><strong>trans, trans-farnesyl diphosphate biosynthesis</strong><span>gomodel:YeastPathways_PWY-5123 — 24 mechanistic edges</span></a></li>
+<li data-search="trehalose biosynthesis I MetaCyc:TRESYN-PWY"><a href="records/MetaCyc_TRESYN-PWY.html"><strong>trehalose biosynthesis I</strong><span>MetaCyc:TRESYN-PWY — 18 mechanistic edges</span></a></li>
+<li data-search="Triglyceride biosynthesis WikiPathways:WP266"><a href="records/WikiPathways_WP266.html"><strong>Triglyceride biosynthesis</strong><span>WikiPathways:WP266 — 29 mechanistic edges</span></a></li>
+<li data-search="tryptophan degradation gomodel:YeastPathways_PWY3O-214"><a href="records/gomodel_YeastPathways_PWY3O-214.html"><strong>tryptophan degradation</strong><span>gomodel:YeastPathways_PWY3O-214 — 121 mechanistic edges</span></a></li>
+<li data-search="tyrosine biosynthesis gomodel:YeastPathways_PWY3O-4120"><a href="records/gomodel_YeastPathways_PWY3O-4120.html"><strong>tyrosine biosynthesis</strong><span>gomodel:YeastPathways_PWY3O-4120 — 32 mechanistic edges</span></a></li>
+<li data-search="Ubiquinol-6 biosynthesis from 4-hydroxybenzoate WikiPathways:WP287"><a href="records/WikiPathways_WP287.html"><strong>Ubiquinol-6 biosynthesis from 4-hydroxybenzoate</strong><span>WikiPathways:WP287 — 52 mechanistic edges</span></a></li>
+<li data-search="UDP-N-acetylglucosamine biosynthesis gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY"><a href="records/gomodel_YeastPathways_UDPNAGSYN-YEAST-PWY.html"><strong>UDP-N-acetylglucosamine biosynthesis</strong><span>gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY — 35 mechanistic edges</span></a></li>
+<li data-search="UMP biosynthesis I MetaCyc:PWY-5686"><a href="records/MetaCyc_PWY-5686.html"><strong>UMP biosynthesis I</strong><span>MetaCyc:PWY-5686 — 54 mechanistic edges</span></a></li>
+<li data-search="urea degradation I gomodel:YeastPathways_PWY-5703"><a href="records/gomodel_YeastPathways_PWY-5703.html"><strong>urea degradation I</strong><span>gomodel:YeastPathways_PWY-5703 — 21 mechanistic edges</span></a></li>
+<li data-search="UTP and CTP de novo biosynthesis gomodel:YeastPathways_PWY-7176"><a href="records/gomodel_YeastPathways_PWY-7176.html"><strong>UTP and CTP de novo biosynthesis</strong><span>gomodel:YeastPathways_PWY-7176 — 46 mechanistic edges</span></a></li>
+<li data-search="valine degradation gomodel:YeastPathways_PWY3O-4105"><a href="records/gomodel_YeastPathways_PWY3O-4105.html"><strong>valine degradation</strong><span>gomodel:YeastPathways_PWY3O-4105 — 125 mechanistic edges</span></a></li>
+<li data-search="very long chain fatty acid biosynthesis I gomodel:YeastPathways_PWY-5080-1"><a href="records/gomodel_YeastPathways_PWY-5080-1.html"><strong>very long chain fatty acid biosynthesis I</strong><span>gomodel:YeastPathways_PWY-5080-1 — 42 mechanistic edges</span></a></li>
+<li data-search="xylose metabolism gomodel:YeastPathways_PWY3O-8"><a href="records/gomodel_YeastPathways_PWY3O-8.html"><strong>xylose metabolism</strong><span>gomodel:YeastPathways_PWY3O-8 — 19 mechanistic edges</span></a></li>
+<li data-search="zymosterol biosynthesis gomodel:YeastPathways_PWY-6074-1"><a href="records/gomodel_YeastPathways_PWY-6074-1.html"><strong>zymosterol biosynthesis</strong><span>gomodel:YeastPathways_PWY-6074-1 — 102 mechanistic edges</span></a></li></ul>
   </main>
 </body>
 </html>

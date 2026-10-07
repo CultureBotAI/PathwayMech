@@ -1,0 +1,28 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/biopax.py
+  slug: diagram-importers
+session:
+  id: 2026-10-05T062900Z-Codex-00641b
+  timestamp: '2026-10-05T06:29:00Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt-6
+    agent_tool: codex
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve native biochemical direction, catalytic assemblies and structured source
+    evidence during import
+  details: GPML and BioPAX importers now cite native source objects, never synthetic or copied
+    paper quotations. GPML handles bidirectional/right-to-left conversion arrows, rejects
+    inhibitory glyphs as products, retains anchored chemical support and native unknown compounds,
+    and avoids treating grouped enzyme members as independent catalysts. BioPAX preserves
+    complexes and cofactors, native physical protein states and cellular locations, uses explicit
+    conversion/catalysis/pathway-step direction, and rejects missing or contradictory direction.
+    BioPAX Level3 documentation establishes that left/right sides are not implicit reactant/product
+    assignments (https://www.biopax.org/release/biopax-level3-documentation.pdf). Independent
+    fixture tests cover these scientific error classes; cached 12 GPML and 3 Reactome BioPAX
+    sources also validate offline.

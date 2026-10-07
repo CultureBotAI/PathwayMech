@@ -4,6 +4,9 @@ import csv
 from dataclasses import replace
 from pathlib import Path
 
+import pytest
+import yaml
+
 from pathwaymech.kgx import (
     EDGE_COLUMNS,
     LOCAL_PREDICATE_CURIES,
@@ -12,7 +15,7 @@ from pathwaymech.kgx import (
     kgx_nodes,
     write_kgx,
 )
-from pathwaymech.schema import ALLOWED_EDGE_PREDICATES, PathwayRecord
+from pathwaymech.schema import ALLOWED_EDGE_PREDICATES, PathwayRecord, validate_record
 from pathwaymech.yaml_io import load_pathway_records
 
 
@@ -94,6 +97,40 @@ def test_kgx_nodes_category_panther_reactions() -> None:
     }
 
     assert rows["PANTHER:R-TEST-67890"].category == "biolink:BiochemicalReaction"
+
+
+@pytest.mark.parametrize("path, identifier", [
+    ("epoxysqualene-biosynthesis", "gomodel:YeastPathways_PWY-5670-1/654d809000002591"),
+    ("epoxysqualene-biosynthesis", "gomodel:YeastPathways_PWY-5670-1/654d809000002611"),
+    ("formaldehyde-oxidation-ii-glutathione-dependent",
+     "gomodel:YeastPathways_PWY-1801-1/65692e7e00001183"),
+    ("s-adenosyl-l-methionine-cycle-ii",
+     "gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605"),
+    ("very-long-chain-fatty-acid-biosynthesis",
+     "gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813"),
+])
+def test_unresolved_corpus_participants_are_not_exported_as_reactions(path, identifier):
+    source = yaml.safe_load(Path(f"data/pathways/{path}.yaml").read_text(encoding="utf-8"))
+    checked = validate_record(source)
+    node = next(node for node in kgx_nodes([checked]) if node.id == identifier)
+
+    assert node.category == "biolink:NamedThing"
+    assert any(n["id"] == identifier for n in checked.participants)
+
+
+@pytest.mark.parametrize("prefix", ["gomodel", "WikiPathways", "Reactome"])
+def test_native_participant_fallback_retains_reaction_defaults(prefix):
+    participant = f"{prefix}:test/entity"
+    reaction = f"{prefix}:test/reaction"
+    checked = replace(
+        record(),
+        participants=[{"id": participant, "label": "Unresolved physical entity"}],
+        reactions=[{"id": reaction, "label": "Conversion"}],
+    )
+    rows = {node.id: node for node in kgx_nodes([checked])}
+
+    assert rows[participant].category == "biolink:NamedThing"
+    assert rows[reaction].category == "biolink:BiochemicalReaction"
 
 
 def test_kgx_edges_are_curied_and_unique_outside_record_scope() -> None:

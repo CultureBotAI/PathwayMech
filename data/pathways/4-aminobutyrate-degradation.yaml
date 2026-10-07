@@ -1,8 +1,8 @@
 id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
 label: 4-aminobutyrate degradation
-description: 4-aminobutyrate degradation in Saccharomyces cerevisiae S288C transaminates
-  gamma-aminobutyric acid to 4-oxobutanoate and oxidizes 4-oxobutanoate to succinate
-  in the SGD GO-CAM 4-aminobutyrate degradation pathway.
+description: 4-aminobutyrate degradation in Saccharomyces cerevisiae S288C transaminates gamma-aminobutyric
+  acid to 4-oxobutanoate and oxidizes 4-oxobutanoate to succinate in the SGD GO-CAM 4-aminobutyrate
+  degradation pathway.
 pathway_type: 4-aminobutyrate-degradation
 taxa:
 - id: NCBITaxon:559292
@@ -10,142 +10,267 @@ taxa:
 participants:
 - id: CHEBI:13390
   label: NAD(P)(+)
+  category: small_molecule
 - id: CHEBI:30031
   label: succinate(2-)
+  category: small_molecule
 - id: CHEBI:59888
   label: gamma-aminobutyric acid zwitterion
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0006540
+  label: GABA shunt
+  category: biological_process
 - id: CHEBI:29985
   label: L-glutamate(1-)
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: CHEBI:15377
   label: water
+  category: small_molecule
 - id: SGD:S000000210
   label: UGA2 Scer
+  category: protein
 - id: CHEBI:57706
   label: 4-oxobutanoate
+  category: small_molecule
 - id: CHEBI:13392
   label: NAD(P)H
+  category: small_molecule
 - id: SGD:S000003251
   label: UGA1 Scer
+  category: protein
 - id: CHEBI:16810
   label: 2-oxoglutarate(2-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
 reactions:
-- id: gomodel:RXN0-5293
-  label: succinate semialdehyde + NAD(P)<sup>+</sup> + H<sub>2</sub>O -> succinate
-    + NAD(P)H + 2 H<SUP>+</SUP>
 - id: gomodel:GABATRANSAM-RXN
   label: 2-oxoglutarate + 4-aminobutanoate <=> L-glutamate + succinate semialdehyde
+  category: molecular_activity
+- id: gomodel:RXN0-5293
+  label: succinate semialdehyde + NAD(P)<sup>+</sup> + H<sub>2</sub>O -> succinate + NAD(P)H
+    + 2 H<SUP>+</SUP>
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
-  subject: CHEBI:13390
-  predicate: consumes
-  object: gomodel:RXN0-5293
+  subject: gomodel:RXN0-5293
+  predicate: has_input
+  object: CHEBI:13390
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_13390_RXN0-5293"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_13390_RXN0-5293","type":[{"type":"class","id":"CHEBI:13390"'
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002233 gomodel:CHEBI_13390_RXN0-5293.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/0; endpoint types:
+      /individuals/10/type; /individuals/0/type'
 - id: edge-002
   subject: gomodel:RXN0-5293
-  predicate: produces
+  predicate: has_output
   object: CHEBI:30031
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_30031_RXN0-5293"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_30031_RXN0-5293","type":[{"type":"class","id":"CHEBI:30031"'
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002234 gomodel:CHEBI_30031_RXN0-5293.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/1; endpoint types:
+      /individuals/10/type; /individuals/6/type'
 - id: edge-003
-  subject: CHEBI:59888
-  predicate: consumes
-  object: gomodel:GABATRANSAM-RXN
+  subject: gomodel:GABATRANSAM-RXN
+  predicate: has_input
+  object: CHEBI:59888
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_59888_GABATRANSAM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_59888_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:59888"'
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN RO:0002233 gomodel:CHEBI_59888_GABATRANSAM-RXN.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/2; endpoint types:
+      /individuals/9/type; /individuals/8/type'
 - id: edge-004
   subject: gomodel:GABATRANSAM-RXN
-  predicate: produces
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN BFO:0000066 gomodel:reaction_GABATRANSAM-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/3; endpoint types:
+      /individuals/9/type; /individuals/27/type'
+- id: edge-005
+  subject: gomodel:RXN0-5293
+  predicate: part_of
+  object: GO:0006540
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    source_assertion: The model asserts gomodel:RXN0-5293 BFO:0000050 gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY/YeastPathways_YEAST-4AMINOBUTMETAB-PWY.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/4; endpoint types:
+      /individuals/10/type; /individuals/29/type'
+- id: edge-006
+  subject: gomodel:RXN0-5293
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+    source_assertion: The model asserts gomodel:RXN0-5293 BFO:0000066 gomodel:reaction_RXN0-5293_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/5; endpoint types:
+      /individuals/10/type; /individuals/28/type'
+- id: edge-007
+  subject: gomodel:GABATRANSAM-RXN
+  predicate: has_output
   object: CHEBI:29985
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_29985_GABATRANSAM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_29985_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:29985"'
-- id: edge-005
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN RO:0002234 gomodel:CHEBI_29985_GABATRANSAM-RXN.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/6; endpoint types:
+      /individuals/9/type; /individuals/5/type'
+- id: edge-008
   subject: gomodel:RXN0-5293
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN0-5293"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_15378_RXN0-5293","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-006
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:RXN0-5293
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002234 gomodel:CHEBI_15378_RXN0-5293.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/7; endpoint types:
+      /individuals/10/type; /individuals/3/type'
+- id: edge-009
+  subject: gomodel:RXN0-5293
+  predicate: has_input
+  object: CHEBI:15377
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_RXN0-5293"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_15377_RXN0-5293","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-007
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002233 gomodel:CHEBI_15377_RXN0-5293.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/8; endpoint types:
+      /individuals/10/type; /individuals/2/type'
+- id: edge-010
   subject: SGD:S000000210
   predicate: enables
   object: gomodel:RXN0-5293
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR006W-MONOMER_RXN0-5293_controller"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:YBR006W-MONOMER_RXN0-5293_controller","type":[{"type":"class","id":"SGD:S000000210"'
-- id: edge-008
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002333 gomodel:YBR006W-MONOMER_RXN0-5293_controller.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/9; endpoint types:
+      /individuals/10/type; /individuals/11/type'
+- id: edge-011
   subject: gomodel:GABATRANSAM-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57706
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57706_GABATRANSAM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_57706_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:57706"'
-- id: edge-009
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN RO:0002234 gomodel:CHEBI_57706_GABATRANSAM-RXN.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/10; endpoint types:
+      /individuals/9/type; /individuals/7/type'
+- id: edge-012
   subject: gomodel:RXN0-5293
-  predicate: produces
+  predicate: has_output
   object: CHEBI:13392
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_13392_RXN0-5293"'
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002234 gomodel:CHEBI_13392_RXN0-5293.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/11; endpoint types:
+      /individuals/10/type; /individuals/1/type'
+- id: edge-013
+  subject: gomodel:GABATRANSAM-RXN
+  predicate: part_of
+  object: GO:0006540
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_13392_RXN0-5293","type":[{"type":"class","id":"CHEBI:13392"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN BFO:0000050 gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY/YeastPathways_YEAST-4AMINOBUTMETAB-PWY.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/12; endpoint types:
+      /individuals/9/type; /individuals/29/type'
+- id: edge-014
   subject: SGD:S000003251
   predicate: enables
   object: gomodel:GABATRANSAM-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YGR019W-MONOMER_GABATRANSAM-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:YGR019W-MONOMER_GABATRANSAM-RXN_controller","type":[{"type":"class","id":"SGD:S000003251"'
-- id: edge-011
-  subject: CHEBI:57706
-  predicate: consumes
-  object: gomodel:RXN0-5293
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN RO:0002333 gomodel:YGR019W-MONOMER_GABATRANSAM-RXN_controller.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/13; endpoint types:
+      /individuals/9/type; /individuals/12/type'
+- id: edge-015
+  subject: gomodel:RXN0-5293
+  predicate: has_input
+  object: CHEBI:57706
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:RXN0-5293","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57706_GABATRANSAM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_57706_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:57706"'
-- id: edge-012
-  subject: CHEBI:16810
-  predicate: consumes
-  object: gomodel:GABATRANSAM-RXN
+    source_assertion: The model asserts gomodel:RXN0-5293 RO:0002233 gomodel:CHEBI_57706_GABATRANSAM-RXN.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/14; endpoint types:
+      /individuals/10/type; /individuals/7/type'
+- id: edge-016
+  subject: gomodel:GABATRANSAM-RXN
+  predicate: has_input
+  object: CHEBI:16810
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"subject":"gomodel:GABATRANSAM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16810_GABATRANSAM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-    quote: '"id":"gomodel:CHEBI_16810_GABATRANSAM-RXN","type":[{"type":"class","id":"CHEBI:16810"'
+    source_assertion: The model asserts gomodel:GABATRANSAM-RXN RO:0002233 gomodel:CHEBI_16810_GABATRANSAM-RXN.
+    source_locator: './YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json#/facts/15; endpoint types:
+      /individuals/9/type; /individuals/4/type'
+- id: location-d97108800b33
+  subject: SGD:S000000210
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P38067
+    source_assertion: UniProtKB:P38067 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1267/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P38067
+    source_assertion: UniProtKB:P38067 has the exact SGD cross-reference SGD:S000000210.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1267/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-100b2602f60f
+  subject: SGD:S000003251
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:11914276)
+  evidence:
+  - reference_id: UniProtKB:P17649
+    source_assertion: UniProtKB:P17649 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/468/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P17649
+    source_assertion: UniProtKB:P17649 has the exact SGD cross-reference SGD:S000003251.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/468/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-2a5c0a452713
+  subject: SGD:S000003251
+  predicate: has_cofactor
+  object: CHEBI:597326
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:17355287)'
+  evidence:
+  - reference_id: UniProtKB:P17649
+    source_assertion: UniProtKB:P17649 annotates CHEBI:597326 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/468/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P17649
+    source_assertion: UniProtKB:P17649 has the exact SGD cross-reference SGD:S000003251.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/468/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
-  title: 'SGD GO-CAM 4-aminobutyrate degradation - imported from: Saccharomyces Genome
-    Database'
+  title: 'SGD GO-CAM 4-aminobutyrate degradation - imported from: Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-04-22; member ./YeastPathways_YEAST-4AMINOBUTMETAB-PWY.json
+- id: UniProtKB:P38067
+  title: Reviewed UniProtKB P38067 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P17649
+  title: Reviewed UniProtKB P17649 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

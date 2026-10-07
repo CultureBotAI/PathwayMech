@@ -1,42 +1,100 @@
 id: MIBiG:BGC0002072
 label: linearmycin A and related metabolites biosynthetic gene cluster
-description: Experimentally characterized MIBiG MIBiG:BGC0002072 gene cluster.
+description: The Streptomyces sp. Mg1 linearmycin gene cluster produces linearmycins A, B and C. Deletion
+  and complementation establish LnyI as required for production. The graph records experimentally observed
+  products and genetic dependence; detailed starter-unit chemistry and modular chain-extension assignments
+  remain proposed.
 pathway_type: biosynthetic-gene-cluster
 taxa:
-  - id: NCBITaxon:465541
-    label: Streptomyces sp. Mg1
-participants: []
+- id: NCBITaxon:465541
+  label: Streptomyces sp. Mg1
+participants:
+- id: NCBIProtein:AKL64828.1
+  label: LnyI
+  category: protein
+- id: CHEBI:202459
+  label: Linearmycin A
+  category: small_molecule
+- id: CHEBI:202416
+  label: Linearmycin B
+  category: small_molecule
+- id: CHEBI:210490
+  label: Linearmycin C
+  category: small_molecule
 reactions: []
-mechanistic_edges: []
+mechanistic_edges:
+- id: causal-review-1
+  subject: NCBIProtein:AKL64828.1
+  predicate: enables
+  object: MIBiG:BGC0002072
+  evidence:
+  - reference_id: PMID:28919037
+    source_assertion: Deleting lnyI eliminates detectable linearmycins A, B and C; complementation restores
+      production.
+    source_locator: 'Results: lnyI deletion and complementation; HPLC profiles'
+  description: Genetic requirement for pathway output; this does not assert a specific starter-substrate
+    reaction.
+- id: causal-review-2
+  subject: MIBiG:BGC0002072
+  predicate: produces
+  object: CHEBI:202459
+  evidence:
+  - reference_id: PMID:28919037
+    source_assertion: Linearmycin A was detected among Streptomyces sp. Mg1 linearmycin products in the
+      production and mutant experiments.
+    source_locator: 'Results: linearmycin identification and lnyI mutant/complement HPLC profiles'
+- id: causal-review-3
+  subject: MIBiG:BGC0002072
+  predicate: produces
+  object: CHEBI:202416
+  evidence:
+  - reference_id: PMID:28919037
+    source_assertion: Linearmycin B was detected among Streptomyces sp. Mg1 linearmycin products in the
+      production and mutant experiments.
+    source_locator: 'Results: linearmycin identification and lnyI mutant/complement HPLC profiles'
+- id: causal-review-4
+  subject: MIBiG:BGC0002072
+  predicate: produces
+  object: CHEBI:210490
+  evidence:
+  - reference_id: PMID:28919037
+    source_assertion: Linearmycin C was detected among Streptomyces sp. Mg1 linearmycin products in the
+      production and mutant experiments.
+    source_locator: 'Results: linearmycin identification and lnyI mutant/complement HPLC profiles'
 gene_clusters:
-  - id: MIBiG:BGC0002072
-    label: linearmycin A and related metabolites biosynthetic gene cluster
-    products:
-      - linearmycin A
-      - linearmycin B
-      - linearmycin C
-    biosynthetic_classes:
-      - PKS:Type I
-    genes:
-      - id: AKL64829.1
-      - id: AKL64830.1
-      - id: AKL64831.1
-      - id: AKL64832.1
-      - id: AKL64833.1
-      - id: AKL64834.1
-      - id: AKL69764.1
-      - id: AMB20393.1
-      - id: AMB20394.1
-    loci:
-      - accession: CP011664.1
-        start: 1061319
-        end: 1236790
+- id: MIBiG:BGC0002072
+  label: linearmycin A and related metabolites biosynthetic gene cluster
+  products:
+  - linearmycin A
+  - linearmycin B
+  - linearmycin C
+  biosynthetic_classes:
+  - PKS:Type I
+  genes:
+  - id: AKL64829.1
+  - id: AKL64830.1
+  - id: AKL64831.1
+  - id: AKL64832.1
+  - id: AKL64833.1
+  - id: AKL64834.1
+  - id: AKL69764.1
+  - id: AMB20393.1
+  - id: AMB20394.1
+  - id: NCBIProtein:AKL64828.1
+    label: lnyI
+  loci:
+  - accession: CP011664.1
+    start: 1061319
+    end: 1236790
 references:
-  - id: MIBiG:BGC0002072
-    title: MIBiG record BGC0002072
-  - id: PMID:28919037
-    title: MIBiG literature reference PMID:28919037
-  - id: PMID:29348524
-    title: MIBiG literature reference PMID:29348524
-  - id: PMID:32964081
-    title: MIBiG literature reference PMID:32964081
+- id: PMID:29348524
+  title: MIBiG literature reference PMID:29348524
+- id: MIBiG:BGC0002072
+  title: mibig-4.0 native structured pathway source
+  url: https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz
+  source_version: '4.0'
+  source_sha256: 986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b
+- id: PMID:28919037
+  title: A Link between Linearmycin Biosynthesis and Extracellular Vesicle Genesis Connects Specialized
+    Metabolism and Bacterial Membrane Physiology
+  url: https://doi.org/10.1016/j.chembiol.2017.08.008

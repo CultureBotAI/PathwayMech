@@ -1,255 +1,487 @@
 id: gomodel:YeastPathways_PWY-1801-1
 label: formaldehyde oxidation II (glutathione-dependent)
-description: Formaldehyde oxidation II in Saccharomyces cerevisiae S288C
-  condenses formaldehyde with glutathione, oxidizes S-(hydroxymethyl)glutathione
-  to S-formylglutathione, hydrolyzes S-formylglutathione to formate and
-  glutathione, and oxidizes formate to carbon dioxide.
+description: Formaldehyde oxidation II in Saccharomyces cerevisiae S288C condenses formaldehyde
+  with glutathione, oxidizes S-(hydroxymethyl)glutathione to S-formylglutathione, hydrolyzes
+  S-formylglutathione to formate and glutathione, and oxidizes formate to carbon dioxide.
 pathway_type: formaldehyde-degradation
 taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
-- id: CHEBI:16842
-  label: formaldehyde
-- id: CHEBI:57925
-  label: glutathionate(1-)
-- id: CHEBI:58758
-  label: S-(hydroxymethyl)glutathione(1-)
-- id: SGD:S000002327
-  label: SFA1 Scer
 - id: CHEBI:13390
   label: NAD(P)(+)
-- id: CHEBI:57688
-  label: S-formylglutathionate(1-)
-- id: CHEBI:15378
-  label: hydron
-- id: CHEBI:13392
-  label: NAD(P)H
-- id: SGD:S000003604
-  label: YJL068C Scer
+  category: small_molecule
+- id: CHEBI:58758
+  label: S-(hydroxymethyl)glutathione(1-)
+  category: small_molecule
 - id: CHEBI:15377
   label: water
-- id: CHEBI:15740
-  label: formate
-- id: SGD:S000005915
-  label: FDH1 Scer
+  category: small_molecule
 - id: CHEBI:57540
   label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57688
+  label: S-formylglutathionate(1-)
+  category: small_molecule
 - id: CHEBI:16526
   label: carbon dioxide
+  category: small_molecule
 - id: CHEBI:57945
   label: NADH(2-)
+  category: small_molecule
+- id: gomodel:YeastPathways_PWY-1801-1/65692e7e00001183
+  label: information biomacromolecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57925
+  label: glutathionate(1-)
+  category: small_molecule
+- id: GO:0046294
+  label: formaldehyde catabolic process
+  category: biological_process
+- id: SGD:S000005915
+  label: FDH1 Scer
+  category: protein
+- id: SGD:S000002327
+  label: SFA1 Scer
+  category: protein
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: CHEBI:16842
+  label: formaldehyde
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: SGD:S000003604
+  label: YJL068C Scer
+  category: protein
+- id: CHEBI:13392
+  label: NAD(P)H
+  category: small_molecule
+- id: CHEBI:15740
+  label: formate
+  category: small_molecule
+- id: GO:0005739
+  label: mitochondrion
+  category: cellular_component
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
 reactions:
-- id: gomodel:RXN-2961
-  label: S-(hydroxymethyl)glutathione synthase activity
-- id: gomodel:RXN-2962
-  label: S-(hydroxymethyl)glutathione + NAD(P)+ -> S-formylglutathione + NAD(P)H + H+
-- id: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  label: S-formylglutathione hydrolase activity
 - id: gomodel:1.2.1.2-RXN
   label: formate dehydrogenase (NAD+) activity
+  category: molecular_activity
+- id: gomodel:RXN-2961
+  label: S-(hydroxymethyl)glutathione synthase activity
+  category: molecular_activity
+- id: gomodel:RXN-2962
+  label: S-(hydroxymethyl)glutathione + NAD(P)+ -> S-formylglutathione + NAD(P)H + H+
+  category: molecular_activity
+- id: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  label: S-formylglutathione hydrolase activity
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
-  subject: CHEBI:16842
-  predicate: consumes
-  object: gomodel:RXN-2961
+  subject: gomodel:RXN-2962
+  predicate: has_input
+  object: CHEBI:13390
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_16842_RXN-2961"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_16842_RXN-2961","type":[{"type":"class","id":"CHEBI:16842"'
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002233 gomodel:CHEBI_13390_RXN-2962.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/0; endpoint types: /individuals/15/type;
+      /individuals/0/type'
 - id: edge-002
-  subject: CHEBI:57925
-  predicate: consumes
-  object: gomodel:RXN-2961
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57925_RXN-2961"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_57925_RXN-2961","type":[{"type":"class","id":"CHEBI:57925"'
-- id: edge-003
-  subject: gomodel:RXN-2961
-  predicate: produces
+  subject: gomodel:RXN-2962
+  predicate: has_input
   object: CHEBI:58758
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58758_RXN-2961"'
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002233 gomodel:CHEBI_58758_RXN-2961.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/1; endpoint types: /individuals/15/type;
+      /individuals/13/type'
+- id: edge-003
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_58758_RXN-2961","type":[{"type":"class","id":"CHEBI:58758"'
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002233
+      gomodel:CHEBI_15377_S-FORMYLGLUTATHIONE-HYDROLASE-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/2; endpoint types: /individuals/16/type;
+      /individuals/2/type'
 - id: edge-004
-  subject: gomodel:RXN-2961
-  predicate: precedes
-  object: gomodel:RXN-2962
+  subject: gomodel:1.2.1.2-RXN
+  predicate: has_input
+  object: CHEBI:57540
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2961","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:RXN-2962"'
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN RO:0002233 gomodel:CHEBI_57540_1.2.1.2-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/3; endpoint types: /individuals/48/type;
+      /individuals/8/type'
 - id: edge-005
-  subject: SGD:S000002327
-  predicate: enables
-  object: gomodel:RXN-2962
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDL168W-MONOMER_RXN-2962_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:YDL168W-MONOMER_RXN-2962_controller","type":[{"type":"class","id":"SGD:S000002327"'
-- id: edge-006
-  subject: CHEBI:58758
-  predicate: consumes
-  object: gomodel:RXN-2962
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58758_RXN-2961"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_58758_RXN-2961","type":[{"type":"class","id":"CHEBI:58758"'
-- id: edge-007
-  subject: CHEBI:13390
-  predicate: consumes
-  object: gomodel:RXN-2962
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_13390_RXN-2962"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_13390_RXN-2962","type":[{"type":"class","id":"CHEBI:13390"'
-- id: edge-008
   subject: gomodel:RXN-2962
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57688
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57688_RXN-2962"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_57688_RXN-2962","type":[{"type":"class","id":"CHEBI:57688"'
-- id: edge-009
-  subject: gomodel:RXN-2962
-  predicate: produces
-  object: CHEBI:15378
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002234 gomodel:CHEBI_57688_RXN-2962.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/4; endpoint types: /individuals/15/type;
+      /individuals/9/type'
+- id: edge-006
+  subject: gomodel:1.2.1.2-RXN
+  predicate: has_output
+  object: CHEBI:16526
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_RXN-2962"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_15378_RXN-2962","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-010
-  subject: gomodel:RXN-2962
-  predicate: produces
-  object: CHEBI:13392
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN RO:0002234 gomodel:CHEBI_16526_1.2.1.2-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/5; endpoint types: /individuals/48/type;
+      /individuals/6/type'
+- id: edge-007
+  subject: gomodel:1.2.1.2-RXN
+  predicate: has_output
+  object: CHEBI:57945
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_13392_RXN-2962"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_13392_RXN-2962","type":[{"type":"class","id":"CHEBI:13392"'
-- id: edge-011
-  subject: gomodel:RXN-2962
-  predicate: precedes
-  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:RXN-2962","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
-- id: edge-012
-  subject: SGD:S000003604
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN RO:0002234 gomodel:CHEBI_57945_1.2.1.2-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/6; endpoint types: /individuals/48/type;
+      /individuals/12/type'
+- id: edge-008
+  subject: gomodel:YeastPathways_PWY-1801-1/65692e7e00001183
   predicate: enables
-  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  object: gomodel:RXN-2961
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YJL068C-MONOMER_S-FORMYLGLUTATHIONE-HYDROLASE-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:YJL068C-MONOMER_S-FORMYLGLUTATHIONE-HYDROLASE-RXN_controller","type":[{"type":"class","id":"SGD:S000003604"'
-- id: edge-013
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_15377_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-014
-  subject: CHEBI:57688
-  predicate: consumes
-  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57688_RXN-2962"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_57688_RXN-2962","type":[{"type":"class","id":"CHEBI:57688"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:RXN-2961 RO:0002333 gomodel:YeastPathways_PWY-1801-1/65692e7e00001183.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/7; endpoint types: /individuals/14/type;
+      /individuals/53/type'
+- id: edge-009
   subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_15378_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-016
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002234
+      gomodel:CHEBI_15378_S-FORMYLGLUTATHIONE-HYDROLASE-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/8; endpoint types: /individuals/16/type;
+      /individuals/4/type'
+- id: edge-010
   subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57925
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57925_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_57925_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:57925"'
-- id: edge-017
-  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  predicate: produces
-  object: CHEBI:15740
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002234
+      gomodel:CHEBI_57925_S-FORMYLGLUTATHIONE-HYDROLASE-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/9; endpoint types: /individuals/16/type;
+      /individuals/11/type'
+- id: edge-011
+  subject: gomodel:RXN-2962
+  predicate: part_of
+  object: GO:0046294
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15740"'
-- id: edge-018
-  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
-  predicate: precedes
-  object: gomodel:1.2.1.2-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN","property":"RO:0002413","property-label":"RO:0002413","object":"gomodel:1.2.1.2-RXN"'
-- id: edge-019
+    source_assertion: The model asserts gomodel:RXN-2962 BFO:0000050 gomodel:YeastPathways_PWY-1801-1/YeastPathways_PWY-1801-1.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/10; endpoint types: /individuals/15/type;
+      /individuals/49/type'
+- id: edge-012
   subject: SGD:S000005915
   predicate: enables
   object: gomodel:1.2.1.2-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YOR388C-MONOMER_1.2.1.2-RXN_controller"'
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN RO:0002333 gomodel:YOR388C-MONOMER_1.2.1.2-RXN_controller.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/11; endpoint types: /individuals/48/type;
+      /individuals/19/type'
+- id: edge-013
+  subject: SGD:S000002327
+  predicate: enables
+  object: gomodel:RXN-2962
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:YOR388C-MONOMER_1.2.1.2-RXN_controller","type":[{"type":"class","id":"SGD:S000005915"'
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002333 gomodel:YDL168W-MONOMER_RXN-2962_controller.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/12; endpoint types: /individuals/15/type;
+      /individuals/17/type'
+- id: edge-014
+  subject: gomodel:RXN-2962
+  predicate: has_output
+  object: CHEBI:15378
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002234 gomodel:CHEBI_15378_RXN-2962.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/13; endpoint types: /individuals/15/type;
+      /individuals/3/type'
+- id: edge-015
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN BFO:0000066
+      gomodel:reaction_S-FORMYLGLUTATHIONE-HYDROLASE-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/14; endpoint types: /individuals/16/type;
+      /individuals/47/type'
+- id: edge-016
+  subject: gomodel:1.2.1.2-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN BFO:0000066 gomodel:reaction_1.2.1.2-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/15; endpoint types: /individuals/48/type;
+      /individuals/44/type'
+- id: edge-017
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: part_of
+  object: GO:0046294
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN BFO:0000050
+      gomodel:YeastPathways_PWY-1801-1/YeastPathways_PWY-1801-1.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/16; endpoint types: /individuals/16/type;
+      /individuals/49/type'
+- id: edge-018
+  subject: gomodel:RXN-2962
+  predicate: provides_input_for
+  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002413 gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/17; endpoint types: /individuals/15/type;
+      /individuals/16/type'
+- id: edge-019
+  subject: gomodel:1.2.1.2-RXN
+  predicate: part_of
+  object: GO:0046294
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN BFO:0000050 gomodel:YeastPathways_PWY-1801-1/YeastPathways_PWY-1801-1.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/18; endpoint types: /individuals/48/type;
+      /individuals/49/type'
 - id: edge-020
-  subject: CHEBI:15740
-  predicate: consumes
-  object: gomodel:1.2.1.2-RXN
+  subject: gomodel:RXN-2961
+  predicate: has_input
+  object: CHEBI:16842
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN","type":[{"type":"class","id":"CHEBI:15740"'
+    source_assertion: The model asserts gomodel:RXN-2961 RO:0002233 gomodel:CHEBI_16842_RXN-2961.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/19; endpoint types: /individuals/14/type;
+      /individuals/7/type'
 - id: edge-021
-  subject: CHEBI:57540
-  predicate: consumes
+  subject: gomodel:RXN-2961
+  predicate: has_input
+  object: CHEBI:57925
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2961 RO:0002233 gomodel:CHEBI_57925_RXN-2961.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/20; endpoint types: /individuals/14/type;
+      /individuals/10/type'
+- id: edge-022
+  subject: gomodel:RXN-2962
+  predicate: occurs_in
+  object: GO:0005737
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2962 BFO:0000066 gomodel:reaction_RXN-2962_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/21; endpoint types: /individuals/15/type;
+      /individuals/46/type'
+- id: edge-023
+  subject: gomodel:RXN-2961
+  predicate: has_output
+  object: CHEBI:58758
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2961 RO:0002234 gomodel:CHEBI_58758_RXN-2961.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/22; endpoint types: /individuals/14/type;
+      /individuals/13/type'
+- id: edge-024
+  subject: SGD:S000003604
+  predicate: enables
+  object: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002333
+      gomodel:YJL068C-MONOMER_S-FORMYLGLUTATHIONE-HYDROLASE-RXN_controller.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/23; endpoint types: /individuals/16/type;
+      /individuals/18/type'
+- id: edge-025
+  subject: gomodel:RXN-2962
+  predicate: has_output
+  object: CHEBI:13392
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2962 RO:0002234 gomodel:CHEBI_13392_RXN-2962.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/24; endpoint types: /individuals/15/type;
+      /individuals/1/type'
+- id: edge-026
+  subject: gomodel:RXN-2961
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2961 BFO:0000066 gomodel:reaction_RXN-2961_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/25; endpoint types: /individuals/14/type;
+      /individuals/45/type'
+- id: edge-027
+  subject: gomodel:RXN-2961
+  predicate: provides_input_for
+  object: gomodel:RXN-2962
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2961 RO:0002413 gomodel:RXN-2962.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/26; endpoint types: /individuals/14/type;
+      /individuals/15/type'
+- id: edge-028
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: has_output
+  object: CHEBI:15740
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002234
+      gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/27; endpoint types: /individuals/16/type;
+      /individuals/5/type'
+- id: edge-029
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: has_input
+  object: CHEBI:57688
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002233
+      gomodel:CHEBI_57688_RXN-2962.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/28; endpoint types: /individuals/16/type;
+      /individuals/9/type'
+- id: edge-030
+  subject: gomodel:RXN-2961
+  predicate: part_of
+  object: GO:0046294
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-1801-1
+    source_assertion: The model asserts gomodel:RXN-2961 BFO:0000050 gomodel:YeastPathways_PWY-1801-1/YeastPathways_PWY-1801-1.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/29; endpoint types: /individuals/14/type;
+      /individuals/49/type'
+- id: edge-031
+  subject: gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN
+  predicate: provides_input_for
   object: gomodel:1.2.1.2-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57540_1.2.1.2-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_57540_1.2.1.2-RXN","type":[{"type":"class","id":"CHEBI:57540"'
-- id: edge-022
+    source_assertion: The model asserts gomodel:S-FORMYLGLUTATHIONE-HYDROLASE-RXN RO:0002413
+      gomodel:1.2.1.2-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/30; endpoint types: /individuals/16/type;
+      /individuals/48/type'
+- id: edge-032
   subject: gomodel:1.2.1.2-RXN
-  predicate: produces
-  object: CHEBI:16526
+  predicate: has_input
+  object: CHEBI:15740
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16526_1.2.1.2-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_16526_1.2.1.2-RXN","type":[{"type":"class","id":"CHEBI:16526"'
-- id: edge-023
-  subject: gomodel:1.2.1.2-RXN
-  predicate: produces
-  object: CHEBI:57945
+    source_assertion: The model asserts gomodel:1.2.1.2-RXN RO:0002233 gomodel:CHEBI_15740_S-FORMYLGLUTATHIONE-HYDROLASE-RXN.
+    source_locator: './YeastPathways_PWY-1801-1.json#/facts/31; endpoint types: /individuals/48/type;
+      /individuals/5/type'
+- id: location-be4c22557a5a
+  subject: SGD:S000005915
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000255 (HAMAP-Rule:MF_03210);
+    ECO:0000269 (PubMed:11921099)
   evidence:
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"subject":"gomodel:1.2.1.2-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57945_1.2.1.2-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-1801-1
-    quote: '"id":"gomodel:CHEBI_57945_1.2.1.2-RXN","type":[{"type":"class","id":"CHEBI:57945"'
+  - reference_id: UniProtKB:Q08911
+    source_assertion: UniProtKB:Q08911 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/4271/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q08911
+    source_assertion: UniProtKB:Q08911 has the exact SGD cross-reference SGD:S000005915.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/4271/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-b80b4f1b750d
+  subject: SGD:S000002327
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P32771
+    source_assertion: UniProtKB:P32771 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/990/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32771
+    source_assertion: UniProtKB:P32771 has the exact SGD cross-reference SGD:S000002327.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/990/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-091fe2fe90d3
+  subject: SGD:S000002327
+  predicate: located_in
+  object: GO:0005739
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:16823961)
+  evidence:
+  - reference_id: UniProtKB:P32771
+    source_assertion: UniProtKB:P32771 annotates location Mitochondrion (SL-0173).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/990/comments/1/subcellularLocations/1;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P32771
+    source_assertion: UniProtKB:P32771 has the exact SGD cross-reference SGD:S000002327.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/990/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-ca6bf0305d21
+  subject: SGD:S000003604
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:10427036)
+  evidence:
+  - reference_id: UniProtKB:P40363
+    source_assertion: UniProtKB:P40363 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3743/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P40363
+    source_assertion: UniProtKB:P40363 has the exact SGD cross-reference SGD:S000003604.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3743/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-5ec0450d58bc
+  subject: SGD:S000002327
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P06525) Binds 2 Zn(2+) ions per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:P06525)'
+  evidence:
+  - reference_id: UniProtKB:P32771
+    source_assertion: UniProtKB:P32771 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/990/comments/0/cofactors/0;
+      /results/990/comments/0/note'
+  - reference_id: UniProtKB:P32771
+    source_assertion: UniProtKB:P32771 has the exact SGD cross-reference SGD:S000002327.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/990/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-1801-1
   title: GO-CAM formaldehyde oxidation II model YeastPathways_PWY-1801-1
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-08-04; member ./YeastPathways_PWY-1801-1.json
+- id: UniProtKB:Q08911
+  title: Reviewed UniProtKB Q08911 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P32771
+  title: Reviewed UniProtKB P32771 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P40363
+  title: Reviewed UniProtKB P40363 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

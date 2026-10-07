@@ -3,17 +3,24 @@
 import argparse
 from pathlib import Path
 
+import yaml
+
 from pathwaymech.cross_mech import (
+    MechSpec,
     ScanCoverage,
     build_pathway_index,
     build_report,
+    git_documents,
     load_config,
     load_json,
     scan_sibling,
     write_report,
 )
 from pathwaymech.rhea_directions import load_rhea_directions
-from pathwaymech.yaml_io import load_yaml_file, pathway_files
+
+# The pathway cohort is just as historical as the sibling inputs. Reading the
+# working tree here would silently replace this audit's 152-record cohort.
+PATHWAY_PIN = "aa305727458c44ab05614901334540e2c87a9f3a"
 
 PINS = {
     "TraitMech": "9dea24521a32e92c3425449321fc36b1dbc621f1",
@@ -24,6 +31,14 @@ PINS = {
 }
 
 
+def pathway_records(root: Path) -> list[dict]:
+    spec = MechSpec("PathwayMech", ["data/pathways/**/*.yaml"])
+    records = [yaml.safe_load(payload) for _, payload in git_documents(root, PATHWAY_PIN, spec)]
+    if not records:
+        raise ValueError("the pinned PathwayMech audit cohort is empty")
+    return records
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mechs-root", type=Path, required=True)
@@ -31,7 +46,7 @@ def main():
     args = parser.parse_args()
     audit = Path(__file__).resolve().parent
     root = audit.parents[2]
-    records = [load_yaml_file(path) for path in pathway_files(root / "data/pathways")]
+    records = pathway_records(root)
     annotations = load_json(audit / "inputs/uniprot_annotations.json")
     directions = load_rhea_directions(root / "conf/rhea_directions.json")
     index = build_pathway_index(records, load_json(audit / "inputs/sgd_uniprot.json"),

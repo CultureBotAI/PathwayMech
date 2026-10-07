@@ -11,7 +11,32 @@ from pathlib import Path
 
 import pytest
 
-from scripts.build_source_identifier_snapshot import build_snapshot, main, metacyc_terms
+from scripts.build_source_identifier_snapshot import (
+    build_snapshot,
+    gocam_terms,
+    main,
+    metacyc_terms,
+    source_terms,
+)
+
+
+def test_untyped_native_gocam_instance_has_existence_without_invented_chemical_identity():
+    terms = list(gocam_terms({"id": "gomodel:test", "individuals": [{"id": "gomodel:untyped"}]}))
+    assert terms == [("gomodel:untyped", "gomodel:untyped", [])]
+
+
+def test_ncbi_protein_native_accession_and_gene_synonym(tmp_path):
+    source = tmp_path / "protein.xml"
+    source.write_text("""<GBSet><GBSeq>
+      <GBSeq_accession-version>AKL64828.1</GBSeq_accession-version>
+      <GBSeq_definition>ACP S-malonyltransferase [Streptomyces sp. Mg1]</GBSeq_definition>
+      <GBSeq_feature-table><GBFeature><GBFeature_quals><GBQualifier>
+      <GBQualifier_name>gene</GBQualifier_name><GBQualifier_value>lnyI</GBQualifier_value>
+      </GBQualifier></GBFeature_quals></GBFeature></GBSeq_feature-table>
+      </GBSeq></GBSet>""")
+    assert list(source_terms("ncbi-protein-xml", source)) == [(
+        "NCBIProtein:AKL64828.1", "ACP S-malonyltransferase [Streptomyces sp. Mg1]", ["lnyI"],
+    )]
 
 
 def source_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:

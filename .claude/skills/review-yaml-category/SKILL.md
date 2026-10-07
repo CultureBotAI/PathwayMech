@@ -60,6 +60,8 @@ patterns across the member records.
   adjacent modules, and pathway subsets may be separate records on purpose.
 - Preserve conflicts. If inspected sources disagree, report the disagreement
   and its scope instead of forcing the category to look tidy.
+- Use `docs/CAUSAL_GRAPHS.md` for source-fact coverage, enzyme/cofactor and
+  compartment roles, reaction directions, and traceable structured assertions.
 
 ## Structured Source Cross-Checks
 

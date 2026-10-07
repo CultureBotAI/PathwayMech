@@ -3,7 +3,7 @@ name: pathwaymech
 title: PathwayMech pathway mechanism records
 description: >-
   One record per pathway: its taxa, participants and reactions as CURIE nodes,
-  and the causal edges between them, each backed by quoted evidence from a
+  and the causal edges between them, each backed by traceable evidence from a
   reference declared in the same record. This schema states the structure,
   closed, so an undeclared key is an error. What LinkML cannot state stays in
   src/pathwaymech/schema.py: that edge endpoints resolve to the record, its
@@ -99,6 +99,12 @@ classes:
       label:
         required: true
         pattern: "\\S"
+      category:
+        range: NodeCategoryEnum
+        description: Source-supported biological kind or explicitly demonstrated cofactor role.
+      direction:
+        range: ReactionDirectionEnum
+        description: Direction asserted by the reaction source; permitted on reactions only.
 
   GeneCluster:
     description: >-
@@ -185,7 +191,7 @@ classes:
   MechanisticEdge:
     description: >-
       A directed causal or mechanistic claim between two nodes of the same
-      record, with at least one quoted piece of evidence.
+      record, with at least one quotation or located structured-source assertion.
     attributes:
       id:
         required: true
@@ -214,12 +220,36 @@ classes:
         required: true
         description: The id of a reference declared in this record.
       quote:
-        required: true
         pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
         description: >-
           A verbatim excerpt of at most 400 characters. The pattern ends in
           (?![\s\S]) rather than $, which in Python's re also matches before a
           final newline and so admitted 401.
+      source_assertion:
+        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
+        description: >-
+          Faithful human-readable rendering of an inspected structured source
+          statement, not a quotation or a claim to have read its cited paper.
+      source_locator:
+        pattern: "\\S"
+        description: Exact source object, triple, XML path, or JSON path supporting the assertion.
+    exactly_one_of:
+      - slot_conditions:
+          quote:
+            required: true
+        none_of:
+          - slot_conditions:
+              source_assertion:
+                required: true
+      - slot_conditions:
+          source_assertion:
+            required: true
+          source_locator:
+            required: true
+        none_of:
+          - slot_conditions:
+              quote:
+                required: true
 
   Reference:
     description: A source cited by evidence; needs a title or a citation.
@@ -231,6 +261,12 @@ classes:
         pattern: "\\S"
       citation:
         pattern: "\\S"
+      url:
+        pattern: "^https?://[^\\s]+(?![\\s\\S])"
+      source_version:
+        pattern: "\\S"
+      source_sha256:
+        pattern: "^[0-9a-f]{64}(?![\\s\\S])"
     any_of:
       - slot_conditions:
           title:
@@ -263,6 +299,24 @@ classes:
         range: boolean
 
 enums:
+  ReactionDirectionEnum:
+    permissible_values:
+      left_to_right:
+      right_to_left:
+      reversible:
+  NodeCategoryEnum:
+    permissible_values:
+      small_molecule:
+      lipid:
+      protein:
+      gene:
+      dna:
+      rna:
+      cofactor:
+      complex:
+      cellular_component:
+      molecular_activity:
+      biological_process:
   EdgePredicateEnum:
     permissible_values:
       activates:
@@ -270,7 +324,7 @@ enums:
       catalyzes:
         description: The subject (an enzyme or gene product) catalyzes the object reaction.
       consumes:
-        description: The subject participant is consumed by the object reaction.
+        description: The subject participant is consumed by the object reaction or pathway.
       enables:
         description: The subject enables the object (a function or reaction) to occur.
       inhibits:
@@ -278,6 +332,29 @@ enums:
       precedes:
         description: The subject step happens before the object step.
       produces:
-        description: The subject reaction produces the object participant.
+        description: The subject reaction or pathway produces the object participant.
       regulates:
         description: The subject regulates the object, with direction unstated.
+      causally_upstream_of:
+        description: The subject activity causally influences the object activity without asserting regulation or its sign.
+      has_input:
+        description: The subject activity has the object participant as an input, without asserting chemical consumption.
+      has_output:
+        description: The subject activity has the object participant as an output.
+      occurs_in:
+        description: The subject activity occurs in the object cellular component.
+      located_in:
+        description: The subject physical entity is located in the object cellular component.
+      part_of:
+        description: The subject activity, process, or physical entity is part of the object of a compatible kind.
+      has_part:
+        description: The subject has the object as a component; inverse of part_of.
+      provides_input_for:
+        description: The subject activity directly provides material input for the object activity.
+      has_cofactor:
+        description: >-
+          The subject enzyme or complex uses the object cofactor as stated by the
+          source. Alternative cofactors and evidence limitations belong in the
+          edge description or located source assertion; this does not assert all
+          alternatives are required together. An explicitly typed subject must
+          be a protein or complex.

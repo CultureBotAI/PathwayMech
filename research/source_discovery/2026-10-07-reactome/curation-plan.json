@@ -1,0 +1,496 @@
+{
+  "date": "2026-10-07",
+  "source_projection_sha256": "0c4db35690e382a286d4b7ca6798f2edd8947f53465616f1f2014648c9ef2244",
+  "pathways": {
+    "Reactome:R-MTU-936654": {
+      "filename": "mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml",
+      "description": "The CysM-CysO route in Mycobacterium tuberculosis transfers O-phosphoserine onto thiocarboxylated CysO, then Mec releases L-cysteine and regenerates the carrier. The graph begins at CysO-COSH: the upstream MoeZ sulfur-charging step is excluded because its physiological sulfur donor is unresolved. Carrier modification states, PLP-bearing CysM and the source zinc-containing, cleaved Mec assembly remain distinct.",
+      "exclude_reactions": {
+        "Reactome:R-MTU-936590": "Excluded placeholder chemistry: the source admits the sulfur donor is unknown, despite drawing free sulfide as a substrate (Reactome reaction comment; PMID16104727). This does not reject MoeZ involvement."
+      },
+      "exclude_edges": [],
+      "change_edges": [],
+      "add_edges": [
+        {
+          "id": "curated-flow-1",
+          "subject": "Reactome:R-MTU-936665",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936747",
+          "description": "Source-ordered material transfer through Reactome:R-MTU-936690; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936654",
+              "source_assertion": "BioPAX PathwayStep2 explicitly lists PathwayStep3 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep2/bp:nextStep/#PathwayStep3; #BiochemicalReaction2/bp:right/#Protein4; #BiochemicalReaction2/bp:conversionDirection; #BiochemicalReaction3/bp:left/#Protein4; #BiochemicalReaction3/bp:conversionDirection"
+            }
+          ]
+        }
+      ],
+      "labels": {
+        "CHEBI:15138": "sulfide(2-)",
+        "CHEBI:57524": "O-phosphonato-L-serine(2-)",
+        "CHEBI:43474": "hydrogenphosphate",
+        "CHEBI:15377": "water",
+        "CHEBI:35235": "L-cysteine zwitterion",
+        "CHEBI:29105": "zinc(2+)"
+      },
+      "categories": {
+        "CHEBI:15138": "small_molecule",
+        "CHEBI:57524": "small_molecule",
+        "CHEBI:43474": "small_molecule",
+        "CHEBI:15377": "small_molecule",
+        "CHEBI:35235": "small_molecule",
+        "CHEBI:29105": "cofactor",
+        "Reactome:R-MTU-936619": "protein",
+        "Reactome:R-MTU-936718": "protein",
+        "Reactome:R-MTU-936744": "protein",
+        "Reactome:R-MTU-936690": "protein",
+        "Reactome:R-MTU-936710": "protein",
+        "Reactome:R-MTU-936660": "protein",
+        "Reactome:R-MTU-936569": "complex",
+        "Reactome:R-MTU-936637": "complex",
+        "GO:0005829": "cellular_component"
+      },
+      "source_reference": {
+        "url": "https://reactome.org/ReactomeRESTfulAPI/RESTfulWS/biopaxExporter/Level3/936654",
+        "source_version": "Reactome release 97",
+        "source_sha256": "81265e1ab996bdf4c4126a380f285189dd7cd41e6e68e228fa56d2d09c40ff56"
+      },
+      "references": []
+    },
+    "Reactome:R-MTU-936721": {
+      "filename": "mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml",
+      "description": "The Mycobacterium tuberculosis O-acetylserine route joins CysH/Sir sulfate reduction with CysE serine acetylation and CysK1-dependent cysteine synthesis. The outdated CysK2 O-acetylserine reaction is excluded: CysK2 uses a distinct O-phosphoserine route. Native thioredoxin and ferredoxin states and PLP-bearing CysK1 are retained. Reactome chemical forms include sulfurous acid, sulfide(2-) and acetic acid; this graph does not claim physiological protonation or complete stoichiometric balance.",
+      "exclude_reactions": {
+        "Reactome:R-MTU-936745": "Excluded contradictory OAS substrate assignment: direct experiments show CysK2 does not react with OAS (PMID25022854); its OPS/thiosulfate route is distinct from both this route and CysM-CysO."
+      },
+      "exclude_edges": [
+        {
+          "triple": [
+            "Reactome:R-MTU-937267",
+            "has_part",
+            "CHEBI:33723"
+          ],
+          "reason": "BioPAX oxidized Fdx explicitly contains two distinct [4Fe-4S] clusters (#Stoichiometry10 and #Stoichiometry11), conflicting with the one [4Fe-4S] plus one [3Fe-4S] annotation of P9WNE7 (UniProt cofactor comments; ECO:0000250). Exclude the extra reduced [4Fe-4S] component; do not invent a replacement [3Fe-4S] charge state."
+        }
+      ],
+      "change_edges": [
+        {
+          "triple": [
+            "Reactome:R-MTU-936604",
+            "catalyzes",
+            "Reactome:R-MTU-936615"
+          ],
+          "set": {
+            "description": "Direct recombinant H37Rv CysE characterization supersedes the source comment that direct biochemical evidence was unavailable.",
+            "evidence": [
+              {
+                "reference_id": "Reactome:R-MTU-936721",
+                "source_assertion": "BioPAX Catalysis3 names Protein6 as its catalytic controller.",
+                "source_locator": "#Catalysis3/bp:controller/#Protein6; bp:controlled/#BiochemicalReaction3"
+              },
+              {
+                "reference_id": "PMID:23483228",
+                "quote": "The serine acetyltransferase activity of M. tuberculosis CysE protein was detected."
+              }
+            ]
+          },
+          "reason": "Added inspected primary biochemical evidence for CysE catalysis."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-937263",
+            "has_part",
+            "CHEBI:33723"
+          ],
+          "set": {
+            "description": "Retained as partial source composition, without the source cluster stoichiometry. UniProt P9WNE7 annotates one [4Fe-4S] and one [3Fe-4S] cluster by similarity; this edge does not assert complete composition.",
+            "evidence": [
+              {
+                "reference_id": "Reactome:R-MTU-936721",
+                "source_assertion": "BioPAX complex Complex2 explicitly includes physical entity SmallMolecule5.",
+                "source_locator": "#Complex2/bp:component/#SmallMolecule5"
+              },
+              {
+                "reference_id": "UniProtKB:P9WNE7",
+                "source_assertion": "The COFACTOR annotations list one [4Fe-4S] and one [3Fe-4S] cluster, each with ECO:0000250 similarity evidence. They do not establish the charge of each cluster in this native source state.",
+                "source_locator": "$.results[12].comments[1:3]"
+              }
+            ]
+          },
+          "reason": "Bounded source cluster membership to avoid endorsing two [4Fe-4S] clusters."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-937267",
+            "has_part",
+            "CHEBI:33722"
+          ],
+          "set": {
+            "description": "Retained as partial source composition, without the source cluster stoichiometry. UniProt P9WNE7 annotates one [4Fe-4S] and one [3Fe-4S] cluster by similarity; this edge does not assert complete composition.",
+            "evidence": [
+              {
+                "reference_id": "Reactome:R-MTU-936721",
+                "source_assertion": "BioPAX complex Complex3 explicitly includes physical entity SmallMolecule8.",
+                "source_locator": "#Complex3/bp:component/#SmallMolecule8"
+              },
+              {
+                "reference_id": "UniProtKB:P9WNE7",
+                "source_assertion": "The COFACTOR annotations list one [4Fe-4S] and one [3Fe-4S] cluster, each with ECO:0000250 similarity evidence. They do not establish the charge of each cluster in this native source state.",
+                "source_locator": "$.results[12].comments[1:3]"
+              }
+            ]
+          },
+          "reason": "Bounded source cluster membership to avoid endorsing two [4Fe-4S] clusters."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-936607",
+            "catalyzes",
+            "Reactome:R-MTU-936703"
+          ],
+          "set": {
+            "description": "Reactome assigns this Sir holoenzyme to sulfite reduction. PMID17644602 assayed purified M. tuberculosis SirA with methyl viologen; its deletion physiology was in M. smegmatis, not direct validation of this particular ferredoxin pair."
+          },
+          "reason": "Clarified source-assigned donor and species scope of primary assays."
+        }
+      ],
+      "add_edges": [
+        {
+          "id": "curated-flow-1",
+          "subject": "Reactome:R-MTU-936655",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936703",
+          "description": "Source-ordered material transfer through CHEBI:48854; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936721",
+              "source_assertion": "BioPAX PathwayStep1 explicitly lists PathwayStep2 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep1/bp:nextStep/#PathwayStep2; #BiochemicalReaction1/bp:right/#SmallMolecule3; #BiochemicalReaction1/bp:conversionDirection; #BiochemicalReaction2/bp:left/#SmallMolecule3; #BiochemicalReaction2/bp:conversionDirection"
+            }
+          ]
+        },
+        {
+          "id": "curated-flow-2",
+          "subject": "Reactome:R-MTU-936703",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936642",
+          "description": "Source-ordered material transfer through CHEBI:15138; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936721",
+              "source_assertion": "BioPAX PathwayStep2 explicitly lists PathwayStep4 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep2/bp:nextStep/#PathwayStep4; #BiochemicalReaction2/bp:right/#SmallMolecule7; #BiochemicalReaction2/bp:conversionDirection; #BiochemicalReaction4/bp:left/#SmallMolecule7; #BiochemicalReaction4/bp:conversionDirection"
+            }
+          ]
+        },
+        {
+          "id": "curated-flow-3",
+          "subject": "Reactome:R-MTU-936615",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936642",
+          "description": "Source-ordered material transfer through CHEBI:17981; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936721",
+              "source_assertion": "BioPAX PathwayStep3 explicitly lists PathwayStep4 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep3/bp:nextStep/#PathwayStep4; #BiochemicalReaction3/bp:right/#SmallMolecule12; #BiochemicalReaction3/bp:conversionDirection; #BiochemicalReaction4/bp:left/#SmallMolecule12; #BiochemicalReaction4/bp:conversionDirection"
+            }
+          ]
+        }
+      ],
+      "labels": {
+        "CHEBI:58243": "5'-adenylyl sulfate(2-)",
+        "CHEBI:15378": "hydron",
+        "CHEBI:48854": "sulfurous acid",
+        "CHEBI:456215": "adenosine 5'-monophosphate(2-)",
+        "CHEBI:33723": "tetra-mu3-sulfido-tetrairon(1+)",
+        "CHEBI:15377": "water",
+        "CHEBI:15138": "sulfide(2-)",
+        "CHEBI:33722": "tetra-mu3-sulfido-tetrairon(2+)",
+        "CHEBI:28599": "siroheme",
+        "CHEBI:57288": "acetyl-CoA(4-)",
+        "CHEBI:33384": "L-serine zwitterion",
+        "CHEBI:17981": "O-acetyl-L-serine",
+        "CHEBI:57287": "coenzyme A(4-)",
+        "CHEBI:15366": "acetic acid",
+        "CHEBI:35235": "L-cysteine zwitterion"
+      },
+      "categories": {
+        "CHEBI:58243": "small_molecule",
+        "CHEBI:15378": "small_molecule",
+        "CHEBI:48854": "small_molecule",
+        "CHEBI:456215": "small_molecule",
+        "CHEBI:33723": "cofactor",
+        "CHEBI:15377": "small_molecule",
+        "CHEBI:15138": "small_molecule",
+        "CHEBI:33722": "cofactor",
+        "CHEBI:28599": "cofactor",
+        "CHEBI:57288": "small_molecule",
+        "CHEBI:33384": "small_molecule",
+        "CHEBI:17981": "small_molecule",
+        "CHEBI:57287": "small_molecule",
+        "CHEBI:15366": "small_molecule",
+        "CHEBI:35235": "small_molecule",
+        "Reactome:R-MTU-936674": "protein",
+        "Reactome:R-MTU-1222293": "protein",
+        "Reactome:R-MTU-936694": "protein",
+        "Reactome:R-MTU-937262": "protein",
+        "Reactome:R-MTU-936705": "protein",
+        "Reactome:R-MTU-936604": "protein",
+        "Reactome:R-MTU-936587": "protein",
+        "Reactome:R-MTU-936682": "protein",
+        "Reactome:R-MTU-936704": "complex",
+        "Reactome:R-ALL-70986": "cofactor",
+        "Reactome:R-MTU-937263": "complex",
+        "Reactome:R-MTU-937267": "complex",
+        "Reactome:R-MTU-936607": "complex",
+        "Reactome:R-MTU-936755": "complex",
+        "GO:0005829": "cellular_component"
+      },
+      "source_reference": {
+        "url": "https://reactome.org/ReactomeRESTfulAPI/RESTfulWS/biopaxExporter/Level3/936721",
+        "source_version": "Reactome release 97",
+        "source_sha256": "810756282671ad39c8be2ddf04e500fb53b33fe6a5f5ad51ecb955b263efe5e4"
+      },
+      "references": [
+        {
+          "id": "PMID:25022854",
+          "title": "CysK2 from Mycobacterium tuberculosis Is an O-Phospho-L-Serine-Dependent S-Sulfocysteine Synthase",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4187678/"
+        },
+        {
+          "id": "PMID:23483228",
+          "title": "Identification and characterization of serine acetyltransferase encoded by the Mycobacterium tuberculosis Rv2335 gene",
+          "url": "https://www.spandidos-publications.com/10.3892/ijmm.2013.1298?text=fulltext",
+          "source_sha256": "97e00c0aec96dd72808582420e5c68f8227c47df88a94564291c901f5bc74c02"
+        },
+        {
+          "id": "UniProtKB:P9WNE7",
+          "title": "UniProtKB P9WNE7 ferredoxin cofactor annotations",
+          "url": "https://rest.uniprot.org/uniprotkb/search?query=accession%3AP71745+OR+accession%3AP71746+OR+accession%3AP95231+OR+accession%3AP9WHS1+OR+accession%3AP9WIK1+OR+accession%3AP9WIK3+OR+accession%3AP9WJ03+OR+accession%3AP9WKJ1+OR+accession%3AP9WMN7+OR+accession%3AP9WNE7+OR+accession%3AP9WNM5+OR+accession%3AP9WP53+OR+accession%3AP9WP55+OR+accession%3AP9WQM1+OR+accession%3AQ79FV4&format=json&size=500",
+          "source_version": "retrieved 2026-10-07; release not exposed",
+          "source_sha256": "9d5fc21a10f70ef21cf95ffb126f8e850f11441b59f377c0311d11cd3012ab54"
+        }
+      ]
+    },
+    "Reactome:R-MTU-936635": {
+      "filename": "mycobacterium-sulfate-assimilation.yaml",
+      "description": "Mycobacterium tuberculosis sulfate uptake and activation links SubI binding, CysTWA transport, CysD/CysNC-dependent APS synthesis, APS phosphorylation and the CysQ PAPS-hydrolysis branch. GTP hydrolysis is coupled to APS synthesis, correcting its placement on APS kinase in Reactome. This record does not assert exclusive sulfate dependence, universal enzyme essentiality or complete stoichiometric balance. CysQ PAPS activity is qualitatively supported; PAP is its better-characterized substrate.",
+      "exclude_reactions": {},
+      "exclude_edges": [],
+      "change_edges": [
+        {
+          "triple": [
+            "CHEBI:15377",
+            "consumes",
+            "Reactome:R-MTU-936583"
+          ],
+          "set": {
+            "object": "Reactome:R-MTU-936729",
+            "description": "Corrected placement of the GTP-hydrolysis component from APS kinase to the coupled APS-synthesis event. This qualitative edge does not specify a stoichiometric coefficient.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P9WNM5",
+                "source_assertion": "The structured FUNCTION annotation couples CysN GTP hydrolysis to CysD-mediated APS synthesis (ECO:0000250). This edge assigns the reactant CHEBI:15377 of that hydrolysis component to the APS-synthesis event.",
+                "source_locator": "$.results[5].comments[0].texts[0]"
+              }
+            ]
+          },
+          "reason": "Corrected GTP energy coupling using PMID15615729 and the CysNC structured function annotation."
+        },
+        {
+          "triple": [
+            "CHEBI:37565",
+            "consumes",
+            "Reactome:R-MTU-936583"
+          ],
+          "set": {
+            "object": "Reactome:R-MTU-936729",
+            "description": "Corrected placement of the GTP-hydrolysis component from APS kinase to the coupled APS-synthesis event. This qualitative edge does not specify a stoichiometric coefficient.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P9WNM5",
+                "source_assertion": "The structured FUNCTION annotation couples CysN GTP hydrolysis to CysD-mediated APS synthesis (ECO:0000250). This edge assigns the reactant CHEBI:37565 of that hydrolysis component to the APS-synthesis event.",
+                "source_locator": "$.results[5].comments[0].texts[0]"
+              },
+              {
+                "reference_id": "PMID:15615729",
+                "quote": "The stoichiometry of GTP hydrolysis and APS synthesis is 1:1"
+              }
+            ]
+          },
+          "reason": "Corrected GTP energy coupling using PMID15615729 and the CysNC structured function annotation."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-936583",
+            "produces",
+            "CHEBI:43474"
+          ],
+          "set": {
+            "subject": "Reactome:R-MTU-936729",
+            "description": "Corrected placement of the GTP-hydrolysis component from APS kinase to the coupled APS-synthesis event. This qualitative edge does not specify a stoichiometric coefficient.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P9WNM5",
+                "source_assertion": "The structured FUNCTION annotation couples CysN GTP hydrolysis to CysD-mediated APS synthesis (ECO:0000250). This edge assigns the product CHEBI:43474 of that hydrolysis component to the APS-synthesis event.",
+                "source_locator": "$.results[5].comments[0].texts[0]"
+              }
+            ]
+          },
+          "reason": "Corrected GTP energy coupling using PMID15615729 and the CysNC structured function annotation."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-936583",
+            "produces",
+            "CHEBI:58189"
+          ],
+          "set": {
+            "subject": "Reactome:R-MTU-936729",
+            "description": "Corrected placement of the GTP-hydrolysis component from APS kinase to the coupled APS-synthesis event. This qualitative edge does not specify a stoichiometric coefficient.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P9WNM5",
+                "source_assertion": "The structured FUNCTION annotation couples CysN GTP hydrolysis to CysD-mediated APS synthesis (ECO:0000250). This edge assigns the product CHEBI:58189 of that hydrolysis component to the APS-synthesis event.",
+                "source_locator": "$.results[5].comments[0].texts[0]"
+              }
+            ]
+          },
+          "reason": "Corrected GTP energy coupling using PMID15615729 and the CysNC structured function annotation."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-936583",
+            "produces",
+            "CHEBI:15378"
+          ],
+          "set": {
+            "description": "Qualitative hydron product supported by the APS kinase reaction. Reactome source multiplicity of two is not retained. APS-synthesis proton consumption and coupled GTP-hydrolysis proton production are netted; this graph has no explicit stoichiometric model.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P9WNM5",
+                "source_assertion": "The CATALYTIC ACTIVITY reaction for EC:2.7.1.25 lists APS and ATP as reactants and PAPS, ADP and H(+) as products (RHEA:24152).",
+                "source_locator": "$.results[5].comments[3].reaction"
+              }
+            ]
+          },
+          "reason": "Replaced the source combined-reaction proton count with a bounded kinase product claim; no net APS-synthesis hydron edge added."
+        },
+        {
+          "triple": [
+            "Reactome:R-MTU-936691",
+            "catalyzes",
+            "Reactome:R-MTU-936659"
+          ],
+          "set": {
+            "description": "Source CysQ PAPS hydrolysis assignment has qualitative biochemical support (PMID18454554). PAP, not PAPS, was quantitatively characterized; membrane localization and oligomer context are retained as Reactome assertions."
+          },
+          "reason": "Bounded CysQ evidence and physiological interpretation."
+        }
+      ],
+      "add_edges": [
+        {
+          "id": "curated-flow-1",
+          "subject": "Reactome:R-MTU-936667",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936631",
+          "description": "Source-ordered material transfer through Reactome:R-MTU-936589; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936635",
+              "source_assertion": "BioPAX PathwayStep1 explicitly lists PathwayStep2 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep1/bp:nextStep/#PathwayStep2; #BiochemicalReaction1/bp:right/#Complex1; #BiochemicalReaction1/bp:conversionDirection; #BiochemicalReaction2/bp:left/#Complex1; #BiochemicalReaction2/bp:conversionDirection"
+            }
+          ]
+        },
+        {
+          "id": "curated-flow-2",
+          "subject": "Reactome:R-MTU-936631",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936729",
+          "description": "Source-ordered material transfer through Reactome:R-ALL-174375; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936635",
+              "source_assertion": "BioPAX PathwayStep2 explicitly lists PathwayStep3 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep2/bp:nextStep/#PathwayStep3; #BiochemicalReaction2/bp:right/#SmallMolecule6; #BiochemicalReaction2/bp:conversionDirection; #BiochemicalReaction3/bp:left/#SmallMolecule6; #BiochemicalReaction3/bp:conversionDirection"
+            }
+          ]
+        },
+        {
+          "id": "curated-flow-3",
+          "subject": "Reactome:R-MTU-936729",
+          "predicate": "provides_input_for",
+          "object": "Reactome:R-MTU-936583",
+          "description": "Source-ordered material transfer through CHEBI:58243; no regulatory sign or stoichiometric coefficient is asserted.",
+          "evidence": [
+            {
+              "reference_id": "Reactome:R-MTU-936635",
+              "source_assertion": "BioPAX PathwayStep3 explicitly lists PathwayStep4 as nextStep; the linked reactions produce and consume the same source physical entity.",
+              "source_locator": "#PathwayStep3/bp:nextStep/#PathwayStep4; #BiochemicalReaction3/bp:right/#SmallMolecule7; #BiochemicalReaction3/bp:conversionDirection; #BiochemicalReaction4/bp:left/#SmallMolecule7; #BiochemicalReaction4/bp:conversionDirection"
+            }
+          ]
+        }
+      ],
+      "labels": {
+        "CHEBI:30616": "ATP(4-)",
+        "CHEBI:15377": "water",
+        "CHEBI:456216": "ADP(3-)",
+        "CHEBI:43474": "hydrogenphosphate",
+        "CHEBI:58243": "5'-adenylyl sulfate(2-)",
+        "CHEBI:33019": "diphosphate(3-)",
+        "CHEBI:37565": "GTP(4-)",
+        "CHEBI:15378": "hydron",
+        "CHEBI:58339": "3'-phosphonato-5'-adenylyl sulfate(4-)",
+        "CHEBI:58189": "GDP(3-)",
+        "CHEBI:18420": "magnesium(2+)"
+      },
+      "categories": {
+        "Reactome:R-ALL-427648": "small_molecule",
+        "CHEBI:30616": "small_molecule",
+        "CHEBI:15377": "small_molecule",
+        "CHEBI:456216": "small_molecule",
+        "CHEBI:43474": "small_molecule",
+        "Reactome:R-ALL-174375": "small_molecule",
+        "CHEBI:58243": "small_molecule",
+        "CHEBI:33019": "small_molecule",
+        "CHEBI:37565": "small_molecule",
+        "CHEBI:15378": "small_molecule",
+        "CHEBI:58339": "small_molecule",
+        "CHEBI:58189": "small_molecule",
+        "CHEBI:18420": "cofactor",
+        "Reactome:R-MTU-936726": "protein",
+        "Reactome:R-MTU-936743": "protein",
+        "Reactome:R-MTU-936656": "protein",
+        "Reactome:R-MTU-936681": "protein",
+        "Reactome:R-MTU-936597": "protein",
+        "Reactome:R-MTU-936698": "protein",
+        "Reactome:R-MTU-936577": "protein",
+        "Reactome:R-MTU-936589": "complex",
+        "Reactome:R-MTU-936707": "complex",
+        "Reactome:R-MTU-936606": "complex",
+        "Reactome:R-MTU-936691": "complex",
+        "Reactome:R-MTU-936671": "complex",
+        "GO:0005886": "cellular_component",
+        "GO:0005576": "cellular_component",
+        "GO:0005829": "cellular_component"
+      },
+      "source_reference": {
+        "url": "https://reactome.org/ReactomeRESTfulAPI/RESTfulWS/biopaxExporter/Level3/936635",
+        "source_version": "Reactome release 97",
+        "source_sha256": "3064b8669aaddd154b89541727131af9f24bdc1980c9bc737c3e56d4533d0b71"
+      },
+      "references": [
+        {
+          "id": "UniProtKB:P9WNM5",
+          "title": "UniProtKB P9WNM5 bifunctional CysNC function and catalytic-activity annotations",
+          "url": "https://rest.uniprot.org/uniprotkb/search?query=accession%3AP71745+OR+accession%3AP71746+OR+accession%3AP95231+OR+accession%3AP9WHS1+OR+accession%3AP9WIK1+OR+accession%3AP9WIK3+OR+accession%3AP9WJ03+OR+accession%3AP9WKJ1+OR+accession%3AP9WMN7+OR+accession%3AP9WNE7+OR+accession%3AP9WNM5+OR+accession%3AP9WP53+OR+accession%3AP9WP55+OR+accession%3AP9WQM1+OR+accession%3AQ79FV4&format=json&size=500",
+          "source_version": "retrieved 2026-10-07; release not exposed",
+          "source_sha256": "9d5fc21a10f70ef21cf95ffb126f8e850f11441b59f377c0311d11cd3012ab54"
+        }
+      ]
+    }
+  }
+}

@@ -1,267 +1,562 @@
 id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
 label: galactose degradation
 description: Galactose degradation in Saccharomyces cerevisiae S288C epimerizes beta-D-galactose
-  to alpha-D-galactose, phosphorylates it, transfers UDP-glucose to form alpha-D-glucose
-  1-phosphate and UDP-galactose, regenerates UDP-glucose, and converts alpha-D-glucose
-  1-phosphate to D-glucose 6-phosphate in the SGD GO-CAM galactose degradation pathway.
+  to alpha-D-galactose, phosphorylates it, transfers UDP-glucose to form alpha-D-glucose 1-phosphate
+  and UDP-galactose, regenerates UDP-glucose, and converts alpha-D-glucose 1-phosphate to
+  D-glucose 6-phosphate in the SGD GO-CAM galactose degradation pathway.
 pathway_type: galactose-degradation
 taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
 - id: CHEBI:4170
   label: D-glucopyranose 6-phosphate
+  category: small_molecule
 - id: SGD:S000004711
   label: PGM2 Scer
+  category: protein
+- id: GO:0019388
+  label: galactose catabolic process
+  category: biological_process
 - id: CHEBI:58601
   label: alpha-D-glucose 1-phosphate(2-)
+  category: small_molecule
 - id: CHEBI:58885
   label: UDP-alpha-D-glucose(2-)
+  category: small_molecule
 - id: CHEBI:58336
   label: alpha-D-galactose 1-phosphate(2-)
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: SGD:S000000223
   label: GAL10 Scer
+  category: protein
 - id: SGD:S000000224
   label: GAL1 Scer
+  category: protein
 - id: CHEBI:28061
   label: alpha-D-galactose
+  category: small_molecule
 - id: CHEBI:30616
   label: ATP(4-)
+  category: small_molecule
 - id: SGD:S000000222
   label: GAL7 Scer
+  category: protein
 - id: SGD:S000001610
   label: PGM1 Scer
+  category: protein
 - id: CHEBI:27667
   label: beta-D-galactose
+  category: small_molecule
 - id: CHEBI:66914
   label: UDP-alpha-D-galactose(2-)
+  category: small_molecule
 - id: CHEBI:456216
   label: ADP(3-)
+  category: small_molecule
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: cofactor
 reactions:
+- id: gomodel:ALDOSE1EPIM-RXN
+  label: β-D-galactopyranose -> α-D-galactopyranose
+  category: molecular_activity
+- id: gomodel:GALACTOKIN-RXN
+  label: α-D-galactopyranose + ATP -> α-D-galactose 1-phosphate + ADP + H<SUP>+</SUP>
+  category: molecular_activity
+- id: gomodel:GALACTURIDYLYLTRANS-RXN
+  label: UDP-α-D-glucose + α-D-galactose 1-phosphate -> UDP-α-D-galactose + α-D-glucopyranose
+    1-phosphate
+  category: molecular_activity
 - id: gomodel:PHOSPHOGLUCMUT-RXN
-  label: "\u03B1-D-glucopyranose 1-phosphate <=> D-glucopyranose 6-phosphate"
+  label: α-D-glucopyranose 1-phosphate <=> D-glucopyranose 6-phosphate
+  category: molecular_activity
+- id: gomodel:UDPGLUCEPIM-RXN
+  label: UDP-α-D-glucose <=> UDP-α-D-galactose
+  category: molecular_activity
 - id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
   label: phosphoglucomutase activity
-- id: gomodel:UDPGLUCEPIM-RXN
-  label: "UDP-\u03B1-D-glucose <=> UDP-\u03B1-D-galactose"
-- id: gomodel:GALACTOKIN-RXN
-  label: "\u03B1-D-galactopyranose + ATP -> \u03B1-D-galactose 1-phosphate + ADP +\
-    \ H<SUP>+</SUP>"
-- id: gomodel:ALDOSE1EPIM-RXN
-  label: "\u03B2-D-galactopyranose -> \u03B1-D-galactopyranose"
-- id: gomodel:GALACTURIDYLYLTRANS-RXN
-  label: "UDP-\u03B1-D-glucose + \u03B1-D-galactose 1-phosphate -> UDP-\u03B1-D-galactose\
-    \ + \u03B1-D-glucopyranose 1-phosphate"
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
+  subject: gomodel:UDPGLUCEPIM-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:UDPGLUCEPIM-RXN BFO:0000066 gomodel:reaction_UDPGLUCEPIM-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/0; endpoint types:
+      /individuals/14/type; /individuals/47/type'
+- id: edge-002
+  subject: gomodel:GALACTURIDYLYLTRANS-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN BFO:0000066 gomodel:reaction_GALACTURIDYLYLTRANS-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/1; endpoint types:
+      /individuals/12/type; /individuals/45/type'
+- id: edge-003
   subject: gomodel:PHOSPHOGLUCMUT-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:4170
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN","type":[{"type":"class","id":"CHEBI:4170"'
-- id: edge-002
+    source_assertion: The model asserts gomodel:PHOSPHOGLUCMUT-RXN RO:0002234 gomodel:CHEBI_4170_PHOSPHOGLUCMUT-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/2; endpoint types:
+      /individuals/13/type; /individuals/5/type'
+- id: edge-004
   subject: SGD:S000004711
   predicate: enables
   object: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000634"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000634","type":[{"type":"class","id":"SGD:S000004711"'
-- id: edge-003
-  subject: CHEBI:58601
-  predicate: consumes
-  object: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
-  evidence:
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58601"'
-- id: edge-004
-  subject: CHEBI:58601
-  predicate: consumes
-  object: gomodel:PHOSPHOGLUCMUT-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58601"'
+    source_assertion: The model asserts gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+      RO:0002333 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000634.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/3; endpoint types:
+      /individuals/49/type; /individuals/51/type'
 - id: edge-005
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: part_of
+  object: GO:0019388
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN BFO:0000050 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/YeastPathways_YEAST-GALACT-METAB-PWY.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/4; endpoint types:
+      /individuals/11/type; /individuals/48/type'
+- id: edge-006
+  subject: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  predicate: has_input
+  object: CHEBI:58601
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+      RO:0002233 gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/5; endpoint types:
+      /individuals/49/type; /individuals/8/type'
+- id: edge-007
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: has_input
+  object: CHEBI:58601
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:PHOSPHOGLUCMUT-RXN RO:0002233 gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/6; endpoint types:
+      /individuals/13/type; /individuals/8/type'
+- id: edge-008
   subject: gomodel:UDPGLUCEPIM-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58885
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:UDPGLUCEPIM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN"'
+    source_assertion: The model asserts gomodel:UDPGLUCEPIM-RXN RO:0002234 gomodel:CHEBI_58885_UDPGLUCEPIM-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/7; endpoint types:
+      /individuals/14/type; /individuals/9/type'
+- id: edge-009
+  subject: gomodel:UDPGLUCEPIM-RXN
+  predicate: part_of
+  object: GO:0019388
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN","type":[{"type":"class","id":"CHEBI:58885"'
-- id: edge-006
+    source_assertion: The model asserts gomodel:UDPGLUCEPIM-RXN BFO:0000050 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/YeastPathways_YEAST-GALACT-METAB-PWY.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/8; endpoint types:
+      /individuals/14/type; /individuals/48/type'
+- id: edge-010
   subject: gomodel:GALACTOKIN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58336
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58336_GALACTOKIN-RXN"'
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN RO:0002234 gomodel:CHEBI_58336_GALACTOKIN-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/9; endpoint types:
+      /individuals/11/type; /individuals/7/type'
+- id: edge-011
+  subject: gomodel:ALDOSE1EPIM-RXN
+  predicate: part_of
+  object: GO:0019388
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58336_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:58336"'
-- id: edge-007
+    source_assertion: The model asserts gomodel:ALDOSE1EPIM-RXN BFO:0000050 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/YeastPathways_YEAST-GALACT-METAB-PWY.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/10; endpoint types:
+      /individuals/0/type; /individuals/48/type'
+- id: edge-012
   subject: gomodel:GALACTOKIN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_GALACTOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_15378_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-008
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN RO:0002234 gomodel:CHEBI_15378_GALACTOKIN-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/11; endpoint types:
+      /individuals/11/type; /individuals/1/type'
+- id: edge-013
   subject: SGD:S000000223
   predicate: enables
   object: gomodel:ALDOSE1EPIM-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:ALDOSE1EPIM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR019C-MONOMER_ALDOSE1EPIM-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YBR019C-MONOMER_ALDOSE1EPIM-RXN_controller","type":[{"type":"class","id":"SGD:S000000223"'
-- id: edge-009
+    source_assertion: The model asserts gomodel:ALDOSE1EPIM-RXN RO:0002333 gomodel:YBR019C-MONOMER_ALDOSE1EPIM-RXN_controller.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/12; endpoint types:
+      /individuals/0/type; /individuals/16/type'
+- id: edge-014
   subject: SGD:S000000224
   predicate: enables
   object: gomodel:GALACTOKIN-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR020W-MONOMER_GALACTOKIN-RXN_controller"'
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN RO:0002333 gomodel:YBR020W-MONOMER_GALACTOKIN-RXN_controller.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/13; endpoint types:
+      /individuals/11/type; /individuals/18/type'
+- id: edge-015
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YBR020W-MONOMER_GALACTOKIN-RXN_controller","type":[{"type":"class","id":"SGD:S000000224"'
-- id: edge-010
+    source_assertion: The model asserts gomodel:PHOSPHOGLUCMUT-RXN BFO:0000066 gomodel:reaction_PHOSPHOGLUCMUT-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/14; endpoint types:
+      /individuals/13/type; /individuals/46/type'
+- id: edge-016
   subject: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
-  predicate: produces
+  predicate: has_output
   object: CHEBI:4170
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000633"'
+    source_assertion: The model asserts gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+      RO:0002234 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000633.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/15; endpoint types:
+      /individuals/49/type; /individuals/50/type'
+- id: edge-017
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000633","type":[{"type":"class","id":"CHEBI:4170"'
-- id: edge-011
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN BFO:0000066 gomodel:reaction_GALACTOKIN-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/16; endpoint types:
+      /individuals/11/type; /individuals/44/type'
+- id: edge-018
   subject: gomodel:ALDOSE1EPIM-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:28061
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:ALDOSE1EPIM-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN","type":[{"type":"class","id":"CHEBI:28061"'
-- id: edge-012
-  subject: CHEBI:30616
-  predicate: consumes
-  object: gomodel:GALACTOKIN-RXN
+    source_assertion: The model asserts gomodel:ALDOSE1EPIM-RXN RO:0002234 gomodel:CHEBI_28061_ALDOSE1EPIM-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/17; endpoint types:
+      /individuals/0/type; /individuals/3/type'
+- id: edge-019
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: has_input
+  object: CHEBI:30616
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_30616_GALACTOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_30616_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:30616"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN RO:0002233 gomodel:CHEBI_30616_GALACTOKIN-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/18; endpoint types:
+      /individuals/11/type; /individuals/4/type'
+- id: edge-020
   subject: SGD:S000000222
   predicate: enables
   object: gomodel:GALACTURIDYLYLTRANS-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR018C-MONOMER_GALACTURIDYLYLTRANS-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YBR018C-MONOMER_GALACTURIDYLYLTRANS-RXN_controller","type":[{"type":"class","id":"SGD:S000000222"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN RO:0002333 gomodel:YBR018C-MONOMER_GALACTURIDYLYLTRANS-RXN_controller.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/19; endpoint types:
+      /individuals/12/type; /individuals/15/type'
+- id: edge-021
   subject: gomodel:GALACTURIDYLYLTRANS-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:58601
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:58601"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN RO:0002234 gomodel:CHEBI_58601_GALACTURIDYLYLTRANS-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/20; endpoint types:
+      /individuals/12/type; /individuals/8/type'
+- id: edge-022
   subject: SGD:S000001610
   predicate: enables
   object: gomodel:PHOSPHOGLUCMUT-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:PHOSPHOGLUCMUT-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6690711d00000510"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6690711d00000510","type":[{"type":"class","id":"SGD:S000001610"'
-- id: edge-016
-  subject: CHEBI:27667
-  predicate: consumes
-  object: gomodel:ALDOSE1EPIM-RXN
+    source_assertion: The model asserts gomodel:PHOSPHOGLUCMUT-RXN RO:0002333 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6690711d00000510.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/21; endpoint types:
+      /individuals/13/type; /individuals/58/type'
+- id: edge-023
+  subject: gomodel:ALDOSE1EPIM-RXN
+  predicate: has_input
+  object: CHEBI:27667
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:ALDOSE1EPIM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_27667_ALDOSE1EPIM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_27667_ALDOSE1EPIM-RXN","type":[{"type":"class","id":"CHEBI:27667"'
-- id: edge-017
-  subject: CHEBI:58336
-  predicate: consumes
-  object: gomodel:GALACTURIDYLYLTRANS-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58336_GALACTOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58336_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:58336"'
-- id: edge-018
+    source_assertion: The model asserts gomodel:ALDOSE1EPIM-RXN RO:0002233 gomodel:CHEBI_27667_ALDOSE1EPIM-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/22; endpoint types:
+      /individuals/0/type; /individuals/2/type'
+- id: edge-024
   subject: gomodel:GALACTURIDYLYLTRANS-RXN
-  predicate: produces
+  predicate: has_input
+  object: CHEBI:58336
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN RO:0002233 gomodel:CHEBI_58336_GALACTOKIN-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/23; endpoint types:
+      /individuals/12/type; /individuals/7/type'
+- id: edge-025
+  subject: gomodel:GALACTURIDYLYLTRANS-RXN
+  predicate: has_output
   object: CHEBI:66914
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN"'
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN RO:0002234 gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/24; endpoint types:
+      /individuals/12/type; /individuals/10/type'
+- id: edge-026
+  subject: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  predicate: part_of
+  object: GO:0019388
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:66914"'
-- id: edge-019
+    source_assertion: The model asserts gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+      BFO:0000050 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/YeastPathways_YEAST-GALACT-METAB-PWY.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/25; endpoint types:
+      /individuals/49/type; /individuals/48/type'
+- id: edge-027
+  subject: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000632
+      BFO:0000066 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/6a4c244800000636.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/26; endpoint types:
+      /individuals/49/type; /individuals/52/type'
+- id: edge-028
   subject: gomodel:GALACTOKIN-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:456216
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_456216_GALACTOKIN-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_456216_GALACTOKIN-RXN","type":[{"type":"class","id":"CHEBI:456216"'
-- id: edge-020
-  subject: CHEBI:66914
-  predicate: consumes
-  object: gomodel:UDPGLUCEPIM-RXN
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN RO:0002234 gomodel:CHEBI_456216_GALACTOKIN-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/27; endpoint types:
+      /individuals/11/type; /individuals/6/type'
+- id: edge-029
+  subject: gomodel:GALACTURIDYLYLTRANS-RXN
+  predicate: part_of
+  object: GO:0019388
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:UDPGLUCEPIM-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN"'
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN BFO:0000050 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/YeastPathways_YEAST-GALACT-METAB-PWY.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/28; endpoint types:
+      /individuals/12/type; /individuals/48/type'
+- id: edge-030
+  subject: gomodel:PHOSPHOGLUCMUT-RXN
+  predicate: part_of
+  object: GO:0019388
+  evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN","type":[{"type":"class","id":"CHEBI:66914"'
-- id: edge-021
+    source_assertion: The model asserts gomodel:PHOSPHOGLUCMUT-RXN BFO:0000050 gomodel:YeastPathways_YEAST-GALACT-METAB-PWY/YeastPathways_YEAST-GALACT-METAB-PWY.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/29; endpoint types:
+      /individuals/13/type; /individuals/48/type'
+- id: edge-031
+  subject: gomodel:UDPGLUCEPIM-RXN
+  predicate: has_input
+  object: CHEBI:66914
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:UDPGLUCEPIM-RXN RO:0002233 gomodel:CHEBI_66914_GALACTURIDYLYLTRANS-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/30; endpoint types:
+      /individuals/14/type; /individuals/10/type'
+- id: edge-032
+  subject: gomodel:ALDOSE1EPIM-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+    source_assertion: The model asserts gomodel:ALDOSE1EPIM-RXN BFO:0000066 gomodel:reaction_ALDOSE1EPIM-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/31; endpoint types:
+      /individuals/0/type; /individuals/43/type'
+- id: edge-033
   subject: SGD:S000000223
   predicate: enables
   object: gomodel:UDPGLUCEPIM-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:UDPGLUCEPIM-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YBR019C-MONOMER_UDPGLUCEPIM-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:YBR019C-MONOMER_UDPGLUCEPIM-RXN_controller","type":[{"type":"class","id":"SGD:S000000223"'
-- id: edge-022
-  subject: CHEBI:28061
-  predicate: consumes
-  object: gomodel:GALACTOKIN-RXN
+    source_assertion: The model asserts gomodel:UDPGLUCEPIM-RXN RO:0002333 gomodel:YBR019C-MONOMER_UDPGLUCEPIM-RXN_controller.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/32; endpoint types:
+      /individuals/14/type; /individuals/17/type'
+- id: edge-034
+  subject: gomodel:GALACTOKIN-RXN
+  predicate: has_input
+  object: CHEBI:28061
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTOKIN-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_28061_ALDOSE1EPIM-RXN","type":[{"type":"class","id":"CHEBI:28061"'
-- id: edge-023
-  subject: CHEBI:58885
-  predicate: consumes
-  object: gomodel:GALACTURIDYLYLTRANS-RXN
+    source_assertion: The model asserts gomodel:GALACTOKIN-RXN RO:0002233 gomodel:CHEBI_28061_ALDOSE1EPIM-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/33; endpoint types:
+      /individuals/11/type; /individuals/3/type'
+- id: edge-035
+  subject: gomodel:GALACTURIDYLYLTRANS-RXN
+  predicate: has_input
+  object: CHEBI:58885
   evidence:
   - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"subject":"gomodel:GALACTURIDYLYLTRANS-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN"'
-  - reference_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
-    quote: '"id":"gomodel:CHEBI_58885_UDPGLUCEPIM-RXN","type":[{"type":"class","id":"CHEBI:58885"'
+    source_assertion: The model asserts gomodel:GALACTURIDYLYLTRANS-RXN RO:0002233 gomodel:CHEBI_58885_UDPGLUCEPIM-RXN.
+    source_locator: './YeastPathways_YEAST-GALACT-METAB-PWY.json#/facts/34; endpoint types:
+      /individuals/12/type; /individuals/9/type'
+- id: location-bdb7eec3df16
+  subject: SGD:S000004711
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:8385141)
+  evidence:
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1251/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 has the exact SGD cross-reference SGD:S000004711.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1251/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-f282e8da1094
+  subject: SGD:S000001610
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:14562095)
+  evidence:
+  - reference_id: UniProtKB:P33401
+    source_assertion: UniProtKB:P33401 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1085/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:P33401
+    source_assertion: UniProtKB:P33401 has the exact SGD cross-reference SGD:S000001610.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/1085/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-0945beb9b2eb
+  subject: SGD:S000004711
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:1100398); ECO:0000269 (PubMed:4628805) Binds 1 magnesium ion per subunit. Can
+    also use Zn(2+) as cofactor. UniProt note evidence: ECO:0000269 (PubMed:1100398); ECO:0000269
+    (PubMed:4628805)'
+  evidence:
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/comments/0/cofactors/0;
+      /results/1251/comments/0/note'
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 has the exact SGD cross-reference SGD:S000004711.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/uniProtKBCrossReferences/0'
+- id: cofactor-02ad2260b7d9
+  subject: SGD:S000004711
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000269
+    (PubMed:1100398); ECO:0000269 (PubMed:4628805) Binds 1 magnesium ion per subunit. Can
+    also use Zn(2+) as cofactor. UniProt note evidence: ECO:0000269 (PubMed:1100398); ECO:0000269
+    (PubMed:4628805)'
+  evidence:
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/comments/0/cofactors/1;
+      /results/1251/comments/0/note'
+  - reference_id: UniProtKB:P37012
+    source_assertion: UniProtKB:P37012 has the exact SGD cross-reference SGD:S000004711.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1251/uniProtKBCrossReferences/0'
+- id: cofactor-890051017cf2
+  subject: SGD:S000000223
+  predicate: has_cofactor
+  object: CHEBI:57540
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: not specified'
+  evidence:
+  - reference_id: UniProtKB:P04397
+    source_assertion: UniProtKB:P04397 annotates CHEBI:57540 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/84/comments/0/cofactors/0'
+  - reference_id: UniProtKB:P04397
+    source_assertion: UniProtKB:P04397 has the exact SGD cross-reference SGD:S000000223.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/84/uniProtKBCrossReferences/0'
+- id: cofactor-3a91301be9d8
+  subject: SGD:S000000222
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P09148) Binds 1 zinc ion per subunit. Zinc binding seems to play a structural
+    role. UniProt note evidence: ECO:0000250 (UniProtKB:P09148)'
+  evidence:
+  - reference_id: UniProtKB:P08431
+    source_assertion: UniProtKB:P08431 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3254/comments/0/cofactors/0;
+      /results/3254/comments/0/note'
+  - reference_id: UniProtKB:P08431
+    source_assertion: UniProtKB:P08431 has the exact SGD cross-reference SGD:S000000222.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3254/uniProtKBCrossReferences/0'
+- id: cofactor-ad9ff5447ab5
+  subject: SGD:S000001610
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:P00949) Binds 1 Mg(2+) ion per subunit. UniProt note evidence: ECO:0000250
+    (UniProtKB:P00949)'
+  evidence:
+  - reference_id: UniProtKB:P33401
+    source_assertion: UniProtKB:P33401 annotates CHEBI:18420 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1085/comments/0/cofactors/0;
+      /results/1085/comments/0/note'
+  - reference_id: UniProtKB:P33401
+    source_assertion: UniProtKB:P33401 has the exact SGD cross-reference SGD:S000001610.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/1085/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
   title: 'SGD GO-CAM galactose degradation - imported from: Saccharomyces Genome Database'
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-08; member ./YeastPathways_YEAST-GALACT-METAB-PWY.json
+- id: UniProtKB:P37012
+  title: Reviewed UniProtKB P37012 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P33401
+  title: Reviewed UniProtKB P33401 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P04397
+  title: UniProtKB P04397 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+- id: UniProtKB:P08431
+  title: UniProtKB P08431 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true

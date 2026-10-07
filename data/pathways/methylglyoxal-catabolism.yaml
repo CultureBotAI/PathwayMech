@@ -1,184 +1,372 @@
 id: gomodel:YeastPathways_PWY-901
 label: methylglyoxal catabolism
-description: Methylglyoxal catabolism in Saccharomyces cerevisiae S288C converts methylglyoxal and
-  glutathionate to (R)-S-lactoylglutathionate through GLO1 lactoylglutathione lyase activity, then
-  hydrolyzes (R)-S-lactoylglutathionate to (R)-lactate and regenerates glutathionate through GLO2
-  and GLO4 hydroxyacylglutathione hydrolase activities.
+description: Methylglyoxal catabolism in Saccharomyces cerevisiae S288C converts methylglyoxal
+  and glutathionate to (R)-S-lactoylglutathionate through GLO1 lactoylglutathione lyase activity,
+  then hydrolyzes (R)-S-lactoylglutathionate to (R)-lactate and regenerates glutathionate
+  through GLO2 and GLO4 hydroxyacylglutathione hydrolase activities.
 pathway_type: detoxification
 taxa:
 - id: NCBITaxon:559292
   label: Saccharomyces cerevisiae S288C
 participants:
+- id: GO:0051596
+  label: methylglyoxal catabolic process
+  category: biological_process
 - id: CHEBI:57925
   label: glutathionate(1-)
+  category: small_molecule
 - id: CHEBI:16004
   label: (R)-lactate
+  category: small_molecule
 - id: CHEBI:15378
   label: hydron
+  category: small_molecule
 - id: CHEBI:17158
   label: methylglyoxal
+  category: small_molecule
 - id: CHEBI:57474
   label: (R)-S-lactoylglutathionate(1-)
+  category: small_molecule
 - id: SGD:S000002680
   label: GLO2 Scer
+  category: protein
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
 - id: CHEBI:15377
   label: water
+  category: small_molecule
 - id: SGD:S000004463
   label: GLO1 Scer
+  category: protein
 - id: SGD:S000005566
   label: GLO4 Scer
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005759
+  label: mitochondrial matrix
+  category: cellular_component
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
 reactions:
-- id: gomodel:GLYOXII-RXN
-  label: hydroxyacylglutathione hydrolase activity
 - id: gomodel:GLYOXI-RXN
   label: lactoylglutathione lyase activity
+  category: molecular_activity
+- id: gomodel:GLYOXII-RXN
+  label: hydroxyacylglutathione hydrolase activity
+  category: molecular_activity
 - id: gomodel:YeastPathways_PWY-901/6a46ef0600000777
   label: hydroxyacylglutathione hydrolase activity
+  category: molecular_activity
 mechanistic_edges:
 - id: edge-001
   subject: gomodel:YeastPathways_PWY-901/6a46ef0600000777
-  predicate: produces
+  predicate: part_of
+  object: GO:0051596
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-901
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 BFO:0000050
+      gomodel:YeastPathways_PWY-901/YeastPathways_PWY-901.
+    source_locator: './YeastPathways_PWY-901.json#/facts/0; endpoint types: /individuals/26/type;
+      /individuals/25/type'
+- id: edge-002
+  subject: gomodel:YeastPathways_PWY-901/6a46ef0600000777
+  predicate: has_output
   object: CHEBI:57925
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:YeastPathways_PWY-901/6a46ef0600000777","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-901/6a46ef0600000781"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YeastPathways_PWY-901/6a46ef0600000781","type":[{"type":"class","id":"CHEBI:57925"'
-- id: edge-002
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 RO:0002234
+      gomodel:YeastPathways_PWY-901/6a46ef0600000781.
+    source_locator: './YeastPathways_PWY-901.json#/facts/1; endpoint types: /individuals/26/type;
+      /individuals/30/type'
+- id: edge-003
   subject: gomodel:YeastPathways_PWY-901/6a46ef0600000777
-  predicate: produces
+  predicate: has_output
   object: CHEBI:16004
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:YeastPathways_PWY-901/6a46ef0600000777","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-901/6a46ef0600000780"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YeastPathways_PWY-901/6a46ef0600000780","type":[{"type":"class","id":"CHEBI:16004"'
-- id: edge-003
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 RO:0002234
+      gomodel:YeastPathways_PWY-901/6a46ef0600000780.
+    source_locator: './YeastPathways_PWY-901.json#/facts/2; endpoint types: /individuals/26/type;
+      /individuals/29/type'
+- id: edge-004
   subject: gomodel:GLYOXII-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXII-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_15378_GLYOXII-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_15378_GLYOXII-RXN","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-004
-  subject: CHEBI:57925
-  predicate: consumes
-  object: gomodel:GLYOXI-RXN
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXI-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57925_GLYOXI-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_57925_GLYOXI-RXN","type":[{"type":"class","id":"CHEBI:57925"'
+    source_assertion: The model asserts gomodel:GLYOXII-RXN RO:0002234 gomodel:CHEBI_15378_GLYOXII-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/3; endpoint types: /individuals/8/type;
+      /individuals/1/type'
 - id: edge-005
-  subject: CHEBI:17158
-  predicate: consumes
-  object: gomodel:GLYOXI-RXN
+  subject: gomodel:GLYOXI-RXN
+  predicate: has_input
+  object: CHEBI:57925
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXI-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_17158_GLYOXI-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_17158_GLYOXI-RXN","type":[{"type":"class","id":"CHEBI:17158"'
+    source_assertion: The model asserts gomodel:GLYOXI-RXN RO:0002233 gomodel:CHEBI_57925_GLYOXI-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/4; endpoint types: /individuals/7/type;
+      /individuals/5/type'
 - id: edge-006
-  subject: CHEBI:57474
-  predicate: consumes
-  object: gomodel:GLYOXII-RXN
+  subject: gomodel:GLYOXI-RXN
+  predicate: has_input
+  object: CHEBI:17158
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXII-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57474_GLYOXI-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_57474_GLYOXI-RXN","type":[{"type":"class","id":"CHEBI:57474"'
+    source_assertion: The model asserts gomodel:GLYOXI-RXN RO:0002233 gomodel:CHEBI_17158_GLYOXI-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/5; endpoint types: /individuals/7/type;
+      /individuals/3/type'
 - id: edge-007
+  subject: gomodel:GLYOXII-RXN
+  predicate: has_input
+  object: CHEBI:57474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-901
+    source_assertion: The model asserts gomodel:GLYOXII-RXN RO:0002233 gomodel:CHEBI_57474_GLYOXI-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/6; endpoint types: /individuals/8/type;
+      /individuals/4/type'
+- id: edge-008
   subject: SGD:S000002680
   predicate: enables
   object: gomodel:GLYOXII-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXII-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YDR272W-MONOMER_GLYOXII-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YDR272W-MONOMER_GLYOXII-RXN_controller","type":[{"type":"class","id":"SGD:S000002680"'
-- id: edge-008
-  subject: CHEBI:57474
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-901/6a46ef0600000777
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:YeastPathways_PWY-901/6a46ef0600000777","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_57474_GLYOXI-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_57474_GLYOXI-RXN","type":[{"type":"class","id":"CHEBI:57474"'
-- id: edge-009
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:YeastPathways_PWY-901/6a46ef0600000777
-  evidence:
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:YeastPathways_PWY-901/6a46ef0600000777","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:YeastPathways_PWY-901/6a46ef0600000778"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YeastPathways_PWY-901/6a46ef0600000778","type":[{"type":"class","id":"CHEBI:15377"'
+    source_assertion: The model asserts gomodel:GLYOXII-RXN RO:0002333 gomodel:YDR272W-MONOMER_GLYOXII-RXN_controller.
+    source_locator: './YeastPathways_PWY-901.json#/facts/7; endpoint types: /individuals/8/type;
+      /individuals/9/type'
 - id: edge-010
+  subject: gomodel:YeastPathways_PWY-901/6a46ef0600000777
+  predicate: has_input
+  object: CHEBI:57474
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-901
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 RO:0002233
+      gomodel:CHEBI_57474_GLYOXI-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/9; endpoint types: /individuals/26/type;
+      /individuals/4/type'
+- id: edge-011
+  subject: gomodel:YeastPathways_PWY-901/6a46ef0600000777
+  predicate: has_input
+  object: CHEBI:15377
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-901
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 RO:0002233
+      gomodel:YeastPathways_PWY-901/6a46ef0600000778.
+    source_locator: './YeastPathways_PWY-901.json#/facts/10; endpoint types: /individuals/26/type;
+      /individuals/27/type'
+- id: edge-012
   subject: SGD:S000004463
   predicate: enables
   object: gomodel:GLYOXI-RXN
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXI-RXN","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YML004C-MONOMER_GLYOXI-RXN_controller"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YML004C-MONOMER_GLYOXI-RXN_controller","type":[{"type":"class","id":"SGD:S000004463"'
-- id: edge-011
-  subject: CHEBI:15377
-  predicate: consumes
-  object: gomodel:GLYOXII-RXN
+    source_assertion: The model asserts gomodel:GLYOXI-RXN RO:0002333 gomodel:YML004C-MONOMER_GLYOXI-RXN_controller.
+    source_locator: './YeastPathways_PWY-901.json#/facts/11; endpoint types: /individuals/7/type;
+      /individuals/10/type'
+- id: edge-013
+  subject: gomodel:GLYOXII-RXN
+  predicate: has_input
+  object: CHEBI:15377
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXII-RXN","property":"RO:0002233","property-label":"RO:0002233","object":"gomodel:CHEBI_15377_GLYOXII-RXN"'
+    source_assertion: The model asserts gomodel:GLYOXII-RXN RO:0002233 gomodel:CHEBI_15377_GLYOXII-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/12; endpoint types: /individuals/8/type;
+      /individuals/0/type'
+- id: edge-014
+  subject: gomodel:GLYOXII-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_15377_GLYOXII-RXN","type":[{"type":"class","id":"CHEBI:15377"'
-- id: edge-012
+    source_assertion: The model asserts gomodel:GLYOXII-RXN BFO:0000066 gomodel:reaction_GLYOXII-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-901.json#/facts/13; endpoint types: /individuals/8/type;
+      /individuals/24/type'
+- id: edge-015
   subject: gomodel:GLYOXI-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:57474
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXI-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57474_GLYOXI-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_57474_GLYOXI-RXN","type":[{"type":"class","id":"CHEBI:57474"'
-- id: edge-013
+    source_assertion: The model asserts gomodel:GLYOXI-RXN RO:0002234 gomodel:CHEBI_57474_GLYOXI-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/14; endpoint types: /individuals/7/type;
+      /individuals/4/type'
+- id: edge-016
   subject: gomodel:YeastPathways_PWY-901/6a46ef0600000777
-  predicate: produces
+  predicate: has_output
   object: CHEBI:15378
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:YeastPathways_PWY-901/6a46ef0600000777","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:YeastPathways_PWY-901/6a46ef0600000779"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 RO:0002234
+      gomodel:YeastPathways_PWY-901/6a46ef0600000779.
+    source_locator: './YeastPathways_PWY-901.json#/facts/15; endpoint types: /individuals/26/type;
+      /individuals/28/type'
+- id: edge-017
+  subject: gomodel:GLYOXI-RXN
+  predicate: part_of
+  object: GO:0051596
+  evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YeastPathways_PWY-901/6a46ef0600000779","type":[{"type":"class","id":"CHEBI:15378"'
-- id: edge-014
+    source_assertion: The model asserts gomodel:GLYOXI-RXN BFO:0000050 gomodel:YeastPathways_PWY-901/YeastPathways_PWY-901.
+    source_locator: './YeastPathways_PWY-901.json#/facts/16; endpoint types: /individuals/7/type;
+      /individuals/25/type'
+- id: edge-018
+  subject: gomodel:GLYOXI-RXN
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-901
+    source_assertion: The model asserts gomodel:GLYOXI-RXN BFO:0000066 gomodel:reaction_GLYOXI-RXN_location_lociGO_0005829.
+    source_locator: './YeastPathways_PWY-901.json#/facts/17; endpoint types: /individuals/7/type;
+      /individuals/23/type'
+- id: edge-019
   subject: gomodel:GLYOXII-RXN
-  predicate: produces
+  predicate: has_output
   object: CHEBI:16004
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXII-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_16004_GLYOXII-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_16004_GLYOXII-RXN","type":[{"type":"class","id":"CHEBI:16004"'
-- id: edge-015
+    source_assertion: The model asserts gomodel:GLYOXII-RXN RO:0002234 gomodel:CHEBI_16004_GLYOXII-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/18; endpoint types: /individuals/8/type;
+      /individuals/2/type'
+- id: edge-020
   subject: gomodel:GLYOXII-RXN
-  predicate: produces
+  predicate: part_of
+  object: GO:0051596
+  evidence:
+  - reference_id: gomodel:YeastPathways_PWY-901
+    source_assertion: The model asserts gomodel:GLYOXII-RXN BFO:0000050 gomodel:YeastPathways_PWY-901/YeastPathways_PWY-901.
+    source_locator: './YeastPathways_PWY-901.json#/facts/19; endpoint types: /individuals/8/type;
+      /individuals/25/type'
+- id: edge-021
+  subject: gomodel:GLYOXII-RXN
+  predicate: has_output
   object: CHEBI:57925
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:GLYOXII-RXN","property":"RO:0002234","property-label":"RO:0002234","object":"gomodel:CHEBI_57925_GLYOXII-RXN"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:CHEBI_57925_GLYOXII-RXN","type":[{"type":"class","id":"CHEBI:57925"'
-- id: edge-016
+    source_assertion: The model asserts gomodel:GLYOXII-RXN RO:0002234 gomodel:CHEBI_57925_GLYOXII-RXN.
+    source_locator: './YeastPathways_PWY-901.json#/facts/20; endpoint types: /individuals/8/type;
+      /individuals/6/type'
+- id: edge-022
   subject: SGD:S000005566
   predicate: enables
   object: gomodel:YeastPathways_PWY-901/6a46ef0600000777
   evidence:
   - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"subject":"gomodel:YeastPathways_PWY-901/6a46ef0600000777","property":"RO:0002333","property-label":"RO:0002333","object":"gomodel:YeastPathways_PWY-901/6a46ef0600000783"'
-  - reference_id: gomodel:YeastPathways_PWY-901
-    quote: '"id":"gomodel:YeastPathways_PWY-901/6a46ef0600000783","type":[{"type":"class","id":"SGD:S000005566"'
+    source_assertion: The model asserts gomodel:YeastPathways_PWY-901/6a46ef0600000777 RO:0002333
+      gomodel:YeastPathways_PWY-901/6a46ef0600000783.
+    source_locator: './YeastPathways_PWY-901.json#/facts/21; endpoint types: /individuals/26/type;
+      /individuals/31/type'
+- id: location-3bb6137d35ec
+  subject: SGD:S000002680
+  predicate: located_in
+  object: GO:0005737
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:9261170)
+  evidence:
+  - reference_id: UniProtKB:Q05584
+    source_assertion: UniProtKB:Q05584 annotates location Cytoplasm (SL-0086).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2679/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q05584
+    source_assertion: UniProtKB:Q05584 has the exact SGD cross-reference SGD:S000002680.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/2679/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: location-86edfc2d0c6a
+  subject: SGD:S000005566
+  predicate: located_in
+  object: GO:0005759
+  description: Physical protein location from reviewed UniProt. ECO:0000269 (PubMed:9261170)
+  evidence:
+  - reference_id: UniProtKB:Q12320
+    source_assertion: UniProtKB:Q12320 annotates location Mitochondrion matrix (SL-0170).
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3059/comments/1/subcellularLocations/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+  - reference_id: UniProtKB:Q12320
+    source_assertion: UniProtKB:Q12320 has the exact SGD cross-reference SGD:S000005566.
+    source_locator: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id#/results/3059/uniProtKBCrossReferences/0;
+      sha256=95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: cofactor-3263ffaee847
+  subject: SGD:S000002680
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. Reviewed source qualification:
+    The caution concerns identities of older glyoxalase preparations, not the current GLO2
+    zinc annotation; retain the explicit inference from a human homolog. UniProt evidence:
+    ECO:0000250 (UniProtKB:Q16775) Binds 2 Zn(2+) ions per subunit. UniProt note evidence:
+    ECO:0000250 (UniProtKB:Q16775)'
+  evidence:
+  - reference_id: UniProtKB:Q05584
+    source_assertion: UniProtKB:Q05584 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2679/comments/0/cofactors/0;
+      /results/2679/comments/0/note'
+  - reference_id: UniProtKB:Q05584
+    source_assertion: UniProtKB:Q05584 has the exact SGD cross-reference SGD:S000002680.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2679/uniProtKBCrossReferences/0'
+- id: cofactor-701d2ba34569
+  subject: SGD:S000004463
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. UniProt evidence: ECO:0000250
+    (UniProtKB:Q04760) Binds 1 zinc ion per subunit. UniProt note evidence: ECO:0000250 (UniProtKB:Q04760)'
+  evidence:
+  - reference_id: UniProtKB:P50107
+    source_assertion: UniProtKB:P50107 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2053/comments/0/cofactors/0;
+      /results/2053/comments/0/note'
+  - reference_id: UniProtKB:P50107
+    source_assertion: UniProtKB:P50107 has the exact SGD cross-reference SGD:S000004463.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/2053/uniProtKBCrossReferences/0'
+- id: cofactor-33012249bd91
+  subject: SGD:S000005566
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: 'UniProtKB reviewed (Swiss-Prot) annotation. Reviewed source qualification:
+    The caution concerns identities of older glyoxalase preparations, not the current GLO4
+    zinc annotation; retain the explicit inference from a human homolog. UniProt evidence:
+    ECO:0000250 (UniProtKB:Q16775) Binds 2 Zn(2+) ions per subunit. UniProt note evidence:
+    ECO:0000250 (UniProtKB:Q16775)'
+  evidence:
+  - reference_id: UniProtKB:Q12320
+    source_assertion: UniProtKB:Q12320 annotates CHEBI:29105 as a cofactor of this protein.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3059/comments/0/cofactors/0;
+      /results/3059/comments/0/note'
+  - reference_id: UniProtKB:Q12320
+    source_assertion: UniProtKB:Q12320 has the exact SGD cross-reference SGD:S000005566.
+    source_locator: 'https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+      [sha256:1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4] #/results/3059/uniProtKBCrossReferences/0'
 references:
 - id: gomodel:YeastPathways_PWY-901
   title: SGD GO-CAM methylglyoxal catabolism pathway PWY-901
+  url: https://current.geneontology.org/products/json/noctua-models-json.tgz
+  source_sha256: 7a6999245e9265f2167d6e47c7565adb17433ad26611f1a877dc79564279523b
+  source_version: Pinned Noctua JSON archive; model date 2026-07-06; member ./YeastPathways_PWY-901.json
+- id: UniProtKB:Q05584
+  title: Reviewed UniProtKB Q05584 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:Q12320
+  title: Reviewed UniProtKB Q12320 location annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_subcellular_location%2Ccc_function%2Ccc_caution%2Corganism_id
+  source_version: UniProt release 2026_03
+  source_sha256: 95f72dcc644358c480e0e59f996cf88533558b5fa4256460a030e0a1eaf9678d
+- id: UniProtKB:P50107
+  title: UniProtKB P50107 cofactor annotations
+  url: https://rest.uniprot.org/uniprotkb/stream?query=taxonomy_id%3A559292+AND+reviewed%3Atrue&format=json&fields=accession%2Cprotein_name%2Cxref_sgd%2Ccc_cofactor%2Corganism_id%2Ccc_caution
+  source_version: '2026_03'
+  source_sha256: 1378282d22c5518215707964664b55946f468ba74a227a6ea1bbf27db69ddbc4
+curation_history:
+- timestamp: '2026-10-05T06:05:08Z'
+  curator: Codex
+  action: review-causal-graph
+  changes: Reviewed every native GO-CAM fact; preserved precise input/output, causal, location,
+    membership and complex-part relations with traceable structured source evidence. Kept
+    distinct generic physical instances and recorded source-scope exclusions in the cohort
+    review ledger.
+  llm_assisted: true
