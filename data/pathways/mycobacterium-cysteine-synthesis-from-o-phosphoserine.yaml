@@ -1,0 +1,312 @@
+id: Reactome:R-MTU-936654
+label: Cysteine synthesis from O-phosphoserine
+description: 'The CysM-CysO route in Mycobacterium tuberculosis transfers O-phosphoserine onto thiocarboxylated
+  CysO, then Mec releases L-cysteine and regenerates the carrier. The graph begins at CysO-COSH: the upstream
+  MoeZ sulfur-charging step is excluded because its physiological sulfur donor is unresolved. Carrier
+  modification states, PLP-bearing CysM and the source zinc-containing, cleaved Mec assembly remain distinct.'
+pathway_type: biopax-pathway
+taxa:
+- id: NCBITaxon:1773
+  label: Mycobacterium tuberculosis
+participants:
+- id: CHEBI:57524
+  label: O-phosphonato-L-serine(2-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:35235
+  label: L-cysteine zwitterion
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: Reactome:R-MTU-936619
+  label: CysO
+  category: protein
+- id: Reactome:R-MTU-936718
+  label: CysO-COSH
+  category: protein
+- id: Reactome:R-MTU-936690
+  label: CysO-CO-Cys
+  category: protein
+- id: Reactome:R-MTU-936710
+  label: PXLP-K51-CysM
+  category: protein
+- id: Reactome:R-MTU-936660
+  label: Mec+
+  category: protein
+- id: Reactome:R-MTU-936569
+  label: CysM dimer
+  category: complex
+- id: Reactome:R-MTU-936637
+  label: Mec-Zn++
+  category: complex
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+reactions:
+- id: Reactome:R-MTU-936665
+  label: OPS is added to the carrier sulfide
+  direction: left_to_right
+  category: molecular_activity
+- id: Reactome:R-MTU-936747
+  label: cleavage of L-cysteine from carrier protein
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: biopax-edge-5
+  subject: Reactome:R-MTU-936718
+  predicate: consumes
+  object: Reactome:R-MTU-936665
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction2 places physical entity Protein2 on its left side; conversion
+      direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction2/bp:left/#Protein2; #BiochemicalReaction2/bp:conversionDirection'
+- id: biopax-edge-6
+  subject: CHEBI:57524
+  predicate: consumes
+  object: Reactome:R-MTU-936665
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction2 places physical entity SmallMolecule2 on its left side;
+      conversion direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction2/bp:left/#SmallMolecule2; #BiochemicalReaction2/bp:conversionDirection'
+- id: biopax-edge-7
+  subject: Reactome:R-MTU-936665
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction2 places physical entity SmallMolecule3 on its right side;
+      conversion direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction2/bp:right/#SmallMolecule3; #BiochemicalReaction2/bp:conversionDirection'
+- id: biopax-edge-8
+  subject: Reactome:R-MTU-936665
+  predicate: produces
+  object: Reactome:R-MTU-936690
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction2 places physical entity Protein4 on its right side; conversion
+      direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction2/bp:right/#Protein4; #BiochemicalReaction2/bp:conversionDirection'
+- id: biopax-edge-9
+  subject: Reactome:R-MTU-936665
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: All physical entities on both sides of BioPAX BiochemicalReaction2 have the same
+      cellular location.
+    source_locator: '#BiochemicalReaction2/bp:left|bp:right; physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-10
+  subject: CHEBI:15377
+  predicate: consumes
+  object: Reactome:R-MTU-936747
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction3 places physical entity SmallMolecule4 on its left side;
+      conversion direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction3/bp:left/#SmallMolecule4; #BiochemicalReaction3/bp:conversionDirection'
+- id: biopax-edge-11
+  subject: Reactome:R-MTU-936690
+  predicate: consumes
+  object: Reactome:R-MTU-936747
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction3 places physical entity Protein4 on its left side; conversion
+      direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction3/bp:left/#Protein4; #BiochemicalReaction3/bp:conversionDirection'
+- id: biopax-edge-12
+  subject: Reactome:R-MTU-936747
+  predicate: produces
+  object: Reactome:R-MTU-936619
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction3 places physical entity Protein1 on its right side; conversion
+      direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction3/bp:right/#Protein1; #BiochemicalReaction3/bp:conversionDirection'
+- id: biopax-edge-13
+  subject: Reactome:R-MTU-936747
+  predicate: produces
+  object: CHEBI:35235
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX BiochemicalReaction3 places physical entity SmallMolecule5 on its right side;
+      conversion direction is LEFT-TO-RIGHT; displayed orientation is LEFT-TO-RIGHT.
+    source_locator: '#BiochemicalReaction3/bp:right/#SmallMolecule5; #BiochemicalReaction3/bp:conversionDirection'
+- id: biopax-edge-14
+  subject: Reactome:R-MTU-936747
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: All physical entities on both sides of BioPAX BiochemicalReaction3 have the same
+      cellular location.
+    source_locator: '#BiochemicalReaction3/bp:left|bp:right; physicalEntity/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-16
+  subject: Reactome:R-MTU-936569
+  predicate: catalyzes
+  object: Reactome:R-MTU-936665
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX Catalysis2 names Complex1 as its catalytic controller.
+    source_locator: '#Catalysis2/bp:controller/#Complex1; bp:controlled/#BiochemicalReaction2'
+- id: biopax-edge-17
+  subject: Reactome:R-MTU-936637
+  predicate: catalyzes
+  object: Reactome:R-MTU-936747
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX Catalysis3 names Complex2 as its catalytic controller.
+    source_locator: '#Catalysis3/bp:controller/#Complex2; bp:controlled/#BiochemicalReaction3'
+- id: biopax-edge-18
+  subject: CHEBI:35235
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity SmallMolecule5 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#SmallMolecule5/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-19
+  subject: CHEBI:15377
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity SmallMolecule4 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#SmallMolecule4/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-20
+  subject: CHEBI:43474
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity SmallMolecule3 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#SmallMolecule3/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-21
+  subject: CHEBI:57524
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity SmallMolecule2 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#SmallMolecule2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-23
+  subject: Reactome:R-MTU-936690
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Protein4 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Protein4/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-25
+  subject: Reactome:R-MTU-936718
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Protein2 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Protein2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-26
+  subject: Reactome:R-MTU-936619
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Protein1 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Protein1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-27
+  subject: Reactome:R-MTU-936637
+  predicate: has_part
+  object: Reactome:R-MTU-936660
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX complex Complex2 explicitly includes physical entity Protein6.
+    source_locator: '#Complex2/bp:component/#Protein6'
+- id: biopax-edge-28
+  subject: Reactome:R-MTU-936637
+  predicate: has_part
+  object: CHEBI:29105
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX complex Complex2 explicitly includes physical entity SmallMolecule6.
+    source_locator: '#Complex2/bp:component/#SmallMolecule6'
+- id: biopax-edge-29
+  subject: Reactome:R-MTU-936637
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Complex2 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Complex2/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-30
+  subject: CHEBI:29105
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity SmallMolecule6 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#SmallMolecule6/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-31
+  subject: Reactome:R-MTU-936660
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Protein6 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Protein6/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-32
+  subject: Reactome:R-MTU-936569
+  predicate: has_part
+  object: Reactome:R-MTU-936710
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX complex Complex1 explicitly includes physical entity Protein5.
+    source_locator: '#Complex1/bp:component/#Protein5'
+- id: biopax-edge-33
+  subject: Reactome:R-MTU-936569
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Complex1 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Complex1/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: biopax-edge-34
+  subject: Reactome:R-MTU-936710
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX physical entity Protein5 is assigned to cellular location CellularLocationVocabulary1.
+    source_locator: '#Protein5/bp:cellularLocation/#CellularLocationVocabulary1'
+- id: curated-flow-1
+  subject: Reactome:R-MTU-936665
+  predicate: provides_input_for
+  object: Reactome:R-MTU-936747
+  description: Source-ordered material transfer through Reactome:R-MTU-936690; no regulatory sign or stoichiometric
+    coefficient is asserted.
+  evidence:
+  - reference_id: Reactome:R-MTU-936654
+    source_assertion: BioPAX PathwayStep2 explicitly lists PathwayStep3 as nextStep; the linked reactions
+      produce and consume the same source physical entity.
+    source_locator: '#PathwayStep2/bp:nextStep/#PathwayStep3; #BiochemicalReaction2/bp:right/#Protein4;
+      #BiochemicalReaction2/bp:conversionDirection; #BiochemicalReaction3/bp:left/#Protein4; #BiochemicalReaction3/bp:conversionDirection'
+references:
+- id: PMID:16104727
+  title: Reconstitution of a new cysteine biosynthetic pathway in Mycobacterium tuberculosis
+- id: PMID:18842002
+  title: O-phospho-L-serine and the thiocarboxylated sulfur carrier protein CysO-COSH are substrates for
+    CysM, a cysteine synthase from Mycobacterium tuberculosis
+- id: PMID:18799456
+  title: 'Cysteine synthase (CysM) of Mycobacterium tuberculosis is an O-phosphoserine sulfhydrylase:
+    evidence for an alternative cysteine biosynthesis pathway in mycobacteria'
+- id: Reactome:R-MTU-936654
+  title: BioPAX source pathway Reactome:R-MTU-936654
+  url: https://reactome.org/ReactomeRESTfulAPI/RESTfulWS/biopaxExporter/Level3/936654
+  source_version: Reactome release 97
+  source_sha256: 81265e1ab996bdf4c4126a380f285189dd7cd41e6e68e228fa56d2d09c40ff56

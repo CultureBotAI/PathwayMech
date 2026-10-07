@@ -1,0 +1,25 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/biopax.py
+  slug: biopax-feature-identities
+session:
+  id: 2026-10-07T073429Z-Codex-aa9109
+  timestamp: '2026-10-07T07:34:29Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/278
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve featured BioPAX physical states and reproducible context-edge IDs
+  details: Reactome canaries exposed modified catalysts collapsing to sequence accessions.
+    Adversarial review also reproduced covalent-binding subclass and cleaved Mec 26..146 identity
+    loss (issue 280). Preserve native identities for any explicit entity feature. Sort traversal
+    references to stabilize context-edge ordering across processes (issue 279). New modified-state,
+    native-xref, cleavage and hash-seed regressions failed before their fixes; all 35 BioPAX
+    tests pass. No governed files modified.

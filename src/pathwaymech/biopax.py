@@ -82,6 +82,10 @@ def biopax_to_pathway_record(
         needs_native = (
             previous is None
             or kind == "Complex"
+            # A sole featured catalyst or subunit still denotes a physical
+            # state. This includes covalent binding and cleavage fragments;
+            # an interval alone cannot prove identity to the full sequence.
+            or bool(_children(e, "feature"))
             or (kind in {"Protein", "Dna", "DnaRegion", "Rna", "RnaRegion"} and native in side_refs)
             or len(contexts.get(previous["id"], set())) > 1
         )
@@ -194,7 +198,7 @@ def biopax_to_pathway_record(
                 ),
             )
         )
-    pending = list(used_refs)
+    pending = sorted(used_refs)
     visited = set()
     while pending:
         native = pending.pop()

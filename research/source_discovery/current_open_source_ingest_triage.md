@@ -1,11 +1,14 @@
 # Current open-source ingest triage
 
-Updated: 2026-09-30
+Baseline: 2026-09-30. Follow-up: 2026-10-07.
 
 Scope note: this result applies to the caches listed below, not to all available
 pathway resources. See the
 [October 3 discovery scan](2026-10-03-additional-sources-and-updates.md) for
-additional candidates and upstream update baselines.
+additional candidates and upstream update baselines. The
+[October 7 continuation](2026-10-07-next-sources.md) supersedes the three
+Reactome physical-state blockers below and adds a MIBiG cluster; BRENDA still
+requires context and identifier work.
 
 This note records the terminal sweep of the currently enabled open pathway
 sources after the first GO-CAM and WikiPathways records were ingested into
@@ -202,8 +205,9 @@ preserves the M. tuberculosis OtsAB, TreS, and TreYZ routes with UniProtKB
 catalysts, ChEBI metabolites, five Reactome reaction IDs, and seven PMID
 references from BioPAX.
 
-The remaining direct Mycobacterium tuberculosis Reactome pathways are blocked
-after import. Candidate absence and duplicate checks included gitignored and
+At the original triage, the remaining direct Mycobacterium tuberculosis Reactome
+pathways were blocked after import. The three physical-state cases in this
+paragraph were subsequently curated in the October 7 continuation. Candidate absence and duplicate checks included gitignored and
 hidden paths through `rg --no-ignore --hidden`. `R-MTU-936654` encodes CysO,
 CysO-COSH, and the CysO-CO-Cys adduct as distinct BioPAX protein states whose
 only stable xref is `UniProtKB:P9WP33`, so the importer now has to omit the
