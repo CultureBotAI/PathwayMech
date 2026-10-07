@@ -12,6 +12,7 @@ def test_expected_claude_skills_exist() -> None:
 
     assert {
         "add-pathway",
+        "cross-mech-protein-links",
         "pathwaymech-discover-sources",
         "review-open-issues",
         "review-yaml-category",

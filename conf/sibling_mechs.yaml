@@ -1,0 +1,96 @@
+# Where sibling Mechs keep UniProtKB proteins and PathwayMech links.
+#
+# Read by `just cross-mech-proteins` (src/pathwaymech/cross_mech.py). Paths are
+# dotted slot paths relative to one record; `[]` visits every list item. Only
+# the slots listed here count: an accession cited as evidence or mentioned in
+# prose is not a protein the record holds. A `mixed` slot also holds other
+# identifiers (CHEBI graph nodes, RNAcentral participants) that are skipped.
+# Slot locations and meanings were read from each Mech's LinkML schema on
+# 2026-10-05; see research/cross_mech/2026-10-05-uniprot-protein-links.md.
+#
+# `link_slots` name where a sibling records a link to a PathwayMech record. The
+# value is the PathwayMech record id (for example `WikiPathways:WP5060`) or its
+# page URL. A PathwayMech page URL written anywhere else in a record is found
+# too. `when` keeps only the list items whose keys have these values;
+# `when_match` keeps those whose values fully match a regular expression.
+#
+# The fleet shape for a cross-corpus link is NaturalProductMech's
+# CrossCorpusLink (`related_records[]`: corpus, identifier, relation, basis,
+# source_version). Only NaturalProductMech has the slot today; the others are
+# listed so that links appear in the inventory as soon as a Mech adopts it.
+#
+# `prefilter: true` parses only the files whose text mentions a PathwayMech
+# protein or "PathwayMech"; use it for corpora too large to parse in full.
+version: 1
+mechs:
+  TraitMech:
+    records: data/traits/**/*.yaml
+    protein_slots:
+      - path: causal_graphs[].nodes[].protein_examples[].uniprot_id
+        role: trait causal-graph node protein example
+    link_slots:
+      - path: related_records[]
+        id_key: identifier
+        when: {corpus: PathwayMech}
+      - path: causal_graphs[].nodes[].related_records[]
+        id_key: identifier
+        when: {corpus: PathwayMech}
+  ProteinTraitsMech:
+    records: data/traits/**/*.yaml
+    prefilter: true
+    protein_slots:
+      - path: canonical_examples[].protein_id
+        role: protein-trait canonical example
+    link_slots:
+      - path: trait_relations[]
+        id_key: object
+        when_match: {relation_source: "PathwayMech\\b.*"}
+  NaturalProductMech:
+    records: data/natural_products/**/*.yaml
+    protein_slots:
+      - path: biosynthetic_pathway[].enzyme_id
+        role: biosynthetic step enzyme (curator-owned)
+        mixed: true
+      - path: causal_graphs[].nodes[].identifier
+        role: causal-graph node (curator-owned)
+        mixed: true
+      - path: bioactivities[].target_enzyme
+        role: PubChem bioassay target (seeder-owned)
+        mixed: true
+      - path: molecular_targets[].protein_examples[]
+        role: BindingDB target example (seeder-owned)
+        mixed: true
+    link_slots:
+      - path: related_records[]
+        id_key: identifier
+        when: {corpus: PathwayMech}
+  AntibioticMech:
+    records: data/antibiotics/**/*.yaml
+    protein_slots:
+      - path: molecular_targets[].protein_examples[].uniprot_id
+        role: molecular target example
+      - path: resistance_mechanisms[].protein_accession
+        role: resistance determinant (lineage-level association)
+        mixed: true
+      - path: causal_graphs[].nodes[].xrefs[]
+        role: causal-graph node xref
+        mixed: true
+    link_slots:
+      - path: related_records[]
+        id_key: identifier
+        when: {corpus: PathwayMech}
+  CellStructureMech:
+    records: data/structures/**/*.yaml
+    protein_slots:
+      - path: components[].protein_examples[].uniprot_id
+        role: structure component example
+      - path: complex_compositions[].participants[].participant_id
+        role: Complex Portal participant (source import)
+        mixed: true
+      - path: causal_graphs[].nodes[].xrefs[]
+        role: causal-graph node xref
+        mixed: true
+    link_slots:
+      - path: related_records[]
+        id_key: identifier
+        when: {corpus: PathwayMech}

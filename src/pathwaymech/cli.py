@@ -19,6 +19,7 @@ from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.biopax import biopax_to_pathway_record, load_biopax
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.chebi import load_chebi_xrefs
+from pathwaymech.cross_mech import pathway_index_json
 from pathwaymech.dbcan import dbcan_pul_seed_rows, load_dbcan_pul
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
@@ -217,6 +218,7 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
     }
     files["downloads/manifest.json"] = json.dumps(manifest, indent=2) + "\n"
     files["index.html"] = _home_page(records, fingerprint)
+    files["pathway_index.json"] = pathway_index_json(records)
     return files
 
 
@@ -407,6 +409,12 @@ def _validate_history_gate() -> int:
         cwd=ROOT,
         check=False,
     ).returncode
+
+
+def cross_mech_proteins_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:
+    from pathwaymech.cross_mech import main
+
+    return main(argv, root)
 
 
 def export_kgx_main(argv: list[str] | None = None, *, root: Path = ROOT) -> int:

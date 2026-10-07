@@ -1,0 +1,28 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/cross_mech.py
+  slug: cross-mech-rollout-integration
+session:
+  id: 2026-10-07T184701Z-codex-9005b0
+  timestamp: '2026-10-07T18:47:01Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/249
+events:
+- type: EDIT
+  outcome: changed
+  summary: Integrate the cross-Mech inventory with current main and preserve historical audit
+    inputs
+  details: Merge current main ff3e716843ba8ff27970b2ba028fae328d1f9569 while retaining original
+    source commit aa305727458c44ab05614901334540e2c87a9f3a and feature history. Preserve canonical
+    59aead1ba791d1b1840a263a41260a0717115870, current history-aware rendering and KGX downloads;
+    regenerate the current pathway index. Bind dated audit replay to the original PathwayMech
+    cohort instead of the working tree. Preserve all original dated audit inputs, results
+    and history records. Regression coverage checks that later commits and dirty working files
+    cannot replace the historical cohort, and missing source objects fail explicitly.
