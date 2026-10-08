@@ -1,163 +1,224 @@
 ---
 name: review-open-issues
-description: Sweep and triage PathwayMech's full open-issue queue. Fetch every open issue, check each against main, the pathway corpus, source inventory, research notes, validators, and docs, flag duplicates and already-fixed items, and assign a priority tier. Produces a short ranked report; only touches GitHub when explicitly asked.
-allowed-tools: Bash, Read, Grep, Glob
+description: Review and prioritize PathwayMech's full open GitHub issue queue against current code, pathway records, source inventory, evidence, and gates. Identify partial fixes, duplicates, and closure candidates; rank remaining work by severity and dependencies. Use inside PathwayMech for issue reviews or backlog triage, not for implementing fixes or discovering new sources. Read-only by default.
+allowed-tools: Bash, Read, Grep, Glob, WebSearch, WebFetch
 metadata:
   category: workflow
   requires_database: false
   requires_internet: true
-  version: 1.0.1
+  version: 2.0.0
 ---
 
 # Review and Prioritize Open Issues
 
-Produce an honest, current ranking of the whole PathwayMech open-issue queue.
-This skill ranks issues; it does not implement fixes, merge, close, relabel, or
-promote records.
+Produce an evidence-backed ranking of PathwayMech's open-issue queue, following
+the full-queue, dependency-aware review pattern used in the other Mech repos.
+Review the whole queue unless the user specifies a subset; a source inventory
+or planning document is context, not a substitute for GitHub issues.
 
-## Read-Only Default
+## Scope and Authorization
 
-Fetching and reading issues is allowed. Closing, relabeling, retitling,
-commenting, opening issues, editing projects, merging pull requests, and
-mentioning people are writes; ask for explicit authorization before each batch
-of GitHub mutations and keep the evidence in the comment concise.
+Review authorizes issue reads, public source checks, temporary review files,
+and validation. Return the report in the conversation unless the user requests
+a saved artifact. Do not implement fixes, edit records, regenerate committed
+products, invoke paid research, or mutate GitHub merely to triage issues.
 
-## What Makes PathwayMech Different
+If the user also requests action on the findings, honor the specific actions
+already authorized. Establish the issue numbers, proposed changes, and evidence
+before any GitHub write. Ask only for missing authorization; do not repeatedly
+confirm an already authorized batch. Do not infer permission to post comments,
+mention people, open cross-repository issues, merge, or close unrelated issues.
 
-- The curated corpus is still small and flat: all maintained pathway records
-  are direct YAML files in `data/pathways/`.
-- `pages/` is generated. A stale page or empty browse view should be checked
-  against `just validate` and `just render-pages`, then fixed by regenerating
-  from YAML, not by patching HTML.
-- `conf/sources.yaml` is the current source inventory. Candidate source
-  adoption and licensing questions should be handed to `source-triage`.
-- The first local gates validate YAML shape against the closed LinkML schema
-  (`just validate-strict`), local edge endpoints, local reference IDs,
-  documentation presence, the deep-research report contract,
-  that the committed `pages/` is what the records render to (`just
-  check-pages`), and tests. They do not establish that a cited paper really
-  supports an edge.
-- Pathway records support optional `curation_history` events through
-  `CurationEvent` in `src/pathwaymech/schema/pathwaymech.yaml` and validation
-  in `src/pathwaymech/schema.py`. Separate session-level history records and
-  their validation are documented in `history/README.md`.
-- Check the current schema and mutation commands before treating a requested
-  capability as missing infrastructure. A history issue may concern an
-  existing contract or its use in curation rather than a new subsystem.
+## PathwayMech Sources of Truth
+
+Read `CLAUDE.md`, `justfile`, and relevant CI workflows before evaluating claims
+about what is maintained, generated, or checked. Then follow the affected stage:
+
+```text
+source terms and snapshots (conf/sources.yaml, research/source_discovery/)
+  -> importers, identifiers, and source mappings (src/pathwaymech/)
+  -> schema and pathway records (src/pathwaymech/schema/, data/pathways/)
+  -> edge evidence, references, and curation history
+  -> validation and CI gates
+  -> generated pages, KGX/SSSOM exports, and published claims
+```
+
+- `src/pathwaymech/schema/pathwaymech.yaml` is the closed LinkML contract;
+  `src/pathwaymech/schema.py` adds semantic checks. A schema-valid graph does
+  not prove that a paper supports its edges.
+- Inspect `data/pathways/` recursively using the current record-discovery
+  implementation. Do not assume the corpus remains small or flat, or quote
+  historical record counts as current measurements.
+- `conf/sources.yaml` records source roles and ingestion status. `enabled:
+  true` alone does not mean full ingestion, curated evidence, or permission to
+  redistribute. Distinguish active, fixture, support, and license-gated work;
+  check importers, tests, and actual records before calling adoption complete.
+- `docs/CURATION.md` and `docs/HARMONIZATION.md` define curation and identifier
+  boundaries. Research reports are leads; verify material claims against the
+  cited primary source and preserve strain, condition, and pathway-variant scope.
+- `curation_history` in pathway records and session records under `history/`
+  are existing contracts. Read the schema and `history/README.md` before
+  classifying a history issue as missing infrastructure.
+- `pages/` is generated and committed. Use `just check-pages` to assess drift;
+  do not repair HTML or run `just render-pages` during a review. Inspect the
+  current tracking and generation rules for exports before treating an absent
+  local export as a broken committed product.
+- The governed-file list in `CLAUDE.md` and `scripts/.vendored_canon_ref`
+  identify changes owned by `culturebotai-claw`. Recommend an upstream fix and
+  re-pin when appropriate; do not propose patching vendored files locally.
 
 ## Workflow
 
-### 1. Fetch the Full Open-Issue Queue
+### 1. Capture the Full Queue and Discussions
+
+Resolve and check the repository identity before fetching issues. Paginate the
+REST issue list and each discussion; the issue endpoint also returns pull
+requests, so exclude those explicitly. Run this in Bash:
 
 ```bash
+set -euo pipefail
 repo="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
-queue_file="${TMPDIR:-/tmp}/pathwaymech-open-issues.json"
-gh issue list -R "$repo" --state open --limit 5000 \
-  --json number,title,body,labels,comments,createdAt,updatedAt,url > "$queue_file"
-jq -r '.[] | [.number, .createdAt[:10], (.labels|map(.name)|join(",")), .title] | @tsv' "$queue_file"
-jq length "$queue_file"
+review_dir="$(mktemp -d "${TMPDIR:-/tmp}/pathwaymech-issues.XXXXXX")"
+gh api --paginate "repos/$repo/issues?state=open&sort=created&direction=asc&per_page=100" \
+  | jq -s '[.[][] | select(has("pull_request") | not)]' \
+  > "$review_dir/issues.json"
+jq -r '.[] | [.number, .created_at[:10], (.labels|map(.name)|join(",")), .title] | @tsv' \
+  "$review_dir/issues.json"
+jq length "$review_dir/issues.json"
+while IFS= read -r number; do
+  gh api --paginate "repos/$repo/issues/$number/comments?per_page=100" \
+    | jq -s 'add // []' > "$review_dir/comments-$number.json"
+done < <(jq -r '.[] | select(.comments > 0) | .number' "$review_dir/issues.json")
 ```
 
-`--limit` caps silently; print the JSON length and say whether coverage was
-complete. Read bodies and comments from the JSON before calling an issue stale.
+Read bodies and complete discussions, not only the printed overview. Comments
+can withdraw a claim, record a fix, or narrow the remaining scope. Keep the
+repository, capture time, issue count, and any fetch failures with the review.
+Never interpret a failed request, partial JSON, or truncated tool output as an
+empty queue or proof that an issue is resolved. If remote access is unavailable,
+use available local notes and clearly limit the coverage claim.
 
-If `gh` or the network is unavailable, review any locally available issue
-notes and say that remote coverage was unavailable. Do not pretend the queue
-was complete.
-
-### 2. Establish the Tree State
-
-Run the local read-only gates before checking issue claims:
+### 2. Identify the Exact Tree and Gate Results
 
 ```bash
+git status --short --branch
 git fetch origin main
-git status -sb
+git rev-parse HEAD origin/main
 just validate
 just test
 just lint
 git diff --check
 ```
 
-If `just validate` fails on `main`, that is the first finding and every other
-verdict is provisional until the failing gate is explained.
+Fetching `origin/main` does not change the checkout. Report the tested commit
+and local modifications. If this is a feature branch or a dirty tree, inspect
+`origin/main` separately with `git show` or use an isolated checkout for
+default-branch validation; preserve the user's working files. A local-only fix
+is work in progress, not evidence that the default branch is fixed. If fetching
+fails, state that the available base ref may be stale.
 
-### 3. Group and Classify
+Run gates without pipelines that hide exit status. `just validate` checks
+skills and runs the QC sequence in `src/pathwaymech/cli.py`; QC stops at its
+first failure. List subsequent checks as not run unless you ran them separately.
+A failure is a finding to explain, not a reason to stop reviewing unaffected
+issues. Separate a repository defect from unavailable dependencies or services.
 
-Group by pathway identifier, source candidate, PR reference, validator, or the
-same failure shape. Issues filed by one review pass often describe one
-underlying defect.
+### 3. Place, Group, and Verify Every Issue
 
-Classify each issue:
+For each issue, identify its pipeline stage, affected files or identifiers,
+owning repository, dependencies, and a decisive acceptance check. Group shared
+root causes while retaining every member's number and remaining scope.
 
-- **verifiable now**: about a file, pathway record, source row, rendered page,
-  documentation page, or identifier that can be checked now;
-- **source triage**: asks which pathway source to adopt, or whether a source's
-  license, identifiers, or access are good enough;
-- **curation review**: alleges a factual pathway error that needs source
-  reading, not just a shape validator;
-- **decision**: needs the owner to choose policy, scope, or license posture;
-- **upstream**: belongs in GO, MetaCyc, KEGG, Rhea, ChEBI, kg-microbe, or
-  another sibling Mech first.
+Verify the claims using the cheapest decisive evidence:
 
-### 4. Check Each Issue Against Current Reality
+- **Fixed on the default branch?** Search `origin/main`, not `--all`:
+  `git log --oneline origin/main --perl-regexp --grep '#<N>\b'`.
+  The boundary prevents `#4` matching `#40`. A missing issue number in commit
+  messages is not proof that no fix exists; inspect the current implementation.
+- **Related PR merged?** Inspect exact links in the issue and
+  `gh issue view <N> -R "$repo" --json closedByPullRequestsReferences`, then
+  check candidate PRs with `gh pr view <PR> -R "$repo" --json state,mergedAt,url`.
+  Confirm the change remains on the current base. Number-only PR searches and
+  merge messages are leads, not proof that every acceptance criterion is met.
+- **Fully or partly addressed?** Compare each acceptance criterion with current
+  behavior and tests. Name the completed part and narrowed residual. A tracker
+  or corpus-wide backlog is not complete because one slice landed.
+- **Still reproducible?** Inspect the current schema, importer, validator,
+  tests, and workflow triggers relevant to the claim. A renamed file does not
+  resolve a defect if the behavior moved elsewhere. Distinguish code inspection
+  from an executed reproduction, and inspect whether CI actually runs the gate.
+- **Missing artifact or capability?** Include ignored files in searches:
+  `rg --no-ignore --hidden` or `find`. Search identifiers, aliases, old paths,
+  research notes, and relevant configured caches. State the searched scope and
+  exclusions; a miss from an ordinary ignored-aware search is provisional.
+- **Identity or evidence error?** Resolve the exact CURIE, accession, DOI, or
+  PMID through primary sources. Inspect the cited text for the specific edge,
+  direction, participants, and taxon scope. Membership, coexpression, a diagram,
+  or an enzyme-step rule is not automatically a causal reaction graph. Failed
+  access means unverified, not nonexistent or unsupported.
+- **Source or count claim?** Re-derive counts from the current records or
+  inventory. Check dated source-discovery notes and verify current access,
+  versions, and reuse terms from primary sources when relevant. Separate
+  observed upstream changes from what has actually been imported locally.
+- **Duplicate or superseded?** Cite the surviving issue and compare scope.
+  Similar titles alone do not establish a duplicate; retain unique residuals.
 
-- **Already fixed on `origin/main`?** Use
-  `git log --oneline origin/main --perl-regexp --grep "#<N>\\b"`. The `\\b`
-  matters because `#4` also matches `#40`.
-- **Path still exists?** Use `rg --no-ignore --hidden` or `find` before
-  reporting that a named file, record, report, or source row is absent.
-- **Identifier claim still true?** Resolve the exact GO, MetaCyc, KEGG, Rhea,
-  CHEBI, EC, UniProtKB, NCBITaxon, GTDB, DOI, or PMID named in the issue.
-- **Count still true?** Re-derive from the YAML or source inventory; do not
-  trust counts in old prose.
-- **Source status changed?** Cross-check `conf/sources.yaml` and
-  `research/source_discovery/` before ranking a database-adoption issue.
-- **Gate still missing?** Confirm the test, script, or validator named in the
-  issue does or does not exist in the current tree.
+Use temporary copies for any reproduction that requires changing an input.
+Do not weaken a schema, threshold, baseline, or exception rule to make a check
+pass. Report what would establish a fix when testing it exceeds review scope.
 
-### 5. Assign Priority
+### 4. Rank Consequence Separately from Cost and Readiness
 
-- **P0 - silently wrong data or license breach.** A pathway record whose
-  identity, local graph, source support, or redistribution state is wrong while
-  all gates pass.
-- **P1 - real and schedulable.** A gate gap that could let a P0 through, a
-  missing test with a known failure, or an implemented source-adoption step
-  with bounded scope.
-- **P2 - process or documentation.** Broken guidance, stale generated docs, or
-  a non-data workflow gap.
-- **P3 - backlog.** Real but unscheduled corpus growth or future polish.
+- **P0 — active data or publication risk.** Wrong pathway identity, unsupported
+  causal evidence, identifier corruption, or prohibited redistribution reaching
+  maintained records or published products; a demonstrably blind gate exposing
+  those consumers also belongs here. A speculative risk alone is not P0.
+- **P1 — real and schedulable.** Reproducible defects, provenance gaps, bounded
+  source-adoption work, or gate gaps with a concrete failure scenario.
+- **P2 — process or documentation.** Guidance drift, noncritical workflow
+  problems, and presentation defects without a material data consequence.
+- **P3 — backlog.** Unscheduled corpus growth, optional audits, or future polish.
 
-`decision`, `curation-review`, `source-triage`, and `upstream` are orthogonal
-labels, not severities. Label changes are GitHub writes; ask first.
+Keep **decision**, **curation review**, **source triage**, and **upstream** as
+separate routing annotations. Mark unresolved evidence as **unverified**, not
+as fixed. Dispositions such as **fixed**, **duplicate**, **superseded**, and
+**partial** describe status, not severity. These are report annotations, not
+instructions to create or change GitHub labels.
 
-### 6. Present the Report
+Record blockers and a rough cost class (inspection, local fix, corpus sweep,
+regeneration, or external dependency). Sequence upstream fixes and missing
+guards before the downstream work they protect. Preserve severity when a
+high-impact issue is expensive or blocked; do not rank solely by age or an old
+priority label.
 
-Report:
+### 5. Refresh and Report
 
-- the count reviewed and whether queue coverage was complete;
-- what `just validate`, `just test`, and `just lint` said on the checked tree;
-- a ranked list of still-open work, P0 first, one line per issue or group;
-- issues that are fixed in code and should be closed, with the commit, PR, or
-  file that proves it;
-- issues needing a decision, curation review, source triage, or upstream work;
-- the top two or three issues to act on next, with a one-sentence reason.
+Before finalizing, refresh the open issue list and compare numbers and
+`updated_at` values with the snapshot. Re-read changed discussions, account for
+new or closed issues, and disclose any remaining coverage gap. If the queue
+continues moving, report a time-bounded snapshot rather than chasing it forever.
 
-Do not edit GitHub unless the user explicitly asks you to act on the reviewed
-queue.
+Return a compact report containing:
 
-## Conventions
+- Repository, review time, tested/base commits, issue count, and coverage.
+- Gate results, including failures, skipped checks, and dirty-tree limitations.
+- The top two or three next actions and what each unblocks.
+- A ranked table with issue links, disposition, priority, concrete evidence,
+  dependencies, cost, and next acceptance check. Include every reviewed issue,
+  either individually or explicitly within a group.
+- Closure/update candidates with exact commits, PRs, files, or comments that
+  support the recommendation; partial fixes retain their residual work.
+- Unresolved decisions, evidence gaps, source questions, and upstream owners.
 
-- Full-queue coverage beats first-page sampling. State the count.
-- Evidence over intuition. Every fixed, duplicate, or false-positive verdict
-  cites a commit, PR, file, or exact lookup.
-- Resolve exact identifiers live when they are part of the issue.
-- Use gitignore-independent search before reporting that something is absent.
-- Read-only by default.
-- No @-mentions without explicit per-mention authorization.
+Distinguish measured results, code inspection, inference, and proposed checks.
+If actions were separately authorized, report precisely which mutations were
+completed and which remain proposals. Write multiline GitHub bodies through a
+structured API argument or `--body-file`, not shell-interpolated prose.
 
-## Related
+## Related Skills
 
-- `.claude/skills/source-triage/SKILL.md` for source-adoption issues.
-- `.claude/skills/review-yaml-record/SKILL.md` for named pathway review.
-- `.claude/skills/review-yaml-category/SKILL.md` for cohort review.
-- `just validate`, `just test`, and `just lint` for local gates.
+- `.claude/skills/source-triage/SKILL.md` for source-adoption decisions.
+- `.claude/skills/pathwaymech-discover-sources/SKILL.md` for source discovery
+  and update scans.
+- `.claude/skills/review-yaml-record/SKILL.md` for detailed named-record review.
+- `.claude/skills/review-yaml-category/SKILL.md` for a cohort review.
