@@ -10,13 +10,13 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 from xml.etree import ElementTree
 
 import yaml
 
 from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
-from pathwaymech.biopax import biopax_to_pathway_record, load_biopax
+from pathwaymech.biopax import biopax_to_pathway_record
 from pathwaymech.brenda import brenda_seed_rows, load_brenda_role_bundle
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.chebi import load_chebi_xrefs
@@ -606,16 +606,48 @@ def import_biopax_main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("source_prefix", choices=["PANTHER", "PathBank", "Reactome"])
     parser.add_argument("paths", nargs="+", type=Path, help="BioPAX RDF/XML path")
+    parser.add_argument("--sha256", help="expected SHA-256 of the single local input")
+    parser.add_argument("--source-url", help="source download URL for a single pinned input")
+    parser.add_argument(
+        "--source-version", help="release and archive member for a single pinned input",
+    )
     args = parser.parse_args(argv)
+    if (args.sha256 is not None or args.source_url or args.source_version) and len(args.paths) != 1:
+        parser.error("source provenance options require exactly one input file")
+    if (args.source_url or args.source_version) and not args.sha256:
+        parser.error("--source-url and --source-version require --sha256")
+    if args.source_url:
+        try:
+            parsed = urlsplit(args.source_url)
+        except ValueError:
+            parser.error("--source-url must be a valid absolute HTTP(S) URL")
+        if (parsed.scheme not in {"http", "https"} or not parsed.netloc
+                or any(char.isspace() for char in args.source_url)):
+            parser.error("--source-url must be an absolute HTTP(S) URL without whitespace")
 
     records = []
     for path in args.paths:
         try:
             fallback_id = f"{args.source_prefix}:{path.stem}"
-            record = biopax_to_pathway_record(load_biopax(path), fallback_id)
+            payload = path.read_bytes()
+            digest = hashlib.sha256(payload).hexdigest()
+            if args.sha256 is not None:
+                if not re.fullmatch(r"[0-9a-fA-F]{64}", args.sha256):
+                    raise ValueError("--sha256 must contain exactly 64 hexadecimal characters")
+                if digest != args.sha256.lower():
+                    raise ValueError(
+                        f"SHA-256 mismatch: expected {args.sha256.lower()}, got {digest}"
+                    )
+            record = biopax_to_pathway_record(ElementTree.fromstring(payload), fallback_id)
+            reference = next(ref for ref in record["references"] if ref["id"] == record["id"])
+            reference["source_sha256"] = digest
+            if args.source_url:
+                reference["url"] = args.source_url
+            if args.source_version:
+                reference["source_version"] = args.source_version
             validate_record(record)
             records.append(record)
-        except (ElementTree.ParseError, ValidationError, ValueError) as error:
+        except (OSError, ElementTree.ParseError, ValidationError, ValueError) as error:
             print(f"{path}: {error}", file=sys.stderr)
             return 1
 
@@ -859,13 +891,24 @@ def import_dbcan_pul_main(argv: list[str] | None = None) -> int:
         description="Extract dbCAN-PUL workbook or TSV glycan-locus seed rows.",
     )
     parser.add_argument("paths", nargs="+", type=Path, help="dbCAN-PUL XLSX, TSV, or CSV")
+    parser.add_argument("--sha256", help="expected SHA-256 of the single local input")
+    parser.add_argument(
+        "--include-provenance", action="store_true",
+        help="include file hash, worksheet/row locator and ordered original cells",
+    )
     args = parser.parse_args(argv)
+    if args.sha256 is not None and len(args.paths) != 1:
+        parser.error("--sha256 requires exactly one input file")
 
     records = []
     for path in args.paths:
-        records.extend(load_dbcan_pul(path))
+        try:
+            records.extend(load_dbcan_pul(path, expected_sha256=args.sha256))
+        except (OSError, ValueError) as error:
+            print(f"{path}: {error}", file=sys.stderr)
+            return 1
 
-    for row in dbcan_pul_seed_rows(records):
+    for row in dbcan_pul_seed_rows(records, include_provenance=args.include_provenance):
         print(row)
     return 0
 

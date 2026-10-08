@@ -65,7 +65,7 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "10\tgo-cam\tactive\ttrue\tcausal-activity-model\t"
         "Gene Ontology Causal Activity Models"
     )
-    assert any(row.startswith("60\tpathbank\tfixture\ttrue\t") for row in rows)
+    assert any(row.startswith("60\tpathbank\tsupport\ttrue\t") for row in rows)
     assert (
         "130\tpmn\tlicense-gated\ttrue\talgal-pathway-reference\t"
         "Plant Metabolic Network / ChlamyCyc"
@@ -78,7 +78,7 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     assert "160\tunipathway\tsupport\ttrue\tpathway-crosswalk\tUniPathway" in rows
     assert "260\thadeg\tsupport\ttrue\tdegradation-pathway-membership\tHADEG" in rows
     assert "250\tbrenda\tsupport\ttrue\tpathway-reaction-component-reference\tBRENDA" in rows
-    assert "170\tdbcan-pul\tlicense-gated\ttrue\tglycan-locus-reference\tdbCAN-PUL" in rows
+    assert "170\tdbcan-pul\tsupport\ttrue\tglycan-locus-reference\tdbCAN-PUL" in rows
     assert (
         "180\tpanther\tfixture\ttrue\tbiopax-pathway-reference\tPANTHER Pathway"
     ) in rows

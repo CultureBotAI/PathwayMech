@@ -11,6 +11,9 @@ were rechecked separately. The recommendations below retain their historical
 landscape context; current enablement is in `conf/sources.yaml`.
 The [BRENDA/violacein ingestion follow-up](2026-10-08-brenda-violacein-ingestion.md)
 records the support adapter, one new maintained cluster, and their evidence limits.
+The subsequent [local data ingestion batch](2026-10-08-local-data-ingestion.md)
+acquires and parses PathBank and dbCAN-PUL source data, with public-release
+licensing tracked separately from local processing.
 
 This memo ranks resources that could feed PathwayMech with pathway definitions,
 reaction definitions, organism-specific pathway calls, or crosswalks. The local
