@@ -46,6 +46,7 @@ uv run pathwaymech-validate-sources
 uv run pathwaymech-check-provenance
 uv run pathwaymech-import-bigg tests/fixtures/bigg/model.json
 uv run pathwaymech-import-biopax Reactome tests/fixtures/biopax/R-TEST.owl
+uv run pathwaymech-import-brenda research/source_discovery/2026-10-07-brenda-canary/role-import-manifest.json
 uv run pathwaymech-import-bvbrc tests/fixtures/bvbrc/pathways.tsv
 uv run pathwaymech-import-dbcan-pul tests/fixtures/dbcan/dbcan-pul.tsv
 uv run pathwaymech-import-gocam tests/fixtures/gocam/mini_model.json
@@ -62,7 +63,8 @@ uv run pathwaymech-render-pages
 uv run pytest
 ```
 
-HADEG membership ingestion requires a pinned external CSV. See the
+HADEG membership ingestion requires a pinned external CSV. BRENDA imports
+source reaction-role support rows from a saved, hash-checked query bundle. See the
 [local-source import instructions](docs/HARMONIZATION.md) for its checksum-bound
 command and the PMN native-export requirements. Test fixtures demonstrate syntax;
 they are not source-validated pathway records.

@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import csv
+import io
 import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-MIBIG_SEED_HEADER = "mibig_id\tproducts\tgenes\tloci\treferences"
+MIBIG_SEED_HEADER = (
+    "mibig_id\tproducts\tgenes\tloci\treferences\tstatus\tquality\tcompleteness"
+    "\tretirement_reasons\tsee_also"
+)
 
 
 @dataclass(frozen=True)
@@ -25,6 +30,11 @@ class MibigCluster:
     biosynthetic_classes: tuple[str, ...]
     organism: str | None = None
     taxon_id: str | None = None
+    status: str | None = None
+    quality: str | None = None
+    completeness: str | None = None
+    retirement_reasons: tuple[str, ...] | None = None
+    see_also: tuple[str, ...] | None = None
 
 
 def load_mibig_json(path: Path) -> dict[str, Any]:
@@ -49,10 +59,20 @@ def mibig_cluster(record: dict[str, Any]) -> MibigCluster:
         biosynthetic_classes=tuple(sorted(_biosynthetic_classes(record))),
         organism=_organism_name(record),
         taxon_id=_taxon_id(record),
+        status=_assessment_string(record, "status"),
+        quality=_assessment_string(record, "quality"),
+        completeness=_assessment_string(record, "completeness"),
+        retirement_reasons=_assessment_list(record, "retirement_reasons"),
+        see_also=_assessment_list(record, "see_also"),
     )
 
 
 def mibig_pathway_record(cluster: MibigCluster) -> dict[str, Any]:
+    if cluster.status is not None and cluster.status.strip().casefold() == "retired":
+        raise ValueError(
+            f"Retired MIBiG record {cluster.id} cannot become an automatic pathway draft; "
+            "inspect retirement_reasons and see_also in seed output."
+        )
     cluster_label = _cluster_label(cluster)
     gene_cluster: dict[str, Any] = {
         "id": cluster.id,
@@ -81,7 +101,7 @@ def mibig_pathway_record(cluster: MibigCluster) -> dict[str, Any]:
     record: dict[str, Any] = {
         "id": cluster.id,
         "label": cluster_label,
-        "description": f"Experimentally characterized {cluster.id} gene cluster.",
+        "description": _cluster_description(cluster),
         "pathway_type": "biosynthetic-gene-cluster",
         "taxa": [],
         "participants": [],
@@ -116,17 +136,75 @@ def mibig_seed_rows(clusters: list[MibigCluster]) -> list[str]:
     rows = [MIBIG_SEED_HEADER]
     for cluster in clusters:
         rows.append(
-            "\t".join(
+            _tsv_line(
                 [
                     cluster.id,
                     ";".join(cluster.products),
                     ";".join(cluster.genes),
                     ";".join(locus.accession for locus in cluster.loci),
                     ";".join(cluster.references),
+                    cluster.status if cluster.status is not None else "",
+                    cluster.quality if cluster.quality is not None else "",
+                    cluster.completeness if cluster.completeness is not None else "",
+                    json.dumps(cluster.retirement_reasons, ensure_ascii=True)
+                    if cluster.retirement_reasons is not None
+                    else "",
+                    json.dumps(cluster.see_also, ensure_ascii=True)
+                    if cluster.see_also is not None
+                    else "",
                 ]
             )
         )
     return rows
+
+
+def _cluster_description(cluster: MibigCluster) -> str:
+    description = f"MIBiG source record {cluster.id} describes a biosynthetic gene cluster."
+    assessments = [
+        f"{field}={json.dumps(value, ensure_ascii=True)}"
+        for field in ("status", "quality", "completeness")
+        if (value := getattr(cluster, field)) is not None
+    ]
+    if assessments:
+        description += " Source assessments: " + "; ".join(assessments) + "."
+    return description
+
+
+def _assessment_value(record: dict[str, Any], field: str) -> tuple[bool, Any]:
+    """Read only record-level or legacy cluster-level source assessments."""
+    nested = record.get("cluster")
+    nested_present, nested_value = (
+        _assessment_value(nested, field) if isinstance(nested, dict) else (False, None)
+    )
+    if field in record:
+        if nested_present and record[field] != nested_value:
+            raise ValueError(f"Conflicting MIBiG {field} in record and legacy cluster wrapper")
+        return True, record[field]
+    return nested_present, nested_value
+
+
+def _assessment_string(record: dict[str, Any], field: str) -> str | None:
+    present, value = _assessment_value(record, field)
+    if not present:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"MIBiG {field} must be a nonempty source string when present")
+    return value
+
+
+def _assessment_list(record: dict[str, Any], field: str) -> tuple[str, ...] | None:
+    present, value = _assessment_value(record, field)
+    if not present:
+        return None
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise ValueError(f"MIBiG {field} must be a list of source strings when present")
+    return tuple(value)
+
+
+def _tsv_line(values: list[str]) -> str:
+    buffer = io.StringIO(newline="")
+    csv.writer(buffer, delimiter="\t", lineterminator="\n").writerow(values)
+    return buffer.getvalue().removesuffix("\n")
 
 
 def _cluster_label(cluster: MibigCluster) -> str:

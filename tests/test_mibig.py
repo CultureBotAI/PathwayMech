@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import csv
+import io
+import json
 from pathlib import Path
 
+import pytest
 import yaml
 
 from pathwaymech.mibig import load_mibig_json, mibig_cluster, mibig_pathway_record, mibig_seed_rows
@@ -29,9 +33,10 @@ def test_mibig_json_builds_cluster_lookup_rows() -> None:
 
 def test_mibig_seed_rows_emit_tsv() -> None:
     assert mibig_seed_rows([mibig_cluster(load_mibig_json(FIXTURE))]) == [
-        "mibig_id\tproducts\tgenes\tloci\treferences",
+        "mibig_id\tproducts\tgenes\tloci\treferences\tstatus\tquality\tcompleteness"
+        "\tretirement_reasons\tsee_also",
         "MIBiG:BGC0000001\tmini metabolite\tgene-a;gene-b\t"
-        "ABCD01000001.1;ABCD01000001.1\tPMID:12345678;PMID:87654321",
+        "ABCD01000001.1;ABCD01000001.1\tPMID:12345678;PMID:87654321\t\t\t\t\t",
     ]
 
 
@@ -42,7 +47,9 @@ def test_mibig_cluster_builds_bgc_shaped_pathway_record() -> None:
     assert yaml.safe_load(yaml.safe_dump(record)) == {
         "id": "MIBiG:BGC0000001",
         "label": "mini metabolite biosynthetic gene cluster",
-        "description": "Experimentally characterized MIBiG:BGC0000001 gene cluster.",
+        "description": (
+            "MIBiG source record MIBiG:BGC0000001 describes a biosynthetic gene cluster."
+        ),
         "pathway_type": "biosynthetic-gene-cluster",
         "taxa": [{"id": "NCBITaxon:12345", "label": "Mini test microbe"}],
         "participants": [],
@@ -135,3 +142,147 @@ def test_mibig_cluster_rejects_records_without_a_cluster_accession() -> None:
         assert str(error) == "MIBiG JSON missing mibig_accession"
     else:
         raise AssertionError("expected a missing accession error")
+
+
+def _seed_dict(cluster):
+    return list(csv.DictReader(io.StringIO("\n".join(mibig_seed_rows([cluster]))), delimiter="\t"))[
+        0
+    ]
+
+
+@pytest.mark.parametrize("legacy", [True, False])
+def test_retired_source_is_auditable_but_cannot_become_a_draft(legacy):
+    source = {
+        "accession": "BGC9999001",
+        "status": "retired",
+        "quality": "questionable",
+        "completeness": "unknown",
+        "retirement_reasons": ["Duplicate of BGC9999002"],
+        "see_also": ["BGC9999002"],
+    }
+    if legacy:
+        source["mibig_accession"] = source.pop("accession")
+        source = {"cluster": source}
+    cluster = mibig_cluster(source)
+    assert cluster.id == "MIBiG:BGC9999001"
+    assert (cluster.status, cluster.quality, cluster.completeness) == (
+        "retired",
+        "questionable",
+        "unknown",
+    )
+    assert cluster.retirement_reasons == ("Duplicate of BGC9999002",)
+    assert cluster.see_also == ("BGC9999002",)
+    row = _seed_dict(cluster)
+    assert row["mibig_id"] == "MIBiG:BGC9999001"
+    assert row["status"] == "retired"
+    assert json.loads(row["retirement_reasons"]) == ["Duplicate of BGC9999002"]
+    assert json.loads(row["see_also"]) == ["BGC9999002"]
+    with pytest.raises(ValueError, match="Retired MIBiG record MIBiG:BGC9999001"):
+        mibig_pathway_record(cluster)
+
+
+def test_questionable_active_record_keeps_assessments_without_experimental_upgrade():
+    cluster = mibig_cluster(
+        {
+            "accession": "BGC9999002",
+            "status": "active",
+            "quality": "questionable",
+            "completeness": "complete",
+        }
+    )
+    draft = mibig_pathway_record(cluster)
+    validate_record(draft)
+    assert draft["id"] == "MIBiG:BGC9999002"
+    assert draft["description"] == (
+        "MIBiG source record MIBiG:BGC9999002 describes a biosynthetic gene cluster. "
+        'Source assessments: status="active"; quality="questionable"; completeness="complete".'
+    )
+    assert "experimentally" not in draft["description"].lower()
+    row = _seed_dict(cluster)
+    assert (row["status"], row["quality"], row["completeness"]) == (
+        "active",
+        "questionable",
+        "complete",
+    )
+
+
+def test_missing_flags_remain_absent_and_nested_noncluster_flags_do_not_leak():
+    cluster = mibig_cluster(
+        {
+            "accession": "BGC9999003",
+            "genes": [{"quality": "high", "status": "active"}],
+            "compounds": [{"completeness": "complete"}],
+        }
+    )
+    for field in ("status", "quality", "completeness", "retirement_reasons", "see_also"):
+        assert getattr(cluster, field) is None
+        assert _seed_dict(cluster)[field] == ""
+    assert mibig_pathway_record(cluster)["description"] == (
+        "MIBiG source record MIBiG:BGC9999003 describes a biosynthetic gene cluster."
+    )
+
+
+def test_explicit_empty_lists_remain_distinct_from_absent_flags():
+    cluster = mibig_cluster(
+        {
+            "accession": "BGC9999004",
+            "retirement_reasons": [],
+            "see_also": [],
+        }
+    )
+    assert cluster.retirement_reasons == ()
+    assert cluster.see_also == ()
+    assert _seed_dict(cluster)["retirement_reasons"] == "[]"
+    assert _seed_dict(cluster)["see_also"] == "[]"
+
+
+def test_seed_tsv_roundtrips_tabs_newlines_and_literal_source_order():
+    cluster = mibig_cluster(
+        {
+            "accession": "BGC9999005",
+            "status": "active",
+            "quality": "questionable",
+            "compounds": [{"name": 'name\twith\n"quotes"'}],
+            "retirement_reasons": ["second\nline", "first\ttab", "second\nline"],
+            "see_also": ["BGC9999007", "BGC9999006"],
+        }
+    )
+    row = _seed_dict(cluster)
+    assert row["products"] == 'name\twith\n"quotes"'
+    assert json.loads(row["retirement_reasons"]) == ["second\nline", "first\ttab", "second\nline"]
+    assert json.loads(row["see_also"]) == ["BGC9999007", "BGC9999006"]
+
+
+def test_conflicting_legacy_and_modern_status_is_not_silently_ignored():
+    with pytest.raises(ValueError, match="Conflicting MIBiG status"):
+        mibig_cluster(
+            {
+                "accession": "BGC9999008",
+                "status": "active",
+                "cluster": {"mibig_accession": "BGC9999008", "status": "retired"},
+            }
+        )
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("status", None),
+        ("status", False),
+        ("quality", ""),
+        ("completeness", {}),
+        ("retirement_reasons", "duplicate"),
+        ("see_also", [None]),
+    ],
+)
+def test_malformed_assessment_fields_fail_explicitly(field, value):
+    with pytest.raises(ValueError, match=f"MIBiG {field}"):
+        mibig_cluster({"accession": "BGC9999009", field: value})
+
+
+def test_source_status_spelling_preserved_but_retirement_guard_cannot_be_bypassed():
+    cluster = mibig_cluster({"accession": "BGC9999010", "status": " Retired "})
+    assert cluster.status == " Retired "
+    assert _seed_dict(cluster)["status"] == " Retired "
+    with pytest.raises(ValueError, match="Retired MIBiG"):
+        mibig_pathway_record(cluster)

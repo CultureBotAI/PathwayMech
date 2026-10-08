@@ -1,12 +1,16 @@
 # Microbial pathway source discovery
 
-Updated: 2026-10-03
+Updated: 2026-10-08
 
-For the latest incremental additions and update baselines, see
-[the October 3 follow-up](2026-10-03-additional-sources-and-updates.md):
-BRENDA, HADEG, enviPath, DRAM, DiTing, and METABOLIC. They remain disabled
-candidates, not ingested sources. The recommendations below retain their
-historical landscape context; current enablement is in `conf/sources.yaml`.
+The [October 3 discovery scan](2026-10-03-additional-sources-and-updates.md)
+introduced BRENDA, HADEG, enviPath, DRAM, DiTing and METABOLIC. Subsequent
+bounded ingestion adds [HADEG membership support](2026-10-08-hadeg-pmn-canaries.md)
+and [BRENDA reaction-role support](2026-10-08-brenda-context.md); the other four
+remain disabled. [PathBank and dbCAN-PUL rights](2026-10-08-pathbank-dbcan-rights.md)
+were rechecked separately. The recommendations below retain their historical
+landscape context; current enablement is in `conf/sources.yaml`.
+The [BRENDA/violacein ingestion follow-up](2026-10-08-brenda-violacein-ingestion.md)
+records the support adapter, one new maintained cluster, and their evidence limits.
 
 This memo ranks resources that could feed PathwayMech with pathway definitions,
 reaction definitions, organism-specific pathway calls, or crosswalks. The local

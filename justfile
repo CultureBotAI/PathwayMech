@@ -76,6 +76,9 @@ import-biopax *args:
 import-bigg *paths:
     uv run pathwaymech-import-bigg {{paths}}
 
+import-brenda *args:
+    uv run pathwaymech-import-brenda {{args}}
+
 import-bvbrc *paths:
     uv run pathwaymech-import-bvbrc {{paths}}
 
