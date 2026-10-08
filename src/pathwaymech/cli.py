@@ -24,6 +24,7 @@ from pathwaymech.dbcan import dbcan_pul_seed_rows, load_dbcan_pul
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
+from pathwaymech.hadeg import hadeg_seed_rows, load_hadeg_memberships
 from pathwaymech.identifiers import identifier_errors
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
 from pathwaymech.kgx import render_kgx, write_kgx
@@ -631,12 +632,44 @@ def import_metacyc_main(argv: list[str] | None = None) -> int:
     )
 
 
+def import_hadeg_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract source-reported memberships from a pinned local HADEG CSV.",
+    )
+    parser.add_argument("path", type=Path, help="local Tables/7_All_pathways.csv")
+    parser.add_argument("--source-commit", required=True, help="full upstream Git commit")
+    parser.add_argument("--sha256", required=True, help="expected SHA-256 of the input bytes")
+    args = parser.parse_args(argv)
+    try:
+        memberships = load_hadeg_memberships(
+            args.path, source_commit=args.source_commit, expected_sha256=args.sha256,
+        )
+        output = "\n".join(hadeg_seed_rows(memberships))
+    except (OSError, ValueError) as error:
+        print(f"{args.path}: {error}", file=sys.stderr)
+        return 1
+    print(output)
+    return 0
+
+
 def import_pmn_main(argv: list[str] | None = None) -> int:
-    return _import_pathway_tools_main(
-        argv,
+    parser = argparse.ArgumentParser(
         description="Convert local PMN Pathway Tools pathways.dat files to drafts.",
-        path_help="PMN pathways.dat path",
-        record_factory=pmn_pathway_records,
+    )
+    parser.add_argument("paths", nargs="+", type=Path, help="PMN pathways.dat path")
+    parser.add_argument("--pgdb", required=True, help="native PGDB identifier (e.g. Chlamy)")
+    parser.add_argument("--source-version", help="version of the supplied PGDB export")
+    parser.add_argument(
+        "--pathway-id", action="append", help="select an exact native frame; repeatable"
+    )
+    parser.add_argument("--encoding", choices=["utf-8", "latin-1"], default="utf-8")
+    args = parser.parse_args(argv)
+    return _convert_pathway_tools_files(
+        args.paths,
+        lambda records: pmn_pathway_records(
+            records, pgdb=args.pgdb, source_version=args.source_version
+        ),
+        selected_ids=args.pathway_id, encoding=args.encoding,
     )
 
 
@@ -651,19 +684,51 @@ def _import_pathway_tools_main(
         description=description,
     )
     parser.add_argument("paths", nargs="+", type=Path, help=path_help)
+    parser.add_argument(
+        "--pathway-id", action="append", help="select an exact native frame; repeatable"
+    )
+    parser.add_argument("--encoding", choices=["utf-8", "latin-1"], default="utf-8")
     args = parser.parse_args(argv)
+    return _convert_pathway_tools_files(
+        args.paths, record_factory, selected_ids=args.pathway_id, encoding=args.encoding
+    )
 
+
+def _convert_pathway_tools_files(
+    paths: list[Path],
+    record_factory: Callable[[list[dict[str, list[str]]]], list[dict[str, Any]]],
+    *,
+    selected_ids: list[str] | None = None,
+    encoding: str = "utf-8",
+) -> int:
     records = []
-    for path in args.paths:
+    seen_ids: set[str] = set()
+    requested = set(selected_ids or [])
+    found: set[str] = set()
+    for path in paths:
         try:
-            path_records = record_factory(load_pathway_tools_dat(path))
+            native_records = load_pathway_tools_dat(path, encoding=encoding)
+            if requested:
+                native_records = [
+                    record for record in native_records
+                    if requested.intersection(record.get("UNIQUE-ID", []))
+                ]
+                for record in native_records:
+                    found.update(record.get("UNIQUE-ID", []))
+            path_records = record_factory(native_records)
             for record in path_records:
                 validate_record(record)
+                if record["id"] in seen_ids:
+                    raise ValueError(f"duplicate pathway across input files: {record['id']}")
+                seen_ids.add(record["id"])
             records.extend(path_records)
-        except (ValidationError, ValueError) as error:
+        except (OSError, ValidationError, ValueError) as error:
             print(f"{path}: {error}", file=sys.stderr)
             return 1
 
+    if requested - found:
+        print(f"pathway frames not found: {', '.join(sorted(requested - found))}", file=sys.stderr)
+        return 1
     print(yaml.safe_dump_all(records, sort_keys=False), end="")
     return 0
 

@@ -1,0 +1,22 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/hadeg.py
+  slug: hadeg-membership-adapter
+session:
+  id: 2026-10-08T005408Z-codex-e5606e
+  timestamp: '2026-10-08T00:54:08Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+events:
+- type: CREATE
+  outcome: changed
+  summary: Add pinned HADEG support membership ingestion
+  details: Strict CSV and checksum validation preserves nine source fields and line provenance.
+    Syntactic namespace candidates are never asserted as verified identifiers. The full upstream
+    CSV yielded 629 rows (562 UniProt-shaped, 18 versioned NCBI protein, 49 unresolved); 43
+    module tests and four CLI tests cover failures and lossless output. Independent adversarial
+    review checked every raw field in a full-source TSV roundtrip. No pathway graph was generated.

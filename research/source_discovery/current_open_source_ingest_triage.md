@@ -1,6 +1,6 @@
 # Current open-source ingest triage
 
-Baseline: 2026-09-30. Follow-up: 2026-10-07.
+Baseline: 2026-09-30. Follow-up: 2026-10-08.
 
 Scope note: this result applies to the caches listed below, not to all available
 pathway resources. See the
@@ -9,6 +9,9 @@ additional candidates and upstream update baselines. The
 [October 7 continuation](2026-10-07-next-sources.md) supersedes the three
 Reactome physical-state blockers below and adds a MIBiG cluster; BRENDA still
 requires context and identifier work.
+The [October 8 continuation](2026-10-08-hadeg-pmn-canaries.md) adds HADEG support
+membership ingestion and a four-member evidence audit; PMN still requires an
+authorized native export. Neither source adds a maintained pathway graph.
 
 This note records the terminal sweep of the currently enabled open pathway
 sources after the first GO-CAM and WikiPathways records were ingested into
