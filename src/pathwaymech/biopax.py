@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -43,7 +44,13 @@ def biopax_to_pathway_record(
     from the linked publication. Evidence therefore cites the BioPAX objects.
     """
     source_prefix = fallback_id.split(":", 1)[0]
-    xrefs = _unification_xrefs(root)
+    if source_prefix == "PathBank" and len(_elements(root, "Pathway")) != 1:
+        raise ValueError(
+            "PathBank import requires exactly one native Pathway; select a bounded file"
+        )
+    if source_prefix == "PathBank":
+        _validate_pathbank_reaction_membership(root)
+    xrefs = _unification_xrefs(root, source_prefix)
     pathway_id = _pathway_id(root, xrefs, source_prefix) or fallback_id
     references, _ = _publication_references(root)
     references[pathway_id] = _fallback_reference(pathway_id)
@@ -113,7 +120,9 @@ def biopax_to_pathway_record(
     for reaction in _elements(root, "BiochemicalReaction"):
         native = _element_ref(reaction)
         rid = _source_xref(reaction, xrefs, source_prefix) or f"{pathway_id}/{native}"
-        direction, orientation, direction_locator = _conversion_direction(root, reaction)
+        direction, orientation, direction_locator = _conversion_direction(
+            root, reaction, source_prefix
+        )
         reaction_by_ref[native] = rid
         reactions.append(
             {
@@ -146,6 +155,7 @@ def biopax_to_pathway_record(
                             f"BioPAX {native} places physical entity {pref} on its {side} side; "
                             f"conversion direction is {direction}; "
                             f"displayed orientation is {orientation}."
+                            + _raw_conversion_spelling(reaction, direction)
                         ),
                         f"#{native}/bp:{side}/#{pref}; {direction_locator}",
                     )
@@ -240,7 +250,7 @@ def biopax_to_pathway_record(
         "label": _pathway_label(root) or pathway_id,
         "description": f"BioPAX pathway {pathway_id}.",
         "pathway_type": "biopax-pathway",
-        "taxa": _taxa(root, xrefs),
+        "taxa": _taxa(root, xrefs, reject_conflicts=source_prefix == "PathBank"),
         "participants": _unique_nodes(
             [
                 *(participants[n] for n in participants if n in used_refs),
@@ -257,21 +267,79 @@ def biopax_to_pathway_record(
     return record
 
 
+def _validate_pathbank_reaction_membership(root: ElementTree.Element) -> None:
+    """Require explicit source membership without inferring pathway order."""
+    pathway = _elements(root, "Pathway")[0]
+    by_ref = {_element_ref(element): element for element in root}
+    members = set()
+
+    def resolve(ref: str) -> ElementTree.Element:
+        if ref not in by_ref:
+            raise ValueError(f"PathBank pathway has unresolved membership reference {ref}")
+        return by_ref[ref]
+
+    def include_process(ref: str) -> None:
+        process = resolve(ref)
+        if _local_name(process.tag) == "BiochemicalReaction":
+            members.add(ref)
+        elif _local_name(process.tag) == "Catalysis":
+            for controlled in _children(process, "controlled"):
+                target = _resource(controlled)
+                if _local_name(resolve(target).tag) == "BiochemicalReaction":
+                    members.add(target)
+        # Other explicit components, such as MolecularInteraction, do not
+        # establish membership for any BiochemicalReaction in this projection.
+
+    for component in _children(pathway, "pathwayComponent"):
+        include_process(_resource(component))
+    for link in _children(pathway, "pathwayOrder"):
+        step_ref = _resource(link)
+        step = resolve(step_ref)
+        if _local_name(step.tag) not in {"BiochemicalPathwayStep", "PathwayStep"}:
+            raise ValueError(f"PathBank pathwayOrder {step_ref} does not reference a pathway step")
+        for relation in ("stepConversion", "stepProcess"):
+            for process in _children(step, relation):
+                include_process(_resource(process))
+    unscoped = sorted(
+        _element_ref(reaction)
+        for reaction in _elements(root, "BiochemicalReaction")
+        if _element_ref(reaction) not in members
+    )
+    if unscoped:
+        raise ValueError(
+            "PathBank reactions lack explicit pathway membership: " + ", ".join(unscoped)
+        )
+
+
 def _conversion_direction(
-    root: ElementTree.Element, reaction: ElementTree.Element
+    root: ElementTree.Element, reaction: ElementTree.Element, source_prefix: str | None = None
 ) -> tuple[str, str, str]:
     """BioPAX left/right are sides, not implicit reactant/product assignments."""
     native = _element_ref(reaction)
     conversion = _text_child(reaction, "conversionDirection")
+    if source_prefix == "PathBank":
+        conversion = {
+            "LEFT_TO_RIGHT": "LEFT-TO-RIGHT",
+            "RIGHT_TO_LEFT": "RIGHT-TO-LEFT",
+        }.get(conversion, conversion)
     controls = {
         _element_ref(c): _text_child(c, "catalysisDirection")
         for c in _elements(root, "Catalysis")
         if _resource_child(c, "controlled") == native and _text_child(c, "catalysisDirection")
     }
+    step_scope = None
+    if source_prefix == "PathBank":
+        step_scope = {
+            _resource(link)
+            for pathway in _elements(root, "Pathway")
+            for link in _children(pathway, "pathwayOrder")
+        }
     steps = {
         _element_ref(step): _text_child(step, "stepDirection")
         for step in _elements(root, "BiochemicalPathwayStep")
-        if _resource_child(step, "stepConversion") == native and _text_child(step, "stepDirection")
+        if (step_scope is None or _element_ref(step) in step_scope)
+        and _resource_child(step, "stepConversion") == native
+        and _text_child(step, "stepDirection")
     }
     directed = {"LEFT-TO-RIGHT", "RIGHT-TO-LEFT"}
     if conversion is not None and conversion not in directed | {"REVERSIBLE"}:
@@ -310,13 +378,24 @@ def _conversion_direction(
     return direction, orientation, "; ".join(locators)
 
 
-def _unification_xrefs(root: ElementTree.Element) -> dict[str, NormalizedXref]:
+def _raw_conversion_spelling(reaction: ElementTree.Element, direction: str) -> str:
+    raw = _text_child(reaction, "conversionDirection")
+    if raw is not None and raw != direction:
+        return f" Source conversionDirection spelling is {raw}."
+    return ""
+
+
+def _unification_xrefs(
+    root: ElementTree.Element, source_prefix: str | None = None
+) -> dict[str, NormalizedXref]:
     xrefs = {}
     for xref in _elements(root, "UnificationXref"):
         database = _text_child(xref, "db") or ""
         normalized_database = database.lower()
         identifier = _text_child(xref, "id")
         prefix = DB_PREFIXES.get(normalized_database)
+        if source_prefix == "PathBank" and normalized_database == "taxonomy":
+            prefix = "NCBITaxon"
         if prefix and identifier:
             xrefs[_element_ref(xref)] = NormalizedXref(
                 source_id=_format_curie(_source_prefix(database, prefix), identifier),
@@ -384,26 +463,52 @@ def _entity_references(
     xref_by_ref: dict[str, NormalizedXref],
 ) -> dict[str, NormalizedXref]:
     references = {}
-    for element_name in ["SmallMoleculeReference", "ProteinReference"]:
+    for element_name, prefix in (
+        ("SmallMoleculeReference", "CHEBI"),
+        ("ProteinReference", "UniProtKB"),
+    ):
         for element in _elements(root, element_name):
-            xref = _resource_child(element, "xref")
-            if xref in xref_by_ref:
-                references[_element_ref(element)] = xref_by_ref[xref]
+            candidates = {}
+            for link in _children(element, "xref"):
+                xref = xref_by_ref.get(_resource(link))
+                if xref and xref.object_id.startswith(prefix + ":"):
+                    candidates.setdefault(xref.object_id, xref)
+            if len(candidates) > 1:
+                raise ValueError(
+                    f"BioPAX {_element_ref(element)} has conflicting {prefix} reference xrefs"
+                )
+            if candidates:
+                references[_element_ref(element)] = next(iter(candidates.values()))
     return references
 
 
 def _taxa(
     root: ElementTree.Element,
     xref_by_ref: dict[str, NormalizedXref],
+    *,
+    reject_conflicts: bool = False,
 ) -> list[dict[str, str]]:
     taxa_by_ref = {}
     for source in _elements(root, "BioSource"):
+        if reject_conflicts:
+            candidates = {
+                xref.object_id
+                for link in _children(source, "xref")
+                if (xref := xref_by_ref.get(_resource(link)))
+                and xref.object_id.startswith("NCBITaxon:")
+            }
+            if len(candidates) > 1:
+                raise ValueError(
+                    f"BioPAX {_element_ref(source)} has conflicting NCBITaxon reference xrefs"
+                )
         taxon_id = _curie_with_prefix(source, xref_by_ref, "NCBITaxon")
         if not taxon_id:
             continue
         taxa_by_ref[_element_ref(source)] = {
             "id": taxon_id,
-            "label": _text_child(source, "name") or taxon_id,
+            "label": (
+                _text_child(source, "displayName") or _text_child(source, "name") or taxon_id
+            ),
         }
 
     taxa = []
@@ -422,7 +527,34 @@ def _pathway_id(
     pathway = next(iter(_elements(root, "Pathway")), None)
     if pathway is None:
         return None
+    if source_prefix == "PathBank":
+        native = _pathbank_native_accession(root, pathway)
+        if native is not None:
+            return f"PathBank:{native}"
     return _source_xref(pathway, xref_by_ref, source_prefix)
+
+
+def _pathbank_native_accession(
+    root: ElementTree.Element, pathway: ElementTree.Element
+) -> str | None:
+    """PathBank exports cite SMPDB accessions separately from PathWhiz file IDs."""
+    xrefs = {_element_ref(xref): xref for xref in _elements(root, "UnificationXref")}
+    accessions = set()
+    for link in _children(pathway, "xref"):
+        xref = xrefs.get(_resource(link))
+        if xref is None or (_text_child(xref, "db") or "").lower() != "smpdb":
+            continue
+        accession = _text_child(xref, "id") or ""
+        if not re.fullmatch(r"SMP[0-9]+", accession):
+            raise ValueError("PathBank pathway has an invalid native SMPDB accession")
+        accessions.add(accession)
+    if len(accessions) > 1:
+        raise ValueError("PathBank pathway has conflicting native SMPDB accessions")
+    about = pathway.get(f"{RDF}about", "")
+    native_uri = re.fullmatch(r"https?://identifiers\.org/smpdb/(SMP[0-9]+)", about)
+    if native_uri and (not accessions or native_uri.group(1) not in accessions):
+        raise ValueError("PathBank pathway URI and SMPDB xref must agree")
+    return next(iter(accessions), None)
 
 
 def _source_xref(

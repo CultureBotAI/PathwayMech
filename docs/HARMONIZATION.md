@@ -128,8 +128,53 @@ or emit PathwayRecord YAML. The RDF snapshot's release is unknown; the website's
 release label must not be attached to it. See the
 [native-context audit](../research/source_discovery/2026-10-08-brenda-context.md).
 
-PathBank's local fixture adapter remains available, but current PathBank 2.0
-data carry CC BY-NC 4.0 terms. The
+PathBank and dbCAN-PUL now have real-source local ingestion canaries. Their
+`support` status describes local processing, not public-release clearance or
+promotion into maintained pathway records. Current PathBank 2.0 data carry
+CC BY-NC 4.0 terms. The
 [rights review](../research/source_discovery/2026-10-08-pathbank-dbcan-rights.md)
 distinguishes that database license from older About-page wording and from
-software or article licenses. dbCAN-PUL remains gated on database reuse terms.
+software or article licenses. Public-release licensing is tracked separately
+from the authorized local ingestion described below.
+
+For a local BioPAX input, `--sha256` binds the parsed bytes to an expected
+digest. `--source-url` and `--source-version` require that digest and one input
+file; use the version text to identify an archive member when the URL identifies
+the archive. The reference digest covers the parsed member bytes, not the ZIP.
+All BioPAX CLI drafts record their input digest, including unpinned exploratory
+imports; a computed digest alone does not authenticate the source.
+
+```bash
+just import-biopax PathBank /path/to/cache/PW000967.owl \
+  --sha256 1a037aaf80b3cc99f6e6a2c45d60cebea0909cd7b5ee7c15e4f2acf885a8b611 \
+  --source-url https://pathbank.org/downloads/pathbank_primary_biopax.zip \
+  --source-version 'primary archive, Last-Modified 2019-08-16; member PW000967.owl' \
+  > /path/to/local-drafts/SMP0000983.yaml
+```
+
+PathBank's native SMPDB pathway xref supplies the `PathBank:SMP...` identifier;
+the archive's `PW...` filename belongs to PathWhiz and is not substituted for it.
+Known underscored direction values are normalized with the native spellings
+retained in source evidence. This is a source-based draft requiring further
+authority and biological review, not a maintained or experimentally verified
+mechanism. See the [PathBank canary](../research/source_discovery/2026-10-08-pathbank-local.md).
+PathBank drafting requires one native pathway, unambiguous supported organism
+identity, and explicit reaction membership through its component or attached
+step links. An unlinked reaction is an error rather than an inferred member.
+
+For dbCAN-PUL, keep the workbook and complete support output in a local cache:
+
+```bash
+just import-dbcan-pul /path/to/cache/dbCAN-PUL_Feb-2025.xlsx \
+  --sha256 9be758d08cdfd0e36de816819cbcecd04224e4db53a83866369594ecbf3df949 \
+  --include-provenance > /path/to/local-support/dbcan-pul.tsv
+```
+
+The compact legacy columns remain a normalized lookup view. The provenance
+columns preserve the source filename, full file hash, worksheet, physical row
+and ordered original header/value pairs, including unknown or blank headers.
+Use those original cells when reconciling old locus tags and multidomain
+CAZyme annotations: the compact family list is not a protein/domain graph.
+The prediction flag `cazymes_predicted_dbCAN2` is never a CAZyme family.
+The [dbCAN-PUL canary](../research/source_discovery/2026-10-08-dbcan-local.md)
+documents the complete 633-row workbook ingestion and its experimental scope.

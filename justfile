@@ -82,6 +82,9 @@ import-brenda *args:
 import-bvbrc *paths:
     uv run pathwaymech-import-bvbrc {{paths}}
 
+import-dbcan-pul *args:
+    uv run pathwaymech-import-dbcan-pul {{args}}
+
 import-gapmind *paths:
     uv run pathwaymech-import-gapmind {{paths}}
 
