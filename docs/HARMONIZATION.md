@@ -178,3 +178,46 @@ CAZyme annotations: the compact family list is not a protein/domain graph.
 The prediction flag `cazymes_predicted_dbCAN2` is never a CAZyme family.
 The [dbCAN-PUL canary](../research/source_discovery/2026-10-08-dbcan-local.md)
 documents the complete 633-row workbook ingestion and its experimental scope.
+
+DRAM1 module-step ingestion reads the pinned `data/module_step_form.tsv` as
+annotation support. It preserves every native row, including duplicate rows,
+blank cells and the full path coordinates, with file and physical-line provenance.
+No row deduplication, chemical-name splitting or pathway-graph construction is
+performed. Module, KO, reaction and compound strings remain source assertions;
+they have not passed independent identifier approval. In particular, coordinates
+and same-path KO groups do not establish physiological ordering or enzyme-complex
+requirements. DRAM2 is a separate source version and is not covered by this table.
+
+```bash
+just import-dram /path/to/cache/module_step_form.tsv \
+  --source-commit fe61d759303f30db058d5d505c448b28e41b03f1 \
+  --sha256 55a803dcd7fa10ed05403b36c3aa89b19f007c3601dc60cb703c38828e89a4d9 \
+  > /path/to/local-support/dram-module-steps.tsv
+```
+
+The [DRAM ingestion audit](../research/source_discovery/2026-10-08-dram-local.md)
+records all 3,288 rows across 399 modules and the M00001 canary. The local data
+bundle retains the original artifact and KEGG lineage for later public-release
+review. Only support data are produced; no maintained pathway is added.
+
+SEED / PubSEED subsystem ingestion accepts a local manifest covering five native
+API responses: ordered roles (including auxiliary roles), genome variants with
+role/feature cells, subsystem version, curator and description. The manifest
+records each request, acquisition time and file hash. The loader validates the
+entire bundle, including exact subsystem scope and role-name joins, before
+emitting any output.
+
+```bash
+just import-seed-subsystems /path/to/cache/glyoxylate-manifest.json \
+  > /path/to/local-support/glyoxylate-native.tsv
+```
+
+Support rows retain the original JSON values, duplicate role positions, native
+genome and feature IDs, and variant strings. A role's spreadsheet position is
+not reaction order; absent role cells and variant codes do not establish a
+biological phenotype. Requests are acquired separately, so the bundle is not
+an atomic database snapshot. The observed subsystem version is metadata from
+its own response, not an independently verified release for every feature call.
+The [SEED audit](../research/source_discovery/2026-10-08-seed-local.md) records the
+glyoxylate-bypass canary and the rejected alanine bundle's unmatched role name.
+No synonym is invented to force an inconsistent bundle through the importer.

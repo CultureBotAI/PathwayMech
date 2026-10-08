@@ -79,6 +79,11 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     assert "260\thadeg\tsupport\ttrue\tdegradation-pathway-membership\tHADEG" in rows
     assert "250\tbrenda\tsupport\ttrue\tpathway-reaction-component-reference\tBRENDA" in rows
     assert "170\tdbcan-pul\tsupport\ttrue\tglycan-locus-reference\tdbCAN-PUL" in rows
+    assert "280\tdram\tsupport\ttrue\tmetabolic-module-reference\tDRAM" in rows
+    assert (
+        "200\tseed-pubseed\tsupport\ttrue\tsubsystem-role-reference\t"
+        "SEED / PubSEED Subsystems"
+    ) in rows
     assert (
         "180\tpanther\tfixture\ttrue\tbiopax-pathway-reference\tPANTHER Pathway"
     ) in rows
@@ -91,7 +96,6 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     ("source_id", "status"),
     [
         ("envipath", "license-gated"),
-        ("dram", "license-gated"),
         ("diting", "deferred"),
         ("metabolic", "license-gated"),
     ],

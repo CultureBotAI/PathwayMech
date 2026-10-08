@@ -5,8 +5,9 @@ Updated: 2026-10-08
 The [October 3 discovery scan](2026-10-03-additional-sources-and-updates.md)
 introduced BRENDA, HADEG, enviPath, DRAM, DiTing and METABOLIC. Subsequent
 bounded ingestion adds [HADEG membership support](2026-10-08-hadeg-pmn-canaries.md)
-and [BRENDA reaction-role support](2026-10-08-brenda-context.md); the other four
-remain disabled. [PathBank and dbCAN-PUL rights](2026-10-08-pathbank-dbcan-rights.md)
+and [BRENDA reaction-role support](2026-10-08-brenda-context.md). The later
+[DRAM and SEED ingestion batch](2026-10-08-dram-seed-ingestion.md) adds native
+module-step and subsystem support; enviPath, DiTing and METABOLIC remain disabled. [PathBank and dbCAN-PUL rights](2026-10-08-pathbank-dbcan-rights.md)
 were rechecked separately. The recommendations below retain their historical
 landscape context; current enablement is in `conf/sources.yaml`.
 The [BRENDA/violacein ingestion follow-up](2026-10-08-brenda-violacein-ingestion.md)

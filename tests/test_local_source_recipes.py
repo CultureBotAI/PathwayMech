@@ -10,7 +10,9 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.parametrize("recipe", ["import-biopax", "import-dbcan-pul"])
+@pytest.mark.parametrize("recipe", [
+    "import-biopax", "import-dbcan-pul", "import-dram", "import-seed-subsystems",
+])
 def test_local_source_recipe_passes_arguments_literally(tmp_path: Path, recipe: str) -> None:
     just = shutil.which("just")
     if just is None:
