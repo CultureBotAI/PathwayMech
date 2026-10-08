@@ -87,6 +87,14 @@ import-bvbrc *paths:
 import-dbcan-pul *args:
     uv run pathwaymech-import-dbcan-pul "$@"
 
+[positional-arguments]
+import-dram *args:
+    uv run pathwaymech-import-dram "$@"
+
+[positional-arguments]
+import-seed-subsystems *args:
+    uv run pathwaymech-import-seed-subsystems "$@"
+
 import-gapmind *paths:
     uv run pathwaymech-import-gapmind {{paths}}
 

@@ -22,6 +22,7 @@ from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.chebi import load_chebi_xrefs
 from pathwaymech.cross_mech import pathway_index_json
 from pathwaymech.dbcan import dbcan_pul_seed_rows, load_dbcan_pul
+from pathwaymech.dram import dram_seed_rows, load_dram_module_steps
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
@@ -43,6 +44,7 @@ from pathwaymech.pathway_tools import (
 )
 from pathwaymech.rhea import load_rhea_tsv, rhea_seed_rows
 from pathwaymech.schema import ValidationError, validate_record
+from pathwaymech.seed_subsystems import load_seed_subsystem_bundle, seed_subsystem_rows
 from pathwaymech.site_display import (
     evidence_html,
     history_html,
@@ -683,6 +685,44 @@ def import_hadeg_main(argv: list[str] | None = None) -> int:
         output = "\n".join(hadeg_seed_rows(memberships))
     except (OSError, ValueError) as error:
         print(f"{args.path}: {error}", file=sys.stderr)
+        return 1
+    print(output)
+    return 0
+
+
+def import_dram_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract native module-step support rows from a pinned local DRAM1 table.",
+    )
+    parser.add_argument("path", type=Path, help="local data/module_step_form.tsv")
+    parser.add_argument("--source-commit", required=True, help="full upstream Git commit")
+    parser.add_argument("--sha256", required=True, help="expected SHA-256 of the input bytes")
+    args = parser.parse_args(argv)
+    try:
+        records = load_dram_module_steps(
+            args.path, source_commit=args.source_commit, expected_sha256=args.sha256,
+        )
+        output = "\n".join(dram_seed_rows(records))
+    except (OSError, ValueError) as error:
+        print(f"{args.path}: {error}", file=sys.stderr)
+        return 1
+    print(output)
+    return 0
+
+
+def import_seed_subsystems_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract native SEED subsystem support rows from a pinned local API bundle.",
+    )
+    parser.add_argument(
+        "manifest", type=Path, help="local subsystem request/response manifest JSON",
+    )
+    args = parser.parse_args(argv)
+    try:
+        bundle = load_seed_subsystem_bundle(args.manifest)
+        output = "\n".join(seed_subsystem_rows(bundle))
+    except (OSError, ValueError) as error:
+        print(f"{args.manifest}: {error}", file=sys.stderr)
         return 1
     print(output)
     return 0

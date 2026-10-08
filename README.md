@@ -66,7 +66,9 @@ uv run pytest
 HADEG membership ingestion requires a pinned external CSV. BRENDA imports
 source reaction-role support rows from a saved, hash-checked query bundle.
 PathBank BioPAX and dbCAN-PUL workbook canaries support local ingestion with
-input hashes and native evidence retained. See the
+input hashes and native evidence retained. DRAM module-step tables and native
+SEED subsystem bundles also produce local support rows with source provenance.
+See the
 [local-source import instructions](docs/HARMONIZATION.md) for these commands
 and the PMN native-export requirements. Test fixtures demonstrate syntax;
 they are not source-validated pathway records.

@@ -9,10 +9,49 @@ from pathlib import Path
 import pytest
 import yaml
 
-from pathwaymech.cli import import_biopax_main, import_dbcan_pul_main
+from pathwaymech.cli import (
+    import_biopax_main,
+    import_dbcan_pul_main,
+    import_dram_main,
+    import_seed_subsystems_main,
+)
 
 BIOPAX = Path("tests/fixtures/biopax/R-TEST.owl")
 DBCAN = Path("tests/fixtures/dbcan/dbcan-pul.tsv")
+
+
+@pytest.mark.parametrize("failure", ["checksum", "late_row"])
+def test_dram_cli_refuses_entire_invalid_input(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], failure: str,
+) -> None:
+    path = tmp_path / "module table.tsv"
+    path.write_text(
+        "gene\tko\tmodule\tmodule_name\tpath\tproduct_ids\tproduct_names"
+        "\tsubstrate_ids\tsubstrate_names\n"
+        "synthetic enzyme\tK00001\tM00001\tsynthetic module\t0,0\t\t\t\t\n"
+        + ("broken final row\n" if failure == "late_row" else "")
+    )
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    assert import_dram_main([
+        str(path), "--source-commit", "a" * 40,
+        "--sha256", "0" * 64 if failure == "checksum" else digest,
+    ]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err
+
+
+@pytest.mark.parametrize("failure", ["missing", "malformed"])
+def test_seed_subsystems_cli_reports_manifest_error_without_output(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], failure: str,
+) -> None:
+    path = tmp_path / "manifest.json"
+    if failure == "malformed":
+        path.write_text("{ invalid JSON")
+    assert import_seed_subsystems_main([str(path)]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err
 
 
 def test_biopax_cli_binds_draft_to_input_bytes_and_source(
