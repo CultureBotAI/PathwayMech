@@ -1,0 +1,25 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: justfile
+  slug: local-source-recipes
+session:
+  id: 2026-10-08T065412Z-codex-d9ca0d
+  timestamp: '2026-10-08T06:54:12Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/302
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve literal local-source import arguments
+  details: Exact-head adversarial review found that raw just argument interpolation split
+    multiword source versions and could interpret shell punctuation. Both BioPAX and dbCAN-PUL
+    recipes now use positional arguments and quoted forwarding. Two executable regressions
+    pass with spaces and semicolons, and the documented source-version string matches the
+    pinned PathBank draft. Source inputs and importer behavior are unchanged.

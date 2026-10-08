@@ -52,3 +52,7 @@ the input bytes. BioPAX references retain that digest and supplied source
 URL/version; dbCAN provenance retains every ordered native field and locator.
 Synthetic regressions exercise the acquired shapes without embedding source
 database exports in the test suite.
+Exact-head integration review [#302](https://github.com/CultureBotAI/PathwayMech/issues/302)
+also corrected shell argument forwarding in the two `just` recipes. Positional
+arguments keep source paths and multiword version strings literal, including
+semicolons; executable recipe regressions cover those argument boundaries.

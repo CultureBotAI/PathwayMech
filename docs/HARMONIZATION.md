@@ -148,7 +148,7 @@ imports; a computed digest alone does not authenticate the source.
 just import-biopax PathBank /path/to/cache/PW000967.owl \
   --sha256 1a037aaf80b3cc99f6e6a2c45d60cebea0909cd7b5ee7c15e4f2acf885a8b611 \
   --source-url https://pathbank.org/downloads/pathbank_primary_biopax.zip \
-  --source-version 'primary archive, Last-Modified 2019-08-16; member PW000967.owl' \
+  --source-version 'primary archive Last-Modified 2019-08-16; member PW000967.owl' \
   > /path/to/local-drafts/SMP0000983.yaml
 ```
 

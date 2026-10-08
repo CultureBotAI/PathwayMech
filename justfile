@@ -70,8 +70,9 @@ validate-history *args:
 stage-imodulondb *args:
     uv run python scripts/stage_imodulondb_pathway_contexts.py {{args}}
 
+[positional-arguments]
 import-biopax *args:
-    uv run pathwaymech-import-biopax {{args}}
+    uv run pathwaymech-import-biopax "$@"
 
 import-bigg *paths:
     uv run pathwaymech-import-bigg {{paths}}
@@ -82,8 +83,9 @@ import-brenda *args:
 import-bvbrc *paths:
     uv run pathwaymech-import-bvbrc {{paths}}
 
+[positional-arguments]
 import-dbcan-pul *args:
-    uv run pathwaymech-import-dbcan-pul {{args}}
+    uv run pathwaymech-import-dbcan-pul "$@"
 
 import-gapmind *paths:
     uv run pathwaymech-import-gapmind {{paths}}
