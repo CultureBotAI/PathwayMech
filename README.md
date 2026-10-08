@@ -55,11 +55,17 @@ uv run pathwaymech-import-mibig tests/fixtures/mibig/BGC0000001.json
 uv run pathwaymech-import-metacyc tests/fixtures/metacyc/pathways.dat
 uv run pathwaymech-import-modelseed tests/fixtures/modelseed/reactions.tsv
 uv run pathwaymech-import-panther tests/fixtures/biopax/R-TEST.owl
+uv run pathwaymech-import-pmn tests/fixtures/pmn/pathways.dat --pgdb Chlamy --source-version fixture-1
 uv run pathwaymech-import-rhea tests/fixtures/rhea/reactions.tsv
 uv run pathwaymech-import-wikipathways tests/fixtures/wikipathways/WPTEST.gpml
 uv run pathwaymech-render-pages
 uv run pytest
 ```
+
+HADEG membership ingestion requires a pinned external CSV. See the
+[local-source import instructions](docs/HARMONIZATION.md) for its checksum-bound
+command and the PMN native-export requirements. Test fixtures demonstrate syntax;
+they are not source-validated pathway records.
 
 Run the complete local gate with:
 

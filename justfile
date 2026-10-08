@@ -88,6 +88,9 @@ import-gocam *paths:
 import-go *paths:
     uv run pathwaymech-import-go {{paths}}
 
+import-hadeg *args:
+    uv run pathwaymech-import-hadeg {{args}}
+
 import-kegg *paths:
     uv run pathwaymech-import-kegg {{paths}}
 
