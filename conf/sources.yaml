@@ -47,8 +47,8 @@ sources:
     role: model-organism-pathway-reference
     homepage: https://pathbank.org/
     notes: >-
-      BioPAX, SBML, and PWML model-organism pathways with ChEBI, KEGG, and
-      UniProt links.
+      Local BioPAX fixtures; PathBank 2.0 data are CC BY-NC 4.0 and current
+      commercial redistribution requires permission (2026-10-08 rights review).
   - id: metacyc
     priority: 70
     label: MetaCyc
@@ -200,11 +200,14 @@ sources:
   - id: brenda
     priority: 250
     label: BRENDA
-    enabled: false
-    ingest_status: next
-    role: pathway-enzyme-reference
+    enabled: true
+    ingest_status: support
+    role: pathway-reaction-component-reference
     homepage: https://brenda-enzymes.org/
-    notes: Public Entner-Doudoroff CSV/RDF canary recovered; assertion-specific enzyme context and native identifiers need reconciliation.
+    notes: >-
+      Pinned local RDF role-query importer preserves native reaction-component
+      assertions; separately audited web rows retain organism/reference scope,
+      without automatic enzyme joins or maintained pathway graphs.
   - id: hadeg
     priority: 260
     label: HADEG

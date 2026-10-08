@@ -17,6 +17,7 @@ import yaml
 
 from pathwaymech.bigg import bigg_reactions, bigg_seed_rows, load_bigg_model
 from pathwaymech.biopax import biopax_to_pathway_record, load_biopax
+from pathwaymech.brenda import brenda_seed_rows, load_brenda_role_bundle
 from pathwaymech.bvbrc import bvbrc_seed_rows, load_bvbrc_pathways
 from pathwaymech.chebi import load_chebi_xrefs
 from pathwaymech.cross_mech import pathway_index_json
@@ -581,13 +582,16 @@ def import_mibig_main(argv: list[str] | None = None) -> int:
             return 1
 
     if args.yaml:
-        records = [mibig_pathway_record(cluster) for cluster in clusters]
         try:
+            records = [mibig_pathway_record(cluster) for cluster in clusters]
             for record in records:
                 validate_record(record)
         except ValidationError as error:
             for line in error.errors:
                 print(line, file=sys.stderr)
+            return 1
+        except ValueError as error:
+            print(error, file=sys.stderr)
             return 1
         print(yaml.safe_dump_all(records, sort_keys=False), end="")
     else:
@@ -647,6 +651,22 @@ def import_hadeg_main(argv: list[str] | None = None) -> int:
         output = "\n".join(hadeg_seed_rows(memberships))
     except (OSError, ValueError) as error:
         print(f"{args.path}: {error}", file=sys.stderr)
+        return 1
+    print(output)
+    return 0
+
+
+def import_brenda_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Extract support rows from a pinned local BRENDA reaction-role query bundle.",
+    )
+    parser.add_argument("manifest", type=Path, help="local role-import manifest JSON")
+    args = parser.parse_args(argv)
+    try:
+        bundle = load_brenda_role_bundle(args.manifest)
+        output = "\n".join(brenda_seed_rows(bundle))
+    except (OSError, ValueError) as error:
+        print(f"{args.manifest}: {error}", file=sys.stderr)
         return 1
     print(output)
     return 0

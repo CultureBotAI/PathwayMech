@@ -42,6 +42,15 @@ MIBiG JSON ingestion extracts BGC accessions, products, genes, loci, and PubMed
 references as seed rows or as BGC-shaped draft YAML records whose
 `gene_clusters` preserve MIBiG products, biosynthetic classes, local genes, and
 GenBank loci separately from ChEBI/Rhea reaction graphs.
+Support rows also retain native status, quality, completeness, retirement reasons
+and successor links. Missing assessment fields remain blank; explicitly empty
+retirement/link lists remain `[]`. Draft descriptions carry the supplied source
+assessments without asserting experimental characterization. Retired entries
+remain available for support audits but are refused by `--yaml`, including a
+mixed request with active records; automatic drafting never redirects to a
+successor. The [violacein audit](../research/source_discovery/2026-10-08-violacein-followup.md)
+illustrates why a duplicate cluster lineage does not establish protein sequence
+equivalence.
 
 Reactome, PathBank, and PANTHER BioPAX ingestion share an importer that reads BioPAX
 biochemical reactions, grounds reaction-side small molecules through ChEBI, and
@@ -97,3 +106,30 @@ just import-hadeg /path/to/7_All_pathways.csv \
 
 See the [HADEG/PMN canary assessment](../research/source_discovery/2026-10-08-hadeg-pmn-canaries.md)
 for the four-member evidence audit, reproduction instructions and PMN access gate.
+
+BRENDA support ingestion reads a local manifest, saved SPARQL role query and
+its original JSON response. The manifest binds the exact query scope, endpoint,
+retrieval time, row limit and both file hashes. Only the documented bounded
+query shape is accepted; reaching its row limit is an error. This establishes
+the scope and integrity of the supplied snapshot, not independent biological
+validation or completeness of the whole BRENDA database.
+
+```bash
+just import-brenda research/source_discovery/2026-10-07-brenda-canary/role-import-manifest.json
+```
+
+TSV output preserves every query binding and its RDF term metadata alongside
+native pathway, reaction, role and compound URIs. These remain support rows:
+substrate/product roles do not establish physiological direction, coefficients,
+reaction order, protein identity or organism-specific experimental support.
+Role URIs may be reused by different reactions. The importer does not join
+independent enzyme, organism and reference lists, equate web and RDF identifiers,
+or emit PathwayRecord YAML. The RDF snapshot's release is unknown; the website's
+release label must not be attached to it. See the
+[native-context audit](../research/source_discovery/2026-10-08-brenda-context.md).
+
+PathBank's local fixture adapter remains available, but current PathBank 2.0
+data carry CC BY-NC 4.0 terms. The
+[rights review](../research/source_discovery/2026-10-08-pathbank-dbcan-rights.md)
+distinguishes that database license from older About-page wording and from
+software or article licenses. dbCAN-PUL remains gated on database reuse terms.
