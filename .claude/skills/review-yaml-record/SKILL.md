@@ -6,7 +6,7 @@ metadata:
   category: review
   requires_database: false
   requires_internet: true
-  version: 1.0.0
+  version: 2.0.0
 ---
 
 # Review One PathwayMech YAML Record
@@ -22,7 +22,7 @@ unsupported or internally inconsistent, what is materially incomplete, and what
 bounded checks would resolve the remaining uncertainty.
 
 Reviewing is not curation. A review request authorizes reads, validation
-commands, one new Markdown report under the review-report path named below, and
+commands, one structured YAML/Markdown review bundle described below, and
 a concise final summary; it does not authorize editing a pathway record,
 regenerating pages, spending provider credits, contacting anyone, or creating
 or mutating GitHub issues, pull requests, comments, labels, or settings.
@@ -162,45 +162,37 @@ search, call the miss provisional.
 
 ## Output
 
-After resolving exactly one target and completing a review, write exactly one
-timestamped Markdown report before the final response:
+<!-- canonical:begin output -->
+Save one immutable structured review bundle for the resolved record
+using the CLAW-governed contract in `docs/record-reviews.md` and
+`schema/record_review.yaml`. Preserve the local rubric identified by
+`docs/record-review-profile.md`.
 
-- Name it `reports/yaml_record_review/<YYYYMMDDTHHMMSSZ>-<record-stem>.md`.
-  Use `date -u +%Y%m%dT%H%M%SZ` for the UTC timestamp. Preserve the target
-  file stem when it is already filename-safe; otherwise slugify it to
-  lower-case ASCII words joined with `-`.
-- Create `reports/yaml_record_review/` if it does not exist.
-- Do not overwrite or append to a prior review. If a filename already exists,
-  regenerate the timestamp.
-- Keep this section order so review reports are easy to diff across the fleet:
+- Capture actual UTC start/finish, reviewer identity and independence, exact
+  target IDs/locators, Git base, input hashes, and generated-input owners.
+- Retain every check and its real result, domain assessments, inspected evidence,
+  normalized findings, native rules/severity rationale, proposed actions with
+  acceptance checks, and explicit limitations. Do not equate a deterministic
+  check with scientific review.
+- Use `kind: record`; it identifies exactly one target.
+- Invoke `uv run python scripts/record_review.py inspect --targets <targets.yaml>`
+  before assessment, then `validate <completed-review.yaml>` and
+  `save --content <completed-review.yaml>` with the same script. Recheck changed
+  inputs instead of silently refreshing their hashes.
+- The saver writes
+  `reviews/structured/<YYYYMMDDTHHMMSSZ>-<slug>/review.yaml` plus `review.md`.
+  YAML is authoritative; do not hand-edit the rendered Markdown or overwrite an
+  earlier bundle. Run `uv run python scripts/record_review.py check` afterward.
+- If required checks are unavailable after the target is resolved, save an honest
+  partial/blocked observation. If the shared saver itself cannot run, report
+  that persistence is blocked; session-only prose is not a saved review.
+- Retain stable issue keys and exact `previous_occurrences` when reassessing a
+  finding. A later clean report does not close earlier unresolved findings.
+- Do not append curation/history events or promote native scientific status.
+  Those require a separately authorized curation change and native gates.
 
-```markdown
-# YAML Record Review: <record label>
-
-- Repository:
-- Record:
-- Started UTC:
-- Finished UTC:
-- Verdict:
-
-## Target
-## Validation
-## Identity and Grounding
-## Graph and Local References
-## Edge Evidence
-## Completeness
-## Findings
-## Recommended Edits
-## Follow-up Checks
-## Additional Notes
-```
-
-Use `None found` or `Not checked: <reason>` when a section has no findings or a
-check cannot run; do not delete required headings.
-
-Do not edit the YAML, regenerate `pages/`, append curation history, or create a
-GitHub item from this read-only review. If the request needs disambiguation
-before one target is resolved, ask for it without creating a report.
-
-In the final response, link the report path and summarize only the verdict,
-finding counts by severity, skipped validators, and unresolved blockers.
+Do not create a report for an unresolved ambiguous target. In the final response,
+link both saved files and summarize scope, verdict, findings by severity, and
+unavailable checks. Existing ad hoc Markdown is historical, not the output format
+for new reviews.
+<!-- canonical:end output -->

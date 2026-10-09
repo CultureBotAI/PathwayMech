@@ -133,3 +133,7 @@ import-veupathdb *paths:
 
 import-wikipathways *paths:
     uv run pathwaymech-import-wikipathways {{paths}}
+
+# Validate immutable structured review observations; never curate records.
+review-check *args:
+    uv run python scripts/record_review.py check {{args}}
