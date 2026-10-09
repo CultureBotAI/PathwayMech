@@ -6,7 +6,7 @@ metadata:
   category: review
   requires_database: false
   requires_internet: true
-  version: 1.0.0
+  version: 2.0.0
 ---
 
 # Review One PathwayMech YAML Category
@@ -23,7 +23,7 @@ which represent variants that should stay split, which patterns are well
 supported, and which future curation changes would make the cohort sound.
 
 Reviewing a category is not curation. A review request authorizes reads,
-validation commands, Markdown reports under the review-report path named below,
+validation commands, structured YAML/Markdown review bundles described below,
 and a concise final summary; it does not authorize editing records,
 regenerating products, spending provider credits, contacting anyone, or
 creating or mutating GitHub issues, pull requests, comments, labels, or
@@ -160,50 +160,39 @@ search, call the miss provisional.
 
 ## Output
 
-After resolving at least one coherent target category and completing a review,
-write one timestamped Markdown report per reviewed cohort before the final
-response:
+<!-- canonical:begin output -->
+Save one immutable structured review bundle per reviewed cohort
+using the CLAW-governed contract in `docs/record-reviews.md` and
+`schema/record_review.yaml`. Preserve the local rubric identified by
+`docs/record-review-profile.md`.
 
-- Name each report
-  `reports/yaml_category_review/<YYYYMMDDTHHMMSSZ>-<category-slug>.md`. Use
-  `date -u +%Y%m%dT%H%M%SZ` for the UTC timestamp. Preserve the category slug
-  when it is already filename-safe; otherwise slugify it to lower-case ASCII
-  words joined with `-`.
-- Create `reports/yaml_category_review/` if it does not exist.
-- Do not overwrite or append to a prior review. If a filename already exists,
-  regenerate the timestamp.
-- Keep this section order so review reports are easy to diff across the fleet:
+- Capture actual UTC start/finish, reviewer identity and independence, exact
+  target IDs/locators, Git base, input hashes, and generated-input owners.
+- Retain every check and its real result, domain assessments, inspected evidence,
+  normalized findings, native rules/severity rationale, proposed actions with
+  acceptance checks, and explicit limitations. Do not equate a deterministic
+  check with scientific review.
+- Use `kind: category`; enumerate reviewed members, population and selection,
+  and record explicit lump/split/retain/defer decisions with evidence. Sampled
+  coverage must retain its method and uninspected remainder.
+- Invoke `uv run python scripts/record_review.py inspect --targets <targets.yaml>`
+  before assessment, then `validate <completed-review.yaml>` and
+  `save --content <completed-review.yaml>` with the same script. Recheck changed
+  inputs instead of silently refreshing their hashes.
+- The saver writes
+  `reviews/structured/<YYYYMMDDTHHMMSSZ>-<slug>/review.yaml` plus `review.md`.
+  YAML is authoritative; do not hand-edit the rendered Markdown or overwrite an
+  earlier bundle. Run `uv run python scripts/record_review.py check` afterward.
+- If required checks are unavailable after the target is resolved, save an honest
+  partial/blocked observation. If the shared saver itself cannot run, report
+  that persistence is blocked; session-only prose is not a saved review.
+- Retain stable issue keys and exact `previous_occurrences` when reassessing a
+  finding. A later clean report does not close earlier unresolved findings.
+- Do not append curation/history events or promote native scientific status.
+  Those require a separately authorized curation change and native gates.
 
-```markdown
-# YAML Category Review: <category label>
-
-- Repository:
-- Category:
-- Selection Rule:
-- Started UTC:
-- Finished UTC:
-- Verdict:
-
-## Target Category
-## Selection and Membership
-## Validation
-## Lump and Split Review
-## Identity and Grounding
-## Graph and Evidence Patterns
-## Completeness Patterns
-## Findings
-## Recommended Edits
-## Follow-up Checks
-## Additional Notes
-```
-
-Use `None found` or `Not checked: <reason>` when a section has no findings or a
-check cannot run; do not delete required headings. If only a sample was read,
-the verdict must say `sampled` and must not claim full-category coverage.
-
-Do not edit YAML, regenerate pages, append curation history, or create a
-GitHub item from this read-only review. If the request needs disambiguation
-before a coherent category is resolved, ask for it without creating a report.
-
-In the final response, link every report path and summarize only each verdict,
-finding counts by severity, skipped validators, and unresolved blockers.
+Do not create a report for an unresolved ambiguous target. In the final response,
+link both saved files and summarize scope, verdict, findings by severity, and
+unavailable checks. Existing ad hoc Markdown is historical, not the output format
+for new reviews.
+<!-- canonical:end output -->

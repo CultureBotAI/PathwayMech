@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import yaml
+
 from scripts.validate_claude_skills import SKILLS_DIR, validate_skills
 
 
@@ -19,3 +21,9 @@ def test_expected_claude_skills_exist() -> None:
         "review-yaml-record",
         "source-triage",
     } <= names
+
+
+def test_cross_mech_assessment_is_a_registered_review_route() -> None:
+    root = SKILLS_DIR.parent.parent
+    profile = yaml.safe_load((root / "conf/record_review.yaml").read_text())
+    assert ".claude/skills/cross-mech-protein-links/SKILL.md" in profile["skills"]

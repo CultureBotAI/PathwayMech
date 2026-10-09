@@ -168,6 +168,28 @@ PathwayMech's `just validate`, `just test`, `just lint`, and `git diff --check`.
 
 ## Report
 
+Persist the final adjudicated assessment with `docs/record-reviews.md` and
+`docs/record-review-profile.md`; deterministic tables and `summary.md` remain
+raw leads, not completed scientific reviews. Use the shared `inspect`,
+`validate`, and `save` commands to produce the timestamped YAML/Markdown pair.
+
+For a cross-corpus audit, use `kind: repository` and exact local PathwayMech
+targets or local frozen audit inputs under `research/cross_mech/`. Represent a
+selected table row as `kind: snapshot_row` with an exact selector and stable ID;
+hash the inspected tables, coverage and local pathway inputs. Never place
+`../SiblingMech/...` or absolute external paths in target/source paths. Record
+sibling repository identities, pinned commits and inspected source locators as
+evidence and assessment dimensions. Actions can name maintained owners in the
+appropriate repository. This local snapshot assessment does not substitute for
+a sibling's own record-review or promotion gate.
+
+Retain exact selected/reviewed IDs, source-native counts and denominators,
+accepted and rejected leads, scientific uncertainty, ownership and acceptance
+checks. A missing annotation or excluded corpus limits coverage; it is not
+evidence of absence. For a record-specific follow-up, hand off to that Mech's
+registered record-review route and link the resulting observation. Do not
+change scientific records merely to save this assessment.
+
 Name the report folder and its sibling commits. Give per-Mech counts (slot
 values, distinct accessions, overlaps, links, broken links). List:
 
@@ -176,6 +198,10 @@ values, distinct accessions, overlaps, links, broken links). List:
 - the ranked pathway gaps, and which ones were added;
 - the leads rejected, and why;
 - every PR and issue opened, with the checks that passed or could not run.
+
+Link both saved structured artifacts in the response. Keep publication and
+curation status separate from the review verdict, and retain partial/blocked
+assessments when required checks are unavailable.
 
 ## Related
 
