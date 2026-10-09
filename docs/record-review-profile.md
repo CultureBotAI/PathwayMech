@@ -4,6 +4,11 @@ Use the native `.claude/skills/review-yaml-record/SKILL.md` or
 `.claude/skills/review-yaml-category/SKILL.md` scientific workflow. Both persist
 through [record-reviews.md](record-reviews.md) and `schema/record_review.yaml`.
 `conf/record_review.yaml` lists the CI-checked routes and local rubrics.
+The `cross-mech-protein-links` route saves its final adjudicated assessment as
+a repository-scoped review of exact local frozen audit inputs and local pathway
+targets. Its TSVs remain leads. Sibling pins/locators belong in evidence and
+dimensions, not external target paths; a sibling record needs its own native
+review handoff before scientific status can change.
 
 The targets are maintained `data/pathways/*.yaml`. Read the entire pathway,
 `docs/CURATION.md`, `docs/HARMONIZATION.md`, `docs/CAUSAL_GRAPHS.md`, and the
