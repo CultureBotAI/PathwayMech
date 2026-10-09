@@ -10,7 +10,7 @@ targets. Its TSVs remain leads. Sibling pins/locators belong in evidence and
 dimensions, not external target paths; a sibling record needs its own native
 review handoff before scientific status can change.
 
-The targets are maintained `data/pathways/*.yaml`. Read the entire pathway,
+The scientific-review targets are maintained `data/pathways/*.yaml`. Read the entire pathway,
 `docs/CURATION.md`, `docs/HARMONIZATION.md`, `docs/CAUSAL_GRAPHS.md`, and the
 `add-pathway` skill. Review exact pathway identity, taxa, participants, reactions,
 cofactors, compartments, direction, edge-local endpoints/predicates and evidence.
@@ -40,3 +40,12 @@ history under `reviews/structured/`. PR/merge-group CI uses the trusted event
 base in `RECORD_REVIEW_BASE`. Existing `reports/yaml_record_review/` and
 `reports/yaml_category_review/` prose stays historical and is not migrated.
 No scientific record, native curation status or history event changes on save.
+
+The `.claude/skills/pathwaymech-resolve-reviews/SKILL.md` route interprets saved
+reviews and applies supported corrections. A bounded reconciliation may use
+legacy reports as `source` targets with current maintained YAML and audit ledgers
+as inspected context inputs; declare `scientific_review: false` and explicitly
+exclude fresh literature review. Include any record requiring a correction as
+an assessed maintained target. Legacy prose is not converted into fabricated
+structured predecessors: already-applied changes belong in evidence-linked
+assessments, while structured dispositions retain exact finding lineage.
