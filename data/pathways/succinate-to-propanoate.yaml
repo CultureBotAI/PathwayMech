@@ -1,0 +1,471 @@
+id: MetaCyc:PWY0-43
+label: conversion of succinate to propanoate
+description: 'The Sbm/ScpABC three-enzyme biochemical cycle annotated for Escherichia coli K-12 MG1655
+  couples succinyl-CoA rearrangement, methylmalonyl-CoA decarboxylation and CoA transfer to succinate.
+  Adenosylcobalamin supports Sbm mutase activity. Recombinant enzyme assays support the proposed cycle,
+  but do not establish wild-type pathway flux. The graph retains the current reviewed Rhea/UniProt assignment
+  of (R)-methylmalonyl-CoA to ScpB as an annotation with unresolved experimental stereospecificity: the
+  original coupled assay did not resolve the methylmalonyl-CoA enantiomers, while later engineered strains
+  required a heterologous epimerase for propionate production from glucose in minimal medium. A later
+  direct ScpB assay used an R/S substrate mixture and also observed hydrolysis. These findings remain
+  a source conflict; no unverified native epimerase is added. The native Sbm dimer and ScpB hexamer are
+  represented as assemblies; apo-Sbm can also occur as a monomer.'
+pathway_type: proposed-succinate-decarboxylation-cycle
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:30031
+  label: succinate(2-)
+  category: small_molecule
+- id: CHEBI:57292
+  label: succinyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:57326
+  label: (R)-methylmalonyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:57392
+  label: propionyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:17272
+  label: propionate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:18408
+  label: cobamamide
+  category: cofactor
+- id: UniProtKB:P27253
+  label: Methylmalonyl-CoA mutase
+  category: protein
+- id: UniProtKB:P52045
+  label: Methylmalonyl-CoA decarboxylase
+  category: protein
+- id: UniProtKB:P52043
+  label: Propanoyl-CoA:succinate CoA transferase
+  category: protein
+- id: MetaCyc:CPLX0-7741
+  label: methylmalonyl-CoA mutase
+  category: complex
+- id: MetaCyc:CPLX0-254
+  label: methylmalonyl-CoA decarboxylase
+  category: complex
+reactions:
+- id: RHEA:22890
+  label: succinyl-CoA => (R)-methylmalonyl-CoA
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:27667
+  label: (R)-methylmalonyl-CoA + H(+) => propanoyl-CoA + CO2
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:28011
+  label: propanoyl-CoA + succinate => propanoate + succinyl-CoA
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: sbm-edge-001
+  subject: CHEBI:57292
+  predicate: consumes
+  object: RHEA:22890
+  evidence:
+  - reference_id: RHEA:22890
+    source_assertion: Rhea RHEA:22890 assigns CHEBI:57292 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22890']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22888_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22888_compound_4684'];
+      rh:compound/rh:chebi
+- id: sbm-edge-002
+  subject: RHEA:22890
+  predicate: produces
+  object: CHEBI:57326
+  evidence:
+  - reference_id: RHEA:22890
+    source_assertion: Rhea RHEA:22890 assigns CHEBI:57326 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22890']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22888_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22888_compound_1391'];
+      rh:compound/rh:chebi
+- id: sbm-edge-003
+  subject: CHEBI:57326
+  predicate: consumes
+  object: RHEA:27667
+  description: This is the current Rhea/UniProt (R)-specific annotation, not an enantiomer-resolved ScpB
+    assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium cultures. The
+    conflict with the original coupled assay remains unresolved; no wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:57326 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_1391'];
+      rh:compound/rh:chebi
+- id: sbm-edge-004
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27667
+  description: This is the current Rhea/UniProt (R)-specific annotation, not an enantiomer-resolved ScpB
+    assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium cultures. The
+    conflict with the original coupled assay remains unresolved; no wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_3249'];
+      rh:compound/rh:chebi
+- id: sbm-edge-005
+  subject: RHEA:27667
+  predicate: produces
+  object: CHEBI:57392
+  description: This is the current Rhea/UniProt (R)-specific annotation, not an enantiomer-resolved ScpB
+    assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium cultures. The
+    conflict with the original coupled assay remains unresolved; no wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:57392 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_3421'];
+      rh:compound/rh:chebi
+- id: sbm-edge-006
+  subject: RHEA:27667
+  predicate: produces
+  object: CHEBI:16526
+  description: This is the current Rhea/UniProt (R)-specific annotation, not an enantiomer-resolved ScpB
+    assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium cultures. The
+    conflict with the original coupled assay remains unresolved; no wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:16526 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_4391'];
+      rh:compound/rh:chebi
+- id: sbm-edge-007
+  subject: CHEBI:57392
+  predicate: consumes
+  object: RHEA:28011
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:57392 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_3421'];
+      rh:compound/rh:chebi
+- id: sbm-edge-008
+  subject: CHEBI:30031
+  predicate: consumes
+  object: RHEA:28011
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:30031 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_2501'];
+      rh:compound/rh:chebi
+- id: sbm-edge-009
+  subject: RHEA:28011
+  predicate: produces
+  object: CHEBI:17272
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:17272 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_4801'];
+      rh:compound/rh:chebi
+- id: sbm-edge-010
+  subject: RHEA:28011
+  predicate: produces
+  object: CHEBI:57292
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:57292 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_4684'];
+      rh:compound/rh:chebi
+- id: sbm-edge-011
+  subject: UniProtKB:P27253
+  predicate: part_of
+  object: MetaCyc:CPLX0-7741
+  description: Membership represents the annotated Sbm homodimer; it does not imply that all apo-Sbm is
+    dimeric or include the distinct YgfD-bound assembly.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7741
+    source_assertion: MetaCyc CPLX0-7741 contains 2 copies of METHYLMALONYL-COA-MUT-MONOMER and assigns
+      the assembly to E. coli K-12 MG1655.
+    source_locator: Protein[@frameid='CPLX0-7741']/component; species/Organism[@frameid='TAX-511145']
+  - reference_id: MetaCyc:METHYLMALONYL-COA-MUT-MONOMER
+    source_assertion: The native METHYLMALONYL-COA-MUT-MONOMER protein has a UniProt unification cross-reference
+      to P27253.
+    source_locator: Protein[@frameid='METHYLMALONYL-COA-MUT-MONOMER']/dblink[dblink-db='UNIPROT']/dblink-oid
+  - reference_id: PMID:18950999
+    source_assertion: Native PAGE and size exclusion detected apo-Sbm as a mixture of monomer and dimer.
+    source_locator: Results, Interaction of YgfD and Sbm in vitro (P17); Figure 4B and Figure 4C, panel
+      2; Discussion
+- id: sbm-edge-012
+  subject: UniProtKB:P52045
+  predicate: part_of
+  object: MetaCyc:CPLX0-254
+  evidence:
+  - reference_id: MetaCyc:CPLX0-254
+    source_assertion: MetaCyc CPLX0-254 contains 6 copies of G7516-MONOMER and assigns the assembly to
+      E. coli K-12 MG1655.
+    source_locator: Protein[@frameid='CPLX0-254']/component; species/Organism[@frameid='TAX-511145']
+  - reference_id: MetaCyc:G7516-MONOMER
+    source_assertion: The native G7516-MONOMER protein has a UniProt unification cross-reference to P52045.
+    source_locator: Protein[@frameid='G7516-MONOMER']/dblink[dblink-db='UNIPROT']/dblink-oid
+  - reference_id: PMID:10769118
+    source_assertion: The E. coli decarboxylase crystal structure forms a hexamer arranged as two trimers.
+    source_locator: Indexed abstract; oligomeric architecture
+- id: sbm-edge-013
+  subject: MetaCyc:CPLX0-7741
+  predicate: catalyzes
+  object: RHEA:22890
+  description: RHEA:22890 selects the succinyl-CoA-to-(R)-methylmalonyl-CoA direction of the reversible
+    mutase reaction for the proposed cycle.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7741
+    source_assertion: MetaCyc CPLX0-7741 is the enzyme assigned to METHYLMALONYL-COA-MUT-RXN.
+    source_locator: Protein[@frameid='CPLX0-7741']/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P27253
+    source_assertion: Reviewed UniProt P27253 assigns (R)-methylmalonyl-CoA = succinyl-CoA (RHEA:22888;
+      ECO:0000269, PMID:10769117).
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - reference_id: PMID:10769117
+    source_assertion: Adenosylcobalamin-reconstituted Sbm converted succinyl-CoA to propionyl-CoA in a
+      coupled assay containing excess YgfG/ScpB.
+    source_locator: pp. 4624-4625, Reconstitution and HPLC Assay of Sbm; p. 4627, Function of Sbm
+- id: sbm-edge-014
+  subject: MetaCyc:CPLX0-254
+  predicate: catalyzes
+  object: RHEA:27667
+  description: This is the current Rhea/UniProt (R)-specific annotation, not an enantiomer-resolved ScpB
+    assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium cultures. The
+    conflict with the original coupled assay remains unresolved; no wild-type flux is asserted. The 2019
+    assay used an R/S substrate mixture.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-254
+    source_assertion: MetaCyc CPLX0-254 is the enzyme assigned to RXN0-310.
+    source_locator: Protein[@frameid='CPLX0-254']/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P52045
+    source_assertion: Reviewed UniProt P52045 assigns (R)-methylmalonyl-CoA + H(+) = propanoyl-CoA + CO2
+      (RHEA:27666; ECO:0000269, PMID:10769117).
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - reference_id: PMID:10769117
+    source_assertion: Purified YgfG/ScpB catalyzed methylmalonyl-CoA decarboxylation; coupled Sbm/YgfG
+      assays converted succinyl-CoA to propionyl-CoA.
+    source_locator: p. 4626, Function of YgfG and Table 1; p. 4627, Function of Sbm
+  - reference_id: PMID:28716098
+    source_assertion: Engineered BL21 and DH5alpha cultures required heterologous methylmalonyl-CoA epimerase
+      for propionate production from glucose in minimal medium; the paper questions ScpB stereospecificity.
+    source_locator: Results, Heterologous PA production, epimerase co-expression; Discussion
+  - reference_id: DOI:10.1021/jacs.9b00650.s001
+    source_assertion: The 2019 MMCD-His6 assay used (R/S)-methylmalonyl-CoA and measured propionyl-CoA
+      and free CoA. It supports decarboxylation plus hydrolysis without resolving ScpB enantiomer specificity.
+    source_locator: Supporting Information, Section VIII pp. S14-S15; Figures S4-S5 pp. S27-S28
+- id: sbm-edge-015
+  subject: UniProtKB:P52043
+  predicate: catalyzes
+  object: RHEA:28011
+  description: RHEA:28011 selects the propionyl-CoA plus succinate direction of a reversible CoA transferase
+    reaction; ScpC is represented by its protein identifier without an unsupported oligomeric state.
+  evidence:
+  - reference_id: MetaCyc:G7517-MONOMER
+    source_assertion: MetaCyc G7517-MONOMER is the enzyme assigned to RXN0-268.
+    source_locator: Protein[@frameid='G7517-MONOMER']/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P52043
+    source_assertion: Reviewed UniProt P52043 assigns propanoyl-CoA + succinate = propanoate + succinyl-CoA
+      (RHEA:28010; ECO:0000269, PMID:10769117).
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - reference_id: PMID:10769117
+    source_assertion: Purified YgfH/ScpC transferred CoA from propionyl-CoA to succinate in an HPLC assay.
+    source_locator: p. 4624, HPLC Assay of YgfH; p. 4627, Function of YgfH
+- id: sbm-edge-016
+  subject: UniProtKB:P27253
+  predicate: has_cofactor
+  object: CHEBI:18408
+  description: CHEBI:18408 has canonical ChEBI label cobamamide; this is adenosylcobalamin, not a generic
+    vitamin B12 pool or a consumed pathway substrate.
+  evidence:
+  - reference_id: UniProtKB:P27253
+    source_assertion: Reviewed UniProt P27253 assigns adenosylcob(III)alamin (CHEBI:18408) as cofactor
+      with ECO:0000269 citing PMID:10769117 and PMID:11955068.
+    source_locator: comments[commentType='COFACTOR'].cofactors
+  - reference_id: PMID:10769117
+    source_assertion: Recombinant apo-Sbm was reconstituted with adenosylcobalamin before the mutase assay.
+    source_locator: p. 4624, Reconstitution and HPLC Assay of Sbm; p. 4627, Function of Sbm
+- id: sbm-edge-017
+  subject: RHEA:22890
+  predicate: part_of
+  object: MetaCyc:PWY0-43
+  description: Membership in the experimentally motivated biochemical proposal does not assert operation
+    of a complete native cycle under unspecified growth conditions.
+  evidence:
+  - reference_id: MetaCyc:PWY0-43
+    source_assertion: MetaCyc PWY0-43 lists METHYLMALONYL-COA-MUT-RXN in its three-reaction proposed succinate-to-propanoate
+      cycle; its comment states that a metabolic role has not been shown.
+    source_locator: Pathway[@frameid='PWY0-43']/reaction-list/Reaction[@frameid='METHYLMALONYL-COA-MUT-RXN'];
+      comment
+  - reference_id: MetaCyc:METHYLMALONYL-COA-MUT-RXN
+    source_assertion: The native reaction METHYLMALONYL-COA-MUT-RXN has the chemical sides and Rhea cross-reference
+      corresponding to this selected directional reaction.
+    source_locator: Reaction[@frameid='METHYLMALONYL-COA-MUT-RXN']/left; right; reaction-direction; dblink[dblink-db='RHEA']
+- id: sbm-edge-018
+  subject: RHEA:27667
+  predicate: part_of
+  object: MetaCyc:PWY0-43
+  description: Membership in the experimentally motivated biochemical proposal does not assert operation
+    of a complete native cycle under unspecified growth conditions.
+  evidence:
+  - reference_id: MetaCyc:PWY0-43
+    source_assertion: MetaCyc PWY0-43 lists RXN0-310 in its three-reaction proposed succinate-to-propanoate
+      cycle; its comment states that a metabolic role has not been shown.
+    source_locator: Pathway[@frameid='PWY0-43']/reaction-list/Reaction[@frameid='RXN0-310']; comment
+  - reference_id: MetaCyc:RXN0-310
+    source_assertion: The native reaction RXN0-310 has the chemical sides and Rhea cross-reference corresponding
+      to this selected directional reaction.
+    source_locator: Reaction[@frameid='RXN0-310']/left; right; reaction-direction; dblink[dblink-db='RHEA']
+- id: sbm-edge-019
+  subject: RHEA:28011
+  predicate: part_of
+  object: MetaCyc:PWY0-43
+  description: Membership in the experimentally motivated biochemical proposal does not assert operation
+    of a complete native cycle under unspecified growth conditions.
+  evidence:
+  - reference_id: MetaCyc:PWY0-43
+    source_assertion: MetaCyc PWY0-43 lists RXN0-268 in its three-reaction proposed succinate-to-propanoate
+      cycle; its comment states that a metabolic role has not been shown.
+    source_locator: Pathway[@frameid='PWY0-43']/reaction-list/Reaction[@frameid='RXN0-268']; comment
+  - reference_id: MetaCyc:RXN0-268
+    source_assertion: The native reaction RXN0-268 has the chemical sides and Rhea cross-reference corresponding
+      to this selected directional reaction.
+    source_locator: Reaction[@frameid='RXN0-268']/left; right; reaction-direction; dblink[dblink-db='RHEA']
+- id: sbm-edge-020
+  subject: RHEA:22890
+  predicate: provides_input_for
+  object: RHEA:27667
+  description: This is the current Rhea/UniProt (R)-specific annotation, not an enantiomer-resolved ScpB
+    assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium cultures. The
+    conflict with the original coupled assay remains unresolved; no wild-type flux is asserted.
+  evidence:
+  - reference_id: MetaCyc:PWY0-43
+    source_assertion: Native PWY0-43 reaction order places METHYLMALONYL-COA-MUT-RXN before RXN0-310 in
+      the proposed cycle, sharing (R)-methylmalonyl-CoA.
+    source_locator: Pathway[@frameid='PWY0-43']/reaction-ordering[Reaction[@frameid='RXN0-310'] and predecessor-reactions/Reaction[@frameid='METHYLMALONYL-COA-MUT-RXN']];
+      reaction-layout
+- id: sbm-edge-021
+  subject: RHEA:27667
+  predicate: provides_input_for
+  object: RHEA:28011
+  description: This edge records the native biochemical-cycle layout, not measured wild-type flux or an
+    additional physiological inference.
+  evidence:
+  - reference_id: MetaCyc:PWY0-43
+    source_assertion: Native PWY0-43 reaction order places RXN0-310 before RXN0-268 in the proposed cycle,
+      sharing propionyl-CoA.
+    source_locator: Pathway[@frameid='PWY0-43']/reaction-ordering[Reaction[@frameid='RXN0-268'] and predecessor-reactions/Reaction[@frameid='RXN0-310']];
+      reaction-layout
+- id: sbm-edge-022
+  subject: RHEA:28011
+  predicate: provides_input_for
+  object: RHEA:22890
+  description: This edge records the native biochemical-cycle layout, not measured wild-type flux or an
+    additional physiological inference.
+  evidence:
+  - reference_id: MetaCyc:PWY0-43
+    source_assertion: Native PWY0-43 reaction order places RXN0-268 before METHYLMALONYL-COA-MUT-RXN in
+      the proposed cycle, sharing succinyl-CoA.
+    source_locator: Pathway[@frameid='PWY0-43']/reaction-ordering[Reaction[@frameid='METHYLMALONYL-COA-MUT-RXN']
+      and predecessor-reactions/Reaction[@frameid='RXN0-268']]; reaction-layout
+references:
+- id: MetaCyc:PWY0-43
+  title: MetaCyc PWY0-43
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-43
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 4a16c5ff09d436aacfe989620832fbda176740ab625ca479dbc2612eae11a151
+- id: MetaCyc:CPLX0-7741
+  title: MetaCyc CPLX0-7741
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-7741
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: f8aa687d9b17e35e238154abb6b33b224841a8d5801d0d5491d6fba3f63826a4
+- id: MetaCyc:CPLX0-254
+  title: MetaCyc CPLX0-254
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-254
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 83a322ba0c7bb17d60f82bc95d21cbe0123b87365d623b7f9797d67304b6b06b
+- id: MetaCyc:METHYLMALONYL-COA-MUT-MONOMER
+  title: MetaCyc METHYLMALONYL-COA-MUT-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:METHYLMALONYL-COA-MUT-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 23658c5ce55d1ef5bcbface9fc0d054d451eb7e904ea4f15579bf139ba1ad953
+- id: MetaCyc:G7516-MONOMER
+  title: MetaCyc G7516-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:G7516-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: d2aab6d918014e4736ac58d2aa46f2d02648735d1b6474a333bd0ed5a3f053f3
+- id: MetaCyc:G7517-MONOMER
+  title: MetaCyc G7517-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:G7517-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 0167f442350d99cb4fe1056cf2990aa4af5096b6275d34156d802142a9194842
+- id: MetaCyc:METHYLMALONYL-COA-MUT-RXN
+  title: MetaCyc METHYLMALONYL-COA-MUT-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:METHYLMALONYL-COA-MUT-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 322c68783b32c46bc6c9ba48baec241cbfc708fb7f2ace8dbff6dc501a12216e
+- id: MetaCyc:RXN0-310
+  title: MetaCyc RXN0-310
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-310
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: e1ac85a526f25f0e652af5f902831544bd3b2da20093441f09c69a59d10306a3
+- id: MetaCyc:RXN0-268
+  title: MetaCyc RXN0-268
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-268
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: fa32ebd19455f13f6ae34cbc06bef5c04cbeaf943b6f8096295fe08574957f36
+- id: UniProtKB:P27253
+  title: Reviewed UniProtKB P27253
+  url: https://rest.uniprot.org/uniprotkb/P27253.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: d0dae7669ab2c19e766695ac9f68754f8666c959e01219b8322513c34c27729d
+- id: UniProtKB:P52045
+  title: Reviewed UniProtKB P52045
+  url: https://rest.uniprot.org/uniprotkb/P52045.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: 49fb11dae7a00530346b65c5997b3cb23e9aa5603894b9e7d0b50f88a879fac1
+- id: UniProtKB:P52043
+  title: Reviewed UniProtKB P52043
+  url: https://rest.uniprot.org/uniprotkb/P52043.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: 6cc26a29ea9bac230e4e9a20d83e89cdb2d483619b627355ee983cac89e0bb05
+- id: RHEA:22890
+  title: Rhea 22890 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27667
+  title: Rhea 27667 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28011
+  title: Rhea 28011 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:10769117
+  title: 'Discovering new enzymes and metabolic pathways: conversion of succinate to propionate by Escherichia
+    coli.'
+  url: https://static.igem.org/mediawiki/2013/c/c1/HUST-4.pdf
+  source_version: Primary full text; DOI 10.1021/bi992888d; retrieved 2026-10-10
+  source_sha256: d7a629eba85789aacbd57a4b813867c68f16e28d9ac9ef603ff40a4da9a40492
+- id: PMID:18950999
+  title: Sleeping beauty mutase (sbm) is expressed and interacts with ygfD in Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2741639/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: dfda3e02e329753cf3db0d38473e24b0c7a97555f411de1ee91a8a7bd308e013
+- id: PMID:10769118
+  title: 'New reactions in the crotonase superfamily: structure of methylmalonyl CoA decarboxylase from
+    Escherichia coli.'
+  url: https://pubmed.ncbi.nlm.nih.gov/10769118/
+  source_version: Europe PMC core metadata and complete indexed abstract; retrieved 2026-10-10
+  source_sha256: d9ccd88e2de20db134af2d13aee3d42b8c86262c58db485f4f863722dc49fd33
+- id: PMID:28716098
+  title: 'Awakening sleeping beauty: production of propionic acid in Escherichia coli through the sbm
+    operon requires the activity of a methylmalonyl-CoA epimerase.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5512728/fullTextXML
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 65cdfdcf56021b9e915e3013da82cc731379455e71df92a9e35ab35c167113cf
+- id: DOI:10.1021/jacs.9b00650.s001
+  title: 'Supporting Information: Sulfonate/Nitro Bearing Methylmalonyl-Thioester Isosteres Applied to
+    Methylmalonyl-CoA Decarboxylase Structure-Function Studies.'
+  url: https://ndownloader.figshare.com/files/14641211
+  source_version: ACS Figshare article 7863569, file 14641211; retrieved 2026-10-10
+  source_sha256: b979ec82a7ffc27790053dac5949f67c4bb99d91db827f6445bfb788b79aa1b2

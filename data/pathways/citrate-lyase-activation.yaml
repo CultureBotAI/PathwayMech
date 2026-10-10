@@ -1,0 +1,429 @@
+id: MetaCyc:P2-PWY
+label: citrate lyase activation
+description: 'The Escherichia coli K-12 protein core of citrate lyase maturation: CitG forms the triphosphoribosyl-dephospho-CoA
+  precursor from ATP and dephospho-CoA; CitX attaches the prosthetic group to the dedicated apo acyl-carrier
+  protein; CitC acetylates its thiol using acetate and ATP. The endpoint is acetylated carrier, not citrate
+  cleavage. Whole apo, holo and acetylated ACP states retain separate generic Rhea protein identifiers
+  and do not identify a particular protein sequence. CitG/CitX have direct biochemical support; the P77390
+  CitC assignment combines reviewed catalytic annotation, an explicit EcoCyc direct-assay GO mapping and
+  the primary E. coli ligase observation, whose full paper was not inspected. This record does not claim
+  isolated sequence-specific CitC purification or activity in every K-12 strain. AMP-ACP is an off-pathway
+  side product. The multispecies source''s alternative acetyltransferase and deacetylase branches are
+  excluded; no citrate-lyase assembly stoichiometry or bound-metal requirement is inferred from assay
+  conditions.'
+pathway_type: protein-prosthetic-group-biosynthesis-and-activation
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:57328
+  label: 3'-dephospho-CoA(2-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:61378
+  label: 2'-(5-triphosphoribosyl)-3'-dephospho-CoA(6-)
+  category: small_molecule
+- id: CHEBI:16708
+  label: adenine
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:30089
+  label: acetate
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: RHEA-COMP:10157
+  label: apo-[citrate lyase ACP]
+  category: protein
+- id: RHEA-COMP:10158
+  label: holo-[citrate lyase ACP]
+  category: protein
+- id: RHEA-COMP:13710
+  label: acetyl-[citrate lyase ACP]
+  category: protein
+- id: UniProtKB:P77231
+  label: 2-(5''-triphosphoribosyl)-3'-dephosphocoenzyme-A synthase
+  category: protein
+- id: UniProtKB:P0A6G5
+  label: Apo-citrate lyase phosphoribosyl-dephospho-CoA transferase
+  category: protein
+- id: UniProtKB:P77390
+  label: '[Citrate [pro-3S]-lyase] ligase'
+  category: protein
+reactions:
+- id: RHEA:15118
+  label: 3'-dephospho-CoA + ATP => 2'-(5''-triphospho-alpha-D-ribosyl)-3'-dephospho-CoA + adenine
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16334
+  label: apo-[citrate lyase ACP] + 2'-(5''-triphospho-alpha-D-ribosyl)-3'-dephospho-CoA => holo-[citrate
+    lyase ACP] + diphosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:23789
+  label: holo-[citrate lyase ACP] + acetate + ATP => acetyl-[citrate lyase ACP] + AMP + diphosphate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: citrate-edge-001
+  subject: CHEBI:57328
+  predicate: consumes
+  object: RHEA:15118
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:15117
+    source_assertion: RHEA:15118 substrates contain CHEBI:57328 with coefficient 1; the compound is 3'-dephospho-CoA.
+    source_locator: http://rdf.rhea-db.org/15118 rh:substrates; http://rdf.rhea-db.org/15117_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15117_compound_1509; rh:compound/rh:accession
+- id: citrate-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:15118
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:15117
+    source_assertion: RHEA:15118 substrates contain CHEBI:30616 with coefficient 1; the compound is ATP.
+    source_locator: http://rdf.rhea-db.org/15118 rh:substrates; http://rdf.rhea-db.org/15117_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15117_compound_6372; rh:compound/rh:accession
+- id: citrate-edge-003
+  subject: RHEA:15118
+  predicate: produces
+  object: CHEBI:61378
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:15117
+    source_assertion: RHEA:15118 products contain CHEBI:61378 with coefficient 1; the compound is 2'-(5''-triphospho-alpha-D-ribosyl)-3'-dephospho-CoA.
+    source_locator: http://rdf.rhea-db.org/15118 rh:products; http://rdf.rhea-db.org/15117_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15117_compound_6441; rh:compound/rh:accession
+- id: citrate-edge-004
+  subject: RHEA:15118
+  predicate: produces
+  object: CHEBI:16708
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:15117
+    source_assertion: RHEA:15118 products contain CHEBI:16708 with coefficient 1; the compound is adenine.
+    source_locator: http://rdf.rhea-db.org/15118 rh:products; http://rdf.rhea-db.org/15117_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15117_compound_4174; rh:compound/rh:accession
+- id: citrate-edge-005
+  subject: RHEA-COMP:10157
+  predicate: consumes
+  object: RHEA:16334
+  description: Coefficient 1 of a whole generic citrate-lyase ACP polypeptide state. Its ChEBI reactive-part
+    residue is not substituted for the complete carrier; no sequence-specific identity is asserted.
+  evidence:
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 substrates contain GENERIC:10157 with coefficient 1; the compound is
+      apo-[citrate lyase ACP].
+    source_locator: http://rdf.rhea-db.org/16334 rh:substrates; http://rdf.rhea-db.org/16333_L rh:contains1
+      http://rdf.rhea-db.org/Participant_16333_compound_10157; rh:compound/rh:accession
+  - reference_id: UniProtKB:P0A6G5
+    source_assertion: The catalytic-activity Rhea cross-references include RHEA-COMP:10157, the whole
+      ACP state represented by native Rhea Compound_10157.
+    source_locator: comments[1].reaction.reactionCrossReferences[database="Rhea"]
+- id: citrate-edge-006
+  subject: CHEBI:61378
+  predicate: consumes
+  object: RHEA:16334
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 substrates contain CHEBI:61378 with coefficient 1; the compound is 2'-(5''-triphospho-alpha-D-ribosyl)-3'-dephospho-CoA.
+    source_locator: http://rdf.rhea-db.org/16334 rh:substrates; http://rdf.rhea-db.org/16333_L rh:contains1
+      http://rdf.rhea-db.org/Participant_16333_compound_6441; rh:compound/rh:accession
+- id: citrate-edge-007
+  subject: RHEA:16334
+  predicate: produces
+  object: RHEA-COMP:10158
+  description: Coefficient 1 of a whole generic citrate-lyase ACP polypeptide state. Its ChEBI reactive-part
+    residue is not substituted for the complete carrier; no sequence-specific identity is asserted.
+  evidence:
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 products contain GENERIC:10158 with coefficient 1; the compound is holo-[citrate
+      lyase ACP].
+    source_locator: http://rdf.rhea-db.org/16334 rh:products; http://rdf.rhea-db.org/16333_R rh:contains1
+      http://rdf.rhea-db.org/Participant_16333_compound_10158; rh:compound/rh:accession
+  - reference_id: UniProtKB:P0A6G5
+    source_assertion: The catalytic-activity Rhea cross-references include RHEA-COMP:10158, the whole
+      ACP state represented by native Rhea Compound_10158.
+    source_locator: comments[1].reaction.reactionCrossReferences[database="Rhea"]
+- id: citrate-edge-008
+  subject: RHEA:16334
+  predicate: produces
+  object: CHEBI:33019
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 products contain CHEBI:33019 with coefficient 1; the compound is diphosphate.
+    source_locator: http://rdf.rhea-db.org/16334 rh:products; http://rdf.rhea-db.org/16333_R rh:contains1
+      http://rdf.rhea-db.org/Participant_16333_compound_2106; rh:compound/rh:accession
+- id: citrate-edge-009
+  subject: RHEA-COMP:10158
+  predicate: consumes
+  object: RHEA:23789
+  description: Coefficient 1 of a whole generic citrate-lyase ACP polypeptide state. Its ChEBI reactive-part
+    residue is not substituted for the complete carrier; no sequence-specific identity is asserted.
+  evidence:
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 substrates contain GENERIC:10158 with coefficient 1; the compound is
+      holo-[citrate lyase ACP].
+    source_locator: http://rdf.rhea-db.org/23789 rh:substrates; http://rdf.rhea-db.org/23788_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23788_compound_10158; rh:compound/rh:accession
+  - reference_id: UniProtKB:P77390
+    source_assertion: The catalytic-activity Rhea cross-references include RHEA-COMP:10158, the whole
+      ACP state represented by native Rhea Compound_10158.
+    source_locator: comments[1].reaction.reactionCrossReferences[database="Rhea"]
+- id: citrate-edge-010
+  subject: CHEBI:30089
+  predicate: consumes
+  object: RHEA:23789
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 substrates contain CHEBI:30089 with coefficient 1; the compound is acetate.
+    source_locator: http://rdf.rhea-db.org/23789 rh:substrates; http://rdf.rhea-db.org/23788_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23788_compound_6051; rh:compound/rh:accession
+- id: citrate-edge-011
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:23789
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 substrates contain CHEBI:30616 with coefficient 1; the compound is ATP.
+    source_locator: http://rdf.rhea-db.org/23789 rh:substrates; http://rdf.rhea-db.org/23788_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23788_compound_6372; rh:compound/rh:accession
+- id: citrate-edge-012
+  subject: RHEA:23789
+  predicate: produces
+  object: RHEA-COMP:13710
+  description: Coefficient 1 of a whole generic citrate-lyase ACP polypeptide state. Its ChEBI reactive-part
+    residue is not substituted for the complete carrier; no sequence-specific identity is asserted.
+  evidence:
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 products contain GENERIC:13710 with coefficient 1; the compound is acetyl-[citrate
+      lyase ACP].
+    source_locator: http://rdf.rhea-db.org/23789 rh:products; http://rdf.rhea-db.org/23788_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23788_compound_13710; rh:compound/rh:accession
+  - reference_id: UniProtKB:P77390
+    source_assertion: The catalytic-activity Rhea cross-references include RHEA-COMP:13710, the whole
+      ACP state represented by native Rhea Compound_13710.
+    source_locator: comments[1].reaction.reactionCrossReferences[database="Rhea"]
+- id: citrate-edge-013
+  subject: RHEA:23789
+  predicate: produces
+  object: CHEBI:456215
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 products contain CHEBI:456215 with coefficient 1; the compound is AMP.
+    source_locator: http://rdf.rhea-db.org/23789 rh:products; http://rdf.rhea-db.org/23788_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23788_compound_2590; rh:compound/rh:accession
+- id: citrate-edge-014
+  subject: RHEA:23789
+  predicate: produces
+  object: CHEBI:33019
+  description: Coefficient 1 in the selected activation direction, preserving the Rhea charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 products contain CHEBI:33019 with coefficient 1; the compound is diphosphate.
+    source_locator: http://rdf.rhea-db.org/23789 rh:products; http://rdf.rhea-db.org/23788_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23788_compound_2106; rh:compound/rh:accession
+- id: citrate-edge-015
+  subject: UniProtKB:P77231
+  predicate: catalyzes
+  object: RHEA:15118
+  description: CitG synthesizes the prosthetic-group precursor. The native reaction frame retains the
+    obsolete EC-like name 2.7.8.25-RXN, but its current enzyme classification is EC 2.4.2.52.
+  evidence:
+  - reference_id: UniProtKB:P77231
+    source_assertion: The reviewed catalytic-activity comment assigns RHEA:15117 with experimental evidence
+      ECO:0000269 from PMID:11042274.
+    source_locator: comments[1].reaction; reactionCrossReferences; evidences
+  - reference_id: PMID:11042274
+    source_assertion: CitG converts ATP and dephospho-CoA to adenine and triphosphoribosyl-dephospho-CoA,
+      identifying the precursor proposed in the preceding study.
+    source_locator: Europe PMC core result[id="11042274"].abstractText
+- id: citrate-edge-016
+  subject: UniProtKB:P0A6G5
+  predicate: catalyzes
+  object: RHEA:16334
+  description: CitX transfers the precursor to apo-ACP to produce holo-ACP. The separately demonstrated
+    ATP-dependent adenylylation side reaction does not make AMP-ACP a pathway intermediate.
+  evidence:
+  - reference_id: UniProtKB:P0A6G5
+    source_assertion: The reviewed catalytic-activity comment assigns RHEA:16333 with experimental evidence
+      ECO:0000269 from PMID:10924139 and PMID:11042274.
+    source_locator: comments[1].reaction; reactionCrossReferences; evidences
+  - reference_id: PMID:11042274
+    quote: this precursor was transferred by CitX to apo-ACP, yielding holo-ACP.
+    source_locator: Europe PMC core result[id="11042274"].abstractText
+  - reference_id: PMID:10924139
+    source_assertion: Purified CitG and CitX convert apo-ACP to holo-ACP with ATP and dephospho-CoA; AMP-ACP
+      cannot be converted further and is a side product.
+    source_locator: Europe PMC core result[id="10924139"].abstractText
+- id: citrate-edge-017
+  subject: UniProtKB:P77390
+  predicate: catalyzes
+  object: RHEA:23789
+  description: CitC acetylates the holo-ACP prosthetic-group thiol with acetate and ATP. Its exact sequence
+    assignment is supported by reviewed annotation and an explicit curated direct-assay mapping; the inspected
+    primary abstract establishes E. coli ligase activity, not independently verified purification of accession
+    P77390.
+  evidence:
+  - reference_id: UniProtKB:P77390
+    source_assertion: The reviewed catalytic-activity comment assigns RHEA:23788 and EC 6.2.1.22. This
+      comment has no inline experimental ECO tag.
+    source_locator: comments[1].reaction; reactionCrossReferences
+  - reference_id: UniProtKB:P77390
+    source_assertion: The GO:0008771 cross-reference has IDA:EcoCyc evidence ECO:0000314 citing PMID:6354265.
+      This is an inspected database attribution, not independent inspection of the full experiment.
+    source_locator: uniProtKBCrossReferences[database="GO",id="GO:0008771"].properties; evidences
+  - reference_id: PMID:6354265
+    quote: A ligase which acetylates the deacetyl[citrate lyase] in the presence of acetate and ATP
+    source_locator: Europe PMC core result[id="6354265"].abstractText, final sentence; abstract truncated
+      at 250 words
+- id: citrate-edge-018
+  subject: RHEA:15118
+  predicate: part_of
+  object: MetaCyc:P2-PWY
+  description: This activation reaction belongs to the retained E. coli core. Membership does not transfer
+    the source diagram's other-species branches into this organism.
+  evidence:
+  - reference_id: MetaCyc:P2-PWY
+    source_assertion: P2-PWY explicitly lists 2.7.8.25-RXN as a pathway reaction.
+    source_locator: Pathway[@frameid="P2-PWY"]/reaction-list
+  - reference_id: RHEA:15117
+    source_assertion: RHEA:15118 has a seeAlso cross-reference to MetaCyc 2.7.8.25-RXN; RHEA:15117 lists
+      RHEA:15118 as a directional reaction.
+    source_locator: http://rdf.rhea-db.org/15118 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:2.7.8.25-RXN;
+      http://rdf.rhea-db.org/15117 rh:directionalReaction
+- id: citrate-edge-019
+  subject: RHEA:16334
+  predicate: part_of
+  object: MetaCyc:P2-PWY
+  description: This activation reaction belongs to the retained E. coli core. Membership does not transfer
+    the source diagram's other-species branches into this organism.
+  evidence:
+  - reference_id: MetaCyc:P2-PWY
+    source_assertion: P2-PWY explicitly lists 2.7.7.61-RXN as a pathway reaction.
+    source_locator: Pathway[@frameid="P2-PWY"]/reaction-list
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 has a seeAlso cross-reference to MetaCyc 2.7.7.61-RXN; RHEA:16333 lists
+      RHEA:16334 as a directional reaction.
+    source_locator: http://rdf.rhea-db.org/16334 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:2.7.7.61-RXN;
+      http://rdf.rhea-db.org/16333 rh:directionalReaction
+- id: citrate-edge-020
+  subject: RHEA:23789
+  predicate: part_of
+  object: MetaCyc:P2-PWY
+  description: This activation reaction belongs to the retained E. coli core. Membership does not transfer
+    the source diagram's other-species branches into this organism.
+  evidence:
+  - reference_id: MetaCyc:P2-PWY
+    source_assertion: P2-PWY explicitly lists CITC-RXN as a pathway reaction.
+    source_locator: Pathway[@frameid="P2-PWY"]/reaction-list
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 has a seeAlso cross-reference to MetaCyc CITC-RXN; RHEA:23788 lists RHEA:23789
+      as a directional reaction.
+    source_locator: http://rdf.rhea-db.org/23789 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:CITC-RXN;
+      http://rdf.rhea-db.org/23788 rh:directionalReaction
+- id: citrate-edge-021
+  subject: RHEA:15118
+  predicate: provides_input_for
+  object: RHEA:16334
+  description: CitG supplies the precursor consumed by CitX; this is material transfer, not a claimed
+    stable CitG–CitX complex or direct channeling interaction.
+  evidence:
+  - reference_id: RHEA:15117
+    source_assertion: RHEA:15118 produces CHEBI:61378.
+    source_locator: http://rdf.rhea-db.org/15118 rh:products; rh:contains1/rh:compound/rh:accession
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 consumes CHEBI:61378.
+    source_locator: http://rdf.rhea-db.org/16334 rh:substrates; rh:contains1/rh:compound/rh:accession
+- id: citrate-edge-022
+  subject: RHEA:16334
+  predicate: provides_input_for
+  object: RHEA:23789
+  description: CitX supplies holo-ACP for CitC acetylation. The same whole carrier state is shared by
+    the two reactions.
+  evidence:
+  - reference_id: RHEA:16333
+    source_assertion: RHEA:16334 produces Compound_10158 (GENERIC:10158), normalized as RHEA-COMP:10158.
+    source_locator: http://rdf.rhea-db.org/16334 rh:products; rh:contains1/rh:compound/rh:accession
+  - reference_id: RHEA:23788
+    source_assertion: RHEA:23789 consumes Compound_10158 (GENERIC:10158), normalized as RHEA-COMP:10158.
+    source_locator: http://rdf.rhea-db.org/23789 rh:substrates; rh:contains1/rh:compound/rh:accession
+references:
+- id: MetaCyc:P2-PWY
+  title: MetaCyc P2-PWY native citrate lyase activation pathway
+  url: https://pathway.yeastgenome.org/getxml?META:P2-PWY
+  source_version: MetaCyc Pathway Tools 22.5; public XML retrieved 2026-10-10; exact response digest
+  source_sha256: 8e12d1a7b0351c9cb1713d5000431f2f66d4ac35f1162ee1a412d72e4ec86f21
+- id: RHEA:15117
+  title: RHEA:15117 and activation direction RHEA:15118
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers the complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:16333
+  title: RHEA:16333 and activation direction RHEA:16334
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers the complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:23788
+  title: RHEA:23788 and activation direction RHEA:23789
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers the complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P77231
+  title: 2-(5''-triphosphoribosyl)-3'-dephosphocoenzyme-A synthase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P77231.json
+  source_version: Reviewed entry version 152; sequence version 1; retrieved 2026-10-10; exact JSON response
+    digest
+  source_sha256: 2abd096e22cd277b7b552495b6dd323b5ee5f311e748a8d245fb67a540d53a5e
+- id: UniProtKB:P0A6G5
+  title: Apo-citrate lyase phosphoribosyl-dephospho-CoA transferase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P0A6G5.json
+  source_version: Reviewed entry version 120; sequence version 1; retrieved 2026-10-10; exact JSON response
+    digest
+  source_sha256: c8388822ec4739b4e0d385b50567c60b4b2caf2382c184259ab9027a4df14744
+- id: UniProtKB:P77390
+  title: '[Citrate [pro-3S]-lyase] ligase — reviewed UniProtKB record'
+  url: https://rest.uniprot.org/uniprotkb/P77390.json
+  source_version: Reviewed entry version 167; sequence version 2; retrieved 2026-10-10; exact JSON response
+    digest
+  source_sha256: 388100336eb5d367760e6c3d5862ecbbb2fee1cf24b2b344dace85639cbec9d2
+- id: PMID:10924139
+  title: Biosynthesis of the prosthetic group of citrate lyase.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A10924139%20AND%20SRC%3AMED&format=json&resultType=core
+  source_version: Primary abstract in Europe PMC core; DOI 10.1021/bi000401r; retrieved 2026-10-10; digest
+    covers exact JSON response
+  source_sha256: 4dccb4c0599e39e4102d14ef25c1926b62a012d06492e0aea4b0622e5735114c
+- id: PMID:11042274
+  title: Identification of triphosphoribosyl-dephospho-CoA as precursor of the citrate lyase prosthetic
+    group.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A11042274%20AND%20SRC%3AMED&format=json&resultType=core
+  source_version: Primary abstract in Europe PMC core; DOI 10.1016/s0014-5793(00)02105-0; retrieved 2026-10-10;
+    digest covers exact JSON response
+  source_sha256: ae1fe40a496c1fb91f4a30112b75ebb330dbce81a6e32f3facaacd236c8112e2
+- id: PMID:6354265
+  title: Purification and properties of citrate lyase from Escherichia coli.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A6354265%20AND%20SRC%3AMED&format=json&resultType=core
+  source_version: Primary abstract in Europe PMC core; DOI 10.1021/bi00289a008; retrieved 2026-10-10;
+    digest covers exact JSON response; abstract truncated at 250 words
+  source_sha256: ae2214c67694c78febd8336927e60dd9bef00fb862f1546481bb0f7cc7593552
