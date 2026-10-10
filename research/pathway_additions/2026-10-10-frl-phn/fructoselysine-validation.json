@@ -1,0 +1,62 @@
+{
+  "record": "data/pathways/fructoselysine-catabolic-process.yaml",
+  "record_sha256": "e9e80038a8671da109e8453523439ed921fe7810bb96b24f55dc532b4dd6ca5f",
+  "verified_at": "2026-10-10T21:23:15.620102+00:00",
+  "scope": "Author bounded checks only; shared authority snapshots, curation history, page rendering, full-corpus gates and independent review remain parent-owned requirements",
+  "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-frl-phn-uv-cache UV_NO_SYNC=1 uv run python /private/tmp/validate-fructoselysine-record.py",
+  "checks": [
+    {
+      "check": "native_schema",
+      "status": "passed",
+      "detail": "validate_record accepted the complete draft"
+    },
+    {
+      "check": "closed_linkml_schema",
+      "status": "passed",
+      "detail": "strict_errors returned no errors"
+    },
+    {
+      "check": "source_artifact_hashes",
+      "status": "passed",
+      "detail": "All 9 successful source artifacts match preserved byte digests"
+    },
+    {
+      "check": "exact_chemical_sides",
+      "status": "passed",
+      "detail": "All 9 native Rhea sides retained; exact CHEBI identity, orientation and source coefficient 1 verified; no duplicate stoichiometric edges"
+    },
+    {
+      "check": "exact_primary_quotes",
+      "status": "passed",
+      "detail": {
+        "source": "PMID:12147680 abstract",
+        "exact_substring_matches": 3,
+        "whitespace_delimited_words": 17
+      }
+    },
+    {
+      "check": "identities_labels_and_references",
+      "status": "passed",
+      "detail": "14 unique named nodes, 14 unique edges; all endpoints and evidence references resolve locally; all labels match the inspected authorities exactly"
+    },
+    {
+      "check": "actual_kgx_export",
+      "status": "passed",
+      "detail": {
+        "nodes": 14,
+        "edges": 14,
+        "evidence_arrays_and_reference_metadata": "exactly preserved",
+        "descriptions": "exactly preserved",
+        "reaction_categories": "biolink:MolecularActivity",
+        "protein_categories": "biolink:Protein",
+        "chemical_categories": "biolink:SmallMolecule",
+        "export_directory": "/private/tmp/pathwaymech-frl-phn-evidence/fructoselysine/bounded-kgx-export"
+      }
+    },
+    {
+      "check": "git_diff_check",
+      "status": "passed",
+      "detail": "Scoped git diff --check exited 0; draft files remain uncommitted"
+    }
+  ]
+}

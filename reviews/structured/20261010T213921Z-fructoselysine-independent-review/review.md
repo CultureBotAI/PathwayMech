@@ -1,0 +1,817 @@
+# Independent scientific review of fructoselysine catabolic process
+
+- Review: 20261010T213921Z-fructoselysine-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-10T21:24:06Z
+- Finished UTC: 2026-10-10T21:39:21Z
+- Reviewer: Codex independent fructoselysine reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The exact GO identity, two E. coli K-12 protein assignments, two catabolic reaction directions, all 14 edges and all 14 named nodes are supported within the bounded core conversion. All nine Rhea side occurrences and coefficients match the raw source. No corrective scientific findings were identified. Final validation, lint and the full test suite pass; primary full-text access and protein oligomerization verification limits remain explicit.
+
+## Scope And Provenance
+
+One complete maintained fructoselysine core catabolism record, including its exact node identities, all edge evidence and relevant source exclusions.
+
+Selection: Exact GO:1901281 target and SHA e9e80038a8671da109e8453523439ed921fe7810bb96b24f55dc532b4dd6ca5f supplied for independent review.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base d83a2f0bc4f2a3eb54fe732a1b94082b71b1657c.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| GO:1901281 | data/pathways/fructoselysine-catabolic-process.yaml | maintained | fructoselysine catabolic process |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent raw-source and quote audit | passed | False | GO:1901281 | Exit 0: 9 chemical-side occurrences, 10 canonical ontology labels, 9 source artifact hashes and 3 literal quotes verified. |
+| Canonical structured organism/dataset discovery | passed | True | GO:1901281 | Exit 0; E. coli precise_mg1655 dataset exists. |
+| Canonical frl gene lookup | passed | True | GO:1901281 | Exit 0; 5 gene hits and 0 iModulon hits, without biological absence claims. |
+| Working-tree whitespace check | passed | True | GO:1901281 | Exit 0. |
+| Final integrated full-corpus validation | passed | True | GO:1901281 | Exit 0: 161 records, 8449 evidence blocks, 30 sources, 240 histories and 161 current pages. |
+| Repository lint | passed | True | GO:1901281 | Exit 0; Ruff all checks passed. |
+| Governed artifact synchronization | passed | True | GO:1901281 | Exit 0; all 22 governed artifacts match the pinned CLAW revision. |
+| Initial full test suite | failed | False | GO:1901281 | Exit 1: 1 failed, 1033 passed, 3 skipped and 3 upstream warnings in 257.64s. The old PathBank source-status expectation is tracked in issue 318 and corrected from support to active. The complete rerun subsequently passed (c-test-final); this historical result is retained. |
+| Exploratory export/page selector checks | failed | False | GO:1901281 | Two exploratory assertions failed because they selected source_records as a pathway field and expected raw YAML edge IDs as HTML anchors. Inspection showed reference IDs and indexed mechanism-edge-N anchors, respectively. No exported-evidence defect was found; corrected exact audit passes. |
+| Independent exact KGX/SVG audit | passed | True | GO:1901281 | Exit 0: all 14 record edges preserve endpoints, descriptions and complete evidence; all 14 SVG links have matching predicates and evidence anchors. |
+| Intermediate draft contract validation | failed | False | GO:1901281 | Exit 1 while the external draft was incomplete: the provisional finish timestamp preceded later evidence access. Finalization records the actual finish time after all evidence inspection; no target or source defect was involved. A completed review must pass the saver validation before persistence. |
+| Final full repository test suite | passed | True | GO:1901281 | Exit 0: 1034 passed, 3 skipped and 3 upstream dependency warnings in 296.28s. The final run includes the corrected PathBank active-source expectation. |
+
+## Scientific And Domain Assessments
+
+### Exact process and K-12 enzyme scope
+
+identity: supported. Targets: GO:1901281.
+
+GO:1901281 denotes the selected breakdown process. The UPA00784 definition xref and both UniProt pathway links independently bridge that identity to the two-enzyme route; taxon 83333 is exact protein provenance.
+
+### All chemical entities, directions and coefficients
+
+grounding: supported. Targets: GO:1901281.
+
+All eight chemical node identities and two directional reaction IDs match their authorities. Edges 001–009 retain all nine raw Rhea side occurrences with coefficient 1 and the correct charged forms.
+
+### Catalysts and experimental evidence tiers
+
+evidence: supported. Targets: GO:1901281.
+
+Edges 010–011 correctly associate the reviewed FrlD and FrlB proteins with their experimental Rhea master assignments and primary chemistry. Monomeric FrlD and homododecameric FrlB notes match the exact SUBUNIT annotations.
+
+### Pathway membership and material sequence
+
+graph: supported. Targets: GO:1901281.
+
+Edges 012–014 correctly retain UniPathway step 1/2 and step 2/2, the GO definition bridge and source-specific evidence grades. Their sequence agrees with the shared intermediate and primary delayed-product observation.
+
+### Gene-product nodes and selected catabolic orientation
+
+representation: supported. Targets: GO:1901281.
+
+The FrlB gene-product node does not imply monomer catalysis. The directed catabolic reaction is compatible with the explicitly retained in vitro reversibility; no thermodynamic irreversibility is asserted.
+
+### Explicit two-enzyme conversion boundary
+
+scope: supported. Targets: GO:1901281.
+
+Transport, regulation, epimerase entry, in vitro inhibition and other-taxon pathways are considered and deliberately excluded from the core conversion. There is no unsupported cofactor-independence or compartment claim.
+
+### Local evidence assertions, literal quotations and source access
+
+provenance: supported. Targets: GO:1901281.
+
+All reference IDs resolve locally. All three quotations are literal; structured statements match native source fields, including the source misspelling RectionId. Artifact digests and their byte scope are accurate; inaccessible full text is explicitly disclosed.
+
+### Bounded structured expression context
+
+evidence: supported. Targets: GO:1901281.
+
+The independent canonical adapter confirms the five named frl gene entries in the specified dataset. No module membership or regulatory mechanism is inferred from zero module hits.
+
+### Generated page, KGX and authority integration
+
+representation: supported. Targets: GO:1901281.
+
+All 14 target edges and 26 evidence blocks survive generated-page and KGX export integration. Independent authority terms agree with the reviewed raw sources. Final full validation, lint and the 1034-test suite pass; the historical source-status expectation failure and its correction remain documented.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-go | https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:1901281; results[id=GO:1901281], definition.text, definition.xrefs | supports | The nonobsolete biological-process term denotes fructoselysine breakdown and explicitly cites UniPathway UPA00784. This supports the narrow pathway identity. |
+| e-uniprot-frld | https://rest.uniprot.org/uniprotkb/P45543.json; primaryAccession, organism.taxonId; comments FUNCTION, CATALYTIC ACTIVITY, PATHWAY, SUBUNIT; UniPathway xref | supports | Reviewed E. coli K-12 FrlD maps to RHEA:28378 with experimental ECO:0000269, UPA00784/UER00769, and pathway step 1/2 with ECO:0000305. Monomer is an experimentally supported SUBUNIT annotation. |
+| e-uniprot-frlb | https://rest.uniprot.org/uniprotkb/P0AC00.json; primaryAccession, organism.taxonId; comments FUNCTION, CATALYTIC ACTIVITY, PATHWAY, SUBUNIT, ACTIVITY REGULATION; UniPathway xref | supports | Reviewed K-12 FrlB maps to RHEA:28382 with experimental catalytic evidence, UPA00784/UER00770 and step 2/2 with mixed experimental/inferred pathway evidence. The entry explicitly reports reversibility, homododecamer state and in vitro ZnCl2 inhibition. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; RDF descriptions 28378,28379,28382,28383; their substrates/products, side contains1, participants and ChEBI compounds | supports | The independently parsed raw Rhea 142 artifact supplies the two master/directional bridges and all nine retained chemical-side assertions. Each side coefficient is 1; the exact charged stereochemical entities and reaction orientations match. |
+| e-ontology | Independent GO 2026-07-26, ChEBI 255 and NCBITaxon 2026-07-12 SemanticSQL caches; statements WHERE subject in the 10 GO/ChEBI/taxon target IDs AND predicate=rdfs:label | supports | Direct database queries independently verified every ontology-backed canonical label; protein names and exact Rhea equations were checked at their own authorities. Current batch authority-byte rechecks are root-owned. Its snapshot hash covers the independent audit receipt containing the queried labels, not a concatenation of database files. |
+| e-primary | PMID:12147680; DOI:10.1074/jbc.M200863200; https://pubmed.ncbi.nlm.nih.gov/12147680/; EuropePMC core result id 12147680 abstractText; live PubMed abstract | supports | The inspected primary abstract reports purified YhfQ/FrlD phosphorylation with NMR identification of fructoselysine 6-phosphate and purified YhfN/FrlB reversible conversion to lysine and glucose 6-phosphate. It also supports delayed downstream-product formation. All three short record quotations match literally. |
+| e-epimerase | PMID:14641112; DOI:10.1042/BJ20031527; EuropePMC core result id 14641112 abstractText | context_only | The abstract characterizes reversible metal-dependent epimerization to psicoselysine and mutant growth context. It supports treating this as an adjacent substrate-entry extension rather than silently merging it into the selected fructoselysine breakdown. |
+| e-regulation | PMID:32979851; DOI:10.1111/mmi.14608; EuropePMC core result id 32979851 abstractText | context_only | The abstract supports substrate-specific FrlR repression and CRP/RpoH promoter activation. These are documented as contextual physiology without invented promoter, DNA or regulatory graph endpoints. |
+| e-alternative | PMID:16153181; DOI:10.1042/BJ20051183; EuropePMC core result id 16153181 abstractText | context_only | The abstract distinguishes Enterococcus faecium GfrF fructoselysine-phosphate chemistry from GfrE glucoselysine-phosphate chemistry and a putative PTS. This route is not equated with E. coli ATP-dependent FrlD catalysis. |
+| e-source-access | Fructoselysine source manifest and Elsevier article response; source manifest unavailable_source_attempts/reference_digest_scopes; primary-12147680.xml | context_only | The actual Elsevier payload contains bibliographic metadata but no original full text. The manifest accurately records inaccessible article attempts and that PMID digests cover two-entry EuropePMC responses, not PubMed webpage bytes. |
+| e-imodulondb | Canonical kg-microbe-sources iModulonDB adapter; datasets; e_coli/precise_mg1655 query frl | context_only | Independent adapter execution returned five exact gene keys: b3374 (frlD), b3371 (frlB), b3370 (frlA), b4474 (frlC) and b3375 (frlR); zero iModulon hits. This is computational expression context only. |
+| e-audit | Independent raw-source audit; /private/tmp/pathwaymech-frl-review-evidence-check.py; /private/tmp/pathwaymech-frl-review-source-audit.json | supports | Independent script parsed native RDF, verified all nine side assertions/coefficients and all ten ontology labels, rehashed all nine cited source artifacts, and checked all three quotations literally (17 words combined). |
+| e-prior-search | Local reviews and maintained pathway records; rg --no-ignore --hidden -n -F GO:1901281 reviews data/pathways | context_only | Only this maintained target matched; no prior structured observation of this exact GO target was found. |
+| e-authority-integration | Batch independent authority refresh; research/pathway_additions/2026-10-10-frl-phn/authority-integration.json | supports | All 96 previous source inputs and four ontology databases were byte-verified by the integration agent; final manifest has 97 inputs and only new PathBank provenance. This reviewer read the final manifest and compared target authority terms directly to raw sources; all target snapshots and labels remain unchanged from initial review capture. |
+| e-export | Independent actual CLI KGX and SVG check; /private/tmp/pathwaymech-frl-review-export-check.py; /private/tmp/pathwaymech-frl-review-export-audit.json | supports | The corrected independent audit selects the record by stable KGX ID prefix and verifies all 14 exported endpoint/evidence/description triples and 14 SVG endpoint/predicate/evidence-anchor mappings. No browser interaction or visual quality claim is made. The snapshot hash covers the audit JSON receipt. |
+| e-generated-audit | Integrated programmatic graph/export audit; research/pathway_additions/2026-10-10-frl-phn/generated-graph-kgx-audit.json | supports | The integration audit verifies all 54 new edges and 88 evidence blocks across both records. This review relies only on its exact GO:1901281 result: 14 edges, 26 evidence blocks, 13 SVG nodes with correct endpoints/anchors; the isolated scope taxon accounts for the 14th named record node. Published and separately generated CLI download bytes match. |
+| e-gates | Integration-agent whole-repository validation logs; /private/tmp/pathwaymech-frl-phn-validate-final.log; /private/tmp/pathwaymech-frl-phn-lint-final.log; /private/tmp/pathwaymech-frl-phn-vendored.log | supports | Inspected final logs show 161 native/closed-schema/identifier-valid records, 8449 evidence blocks, 30 sources, 240 histories and current pages. Ruff passes; all 22 governed artifacts match the pinned CLAW revision. The snapshot hash covers the final validate log. These gates provide deterministic validation, not fresh scientific review of all 161 records. |
+| e-initial-test | Initial full-suite log and issue 318; /private/tmp/pathwaymech-frl-phn-test.log; tests/test_sources.py | context_only | The initial suite had 1 failed, 1033 passed and 3 skipped: the old PathBank support-status expectation disagreed with the promotion to active. The exact one-line assertion fix was read; it does not change this record or scientific sources. The final complete suite passed, documented separately in e-final-test. |
+| e-final-test | Final full-suite integration log; /private/tmp/pathwaymech-frl-phn-test-final.log | supports | The completed log reports 1034 passed, 3 skipped and 3 upstream dependency warnings in 296.28s. Root reported process exit 0. This verifies the integrated implementation and source-status correction; it does not replace independent scientific source inspection. |
+
+## Limits And Additional Notes
+
+- The original 2002 article full text was unavailable to the curation task: publisher PDF requests returned 403 and the accessible Elsevier XML contained bibliographic metadata, not the full article. This review directly inspected its primary abstract, including the purified-enzyme and NMR results, plus reviewed UniProt and Rhea statements. Experimental details absent from those sources were not reconstructed.
+- The three additional primary papers were inspected through indexed abstracts. Their regulation, transport, epimerization and alternative-route claims are used to bound the core conversion, not to assert complete physiological coverage.
+- Protein oligomer states are inspected experimental UniProt annotations rather than an independently inspected oligomerization experiment. A gene-product node with a qualified catalytic edge does not declare a monomeric FrlB enzyme or create an unsupported complex accession.
+- Source annotation omissions do not establish cofactor or compartment independence. No guessed kinase metal or localization is added.
+- The FrlB biochemical reaction is reversible; the graph selects the directed catabolic Rhea member and explicitly preserves the reverse-reaction evidence.
+- iModulonDB results are computational gene context and are not mechanistic proof or negative biological evidence.
+- No prior structured review of this exact target was found in an ignored-and-hidden-inclusive search of reviews and data/pathways; no finding lineage is fabricated.
+- Initial inspect source manifest SHA 812bbaf00de5ed76e594227f01393b13f76ff3a97073d7d2213616c00d84e7ec changed during integration to 681fe67e91241858f9fe32c18d413c7f8f4a480cacc35133cb2ee3beb71c353a. The final 97-entry manifest, independent authority receipts and target terms were reread and compared; the target/schema/ontology/source-snapshot hashes were unchanged. This is explicit changed-input reinspection, not silent hash replacement.
+- Final source inspection additionally captured the exact conf/sources.yaml promotion, tests/test_sources.py assertion correction and author validation receipt after reading their actual content. No previously captured input changed during finalization. No completed structured review has been overwritten.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261010T213921Z-fructoselysine-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of fructoselysine catabolic process
+started_at: '2026-10-10T21:24:06Z'
+finished_at: '2026-10-10T21:39:21Z'
+reviewer:
+  identity: Codex independent fructoselysine reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: A separate agent authored the fructoselysine target and its
+    research artifacts. This reviewer did not edit that target, its evidence ledger
+    or shared authority integration. The reviewer authored the separate methylphosphonate
+    record, which is excluded from this scientific assessment. Assertions were checked
+    independently against raw Rhea RDF, UniProt/QuickGO JSON, ontology databases and
+    primary abstracts.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The exact GO identity, two E. coli K-12 protein assignments, two catabolic
+  reaction directions, all 14 edges and all 14 named nodes are supported within the
+  bounded core conversion. All nine Rhea side occurrences and coefficients match the
+  raw source. No corrective scientific findings were identified. Final validation,
+  lint and the full test suite pass; primary full-text access and protein oligomerization
+  verification limits remain explicit.
+source:
+  git_revision: d83a2f0bc4f2a3eb54fe732a1b94082b71b1657c
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: b5831e481fb7551858de5de9e4765c560d1f1d5531eecf871205cbe26041bc19
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 681fe67e91241858f9fe32c18d413c7f8f4a480cacc35133cb2ee3beb71c353a
+    role: context
+  - path: conf/sources.yaml
+    sha256: 49507bca325f9529bd25b3507b062a1241c403916293dbab96d3cb598d6a7a95
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 7fa755d7ccffdde985fd0dd76db3804c973c7a86c83f401b11003bfc222be940
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 09dd730cbbb4d62a292c587dfa6d79b8649d5fff704356aff93639e24acb86d2
+    role: context
+  - path: data/pathways/fructoselysine-catabolic-process.yaml
+    sha256: e9e80038a8671da109e8453523439ed921fe7810bb96b24f55dc532b4dd6ca5f
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: pages/records/GO_1901281.html
+    sha256: 1b07ee86f9acd4dc7416793c6456212d0f07a3298dcdc661cca1fd73673fceba
+    role: generated context; maintained target YAML and src/pathwaymech/cli.py plus
+      graph_view.py own future changes
+  - path: research/pathway_additions/2026-10-10-frl-phn/authority-integration.json
+    sha256: 10166c5ab98529b61ff5baef17111e1c92efaed7f25de4a359ebef18ff8b4de6
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/fructoselysine-curation.md
+    sha256: 39f836a9b20c2d190154aa789d31aed93278384e16553f369eae81501d3cf5d4
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/fructoselysine-source-manifest.json
+    sha256: ac99ed6d8bff8425a9b6c8e0faa36904bf2d2bb1ae245578c41c94d3a26081ad
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/fructoselysine-source-projection.json
+    sha256: 37fae30a12426c6b4df7d3a8726a3c6dfa804e5d321e8ad0971d54c51d3f8652
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/fructoselysine-validation.json
+    sha256: 16f63cc6300fcd21dd9388acabe710bd935587c1c9082586b57c2830c8306211
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/generated-graph-kgx-audit.json
+    sha256: b66272d4587dfe7ef2bb79b6525a64ab9fb4b67eef695ac3b268b294beb6bb7b
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: fd5f9cb0f730d2d6b57f4ddee6418b8299b934978459c73be57f22c26ba78463
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 56bb3f153ea10e6c3964845ef24303e9362f6104a2ab3c95cf1da1a7ae2d2895
+    role: context
+  - path: tests/test_sources.py
+    sha256: cb53876f61b522b85bba5e005081edd56ceb9d48ae6c8a7355b1a43b11f0d900
+    role: context
+scope:
+  description: One complete maintained fructoselysine core catabolism record, including
+    its exact node identities, all edge evidence and relevant source exclusions.
+  selection: Exact GO:1901281 target and SHA e9e80038a8671da109e8453523439ed921fe7810bb96b24f55dc532b4dd6ca5f
+    supplied for independent review.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - GO:1901281
+  exclusions:
+  - target: data/pathways/methylphosphonate-degradation-i.yaml
+    reason: Authored by this reviewer and independently assessed by another agent;
+      not scientifically reviewed in this bundle.
+  - target: Other maintained pathways and additional fructoselysine physiology
+    reason: No claim of fresh corpus-wide scientific review; transport, regulation,
+      psicoselysine epimerization and other-taxon routes are evaluated only as explicit
+      boundary context.
+targets:
+- target_id: GO:1901281
+  path: data/pathways/fructoselysine-catabolic-process.yaml
+  label: fructoselysine catabolic process
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/fructoselysine-catabolic-process.yaml
+    role: maintained curation source
+checks:
+- check_id: c-source-audit
+  name: Independent raw-source and quote audit
+  status: passed
+  required: false
+  summary: 'Exit 0: 9 chemical-side occurrences, 10 canonical ontology labels, 9 source
+    artifact hashes and 3 literal quotes verified.'
+  target_ids:
+  - GO:1901281
+  command: .venv/bin/python /private/tmp/pathwaymech-frl-review-evidence-check.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-audit
+- check_id: c-imodulondb-datasets
+  name: Canonical structured organism/dataset discovery
+  status: passed
+  required: true
+  summary: Exit 0; E. coli precise_mg1655 dataset exists.
+  target_ids:
+  - GO:1901281
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-imodulondb-frl
+  name: Canonical frl gene lookup
+  status: passed
+  required: true
+  summary: Exit 0; 5 gene hits and 0 iModulon hits, without biological absence claims.
+  target_ids:
+  - GO:1901281
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query frl
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-diff
+  name: Working-tree whitespace check
+  status: passed
+  required: true
+  summary: Exit 0.
+  target_ids:
+  - GO:1901281
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-audit
+- check_id: c-validate
+  name: Final integrated full-corpus validation
+  status: passed
+  required: true
+  summary: 'Exit 0: 161 records, 8449 evidence blocks, 30 sources, 240 histories and
+    161 current pages.'
+  target_ids:
+  - GO:1901281
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed full repository gates; reviewer inspected
+    actual logs and exact final target/source hashes.
+- check_id: c-lint
+  name: Repository lint
+  status: passed
+  required: true
+  summary: Exit 0; Ruff all checks passed.
+  target_ids:
+  - GO:1901281
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed full repository gates; reviewer inspected
+    actual logs and exact final target/source hashes.
+- check_id: c-vendored
+  name: Governed artifact synchronization
+  status: passed
+  required: true
+  summary: Exit 0; all 22 governed artifacts match the pinned CLAW revision.
+  target_ids:
+  - GO:1901281
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed full repository gates; reviewer inspected
+    actual logs and exact final target/source hashes.
+- check_id: c-test-initial
+  name: Initial full test suite
+  status: failed
+  required: false
+  summary: 'Exit 1: 1 failed, 1033 passed, 3 skipped and 3 upstream warnings in 257.64s.
+    The old PathBank source-status expectation is tracked in issue 318 and corrected
+    from support to active. The complete rerun subsequently passed (c-test-final);
+    this historical result is retained.'
+  target_ids:
+  - GO:1901281
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - e-initial-test
+  scope_note: Integration agent executed full repository gates; reviewer inspected
+    actual logs and exact final target/source hashes.
+- check_id: c-export-probes
+  name: Exploratory export/page selector checks
+  status: failed
+  required: false
+  summary: Two exploratory assertions failed because they selected source_records
+    as a pathway field and expected raw YAML edge IDs as HTML anchors. Inspection
+    showed reference IDs and indexed mechanism-edge-N anchors, respectively. No exported-evidence
+    defect was found; corrected exact audit passes.
+  target_ids:
+  - GO:1901281
+  command: .venv/bin/python (inline KGX/SVG exploratory assertions)
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - e-export
+  scope_note: Independent reviewer check; no target or generated artifacts edited.
+- check_id: c-export
+  name: Independent exact KGX/SVG audit
+  status: passed
+  required: true
+  summary: 'Exit 0: all 14 record edges preserve endpoints, descriptions and complete
+    evidence; all 14 SVG links have matching predicates and evidence anchors.'
+  target_ids:
+  - GO:1901281
+  command: .venv/bin/python /private/tmp/pathwaymech-frl-review-export-check.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-export
+  scope_note: Independent reviewer check; no target or generated artifacts edited.
+- check_id: c-draft-contract
+  name: Intermediate draft contract validation
+  status: failed
+  required: false
+  summary: 'Exit 1 while the external draft was incomplete: the provisional finish
+    timestamp preceded later evidence access. Finalization records the actual finish
+    time after all evidence inspection; no target or source defect was involved. A
+    completed review must pass the saver validation before persistence.'
+  target_ids:
+  - GO:1901281
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py validate /private/tmp/pathwaymech-frl-independent-review-draft.yaml
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: c-test-final
+  name: Final full repository test suite
+  status: passed
+  required: true
+  summary: 'Exit 0: 1034 passed, 3 skipped and 3 upstream dependency warnings in 296.28s.
+    The final run includes the corrected PathBank active-source expectation.'
+  target_ids:
+  - GO:1901281
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-final-test
+  scope_note: Integration agent executed the full gate and reported exit 0; this reviewer
+    inspected the actual completed log. The target, scientific sources, authorities
+    and generated page remained byte-identical.
+evidence:
+- evidence_id: e-go
+  kind: authority
+  reference: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:1901281
+  locator: results[id=GO:1901281], definition.text, definition.xrefs
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: The nonobsolete biological-process term denotes fructoselysine breakdown
+    and explicitly cites UniPathway UPA00784. This supports the narrow pathway identity.
+  snapshot_sha256: 7593ef204917e5d650ed7e45571028d09bea41e768593723c57308b8629e5ab4
+- evidence_id: e-uniprot-frld
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P45543.json
+  locator: primaryAccession, organism.taxonId; comments FUNCTION, CATALYTIC ACTIVITY,
+    PATHWAY, SUBUNIT; UniPathway xref
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: Reviewed E. coli K-12 FrlD maps to RHEA:28378 with experimental ECO:0000269,
+    UPA00784/UER00769, and pathway step 1/2 with ECO:0000305. Monomer is an experimentally
+    supported SUBUNIT annotation.
+  snapshot_sha256: dfa557a2656ad36070beb24d892ae59c01bcdfafd24d0743c81ac87151e7d5ee
+- evidence_id: e-uniprot-frlb
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0AC00.json
+  locator: primaryAccession, organism.taxonId; comments FUNCTION, CATALYTIC ACTIVITY,
+    PATHWAY, SUBUNIT, ACTIVITY REGULATION; UniPathway xref
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: Reviewed K-12 FrlB maps to RHEA:28382 with experimental catalytic evidence,
+    UPA00784/UER00770 and step 2/2 with mixed experimental/inferred pathway evidence.
+    The entry explicitly reports reversibility, homododecamer state and in vitro ZnCl2
+    inhibition.
+  snapshot_sha256: 8a39f92fa00ac705a754a268a026765d25413c14d3bc0b5835aedf79a61ce49e
+- evidence_id: e-rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: RDF descriptions 28378,28379,28382,28383; their substrates/products, side
+    contains1, participants and ChEBI compounds
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: The independently parsed raw Rhea 142 artifact supplies the two master/directional
+    bridges and all nine retained chemical-side assertions. Each side coefficient
+    is 1; the exact charged stereochemical entities and reaction orientations match.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-ontology
+  kind: authority
+  reference: Independent GO 2026-07-26, ChEBI 255 and NCBITaxon 2026-07-12 SemanticSQL
+    caches
+  locator: statements WHERE subject in the 10 GO/ChEBI/taxon target IDs AND predicate=rdfs:label
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: Direct database queries independently verified every ontology-backed canonical
+    label; protein names and exact Rhea equations were checked at their own authorities.
+    Current batch authority-byte rechecks are root-owned. Its snapshot hash covers
+    the independent audit receipt containing the queried labels, not a concatenation
+    of database files.
+  snapshot_sha256: 3bc7db01e182cc519b42c8988fa03ad7345fd587332d4fbca3c9a3c457f65483
+- evidence_id: e-primary
+  kind: primary_source
+  reference: PMID:12147680; DOI:10.1074/jbc.M200863200; https://pubmed.ncbi.nlm.nih.gov/12147680/
+  locator: EuropePMC core result id 12147680 abstractText; live PubMed abstract
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: The inspected primary abstract reports purified YhfQ/FrlD phosphorylation
+    with NMR identification of fructoselysine 6-phosphate and purified YhfN/FrlB reversible
+    conversion to lysine and glucose 6-phosphate. It also supports delayed downstream-product
+    formation. All three short record quotations match literally.
+  snapshot_sha256: 16badcc75122a0180e43624a288a026fead55e9d21f5fe14290eeb718150b2ee
+- evidence_id: e-epimerase
+  kind: primary_source
+  reference: PMID:14641112; DOI:10.1042/BJ20031527
+  locator: EuropePMC core result id 14641112 abstractText
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: context_only
+  summary: The abstract characterizes reversible metal-dependent epimerization to
+    psicoselysine and mutant growth context. It supports treating this as an adjacent
+    substrate-entry extension rather than silently merging it into the selected fructoselysine
+    breakdown.
+  snapshot_sha256: 16badcc75122a0180e43624a288a026fead55e9d21f5fe14290eeb718150b2ee
+- evidence_id: e-regulation
+  kind: primary_source
+  reference: PMID:32979851; DOI:10.1111/mmi.14608
+  locator: EuropePMC core result id 32979851 abstractText
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: context_only
+  summary: The abstract supports substrate-specific FrlR repression and CRP/RpoH promoter
+    activation. These are documented as contextual physiology without invented promoter,
+    DNA or regulatory graph endpoints.
+  snapshot_sha256: 7a8bdc86dd9383feb7dcaa8283f3749402d309d091f1d19f4b816134be7c630a
+- evidence_id: e-alternative
+  kind: primary_source
+  reference: PMID:16153181; DOI:10.1042/BJ20051183
+  locator: EuropePMC core result id 16153181 abstractText
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: context_only
+  summary: The abstract distinguishes Enterococcus faecium GfrF fructoselysine-phosphate
+    chemistry from GfrE glucoselysine-phosphate chemistry and a putative PTS. This
+    route is not equated with E. coli ATP-dependent FrlD catalysis.
+  snapshot_sha256: 7a8bdc86dd9383feb7dcaa8283f3749402d309d091f1d19f4b816134be7c630a
+- evidence_id: e-source-access
+  kind: record_content
+  reference: Fructoselysine source manifest and Elsevier article response
+  locator: source manifest unavailable_source_attempts/reference_digest_scopes; primary-12147680.xml
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: context_only
+  summary: The actual Elsevier payload contains bibliographic metadata but no original
+    full text. The manifest accurately records inaccessible article attempts and that
+    PMID digests cover two-entry EuropePMC responses, not PubMed webpage bytes.
+  snapshot_sha256: 85c566c18d912c88eee06e4fb8083d9a60df0c2e9fb0a548b49cb48665e0d1e0
+- evidence_id: e-imodulondb
+  kind: database
+  reference: Canonical kg-microbe-sources iModulonDB adapter
+  locator: datasets; e_coli/precise_mg1655 query frl
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: context_only
+  summary: 'Independent adapter execution returned five exact gene keys: b3374 (frlD),
+    b3371 (frlB), b3370 (frlA), b4474 (frlC) and b3375 (frlR); zero iModulon hits.
+    This is computational expression context only.'
+  snapshot_sha256: bdac4c9ca4847b6e490de2ca1aa0c618d75d84b4bcecbba4c6c360f41bd81b14
+- evidence_id: e-audit
+  kind: validation
+  reference: Independent raw-source audit
+  locator: /private/tmp/pathwaymech-frl-review-evidence-check.py; /private/tmp/pathwaymech-frl-review-source-audit.json
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: supports
+  summary: Independent script parsed native RDF, verified all nine side assertions/coefficients
+    and all ten ontology labels, rehashed all nine cited source artifacts, and checked
+    all three quotations literally (17 words combined).
+  snapshot_sha256: 3bc7db01e182cc519b42c8988fa03ad7345fd587332d4fbca3c9a3c457f65483
+- evidence_id: e-prior-search
+  kind: search
+  reference: Local reviews and maintained pathway records
+  locator: rg --no-ignore --hidden -n -F GO:1901281 reviews data/pathways
+  accessed_at: '2026-10-10T21:26:42Z'
+  support: context_only
+  summary: Only this maintained target matched; no prior structured observation of
+    this exact GO target was found.
+  search_scope: Exact GO:1901281 query across reviews and data/pathways included ignored
+    and hidden files; Git internals excluded. This is not an external-source exhaustion
+    claim.
+- evidence_id: e-authority-integration
+  kind: validation
+  reference: Batch independent authority refresh
+  locator: research/pathway_additions/2026-10-10-frl-phn/authority-integration.json
+  accessed_at: '2026-10-10T21:34:51Z'
+  support: supports
+  summary: All 96 previous source inputs and four ontology databases were byte-verified
+    by the integration agent; final manifest has 97 inputs and only new PathBank provenance.
+    This reviewer read the final manifest and compared target authority terms directly
+    to raw sources; all target snapshots and labels remain unchanged from initial
+    review capture.
+  snapshot_sha256: 10166c5ab98529b61ff5baef17111e1c92efaed7f25de4a359ebef18ff8b4de6
+- evidence_id: e-export
+  kind: validation
+  reference: Independent actual CLI KGX and SVG check
+  locator: /private/tmp/pathwaymech-frl-review-export-check.py; /private/tmp/pathwaymech-frl-review-export-audit.json
+  accessed_at: '2026-10-10T21:34:51Z'
+  support: supports
+  summary: The corrected independent audit selects the record by stable KGX ID prefix
+    and verifies all 14 exported endpoint/evidence/description triples and 14 SVG
+    endpoint/predicate/evidence-anchor mappings. No browser interaction or visual
+    quality claim is made. The snapshot hash covers the audit JSON receipt.
+  snapshot_sha256: bb9a2d930369f1c7972f89bf9725a642f7b7147cb68567d97c73eacb7b3208b8
+- evidence_id: e-generated-audit
+  kind: validation
+  reference: Integrated programmatic graph/export audit
+  locator: research/pathway_additions/2026-10-10-frl-phn/generated-graph-kgx-audit.json
+  accessed_at: '2026-10-10T21:34:51Z'
+  support: supports
+  summary: 'The integration audit verifies all 54 new edges and 88 evidence blocks
+    across both records. This review relies only on its exact GO:1901281 result: 14
+    edges, 26 evidence blocks, 13 SVG nodes with correct endpoints/anchors; the isolated
+    scope taxon accounts for the 14th named record node. Published and separately
+    generated CLI download bytes match.'
+  snapshot_sha256: b66272d4587dfe7ef2bb79b6525a64ab9fb4b67eef695ac3b268b294beb6bb7b
+- evidence_id: e-gates
+  kind: validation
+  reference: Integration-agent whole-repository validation logs
+  locator: /private/tmp/pathwaymech-frl-phn-validate-final.log; /private/tmp/pathwaymech-frl-phn-lint-final.log;
+    /private/tmp/pathwaymech-frl-phn-vendored.log
+  accessed_at: '2026-10-10T21:39:21Z'
+  support: supports
+  summary: Inspected final logs show 161 native/closed-schema/identifier-valid records,
+    8449 evidence blocks, 30 sources, 240 histories and current pages. Ruff passes;
+    all 22 governed artifacts match the pinned CLAW revision. The snapshot hash covers
+    the final validate log. These gates provide deterministic validation, not fresh
+    scientific review of all 161 records.
+  snapshot_sha256: 023f761294dd4451082cf3578c4af47d31e38b667cae059fa3c9057b57878fa9
+- evidence_id: e-initial-test
+  kind: validation
+  reference: Initial full-suite log and issue 318
+  locator: /private/tmp/pathwaymech-frl-phn-test.log; tests/test_sources.py
+  accessed_at: '2026-10-10T21:34:51Z'
+  support: context_only
+  summary: 'The initial suite had 1 failed, 1033 passed and 3 skipped: the old PathBank
+    support-status expectation disagreed with the promotion to active. The exact one-line
+    assertion fix was read; it does not change this record or scientific sources.
+    The final complete suite passed, documented separately in e-final-test.'
+  snapshot_sha256: c3612fd50d790c287853cdd9e392d358ef5e710eccbdd82c57054c1aabd9d769
+- evidence_id: e-final-test
+  kind: validation
+  reference: Final full-suite integration log
+  locator: /private/tmp/pathwaymech-frl-phn-test-final.log
+  accessed_at: '2026-10-10T21:39:21Z'
+  support: supports
+  summary: The completed log reports 1034 passed, 3 skipped and 3 upstream dependency
+    warnings in 296.28s. Root reported process exit 0. This verifies the integrated
+    implementation and source-status correction; it does not replace independent scientific
+    source inspection.
+  snapshot_sha256: 59a814c0e813c12f0c244ddf14fed7aa26f98cdf626932ad41ffa6b9baecce33
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact process and K-12 enzyme scope
+  outcome: supported
+  summary: GO:1901281 denotes the selected breakdown process. The UPA00784 definition
+    xref and both UniProt pathway links independently bridge that identity to the
+    two-enzyme route; taxon 83333 is exact protein provenance.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-go
+  - e-uniprot-frld
+  - e-uniprot-frlb
+  - e-ontology
+- assessment_id: a-chemistry
+  area: grounding
+  topic: All chemical entities, directions and coefficients
+  outcome: supported
+  summary: All eight chemical node identities and two directional reaction IDs match
+    their authorities. Edges 001–009 retain all nine raw Rhea side occurrences with
+    coefficient 1 and the correct charged forms.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-rhea
+  - e-ontology
+  - e-audit
+- assessment_id: a-catalysis
+  area: evidence
+  topic: Catalysts and experimental evidence tiers
+  outcome: supported
+  summary: Edges 010–011 correctly associate the reviewed FrlD and FrlB proteins with
+    their experimental Rhea master assignments and primary chemistry. Monomeric FrlD
+    and homododecameric FrlB notes match the exact SUBUNIT annotations.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-uniprot-frld
+  - e-uniprot-frlb
+  - e-primary
+- assessment_id: a-membership
+  area: graph
+  topic: Pathway membership and material sequence
+  outcome: supported
+  summary: Edges 012–014 correctly retain UniPathway step 1/2 and step 2/2, the GO
+    definition bridge and source-specific evidence grades. Their sequence agrees with
+    the shared intermediate and primary delayed-product observation.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-go
+  - e-uniprot-frld
+  - e-uniprot-frlb
+  - e-primary
+- assessment_id: a-reversibility
+  area: representation
+  topic: Gene-product nodes and selected catabolic orientation
+  outcome: supported
+  summary: The FrlB gene-product node does not imply monomer catalysis. The directed
+    catabolic reaction is compatible with the explicitly retained in vitro reversibility;
+    no thermodynamic irreversibility is asserted.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-uniprot-frlb
+  - e-primary
+  - e-rhea
+- assessment_id: a-boundary
+  area: scope
+  topic: Explicit two-enzyme conversion boundary
+  outcome: supported
+  summary: Transport, regulation, epimerase entry, in vitro inhibition and other-taxon
+    pathways are considered and deliberately excluded from the core conversion. There
+    is no unsupported cofactor-independence or compartment claim.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-epimerase
+  - e-regulation
+  - e-alternative
+  - e-uniprot-frld
+  - e-uniprot-frlb
+- assessment_id: a-provenance
+  area: provenance
+  topic: Local evidence assertions, literal quotations and source access
+  outcome: supported
+  summary: All reference IDs resolve locally. All three quotations are literal; structured
+    statements match native source fields, including the source misspelling RectionId.
+    Artifact digests and their byte scope are accurate; inaccessible full text is
+    explicitly disclosed.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-audit
+  - e-source-access
+  - e-go
+  - e-uniprot-frld
+  - e-uniprot-frlb
+- assessment_id: a-transcriptomics
+  area: evidence
+  topic: Bounded structured expression context
+  outcome: supported
+  summary: The independent canonical adapter confirms the five named frl gene entries
+    in the specified dataset. No module membership or regulatory mechanism is inferred
+    from zero module hits.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-imodulondb
+- assessment_id: a-integration
+  area: representation
+  topic: Generated page, KGX and authority integration
+  outcome: supported
+  summary: All 14 target edges and 26 evidence blocks survive generated-page and KGX
+    export integration. Independent authority terms agree with the reviewed raw sources.
+    Final full validation, lint and the 1034-test suite pass; the historical source-status
+    expectation failure and its correction remain documented.
+  target_ids:
+  - GO:1901281
+  evidence_ids:
+  - e-export
+  - e-generated-audit
+  - e-gates
+  - e-authority-integration
+  - e-final-test
+findings: []
+actions: []
+limitations:
+- 'The original 2002 article full text was unavailable to the curation task: publisher
+  PDF requests returned 403 and the accessible Elsevier XML contained bibliographic
+  metadata, not the full article. This review directly inspected its primary abstract,
+  including the purified-enzyme and NMR results, plus reviewed UniProt and Rhea statements.
+  Experimental details absent from those sources were not reconstructed.'
+- The three additional primary papers were inspected through indexed abstracts. Their
+  regulation, transport, epimerization and alternative-route claims are used to bound
+  the core conversion, not to assert complete physiological coverage.
+- Protein oligomer states are inspected experimental UniProt annotations rather than
+  an independently inspected oligomerization experiment. A gene-product node with
+  a qualified catalytic edge does not declare a monomeric FrlB enzyme or create an
+  unsupported complex accession.
+- Source annotation omissions do not establish cofactor or compartment independence.
+  No guessed kinase metal or localization is added.
+- The FrlB biochemical reaction is reversible; the graph selects the directed catabolic
+  Rhea member and explicitly preserves the reverse-reaction evidence.
+- iModulonDB results are computational gene context and are not mechanistic proof
+  or negative biological evidence.
+notes:
+- No prior structured review of this exact target was found in an ignored-and-hidden-inclusive
+  search of reviews and data/pathways; no finding lineage is fabricated.
+- Initial inspect source manifest SHA 812bbaf00de5ed76e594227f01393b13f76ff3a97073d7d2213616c00d84e7ec
+  changed during integration to 681fe67e91241858f9fe32c18d413c7f8f4a480cacc35133cb2ee3beb71c353a.
+  The final 97-entry manifest, independent authority receipts and target terms were
+  reread and compared; the target/schema/ontology/source-snapshot hashes were unchanged.
+  This is explicit changed-input reinspection, not silent hash replacement.
+- Final source inspection additionally captured the exact conf/sources.yaml promotion,
+  tests/test_sources.py assertion correction and author validation receipt after reading
+  their actual content. No previously captured input changed during finalization.
+  No completed structured review has been overwritten.
+tags:
+- independent
+- scientific
+- fructoselysine
+- bounded-route
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/318
+```

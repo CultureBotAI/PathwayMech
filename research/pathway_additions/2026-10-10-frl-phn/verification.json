@@ -1,0 +1,92 @@
+{
+  "recorded_at": "2026-10-10T21:39:02.333161+00:00",
+  "base_commit": "d83a2f0bc4f2a3eb54fe732a1b94082b71b1657c",
+  "checks": [
+    {
+      "check_id": "render",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just render-pages",
+      "exit_code": 0,
+      "summary": "Rendered 161 pathway records.",
+      "log_sha256": "8c0f5598d8e6900edd2e744720f71e8381ee22fdccf249cffa82e419831cb9ec"
+    },
+    {
+      "check_id": "validate",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just validate",
+      "exit_code": 0,
+      "summary": "161 native and closed-schema records; verified identifiers; 8449 evidence blocks; 30 sources; 240 histories; documentation and current generated pages.",
+      "log_sha256": "023f761294dd4451082cf3578c4af47d31e38b667cae059fa3c9057b57878fa9"
+    },
+    {
+      "check_id": "test",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just test",
+      "exit_code": 0,
+      "summary": "1034 passed, 3 skipped, 3 upstream deprecation warnings; 296.28 seconds.",
+      "log_sha256": "59a814c0e813c12f0c244ddf14fed7aa26f98cdf626932ad41ffa6b9baecce33"
+    },
+    {
+      "check_id": "lint",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just lint",
+      "exit_code": 0,
+      "summary": "Ruff passed.",
+      "log_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41"
+    },
+    {
+      "check_id": "vendored",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just vendored-check",
+      "exit_code": 0,
+      "summary": "22 governed artifacts match the pinned CLAW revision.",
+      "log_sha256": "b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6"
+    },
+    {
+      "check_id": "kgx",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just kgx-export",
+      "exit_code": 0,
+      "summary": "Exported 161 records. Actual CLI outputs were copied unchanged from default output/kgx to /private/tmp/pathwaymech-frl-phn-kgx for comparison; the previously clean tracked output files were restored to HEAD, avoiding unrelated previous-batch output drift. Fresh published downloads are included.",
+      "log_sha256": "5ba89c12c95bf5814301f544ca1d206a8687aef70d4237642048f56490fb36b3"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check; git diff --cached --check",
+      "exit_code": 0,
+      "summary": "Both unstaged and staged checks passed after LF normalization of the new research TSV."
+    }
+  ],
+  "generated_graph_and_export_audit": "generated-graph-kgx-audit.json",
+  "authority_rebuild": "authority-integration.json",
+  "technical_review": "pathbank-technical-audit.md",
+  "superseded_runs": [
+    {
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just test",
+      "exit_code": 1,
+      "passed": 1033,
+      "failed": 1,
+      "skipped": 3,
+      "seconds": 257.64,
+      "log_sha256": "c3612fd50d790c287853cdd9e392d358ef5e710eccbdd82c57054c1aabd9d769",
+      "reason": "The existing source seed-row regression still expected PathBank support after intentional active adoption. Issue318 updated this assertion; independent focused source tests passed 7/7 and the complete rerun passed."
+    }
+  ],
+  "reviewed_issues": [
+    "https://github.com/CultureBotAI/PathwayMech/issues/317",
+    "https://github.com/CultureBotAI/PathwayMech/issues/318"
+  ],
+  "limitations": [
+    "CUA had no enabled browser surfaces, so no visual/browser preview was performed. Generated SVG geometry, endpoints, evidence anchors and complete KGX contents were audited.",
+    "Primary full-text availability and bounded pathway exclusions remain explicit in each source projection and independent scientific review.",
+    "The named microbial archive screen does not exhaust PathBank or other pathway resources."
+  ],
+  "independent_scientific_reviews": [
+    "reviews/structured/20261010T213921Z-fructoselysine-independent-review/review.yaml",
+    "reviews/structured/20261010T213852Z-methylphosphonate-i-independent-review/review.yaml"
+  ],
+  "publication_formatting": {
+    "initial_staged_diff_check_exit_code": 2,
+    "cause": "The newly staged screening TSV had Python csv default CRLF line endings, which git diff --cached --check reports as trailing whitespace.",
+    "correction": "Explicit LF lineterminator in the research-only generator; normalized exactly 529 CRLF endings, preserving all field bytes. Independent regeneration and field comparison are recorded in pathbank-technical-audit.md. Scientific review inputs, records and generated pages are unchanged.",
+    "lint_exit_code": 0,
+    "lint_log_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41",
+    "independent_regeneration_exit_code": 0,
+    "unchanged_rows": 529,
+    "unchanged_cells": 5819
+  }
+}

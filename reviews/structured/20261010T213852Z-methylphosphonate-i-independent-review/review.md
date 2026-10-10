@@ -1,0 +1,975 @@
+# Independent scientific review of methylphosphonate degradation I
+
+- Review: 20261010T213852Z-methylphosphonate-i-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-10T21:21:07Z
+- Finished UTC: 2026-10-10T21:38:52Z
+- Reviewer: Codex independent methylphosphonate scientific reviewer (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The exact native PathBank four-step route is supported by four directed Rhea reactions, 27 participants and 40 local edges. All 22 chemical-side occurrences preserve native identities, directions and coefficient 1. Four assembly members, four catalytic assignments, three qualified cofactor relationships and three material-transfer links have bounded source support. The unsupported complex-magnesium cofactor edge was removed after adversarial review; MgATP remains an assay/substrate condition. No corrective finding remains. Activation-versus-turnover chemistry, larger cellular machinery, transport-dependent growth and older abstract-only evidence remain explicit limitations.
+
+## Scope And Provenance
+
+Scientific review of exactly one maintained methylphosphonate pathway record and the identity/evidence inputs it uses.
+
+Selection: Exact PathBank:SMP0002077 identifier and data/pathways/methylphosphonate-degradation-i.yaml path assigned by the integration agent.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base d83a2f0bc4f2a3eb54fe732a1b94082b71b1657c.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| PathBank:SMP0002077 | data/pathways/methylphosphonate-degradation-i.yaml | maintained | Methylphosphonate Degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent final native-source audit | passed | False | PathBank:SMP0002077 | Final SHA 204b86be record passes exact 22 Rhea side/locator/coefficient, native component/membership, protein identity/taxon/catalytic/cofactor, all 6 quote, PMID title and endpoint checks. |
+| Working tree whitespace check | passed | True | PathBank:SMP0002077 | Exit 0 after the final target correction. |
+| Structured dataset discovery | passed | True | PathBank:SMP0002077 | Exit 0; supported E. coli datasets include precise_mg1655. |
+| Structured phn gene/pathway lookup | passed | True | PathBank:SMP0002077 | Exit 0;10 gene matches,0 iModulons. Relevant target genes provide context only. |
+| iModulon component summary | not_applicable | False | PathBank:SMP0002077 | No component was returned; no summarize request was applicable. |
+| Independent final target KGX preservation audit | passed | False | PathBank:SMP0002077 | All 40 target edges preserve complete evidence, descriptions and reference metadata. Native complex and target donor/acceptor contexts remain correct; removed Mg has no target context. A pre-existing WP287 donor classification remains visible in corpus aggregation. |
+| Independent generated graph and download audit | passed | False | PathBank:SMP0002077 | Final target32 SVG nodes,40 edges and62 evidence blocks match maintained data; endpoints, geometry bounds, evidence anchors, download hashes and CLI byte identity pass. |
+| Optional interactive browser visual inspection | unavailable | False | PathBank:SMP0002077 | Integration audit reports native CUA surfaces unavailable; no browser visual inspection is claimed. |
+| Initial full suite before source-status expectation correction | failed | False | PathBank:SMP0002077 | Exit 1: 1 failed, 1033 passed, 3 skipped, 3 warnings in 257.64 s. Existing test_source_seed_rows_include_disabled_candidates expected PathBank support despite its intentional support→active source-inventory change. Issue #318 corrected that existing assertion; the full rerun is separately recorded. |
+| Final full-corpus validation | passed | True | PathBank:SMP0002077 | Exit 0: 240 history records valid; 161 pathways satisfy native/closed schemas and identifier policies; 8449 evidence blocks, 30 sources, six documentation files, deep-research contract and current 161-record pages. |
+| Repository lint | passed | True | PathBank:SMP0002077 | Exit 0; Ruff reports all checks passed. |
+| Governed artifact synchronization | passed | True | PathBank:SMP0002077 | Exit 0; all 22 governed artifacts match the pinned CLAW revision. |
+| Final page generation | passed | True | PathBank:SMP0002077 | Exit 0; 161 current pages generated. Target SVG and complete evidence preservation were audited separately. |
+| Final corpus KGX export | passed | True | PathBank:SMP0002077 | Exit 0; actual 161-record default-output export copied to /private/tmp/pathwaymech-frl-phn-kgx for byte and target-evidence audits. Existing tracked standalone output was restored by integration agent; published downloads match these generated bytes. |
+| Final full suite after source-status correction | passed | True | PathBank:SMP0002077 | Exit 0: 1034 passed, 3 skipped and 3 upstream warnings in 296.28 s. Full rerun supersedes the retained initial one-test failure. |
+
+## Scientific And Domain Assessments
+
+### Native pathway identity and four-step boundary
+
+identity: supported. Targets: PathBank:SMP0002077.
+
+SMP0002077, the source title and four explicit native reaction members denote methylphosphonate degradation I ending at ribose 1,5-bisphosphate and methane. The distinct PathWhiz filename is not used as the pathway identity. No downstream PRPP or free-phosphate release is asserted.
+
+### Chemical identity, direction, coefficients and charge forms
+
+quantity: supported. Targets: PathBank:SMP0002077.
+
+All 22 retained Rhea chemical-side assertions match exact directed sides and coefficient 1; all four LR choices agree with the source reaction families. Native charge-form correspondence preserves stereochemistry and is not declared exact identity across protonation states.
+
+### Assembly membership and catalytic assignments
+
+evidence: supported. Targets: PathBank:SMP0002077.
+
+Four native PhnG/H/I/L component links are distinguished from the assembly catalytic edge. PhnM, PhnJ and PhnP catalytic assignments match precise UniProt/Rhea families and primary experiments. Accessory-subunit membership is not treated as four independent catalysts.
+
+### Qualified cofactors and corrected magnesium inference
+
+evidence: supported. Targets: PathBank:SMP0002077.
+
+The final graph retains reduced Fe4S4 for PhnJ and separately qualified Mn/Zn roles for PhnP. MgATP remains a substrate/assay condition after removal of the unsupported complex-cofactor edge. This correction does not establish magnesium independence.
+
+### Activation chemistry versus physiological turnover
+
+representation: supported. Targets: PathBank:SMP0002077.
+
+The Rhea reference equation includes SAM cleavage products and generic donor/acceptor classes, while record and edge descriptions explicitly decline a fixed physiological SAM-to-substrate turnover ratio or a unique physiological reductant. The current edge schema cannot split activation from repeated catalysis.
+
+### Material transfer and local graph shape
+
+graph: supported. Targets: PathBank:SMP0002077.
+
+Three provides_input_for links follow exactly shared Rhea intermediates and primary experimental sequence. Native pathwayOrder membership is not misrepresented as nextStep evidence. All final local endpoints and source references resolve.
+
+### Taxon, later machinery and transport phenotype
+
+scope: supported. Targets: PathBank:SMP0002077.
+
+K-12 protein provenance is supported independently for all seven proteins. The record explicitly retains phnE transport limits, excludes a universal growth claim, and distinguishes later PhnK/PhnL whole-utilization evidence from unsupported assignment to a specific native reaction.
+
+### Independent authorities and preserved provenance
+
+grounding: supported. Targets: PathBank:SMP0002077.
+
+Canonical pathway identity and external entities are independently grounded. Local PathBank graph existence does not itself prove membership or catalysis; those claims have separate native and primary evidence. Authority additions preserve all baseline terms and provenance.
+
+### Structured source cross-check
+
+scope: supported. Targets: PathBank:SMP0002077.
+
+The covered MG1655 adapter results remain gene context only; no expression-module or causal mechanism is inferred.
+
+### Final structural and generated-artifact gates
+
+schema: supported. Targets: PathBank:SMP0002077.
+
+Final required gates pass after target and supporting inputs froze. Deterministic source/identifier/export checks supplement rather than replace this scientific review.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-record | data/pathways/methylphosphonate-degradation-i.yaml; Complete final YAML, including all participants, four reactions, 40 edges, 62 evidence blocks and references | supports | The initial 41-edge record and corrected 40-edge record were read. The changed Mg relationship, participant inventory, catalytic description and research dispositions were explicitly reassessed before final hash capture. |
+| e-pathbank | https://pathbank.org/downloads/pathbank_primary_biopax.zip; Exact PW002065.owl member; SMPDB and PathWhiz xrefs, Pathway SMP0002077, four Reactions/6035-6038, Catalysis/6000, ProteinComplex/4049, component and protein-reference links | supports | The SMPDB xref and pathway URI support the exact native identity. Four biochemical reactions are explicitly pathwayComponent members; the native endpoint is ribose 1,5-bisphosphate. Four component links resolve to PhnG/H/I/L, without copy numbers. PathwayOrder has no nextStep links and is not used as source-native sequence evidence. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Rhea 142, release 2026-09-02: masters 34679/34683/34707/34795; LR 34680/34684/34708/34796; exact substrate/product, contains1, Participant, Compound and chebi triples | supports | Independently extracted merged RDF subjects support all four directions and all 22 retained chemical-side occurrences. Three consecutive products are identical to the next substrates. Generic AH2/A have direct ChEBI class identities; no specific physiological donor is assigned. |
+| e-uniprot | https://rest.uniprot.org/uniprotkb/; Seven preserved release 2026_03 JSON entries P16685/P16686/P16687/P16679/P16689/P16688/P16692; primaryAccession, organism, recommendedName, FUNCTION, CATALYTIC ACTIVITY, COFACTOR and evidence fields | supports | All seven identities, canonical names and taxon 83333 assignments match. Catalyst reaction masters/ECs match the four selected reactions. PhnI requires G/H/L for the represented transfer; PhnI-alone nucleosidase is excluded. PhnJ Fe4S4 and PhnP Mn/Zn annotations retain ECO:0000269 and primary citations. Source hashes are in the inspected manifest. |
+| e-2011 | https://pmc.ncbi.nlm.nih.gov/articles/PMC3245791/; PMID:22089136, DOI:10.1038/nature10622; BioC passage offsets 77,3473,4703,5667,8598,9520,10880,11552,12592 and17873 | supports | Purified-protein experiments support PhnI/G/H/L transfer from MgATP, PhnM hydrolysis and anaerobic reduced-Fe4S4/SAM-dependent PhnJ cleavage with methane and activation products. Fusion-tag removal, solubility and low-turnover limits are retained. MgATP wording establishes substrate/assay context, not independently a complex-to-free-Mg cofactor assertion. |
+| e-phnp | https://pubmed.ncbi.nlm.nih.gov/21341651/; Europe PMC MED core primary abstract and metadata; DOI:10.1021/ja1102713 | supports | Purified PhnP transforms synthesized 5-phospho-alpha-D-ribosyl 1,2-cyclic phosphate to alpha-D-ribosyl 1,5-bisphosphate. The literal product quote matches the abstract. Its older proposed PRPP-initiation model is not substituted for the later experimentally established ATP route. |
+| e-metals | https://pubmed.ncbi.nlm.nih.gov/19366688/; Europe PMC MED core primary abstract and metadata; DOI:10.1074/jbc.M808392200; Mn/Ni substrate assay and remote Zn site | supports | Mn2+ and Ni2+ preference was measured using bis(p-nitrophenyl)phosphate; zinc gave poor catalytic substitution. A separate remote Zn site stabilizes structure. The record distinguishes these roles and does not assert exclusive physiological Mn usage. Full text was not available. |
+| e-2015 | https://pmc.ncbi.nlm.nih.gov/articles/PMC4617613/; PMID:26280334, DOI:10.1038/nature14683; BioC offsets 1745,7457,8408,11277 and23902 | supports | The full structural paper distinguishes the PhnGHIJ core and PhnK association from the native G/H/I/L reconstitution assembly. A persistent glycyl-radical turnover mechanism is proposed; one SAM per repeated physiological substrate turnover is not established. Aerobic structural Zn does not replace the active Fe-S requirement. |
+| e-2023 | https://pmc.ncbi.nlm.nih.gov/articles/PMC9947105/; PMID:36813778, DOI:10.1038/s41467-023-36604-y; introduction, dual-ABC ATPase structures, Fig3 genetic complementation, results and final discussion | supports | The larger Phn(GHIJKL)2 machinery contains dual PhnK/PhnL ATPases; their ATPase-disrupting mutations abolish growth complementation in the described HO1488 background. The precise chemical step associated with remodelling remains unresolved. The record treats this as explicit broader machinery context, without a fabricated reaction-specific PhnK edge. |
+| e-phne | https://pubmed.ncbi.nlm.nih.gov/15342581/; Europe PMC MED core primary abstract; DOI:10.1128/JB.186.18.6118-6123.2004 | supports | Reversible phnE phase variation distinguishes transport-competent variants from cryptic K-12 utilization. The record correctly limits K-12 scope to characterized enzyme provenance and makes no universal growth claim. Full text was not inspected. |
+| e-chemistry | http://purl.obolibrary.org/obo/chebi/255/chebi.owl; Pinned full SemanticSQL chebi.db; labels/definitions for all selected chemicals and native-versus-selected structure statements for seven protonation pairs | supports | All selected labels/definitions match the independent ChEBI 255 authority. The seven complete InChI/scaffold comparisons differ only by protonation layer, retaining alpha-D stereochemistry. Native-to-selected correspondence is described as a charge-form mapping, not skos:exactMatch. |
+| e-authorities | research/pathway_additions/2026-10-10-frl-phn/authority-integration.json; Final 97 source-manifest inputs; regenerated ontology/source snapshots and comparison against git d83a2f0 | supports | Independent comparison preserves all 1257 baseline ontology terms and four provenance blocks, adding 17 terms; all 1572 baseline source terms and 88 provenance blocks are preserved, adding 11 terms and one PathBank source. Root verified full pinned ontology bytes and 96 pre-existing source artifacts. Fresh UniProt mechanistic downloads are distinct from preserved independent name-authority inputs. Rhea 139 identifier authority is distinct from Rhea 142 reaction evidence. |
+| e-projection | research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-source-projection.json; Complete native graph, manual native/UniProt/Rhea reaction correspondences,22 source side coefficients, seven chemical-form dispositions, protein comments, primary source dispositions and order limitation | supports | Projection statements were checked against the independently inspected raw sources. Native PathBank supplies no Rhea crosswalk; EC/chemistry/protein correspondence is explicitly curator-derived. Rejected fulltext retrieval bodies are not treated as articles. |
+| e-source-audit | /private/tmp/pathwaymech-phn-review/source-audit.json; Reviewer-owned audit_sources.py result against final target hash | supports | Exact independent checks pass for22 Rhea side locators/coefficients, four native reaction members, four complex components, seven protein identities/taxa/names, four EC/master bridges, all retained literal quotes, reference titles and local endpoints. Initial audit-script assumptions about generic contains triples and additional Catalysis pathway components were corrected against raw RDF/XML before the passing audit; these were review-script errors, not record defects. |
+| e-imodulondb | https://imodulondb.org/; Canonical adapter datasets receipt and query phn in e_coli/precise_mg1655; /private/tmp/pathwaymech-frl-phn-imodulondb-phn.md | context_only | Ten gene matches and zero iModulon matches provide bounded gene context. Relevant keys include b4092(phnP),b4095(phnM),b4096(phnL),b4098(phnJ),b4099(phnI); b4097(phnK) is broader machinery context. No component summary was applicable, and missing returned genes are not negative evidence. |
+| e-search | Task worktree data/pathways and repository YAML inputs; Exact SMP0002077, Methylphosphonate Degradation I, slug and four selected Rhea IDs | context_only | Only the assigned maintained pathway was returned for this exact identity in the bounded worktree search. This does not establish global novelty or source exhaustion. |
+| e-correction | https://github.com/CultureBotAI/PathwayMech/issues/317; Removed methylphosphonate-edge-031 and CHEBI:18420; retained MgATP condition on catalytic edge027 and corrected research ledgers | supports | Adversarial review identified the unsupported typed complex-magnesium cofactor relation. The author removed that relation and unused participant, retaining the experimentally supported substrate/assay condition. Reinspection confirms the exact bounded correction. No predecessor structured finding existed; this records a corrected assessment rather than inventing resolved finding lineage. |
+| e-export | /private/tmp/pathwaymech-phn-review/kgx-audit.json; Actual 161-record KGX export retained externally; all 40 methylphosphonate edges and record-scoped node contexts | supports | All 40 edges retain complete evidence arrays, descriptions and reference metadata. The native complex is MacromolecularComplex, donor/acceptor target contexts remain cofactor, and removed Mg has no target context. Global CHEBI:17499 also retains an older WikiPathways:WP287 small_molecule category; this aggregate source disagreement is not attributed to the new target. |
+| e-generated | research/pathway_additions/2026-10-10-frl-phn/generated-graph-kgx-audit.json; Final PathBank:SMP0002077 SVG and actual KGX entry,32 SVG nodes,40 edges,62 evidence blocks | supports | An independent integration audit verifies every SVG endpoint, node/evidence anchor and geometry bound; complete target evidence/reference metadata is preserved in both published and CLI KGX bytes. It explicitly excludes browser visual inspection and scientific interpretation. |
+| e-gates | /private/tmp/pathwaymech-frl-phn-validate-final.log; /private/tmp/pathwaymech-frl-phn-test.log; /private/tmp/pathwaymech-frl-phn-test-final.log; /private/tmp/pathwaymech-frl-phn-lint-final.log; /private/tmp/pathwaymech-frl-phn-vendored.log; Integration-agent actual final receipts, reviewer-inspected logs and working-tree whitespace check | supports | Final validation, lint, vendored synchronization, rendering, KGX export and complete test suite pass. Validation covers 161 records, 8449 evidence blocks and 240 histories; final suite has 1034 passed and 3 skipped. The initial suite failure on the PathBank support-status expectation is retained and superseded after issue318. Target/scientific input hashes remained unchanged through that one-line test correction. |
+
+## Limits And Additional Notes
+
+- The maintained route is a bounded source-defined four-step biochemical map, not a complete cellular utilization model. PhnCDE transport, PhnF regulation, PhnN conversion to PRPP, alternative substrates and exact later complex dynamics remain outside it.
+- The generic Rhea hydrogen donor/acceptor classes do not identify a physiological electron donor. Experimental dithionite is not asserted as the native donor.
+- SAM cleavage products describe the activation-associated reference equation; fixed stoichiometry across repeated physiological turnover is not established. The edge schema does not model activation and subsequent turnover as separate cycles.
+- The PhnP 2009/2011 and phnE primary claims were bounded to inspected primary abstracts and corroborating curated objects. Error/help XML retrieval bodies were rejected; unavailable full texts were not claimed as inspected.
+- Biochemical reconstitution and K-12 protein annotation do not prove growth of every strain or phnE phase state. The larger PhnK/PhnL machinery evidence is contextual where a precise reaction-specific assignment is unresolved.
+- No interactive browser visual check was available; generated SVG endpoint, geometry and evidence-anchor audits passed.
+- The actual corpus KGX export aggregates CHEBI:17499 as ChemicalEntity&#124;SmallMolecule because older WikiPathways:WP287 contributes a small_molecule classification. The reviewed target retains its correct cofactor source context; the older record was not scientifically reviewed here.
+- This reviewer authored supporting PathBank authority code/policy and supplied source facts; target YAML and mechanistic notes were authored separately. Independent technical audit of that supporting code is documented separately.
+- The review assesses one pathway scientifically. Full-corpus gates do not imply new scientific review of all maintained pathways. Public-release data licensing remains outside this authorized local curation review.
+- A genuine unsupported magnesium edge was corrected during the review and tracked in https://github.com/CultureBotAI/PathwayMech/issues/317. There is no fabricated resolved structured finding because no predecessor bundle had been saved.
+- The initial full suite failed on the existing PathBank support-status expectation after intentional source activation. Issue #318 changed that assertion to active; the failed run and final rerun are both retained as actual checks.
+- Input hashes were captured before assessment and again after changed authority/record/research inputs were explicitly rechecked. The final saved source block describes the corrected working tree.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261010T213852Z-methylphosphonate-i-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of methylphosphonate degradation I
+started_at: '2026-10-10T21:21:07Z'
+finished_at: '2026-10-10T21:38:52Z'
+reviewer:
+  identity: Codex independent methylphosphonate scientific reviewer
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: A separate agent authored and corrected the target YAML and
+    mechanistic research notes. This reviewer authored the supporting PathBank authority
+    parser/policy and supplied independently extracted Rhea source facts, but did
+    not author or edit the target YAML, its mechanistic projection or curation notes.
+    Target assertions were independently compared with preserved primary source objects
+    and texts. A separate technical reviewer audited the supporting authority implementation;
+    this report does not claim independence from that code.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The exact native PathBank four-step route is supported by four directed Rhea
+  reactions, 27 participants and 40 local edges. All 22 chemical-side occurrences
+  preserve native identities, directions and coefficient 1. Four assembly members,
+  four catalytic assignments, three qualified cofactor relationships and three material-transfer
+  links have bounded source support. The unsupported complex-magnesium cofactor edge
+  was removed after adversarial review; MgATP remains an assay/substrate condition.
+  No corrective finding remains. Activation-versus-turnover chemistry, larger cellular
+  machinery, transport-dependent growth and older abstract-only evidence remain explicit
+  limitations.
+source:
+  git_revision: d83a2f0bc4f2a3eb54fe732a1b94082b71b1657c
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: b5831e481fb7551858de5de9e4765c560d1f1d5531eecf871205cbe26041bc19
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 681fe67e91241858f9fe32c18d413c7f8f4a480cacc35133cb2ee3beb71c353a
+    role: context
+  - path: conf/sources.yaml
+    sha256: 49507bca325f9529bd25b3507b062a1241c403916293dbab96d3cb598d6a7a95
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 7fa755d7ccffdde985fd0dd76db3804c973c7a86c83f401b11003bfc222be940
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 09dd730cbbb4d62a292c587dfa6d79b8649d5fff704356aff93639e24acb86d2
+    role: context
+  - path: data/pathways/methylphosphonate-degradation-i.yaml
+    sha256: 204b86bef2371a61586a7c9b4c0a33880e23c8999620fdeefb575900f5ddfdbe
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 972bb87557f26b2567ee997faeba0a691e9c0ca3b0b0183531f15856ae835d1f
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/authority-integration.json
+    sha256: 10166c5ab98529b61ff5baef17111e1c92efaed7f25de4a359ebef18ff8b4de6
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/generated-graph-kgx-audit.json
+    sha256: b66272d4587dfe7ef2bb79b6525a64ab9fb4b67eef695ac3b268b294beb6bb7b
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-curation.md
+    sha256: 94186a880da804563d999749a7df3da0da9a0e7de3e173f8e3b43f091337ffc9
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-identifiers.json
+    sha256: 00dd3878fd046ad019a5a01e11eb99aec6172ea206c855235e7494c5504ea430
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-source-manifest.json
+    sha256: 56cba370b9f8e2aa50da20bf0b0b305f0bec5e5d084aad2100c85d4f96af3b18
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-source-projection.json
+    sha256: 66243fdda628b8e5f14baadc0dcc2f3796cffc73e1569f66f1f5486e4d27ec03
+    role: context
+  - path: research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-validation.json
+    sha256: 33793c2395d6477996a16f93e4008967c5d04f6b91d6ce7aae9c1eecc15f0ffb
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: b65cc2b7fe4d7234d5d3925918b3cc8ad2be01c67dfaaf8423e8d6935186fdd4
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: fd5f9cb0f730d2d6b57f4ddee6418b8299b934978459c73be57f22c26ba78463
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 56bb3f153ea10e6c3964845ef24303e9362f6104a2ab3c95cf1da1a7ae2d2895
+    role: context
+  - path: tests/test_sources.py
+    sha256: cb53876f61b522b85bba5e005081edd56ceb9d48ae6c8a7355b1a43b11f0d900
+    role: context
+scope:
+  description: Scientific review of exactly one maintained methylphosphonate pathway
+    record and the identity/evidence inputs it uses.
+  selection: Exact PathBank:SMP0002077 identifier and data/pathways/methylphosphonate-degradation-i.yaml
+    path assigned by the integration agent.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - PathBank:SMP0002077
+  exclusions:
+  - target: data/pathways/fructoselysine-catabolic-process.yaml
+    reason: A different reviewer assesses the other new pathway.
+  - target: Other maintained records
+    reason: Whole-corpus gates provide structural context, not a fresh scientific
+      review of those records.
+targets:
+- target_id: PathBank:SMP0002077
+  path: data/pathways/methylphosphonate-degradation-i.yaml
+  label: Methylphosphonate Degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylphosphonate-degradation-i.yaml
+    role: maintained pathway mechanism and edge evidence
+checks:
+- check_id: c-source-audit
+  name: Independent final native-source audit
+  status: passed
+  required: false
+  summary: Final SHA 204b86be record passes exact 22 Rhea side/locator/coefficient,
+    native component/membership, protein identity/taxon/catalytic/cofactor, all 6
+    quote, PMID title and endpoint checks.
+  target_ids:
+  - PathBank:SMP0002077
+  command: .venv/bin/python /private/tmp/pathwaymech-phn-review/audit_sources.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-source-audit
+  scope_note: Reviewer-owned narrow source checks; not a substitute for whole-corpus
+    gates or scientific source interpretation.
+- check_id: c-diff
+  name: Working tree whitespace check
+  status: passed
+  required: true
+  summary: Exit 0 after the final target correction.
+  target_ids:
+  - PathBank:SMP0002077
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+- check_id: c-imodulondb-datasets
+  name: Structured dataset discovery
+  status: passed
+  required: true
+  summary: Exit 0; supported E. coli datasets include precise_mg1655.
+  target_ids:
+  - PathBank:SMP0002077
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+  scope_note: Retained canonical adapter receipt from this conversation was inspected;
+    no claim of a new download at review completion.
+- check_id: c-imodulondb-search
+  name: Structured phn gene/pathway lookup
+  status: passed
+  required: true
+  summary: Exit 0;10 gene matches,0 iModulons. Relevant target genes provide context
+    only.
+  target_ids:
+  - PathBank:SMP0002077
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query phn
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+  scope_note: Integration agent executed the canonical command; reviewer inspected
+    actual output and received its exit receipt.
+- check_id: c-imodulondb-summary
+  name: iModulon component summary
+  status: not_applicable
+  required: false
+  summary: No component was returned; no summarize request was applicable.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-kgx-audit
+  name: Independent final target KGX preservation audit
+  status: passed
+  required: false
+  summary: All 40 target edges preserve complete evidence, descriptions and reference
+    metadata. Native complex and target donor/acceptor contexts remain correct; removed
+    Mg has no target context. A pre-existing WP287 donor classification remains visible
+    in corpus aggregation.
+  target_ids:
+  - PathBank:SMP0002077
+  command: .venv/bin/python /private/tmp/pathwaymech-phn-review/audit_kgx.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-export
+  scope_note: Read-only inspection of actual integrated export bytes, not a regenerated
+    target-only export.
+- check_id: c-generated-audit
+  name: Independent generated graph and download audit
+  status: passed
+  required: false
+  summary: Final target32 SVG nodes,40 edges and62 evidence blocks match maintained
+    data; endpoints, geometry bounds, evidence anchors, download hashes and CLI byte
+    identity pass.
+  target_ids:
+  - PathBank:SMP0002077
+  command: /private/tmp/pathwaymech-frl-phn-graph-audit.py --comparison-kgx-dir /private/tmp/pathwaymech-frl-phn-kgx
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-generated
+  scope_note: Separate integration reviewer executed this audit; this scientific reviewer
+    inspected its target-specific receipt.
+- check_id: c-browser
+  name: Optional interactive browser visual inspection
+  status: unavailable
+  required: false
+  summary: Integration audit reports native CUA surfaces unavailable; no browser visual
+    inspection is claimed.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-generated
+- check_id: c-test-initial
+  name: Initial full suite before source-status expectation correction
+  status: failed
+  required: false
+  summary: 'Exit 1: 1 failed, 1033 passed, 3 skipped, 3 warnings in 257.64 s. Existing
+    test_source_seed_rows_include_disabled_candidates expected PathBank support despite
+    its intentional support→active source-inventory change. Issue #318 corrected that
+    existing assertion; the full rerun is separately recorded.'
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: The failed check is preserved; it is not a target mechanism failure
+    or a claim that required checks passed before correction.
+- check_id: c-validate
+  name: Final full-corpus validation
+  status: passed
+  required: true
+  summary: 'Exit 0: 240 history records valid; 161 pathways satisfy native/closed
+    schemas and identifier policies; 8449 evidence blocks, 30 sources, six documentation
+    files, deep-research contract and current 161-record pages.'
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Final rerun after the source-status expectation correction; /private/tmp/pathwaymech-frl-phn-validate-final.log.
+    Integration agent executed it and supplied exit 0; reviewer inspected the log.
+    Corpus validation is structural context, not fresh scientific review of every
+    record.
+- check_id: c-lint
+  name: Repository lint
+  status: passed
+  required: true
+  summary: Exit 0; Ruff reports all checks passed.
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Final rerun after the source-status expectation correction; /private/tmp/pathwaymech-frl-phn-lint-final.log.
+    Integration agent supplied exit 0; reviewer inspected the log.
+- check_id: c-vendored
+  name: Governed artifact synchronization
+  status: passed
+  required: true
+  summary: Exit 0; all 22 governed artifacts match the pinned CLAW revision.
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the final command and supplied its real exit
+    receipt; reviewer inspected available logs and artifact audits. Corpus validation
+    is not a fresh scientific review of every record.
+- check_id: c-render
+  name: Final page generation
+  status: passed
+  required: true
+  summary: Exit 0; 161 current pages generated. Target SVG and complete evidence preservation
+    were audited separately.
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the final command and supplied its real exit
+    receipt; reviewer inspected available logs and artifact audits. Corpus validation
+    is not a fresh scientific review of every record.
+- check_id: c-kgx
+  name: Final corpus KGX export
+  status: passed
+  required: true
+  summary: Exit 0; actual 161-record default-output export copied to /private/tmp/pathwaymech-frl-phn-kgx
+    for byte and target-evidence audits. Existing tracked standalone output was restored
+    by integration agent; published downloads match these generated bytes.
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the final command and supplied its real exit
+    receipt; reviewer inspected available logs and artifact audits. Corpus validation
+    is not a fresh scientific review of every record.
+- check_id: c-test-final
+  name: Final full suite after source-status correction
+  status: passed
+  required: true
+  summary: 'Exit 0: 1034 passed, 3 skipped and 3 upstream warnings in 296.28 s. Full
+    rerun supersedes the retained initial one-test failure.'
+  target_ids:
+  - PathBank:SMP0002077
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent completed the frozen-input full suite and confirmed
+    exit 0; this reviewer inspected the final actual log.
+evidence:
+- evidence_id: e-record
+  kind: record_content
+  reference: data/pathways/methylphosphonate-degradation-i.yaml
+  locator: Complete final YAML, including all participants, four reactions, 40 edges,
+    62 evidence blocks and references
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: The initial 41-edge record and corrected 40-edge record were read. The
+    changed Mg relationship, participant inventory, catalytic description and research
+    dispositions were explicitly reassessed before final hash capture.
+  snapshot_sha256: 204b86bef2371a61586a7c9b4c0a33880e23c8999620fdeefb575900f5ddfdbe
+- evidence_id: e-pathbank
+  kind: database
+  reference: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  locator: Exact PW002065.owl member; SMPDB and PathWhiz xrefs, Pathway SMP0002077,
+    four Reactions/6035-6038, Catalysis/6000, ProteinComplex/4049, component and protein-reference
+    links
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: The SMPDB xref and pathway URI support the exact native identity. Four
+    biochemical reactions are explicitly pathwayComponent members; the native endpoint
+    is ribose 1,5-bisphosphate. Four component links resolve to PhnG/H/I/L, without
+    copy numbers. PathwayOrder has no nextStep links and is not used as source-native
+    sequence evidence.
+  snapshot_sha256: 66e835939e82188e3c976f0eda7ab68fa3d6fd8064bb18b1c4df439abec4cc62
+- evidence_id: e-rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: 'Rhea 142, release 2026-09-02: masters 34679/34683/34707/34795; LR 34680/34684/34708/34796;
+    exact substrate/product, contains1, Participant, Compound and chebi triples'
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: Independently extracted merged RDF subjects support all four directions
+    and all 22 retained chemical-side occurrences. Three consecutive products are
+    identical to the next substrates. Generic AH2/A have direct ChEBI class identities;
+    no specific physiological donor is assigned.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-uniprot
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/
+  locator: Seven preserved release 2026_03 JSON entries P16685/P16686/P16687/P16679/P16689/P16688/P16692;
+    primaryAccession, organism, recommendedName, FUNCTION, CATALYTIC ACTIVITY, COFACTOR
+    and evidence fields
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: All seven identities, canonical names and taxon 83333 assignments match.
+    Catalyst reaction masters/ECs match the four selected reactions. PhnI requires
+    G/H/L for the represented transfer; PhnI-alone nucleosidase is excluded. PhnJ
+    Fe4S4 and PhnP Mn/Zn annotations retain ECO:0000269 and primary citations. Source
+    hashes are in the inspected manifest.
+- evidence_id: e-2011
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3245791/
+  locator: PMID:22089136, DOI:10.1038/nature10622; BioC passage offsets 77,3473,4703,5667,8598,9520,10880,11552,12592
+    and17873
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: Purified-protein experiments support PhnI/G/H/L transfer from MgATP, PhnM
+    hydrolysis and anaerobic reduced-Fe4S4/SAM-dependent PhnJ cleavage with methane
+    and activation products. Fusion-tag removal, solubility and low-turnover limits
+    are retained. MgATP wording establishes substrate/assay context, not independently
+    a complex-to-free-Mg cofactor assertion.
+  snapshot_sha256: 9447311607da7b30682f52e1774a269091ab6a563e9c063e766eed46c5c5ac13
+- evidence_id: e-phnp
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/21341651/
+  locator: Europe PMC MED core primary abstract and metadata; DOI:10.1021/ja1102713
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: Purified PhnP transforms synthesized 5-phospho-alpha-D-ribosyl 1,2-cyclic
+    phosphate to alpha-D-ribosyl 1,5-bisphosphate. The literal product quote matches
+    the abstract. Its older proposed PRPP-initiation model is not substituted for
+    the later experimentally established ATP route.
+  snapshot_sha256: 99d7518249890736dc3110816980fa170a55c65382fb791042be28f8aecd593b
+- evidence_id: e-metals
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/19366688/
+  locator: Europe PMC MED core primary abstract and metadata; DOI:10.1074/jbc.M808392200;
+    Mn/Ni substrate assay and remote Zn site
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: Mn2+ and Ni2+ preference was measured using bis(p-nitrophenyl)phosphate;
+    zinc gave poor catalytic substitution. A separate remote Zn site stabilizes structure.
+    The record distinguishes these roles and does not assert exclusive physiological
+    Mn usage. Full text was not available.
+  snapshot_sha256: 99d7518249890736dc3110816980fa170a55c65382fb791042be28f8aecd593b
+- evidence_id: e-2015
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC4617613/
+  locator: PMID:26280334, DOI:10.1038/nature14683; BioC offsets 1745,7457,8408,11277
+    and23902
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: The full structural paper distinguishes the PhnGHIJ core and PhnK association
+    from the native G/H/I/L reconstitution assembly. A persistent glycyl-radical turnover
+    mechanism is proposed; one SAM per repeated physiological substrate turnover is
+    not established. Aerobic structural Zn does not replace the active Fe-S requirement.
+  snapshot_sha256: 92e96afc18c550530f7bfb6e55d9516c0fe915ea27e4b94d48416485b96fd8c0
+- evidence_id: e-2023
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC9947105/
+  locator: PMID:36813778, DOI:10.1038/s41467-023-36604-y; introduction, dual-ABC ATPase
+    structures, Fig3 genetic complementation, results and final discussion
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: The larger Phn(GHIJKL)2 machinery contains dual PhnK/PhnL ATPases; their
+    ATPase-disrupting mutations abolish growth complementation in the described HO1488
+    background. The precise chemical step associated with remodelling remains unresolved.
+    The record treats this as explicit broader machinery context, without a fabricated
+    reaction-specific PhnK edge.
+  snapshot_sha256: b3297540045540778c329ea25211e47bf54b1b950dca1adecafa06de8399de9d
+- evidence_id: e-phne
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/15342581/
+  locator: Europe PMC MED core primary abstract; DOI:10.1128/JB.186.18.6118-6123.2004
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: Reversible phnE phase variation distinguishes transport-competent variants
+    from cryptic K-12 utilization. The record correctly limits K-12 scope to characterized
+    enzyme provenance and makes no universal growth claim. Full text was not inspected.
+  snapshot_sha256: 390f1ad0eaeef1f9ac6efce3946783d5c1e366add2139c65eeafbddc8082f2cb
+- evidence_id: e-chemistry
+  kind: authority
+  reference: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  locator: Pinned full SemanticSQL chebi.db; labels/definitions for all selected chemicals
+    and native-versus-selected structure statements for seven protonation pairs
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: supports
+  summary: All selected labels/definitions match the independent ChEBI 255 authority.
+    The seven complete InChI/scaffold comparisons differ only by protonation layer,
+    retaining alpha-D stereochemistry. Native-to-selected correspondence is described
+    as a charge-form mapping, not skos:exactMatch.
+- evidence_id: e-authorities
+  kind: authority
+  reference: research/pathway_additions/2026-10-10-frl-phn/authority-integration.json
+  locator: Final 97 source-manifest inputs; regenerated ontology/source snapshots
+    and comparison against git d83a2f0
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: Independent comparison preserves all 1257 baseline ontology terms and four
+    provenance blocks, adding 17 terms; all 1572 baseline source terms and 88 provenance
+    blocks are preserved, adding 11 terms and one PathBank source. Root verified full
+    pinned ontology bytes and 96 pre-existing source artifacts. Fresh UniProt mechanistic
+    downloads are distinct from preserved independent name-authority inputs. Rhea
+    139 identifier authority is distinct from Rhea 142 reaction evidence.
+  snapshot_sha256: 10166c5ab98529b61ff5baef17111e1c92efaed7f25de4a359ebef18ff8b4de6
+- evidence_id: e-projection
+  kind: record_content
+  reference: research/pathway_additions/2026-10-10-frl-phn/methylphosphonate-source-projection.json
+  locator: Complete native graph, manual native/UniProt/Rhea reaction correspondences,22
+    source side coefficients, seven chemical-form dispositions, protein comments,
+    primary source dispositions and order limitation
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: Projection statements were checked against the independently inspected
+    raw sources. Native PathBank supplies no Rhea crosswalk; EC/chemistry/protein
+    correspondence is explicitly curator-derived. Rejected fulltext retrieval bodies
+    are not treated as articles.
+  snapshot_sha256: 66243fdda628b8e5f14baadc0dcc2f3796cffc73e1569f66f1f5486e4d27ec03
+- evidence_id: e-source-audit
+  kind: validation
+  reference: /private/tmp/pathwaymech-phn-review/source-audit.json
+  locator: Reviewer-owned audit_sources.py result against final target hash
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: Exact independent checks pass for22 Rhea side locators/coefficients, four
+    native reaction members, four complex components, seven protein identities/taxa/names,
+    four EC/master bridges, all retained literal quotes, reference titles and local
+    endpoints. Initial audit-script assumptions about generic contains triples and
+    additional Catalysis pathway components were corrected against raw RDF/XML before
+    the passing audit; these were review-script errors, not record defects.
+  snapshot_sha256: bf5fba8595d8af822e32d0a9f1e438fa71a387276067c4e8735ecff71fded405
+- evidence_id: e-imodulondb
+  kind: database
+  reference: https://imodulondb.org/
+  locator: Canonical adapter datasets receipt and query phn in e_coli/precise_mg1655;
+    /private/tmp/pathwaymech-frl-phn-imodulondb-phn.md
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: context_only
+  summary: Ten gene matches and zero iModulon matches provide bounded gene context.
+    Relevant keys include b4092(phnP),b4095(phnM),b4096(phnL),b4098(phnJ),b4099(phnI);
+    b4097(phnK) is broader machinery context. No component summary was applicable,
+    and missing returned genes are not negative evidence.
+- evidence_id: e-search
+  kind: search
+  reference: Task worktree data/pathways and repository YAML inputs
+  locator: Exact SMP0002077, Methylphosphonate Degradation I, slug and four selected
+    Rhea IDs
+  accessed_at: '2026-10-10T21:26:31Z'
+  support: context_only
+  summary: Only the assigned maintained pathway was returned for this exact identity
+    in the bounded worktree search. This does not establish global novelty or source
+    exhaustion.
+  search_scope: rg --no-ignore --hidden searched data/pathways for exact ID/title/slug/Rhea
+    identifiers and repository YAML inputs for exact ID/title. Hidden and ignored
+    files were included; Git internals, virtual-environment dependencies, generated
+    pages/build output and historical reviews were excluded from the broader YAML
+    search.
+- evidence_id: e-correction
+  kind: record_content
+  reference: https://github.com/CultureBotAI/PathwayMech/issues/317
+  locator: Removed methylphosphonate-edge-031 and CHEBI:18420; retained MgATP condition
+    on catalytic edge027 and corrected research ledgers
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: Adversarial review identified the unsupported typed complex-magnesium cofactor
+    relation. The author removed that relation and unused participant, retaining the
+    experimentally supported substrate/assay condition. Reinspection confirms the
+    exact bounded correction. No predecessor structured finding existed; this records
+    a corrected assessment rather than inventing resolved finding lineage.
+- evidence_id: e-export
+  kind: validation
+  reference: /private/tmp/pathwaymech-phn-review/kgx-audit.json
+  locator: Actual 161-record KGX export retained externally; all 40 methylphosphonate
+    edges and record-scoped node contexts
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: All 40 edges retain complete evidence arrays, descriptions and reference
+    metadata. The native complex is MacromolecularComplex, donor/acceptor target contexts
+    remain cofactor, and removed Mg has no target context. Global CHEBI:17499 also
+    retains an older WikiPathways:WP287 small_molecule category; this aggregate source
+    disagreement is not attributed to the new target.
+  snapshot_sha256: 802ff194df7891e516d40d7f4010ed84e6c27ef7bf999d077f94cb78ecb5147d
+- evidence_id: e-generated
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-frl-phn/generated-graph-kgx-audit.json
+  locator: Final PathBank:SMP0002077 SVG and actual KGX entry,32 SVG nodes,40 edges,62
+    evidence blocks
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: An independent integration audit verifies every SVG endpoint, node/evidence
+    anchor and geometry bound; complete target evidence/reference metadata is preserved
+    in both published and CLI KGX bytes. It explicitly excludes browser visual inspection
+    and scientific interpretation.
+  snapshot_sha256: b66272d4587dfe7ef2bb79b6525a64ab9fb4b67eef695ac3b268b294beb6bb7b
+- evidence_id: e-gates
+  kind: validation
+  reference: /private/tmp/pathwaymech-frl-phn-validate-final.log; /private/tmp/pathwaymech-frl-phn-test.log;
+    /private/tmp/pathwaymech-frl-phn-test-final.log; /private/tmp/pathwaymech-frl-phn-lint-final.log;
+    /private/tmp/pathwaymech-frl-phn-vendored.log
+  locator: Integration-agent actual final receipts, reviewer-inspected logs and working-tree
+    whitespace check
+  accessed_at: '2026-10-10T21:38:52Z'
+  support: supports
+  summary: Final validation, lint, vendored synchronization, rendering, KGX export
+    and complete test suite pass. Validation covers 161 records, 8449 evidence blocks
+    and 240 histories; final suite has 1034 passed and 3 skipped. The initial suite
+    failure on the PathBank support-status expectation is retained and superseded
+    after issue318. Target/scientific input hashes remained unchanged through that
+    one-line test correction.
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Native pathway identity and four-step boundary
+  outcome: supported
+  summary: SMP0002077, the source title and four explicit native reaction members
+    denote methylphosphonate degradation I ending at ribose 1,5-bisphosphate and methane.
+    The distinct PathWhiz filename is not used as the pathway identity. No downstream
+    PRPP or free-phosphate release is asserted.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-record
+  - e-pathbank
+  - e-2011
+  - e-phnp
+  - e-search
+  dimensions:
+  - name: taxon
+    value: NCBITaxon:83333 (Escherichia coli K-12)
+    definition: Characterized protein provenance; narrower than native BioSource 562
+      and not a universal growth phenotype.
+    evidence_ids:
+    - e-uniprot
+    - e-phne
+- assessment_id: a-chemistry
+  area: quantity
+  topic: Chemical identity, direction, coefficients and charge forms
+  outcome: supported
+  summary: All 22 retained Rhea chemical-side assertions match exact directed sides
+    and coefficient 1; all four LR choices agree with the source reaction families.
+    Native charge-form correspondence preserves stereochemistry and is not declared
+    exact identity across protonation states.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-rhea
+  - e-chemistry
+  - e-source-audit
+  - e-projection
+- assessment_id: a-catalysis
+  area: evidence
+  topic: Assembly membership and catalytic assignments
+  outcome: supported
+  summary: Four native PhnG/H/I/L component links are distinguished from the assembly
+    catalytic edge. PhnM, PhnJ and PhnP catalytic assignments match precise UniProt/Rhea
+    families and primary experiments. Accessory-subunit membership is not treated
+    as four independent catalysts.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-pathbank
+  - e-uniprot
+  - e-2011
+  - e-phnp
+  dimensions:
+  - name: component-role
+    value: Source-defined G/H/I/L assembly plus separate M,J,P enzymes
+    definition: Bounded four-step biochemical representation, not the full later Phn(GHIJKL)2
+      machinery.
+    evidence_ids:
+    - e-pathbank
+    - e-2011
+    - e-2015
+    - e-2023
+- assessment_id: a-cofactors
+  area: evidence
+  topic: Qualified cofactors and corrected magnesium inference
+  outcome: supported
+  summary: The final graph retains reduced Fe4S4 for PhnJ and separately qualified
+    Mn/Zn roles for PhnP. MgATP remains a substrate/assay condition after removal
+    of the unsupported complex-cofactor edge. This correction does not establish magnesium
+    independence.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-uniprot
+  - e-2011
+  - e-metals
+  - e-correction
+- assessment_id: a-sam
+  area: representation
+  topic: Activation chemistry versus physiological turnover
+  outcome: supported
+  summary: The Rhea reference equation includes SAM cleavage products and generic
+    donor/acceptor classes, while record and edge descriptions explicitly decline
+    a fixed physiological SAM-to-substrate turnover ratio or a unique physiological
+    reductant. The current edge schema cannot split activation from repeated catalysis.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-rhea
+  - e-2011
+  - e-2015
+  - e-record
+- assessment_id: a-order
+  area: graph
+  topic: Material transfer and local graph shape
+  outcome: supported
+  summary: Three provides_input_for links follow exactly shared Rhea intermediates
+    and primary experimental sequence. Native pathwayOrder membership is not misrepresented
+    as nextStep evidence. All final local endpoints and source references resolve.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-pathbank
+  - e-rhea
+  - e-2011
+  - e-source-audit
+- assessment_id: a-scope
+  area: scope
+  topic: Taxon, later machinery and transport phenotype
+  outcome: supported
+  summary: K-12 protein provenance is supported independently for all seven proteins.
+    The record explicitly retains phnE transport limits, excludes a universal growth
+    claim, and distinguishes later PhnK/PhnL whole-utilization evidence from unsupported
+    assignment to a specific native reaction.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-uniprot
+  - e-phne
+  - e-2015
+  - e-2023
+  - e-record
+- assessment_id: a-grounding
+  area: grounding
+  topic: Independent authorities and preserved provenance
+  outcome: supported
+  summary: Canonical pathway identity and external entities are independently grounded.
+    Local PathBank graph existence does not itself prove membership or catalysis;
+    those claims have separate native and primary evidence. Authority additions preserve
+    all baseline terms and provenance.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-authorities
+  - e-pathbank
+  - e-chemistry
+  - e-uniprot
+- assessment_id: a-transcriptomics
+  area: scope
+  topic: Structured source cross-check
+  outcome: supported
+  summary: The covered MG1655 adapter results remain gene context only; no expression-module
+    or causal mechanism is inferred.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-imodulondb
+- assessment_id: a-validation
+  area: schema
+  topic: Final structural and generated-artifact gates
+  outcome: supported
+  summary: Final required gates pass after target and supporting inputs froze. Deterministic
+    source/identifier/export checks supplement rather than replace this scientific
+    review.
+  target_ids:
+  - PathBank:SMP0002077
+  evidence_ids:
+  - e-source-audit
+  - e-export
+  - e-generated
+  - e-gates
+  - e-record
+findings: []
+actions: []
+limitations:
+- The maintained route is a bounded source-defined four-step biochemical map, not
+  a complete cellular utilization model. PhnCDE transport, PhnF regulation, PhnN conversion
+  to PRPP, alternative substrates and exact later complex dynamics remain outside
+  it.
+- The generic Rhea hydrogen donor/acceptor classes do not identify a physiological
+  electron donor. Experimental dithionite is not asserted as the native donor.
+- SAM cleavage products describe the activation-associated reference equation; fixed
+  stoichiometry across repeated physiological turnover is not established. The edge
+  schema does not model activation and subsequent turnover as separate cycles.
+- The PhnP 2009/2011 and phnE primary claims were bounded to inspected primary abstracts
+  and corroborating curated objects. Error/help XML retrieval bodies were rejected;
+  unavailable full texts were not claimed as inspected.
+- Biochemical reconstitution and K-12 protein annotation do not prove growth of every
+  strain or phnE phase state. The larger PhnK/PhnL machinery evidence is contextual
+  where a precise reaction-specific assignment is unresolved.
+- No interactive browser visual check was available; generated SVG endpoint, geometry
+  and evidence-anchor audits passed.
+- The actual corpus KGX export aggregates CHEBI:17499 as ChemicalEntity|SmallMolecule
+  because older WikiPathways:WP287 contributes a small_molecule classification. The
+  reviewed target retains its correct cofactor source context; the older record was
+  not scientifically reviewed here.
+- This reviewer authored supporting PathBank authority code/policy and supplied source
+  facts; target YAML and mechanistic notes were authored separately. Independent technical
+  audit of that supporting code is documented separately.
+- The review assesses one pathway scientifically. Full-corpus gates do not imply new
+  scientific review of all maintained pathways. Public-release data licensing remains
+  outside this authorized local curation review.
+notes:
+- A genuine unsupported magnesium edge was corrected during the review and tracked
+  in https://github.com/CultureBotAI/PathwayMech/issues/317. There is no fabricated
+  resolved structured finding because no predecessor bundle had been saved.
+- 'The initial full suite failed on the existing PathBank support-status expectation
+  after intentional source activation. Issue #318 changed that assertion to active;
+  the failed run and final rerun are both retained as actual checks.'
+- Input hashes were captured before assessment and again after changed authority/record/research
+  inputs were explicitly rechecked. The final saved source block describes the corrected
+  working tree.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/317
+- https://github.com/CultureBotAI/PathwayMech/issues/318
+```
