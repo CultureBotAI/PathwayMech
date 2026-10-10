@@ -60,6 +60,7 @@ ALLOWED_CURIE_PREFIXES = {
     "PMID",
     "PubChem",
     "RHEA",
+    "RHEA-COMP",
     "Reactome",
     "SGD",
     "TubercuList",

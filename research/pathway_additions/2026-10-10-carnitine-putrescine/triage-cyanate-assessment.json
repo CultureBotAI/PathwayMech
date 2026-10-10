@@ -1,0 +1,78 @@
+{
+  "candidate": "PathBank:SMP0002111",
+  "native_member": "PW002099.owl",
+  "native_sha256": "d8616300c7c407dffc277f8247cfc95ea3a9f9c6ad4a3ef4dcd8dc2f3bfec604",
+  "independent_pathway_definition": "MetaCyc:CYANCAT-PWY",
+  "frozen_screening_row": {
+    "member": "PW002099.owl",
+    "sha256": "d8616300c7c407dffc277f8247cfc95ea3a9f9c6ad4a3ef4dcd8dc2f3bfec604",
+    "explicit_microbial_biosources": "Escherichia coli",
+    "pathway_object_count": "1",
+    "document_reaction_count": "3",
+    "native_pathway_ids": "PathBank:SMP0002111",
+    "native_titles": "Cyanate Degradation",
+    "screening_class": "single_pathway_ge2_document_reactions",
+    "exact_record_id_matches": "",
+    "exact_record_title_matches": "",
+    "disposition": "needs_scientific_review_and_semantic_deduplication"
+  },
+  "scope": {
+    "native": "Escherichia coli / NCBITaxon:562",
+    "reviewed_proteins": "Escherichia coli K-12 / NCBITaxon:83333"
+  },
+  "scientific_facts": [
+    {
+      "source": "PW002099.owl",
+      "locator": "Reactions/6123; Reactions/5907; Reactions/6122; Transports/512; Catalysis objects",
+      "fact": "Native three reactions represent cyanase, carbamate decomposition and carbonic anhydrase recycling; one transport assigns periplasm→cytosol cyanate uptake to CynX/P17583. Reactions/5907 has no catalyst but spontaneous=false. Native neutral carbamic acidCHEBI28616 plus2H+→NH4+CO2 must not be copied as normalized charged carbamate chemistry."
+    },
+    {
+      "source": "PW002099.owl",
+      "locator": "ProteinComplex/1171/component; ProteinReference objects P0ABE9 and P61517",
+      "fact": "One native carbonic anhydrase complex contains CynT/P0ABE9 and Can/P61517. Independent reviewed entries and primary results describe separate carbonic anhydrases, not this mixed assembly."
+    },
+    {
+      "source": "cyanate-metacyc.xml",
+      "locator": "Pathway[@frameid=CYANCAT-PWY]/comment; reaction-list; reaction-ordering; reaction-layout",
+      "fact": "MetaCyc22.5 defines R524-RXN, RXN0-5222 and RXN0-5224 as a bicarbonate-recycling cycle. Its comment explicitly describes unstable carbamate spontaneously decomposing to CO2 and ammonia and carbonic anhydrase requirement at atmospheric CO2. Source layout selects CO2→bicarbonate for the regeneration reaction."
+    },
+    {
+      "source": "primary-metadata.json",
+      "locator": "resultList/result[id=8444806]/abstractText",
+      "fact": "At0.03%CO2, cynT-deficient E. coli retained active cyanase yet could not degrade cyanate/use it as sole nitrogen source;3%CO2 rescued the phenotype. CynX mutations did not alter examined traits and the physiological function was unresolved in this study."
+    },
+    {
+      "source": "cyanate-primary-extra.json",
+      "locator": "resultList/result[id=1740425,3110153,11316870,14563877]/abstractText",
+      "fact": "CynT is an oligomeric zinc carbonic anhydrase; isotope evidence establishes bicarbonate as a cyanase substrate and supports carbamate intermediate formation; Can is a separate active carbonic anhydrase. Induced CynT can substitute for Can under stated growth conditions, supporting alternative enzymes rather than a joint complex."
+    },
+    {
+      "source": [
+        "uniprot-P00816.json",
+        "uniprot-P0ABE9.json",
+        "uniprot-P61517.json",
+        "uniprot-P17583.json"
+      ],
+      "locator": "comments[FUNCTION,CATALYTIC ACTIVITY,COFACTOR,SUBUNIT]",
+      "fact": "CynS gives net Rhea11120 cyanate+bicarbonate+3H+→NH4+2CO2. CynT and Can each give Rhea10748 reversible carbonic anhydrase chemistry; each zinc annotation is tied to its own evidence. P17583 currently calls CynX an active cyanate importer without an inline evidence code in that function comment, contrasting with the unresolved role in PMID8444806."
+    },
+    {
+      "source": [
+        "reports/causal_graph_review/metacyc-review.json",
+        "data/pathways/l-arginine-degradation-v.yaml"
+      ],
+      "locator": "RXN0-5222 mapping; RHEA:15650; CHEBI:13941",
+      "fact": "Carbamate decay already occurs in the arginine route as RHEA15650. This shared reaction does not duplicate the cyanate pathway; use it as an authority lead and recheck its exact issuing-source chemistry before addition."
+    }
+  ],
+  "disposition": "prioritize_for_curation_with_corrected_catalyst_and_spontaneous_step_scope",
+  "eligible_in_principle": true,
+  "record_created": false,
+  "unresolved": [
+    "Inspect exact full MetaCyc reaction objects and pinned Rhea sides/coefficients; pathway-layout primary reactants omit some cofactors and are not complete equations.",
+    "Keep carbamate/carbamic-acid protonation consistent; do not mix Rhea net cyanase with explicit intermediate steps as additional independent conversions.",
+    "Do not assert native CynT+Can heteromer or an experimentally established CynX transport mechanism based only on these inspected sources.",
+    "MetaCyc enzymes-not-used names CPLX0-7521; its identity was not inspected and must not be guessed."
+  ],
+  "next_bounded_action": "Curate a narrowly scoped E. coli CynS+CynT bicarbonate-recycling pathway from the explicit MetaCyc cycle and primary evidence; verify Rhea directions/charge forms first. Keep nonenzymatic carbamate decay explicit or explain the chosen net-reaction projection. Exclude unsupported native mixed assembly and leave CynX as unresolved context unless further evidence resolves it."
+}

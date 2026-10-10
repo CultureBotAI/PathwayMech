@@ -1,0 +1,683 @@
+schema_version: 1.0.0
+review_id: 20261010T221038Z-putrescine-ii-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of putrescine degradation II
+started_at: '2026-10-10T22:03:42Z'
+finished_at: '2026-10-10T22:10:38Z'
+reviewer:
+  identity: Codex independent putrescine scientific reviewer (/root/pathway_authority_cache)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: A different agent authored the target YAML and its research
+    notes. This reviewer did not author or edit those files and independently inspected
+    native source objects, issuing-authority chemistry, protein annotations and primary
+    text. The reviewer authored the separate carnitine record in this batch and the
+    previously merged PathBank authority parser/policy; independence is claimed for
+    this target scientific assessment, not for that shared supporting implementation.
+    Separate technical review covered the new Rhea-component extension.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The exact native PathBank identity and explicitly bounded four-enzyme glutamylation
+  core are supported. All 23 Rhea chemical-side occurrences, including the two-hydron
+  coefficient in PuuC, preserve exact forms and balanced equations. Native intermediate
+  structure errors and the PuuB water/hydron conflict are explicitly resolved using
+  independent ChEBI/Rhea evidence. Catalysis, PuuA dodecamer and PuuD homodimer, alternative
+  PuuA metals and three material connections have scoped support. No corrective finding
+  remains. Abstract-only access to older original studies, heterogeneous annotation
+  evidence, selected NADP chemistry and condition-dependent physiology limit the conclusion.
+source:
+  git_revision: 5766cf2fe227afc248a72e455f74f4c5ddda9d97
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: d1d18735600fe87f44822cfbc2448c82c10764fec2d45a9780a52c694a892d63
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 27ee62d867323b83532cfc8ac5fc55c49163ffc4cdb9ca6835bdab87fa76f322
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 0992ab0a7d05ea6a841bcda6a6c3d8be9a97153545c0e3d57eeee46802761bf1
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: a2d9153a9a252cafc562515a1cff8fec764aa6a130dc97b07ec9c1ae24ccd42e
+    role: context
+  - path: data/pathways/putrescine-degradation-ii.yaml
+    sha256: 92dd03c0886b7b6a30ad87219f380e80c9e10ef087f3b10dacccdb69f3ab2b3f
+    role: target
+  - path: research/pathway_additions/2026-10-10-carnitine-putrescine/authority-integration.json
+    sha256: 756b534ece3797a3585f2360f660da6915272ccd7211be078a5869cb52e336f7
+    role: context
+  - path: research/pathway_additions/2026-10-10-carnitine-putrescine/generated-graph-kgx-audit.json
+    sha256: a49c8122269fc29bbf00d8bd2856e5eefee2f146a006c1eb002b063102547d46
+    role: context
+  - path: research/pathway_additions/2026-10-10-carnitine-putrescine/putrescine-curation.md
+    sha256: 1cebc6b91b8166a4877782868991a88e69d157efccfc8f6100194a1aba07e32c
+    role: context
+  - path: research/pathway_additions/2026-10-10-carnitine-putrescine/putrescine-source-manifest.json
+    sha256: 47a5a4a71ee871fb6b5d5cf3fd91ba25d4b21911aa20e2549ae3efc77885a859
+    role: context
+  - path: research/pathway_additions/2026-10-10-carnitine-putrescine/putrescine-source-projection.json
+    sha256: 5584311d9111b6176e569d396ef93b5500006ce0e1497e6002fa606fc0e893fc
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+scope:
+  description: Scientific review of one maintained pathway and its exact identity/evidence
+    inputs. Every local node, reaction, edge and reference was inspected.
+  selection: Exact PathBank:SMP0002067 and data/pathways/putrescine-degradation-ii.yaml
+    assigned by the integration agent.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - PathBank:SMP0002067
+  exclusions:
+  - target: data/pathways/l-carnitine-degradation-i.yaml
+    reason: Authored by this reviewer and independently assessed by another agent;
+      excluded from this scientific verdict.
+  - target: Other maintained pathways and source candidates
+    reason: Integrated gates cover structure, not fresh scientific review of those
+      records.
+targets:
+- target_id: PathBank:SMP0002067
+  path: data/pathways/putrescine-degradation-ii.yaml
+  label: Putrescine Degradation II
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/putrescine-degradation-ii.yaml
+    role: maintained
+checks:
+- check_id: c-source
+  name: Independent source audit
+  status: passed
+  required: false
+  summary: Exit 0; raw RDF/ChEBI chemistry and literal primary evidence replay agree
+    with target.
+  target_ids:
+  - PathBank:SMP0002067
+  command: .venv/bin/python /private/tmp/pathwaymech-putrescine-independent-source-check.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-source-check
+- check_id: c-diff
+  name: Whitespace gate
+  status: passed
+  required: true
+  summary: Exit 0 on final shared inputs.
+  target_ids:
+  - PathBank:SMP0002067
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+- check_id: c-datasets
+  name: Structured dataset discovery
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  summary: Exit 0; dataset list includes e_coli/precise_mg1655. Actual log /private/tmp/pathwaymech-carnitine-putrescine-imodulondb-datasets.md.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-context
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-imodulon-search
+  name: Structured puu lookup
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query puu
+  summary: Exit 0; seven gene hits and Putrescine component 71. Actual log /private/tmp/pathwaymech-carnitine-putrescine-imodulondb-puu.md.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-context
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-imodulon-summary-initial
+  name: Initial module summary attempt
+  status: failed
+  required: false
+  target_ids:
+  - PathBank:SMP0002067
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb summarize --organism e_coli --dataset precise_mg1655 --k 71
+  summary: 'Initial sandbox attempt exited 2: urlopen DNS Errno8 fetching the module
+    genes endpoint. No biological inference was drawn. The explicitly authorized network
+    retry below succeeded.'
+  evidence_ids:
+  - e-context
+  scope_note: Integration-agent receipt; retained so that the successful retry does
+    not conceal a network failure.
+  exit_code: 2
+  expected_exit_code: 0
+- check_id: c-imodulon-summary
+  name: Putrescine module summary
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb summarize --organism e_coli --dataset precise_mg1655 --k 71
+  summary: Authorized network retry exit 0; eight members include PuuA/B/C/D; context
+    only. Actual log /private/tmp/pathwaymech-carnitine-putrescine-imodulondb-puu-summary.md.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-context
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-render
+  name: Final render
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  summary: Exit 0; final target page generated. Actual log /private/tmp/pathwaymech-carnitine-putrescine-render.log.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-lint
+  name: Final lint
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  summary: Exit 0; final source lint passed. Actual log /private/tmp/pathwaymech-carnitine-putrescine-lint.log.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-vendored
+  name: Final vendored
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    vendored-check
+  summary: Exit 0; all 22 governed artifacts match. Actual log /private/tmp/pathwaymech-carnitine-putrescine-vendored.log.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-kgx
+  name: Final kgx
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export
+  summary: Exit 0; actual CLI output copied externally and compared byte-for-byte
+    with published downloads. Actual log /private/tmp/pathwaymech-carnitine-putrescine-kgx.log.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-graph
+  name: Independent generated graph/KGX audit
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python /private/tmp/pathwaymech-carnitine-putrescine-graph-audit.py --root
+    /private/tmp/pathwaymech-carnitine-putrescine-20261010 --comparison-kgx-dir /private/tmp/pathwaymech-carnitine-putrescine-kgx
+    --receipt research/pathway_additions/2026-10-10-carnitine-putrescine/generated-graph-kgx-audit.json
+  summary: Exit 0; both target graphs preserve 70 edges and 112 evidence blocks; this
+    target contributes 38 edges, 59 evidence blocks and 29 SVG nodes.
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-generated
+  scope_note: Integration agent executed the command in this batch and supplied the
+    exit receipt; reviewer inspected retained output. These technical checks do not
+    substitute for source-level scientific interpretation.
+- check_id: c-validate
+  name: Final complete validation gate
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Exit 0; 163 native/closed/identifier-validated records, 8561 evidence blocks,
+    30 sources, 243 history records, 6 documentation files and current pages. Actual
+    log /private/tmp/pathwaymech-carnitine-putrescine-validate.log.
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent executed the final frozen-input command; reviewer
+    inspected the completed log and received its exit receipt.
+- check_id: c-review-draft-initial
+  name: Review draft contract initial
+  status: failed
+  required: false
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py validate /private/tmp/pathwaymech-putrescine-review-draft.yaml
+  exit_code: 1
+  expected_exit_code: 0
+  summary: Initial partial-draft contract validation failed because the earlier integration-agent
+    DNS failure lacked its numeric exit receipt. The receipt was obtained (exit 2)
+    and recorded; no scientific target assertion changed.
+  evidence_ids:
+  - e-gates
+- check_id: c-review-draft-corrected
+  name: Review draft contract corrected
+  status: passed
+  required: false
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py validate /private/tmp/pathwaymech-putrescine-review-draft.yaml
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Corrected partial-draft contract validation passed after the real initial
+    DNS exit code was supplied. This checks report structure only; final completed
+    save remains after the full-suite receipt.
+  evidence_ids:
+  - e-gates
+- check_id: c-test
+  name: Final full test suite
+  status: passed
+  required: true
+  target_ids:
+  - PathBank:SMP0002067
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  summary: 'Exit 0: 1043 passed, 3 skipped and 3 upstream deprecation warnings in
+    322.13 seconds. Actual log /private/tmp/pathwaymech-carnitine-putrescine-test.log.'
+  evidence_ids:
+  - e-gates
+  scope_note: Integration agent completed the final frozen-input full suite and confirmed
+    exit 0; reviewer inspected the completed actual log.
+evidence:
+- evidence_id: e-record
+  kind: record_content
+  reference: data/pathways/putrescine-degradation-ii.yaml
+  locator: 'Complete frozen YAML: 24 participants, 4 reactions, 38 mechanistic edges,
+    59 evidence blocks, one taxon and exact pathway identity'
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: All target content was read, including edge-local limitations, source assertions
+    and reference digest scopes.
+  snapshot_sha256: 92dd03c0886b7b6a30ad87219f380e80c9e10ef087f3b10dacccdb69f3ab2b3f
+- evidence_id: e-native
+  kind: database
+  reference: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  locator: Exact PW002054.owl member; pathway URI/SMPDB/PathWhiz xrefs; Reactions5997/5998/6000/6001;
+    Catalysis5960/5961/5963/5964; complexes4033/1396 and protein-reference chains
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: Independent raw XML inspection verifies exact identity, four reaction memberships,
+    controller proteins, twelve-copy PuuA and two-copy PuuD assemblies. Native transport
+    objects are present and excluded explicitly. No native Rhea exactMatch is asserted.
+  snapshot_sha256: 0aa406cfc7c31bc502c695a85a4d1c5b2bf2c8d9d2de4bba6e45195b5a86585e
+- evidence_id: e-chemistry
+  kind: authority
+  reference: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  locator: Complete read-only /Users/marcin/.data/oaklib/chebi.db; all 18 named chemical
+    labels; CHEBI58731/61508/58800/49260/59888 definitions, charges and SMILES
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: Exact L-gamma-glutamyl amide connectivity and charged forms are supported
+    independently. Native PW_C042556 lacks the glutamyl amide topology; PW_C044519
+    is also incompatible. The retained structures and explicit rejection of those
+    native strings are sound.
+  snapshot_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- evidence_id: e-rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Release142 masters13633/28414/28410/19737 and LR13634/28415/28411/19738;
+    merged RDF descriptions; substrate/product sides; contains1/contains2; participant/compound/accession
+    chains
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: Independent traversal of the full gzip recovered55 relevant subjects. All
+    23 side occurrences and coefficients match the target. Four equations independently
+    balance atoms and charge. PuuB uses water rather than native hydron; PuuC produces
+    two hydrons. All three consecutive intermediate handoffs use identical charged
+    species.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-proteins
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/
+  locator: 'Preserved P78061/P37906/P23883/P76038 JSON: primaryAccession, recommendedName,
+    organism83333, FUNCTION, CATALYTIC ACTIVITY, physiologicalReactions, PATHWAY,
+    SUBUNIT, COFACTOR and evidence codes'
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: All four reviewed identities and K-12 provenance match. Catalyst masters
+    and step1–4 annotations align. PuuA explicitly requires Mg with Mn substitution;
+    the claim is not inferred from MgATP. Assembly annotations support dodecamer/homodimer.
+    PuuB code absence and PuuC NAD/NADP alternatives are preserved.
+- evidence_id: e-2005
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/15590624/
+  locator: Europe PMC primary-pmids.json result id15590624; indexed abstract; DOI10.1074/jbc.M411114200
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: The original indexed abstract supports sequential glutamylation, oxidation,
+    aldehyde dehydrogenation and glutamyl-bond hydrolysis. Its wider import and downstream
+    transamination scope is not silently adopted. Two short quotes are exact.
+  snapshot_sha256: e12c1d8a9c6c63a70230c956dc2bd2f2738ee6e535b0d064985a4fedb4582be3
+- evidence_id: e-puua
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/18495664/
+  locator: Europe PMC additional-pmids.json result id18495664; indexed abstract; DOI10.1074/jbc.M800133200
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: Purified untagged PuuA performs ATP-dependent gamma-glutamylation and exists
+    as a dodecamer. The literal catalytic quote matches. Kinetic constants and broadly
+    phrased essentiality are not generalized.
+  snapshot_sha256: 2ba64d737aee6d12255978ac5bfb29c59ab71c4ece1171bb160e02197a5e2dd4
+- evidence_id: e-puud
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/16499623/
+  locator: Europe PMC primary-pmids.json result id16499623; indexed abstract; DOI10.1111/j.1574-6968.2006.00137.x
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: Purified PuuD hydrolytic function and intermediate accumulation in its
+    deletion strain support the terminal core step. The literal purification quote
+    matches. Its homodimer claim is attributed to inspected UniProt experimental annotation
+    rather than invented as an abstract quotation.
+  snapshot_sha256: e12c1d8a9c6c63a70230c956dc2bd2f2738ee6e535b0d064985a4fedb4582be3
+- evidence_id: e-2012
+  kind: primary_source
+  reference: https://journals.asm.org/doi/full/10.1128/jb.05063-11
+  locator: 'Publisher full text: Introduction; Materials and Methods strains/growth;
+    Results genetics of putrescine catabolism to GABA; Table1; PMID22636776'
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: K-12 W3110-derived mutants show condition-dependent contributions of glutamylated
+    and transaminase routes. In-frame puuA/B/C mutants retain nitrogen-source growth;
+    combined route defects can prevent it. This supports the record's explicit limit
+    on universal essentiality and separation of uptake/downstream chemistry.
+- evidence_id: e-puuc-context
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/18668238/
+  locator: Europe PMC additional-pmids.json result id18668238, indexed abstract; DOI10.1007/s00253-008-1608-x
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: context_only
+  summary: Broad PuuC substrate specificity and NAD preference measured for other
+    aldehydes do not establish exclusive NADP use or a physiological cofactor ratio
+    for the selected core. The record does not make those claims.
+  snapshot_sha256: 2ba64d737aee6d12255978ac5bfb29c59ab71c4ece1171bb160e02197a5e2dd4
+- evidence_id: e-context
+  kind: database
+  reference: https://imodulondb.org/
+  locator: Current-session canonical adapter datasets; e_coli/precise_mg1655 search
+    puu and summarize k71; external rendered receipts
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: context_only
+  summary: The Putrescine module contains all four core gene products (b1297/b1298/b1300/b1301),
+    alongside PuuP/R/E and ymjE. Membership is retained only as expression context;
+    no new enzyme or regulatory edge is inferred.
+- evidence_id: e-authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-10-carnitine-putrescine/authority-integration.json
+  locator: Final source/ontology snapshots compared with gitHEAD baseline; direct
+    Rhea139 SQL labels for four selected directed reactions
+  accessed_at: '2026-10-10T22:10:38Z'
+  support: supports
+  summary: The final ontology 1293 and source 1598 term snapshots preserve every 1274/1583
+    baseline term and all baseline source metadata unchanged. Relevant native pathway/complex/protein
+    and reaction identities resolve. Exact Rhea139 labels agree with inspected Rhea142
+    chemistry; these versions are not conflated.
+- evidence_id: e-source-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-putrescine-review-source-check.json
+  locator: Independent reviewer source traversal and exact target SHA binding
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: supports
+  summary: 'Source check exit0: 23 side occurrences, all 4 atom/charge balances, 18
+    chemical labels, 4 literal primary quotes. Additional direct XML checks verify
+    both native identity xrefs and assembly stoichiometries;11 downloaded/member/adapter
+    bodies match recorded hashes.'
+  snapshot_sha256: 8be04ad35117be2f89eeef3b74a16d92e15c947368f00a4a779fcf89c09f53a0
+- evidence_id: e-prior-search
+  kind: search
+  reference: reviews/ and reports/
+  locator: rg -uu -n for exact SMP0002067 or putrescine-degradation-ii
+  accessed_at: '2026-10-10T22:05:00Z'
+  support: context_only
+  summary: No prior scientific-review occurrence for this exact target was found in
+    those trees.
+  search_scope: Both reviews and reports recursively searched including hidden and
+    ignored files; .pyc files excluded. No repository-wide absence claim.
+- evidence_id: e-generated
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-carnitine-putrescine/generated-graph-kgx-audit.json
+  locator: Independent integration audit, putrescine record section and complete published/CLI
+    KGX comparison
+  accessed_at: '2026-10-10T22:10:38Z'
+  support: supports
+  summary: For this target:30 named local nodes,29 SVG nodes,38 edges and59 evidence
+    blocks; endpoints, bounds, anchors, exact evidence/metadata and categories preserved.
+    Published downloads match the separate actual CLI export. This is structural validation,
+    not scientific evidence.
+  snapshot_sha256: a49c8122269fc29bbf00d8bd2856e5eefee2f146a006c1eb002b063102547d46
+- evidence_id: e-gates
+  kind: validation
+  reference: /private/tmp/pathwaymech-carnitine-putrescine-*.log
+  locator: Final root-run frozen-input render/validate/test/lint/vendored/KGX receipts
+  accessed_at: '2026-10-10T22:10:38Z'
+  support: supports
+  summary: Actual final receipts and logs were inspected; corpus-wide deterministic
+    gates are distinct from this scientific assessment.
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact native identity and bounded biochemical core
+  outcome: supported
+  summary: PathBank SMP0002067 is independently native-asserted; GO0009447 is broader.
+    Four curated PuuA/B/C/D steps form a coherent core to GABA. Explicit exclusions
+    prevent confusion with uptake, downstream GABA metabolism and the alternative
+    transaminase route.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-native
+  - e-record
+  - e-proteins
+  - e-2005
+  dimensions:
+  - name: scope
+    value: four-enzyme glutamylation core
+    definition: Bounded biochemical route, excluding transport/downstream metabolism
+    evidence_ids:
+    - e-native
+    - e-proteins
+- assessment_id: a-chemistry
+  area: grounding
+  topic: Exact intermediates, stereochemistry, protonation and source conflicts
+  outcome: supported
+  summary: The gamma-glutamyl linkage and L stereochemistry are authoritative, not
+    inferred from defective native labels. All 23 chemical sides preserve native Rhea
+    identities and coefficients, including water and hydron differences; four equations
+    balance.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-chemistry
+  - e-rhea
+  - e-source-check
+- assessment_id: a-catalysis
+  area: evidence
+  topic: Catalyst assignments and evidence grades
+  outcome: supported
+  summary: Catalytic nodes follow exact reviewed protein-to-Rhea annotations and independent
+    native controller links. PuuA/PuuD assembly catalysis is separated from protein
+    membership; PuuB and step-comment annotation gaps remain explicit.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-proteins
+  - e-native
+  - e-2005
+  - e-puua
+  - e-puud
+  dimensions:
+  - name: evidence_tier
+    value: primary abstract support plus inspected authoritative structured statements
+    definition: Evidence is claim-specific; absent ECO codes are not promoted to direct
+      experiments
+    evidence_ids:
+    - e-proteins
+    - e-2005
+    - e-puua
+    - e-puud
+- assessment_id: a-components
+  area: representation
+  topic: Assemblies and alternative metal cofactors
+  outcome: supported
+  summary: Native twelve-copy PuuA and two-copy PuuD assemblies agree with experimental
+    UniProt annotations. Mg is required and Mn can substitute; two cofactor edges
+    explicitly do not imply simultaneous obligatory occupancy.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-native
+  - e-proteins
+  - e-puua
+  - e-puud
+- assessment_id: a-physiology
+  area: scope
+  topic: Taxon, cofactor choice and condition-dependent utilization
+  outcome: supported
+  summary: K-12 protein provenance is supported. The NADP branch is selected without
+    denying NAD activity. The record does not repeat an unqualified PuuA essentiality
+    claim or infer whole-cell growth from the four-step core.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-proteins
+  - e-2012
+  - e-puuc-context
+  dimensions:
+  - name: taxon
+    value: NCBITaxon:83333 Escherichia coli K-12
+    definition: Protein provenance; growth conclusions remain conditional on experimental
+      strain and medium
+    evidence_ids:
+    - e-proteins
+    - e-2012
+- assessment_id: a-graph
+  area: graph
+  topic: Local graph and material connections
+  outcome: supported
+  summary: All 38 edge endpoints are local and the23 reaction-side occurrences are
+    complete. Three handoff edges connect identical intermediates. Generated graph/KGX
+    preserve source distinctions, coefficients in evidence, descriptions and all 59
+    evidence blocks.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-record
+  - e-rhea
+  - e-generated
+  - e-source-check
+- assessment_id: a-provenance
+  area: provenance
+  topic: Source version, digest scope and final input refresh
+  outcome: supported
+  summary: Raw member/body/compressed-gzip/SQL hash scopes are explicit; paper reference
+    digests cover identified multi-record abstract responses. Authority additions
+    preserve old coverage. Final input changes were inspected rather than silently
+    rehashed.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-authority
+  - e-source-check
+  - e-record
+- assessment_id: a-context
+  area: evidence
+  topic: Expression module remains contextual
+  outcome: supported
+  summary: The observed iModulon supports bounded gene-expression context for covered
+    MG1655 data. No module membership is used as direct mechanism evidence.
+  target_ids:
+  - PathBank:SMP0002067
+  evidence_ids:
+  - e-context
+findings: []
+actions: []
+limitations:
+- The original 2005, 2006 and 2008 studies were inspected as indexed primary abstracts;
+  their full methods, figures and supplementary data were unavailable in the author
+  retrievals and are not claimed inspected here. Current authoritative structured
+  assertions provide claim-specific chemistry and component support.
+- PuuB catalytic and pathway comments and PuuD pathway comment lack separate ECO annotations.
+  The record explicitly preserves that distinction rather than upgrading every claim
+  to a purified-enzyme experiment.
+- The graph chooses the native NADP PuuC variant; supported NAD activity is acknowledged
+  but not represented as a second branch. No intracellular NAD/NADP preference is
+  inferred.
+- The maintained core stops at GABA and excludes native transport and downstream succinate
+  metabolism; it is not a whole-cell flux, uptake or universal essentiality model.
+- iModulon membership is computational expression context, not experimental proof
+  of catalysis, regulation, direction or pathway identity.
+- Programmatic SVG/KGX checks do not replace a browser visual inspection. This review
+  does not claim independent authorship of the previously merged shared PathBank authority
+  parser.
+notes:
+- Initial inspection captured the frozen target and current shared inputs. The ontology
+  snapshot subsequently changed; its final additive contents and complete baseline
+  preservation were explicitly reassessed before recapturing hashes. Target YAML and
+  its source projection/manifest/curation bytes remained unchanged.
+- No prior review occurrence was found for this exact target by an ignored-inclusive
+  search of reviews and reports. There is no predecessor finding being silently retired.
+links:
+- https://pubmed.ncbi.nlm.nih.gov/15590624/
+- https://pubmed.ncbi.nlm.nih.gov/18495664/
+- https://pubmed.ncbi.nlm.nih.gov/16499623/
+- https://journals.asm.org/doi/full/10.1128/jb.05063-11
+tags:
+- putrescine
+- independent-scientific-review
+- pathbank
+- rhea
+- source-conflicts

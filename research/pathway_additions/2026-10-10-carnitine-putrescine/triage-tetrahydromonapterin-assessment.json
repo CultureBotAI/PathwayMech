@@ -1,0 +1,73 @@
+{
+  "candidate": "PathBank:SMP0002057",
+  "native_member": "PW002043.owl",
+  "native_sha256": "03f2f79e67f9cfc36a279d2bc1c409d75df5b5a5c5952f830422f490429f635f",
+  "independent_pathway_definition": "MetaCyc:PWY0-1433",
+  "frozen_screening_row": {
+    "member": "PW002043.owl",
+    "sha256": "03f2f79e67f9cfc36a279d2bc1c409d75df5b5a5c5952f830422f490429f635f",
+    "explicit_microbial_biosources": "Escherichia coli",
+    "pathway_object_count": "1",
+    "document_reaction_count": "4",
+    "native_pathway_ids": "PathBank:SMP0002057",
+    "native_titles": "Tetrahydromonapterin Biosynthesis",
+    "screening_class": "single_pathway_ge2_document_reactions",
+    "exact_record_id_matches": "",
+    "exact_record_title_matches": "",
+    "disposition": "needs_scientific_review_and_semantic_deduplication"
+  },
+  "scope": {
+    "native": "Escherichia coli / NCBITaxon:562",
+    "reviewed_proteins": "Escherichia coli K-12 / NCBITaxon:83333"
+  },
+  "scientific_facts": [
+    {
+      "source": "PW002043.owl",
+      "locator": "Reactions/3396; Reactions/5965; Reactions/5966; Reactions/5967; pathwayComponent; ReactionCatalysis/*",
+      "fact": "Four native reactions form GTP→dihydroneopterin triphosphate→dihydromonapterin triphosphate→wrong archived intermediate→tetrahydromonapterin. Three catalysts are FolE/P0A6T5, FolX/P0AC19, FolM/P0AFS3; Reactions/5966 has no catalyst. FolE complex has10 subunits and FolX8."
+    },
+    {
+      "source": "PW002043.owl",
+      "locator": "CompoundReference/PW_C011995; Compound/PW_C011995; Reactions/5966/right; Reactions/5967/left",
+      "fact": "Both intermediate positions point to Dihydromethysticin, C15H16O5, CHEBI1034670, PubChem229852, HMDB0030791 and ChemSpider200147. This is a whole-compound source error, not a label-only discrepancy."
+    },
+    {
+      "source": [
+        "pubchem-229852.json",
+        "chebi-ols-182794.json",
+        "chebi-ols-71175.json",
+        "chebi-ols-71177.json"
+      ],
+      "locator": "PubChem PropertyTable/Properties; OLS _embedded/terms label, annotation, is_obsolete",
+      "fact": "PubChem229852 and current CHEBI182794 identify the same C15H16O5 dihydromethysticin structure. Correct pterin intermediate CHEBI71175 is C9H13N5O4 and product CHEBI71177 is C9H15N5O4. Failed current requests for1034670 do not establish its formal obsoletion or a replacement mapping."
+    },
+    {
+      "source": "tetrahydromonapterin-metacyc.xml",
+      "locator": "Pathway[@frameid=PWY0-1433]/reaction-list; reaction-ordering; reaction-layout; hypothetical-reactions",
+      "fact": "Independent MetaCyc22.5 defines GTP-CYCLOHYDRO-I-RXN→H2NTPEPIM-RXN→RXN0-6368→RXN0-6367. The middle product is CPD-11770 (dihydromonapterin), not dihydromethysticin. RXN0-6368 dephosphorylation is explicitly hypothetical. Final reduction selects right-to-left in MetaCyc equation orientation."
+    },
+    {
+      "source": [
+        "uniprot-P0A6T5.json",
+        "uniprot-P0AC19.json",
+        "uniprot-P0AFS3.json"
+      ],
+      "locator": "comments[CATALYTIC ACTIVITY, FUNCTION, SUBUNIT]; organism",
+      "fact": "Reviewed K-12 proteins carry Rhea17473 FolE,28346 FolX,34847 FolM. FolM canonical name is dihydromonapterin reductase; separate secondary dihydrofolate reductionRhea15009 is not this route. FolX and FolM source evidence includes ECO0000269/PMID19897652."
+    },
+    {
+      "source": "primary-metadata.json",
+      "locator": "resultList/result[id=19897652]/abstractText",
+      "fact": "Genetic and biochemical evidence supports FolX/FolM tetrahydromonapterin synthesis. The abstract reports purified FolM NADPH-dependent activity; it does not identify the dephosphorylating enzyme. Pseudomonas phenylalanine hydroxylase cofactor use must not be assigned to E. coli."
+    }
+  ],
+  "disposition": "valid_multienzyme_pathway_requires_source_correction_and_hypothetical_step_decision",
+  "eligible_in_principle": true,
+  "record_created": false,
+  "unresolved": [
+    "Do not turn the source-defined hypothetical dephosphorylation into an experimentally assigned enzyme edge.",
+    "Do not reuse CHEBI1034670 or merely substitute current dihydromethysticin182794.",
+    "Full primary text and any later phosphatase identification remain uninspected."
+  ],
+  "next_bounded_action": "Inspect exact MetaCyc:RXN0-6368 reaction and primary/later phosphatase evidence; then choose an explicitly limited graph with hypothetical-step uncertainty if permitted, or defer the complete route. Use verified pterin identities. Do not automatically reject the whole pathway because the archive compound is wrong."
+}

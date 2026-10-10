@@ -1,0 +1,59 @@
+{
+  "kind": "independent_technical_adversarial_review_not_record_scientific_review",
+  "reviewed_at": "2026-10-10T22:02:50.025177+00:00",
+  "worktree": "/private/tmp/pathwaymech-carnitine-putrescine-20261010",
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/320",
+  "conclusion": "No actionable defect found in reviewed RHEA-COMP implementation. Full repository gates and final snapshot publication remain parent-owned.",
+  "reviewed_inputs": {
+    "scripts/build_source_identifier_snapshot.py": "87b1ecb977fdaad0e5355e9591c5e937aa91970fa8d5c65c77ea602ca8ea915e",
+    "src/pathwaymech/schema.py": "46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f",
+    "src/pathwaymech/schema/pathwaymech.yaml": "679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797",
+    "conf/identifier_policy.yaml": "d1d18735600fe87f44822cfbc2448c82c10764fec2d45a9780a52c694a892d63",
+    "docs/IDENTIFIERS.md": "77632d2883c161785f010b2c2e39bcd22215000bf4375aab586f3b7f9185d145",
+    ".claude/skills/add-pathway/SKILL.md": "296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d",
+    "tests/test_rhea_component_authority.py": "4aae7221e7ec6c9a3b1f025e4a31561f5b8ca0484245bd070247c291ee98d258"
+  },
+  "tests": {
+    "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv run pytest -q tests/test_rhea_component_authority.py",
+    "exit_code": 0,
+    "result": "9 passed in 0.18s"
+  },
+  "real_authority_check": {
+    "path": "/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz",
+    "sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf",
+    "release_file": "/private/tmp/pathwaymech-curation-authorities/rhea-rhea-release.properties",
+    "release_file_sha256": "4259110467406048a19f7dd797bc3f0506736d1cf2a8327f67ec7b10043fc5d4",
+    "release_number": "142",
+    "release_date": "2026-09-02",
+    "extractor": "scripts.build_source_identifier_snapshot.rhea_component_terms",
+    "complete_gzip_parse_succeeded": true,
+    "whole_generic_polypeptide_count": 1268,
+    "selected_terms": {
+      "RHEA-COMP:10685": "oxidized [electron-transfer flavoprotein]",
+      "RHEA-COMP:10686": "reduced [electron-transfer flavoprotein]"
+    },
+    "raw_identity_check": "Each exact Compound_10685/10686 URI has matching rh:id, GENERIC accession, rh:name and explicit GenericPolypeptide class. Each has a separate reactivePart Compound_..._rp1.",
+    "separate_reactive_parts": {
+      "Compound_10685_rp1": "FAD / CHEBI:57692",
+      "Compound_10686_rp1": "FADH2 / CHEBI:58307"
+    }
+  },
+  "uniprot_crosscheck": {
+    "path": "/private/tmp/pathwaymech-carnitine-putrescine-evidence/carnitine/uniprot-P60584.json",
+    "sha256": "fb7c50d1e1b6635a32d938f51f83938b983abbd935b8aacab9c1797ea723a164",
+    "locator": "comments[commentType=CATALYTIC ACTIVITY].reaction.reactionCrossReferences",
+    "fact": "Reviewed CaiA record exposes IDs RHEA-COMP:10685 and RHEA-COMP:10686 under database=Rhea in the RHEA:51584 catalytic annotation. These are the same whole-carrier states named by native Compound objects; ChEBI reactive-part xrefs coexist and are not interchangeable whole-protein IDs."
+  },
+  "policy_assessment": [
+    "New namespace is in native and closed schemas, SOURCE_NAMESPACES and canonical authority policy. No contextual label exemption was added.",
+    "Extractor accepts only explicit GenericPolypeptide top-level objects; exact URI, numeric id, GENERIC accession and single nonblank name must agree; duplicate qualifying subjects fail.",
+    "Fixture tests exercise identity ambiguity, reactive-part/foreign URIs, missing/conflicting names, duplicates, source label independence and missing corpus component failure. Real pinned source extraction confirms actual RDF compatibility.",
+    "Manifest SHA256 pins authentic compressed RDF; builder verifies it before parsing. Curated labels select terms but do not supply authority labels.",
+    "Current target carrier nodes explicitly declare protein category; KGX maps the explicit category to biolink:Protein, while namespace default remains unspecified. Docs correctly avoid organism-specific identity from generic state names."
+  ],
+  "limits": [
+    "No duplicate complete source snapshot build or full gate suite was run.",
+    "This technical review does not replace independent scientific review of carnitine reaction assignments or final generated graph/export audit.",
+    "Read-only review of root-owned files; no code, schema, policy, tests or records edited."
+  ]
+}

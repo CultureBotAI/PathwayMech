@@ -1,0 +1,52 @@
+{
+  "target": "data/pathways/l-carnitine-degradation-i.yaml",
+  "target_sha256": "b007e4f9bf0d67c08c0c2262a46b6ddf4cbbc37d05ade639725f74bb008be767",
+  "checks": [
+    {
+      "check": "native and closed LinkML schema",
+      "result": "passed",
+      "detail": "One target record; 19 participants, 4 reactions, 32 edges."
+    },
+    {
+      "check": "all reaction sides, coefficients and directions",
+      "result": "passed",
+      "detail": "All 18 Rhea side occurrences exactly present, coefficient 1; all directed/master pairs match RDF and official directions TSV; both whole ETF states retained."
+    },
+    {
+      "check": "native route and assembly",
+      "result": "passed",
+      "detail": "All four native reaction memberships/controller-to-UniProt chains verified from raw XML. CaiB coefficient 2; no native nextStep assertion; pathwayOrder treated only as membership."
+    },
+    {
+      "check": "primary excerpts",
+      "result": "passed",
+      "detail": "Four exact abstract excerpts checked; each source has at most 25 quoted words. Full text not asserted inspected."
+    },
+    {
+      "check": "protein provenance",
+      "result": "passed",
+      "detail": "All four reviewed protein JSON records identify Escherichia coli K-12 NCBITaxon83333."
+    },
+    {
+      "check": "source bytes",
+      "result": "passed",
+      "detail": "Verified 8 downloaded bodies plus native XML against raw-body/member hashes; rejected retrievals remain explicitly marked."
+    },
+    {
+      "check": "actual target KGX export",
+      "result": "passed",
+      "detail": "25 nodes and 32 edges; exact evidence/description/reference metadata preservation; ETF states are proteins, CaiA FAD ChemicalEntity and CaiB MacromolecularComplex."
+    }
+  ],
+  "counts": {
+    "participants": 19,
+    "reactions": 4,
+    "edges": 32,
+    "rhea_side_edges": 18,
+    "evidence_blocks": 53,
+    "named_nodes": 25
+  },
+  "command": ".venv/bin/python /private/tmp/pathwaymech-carnitine-putrescine-evidence/carnitine/check_carnitine.py",
+  "scope": "Narrow author validation, not independent scientific review or integrated full gates. Root runs full gates after shared authority generation.",
+  "raw_source_inspection": "Rhea full pinned RDF extractor rebuilt selected nodes before checks; native XML parsed directly."
+}
