@@ -1,0 +1,338 @@
+id: MetaCyc:PWY-5453
+label: methylglyoxal degradation III
+description: The glutathione-independent acetol branch of methylglyoxal degradation III in Escherichia
+  coli uses Gpr/YghZ to reduce methylglyoxal with NADPH and GldA to reduce acetol with NADH. The record
+  represents the native MG1655 pathway annotation with K-12 enzyme and mutant evidence. Purified YghZ
+  produces acetol; NADH activity and the reverse reaction were negligible or undetected under the reported
+  conditions. The (S)-propanediol product is retained as a current Rhea/UniProt annotation, not an enantiomer-resolved
+  result of the inspected 2005 NMR experiments. A separate engineered AG1 study produced R-propanediol
+  through a proposed lactaldehyde route and does not establish the stereochemistry of this acetol branch.
+  Native physiological flux, exclusive enzyme roles and a fixed GldA oligomeric state are not implied.
+  YghZ also acts on L-glyceraldehyde 3-phosphate; other methylglyoxal reductases provide parallel activities.
+  Transport and neighboring lactaldehyde, glyoxalase and glycerol-utilization reactions are outside this
+  two-reaction record.
+pathway_type: methylglyoxal-detoxification
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:17158
+  label: methylglyoxal
+  category: small_molecule
+- id: CHEBI:27957
+  label: hydroxyacetone
+  category: small_molecule
+- id: CHEBI:29002
+  label: (S)-propane-1,2-diol
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:Q46851
+  label: L-glyceraldehyde 3-phosphate reductase
+  category: protein
+- id: UniProtKB:P0A9S5
+  label: Glycerol dehydrogenase
+  category: protein
+- id: MetaCyc:GLYCDEH-CPLX
+  label: L-1,2-propanediol dehydrogenase / glycerol dehydrogenase
+  category: complex
+reactions:
+- id: RHEA:27988
+  label: methylglyoxal + NADPH + H(+) => hydroxyacetone + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:28668
+  label: hydroxyacetone + NADH + H(+) => (S)-propane-1,2-diol + NAD(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: mg3-edge-001
+  subject: CHEBI:17158
+  predicate: consumes
+  object: RHEA:27988
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:17158 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_4547'];
+      rh:compound/rh:chebi
+- id: mg3-edge-002
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:27988
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:57783 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_3438'];
+      rh:compound/rh:chebi
+- id: mg3-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27988
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_3249'];
+      rh:compound/rh:chebi
+- id: mg3-edge-004
+  subject: RHEA:27988
+  predicate: produces
+  object: CHEBI:27957
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:27957 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_6312'];
+      rh:compound/rh:chebi
+- id: mg3-edge-005
+  subject: RHEA:27988
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:58349 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_5188'];
+      rh:compound/rh:chebi
+- id: mg3-edge-006
+  subject: CHEBI:27957
+  predicate: consumes
+  object: RHEA:28668
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:27957 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_6312'];
+      rh:compound/rh:chebi
+- id: mg3-edge-007
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:28668
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:57945 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_1650'];
+      rh:compound/rh:chebi
+- id: mg3-edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:28668
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_3249'];
+      rh:compound/rh:chebi
+- id: mg3-edge-009
+  subject: RHEA:28668
+  predicate: produces
+  object: CHEBI:29002
+  description: The (S) product is the current Rhea/UniProt and native pathway annotation. The inspected
+    2005 NMR study did not resolve diol enantiomers. Engineered AG1 R-diol production in PMID:10049880
+    was assigned to a lactaldehyde route and does not directly test this exact GldA acetol step.
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:29002 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_5131'];
+      rh:compound/rh:chebi
+- id: mg3-edge-010
+  subject: RHEA:28668
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:57540 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_3484'];
+      rh:compound/rh:chebi
+- id: mg3-edge-011
+  subject: UniProtKB:Q46851
+  predicate: enables
+  object: RHEA:27988
+  description: Functional Gpr/YghZ activity is represented without asserting a monomeric physical catalyst.
+    Current UniProt reports tetrameric and octameric assemblies in different studies. Its methylglyoxal
+    activity is much less efficient than its L-glyceraldehyde 3-phosphate reductase activity; this is
+    not an exclusive substrate or physiological-role claim.
+  evidence:
+  - reference_id: PMID:16077126
+    source_assertion: Purified YghZ converts methylglyoxal to acetol with NADPH by NMR. NADH activity
+      was below 3% of NADPH activity; the reverse acetol-to-methylglyoxal reaction was not detected under
+      the assay conditions.
+    source_locator: 'PMC1196063: Results, Reduction of methylglyoxal to acetol by purified E. coli AKRs;
+      Figure 3B; Table 2'
+  - reference_id: UniProtKB:Q46851
+    source_assertion: Reviewed Q46851 assigns hydroxyacetone/NADP versus methylglyoxal/NADPH chemistry
+      to RHEA:27986, citing ECO:0000269 PMID:16077126 and ECO:0000305 PMID:12583903.
+    source_locator: /comments/2/reaction; /genes/0; /primaryAccession
+- id: mg3-edge-012
+  subject: MetaCyc:GLYCDEH-CPLX
+  predicate: catalyzes
+  object: RHEA:28668
+  description: The (S) product is the current Rhea/UniProt and native pathway annotation. The inspected
+    2005 NMR study did not resolve diol enantiomers. Engineered AG1 R-diol production in PMID:10049880
+    was assigned to a lactaldehyde route and does not directly test this exact GldA acetol step. This
+    retains a reviewed enzyme-function assertion; the cited older experiments were not all inspected as
+    full texts. NADH is the selected branch, not a claim that no NADPH-supported activity exists.
+  evidence:
+  - reference_id: MetaCyc:RXN-8632
+    source_assertion: RXN-8632 has ENZRXN0-6324 with GLYCDEH-CPLX as enzyme, a RHEA:28667 cross-reference
+      and acetol/NADH/proton opposite (S)-propane-1,2-diol/NAD. PWY-5453 selects the reduction direction.
+    source_locator: Reaction[@frameid="RXN-8632"]/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-6324"]/enzyme;
+      left; right; dblink
+  - reference_id: UniProtKB:P0A9S5
+    source_assertion: Reviewed GldA explicitly assigns hydroxyacetone + NADH + H(+) = (S)-propane-1,2-diol
+      + NAD(+) to RHEA:28667, with ECO:0000269 citations 18179582,3920199,40950,6365902.
+    source_locator: /comments/2/reaction; /primaryAccession
+- id: mg3-edge-013
+  subject: UniProtKB:P0A9S5
+  predicate: part_of
+  object: MetaCyc:GLYCDEH-CPLX
+  description: The native octamer coefficient is condition-dependent. This edge records component membership
+    only; it does not assert that all catalysis requires an octamer or excludes tetramers/dimers.
+  evidence:
+  - reference_id: MetaCyc:GLYCDEH-CPLX
+    source_assertion: GLYCDEH-CPLX contains GLYCDEH-MONOMER with coefficient 8 and explicitly notes an
+      active dimer. This supports membership without an invariant assembly stoichiometry.
+    source_locator: Protein[@frameid="GLYCDEH-CPLX"]/component; comment
+  - reference_id: MetaCyc:GLYCDEH-MONOMER
+    source_assertion: The native GLYCDEH-MONOMER has the exact UniProt cross-reference P0A9S5.
+    source_locator: Protein[@frameid="GLYCDEH-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid
+  - reference_id: PMID:30839292
+    source_assertion: Purified E. coli GldA eluted as a homogeneous tetramer in 5% glycerol; the authors
+      contrast reported dimer/octamer mixtures without glycerol.
+    source_locator: 'PMC6404857: Results and discussion 3.1, Protein purification; Figure 1b'
+- id: mg3-edge-014
+  subject: UniProtKB:P0A9S5
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: The crystal demonstrates bound zinc; it is not an apo-enzyme metal-reconstitution assay
+    for acetol reduction. NAD+ in the 2019 structural illustration was modeled from another structure,
+    not observed in that crystal.
+  evidence:
+  - reference_id: UniProtKB:P0A9S5
+    source_assertion: Reviewed GldA names Zn(2+) as cofactor with ECO:0000305 PMID:30839292; its note
+      says one zinc ion per subunit with ECO:0000269 for the same paper.
+    source_locator: /comments/4/cofactors/0; /comments/4/note
+  - reference_id: PMID:30839292
+    source_assertion: The E. coli GldA structure contains active-site Zn2+ coordinated by His254, His271
+      and Asp171 and interacting with glycerol.
+    source_locator: 'PMC6404857: Results and discussion 3.3, Overall structural details; Figure 3'
+- id: mg3-edge-015
+  subject: RHEA:27988
+  predicate: part_of
+  object: MetaCyc:PWY-5453
+  evidence:
+  - reference_id: MetaCyc:PWY-5453
+    source_assertion: PWY-5453 lists RXN0-4281 in methylglyoxal degradation III and chooses its reductive
+      direction in reaction-layout. The graph restricts the multispecies definition to the supported E.
+      coli branch.
+    source_locator: Pathway[@frameid="PWY-5453"]/reaction-list/Reaction[@frameid="RXN0-4281"]; reaction-layout;
+      species
+  - reference_id: MetaCyc:RXN0-4281
+    source_assertion: Native RXN0-4281 provides the exact chemical sides and Rhea master cross-reference
+      for the selected directional reaction.
+    source_locator: Reaction/left; right; reaction-direction; dblink[dblink-db="RHEA"]
+- id: mg3-edge-016
+  subject: RHEA:28668
+  predicate: part_of
+  object: MetaCyc:PWY-5453
+  evidence:
+  - reference_id: MetaCyc:PWY-5453
+    source_assertion: PWY-5453 lists RXN-8632 in methylglyoxal degradation III and chooses its reductive
+      direction in reaction-layout. The graph restricts the multispecies definition to the supported E.
+      coli branch.
+    source_locator: Pathway[@frameid="PWY-5453"]/reaction-list/Reaction[@frameid="RXN-8632"]; reaction-layout;
+      species
+  - reference_id: MetaCyc:RXN-8632
+    source_assertion: Native RXN-8632 provides the exact chemical sides and Rhea master cross-reference
+      for the selected directional reaction.
+    source_locator: Reaction/left; right; reaction-direction; dblink[dblink-db="RHEA"]
+- id: mg3-edge-017
+  subject: RHEA:27988
+  predicate: provides_input_for
+  object: RHEA:28668
+  description: This is the annotated acetol-connected two-enzyme route. The 2005 diol observation is from
+    engineered MG-accumulating CK281 derivatives or crude extracts, not a purified two-enzyme reconstitution
+    or proof of unrestricted MG1655 flux.
+  evidence:
+  - reference_id: MetaCyc:PWY-5453
+    source_assertion: PWY-5453 orders RXN0-4281 before RXN-8632, with acetol as the shared intermediate
+      and both reactions selected in the reductive direction.
+    source_locator: Pathway[@frameid="PWY-5453"]/reaction-ordering[Reaction[@frameid="RXN-8632"]]/predecessor-reactions;
+      reaction-layout
+  - reference_id: PMID:16077126
+    source_assertion: The MG-accumulating strain and crude extracts produced acetol followed by small
+      amounts of 1,2-propanediol; purified AKRs produced acetol but no detectable diol.
+    source_locator: 'PMC1196063: Results, Detection of acetol from methylglyoxal-producing E. coli cells;
+      Figure 2; MG-reducing activity in crude extracts; Figure 3B'
+references:
+- id: MetaCyc:PWY-5453
+  title: MetaCyc PWY-5453
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5453
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: b2797839b180a1ff3be49882b2cb658b7fd0e826a972d29339fec76605beea07
+- id: MetaCyc:RXN0-4281
+  title: MetaCyc RXN0-4281
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-4281
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 748b17d09a5e855078b1df9ae68568e2cefcee8e5b363b8341d78e590265c835
+- id: MetaCyc:RXN-8632
+  title: MetaCyc RXN-8632
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-8632
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: c7366709561952a9ed759276b844325c2b0c5f4a54a8e30928123c671bcd11d6
+- id: MetaCyc:GLYCDEH-CPLX
+  title: MetaCyc GLYCDEH-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:GLYCDEH-CPLX
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 8f0f6b3c38dbb2084640908e907ab4ac7ff90ac8edb741f766f72202a6f1f5f3
+- id: MetaCyc:GLYCDEH-MONOMER
+  title: MetaCyc GLYCDEH-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:GLYCDEH-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: e0a12822cfb2df8e66728d61b9a1006bc37f73edfa64e6bf1d3167be384bcad8
+- id: UniProtKB:Q46851
+  title: Reviewed UniProtKB Q46851
+  url: https://rest.uniprot.org/uniprotkb/Q46851.json
+  source_version: 2026_03; response release header and entry retrieved 2026-10-10
+  source_sha256: b42926fbe3b36065ea7e2ebe7e67c6d787b7be9ae2edf95187f20fd4b95e126e
+- id: UniProtKB:P0A9S5
+  title: Reviewed UniProtKB P0A9S5
+  url: https://rest.uniprot.org/uniprotkb/P0A9S5.json
+  source_version: 2026_03; response release header and entry retrieved 2026-10-10
+  source_sha256: faee284ee8a8c21d95764d891e90e9154d22c2fda5c891c59f0d890ffb577a49
+- id: RHEA:27988
+  title: Rhea 27988 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28668
+  title: Rhea 28668 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:16077126
+  title: Conversion of methylglyoxal to acetol by Escherichia coli aldo-keto reductases.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC1196063/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 7edca4dd5ce4a7ab4903200f3bacbdbc3d35a276cc7a241e7cecd4d3992cd574
+- id: PMID:30839292
+  title: Structure of glycerol dehydrogenase (GldA) from Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6404857/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 40df653530af56649dbfb283428b1e8d9fce15b945ce649c1db8ae7223e0e53e
+- id: PMID:10049880
+  title: Metabolic engineering of a 1,2-propanediol pathway in Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC91161/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 6488881bcba91a133320f164e9be3e7757ad4be8f19dbfa4e71613cd1e724767
