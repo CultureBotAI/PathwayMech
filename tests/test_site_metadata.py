@@ -61,16 +61,19 @@ def test_source_cluster_and_go_cam_source_fragment_have_honest_status():
     cluster = record(gene_clusters=[{"id": "MIBiG:BGC0002072", "label": "Cluster"}])
     assert 'Source cluster summary' in render_site([cluster])["browse.html"]
     assert 'but no curated mechanistic edges' in _record_page(cluster)
-    fragment = '"subject":"node:a","property":"RO:0002413","object":"node:b"'
-    model = record(mechanistic_edges=[{
-        "subject": "node:a", "predicate": "precedes", "object": "node:b",
+    fragment = '"subject":"gomodel:a","property":"RO:0002413","object":"gomodel:b"'
+    model = record(reactions=[{"id": "gomodel:a", "label": "Activity A"},
+                              {"id": "gomodel:b", "label": "Activity B"}],
+        mechanistic_edges=[{
+        "id": "edge-1", "subject": "gomodel:a", "predicate": "provides_input_for",
+        "object": "gomodel:b",
         "evidence": [{"reference_id": "gomodel:one", "quote": fragment}],
-    }], references=[{"id": "gomodel:one"}])
+    }], references=[{"id": "gomodel:one", "title": "Source model"}])
     page = _record_page(model)
     assert 'GO-CAM source assertion' in page
     assert 'not a quotation from an experimental publication' in page
-    assert 'subject: <code>node:a</code>' in page
-    assert '&quot;subject&quot;:&quot;node:a&quot;' in page
+    assert 'subject: <code>gomodel:a</code>' in page
+    assert '&quot;subject&quot;:&quot;gomodel:a&quot;' in page
     assert '<summary>Exact source fragment</summary>' in page
 
 

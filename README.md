@@ -97,6 +97,12 @@ request to protected `main`.
 ## Published site
 
 The browser is published at <https://culturebotai.github.io/PathwayMech/>.
+Pathway record pages include a directed network diagram with typed components,
+zoom controls and a node finder. Each arrow links to its exact evidence-table
+row. Diagrams preserve the recorded relationship directions; they are not a
+simulation of metabolic flux. The diagram and evidence links also work without
+JavaScript, with a full-size scrolling option for larger networks.
+
 `.github/workflows/main.yaml` ("Build and test") runs lint, the tests and
 `just validate` on every pull request and push. When it passes on a push to
 `main`, `.github/workflows/pages.yaml` publishes the root `index.html`

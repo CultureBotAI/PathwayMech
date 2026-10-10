@@ -20,12 +20,13 @@ class Elements(HTMLParser):
 
 def record():
     return SimpleNamespace(id="GO:42", label="Example", description="A pathway",
+        pathway_type="test",
         participants=[{"id": "CHEBI:1", "label": '<script>Substrate</script>'}],
-        taxa=[], reactions=[], gene_clusters=[],
+        taxa=[], reactions=[{"id": "RHEA:42", "label": "RHEA:42"}], gene_clusters=[],
         references=[{"id": "PMID:123", "title": "Source paper"},
                     {"id": "DOI:10.1/paper", "citation": "Second source"}],
-        mechanistic_edges=[{"id": "edge-1", "subject": "CHEBI:1", "predicate": "produces",
-            "object": "UNKNOWN:2", "description": "Only the source claim", "evidence": [
+        mechanistic_edges=[{"id": "edge-1", "subject": "RHEA:42", "predicate": "produces",
+            "object": "CHEBI:1", "description": "Only the source claim", "evidence": [
                 {"reference_id": "PMID:123", "quote": "A < B & C"},
                 {"reference_id": "DOI:10.1/paper", "quote": "Second quote"}]}])
 
@@ -35,11 +36,12 @@ def test_record_displays_declared_labels_each_evidence_quote_and_real_source_pat
     parsed = Elements()
     parsed.feed(page)
     text = " ".join(parsed.text)
-    for expected in ["<script>Substrate</script>", "CHEBI:1", "UNKNOWN:2", "produces",
+    for expected in ["<script>Substrate</script>", "CHEBI:1", "RHEA:42", "produces",
                      "Only the source claim", "A < B & C", "Second quote",
                      "Source paper", "Second source"]:
         assert expected in text
-    assert not any(tag == "script" for tag, _ in parsed.elements)
+    scripts = [attrs for tag, attrs in parsed.elements if tag == "script"]
+    assert scripts == [{"src": "../assets/pathway-network.js", "defer": None}]
     links = [attrs.get("href") for tag, attrs in parsed.elements if tag == "a"]
     for link in ["../browse.html", "../index.html", "#reference-1", "#reference-2",
                  "https://culturebotai.github.io/mechs/",
@@ -72,12 +74,12 @@ def test_reference_routes_and_ambiguous_labels_remain_truthful():
     assert _reference_url("CUSTOM:123") is None
     assert _reference_url("PMID:not-a-number") is None
     sample = record()
-    sample.reactions = [{"id": "CHEBI:1", "label": "Conflicting name"}]
+    sample.reactions.append({"id": "CHEBI:1", "label": "Conflicting name"})
     page = _record_page(sample)
     assert "Conflicting name" not in page and "&lt;script&gt;Substrate" not in page
     assert "CHEBI:1" in page
     sample.participants = [{"id": "CHEBI:1", "label": ""}]
-    sample.reactions = []
+    sample.reactions = sample.reactions[:1]
     assert "<code>CHEBI:1</code>" in _record_page(sample)
 
 
