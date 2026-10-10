@@ -63,6 +63,23 @@ contextual slot. It cannot satisfy canonical-label verification even if the
 strings happen to match. This records the evidence boundary for native IDs
 whose independently available source supplies membership but no canonical name.
 
+The `pathbank-biopax` source kind reads one native PathBank BioPAX Level 3
+pathway per artifact. Its linked SMPDB unification accession establishes the
+`PathBank:SMP...` identity; an identifiers.org SMPDB pathway URI must agree.
+A PathWhiz `PW...` filename never establishes an SMPDB accession. The native
+pathway title remains a canonical label assertion. Declared local reactions and
+physical entities use `PathBank:SMP.../<native-local-id>` and are marked
+`source_context`, including objects without a biological label. Their existence
+does not itself establish pathway membership or catalytic function.
+
+PathBank's external chemical and protein cross-reference labels are not emitted
+as ChEBI or UniProt authority terms: those identifiers still require their own
+independent authority inputs. Scoped PathBank participant rules permit native
+BioPAX display names, and reaction rules permit curated Rhea step descriptions.
+The rules do not relax pathway titles, taxon labels or missing identifiers.
+Archive members must be extracted without rewriting bytes, with the exact member
+path and archive digest recorded in `sha256_scope` when the public URL is a ZIP.
+
 The optional `sha256_scope` says precisely which artifact was hashed when its
 bytes differ from the representation at the public source URL. For example,
 an OAK Semantic SQL database digest covers the uncompressed SQLite database,

@@ -3,7 +3,8 @@
 
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
-gocam-tar, mibig-tar, uniprot, gpml, biopax, metacyc-html and ncbi-protein-xml. Source files are
+gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html and
+ncbi-protein-xml. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -19,13 +20,14 @@ from collections.abc import Iterator
 from html import unescape
 from pathlib import Path
 from typing import Any
+from urllib.parse import urldefrag, urljoin
 from xml.etree import ElementTree
 
 import yaml
 
 SOURCE_NAMESPACES = frozenset(
     {
-        "EC", "MIBiG", "MetaCyc", "NCBIProtein", "Reactome", "SGD", "UniProtKB",
+        "EC", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD", "UniProtKB",
         "WikiPathways", "gomodel",
     }
 )
@@ -177,6 +179,99 @@ def biopax_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str
                 yield xrefs[key], labels[0], labels[1:]
 
 
+def pathbank_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str]]]:
+    """Read one native pathway and its declared local graph objects, not xref labels.
+
+    SMPDB unification assertions establish the PathBank accession; a PathWhiz
+    filename is never an accession authority. Local objects assert source-graph
+    existence only, not membership, catalysis or an external chemical identity.
+    """
+    bp = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    base = root.get("{http://www.w3.org/XML/1998/namespace}base", "")
+    if any(
+        "{http://www.w3.org/XML/1998/namespace}base" in node.attrib
+        for node in root.iter() if node is not root
+    ):
+        raise ValueError("PathBank authority does not support nested XML base overrides")
+
+    def subject(node: ElementTree.Element) -> str:
+        native_id = node.get(rdf + "ID")
+        if native_id is not None and node.get(rdf + "about") is not None:
+            raise ValueError("PathBank RDF subject cannot declare both ID and about")
+        value = "#" + native_id if native_id else node.get(rdf + "about", "")
+        return urljoin(base, value) if value else ""
+
+    def labels(node: ElementTree.Element) -> list[str]:
+        return [
+            item.text.strip()
+            for name in ("displayName", "standardName", "name")
+            for item in node.findall(bp + name)
+            if item.text and item.text.strip()
+        ]
+
+    index: dict[str, ElementTree.Element] = {}
+    for node in root:
+        uri = subject(node)
+        if uri:
+            if uri in index:
+                raise ValueError(f"PathBank source has duplicate RDF subject: {uri}")
+            index[uri] = node
+    pathways = root.findall(bp + "Pathway")
+    if len(pathways) != 1:
+        raise ValueError("PathBank authority requires exactly one native Pathway")
+    pathway = pathways[0]
+    accessions = set()
+    for link in pathway.findall(bp + "xref"):
+        xref = index.get(urljoin(base, link.get(rdf + "resource", "")))
+        if xref is None or xref.tag != bp + "UnificationXref":
+            continue
+        databases = {
+            (item.text or "").strip().casefold() for item in xref.findall(bp + "db")
+        }
+        if "smpdb" not in databases:
+            continue
+        if databases != {"smpdb"}:
+            raise ValueError("PathBank SMPDB unification xref has conflicting databases")
+        values = {(item.text or "").strip() for item in xref.findall(bp + "id")}
+        if not values or any(not re.fullmatch(r"SMP[0-9]+", value) for value in values):
+            raise ValueError("PathBank pathway has an invalid native SMPDB accession")
+        accessions.update(values)
+    if len(accessions) != 1:
+        raise ValueError("PathBank pathway requires one unambiguous SMPDB unification accession")
+    accession = next(iter(accessions))
+    about = pathway.get(rdf + "about", "")
+    if about.startswith(("http://identifiers.org/smpdb/", "https://identifiers.org/smpdb/")):
+        if not re.fullmatch(r"https?://identifiers\.org/smpdb/" + accession, about):
+            raise ValueError("PathBank pathway URI and SMPDB xref must agree")
+    names = labels(pathway)
+    if not names:
+        raise ValueError("PathBank pathway lacks a native label")
+    identifier = "PathBank:" + accession
+    yield identifier, names[0], names[1:]
+
+    graph_types = {
+        bp + kind for kind in (
+            "BiochemicalReaction", "Complex", "PhysicalEntity", "SmallMolecule",
+            "Protein", "Dna", "Rna", "DnaRegion", "RnaRegion",
+        )
+    }
+    for node in root:
+        if node.tag not in graph_types:
+            continue
+        uri = subject(node)
+        document, native = urldefrag(uri)
+        if (
+            not native
+            or document != urldefrag(base)[0]
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", native)
+            or any(part in {".", "..", ""} for part in native.split("/"))
+        ):
+            raise ValueError(f"PathBank graph object lacks an unambiguous local identity: {uri}")
+        names = labels(node) or [native]
+        yield identifier + "/" + native, names[0], names[1:]
+
+
 def metacyc_terms(text: str) -> Iterator[tuple[str, str, list[str]]]:
     """Read native ID and native title from a public Pathway Tools object page."""
     identity = re.search(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'", text)
@@ -210,6 +305,8 @@ def source_terms(kind: str, path: Path) -> Iterator[tuple[str, str, list[str]]]:
         yield from gpml_terms(ElementTree.parse(path).getroot())
     elif kind == "biopax":
         yield from biopax_terms(ElementTree.parse(path).getroot())
+    elif kind == "pathbank-biopax":
+        yield from pathbank_terms(ElementTree.parse(path).getroot())
     elif kind == "metacyc-html":
         yield from metacyc_terms(path.read_text(encoding="utf-8"))
     elif kind == "ncbi-protein-xml":
@@ -271,6 +368,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             }
             if (
                 (identifier.startswith("WikiPathways:") and "/" in identifier)
+                or (entry["kind"] == "pathbank-biopax" and "/" in identifier)
                 or identifier.startswith("MIBiG:")
                 or (
                     entry["kind"] == "gocam-tar"

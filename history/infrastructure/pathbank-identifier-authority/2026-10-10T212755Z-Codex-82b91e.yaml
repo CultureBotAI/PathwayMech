@@ -1,0 +1,27 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/build_source_identifier_snapshot.py
+  slug: pathbank-identifier-authority
+session:
+  id: 2026-10-10T212755Z-Codex-82b91e
+  timestamp: '2026-10-10T21:27:55Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt-6
+    agent_tool: codex
+events:
+- type: CREATE
+  outcome: changed
+  summary: Resolve native PathBank identities from independently pinned BioPAX
+  details: Added a dedicated pathbank-biopax source parser that verifies a single native pathway
+    and its SMPDB UnificationXref, preserves canonical pathway titles, scopes declared graph
+    IDs and rejects conflicting or unsafe identities. External ChEBI and UniProt cross references
+    never become name authority. Added bounded contextual label policy, parser/gate regression
+    tests and documented raw-member digest scope. Integrated one pinned PathBank archive member
+    and rebuilt ontology and source authorities while preserving all baseline terms and provenance;
+    the final 97-input source manifest reproduced its snapshot byte-for-byte. PathBank is
+    now active for the independently curated methylphosphonate record, without approving other
+    archive members. Independent technical review found no actionable issue and all 26 focused
+    new tests passed.

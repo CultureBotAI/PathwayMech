@@ -1,0 +1,728 @@
+id: PathBank:SMP0002077
+label: Methylphosphonate Degradation I
+description: 'The four-reaction PathBank route converts methylphosphonate through ribosyl phosphonate
+  intermediates to methane and alpha-D-ribose 1,5-bisphosphate using characterized Escherichia coli K-12
+  proteins. PhnI acts with PhnG, PhnH and PhnL in the source-defined assembly; PhnM, radical-SAM PhnJ
+  and PhnP perform the following reactions. The endpoint is a phosphate ester, not free phosphate or PRPP.
+  The graph uses Rhea charge forms and its activation-associated PhnJ equation, including generic hydrogen
+  donor/acceptor classes. SAM cleavage and reduced [4Fe-4S] are required for the reconstructed radical
+  reaction; one SAM consumed per physiological substrate turnover is not established. The source-defined
+  four-protein assembly is not the full PhnGHIJKL machinery characterized later. This is enzyme chemistry,
+  not a claim of growth by every K-12 strain: phnE phase variation can prevent methylphosphonate uptake.'
+pathway_type: organophosphonate-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:68684
+  label: methylphosphonate(1-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:68823
+  label: alpha-D-ribose 1-methylphosphonate 5-triphosphate(5-)
+  category: small_molecule
+- id: CHEBI:16708
+  label: adenine
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:68686
+  label: alpha-D-ribose 1-methylphosphonate 5-phosphate(3-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:17499
+  label: hydrogen donor
+  category: cofactor
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:68687
+  label: 5-phosphonato-alpha-D-ribose cyclic-1,2-phosphate(3-)
+  category: small_molecule
+- id: CHEBI:16183
+  label: methane
+  category: small_molecule
+- id: CHEBI:17319
+  label: 5'-deoxyadenosine
+  category: small_molecule
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:13193
+  label: hydrogen acceptor
+  category: cofactor
+- id: CHEBI:68688
+  label: alpha-D-ribose 1,5-bisphosphate(4-)
+  category: small_molecule
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P16685
+  label: Alpha-D-ribose 1-methylphosphonate 5-triphosphate synthase subunit PhnG
+  category: protein
+- id: UniProtKB:P16686
+  label: Alpha-D-ribose 1-methylphosphonate 5-triphosphate synthase subunit PhnH
+  category: protein
+- id: UniProtKB:P16687
+  label: Alpha-D-ribose 1-methylphosphonate 5-triphosphate synthase subunit PhnI
+  category: protein
+- id: UniProtKB:P16679
+  label: Alpha-D-ribose 1-methylphosphonate 5-triphosphate synthase subunit PhnL
+  category: protein
+- id: UniProtKB:P16689
+  label: Alpha-D-ribose 1-methylphosphonate 5-triphosphate diphosphatase
+  category: protein
+- id: UniProtKB:P16688
+  label: Alpha-D-ribose 1-methylphosphonate 5-phosphate C-P lyase
+  category: protein
+- id: UniProtKB:P16692
+  label: Phosphoribosyl 1,2-cyclic phosphate phosphodiesterase
+  category: protein
+- id: PathBank:SMP0002077/ProteinComplex/4049
+  label: methylphosphonate degradation complex
+  category: complex
+reactions:
+- id: RHEA:34680
+  label: PhnG/H/I/L-dependent ribosyl triphosphate transfer to methylphosphonate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:34684
+  label: PhnM hydrolysis of ribosyl methylphosphonate triphosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:34708
+  label: PhnJ C-P cleavage with radical-SAM activation chemistry
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:34796
+  label: PhnP hydrolysis of ribosyl 1,2-cyclic phosphate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: methylphosphonate-edge-001
+  subject: CHEBI:68684
+  predicate: consumes
+  object: RHEA:34680
+  evidence:
+  - reference_id: RHEA:34680
+    source_assertion: Rhea places CHEBI:68684 on the substrates side of directed RHEA:34680, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:substrates; http://rdf.rhea-db.org/34679_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34679_compound_7585/rh:compound -> http://rdf.rhea-db.org/Compound_7585/rh:chebi
+- id: methylphosphonate-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:34680
+  evidence:
+  - reference_id: RHEA:34680
+    source_assertion: Rhea places CHEBI:30616 on the substrates side of directed RHEA:34680, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:substrates; http://rdf.rhea-db.org/34679_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34679_compound_6372/rh:compound -> http://rdf.rhea-db.org/Compound_6372/rh:chebi
+- id: methylphosphonate-edge-003
+  subject: RHEA:34680
+  predicate: produces
+  object: CHEBI:68823
+  evidence:
+  - reference_id: RHEA:34680
+    source_assertion: Rhea places CHEBI:68823 on the products side of directed RHEA:34680, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:products; http://rdf.rhea-db.org/34679_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34679_compound_9342/rh:compound -> http://rdf.rhea-db.org/Compound_9342/rh:chebi
+- id: methylphosphonate-edge-004
+  subject: RHEA:34680
+  predicate: produces
+  object: CHEBI:16708
+  evidence:
+  - reference_id: RHEA:34680
+    source_assertion: Rhea places CHEBI:16708 on the products side of directed RHEA:34680, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:products; http://rdf.rhea-db.org/34679_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34679_compound_4174/rh:compound -> http://rdf.rhea-db.org/Compound_4174/rh:chebi
+- id: methylphosphonate-edge-005
+  subject: CHEBI:68823
+  predicate: consumes
+  object: RHEA:34684
+  evidence:
+  - reference_id: RHEA:34684
+    source_assertion: Rhea places CHEBI:68823 on the substrates side of directed RHEA:34684, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:substrates; http://rdf.rhea-db.org/34683_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34683_compound_9342/rh:compound -> http://rdf.rhea-db.org/Compound_9342/rh:chebi
+- id: methylphosphonate-edge-006
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:34684
+  evidence:
+  - reference_id: RHEA:34684
+    source_assertion: Rhea places CHEBI:15377 on the substrates side of directed RHEA:34684, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:substrates; http://rdf.rhea-db.org/34683_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34683_compound_1283/rh:compound -> http://rdf.rhea-db.org/Compound_1283/rh:chebi
+- id: methylphosphonate-edge-007
+  subject: RHEA:34684
+  predicate: produces
+  object: CHEBI:68686
+  evidence:
+  - reference_id: RHEA:34684
+    source_assertion: Rhea places CHEBI:68686 on the products side of directed RHEA:34684, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:products; http://rdf.rhea-db.org/34683_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34683_compound_7596/rh:compound -> http://rdf.rhea-db.org/Compound_7596/rh:chebi
+- id: methylphosphonate-edge-008
+  subject: RHEA:34684
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:34684
+    source_assertion: Rhea places CHEBI:33019 on the products side of directed RHEA:34684, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:products; http://rdf.rhea-db.org/34683_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34683_compound_2106/rh:compound -> http://rdf.rhea-db.org/Compound_2106/rh:chebi
+- id: methylphosphonate-edge-009
+  subject: RHEA:34684
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:34684
+    source_assertion: Rhea places CHEBI:15378 on the products side of directed RHEA:34684, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:products; http://rdf.rhea-db.org/34683_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34683_compound_3249/rh:compound -> http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: methylphosphonate-edge-010
+  subject: CHEBI:68686
+  predicate: consumes
+  object: RHEA:34708
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:68686 on the substrates side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:substrates; http://rdf.rhea-db.org/34707_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_7596/rh:compound -> http://rdf.rhea-db.org/Compound_7596/rh:chebi
+- id: methylphosphonate-edge-011
+  subject: CHEBI:17499
+  predicate: consumes
+  object: RHEA:34708
+  description: The Rhea AH2/A pair is generic. The reconstitution used dithionite; no physiological donor
+    or carrier identity is asserted.
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:17499 on the substrates side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:substrates; http://rdf.rhea-db.org/34707_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_1304/rh:compound -> http://rdf.rhea-db.org/Compound_1304/rh:chebi
+- id: methylphosphonate-edge-012
+  subject: CHEBI:59789
+  predicate: consumes
+  object: RHEA:34708
+  description: Coefficient 1 belongs to the Rhea activation-associated reference equation. It does not
+    establish a fixed SAM-to-methylphosphonate turnover ratio in the functioning complex.
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:59789 on the substrates side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:substrates; http://rdf.rhea-db.org/34707_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_6127/rh:compound -> http://rdf.rhea-db.org/Compound_6127/rh:chebi
+- id: methylphosphonate-edge-013
+  subject: RHEA:34708
+  predicate: produces
+  object: CHEBI:68687
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:68687 on the products side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; http://rdf.rhea-db.org/34707_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_7601/rh:compound -> http://rdf.rhea-db.org/Compound_7601/rh:chebi
+- id: methylphosphonate-edge-014
+  subject: RHEA:34708
+  predicate: produces
+  object: CHEBI:16183
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:16183 on the products side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; http://rdf.rhea-db.org/34707_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_3576/rh:compound -> http://rdf.rhea-db.org/Compound_3576/rh:chebi
+- id: methylphosphonate-edge-015
+  subject: RHEA:34708
+  predicate: produces
+  object: CHEBI:17319
+  description: Coefficient 1 belongs to the Rhea activation-associated reference equation. It does not
+    establish a fixed SAM-to-methylphosphonate turnover ratio in the functioning complex.
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:17319 on the products side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; http://rdf.rhea-db.org/34707_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_2028/rh:compound -> http://rdf.rhea-db.org/Compound_2028/rh:chebi
+- id: methylphosphonate-edge-016
+  subject: RHEA:34708
+  predicate: produces
+  object: CHEBI:57844
+  description: Coefficient 1 belongs to the Rhea activation-associated reference equation. It does not
+    establish a fixed SAM-to-methylphosphonate turnover ratio in the functioning complex.
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:57844 on the products side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; http://rdf.rhea-db.org/34707_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_2530/rh:compound -> http://rdf.rhea-db.org/Compound_2530/rh:chebi
+- id: methylphosphonate-edge-017
+  subject: RHEA:34708
+  predicate: produces
+  object: CHEBI:13193
+  description: The Rhea AH2/A pair is generic. The reconstitution used dithionite; no physiological donor
+    or carrier identity is asserted.
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:13193 on the products side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; http://rdf.rhea-db.org/34707_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_3512/rh:compound -> http://rdf.rhea-db.org/Compound_3512/rh:chebi
+- id: methylphosphonate-edge-018
+  subject: RHEA:34708
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: Rhea places CHEBI:15378 on the products side of directed RHEA:34708, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; http://rdf.rhea-db.org/34707_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34707_compound_3249/rh:compound -> http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: methylphosphonate-edge-019
+  subject: CHEBI:68687
+  predicate: consumes
+  object: RHEA:34796
+  evidence:
+  - reference_id: RHEA:34796
+    source_assertion: Rhea places CHEBI:68687 on the substrates side of directed RHEA:34796, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:substrates; http://rdf.rhea-db.org/34795_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34795_compound_7601/rh:compound -> http://rdf.rhea-db.org/Compound_7601/rh:chebi
+- id: methylphosphonate-edge-020
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:34796
+  evidence:
+  - reference_id: RHEA:34796
+    source_assertion: Rhea places CHEBI:15377 on the substrates side of directed RHEA:34796, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:substrates; http://rdf.rhea-db.org/34795_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34795_compound_1283/rh:compound -> http://rdf.rhea-db.org/Compound_1283/rh:chebi
+- id: methylphosphonate-edge-021
+  subject: RHEA:34796
+  predicate: produces
+  object: CHEBI:68688
+  evidence:
+  - reference_id: RHEA:34796
+    source_assertion: Rhea places CHEBI:68688 on the products side of directed RHEA:34796, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:products; http://rdf.rhea-db.org/34795_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34795_compound_7560/rh:compound -> http://rdf.rhea-db.org/Compound_7560/rh:chebi
+- id: methylphosphonate-edge-022
+  subject: RHEA:34796
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:34796
+    source_assertion: Rhea places CHEBI:15378 on the products side of directed RHEA:34796, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:products; http://rdf.rhea-db.org/34795_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_34795_compound_3249/rh:compound -> http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: methylphosphonate-edge-023
+  subject: PathBank:SMP0002077/ProteinComplex/4049
+  predicate: has_part
+  object: UniProtKB:P16686
+  description: This is PathBank’s PhnG/H/I/L assembly for the first reconstructed reaction. No subunit
+    copy number or equivalence to the later full C-P lyase complex is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: Native ProteinComplex/4049 lists Protein/10370 as a component; its ProteinReference
+      resolves through a UniProt xref to P16686.
+    source_locator: bp:Complex[@rdf:ID="ProteinComplex/4049"]/bp:component[@rdf:resource="#Protein/10370"];
+      ProteinReference/10370/bp:xref
+- id: methylphosphonate-edge-024
+  subject: PathBank:SMP0002077/ProteinComplex/4049
+  predicate: has_part
+  object: UniProtKB:P16679
+  description: This is PathBank’s PhnG/H/I/L assembly for the first reconstructed reaction. No subunit
+    copy number or equivalence to the later full C-P lyase complex is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: Native ProteinComplex/4049 lists Protein/10369 as a component; its ProteinReference
+      resolves through a UniProt xref to P16679.
+    source_locator: bp:Complex[@rdf:ID="ProteinComplex/4049"]/bp:component[@rdf:resource="#Protein/10369"];
+      ProteinReference/10369/bp:xref
+- id: methylphosphonate-edge-025
+  subject: PathBank:SMP0002077/ProteinComplex/4049
+  predicate: has_part
+  object: UniProtKB:P16685
+  description: This is PathBank’s PhnG/H/I/L assembly for the first reconstructed reaction. No subunit
+    copy number or equivalence to the later full C-P lyase complex is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: Native ProteinComplex/4049 lists Protein/10371 as a component; its ProteinReference
+      resolves through a UniProt xref to P16685.
+    source_locator: bp:Complex[@rdf:ID="ProteinComplex/4049"]/bp:component[@rdf:resource="#Protein/10371"];
+      ProteinReference/10371/bp:xref
+- id: methylphosphonate-edge-026
+  subject: PathBank:SMP0002077/ProteinComplex/4049
+  predicate: has_part
+  object: UniProtKB:P16687
+  description: This is PathBank’s PhnG/H/I/L assembly for the first reconstructed reaction. No subunit
+    copy number or equivalence to the later full C-P lyase complex is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: Native ProteinComplex/4049 lists Protein/10372 as a component; its ProteinReference
+      resolves through a UniProt xref to P16687.
+    source_locator: bp:Complex[@rdf:ID="ProteinComplex/4049"]/bp:component[@rdf:resource="#Protein/10372"];
+      ProteinReference/10372/bp:xref
+- id: methylphosphonate-edge-027
+  subject: PathBank:SMP0002077/ProteinComplex/4049
+  predicate: catalyzes
+  object: RHEA:34680
+  description: The four proteins support the complete first reaction. PhnI alone has a separate nucleosidase
+    activity, which is not this pathway reaction; no individual accessory subunit is asserted to catalyze
+    the overall transformation alone. The reconstructed reaction used MgATP. This assay condition does
+    not establish a specific magnesium-binding site or obligatory cofactor relation for the assembly,
+    and no magnesium independence is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: Catalysis ReactionCatalysis/6000 identifies ProteinComplex/4049 as controller of
+      Reactions/6035, the ATP+methylphosphonate reaction with EC 2.7.8.37.
+    source_locator: bp:Catalysis[@rdf:ID="ReactionCatalysis/6000"]/bp:controller,bp:controlled; bp:BiochemicalReaction[@rdf:ID="Reactions/6035"]/bp:eCNumber
+  - reference_id: UniProtKB:P16687
+    source_assertion: PhnI FUNCTION requires PhnG, PhnH and PhnL for ribose-triphosphate transfer; CATALYTIC
+      ACTIVITY assigns that transformation to RHEA:34679 with ECO:0000269 (PMID:22089136).
+    source_locator: comments[commentType="FUNCTION"]; comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences.id="RHEA:34679"]
+  - reference_id: RHEA:34680
+    source_assertion: Rhea master 34679 specifies 34680 as its left-to-right directional reaction.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34679"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:substrates,rh:products
+  - reference_id: PMID:22089136
+    quote: PhnI, in the presence of PhnG, PhnH, and PhnL
+    source_locator: PMC3245791 BioC passage offset 4703
+  - reference_id: PMID:22089136
+    quote: methylphosphonate reacts with MgATP
+    source_locator: Abstract
+- id: methylphosphonate-edge-028
+  subject: UniProtKB:P16689
+  predicate: catalyzes
+  object: RHEA:34684
+  description: The primary PhnM assay contained MgCl2 and ZnCl2. Their presence in that assay is retained
+    as a condition, without claiming both are independently established obligatory cofactors.
+  evidence:
+  - reference_id: UniProtKB:P16689
+    source_assertion: UniProt CATALYTIC ACTIVITY assigns this protein to RHEA:34683 with ECO:0000269;
+      the selected catabolic direction is RHEA:34684.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences.id="RHEA:34683"]
+  - reference_id: RHEA:34684
+    source_assertion: Rhea master 34683 identifies 34684 as its left-to-right directional reaction.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34683"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:substrates,rh:products
+- id: methylphosphonate-edge-029
+  subject: UniProtKB:P16688
+  predicate: catalyzes
+  object: RHEA:34708
+  description: The source reconstitution used anaerobic conditions, an iron-sulfur cluster, SAM, dithionite
+    and cleavage of the GST tag. Later mechanistic work distinguishes radical activation from repeated
+    substrate turnover.
+  evidence:
+  - reference_id: UniProtKB:P16688
+    source_assertion: UniProt CATALYTIC ACTIVITY assigns this protein to RHEA:34707 with ECO:0000269;
+      the selected catabolic direction is RHEA:34708.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences.id="RHEA:34707"]
+  - reference_id: RHEA:34708
+    source_assertion: Rhea master 34707 identifies 34708 as its left-to-right directional reaction.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34707"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:substrates,rh:products
+- id: methylphosphonate-edge-030
+  subject: UniProtKB:P16692
+  predicate: catalyzes
+  object: RHEA:34796
+  description: The physiological cyclic ribose-phosphate substrate was established in PMID:21341651; the
+    earlier PMID:19366688 characterized structure and metal-dependent phosphodiesterase activity with
+    other substrates.
+  evidence:
+  - reference_id: UniProtKB:P16692
+    source_assertion: UniProt CATALYTIC ACTIVITY assigns this protein to RHEA:34795 with ECO:0000269;
+      the selected catabolic direction is RHEA:34796.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences.id="RHEA:34795"]
+  - reference_id: RHEA:34796
+    source_assertion: Rhea master 34795 identifies 34796 as its left-to-right directional reaction.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34795"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:substrates,rh:products
+  - reference_id: PMID:21341651
+    quote: regiospecifically converted by PhnP to α-D-ribosyl 1,5-bisphosphate
+    source_locator: Abstract, synthesized 5-phospho-alpha-D-ribosyl 1,2-cyclic phosphate experiment
+- id: methylphosphonate-edge-032
+  subject: UniProtKB:P16688
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: CHEBI:49883 identifies the cluster class rather than its oxidation state. The catalytically
+    active reduced state and anaerobic reconstitution conditions are explicit here; Zn observed at this
+    site in aerobic structures is not substituted for the active Fe-S cluster.
+  evidence:
+  - reference_id: UniProtKB:P16688
+    source_assertion: UniProt lists one [4Fe-4S] cluster per PhnJ subunit with ECO:0000269 from PMID:22089136.
+    source_locator: comments[commentType="COFACTOR"].cofactors[cofactorCrossReference.id="CHEBI:49883"];
+      note.texts
+  - reference_id: PMID:22089136
+    quote: requires a reduced [4Fe-4S]-cluster and SAM
+    source_locator: PMC3245791 BioC passage offset 9520
+- id: methylphosphonate-edge-033
+  subject: UniProtKB:P16692
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: The source metal-preference experiment used bis(p-nitrophenyl)phosphate. Ni2+ also supported
+    activity; this edge does not assert exclusive Mn2+ usage or transfer that substrate-specific comparison
+    to every physiological condition.
+  evidence:
+  - reference_id: UniProtKB:P16692
+    source_assertion: UniProt reports binding of two manganese ions per PhnP subunit with ECO:0000269
+      from PMID:19366688.
+    source_locator: comments[commentType="COFACTOR"].cofactors[cofactorCrossReference.id="CHEBI:29035"];
+      note.texts
+  - reference_id: PMID:19366688
+    quote: distinct preference for Mn(2+) and Ni(2+) for catalysis
+    source_locator: Abstract, metal dependence with bis(p-nitrophenyl)phosphate
+- id: methylphosphonate-edge-034
+  subject: UniProtKB:P16692
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: The zinc site is remote from the catalytic metal center and was assigned a structural role.
+    Zinc gave poor activity in the catalytic metal-substitution assay; this is not a claim that Zn2+ substitutes
+    equivalently for catalytic manganese.
+  evidence:
+  - reference_id: UniProtKB:P16692
+    source_assertion: UniProt reports binding of one zinc ion per PhnP subunit with ECO:0000269 from PMID:19366688.
+    source_locator: comments[commentType="COFACTOR"].cofactors[cofactorCrossReference.id="CHEBI:29105"];
+      note.texts
+  - reference_id: PMID:19366688
+    quote: This second metal ion site appears to stabilize a structural motif.
+    source_locator: Abstract, remote Zn2+ binding site
+- id: methylphosphonate-edge-035
+  subject: RHEA:34680
+  predicate: part_of
+  object: PathBank:SMP0002077
+  description: Manual reaction correspondence combines matching native transformation/EC, protein catalytic
+    annotation, and exact Rhea sides. PathBank supplies no native Rhea cross-reference.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: The native SMP0002077 Pathway explicitly includes Reactions/6035; that reaction
+      carries EC 2.7.8.37.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002077"]/bp:pathwayComponent[@rdf:resource="#Reactions/6035"];
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6035"]/bp:eCNumber
+  - reference_id: UniProtKB:P16687
+    source_assertion: The corresponding E. coli protein annotation assigns EC 2.7.8.37 and RHEA:34679
+      to this transformation. Native PathBank membership and this independent reaction grounding are separate
+      assertions.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[ecNumber="2.7.8.37"]; reactionCrossReferences
+  - reference_id: RHEA:34680
+    source_assertion: Rhea defines directed RHEA:34680 from master RHEA:34679; its charge-balanced participants
+      are retained instead of the older PathBank charge forms.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34679"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:substrates,rh:products
+- id: methylphosphonate-edge-036
+  subject: RHEA:34684
+  predicate: part_of
+  object: PathBank:SMP0002077
+  description: Manual reaction correspondence combines matching native transformation/EC, protein catalytic
+    annotation, and exact Rhea sides. PathBank supplies no native Rhea cross-reference.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: The native SMP0002077 Pathway explicitly includes Reactions/6036; that reaction
+      carries EC 3.6.1.63.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002077"]/bp:pathwayComponent[@rdf:resource="#Reactions/6036"];
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6036"]/bp:eCNumber
+  - reference_id: UniProtKB:P16689
+    source_assertion: The corresponding E. coli protein annotation assigns EC 3.6.1.63 and RHEA:34683
+      to this transformation. Native PathBank membership and this independent reaction grounding are separate
+      assertions.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[ecNumber="3.6.1.63"]; reactionCrossReferences
+  - reference_id: RHEA:34684
+    source_assertion: Rhea defines directed RHEA:34684 from master RHEA:34683; its charge-balanced participants
+      are retained instead of the older PathBank charge forms.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34683"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:substrates,rh:products
+- id: methylphosphonate-edge-037
+  subject: RHEA:34708
+  predicate: part_of
+  object: PathBank:SMP0002077
+  description: Manual reaction correspondence combines matching native transformation/EC, protein catalytic
+    annotation, and exact Rhea sides. PathBank supplies no native Rhea cross-reference. PhnJ’s Rhea equation
+    additionally includes the radical-activation reagents and products absent from the native minimal
+    equation.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: The native SMP0002077 Pathway explicitly includes Reactions/6037; that reaction
+      carries EC 4.7.1.1.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002077"]/bp:pathwayComponent[@rdf:resource="#Reactions/6037"];
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6037"]/bp:eCNumber
+  - reference_id: UniProtKB:P16688
+    source_assertion: The corresponding E. coli protein annotation assigns EC 4.7.1.1 and RHEA:34707 to
+      this transformation. Native PathBank membership and this independent reaction grounding are separate
+      assertions.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[ecNumber="4.7.1.1"]; reactionCrossReferences
+  - reference_id: RHEA:34708
+    source_assertion: Rhea defines directed RHEA:34708 from master RHEA:34707; its charge-balanced participants
+      are retained instead of the older PathBank charge forms.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34707"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:substrates,rh:products
+- id: methylphosphonate-edge-038
+  subject: RHEA:34796
+  predicate: part_of
+  object: PathBank:SMP0002077
+  description: Manual reaction correspondence combines matching native transformation/EC, protein catalytic
+    annotation, and exact Rhea sides. PathBank supplies no native Rhea cross-reference.
+  evidence:
+  - reference_id: PathBank:SMP0002077
+    source_assertion: The native SMP0002077 Pathway explicitly includes Reactions/6038; that reaction
+      carries EC 3.1.4.55.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002077"]/bp:pathwayComponent[@rdf:resource="#Reactions/6038"];
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6038"]/bp:eCNumber
+  - reference_id: UniProtKB:P16692
+    source_assertion: The corresponding E. coli protein annotation assigns EC 3.1.4.55 and RHEA:34795
+      to this transformation. Native PathBank membership and this independent reaction grounding are separate
+      assertions.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[ecNumber="3.1.4.55"]; reactionCrossReferences
+  - reference_id: RHEA:34796
+    source_assertion: Rhea defines directed RHEA:34796 from master RHEA:34795; its charge-balanced participants
+      are retained instead of the older PathBank charge forms.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34795"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:substrates,rh:products
+- id: methylphosphonate-edge-039
+  subject: RHEA:34680
+  predicate: provides_input_for
+  object: RHEA:34684
+  description: Material transfer through the identified ribose intermediate establishes the reaction sequence.
+    Native pathwayOrder contains membership links, not nextStep ordering assertions.
+  evidence:
+  - reference_id: RHEA:34680
+    source_assertion: The products of RHEA:34680 include CHEBI:68823.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34680"]/rh:products; rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:34684
+    source_assertion: The substrates of RHEA:34684 include CHEBI:68823.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:substrates; rh:contains1/rh:compound/rh:chebi
+- id: methylphosphonate-edge-040
+  subject: RHEA:34684
+  predicate: provides_input_for
+  object: RHEA:34708
+  description: Material transfer through the identified ribose intermediate establishes the reaction sequence.
+    Native pathwayOrder contains membership links, not nextStep ordering assertions.
+  evidence:
+  - reference_id: RHEA:34684
+    source_assertion: The products of RHEA:34684 include CHEBI:68686.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34684"]/rh:products; rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:34708
+    source_assertion: The substrates of RHEA:34708 include CHEBI:68686.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:substrates; rh:contains1/rh:compound/rh:chebi
+- id: methylphosphonate-edge-041
+  subject: RHEA:34708
+  predicate: provides_input_for
+  object: RHEA:34796
+  description: Material transfer through the identified ribose intermediate establishes the reaction sequence.
+    Native pathwayOrder contains membership links, not nextStep ordering assertions.
+  evidence:
+  - reference_id: RHEA:34708
+    source_assertion: The products of RHEA:34708 include CHEBI:68687.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34708"]/rh:products; rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:34796
+    source_assertion: The substrates of RHEA:34796 include CHEBI:68687.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/34796"]/rh:substrates; rh:contains1/rh:compound/rh:chebi
+references:
+- id: PathBank:SMP0002077
+  title: PathBank Methylphosphonate Degradation I, native BioPAX member PW002065.owl
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: primary archive Last-Modified 2019-08-16; member PW002065.owl
+  source_sha256: 66e835939e82188e3c976f0eda7ab68fa3d6fd8064bb18b1c4df439abec4cc62
+- id: RHEA:34680
+  title: Rhea 34680 directed methylphosphonate pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34684
+  title: Rhea 34684 directed methylphosphonate pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34708
+  title: Rhea 34708 directed methylphosphonate pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34796
+  title: Rhea 34796 directed methylphosphonate pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P16685
+  title: UniProtKB P16685, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16685.json
+  source_version: '2026_03'
+  source_sha256: 76da9ede75bec43e06f28c84f0847bbad79a2a7176b4a408b0f1d11839ac07a7
+- id: UniProtKB:P16686
+  title: UniProtKB P16686, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16686.json
+  source_version: '2026_03'
+  source_sha256: 9538608660587094cd869da514a9051b9602746dfb07c83aff724635d1363b24
+- id: UniProtKB:P16687
+  title: UniProtKB P16687, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16687.json
+  source_version: '2026_03'
+  source_sha256: cf6eb26d4a4206420af2ad14d50aa214b66957dc4721f02374abb04b580e3826
+- id: UniProtKB:P16679
+  title: UniProtKB P16679, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16679.json
+  source_version: '2026_03'
+  source_sha256: f1cbab56cc1a6901d9f4ca3651ccb5e14d5bc085d7b1d62b4af7a7c43b08efac
+- id: UniProtKB:P16689
+  title: UniProtKB P16689, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16689.json
+  source_version: '2026_03'
+  source_sha256: ed17b332cca349cf95b3cad5164777c3760aba7d9653e8fa35262cc36b4b1622
+- id: UniProtKB:P16688
+  title: UniProtKB P16688, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16688.json
+  source_version: '2026_03'
+  source_sha256: 23a26095adfc24be8778e4dd102a8d8ddbc277e5b1195d8607fcc64706b4ff3a
+- id: UniProtKB:P16692
+  title: UniProtKB P16692, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P16692.json
+  source_version: '2026_03'
+  source_sha256: 901bc7968a2cff2e7678da8872439eeb21942fa514d1607d317bca5557bb093d
+- id: PMID:22089136
+  title: Intermediates in the transformation of phosphonates to phosphate by bacteria.
+  url: https://pubmed.ncbi.nlm.nih.gov/22089136/
+- id: PMID:21341651
+  title: Physiological role of phnP-specified phosphoribosyl cyclic phosphodiesterase in catabolism of
+    organophosphonic acids by the carbon-phosphorus lyase pathway.
+  url: https://pubmed.ncbi.nlm.nih.gov/21341651/
+- id: PMID:19366688
+  title: Structure of PhnP, a phosphodiesterase of the carbon-phosphorus lyase pathway for phosphonate
+    degradation.
+  url: https://pubmed.ncbi.nlm.nih.gov/19366688/
+- id: PMID:26280334
+  title: Structural insights into the bacterial carbon-phosphorus lyase machinery.
+  url: https://pubmed.ncbi.nlm.nih.gov/26280334/
+- id: PMID:36813778
+  title: Structural remodelling of the carbon-phosphorus lyase machinery by a dual ABC ATPase.
+  url: https://pubmed.ncbi.nlm.nih.gov/36813778/
+- id: PMID:15342581
+  title: Reversible phase variation in the phnE gene, which is required for phosphonate metabolism in
+    Escherichia coli K-12.
+  url: https://pubmed.ncbi.nlm.nih.gov/15342581/

@@ -23,6 +23,9 @@ namespaces:
   NCBIProtein:
     snapshot: data/identifier_authorities/sources.json
     policy: canonical_or_synonym
+  PathBank:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
   MetaCyc:
     snapshot: data/identifier_authorities/sources.json
     policy: canonical_or_synonym
@@ -52,7 +55,7 @@ contextual_labels:
     reason: GPML diagram labels preserve source display text after chemical cross-reference mapping.
   - namespace: CHEBI
     sections: [participants]
-    record_prefixes: [Reactome]
+    record_prefixes: [Reactome, PathBank]
     reason: BioPAX display names preserve biochemical shorthand while ChEBI IDs specify the grounded chemical form.
   - namespace: EC
     sections: [participants]
@@ -60,7 +63,7 @@ contextual_labels:
     reason: Pathway enzyme-step descriptions preserve activity and gene-context names rather than assert the current IUBMB recommended enzyme name.
   - namespace: RHEA
     sections: [reactions]
-    record_prefixes: [MetaCyc]
+    record_prefixes: [MetaCyc, PathBank]
     reason: Curated pathway step labels describe enzyme function; the Rhea authority labels reaction equations.
   - namespace: SGD
     sections: [participants]
@@ -68,7 +71,7 @@ contextual_labels:
     reason: Source diagrams preserve gene symbols and organism or activity qualifiers such as Scer.
   - namespace: UniProtKB
     sections: [participants]
-    record_prefixes: [MetaCyc, Reactome, WikiPathways]
+    record_prefixes: [MetaCyc, Reactome, WikiPathways, PathBank]
     reason: Pathway diagrams use gene symbols or enzyme-step names rather than the recommended protein name.
   - namespace: gomodel
     sections: [record, participants, reactions]
@@ -78,6 +81,10 @@ contextual_labels:
     sections: [participants, reactions]
     record_prefixes: [WikiPathways]
     reason: GPML interactions and diagram entities have native GraphIds; pathway records preserve their source-context descriptions without claiming an unresolved external chemical identity or canonical reaction name.
+  - namespace: PathBank
+    sections: [participants, reactions]
+    record_prefixes: [PathBank]
+    reason: Native BioPAX graph objects are scoped by their independently asserted SMPDB pathway accession; curated descriptions preserve chemical, complex or reaction context without making an external identity or canonical-name claim. The pathway title itself remains canonical.
   - namespace: MIBiG
     sections: [record]
     record_prefixes: [MIBiG]

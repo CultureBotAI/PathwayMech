@@ -65,7 +65,7 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         "10\tgo-cam\tactive\ttrue\tcausal-activity-model\t"
         "Gene Ontology Causal Activity Models"
     )
-    assert any(row.startswith("60\tpathbank\tsupport\ttrue\t") for row in rows)
+    assert any(row.startswith("60\tpathbank\tactive\ttrue\t") for row in rows)
     assert (
         "130\tpmn\tlicense-gated\ttrue\talgal-pathway-reference\t"
         "Plant Metabolic Network / ChlamyCyc"
