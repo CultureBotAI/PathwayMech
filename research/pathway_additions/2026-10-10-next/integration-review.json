@@ -1,0 +1,646 @@
+{
+  "audit_type": "Independent integration-only review; reviewer authored riboneogenesis, so this is not an independent scientific review of that record.",
+  "reviewer": "codex /root/pathway_literature_candidates",
+  "reviewed_at": "2026-10-10T23:39:56.813295+00:00",
+  "base_commit": "dbf399e6ac90f6240fa5da2fac27386d49966171",
+  "status": "passed_after_issue_327_fix",
+  "unresolved_findings": [],
+  "issue_327": {
+    "url": "https://github.com/CultureBotAI/PathwayMech/issues/327",
+    "file": "research/pathway_additions/2026-10-10-next/audit_pathbank_taxa.py",
+    "finding": "The original sha256 helper used path.read_bytes() for the 14,115,225,600-byte taxonomy SQLite database, unnecessarily allocating the whole database in memory.",
+    "fix": "sha256 now reads and hashes blocks of at most 1 MiB; the same helper covers all file hashes.",
+    "independent_verification": "Inspected streaming implementation, passed six boundary-length digest cases, completed full independent archive/taxonomy replay, and compared exact output bytes with the final maintained report.",
+    "interrupted_initial_attempt": {
+      "session_id": 92939,
+      "exit_code": 130,
+      "result": "KeyboardInterrupt; interrupted before report write",
+      "output_report_exists": false,
+      "stdout_log_bytes": 0,
+      "stdout_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "helper_hash_at_initial_launch": null,
+      "limitation": "Initial helper bytes were not pinned before execution; no final-script verification is claimed for this interrupted attempt.",
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/327"
+    },
+    "boundary_checks": {
+      "helper_sha256": "bc8eae7f9bbeafa790cc9e8125d2bede64f66b94d881ea7139e0672148af8878",
+      "cases": [
+        {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "matches_independent_hashlib": true
+        },
+        {
+          "bytes": 1,
+          "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+          "matches_independent_hashlib": true
+        },
+        {
+          "bytes": 1048575,
+          "sha256": "d8222d77ac43a9391cb348ce3a3bb3c0221a4a666e907b5bc77de56a41f37848",
+          "matches_independent_hashlib": true
+        },
+        {
+          "bytes": 1048576,
+          "sha256": "fbbab289f7f94b25736c58be46a994c441fd02552cc6022352e3d86d2fab7c83",
+          "matches_independent_hashlib": true
+        },
+        {
+          "bytes": 1048577,
+          "sha256": "607deb6eccbc844880b9d7b523751a4cdba0452727b885c74264bfe1fb7843e2",
+          "matches_independent_hashlib": true
+        },
+        {
+          "bytes": 3145745,
+          "sha256": "69112280f593fd44684d97d3fe42cdcb84da4ae495d8e1db649f06c3596a7ce6",
+          "matches_independent_hashlib": true
+        }
+      ],
+      "all_match": true,
+      "scope": "Digest correctness across empty, exact-block and multi-block/partial-block inputs. No benchmark or process RSS claim."
+    }
+  },
+  "authority_baseline_comparison": [
+    {
+      "file": "conf/identifier_sources.json",
+      "current_sha256": "a7721b59eda937c30996ca8ceebbfaf292c7e860fcee4cc838cf4f64370da3fc",
+      "old_count": 110,
+      "new_count": 121,
+      "missing": [],
+      "modified": [],
+      "added": [
+        "metacyc-GLYCDEH-CPLX",
+        "metacyc-PWY-5453",
+        "pathbank-SMP0002406",
+        "uniprot-P0A9S5-2026-10-10",
+        "uniprot-P14540-2026-10-10",
+        "uniprot-P23254-2026-10-10",
+        "uniprot-P33315-2026-10-10",
+        "uniprot-P36136-2026-10-10",
+        "uniprot-P46969-2026-10-10",
+        "uniprot-Q12189-2026-10-10",
+        "uniprot-Q46851-2026-10-10"
+      ]
+    },
+    {
+      "file": "data/identifier_authorities/ontology.json",
+      "current_sha256": "e454259ff88df93fb00b59537175421e1e594e67554ad6585fbe3ceb1587f88f",
+      "sources": {
+        "old_count": 4,
+        "new_count": 4,
+        "missing": [],
+        "modified": [],
+        "added": []
+      },
+      "terms": {
+        "old_count": 1319,
+        "new_count": 1331,
+        "missing": [],
+        "modified": [],
+        "added": [
+          "CHEBI:27957",
+          "CHEBI:29002",
+          "CHEBI:58335",
+          "RHEA:10509",
+          "RHEA:13679",
+          "RHEA:17461",
+          "RHEA:17462",
+          "RHEA:27628",
+          "RHEA:27988",
+          "RHEA:28668",
+          "RHEA:30167",
+          "RHEA:30168"
+        ]
+      }
+    },
+    {
+      "file": "data/identifier_authorities/sources.json",
+      "current_sha256": "56725c311bc14ba7e1d649ba1c7faeeeac4f9785e1aa12fbee1707f4249afe9c",
+      "sources": {
+        "old_count": 102,
+        "new_count": 105,
+        "missing": [],
+        "modified": [],
+        "added": [
+          "metacyc-GLYCDEH-CPLX",
+          "metacyc-PWY-5453",
+          "pathbank-SMP0002406"
+        ]
+      },
+      "terms": {
+        "old_count": 1622,
+        "new_count": 1633,
+        "missing": [],
+        "modified": [],
+        "added": [
+          "MetaCyc:GLYCDEH-CPLX",
+          "MetaCyc:PWY-5453",
+          "PathBank:SMP0002406",
+          "UniProtKB:P0A9S5",
+          "UniProtKB:P14540",
+          "UniProtKB:P23254",
+          "UniProtKB:P33315",
+          "UniProtKB:P36136",
+          "UniProtKB:P46969",
+          "UniProtKB:Q12189",
+          "UniProtKB:Q46851"
+        ]
+      }
+    }
+  ],
+  "new_authority_native_bodies": [
+    {
+      "key": "uniprot-P23254-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-P23254.json",
+      "bytes": 68628,
+      "sha256": "8b817c1f08114fe4e1ee8f522e9a539358821497a488f684868cb81eef34af6c",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-P33315-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-P33315.json",
+      "bytes": 25640,
+      "sha256": "8c01246058d0599e4f488cfeea68b88b20b58e3c194a2d8fe63efe1ddb8061ca",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-P14540-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-P14540.json",
+      "bytes": 31480,
+      "sha256": "698ae373a94fdc9d837183616fbd7abb151c52e9ba53fa1b75f874cf6c83255e",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-P36136-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-P36136.json",
+      "bytes": 32600,
+      "sha256": "18e7a733e01ce849a7abd22b93bdf96109baa5e14da63051d42b1a4211be01f1",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-P46969-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-P46969.json",
+      "bytes": 19882,
+      "sha256": "fed3162d8c9c807befb78170e6b1c9fe77413a8fb9e22cb58515d992f7d6fb76",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-Q12189-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-Q12189.json",
+      "bytes": 20605,
+      "sha256": "ffac01f058a6f99ae38eb095491fbf4a1d9a344471c7f45210fc6ce18e51351e",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-Q46851-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-Q46851.json",
+      "bytes": 33882,
+      "sha256": "b42926fbe3b36065ea7e2ebe7e67c6d787b7be9ae2edf95187f20fd4b95e126e",
+      "matches_manifest": true
+    },
+    {
+      "key": "uniprot-P0A9S5-2026-10-10",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/uniprot-P0A9S5.json",
+      "bytes": 40895,
+      "sha256": "faee284ee8a8c21d95764d891e90e9154d22c2fda5c891c59f0d890ffb577a49",
+      "matches_manifest": true
+    },
+    {
+      "key": "metacyc-PWY-5453",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/metacyc-PWY-5453.html",
+      "bytes": 34115,
+      "sha256": "2f10a4e303e6b5c8b3a297919f644a88312b780e5e54109fb4bc68a60f4dc809",
+      "matches_manifest": true
+    },
+    {
+      "key": "metacyc-GLYCDEH-CPLX",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/metacyc-GLYCDEH-CPLX.html",
+      "bytes": 34185,
+      "sha256": "534ca8907080e002552e2570246d00e717104b57aa17dee35ae81a8b55226ac8",
+      "matches_manifest": true
+    },
+    {
+      "key": "pathbank-SMP0002406",
+      "native_path": "/private/tmp/pathwaymech-curation-authorities/sources/pathbank-SMP0002406.owl",
+      "bytes": 51176,
+      "sha256": "1f8af4af7f79034296739e1f0ef313974de23119528c4401c3f8b41f46594c2e",
+      "matches_manifest": true
+    }
+  ],
+  "archive_structural_coverage": {
+    "counts": {
+      "owl": 2687,
+      "BioSource": 3438,
+      "Pathway": 9415,
+      "BiochemicalReaction": 36166
+    },
+    "nested_native_objects": [],
+    "other_zip_members": []
+  },
+  "taxonomy_labels": {
+    "authority_database_sha256_from_independent_streamed_replay": "89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d",
+    "read_only_exact_label_checks": [
+      {
+        "id": "NCBITaxon:2",
+        "label": "Bacteria",
+        "matches_report": true,
+        "selected_as_microbial": true
+      },
+      {
+        "id": "NCBITaxon:287",
+        "label": "Pseudomonas aeruginosa",
+        "matches_report": true,
+        "selected_as_microbial": true
+      },
+      {
+        "id": "NCBITaxon:562",
+        "label": "Escherichia coli",
+        "matches_report": true,
+        "selected_as_microbial": true
+      },
+      {
+        "id": "NCBITaxon:3702",
+        "label": "Arabidopsis thaliana",
+        "matches_report": true,
+        "selected_as_microbial": false
+      },
+      {
+        "id": "NCBITaxon:4932",
+        "label": "Saccharomyces cerevisiae",
+        "matches_report": true,
+        "selected_as_microbial": true
+      },
+      {
+        "id": "NCBITaxon:6239",
+        "label": "Caenorhabditis elegans",
+        "matches_report": true,
+        "selected_as_microbial": false
+      },
+      {
+        "id": "NCBITaxon:7227",
+        "label": "Drosophila melanogaster",
+        "matches_report": true,
+        "selected_as_microbial": false
+      },
+      {
+        "id": "NCBITaxon:9606",
+        "label": "Homo sapiens",
+        "matches_report": true,
+        "selected_as_microbial": false
+      },
+      {
+        "id": "NCBITaxon:9913",
+        "label": "Bos taurus",
+        "matches_report": true,
+        "selected_as_microbial": false
+      },
+      {
+        "id": "NCBITaxon:10090",
+        "label": "Mus musculus",
+        "matches_report": true,
+        "selected_as_microbial": false
+      },
+      {
+        "id": "NCBITaxon:10116",
+        "label": "Rattus norvegicus",
+        "matches_report": true,
+        "selected_as_microbial": false
+      }
+    ]
+  },
+  "name_screen_comparison": {
+    "rows": 528,
+    "prior_ledger_byte_identical_to_base": true,
+    "membership_identical": true,
+    "all_native_identity_title_count_hash_and_class_fields_identical": true,
+    "changed_hints": [
+      {
+        "member": "PW002037.owl",
+        "fields": [
+          "exact_record_id_matches",
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002043.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002054.owl",
+        "fields": [
+          "exact_record_id_matches",
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002058.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002065.owl",
+        "fields": [
+          "exact_record_id_matches",
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002068.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002075.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW002099.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW123534.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW123538.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW123544.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW123551.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      },
+      {
+        "member": "PW123567.owl",
+        "fields": [
+          "exact_record_title_matches"
+        ]
+      }
+    ],
+    "matches_saved_replay_receipt": true
+  },
+  "taxonomy_replay_comparison": {
+    "initial_path": "/private/tmp/pathwaymech-next-taxonomy-initial.json",
+    "initial_sha256": "a5e1f6d94189d0783670afda1e6616a173d6cae8c6bf18c4a23887b9c8e942fc",
+    "replay_path": "/private/tmp/pathwaymech-next-integration-review/taxonomy-streaming-replay.json",
+    "replay_sha256": "60f5e59ceb7fc874545669edfed39ca798c26d8e13046a577751ae9258378be3",
+    "all_prior_report_fields_preserved": true,
+    "differences": [],
+    "added_field_count": 1584,
+    "added_field_names": [
+      "native_object_class_counts",
+      "organism_taxonomy_ids"
+    ],
+    "maintained_report_sha256": "60f5e59ceb7fc874545669edfed39ca798c26d8e13046a577751ae9258378be3",
+    "maintained_byte_identical": true,
+    "counts": {
+      "parsed_owl_members": 2687,
+      "microbial_taxonomy_member_count": 532
+    },
+    "all_taxa_count": 11,
+    "four_new_members": [
+      "PW000345.owl",
+      "PW002336.owl",
+      "PW002337.owl",
+      "PW064816.owl"
+    ]
+  },
+  "four_native_dispositions": [
+    {
+      "member": "PW000345.owl",
+      "biochemical_reactions": 1,
+      "molecular_interactions": 0,
+      "pathways": [
+        {
+          "id": "SubPathways/752",
+          "label": "Azithromycin inhibition of Bacterial Ribosome",
+          "organism_ids": []
+        },
+        {
+          "id": "http://identifiers.org/smpdb/SMP0000247",
+          "label": "Azithromycin Action Pathway",
+          "organism_ids": [
+            "9606"
+          ]
+        }
+      ]
+    },
+    {
+      "member": "PW002336.owl",
+      "biochemical_reactions": 1,
+      "molecular_interactions": 0,
+      "pathways": [
+        {
+          "id": "http://identifiers.org/smpdb/SMP02268",
+          "label": "Operon: lysine decarboxylase inactivation II",
+          "organism_ids": [
+            "562"
+          ]
+        }
+      ]
+    },
+    {
+      "member": "PW002337.owl",
+      "biochemical_reactions": 1,
+      "molecular_interactions": 0,
+      "pathways": [
+        {
+          "id": "http://identifiers.org/smpdb/SMP02269",
+          "label": "Operon: lysine decarboxylase inactivation III",
+          "organism_ids": [
+            "562"
+          ]
+        }
+      ]
+    },
+    {
+      "member": "PW064816.owl",
+      "biochemical_reactions": 0,
+      "molecular_interactions": 45,
+      "pathways": [
+        {
+          "id": "http://identifiers.org/smpdb/SMP0063811",
+          "label": "GnRH Signaling Pathway",
+          "organism_ids": [
+            "9606"
+          ]
+        }
+      ]
+    }
+  ],
+  "generated_baseline_comparison": {
+    "base_commit": "dbf399e6ac90f6240fa5da2fac27386d49966171",
+    "edges": {
+      "baseline_rows": 7619,
+      "final_rows": 7686,
+      "added_rows": 67,
+      "removed_baseline_rows": [],
+      "modified_baseline_rows": []
+    },
+    "nodes": {
+      "baseline_rows": 2696,
+      "final_rows": 2717,
+      "added_rows": 21,
+      "baseline_contexts_preserved": 5060,
+      "nodes_with_extended_contexts": 28,
+      "missing_baseline_nodes": [],
+      "missing_baseline_contexts": [],
+      "derived_field_changes": [
+        {
+          "id": "RHEA:14659",
+          "field": "category",
+          "before": "biolink:BiochemicalReaction",
+          "after": "biolink:MolecularActivity"
+        },
+        {
+          "id": "RHEA:14659",
+          "field": "source_category",
+          "before": "",
+          "after": "molecular_activity"
+        }
+      ]
+    },
+    "existing_pathway_record_changes": [],
+    "new_record_paths": [
+      "data/pathways/methylglyoxal-degradation-iii.yaml",
+      "data/pathways/riboneogenesis.yaml"
+    ],
+    "limits": "The new explicit molecular_activity declaration takes precedence over the previous RHEA-prefix fallback; both local source contexts remain present. This is not scientific review of the new declaration.",
+    "execution_note": "An initial scratch assertion accidentally included newly staged additions as existing-record modifications. The check was corrected to intersect baseline record paths; no repository defect or file change resulted."
+  },
+  "exhaustion_claim_review": {
+    "README_inspected": "research/pathway_additions/2026-10-10-next/README.md",
+    "result": "Four new native document dispositions match primary BioPAX pathway organism links/class counts. README preserves cobalamin, allantoin and other candidates as pending/unreviewed and explicitly disclaims pathway/source exhaustion. Neither a microbial BioSource co-occurrence nor a reaction count is treated as pathway approval.",
+    "limitation": "No independent scientific assessment of the pending cobalamin/allantoin pathways is claimed."
+  },
+  "actual_terminal_replay": {
+    "started_at": "2026-10-10T23:37:36.652244+00:00",
+    "command": [
+      "/private/tmp/pathwaymech-next-20261010/.venv/bin/python",
+      "/private/tmp/pathwaymech-next-20261010/research/pathway_additions/2026-10-10-next/audit_pathbank_taxa.py",
+      "--archive",
+      "/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip",
+      "--name-screen",
+      "/private/tmp/pathwaymech-next-20261010/research/pathway_additions/2026-10-10-next/current-screening/pathbank-screening.tsv",
+      "--taxonomy-db",
+      "/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+      "--output",
+      "/private/tmp/pathwaymech-next-integration-review/taxonomy-streaming-replay.json"
+    ],
+    "cwd": "/private/tmp/pathwaymech-next-20261010",
+    "script_sha256_before": "bc8eae7f9bbeafa790cc9e8125d2bede64f66b94d881ea7139e0672148af8878",
+    "finished_at": "2026-10-10T23:39:01.250871+00:00",
+    "elapsed_seconds": 84.595,
+    "exit_code": 0,
+    "script_sha256_after": "bc8eae7f9bbeafa790cc9e8125d2bede64f66b94d881ea7139e0672148af8878",
+    "log_sha256": "f2723b4e46216dcbd1b02f627622206a4067e3f25a65ba943757d67979cddab0",
+    "output_sha256": "60f5e59ceb7fc874545669edfed39ca798c26d8e13046a577751ae9258378be3"
+  },
+  "scratch_runner": {
+    "path": "/private/tmp/pathwaymech-next-integration-review/replay.py",
+    "sha256": "da5ba3a00a87fa7913b74774d68552c47633bd118cc67b66bc5f0c5473e8fbd4"
+  },
+  "sensitive_material_scan": {
+    "files_scanned": 50,
+    "scope": "All current changed tracked paths versus base plus the complete dated research directory enumerated with rg --files --no-ignore --hidden, and both new records. Future review/report additions are outside this timestamped scan.",
+    "patterns": {
+      "private_key": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+      "signed_url": "X-Amz-(?:Signature|Credential)=",
+      "authorization_token": "Authorization[\\s:]+(?:Bearer|Basic)\\s+[A-Za-z0-9+/=._-]{12,}",
+      "session_header": "(?im)^\\s*\"?set-cookie[\":]"
+    },
+    "hits": [],
+    "file_paths": [
+      "conf/identifier_sources.json",
+      "data/identifier_authorities/ontology.json",
+      "data/identifier_authorities/sources.json",
+      "data/pathways/methylglyoxal-degradation-iii.yaml",
+      "data/pathways/riboneogenesis.yaml",
+      "history/records/methylglyoxal-degradation-iii/2026-10-10T233206Z-codex-cd47df.yaml",
+      "history/records/riboneogenesis/2026-10-10T233203Z-codex-61465a.yaml",
+      "history/records/riboneogenesis/2026-10-10T233339Z-codex-e3f910.yaml",
+      "pages/browse.html",
+      "pages/downloads/edges.tsv",
+      "pages/downloads/manifest.json",
+      "pages/downloads/nodes.tsv",
+      "pages/index.html",
+      "pages/pathway_index.json",
+      "pages/records/MetaCyc_PWY-5453.html",
+      "pages/records/PathBank_SMP0002406.html",
+      "research/pathway_additions/2026-10-10-next/README.md",
+      "research/pathway_additions/2026-10-10-next/__pycache__/audit_pathbank_taxa.cpython-313.pyc",
+      "research/pathway_additions/2026-10-10-next/audit_pathbank_taxa.py",
+      "research/pathway_additions/2026-10-10-next/authority-integration.json",
+      "research/pathway_additions/2026-10-10-next/baseline-preservation.json",
+      "research/pathway_additions/2026-10-10-next/cobalamin-handoff.md",
+      "research/pathway_additions/2026-10-10-next/cobalamin-native-projection.json",
+      "research/pathway_additions/2026-10-10-next/cobalamin-rhea-projection.json",
+      "research/pathway_additions/2026-10-10-next/cobalamin-search-receipt.json",
+      "research/pathway_additions/2026-10-10-next/cobalamin-source-manifest.json",
+      "research/pathway_additions/2026-10-10-next/cobalamin-validation.json",
+      "research/pathway_additions/2026-10-10-next/current-screening/pathbank-screening.json",
+      "research/pathway_additions/2026-10-10-next/current-screening/pathbank-screening.tsv",
+      "research/pathway_additions/2026-10-10-next/generated-graph-kgx-audit.json",
+      "research/pathway_additions/2026-10-10-next/identifier-ledger.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-checks.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-chemistry.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-curation.md",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-duplicate-searches.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-native-projection.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-protein-projection.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-review-context.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-sources.json",
+      "research/pathway_additions/2026-10-10-next/methylglyoxal-verify.py",
+      "research/pathway_additions/2026-10-10-next/pathbank-taxonomy-audit.json",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-curation.md",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-dedup.json",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-identifiers.json",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-imodulondb-context.json",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-source-manifest.json",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-source-projection.json",
+      "research/pathway_additions/2026-10-10-next/riboneogenesis-validation.json",
+      "research/pathway_additions/2026-10-10-next/screening-replay.json",
+      "research/pathway_additions/2026-10-10-next/taxonomy-replay.json"
+    ],
+    "limit": "Bounded pattern scan and provenance inspection, not a general secret-detection proof."
+  },
+  "input_hashes": {
+    "conf/identifier_sources.json": "a7721b59eda937c30996ca8ceebbfaf292c7e860fcee4cc838cf4f64370da3fc",
+    "data/identifier_authorities/ontology.json": "e454259ff88df93fb00b59537175421e1e594e67554ad6585fbe3ceb1587f88f",
+    "data/identifier_authorities/sources.json": "56725c311bc14ba7e1d649ba1c7faeeeac4f9785e1aa12fbee1707f4249afe9c",
+    "research/pathway_additions/2026-10-10-next/audit_pathbank_taxa.py": "bc8eae7f9bbeafa790cc9e8125d2bede64f66b94d881ea7139e0672148af8878",
+    "research/pathway_additions/2026-10-10-next/pathbank-taxonomy-audit.json": "60f5e59ceb7fc874545669edfed39ca798c26d8e13046a577751ae9258378be3",
+    "research/pathway_additions/2026-10-10-next/README.md": "3ba0cdbaeedaf0ce5e79d98106a21b221185d022c66962e4f6474fbffeb069ea",
+    "research/pathway_additions/2026-10-10-next/authority-integration.json": "76e569ddf2e9ba12dbfa6592036e78938aef8f3fd91ccf8dca9c5b1c6d09d189",
+    "research/pathway_additions/2026-10-10-next/screening-replay.json": "f635f1ee3a78e299a3a5109952c94bcef2c523d00e65160a5b30254c2178fe60",
+    "research/pathway_additions/2026-10-10-next/current-screening/pathbank-screening.tsv": "0c2d7dcdc323a3b8d5bdd232bd6cd4ad0ba54b3f35edf954360f7535b7307526",
+    "pages/downloads/nodes.tsv": "7d9ddee7870cb8ff66adc17aaea954c3975189f5a2b58098c5139bddf5e3ad35",
+    "pages/downloads/edges.tsv": "337f361cf686da9540894872653a22726091f11abb973449489fb735c22e9435"
+  },
+  "limits": [
+    "This audit is independent integration review only; it does not replace either scientific record review.",
+    "The retained name-screen reflects the 167-record base, not a claim of post-addition completeness.",
+    "All new source bodies were independently rehashed; canonical full authority building and whole-corpus gates are reported separately by the parent.",
+    "No browser visual inspection is claimed.",
+    "No public release licensing clearance or exhaustive source-discovery claim is made."
+  ]
+}

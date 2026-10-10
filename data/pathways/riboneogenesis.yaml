@@ -1,0 +1,896 @@
+id: PathBank:SMP0002406
+label: Riboneogenesis
+description: The six-reaction Saccharomyces cerevisiae route makes ribose 5-phosphate from fructose 6-phosphate
+  and triose phosphates without producing NADPH. Transketolase and Fba1 supply sedoheptulose 1,7-bisphosphate;
+  Shb17 hydrolysis provides the thermodynamic drive; transketolase, Rpe1 and Rki1 complete pentose formation.
+  Evidence includes BY4743-derived mutants and FY4/FY5 controls, not a claim of identical flux in every
+  yeast strain. Protein enables edges identify functional gene products while retaining homodimer evidence;
+  no isolated-monomer sufficiency or Tkl1–Tkl2 heteromer is asserted. Tkl2 reaction/cofactor annotations
+  are inferred by similarity. The graph selects riboneogenic flux through otherwise reversible reactions
+  using exact directed Rhea equations and charge forms. These formal chemical representations do not equate
+  the native cyclic ribose phosphate or the crystallographic beta-furanose SBP ligand with open-chain
+  ChEBI structures. NADPH production, transaldolase bypass, octulose metabolism and Calvin-cycle carbon
+  fixation are outside this route.
+pathway_type: ribose-phosphate-biosynthesis
+taxa:
+- id: NCBITaxon:4932
+  label: Saccharomyces cerevisiae
+participants:
+- id: CHEBI:57634
+  label: beta-D-fructofuranose 6-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:59776
+  label: D-glyceraldehyde 3-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:16897
+  label: D-erythrose 4-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:57737
+  label: D-xylulose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:57642
+  label: glycerone phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58335
+  label: sedoheptulose 1,7-bisphosphate(4-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:57483
+  label: sedoheptulose 7-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:58273
+  label: aldehydo-D-ribose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58121
+  label: D-ribulose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58937
+  label: thiamine(1+) diphosphate(3-)
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29108
+  label: calcium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P23254
+  label: Transketolase 1
+  category: protein
+- id: UniProtKB:P33315
+  label: Transketolase 2
+  category: protein
+- id: UniProtKB:P14540
+  label: Fructose-bisphosphate aldolase
+  category: protein
+- id: UniProtKB:P36136
+  label: Sedoheptulose 1,7-bisphosphatase
+  category: protein
+- id: UniProtKB:P46969
+  label: Ribulose-phosphate 3-epimerase
+  category: protein
+- id: UniProtKB:Q12189
+  label: Ribose-5-phosphate isomerase
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005634
+  label: nucleus
+  category: cellular_component
+reactions:
+- id: RHEA:27628
+  label: beta-D-fructose 6-phosphate + D-glyceraldehyde 3-phosphate => D-erythrose 4-phosphate + D-xylulose
+    5-phosphate
+  category: molecular_activity
+  direction: right_to_left
+- id: RHEA:30168
+  label: D-erythrose 4-phosphate + dihydroxyacetone phosphate => D-sedoheptulose 1,7-bisphosphate
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:17462
+  label: D-sedoheptulose 1,7-bisphosphate + H2O => D-sedoheptulose 7-phosphate + phosphate
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:10509
+  label: D-sedoheptulose 7-phosphate + D-glyceraldehyde 3-phosphate => aldehydo-D-ribose 5-phosphate +
+    D-xylulose 5-phosphate
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:13679
+  label: D-xylulose 5-phosphate => D-ribulose 5-phosphate
+  category: molecular_activity
+  direction: right_to_left
+- id: RHEA:14659
+  label: D-ribulose 5-phosphate => aldehydo-D-ribose 5-phosphate
+  category: molecular_activity
+  direction: right_to_left
+mechanistic_edges:
+- id: riboneogenesis-edge-001
+  subject: CHEBI:57634
+  predicate: consumes
+  object: RHEA:27628
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:27626
+    source_assertion: RHEA:27628 substrates contain CHEBI:57634 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27628 rh:substrates; http://rdf.rhea-db.org/27626_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27626_compound_5371; rh:compound/rh:accession
+- id: riboneogenesis-edge-002
+  subject: CHEBI:59776
+  predicate: consumes
+  object: RHEA:27628
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:27626
+    source_assertion: RHEA:27628 substrates contain CHEBI:59776 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27628 rh:substrates; http://rdf.rhea-db.org/27626_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27626_compound_6062; rh:compound/rh:accession
+- id: riboneogenesis-edge-003
+  subject: RHEA:27628
+  predicate: produces
+  object: CHEBI:16897
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:27626
+    source_assertion: RHEA:27628 products contain CHEBI:16897 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27628 rh:products; http://rdf.rhea-db.org/27626_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27626_compound_5282; rh:compound/rh:accession
+- id: riboneogenesis-edge-004
+  subject: RHEA:27628
+  predicate: produces
+  object: CHEBI:57737
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:27626
+    source_assertion: RHEA:27628 products contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27628 rh:products; http://rdf.rhea-db.org/27626_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27626_compound_1624; rh:compound/rh:accession
+- id: riboneogenesis-edge-005
+  subject: CHEBI:16897
+  predicate: consumes
+  object: RHEA:30168
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:30167
+    source_assertion: RHEA:30168 substrates contain CHEBI:16897 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30168 rh:substrates; http://rdf.rhea-db.org/30167_L rh:contains1
+      http://rdf.rhea-db.org/Participant_30167_compound_5282; rh:compound/rh:accession
+- id: riboneogenesis-edge-006
+  subject: CHEBI:57642
+  predicate: consumes
+  object: RHEA:30168
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:30167
+    source_assertion: RHEA:30168 substrates contain CHEBI:57642 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30168 rh:substrates; http://rdf.rhea-db.org/30167_L rh:contains1
+      http://rdf.rhea-db.org/Participant_30167_compound_4255; rh:compound/rh:accession
+- id: riboneogenesis-edge-007
+  subject: RHEA:30168
+  predicate: produces
+  object: CHEBI:58335
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:30167
+    source_assertion: RHEA:30168 products contain CHEBI:58335 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30168 rh:products; http://rdf.rhea-db.org/30167_R rh:contains1
+      http://rdf.rhea-db.org/Participant_30167_compound_2479; rh:compound/rh:accession
+- id: riboneogenesis-edge-008
+  subject: CHEBI:58335
+  predicate: consumes
+  object: RHEA:17462
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:17461
+    source_assertion: RHEA:17462 substrates contain CHEBI:58335 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17462 rh:substrates; http://rdf.rhea-db.org/17461_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17461_compound_2479; rh:compound/rh:accession
+- id: riboneogenesis-edge-009
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17462
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:17461
+    source_assertion: RHEA:17462 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17462 rh:substrates; http://rdf.rhea-db.org/17461_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17461_compound_1283; rh:compound/rh:accession
+- id: riboneogenesis-edge-010
+  subject: RHEA:17462
+  predicate: produces
+  object: CHEBI:57483
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:17461
+    source_assertion: RHEA:17462 products contain CHEBI:57483 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17462 rh:products; http://rdf.rhea-db.org/17461_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17461_compound_3830; rh:compound/rh:accession
+- id: riboneogenesis-edge-011
+  subject: RHEA:17462
+  predicate: produces
+  object: CHEBI:43474
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:17461
+    source_assertion: RHEA:17462 products contain CHEBI:43474 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17462 rh:products; http://rdf.rhea-db.org/17461_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17461_compound_5518; rh:compound/rh:accession
+- id: riboneogenesis-edge-012
+  subject: CHEBI:57483
+  predicate: consumes
+  object: RHEA:10509
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:10508
+    source_assertion: RHEA:10509 substrates contain CHEBI:57483 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/10509 rh:substrates; http://rdf.rhea-db.org/10508_L rh:contains1
+      http://rdf.rhea-db.org/Participant_10508_compound_3830; rh:compound/rh:accession
+- id: riboneogenesis-edge-013
+  subject: CHEBI:59776
+  predicate: consumes
+  object: RHEA:10509
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:10508
+    source_assertion: RHEA:10509 substrates contain CHEBI:59776 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/10509 rh:substrates; http://rdf.rhea-db.org/10508_L rh:contains1
+      http://rdf.rhea-db.org/Participant_10508_compound_6062; rh:compound/rh:accession
+- id: riboneogenesis-edge-014
+  subject: RHEA:10509
+  predicate: produces
+  object: CHEBI:58273
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:10508
+    source_assertion: RHEA:10509 products contain CHEBI:58273 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/10509 rh:products; http://rdf.rhea-db.org/10508_R rh:contains1
+      http://rdf.rhea-db.org/Participant_10508_compound_6214; rh:compound/rh:accession
+- id: riboneogenesis-edge-015
+  subject: RHEA:10509
+  predicate: produces
+  object: CHEBI:57737
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:10508
+    source_assertion: RHEA:10509 products contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/10509 rh:products; http://rdf.rhea-db.org/10508_R rh:contains1
+      http://rdf.rhea-db.org/Participant_10508_compound_1624; rh:compound/rh:accession
+- id: riboneogenesis-edge-016
+  subject: CHEBI:57737
+  predicate: consumes
+  object: RHEA:13679
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:13677
+    source_assertion: RHEA:13679 substrates contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/13679 rh:substrates; http://rdf.rhea-db.org/13677_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13677_compound_1624; rh:compound/rh:accession
+- id: riboneogenesis-edge-017
+  subject: RHEA:13679
+  predicate: produces
+  object: CHEBI:58121
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:13677
+    source_assertion: RHEA:13679 products contain CHEBI:58121 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/13679 rh:products; http://rdf.rhea-db.org/13677_L rh:contains1
+      http://rdf.rhea-db.org/Participant_13677_compound_1531; rh:compound/rh:accession
+- id: riboneogenesis-edge-018
+  subject: CHEBI:58121
+  predicate: consumes
+  object: RHEA:14659
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:14657
+    source_assertion: RHEA:14659 substrates contain CHEBI:58121 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/14659 rh:substrates; http://rdf.rhea-db.org/14657_R rh:contains1
+      http://rdf.rhea-db.org/Participant_14657_compound_1531; rh:compound/rh:accession
+- id: riboneogenesis-edge-019
+  subject: RHEA:14659
+  predicate: produces
+  object: CHEBI:58273
+  description: Coefficient 1 in the selected riboneogenic direction; Rhea's formal charge and sugar representation
+    are retained.
+  evidence:
+  - reference_id: RHEA:14657
+    source_assertion: RHEA:14659 products contain CHEBI:58273 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/14659 rh:products; http://rdf.rhea-db.org/14657_L rh:contains1
+      http://rdf.rhea-db.org/Participant_14657_compound_6214; rh:compound/rh:accession
+- id: riboneogenesis-edge-020
+  subject: UniProtKB:P23254
+  predicate: enables
+  object: RHEA:27628
+  description: Tkl1 functional contribution in its homodimeric enzyme context; this gene-product edge
+    does not assert independent monomer activity. The primary route identifies Tkl1 as the main transketolase
+    activity.
+  evidence:
+  - reference_id: PMID:21663798
+    source_assertion: The pathway text assigns reactions 1 and 4 to transketolase TKL1/TKL2; Figure 6E
+      places transketolase at both conversions.
+    source_locator: PMC3163394 main text following equations (1)-(5); Figure 6E and accompanying Results
+  - reference_id: UniProtKB:P23254
+    source_assertion: SUBUNIT annotates a homodimer with experimental evidence ECO:0000269, including
+      PMID:8176731.
+    source_locator: comments[5].texts[0]; evidences
+  - reference_id: PathBank:SMP0002406
+    source_assertion: Native Reactions/7089 is controlled by Catalysis/7068 through complex4403, whose
+      TKL1/TKL2 protein references identify P23254/P33315. This supports source role assignment, not the
+      asserted mixed-complex composition.
+    source_locator: 'PW002511.owl: Reactions/7089; Catalysis/7068; ProteinComplex/4403; ProteinReference/10736
+      and /10737'
+- id: riboneogenesis-edge-021
+  subject: UniProtKB:P23254
+  predicate: enables
+  object: RHEA:10509
+  description: Tkl1 functional contribution in its homodimeric enzyme context; this gene-product edge
+    does not assert independent monomer activity. The primary route identifies Tkl1 as the main transketolase
+    activity.
+  evidence:
+  - reference_id: PMID:21663798
+    source_assertion: The pathway text assigns reactions 1 and 4 to transketolase TKL1/TKL2; Figure 6E
+      places transketolase at both conversions.
+    source_locator: PMC3163394 main text following equations (1)-(5); Figure 6E and accompanying Results
+  - reference_id: UniProtKB:P23254
+    source_assertion: SUBUNIT annotates a homodimer with experimental evidence ECO:0000269, including
+      PMID:8176731.
+    source_locator: comments[5].texts[0]; evidences
+  - reference_id: UniProtKB:P23254
+    source_assertion: CATALYTIC ACTIVITY assigns RHEA:10508 with ECO:0000269, including PMID:8521838.
+    source_locator: comments[1].reaction; reactionCrossReferences; evidences
+- id: riboneogenesis-edge-022
+  subject: UniProtKB:P33315
+  predicate: enables
+  object: RHEA:27628
+  description: Tkl2 functional contribution in its homodimeric enzyme context; this gene-product edge
+    does not assert independent monomer activity. Its specific reaction and assembly annotation is inferred
+    by similarity, not separately purified Tkl2 evidence.
+  evidence:
+  - reference_id: PMID:21663798
+    source_assertion: The pathway text assigns reactions 1 and 4 to transketolase TKL1/TKL2; Figure 6E
+      places transketolase at both conversions.
+    source_locator: PMC3163394 main text following equations (1)-(5); Figure 6E and accompanying Results
+  - reference_id: UniProtKB:P33315
+    source_assertion: SUBUNIT annotates a homodimer by similarity to P23254 (ECO:0000250).
+    source_locator: comments[5].texts[0]; evidences
+  - reference_id: PathBank:SMP0002406
+    source_assertion: Native Reactions/7089 is controlled by Catalysis/7068 through complex4403, whose
+      TKL1/TKL2 protein references identify P23254/P33315. This supports source role assignment, not the
+      asserted mixed-complex composition.
+    source_locator: 'PW002511.owl: Reactions/7089; Catalysis/7068; ProteinComplex/4403; ProteinReference/10736
+      and /10737'
+- id: riboneogenesis-edge-023
+  subject: UniProtKB:P33315
+  predicate: enables
+  object: RHEA:10509
+  description: Tkl2 functional contribution in its homodimeric enzyme context; this gene-product edge
+    does not assert independent monomer activity. Its specific reaction and assembly annotation is inferred
+    by similarity, not separately purified Tkl2 evidence.
+  evidence:
+  - reference_id: PMID:21663798
+    source_assertion: The pathway text assigns reactions 1 and 4 to transketolase TKL1/TKL2; Figure 6E
+      places transketolase at both conversions.
+    source_locator: PMC3163394 main text following equations (1)-(5); Figure 6E and accompanying Results
+  - reference_id: UniProtKB:P33315
+    source_assertion: SUBUNIT annotates a homodimer by similarity to P23254 (ECO:0000250).
+    source_locator: comments[5].texts[0]; evidences
+  - reference_id: UniProtKB:P33315
+    source_assertion: CATALYTIC ACTIVITY assigns RHEA:10508 by similarity to P23254, ECO:0000250.
+    source_locator: comments[1].reaction; reactionCrossReferences; evidences
+- id: riboneogenesis-edge-024
+  subject: UniProtKB:P14540
+  predicate: enables
+  object: RHEA:30168
+  description: Fba1 enables aldol condensation of erythrose 4-phosphate with DHAP. Reduced FBA1 expression
+    slows SBP labeling; UniProt annotates a homodimer without an inline evidence code. No isolated-monomer
+    sufficiency is claimed.
+  evidence:
+  - reference_id: PMID:21663798
+    quote: labeling of SBP and OBP was markedly slowed
+    source_locator: PMC3163394 Results, Sedoheptulose 1,7-bisphosphate is synthesized in vivo by fructose
+      bisphosphate aldolase; Figure 4B
+  - reference_id: PMID:21663798
+    source_assertion: FBA1-DAmP reduced aldolase expression; precursor labeling was unchanged while SBP
+      labeling slowed. Equation (2) and Figure 6E identify DHAP plus erythrose 4-phosphate as the route
+      substrates.
+    source_locator: PMC3163394 Results, aldolase isotope-labeling experiments; equation (2); Figures 4
+      and 6E
+  - reference_id: UniProtKB:P14540
+    source_assertion: The reviewed FBA1/YKL060C gene product is fructose-bisphosphate aldolase; SUBUNIT
+      states Homodimer. Its catalytic comment describes FBP cleavage, not the distinct SBP reaction.
+    source_locator: primaryAccession; genes; proteinDescription; comments[1,4]
+- id: riboneogenesis-edge-025
+  subject: UniProtKB:P36136
+  predicate: enables
+  object: RHEA:17462
+  description: Shb17 hydrolysis is the committed step. The gene-product edge retains the homodimer context;
+    the SBP-bound H13A structure contains two subunits. The possible Mg2+ density is not a demonstrated
+    requirement and creates no cofactor edge.
+  evidence:
+  - reference_id: UniProtKB:P36136
+    source_assertion: CATALYTIC ACTIVITY assigns RHEA:17461 and SUBUNIT a homodimer, with ECO:0000269
+      citing PMID:21663798 and PMID:20427268.
+    source_locator: comments[1].reaction; comments[3].texts[0]; evidences
+  - reference_id: PMID:21663798
+    quote: The structure revealed a protein dimer
+    source_locator: PMC3163394 Results, Structure of Shb17-SBP complex, first paragraph
+  - reference_id: PMID:21663798
+    source_assertion: Purified Shb17 consumed SBP and produced S7P. Its H13A-SBP structure has possible
+      Mg2+ density; the authors discuss optional phosphate coordination in a metal-independent enzyme,
+      not an established Mg requirement.
+    source_locator: PMC3163394 Results, Shb17 is a selective sedoheptulose and octulose bisphosphatase;
+      Structure of Shb17-SBP complex; Figure 3
+- id: riboneogenesis-edge-026
+  subject: UniProtKB:P46969
+  predicate: enables
+  object: RHEA:13679
+  description: Rpe1 supports xylulose-5-phosphate conversion to ribulose-5-phosphate in this route. Gene-deletion
+    enzyme assays provide direct functional support; the current UniProt catalytic and metal annotations
+    separately retain similarity evidence.
+  evidence:
+  - reference_id: UniProtKB:P46969
+    source_assertion: CATALYTIC ACTIVITY assigns RHEA:13677 with ECO:0000250 to human Q96AT9; this is
+      database similarity evidence.
+    source_locator: comments[1].reaction; reactionCrossReferences; evidences
+  - reference_id: PMID:8929392
+    quote: Deletion mutants of RPE1 show no enzyme activity
+    source_locator: Europe PMC core result[id="8929392"].abstractText
+  - reference_id: PMID:21663798
+    source_assertion: Figure 6E and the following text assign conversion of xylulose 5-phosphate to ribulose
+      5-phosphate to Rpe1.
+    source_locator: PMC3163394 Figure 6E and Results, Shb17 oscillates with ribosomal transcripts in the
+      yeast metabolic cycle
+- id: riboneogenesis-edge-027
+  subject: UniProtKB:Q12189
+  predicate: enables
+  object: RHEA:14659
+  description: Rki1 completes ribose-5-phosphate formation. Gene-dosage rescue supports the functional
+    product; no oligomer stoichiometry is inferred from a missing SUBUNIT comment.
+  evidence:
+  - reference_id: UniProtKB:Q12189
+    source_assertion: The RKI1 catalytic comment assigns RHEA:14657 with ECO:0000305 citing PMID:8929392,
+      a curator-inference annotation.
+    source_locator: genes; comments[0].reaction; reactionCrossReferences; evidences
+  - reference_id: PMID:8929392
+    quote: restored viability and specific D-ribose-5-phosphate ketol-isomerase activity
+    source_locator: Europe PMC core result[id="8929392"].abstractText
+  - reference_id: PMID:21663798
+    source_assertion: Figure 6E and the following text assign conversion of ribulose 5-phosphate to ribose
+      5-phosphate to Rki1.
+    source_locator: PMC3163394 Figure 6E and Results, Shb17 oscillates with ribosomal transcripts in the
+      yeast metabolic cycle
+- id: riboneogenesis-edge-028
+  subject: RHEA:27628
+  predicate: part_of
+  object: PathBank:SMP0002406
+  description: Manual correspondence of the native reaction, primary route and exact Rhea chemistry. PathBank
+    supplies no Rhea cross-reference; protonation/tautomer distinctions are not exact-identity mappings.
+    The native step is reversible; the graph selects the riboneogenic flux.
+  evidence:
+  - reference_id: PathBank:SMP0002406
+    source_assertion: The native pathway explicitly includes Reactions/7089; conversionDirection is REVERSIBLE.
+    source_locator: 'PW002511.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002406"]/pathwayComponent;
+      Reactions/7089/conversionDirection; left; right'
+  - reference_id: RHEA:27626
+    source_assertion: RHEA:27626 lists RHEA:27628 as a directional reaction; its substrates and products
+      define the selected orientation.
+    source_locator: http://rdf.rhea-db.org/27626 rh:directionalReaction http://rdf.rhea-db.org/27628;
+      http://rdf.rhea-db.org/27628 rh:substrates; rh:products
+  - reference_id: PMID:21663798
+    source_assertion: Equations (1)-(5) and Figure 6E define the aldolase/Shb17 route, with the final
+      pentose conversion resolved into Rpe1 and Rki1 reactions.
+    source_locator: PMC3163394 equations (1)-(5); Figure 6E and accompanying Results
+- id: riboneogenesis-edge-029
+  subject: RHEA:30168
+  predicate: part_of
+  object: PathBank:SMP0002406
+  description: Manual correspondence of the native reaction, primary route and exact Rhea chemistry. PathBank
+    supplies no Rhea cross-reference; protonation/tautomer distinctions are not exact-identity mappings.
+    The native step is reversible; the graph selects the riboneogenic flux.
+  evidence:
+  - reference_id: PathBank:SMP0002406
+    source_assertion: The native pathway explicitly includes Reactions/7090; conversionDirection is REVERSIBLE.
+    source_locator: 'PW002511.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002406"]/pathwayComponent;
+      Reactions/7090/conversionDirection; left; right'
+  - reference_id: RHEA:30167
+    source_assertion: RHEA:30167 lists RHEA:30168 as a directional reaction; its substrates and products
+      define the selected orientation.
+    source_locator: http://rdf.rhea-db.org/30167 rh:directionalReaction http://rdf.rhea-db.org/30168;
+      http://rdf.rhea-db.org/30168 rh:substrates; rh:products
+  - reference_id: PMID:21663798
+    source_assertion: Equations (1)-(5) and Figure 6E define the aldolase/Shb17 route, with the final
+      pentose conversion resolved into Rpe1 and Rki1 reactions.
+    source_locator: PMC3163394 equations (1)-(5); Figure 6E and accompanying Results
+- id: riboneogenesis-edge-030
+  subject: RHEA:17462
+  predicate: part_of
+  object: PathBank:SMP0002406
+  description: Manual correspondence of the native reaction, primary route and exact Rhea chemistry. PathBank
+    supplies no Rhea cross-reference; protonation/tautomer distinctions are not exact-identity mappings.
+    Native hydrolysis is left-to-right.
+  evidence:
+  - reference_id: PathBank:SMP0002406
+    source_assertion: The native pathway explicitly includes Reactions/7091; conversionDirection is LEFT_TO_RIGHT.
+    source_locator: 'PW002511.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002406"]/pathwayComponent;
+      Reactions/7091/conversionDirection; left; right'
+  - reference_id: RHEA:17461
+    source_assertion: RHEA:17461 lists RHEA:17462 as a directional reaction; its substrates and products
+      define the selected orientation.
+    source_locator: http://rdf.rhea-db.org/17461 rh:directionalReaction http://rdf.rhea-db.org/17462;
+      http://rdf.rhea-db.org/17462 rh:substrates; rh:products
+  - reference_id: PMID:21663798
+    source_assertion: Equations (1)-(5) and Figure 6E define the aldolase/Shb17 route, with the final
+      pentose conversion resolved into Rpe1 and Rki1 reactions.
+    source_locator: PMC3163394 equations (1)-(5); Figure 6E and accompanying Results
+- id: riboneogenesis-edge-031
+  subject: RHEA:10509
+  predicate: part_of
+  object: PathBank:SMP0002406
+  description: Manual correspondence of the native reaction, primary route and exact Rhea chemistry. PathBank
+    supplies no Rhea cross-reference; protonation/tautomer distinctions are not exact-identity mappings.
+    The native step is reversible; the graph selects the riboneogenic flux.
+  evidence:
+  - reference_id: PathBank:SMP0002406
+    source_assertion: The native pathway explicitly includes Reactions/7092; conversionDirection is REVERSIBLE.
+    source_locator: 'PW002511.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002406"]/pathwayComponent;
+      Reactions/7092/conversionDirection; left; right'
+  - reference_id: RHEA:10508
+    source_assertion: RHEA:10508 lists RHEA:10509 as a directional reaction; its substrates and products
+      define the selected orientation.
+    source_locator: http://rdf.rhea-db.org/10508 rh:directionalReaction http://rdf.rhea-db.org/10509;
+      http://rdf.rhea-db.org/10509 rh:substrates; rh:products
+  - reference_id: PMID:21663798
+    source_assertion: Equations (1)-(5) and Figure 6E define the aldolase/Shb17 route, with the final
+      pentose conversion resolved into Rpe1 and Rki1 reactions.
+    source_locator: PMC3163394 equations (1)-(5); Figure 6E and accompanying Results
+- id: riboneogenesis-edge-032
+  subject: RHEA:13679
+  predicate: part_of
+  object: PathBank:SMP0002406
+  description: Manual correspondence of the native reaction, primary route and exact Rhea chemistry. PathBank
+    supplies no Rhea cross-reference; protonation/tautomer distinctions are not exact-identity mappings.
+    The native step is reversible; the graph selects the riboneogenic flux.
+  evidence:
+  - reference_id: PathBank:SMP0002406
+    source_assertion: The native pathway explicitly includes Reactions/7094; conversionDirection is REVERSIBLE.
+    source_locator: 'PW002511.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002406"]/pathwayComponent;
+      Reactions/7094/conversionDirection; left; right'
+  - reference_id: RHEA:13677
+    source_assertion: RHEA:13677 lists RHEA:13679 as a directional reaction; its substrates and products
+      define the selected orientation.
+    source_locator: http://rdf.rhea-db.org/13677 rh:directionalReaction http://rdf.rhea-db.org/13679;
+      http://rdf.rhea-db.org/13679 rh:substrates; rh:products
+  - reference_id: PMID:21663798
+    source_assertion: Equations (1)-(5) and Figure 6E define the aldolase/Shb17 route, with the final
+      pentose conversion resolved into Rpe1 and Rki1 reactions.
+    source_locator: PMC3163394 equations (1)-(5); Figure 6E and accompanying Results
+- id: riboneogenesis-edge-033
+  subject: RHEA:14659
+  predicate: part_of
+  object: PathBank:SMP0002406
+  description: Manual correspondence of the native reaction, primary route and exact Rhea chemistry. PathBank
+    supplies no Rhea cross-reference; protonation/tautomer distinctions are not exact-identity mappings.
+    The native step is reversible; the graph selects the riboneogenic flux.
+  evidence:
+  - reference_id: PathBank:SMP0002406
+    source_assertion: The native pathway explicitly includes Reactions/7093; conversionDirection is REVERSIBLE.
+    source_locator: 'PW002511.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002406"]/pathwayComponent;
+      Reactions/7093/conversionDirection; left; right'
+  - reference_id: RHEA:14657
+    source_assertion: RHEA:14657 lists RHEA:14659 as a directional reaction; its substrates and products
+      define the selected orientation.
+    source_locator: http://rdf.rhea-db.org/14657 rh:directionalReaction http://rdf.rhea-db.org/14659;
+      http://rdf.rhea-db.org/14659 rh:substrates; rh:products
+  - reference_id: PMID:21663798
+    source_assertion: Equations (1)-(5) and Figure 6E define the aldolase/Shb17 route, with the final
+      pentose conversion resolved into Rpe1 and Rki1 reactions.
+    source_locator: PMC3163394 equations (1)-(5); Figure 6E and accompanying Results
+- id: riboneogenesis-edge-034
+  subject: UniProtKB:P23254
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit (PubMed:18186462). Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+)
+    and Co(2+) (PubMed:18186462). These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P23254
+    source_assertion: COFACTOR identifies CHEBI:18420 (Mg(2+)) with evidence ECO:0000269.
+    source_locator: comments[2].cofactors[0]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-035
+  subject: UniProtKB:P23254
+  predicate: has_cofactor
+  object: CHEBI:29108
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit (PubMed:18186462). Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+)
+    and Co(2+) (PubMed:18186462). These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P23254
+    source_assertion: COFACTOR identifies CHEBI:29108 (Ca(2+)) with evidence ECO:0000269.
+    source_locator: comments[2].cofactors[1]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-036
+  subject: UniProtKB:P23254
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit (PubMed:18186462). Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+)
+    and Co(2+) (PubMed:18186462). These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P23254
+    source_assertion: COFACTOR identifies CHEBI:29035 (Mn(2+)) with evidence ECO:0000269.
+    source_locator: comments[2].cofactors[2]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-037
+  subject: UniProtKB:P23254
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit (PubMed:18186462). Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+)
+    and Co(2+) (PubMed:18186462). These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P23254
+    source_assertion: COFACTOR identifies CHEBI:48828 (Co(2+)) with evidence ECO:0000269.
+    source_locator: comments[2].cofactors[3]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-038
+  subject: UniProtKB:P23254
+  predicate: has_cofactor
+  object: CHEBI:58937
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 thiamine
+    pyrophosphate per subunit.
+  evidence:
+  - reference_id: UniProtKB:P23254
+    source_assertion: COFACTOR identifies CHEBI:58937 (thiamine diphosphate) with evidence ECO:0000269.
+    source_locator: comments[3].cofactors[0]; cofactorCrossReference; evidences; comments[3].note
+- id: riboneogenesis-edge-039
+  subject: UniProtKB:P33315
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit. Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+) and Co(2+). The
+    annotation is by similarity; it is not a direct yeast cofactor assay. These metals are alternatives,
+    not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P33315
+    source_assertion: COFACTOR identifies CHEBI:18420 (Mg(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[0]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-040
+  subject: UniProtKB:P33315
+  predicate: has_cofactor
+  object: CHEBI:29108
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit. Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+) and Co(2+). The
+    annotation is by similarity; it is not a direct yeast cofactor assay. These metals are alternatives,
+    not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P33315
+    source_assertion: COFACTOR identifies CHEBI:29108 (Ca(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[1]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-041
+  subject: UniProtKB:P33315
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit. Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+) and Co(2+). The
+    annotation is by similarity; it is not a direct yeast cofactor assay. These metals are alternatives,
+    not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P33315
+    source_assertion: COFACTOR identifies CHEBI:29035 (Mn(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[2]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-042
+  subject: UniProtKB:P33315
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 Mg(2+) ion
+    per subunit. Can also utilize other divalent metal cations, such as Ca(2+), Mn(2+) and Co(2+). The
+    annotation is by similarity; it is not a direct yeast cofactor assay. These metals are alternatives,
+    not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P33315
+    source_assertion: COFACTOR identifies CHEBI:48828 (Co(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[3]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-043
+  subject: UniProtKB:P33315
+  predicate: has_cofactor
+  object: CHEBI:58937
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 thiamine
+    pyrophosphate per subunit. The annotation is by similarity; it is not a direct yeast cofactor assay.
+  evidence:
+  - reference_id: UniProtKB:P33315
+    source_assertion: COFACTOR identifies CHEBI:58937 (thiamine diphosphate) with evidence ECO:0000250.
+    source_locator: comments[3].cofactors[0]; cofactorCrossReference; evidences; comments[3].note
+- id: riboneogenesis-edge-044
+  subject: UniProtKB:P14540
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 2 Zn(2+) ions
+    per subunit. One is catalytic and the other provides a structural contribution. The annotation is
+    by similarity; it is not a direct yeast cofactor assay.
+  evidence:
+  - reference_id: UniProtKB:P14540
+    source_assertion: COFACTOR identifies CHEBI:29105 (Zn(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[0]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-045
+  subject: UniProtKB:P46969
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 divalent
+    metal cation per subunit. Active with Co(2+), Fe(2+), Mn(2+) and Zn(2+). The annotation is by similarity;
+    it is not a direct yeast cofactor assay. These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P46969
+    source_assertion: COFACTOR identifies CHEBI:48828 (Co(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[0]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-046
+  subject: UniProtKB:P46969
+  predicate: has_cofactor
+  object: CHEBI:29033
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 divalent
+    metal cation per subunit. Active with Co(2+), Fe(2+), Mn(2+) and Zn(2+). The annotation is by similarity;
+    it is not a direct yeast cofactor assay. These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P46969
+    source_assertion: COFACTOR identifies CHEBI:29033 (Fe(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[1]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-047
+  subject: UniProtKB:P46969
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 divalent
+    metal cation per subunit. Active with Co(2+), Fe(2+), Mn(2+) and Zn(2+). The annotation is by similarity;
+    it is not a direct yeast cofactor assay. These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P46969
+    source_assertion: COFACTOR identifies CHEBI:29035 (Mn(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[2]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-048
+  subject: UniProtKB:P46969
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Reviewed protein cofactor annotation in its functional enzyme context. Binds 1 divalent
+    metal cation per subunit. Active with Co(2+), Fe(2+), Mn(2+) and Zn(2+). The annotation is by similarity;
+    it is not a direct yeast cofactor assay. These metals are alternatives, not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P46969
+    source_assertion: COFACTOR identifies CHEBI:29105 (Zn(2+)) with evidence ECO:0000250.
+    source_locator: comments[2].cofactors[3]; cofactorCrossReference; evidences; comments[2].note
+- id: riboneogenesis-edge-049
+  subject: UniProtKB:P36136
+  predicate: located_in
+  object: GO:0005737
+  description: Reported protein localization, not a claim that every riboneogenic reaction occurs in both
+    compartments or that localization is exclusive.
+  evidence:
+  - reference_id: UniProtKB:P36136
+    source_assertion: SUBCELLULAR LOCATION lists Cytoplasm with experimental annotation ECO:0000269 citing
+      PMID:14562095.
+    source_locator: comments[4].subcellularLocations[location.value="Cytoplasm"].location; evidences
+- id: riboneogenesis-edge-050
+  subject: UniProtKB:P36136
+  predicate: located_in
+  object: GO:0005634
+  description: Reported protein localization, not a claim that every riboneogenic reaction occurs in both
+    compartments or that localization is exclusive.
+  evidence:
+  - reference_id: UniProtKB:P36136
+    source_assertion: SUBCELLULAR LOCATION lists Nucleus with experimental annotation ECO:0000269 citing
+      PMID:14562095.
+    source_locator: comments[4].subcellularLocations[location.value="Nucleus"].location; evidences
+references:
+- id: PathBank:SMP0002406
+  title: PathBank Riboneogenesis, native BioPAX member PW002511.owl
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: Public primary BioPAX archive; retrieved and member inspected 2026-10-10; digest is
+    exact unmodified PW002511.owl member, not the archive
+  source_sha256: 1f8af4af7f79034296739e1f0ef313974de23119528c4401c3f8b41f46594c2e
+- id: RHEA:27626
+  title: RHEA:27626, selected riboneogenic direction RHEA:27628
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:30167
+  title: RHEA:30167, selected riboneogenic direction RHEA:30168
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:17461
+  title: RHEA:17461, selected riboneogenic direction RHEA:17462
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:10508
+  title: RHEA:10508, selected riboneogenic direction RHEA:10509
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:13677
+  title: RHEA:13677, selected riboneogenic direction RHEA:13679
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:14657
+  title: RHEA:14657, selected riboneogenic direction RHEA:14659
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed official RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P23254
+  title: Transketolase 1 — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P23254.json
+  source_version: UniProt 2026_03; entry version 227; sequence version 4; retrieved 2026-10-10; exact
+    JSON response digest
+  source_sha256: 8b817c1f08114fe4e1ee8f522e9a539358821497a488f684868cb81eef34af6c
+- id: UniProtKB:P33315
+  title: Transketolase 2 — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P33315.json
+  source_version: UniProt 2026_03; entry version 199; sequence version 1; retrieved 2026-10-10; exact
+    JSON response digest
+  source_sha256: 8c01246058d0599e4f488cfeea68b88b20b58e3c194a2d8fe63efe1ddb8061ca
+- id: UniProtKB:P14540
+  title: Fructose-bisphosphate aldolase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P14540.json
+  source_version: UniProt 2026_03; entry version 224; sequence version 3; retrieved 2026-10-10; exact
+    JSON response digest
+  source_sha256: 698ae373a94fdc9d837183616fbd7abb151c52e9ba53fa1b75f874cf6c83255e
+- id: UniProtKB:P36136
+  title: Sedoheptulose 1,7-bisphosphatase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P36136.json
+  source_version: UniProt 2026_03; entry version 163; sequence version 1; retrieved 2026-10-10; exact
+    JSON response digest
+  source_sha256: 18e7a733e01ce849a7abd22b93bdf96109baa5e14da63051d42b1a4211be01f1
+- id: UniProtKB:P46969
+  title: Ribulose-phosphate 3-epimerase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P46969.json
+  source_version: UniProt 2026_03; entry version 177; sequence version 1; retrieved 2026-10-10; exact
+    JSON response digest
+  source_sha256: fed3162d8c9c807befb78170e6b1c9fe77413a8fb9e22cb58515d992f7d6fb76
+- id: UniProtKB:Q12189
+  title: Ribose-5-phosphate isomerase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/Q12189.json
+  source_version: UniProt 2026_03; entry version 196; sequence version 1; retrieved 2026-10-10; exact
+    JSON response digest
+  source_sha256: ffac01f058a6f99ae38eb095491fbf4a1d9a344471c7f45210fc6ce18e51351e
+- id: PMID:21663798
+  title: Riboneogenesis in yeast
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3163394/
+  source_version: Primary full main article HTML; DOI10.1016/j.cell.2011.05.022; retrieved 2026-10-10;
+    supplement URL returned non-PDF challenge and was not inspected
+  source_sha256: 831fcc40f7344b7e0a68164e48e7e131183ba8743d3e86d30a5f15c3d5ba0278
+- id: PMID:8929392
+  title: Cloning and characterization of the first two genes of the non-oxidative part of the Saccharomyces
+    cerevisiae pentose-phosphate pathway.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:8929392%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract in Europe PMC core; retrieved 2026-10-10; full original article not
+    inspected; exact JSON response digest
+  source_sha256: 09f27448fa755c6e8d9f2b224c172f2925568ab558e3f5d907dfe7578a6d1e28
