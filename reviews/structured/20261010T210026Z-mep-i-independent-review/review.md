@@ -1,0 +1,794 @@
+# Independent scientific review of methylerythritol phosphate pathway I
+
+- Review: 20261010T210026Z-mep-i-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-10T20:43:14Z
+- Finished UTC: 2026-10-10T21:00:26Z
+- Reviewer: Codex independent authority and MEP reviewer (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The reviewed E. coli K-12 record has the exact MetaCyc MEP I identity, nine source-supported reaction directions, both IspH product branches, an explicitly additional Idi interconversion, 35 participants and 68 locally supported edges. All 43 Rhea chemical-side assertions are accounted for: 37 retained assertions preserve their source coefficients and six generic carrier-state sides are explicitly omitted. No remaining corrective finding was identified after the coefficient and authority-provenance fixes. Donor identity, source evidence tiers and the partial chemical projection remain explicit limitations.
+
+## Scope And Provenance
+
+Scientific review of the one new maintained MEP I pathway and the identifier/source inputs on which it relies.
+
+Selection: Exact file and MetaCyc:NONMEVIPP-PWY identifier assigned for independent review.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 32792ef3d9ecaa185817bc0f72fdc3bf50b4e540.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:NONMEVIPP-PWY | data/pathways/methylerythritol-phosphate-pathway-i.yaml | maintained | methylerythritol phosphate pathway I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Final full-corpus validation | passed | True | MetaCyc:NONMEVIPP-PWY | Exit 0 after source freeze: 235 history records, 159 native/closed-schema/identifier-valid pathways, 8361 evidence blocks, 30 sources, six mechanism documents, deep research contracts and 159 current pages. |
+| Earlier full suite with changing inputs | failed | False | MetaCyc:NONMEVIPP-PWY | Earlier run ended with 2 failed, 1005 passed and 3 skipped in 328.02s. The site-current and SSSOM-current tests held the pre-polymer schema module while the PHB YAML acquired category polymer. This mixed-state run was superseded by the fresh frozen-input full run. |
+| Final frozen-input full suite | passed | True | MetaCyc:NONMEVIPP-PWY | 1008 passed, 3 skipped and 3 warnings in 336.25s. The rerun completed after common schema, both records and generated inputs froze. |
+| Repository lint | passed | True | MetaCyc:NONMEVIPP-PWY | Ruff reported all checks passed. |
+| Working tree whitespace check | passed | True | MetaCyc:NONMEVIPP-PWY | git diff --check exited 0. |
+| Staged whitespace check | passed | False | MetaCyc:NONMEVIPP-PWY | git diff --cached --check exited 0. |
+| Governed artifact synchronization | passed | True | MetaCyc:NONMEVIPP-PWY | All 22 governed artifacts match the pinned CLAW revision. |
+| Independent KGX, graph and LinkML regression tests | passed | False | MetaCyc:NONMEVIPP-PWY | 150 tests passed in 62.52s after the polymer category fix. |
+| Structured organism/dataset discovery | passed | True | MetaCyc:NONMEVIPP-PWY | The canonical adapter lists E. coli datasets including precise_mg1655. |
+| Structured dxs lookup | passed | True | MetaCyc:NONMEVIPP-PWY | Network-enabled retry returned one exact gene and no iModulons. Initial restricted-network attempt failed DNS with exit 2; retry exited 0. |
+| Structured ispH lookup | passed | True | MetaCyc:NONMEVIPP-PWY | Network-enabled retry returned the exact ispH gene plus nine unrelated substring product matches and no iModulons. Initial restricted-network attempt failed DNS with exit 2; retry exited 0. |
+| iModulon component summary | not_applicable | False | MetaCyc:NONMEVIPP-PWY | Neither gene query returned an iModulon component; no summarize request was applicable. |
+| Integrated page and graph evidence projection | passed | True | MetaCyc:NONMEVIPP-PWY | Final rendering produced 159 pages. For MEP all 68 edges preserve complete evidence arrays/descriptions in KGX, SVG endpoints match the YAML and evidence links resolve. |
+| Optional interactive browser preview | unavailable | False | MetaCyc:NONMEVIPP-PWY | CUA reported no browser available. Generated SVG endpoint and evidence-link audits passed. |
+| Integrated KGX export | passed | True | MetaCyc:NONMEVIPP-PWY | The final 159-record export completed; all 68 MEP edge evidence arrays and descriptions were retained, with source categories preserved. |
+
+## Scientific And Domain Assessments
+
+### Exact pathway and organism scope
+
+identity: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+MetaCyc:NONMEVIPP-PWY denotes the native MEP I route rather than mevalonate synthesis, the IspG ferredoxin-associated MEP II variant or the shared Dxs precursor reaction alone. The protein set is explicitly E. coli K-12.
+
+### Membership, direction and pathway ordering
+
+graph: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+All nine native reaction frames and eight native predecessor relations are retained with supported Rhea directions. Both IspH branches directly produce their respective isoprenoid precursor, and Idi is an additional interconversion.
+
+The IspG biosynthetic orientation follows the explicit native reaction layout, independent catalytic annotations and primary mechanism account; a reversed closing prose sentence in the native page is recorded as a source conflict. The selected Idi direction does not assert thermodynamic irreversibility.
+
+### Reaction chemical sides and source coefficients
+
+quantity: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+All 37 retained chemical assertions match native Rhea identities, side membership and coefficients; all 43 source side entries have an explicit retained or omitted disposition.
+
+Following #314, source locators include the exact side rh:contains1 or rh:contains2 relation. IspG production of H+ and the two IspH H+ inputs preserve coefficient 2. The graph itself records participant presence, not flux multiplicity.
+
+### Catalytic, cofactor and localization support
+
+evidence: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+All nine catalyst assignments, 13 cofactor links and one localization link have exact source support with their annotation evidence tiers and conditional notes preserved.
+
+IspG mixed similarity/experimental evidence remains distinct from the IspH experimental annotation. Alternative Dxr metals are not simultaneous requirements; the IspH degraded [3Fe-4S] state is not promoted to an equivalent catalytic cofactor. Idi cytoplasm uses the explicit GO:0005737 IEA:UniProtKB-SubCell cross-reference.
+
+### Carrier states and experimental scope
+
+representation: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+The explicitly partial representation avoids replacing generic whole redox carriers with their ChEBI prosthetic groups or treating condition-specific assays as exclusive physiological donor evidence.
+
+Six omitted carrier-state sides comprise IspG reduced/oxidized flavodoxin and reduced/oxidized generic ferredoxin for each IspH branch. The current database equation and E. coli flavodoxin activation assay are retained as differently scoped evidence. Primary product ratios are not converted into fixed pathway stoichiometry.
+
+### Independent identity and explicit authority refresh
+
+grounding: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+Named entities remain anchored by independent official source/ontology inputs, and the deliberate source refresh records changed bytes without silently reusing stale hashes or provenance.
+
+Rhea 139 identifier authority is distinguished from Rhea 142 reaction evidence. Retained term content was checked during the refresh, and the corrected Reactome digest scopes describe actual retrieved exports.
+
+### Structured iModulonDB cross-check
+
+scope: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+The covered MG1655 dataset corroborates the dxs and ispH gene keys as context only; it supplies no expression-module or mechanistic claim for this review.
+
+### Local graph validity and generated representation
+
+schema: supported. Targets: MetaCyc:NONMEVIPP-PWY.
+
+The full-corpus checks accept the final record and its identifier grounding; MEP graph export preserves all 68 source edges, their evidence and descriptions.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-record | data/pathways/methylerythritol-phosphate-pathway-i.yaml; Complete maintained YAML: identity, taxa, all participants, reactions, 68 mechanistic_edges and references | supports | The complete record was inspected, including edge evidence, conditional cofactor notes, reaction direction qualifiers and carrier omission limits. |
+| e-metacyc | https://pathway.yeastgenome.org/getxml?META:NONMEVIPP-PWY; MetaCyc 22.5 Pathway frame NONMEVIPP-PWY; reaction-list, reaction-layout, predecessor relations, species and explanatory text | supports | Nine native reaction frames and eight predecessor relations support the exact MEP I route, both IspH branches and the additional Idi reaction. Native taxon scope and the conflicting final prose sentence about IspG direction were inspected. |
+| e-uniprot | https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333+AND+%28gene_exact%3Adxs+OR+gene_exact%3Adxr+OR+gene_exact%3AispD+OR+gene_exact%3AispE+OR+gene_exact%3AispF+OR+gene_exact%3AispG+OR+gene_exact%3AispH+OR+gene_exact%3Aidi%29&amp;format=json&amp;size=100; Eight result entries P77488, P45568, Q46893, P62615, P62617, P62620, P62623 and Q46822; organism, catalyticActivity, cofactor comments/evidence and Q46822 GO cross-reference | supports | All nine catalytic edges, 13 cofactor edges and the single explicit Idi cytoplasm annotation were compared with native JSON fields and source evidence codes. The absent IspD evidence code is not invented; alternative metal and oxygen-damage qualifiers are preserved. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Rhea release 142 (2026-09-02); directed reactions 12606,13719,13430,18438,23865,43606,24490,24827,23285; substrate/product sides, rh:contains1/contains2, Participant and Compound resources; cross-references on master/directional families | supports | Merged repeated RDF descriptions were independently traversed. All 43 source chemical-side entries agree with the committed projection, including three retained proton coefficients of 2, 37 retained chemical edges and six explicitly omitted whole-carrier states. Native reaction-family mappings and selected directions were checked. |
+| e-isph-primary | https://pubmed.ncbi.nlm.nih.gov/11818558/; Europe PMC MED core PMID:11818558; title, DOI 10.1073/pnas.032658999 and abstract | supports | The abstract supports IspH production of both IPP and DMAPP in the described engineered E. coli experiment. The measured 5:1 ratio is condition-specific rather than universal. |
+| e-mechanism-primary | https://pubmed.ncbi.nlm.nih.gov/12571359/; Europe PMC MED core PMID:12571359; title, DOI 10.1073/pnas.0337742100 and abstract | partial | The abstract supports IspG/IspH activation experiments, both IspH products and flavodoxin/flavodoxin reductase/NADPH activation of IspH. It does not prove a unique physiological donor; its dye-activation 6:1 product ratio remains experiment-specific. |
+| e-projection | research/pathway_additions/2026-10-10/mep-source-projection.json; Complete reaction-side, catalytic, cofactor, localization and omission disposition projection | supports | Independent comparison found all 43 Rhea source sides and all eight native predecessor relations represented with matching identifiers, direction, coefficients and explicit omission dispositions. |
+| e-authorities | data/identifier_authorities/ontology.json and data/identifier_authorities/sources.json; Four complete pinned SemanticSQL input databases, current source-manifest artifacts and regenerated selected-term authority snapshots | supports | GO, CHEBI, NCBITaxon and RHEA full-database SHA-256 values match their pinned authority metadata. All 96 current source-manifest input artifacts are available and match declared SHA-256 values; source snapshots supply independent identifier grounding. Final ontology snapshot preserves all 1238 baseline terms unchanged and adds 19; the source snapshot preserves all 1560 baseline terms unchanged and adds 12. Ontology source provenance blocks are unchanged. |
+| e-refresh | research/pathway_additions/2026-10-10/authority-refresh.json; 56 source artifact refresh entries, old/new hashes, versions and digest scopes; existing selected-term comparison | supports | The deliberate refresh distinguishes 34 recovered pinned artifacts from 56 changed official downloads. All 81 previously selected terms from those 56 changed inputs retained identical labels and synonyms. The Reactome scopes now describe the successfully retrieved live BioPAX 97 exports and preserve the previous scopes in the ledger. |
+| e-imodulondb | https://imodulondb.org/; Canonical kg-microbe-sources datasets and search outputs for e_coli/precise_mg1655 queries dxs and ispH | context_only | The supported MG1655 dataset returned exact genes e_coli/precise_mg1655/b0420 (dxs) and e_coli/precise_mg1655/b0029 (ispH); both searches returned zero iModulons. The other nine ispH-query gene hits were substring product matches, not additional ispH genes. No component summarize call was applicable. |
+| e-duplicates | Local worktree and original PathwayMech checkout; Exact native pathway ID, pathway synonyms, source PMIDs and selected reaction identifiers | context_only | No second exact maintained MEP I record was found in the bounded search. Existing pyridoxal phosphate biosynthesis shares the Dxs reaction but denotes a different downstream route; prior research listed MEP I as an uncurated candidate. |
+| e-gates | /private/tmp/pathwaymech-validate-20261010.log; /private/tmp/pathwaymech-test-20261010.log; /private/tmp/pathwaymech-test-final-20261010.log; /private/tmp/pathwaymech-lint-20261010.log; /private/tmp/pathwaymech-vendored-20261010.log; Final integration receipts and independent regression command output | supports | Final corpus gates were executed by the integration agent after inputs froze. The reviewer inspected their logs and independently ran focused KGX/graph/LinkML tests and whitespace checks. The earlier mixed-input test failure is retained separately. |
+| e-render | /private/tmp/pathwaymech-kgx-audit-20261010.json; MetaCyc:NONMEVIPP-PWY entry: 68 edges, complete_evidence_and_descriptions_preserved, svg_edge_endpoints_match and svg_evidence_links_resolve | supports | The integration audit reports preserved MEP evidence arrays and descriptions in KGX and exact SVG edge endpoints and evidence links. Browser interaction was not inspected because the available CUA environment had no browser. |
+
+## Limits And Additional Notes
+
+- The graph is a partial chemical projection, not a balanced stoichiometric or flux model. Six whole-carrier redox-state assertions are omitted because the source RHEA-COMP entities cannot be replaced by their ChEBI prosthetic-group cross-references.
+- Current Rhea/UniProt IspH equations use generic ferredoxin, whereas the inspected E. coli primary abstract supports flavodoxin-dependent activation. The record preserves this difference and does not select an exclusive physiological electron donor.
+- The independent primary-literature review inspected the abstracts and bibliographic metadata of PMID:11818558 and PMID:12571359. Other papers cited inside UniProt annotations were not independently read; source evidence codes remain database annotations.
+- The record represents the E. coli K-12 protein set. It does not establish the same enzyme assignments for all organisms named by the broad native pathway or for every K-12 substrain.
+- iModulonDB searches provide gene identity and transcriptomic context only. No iModulon hit informed a mechanistic assertion, and absence of an expression-module match is not negative biological evidence.
+- Rhea release 142 supplies inspected reaction-side mechanism evidence; pinned SemanticSQL release 139 supplies independent identifier authority. The releases are explicitly distinct, and relevant directed reaction labels were checked for agreement.
+- Whole-pathway localization, complete protein complexes, in vivo flux and universal IPP:DMAPP product ratios are not established by this review.
+- Interactive browser preview was unavailable in this environment. Generated SVG node/edge endpoints, evidence links and KGX projection were checked, but the review does not claim interactive browser QA.
+- Pre-save review observations led to GitHub issues #312 (Reactome digest-scope provenance) and #314 (MEP source coefficients). Both corrections were inspected before this final observation. No earlier structured finding exists for them, so no resolved finding or predecessor lineage is fabricated here.
+- The initial inspect captured the pre-fix working tree. The changed coefficient assertions, source projection, final identifier manifest, authority snapshots and common schema were reassessed before the final inspect; final source hashes attest those inspected bytes.
+- Generated authority snapshots are owned by conf/identifier_sources.json, conf/identifier_policy.yaml and the explicit full authority inputs, through scripts/build_source_identifier_snapshot.py and scripts/build_ontology_identifier_snapshot.py. Any future correction belongs to those maintained inputs and builders, followed by regeneration.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261010T210026Z-mep-i-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of methylerythritol phosphate pathway I
+started_at: '2026-10-10T20:43:14Z'
+finished_at: '2026-10-10T21:00:26Z'
+reviewer:
+  identity: Codex independent authority and MEP reviewer
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: A separate curation agent authored and repaired the MEP record.
+    This reviewer acquired official authority and Rhea source artifacts and shared
+    source facts, but did not author or edit the target record, its source projection,
+    or the identifier manifests. Scientific assertions were independently compared
+    with the native source artifacts after the fixes.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: 'The reviewed E. coli K-12 record has the exact MetaCyc MEP I identity, nine
+  source-supported reaction directions, both IspH product branches, an explicitly
+  additional Idi interconversion, 35 participants and 68 locally supported edges.
+  All 43 Rhea chemical-side assertions are accounted for: 37 retained assertions preserve
+  their source coefficients and six generic carrier-state sides are explicitly omitted.
+  No remaining corrective finding was identified after the coefficient and authority-provenance
+  fixes. Donor identity, source evidence tiers and the partial chemical projection
+  remain explicit limitations.'
+source:
+  git_revision: 32792ef3d9ecaa185817bc0f72fdc3bf50b4e540
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 2eba23c79caeeaea2e5edcf467647d8c67127812927060b6a04ec611a48631a3
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 4babf3a0af5f03c2a888de4e09a9694eff9220c725ecfccde9e229d2a0d9770a
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: b0a56699496133b81190d35578a221b0d7a6462da36ac23d8787e48bcc64dbd8
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 7a445f77f5631ad27d85e5b5bbded756d2ef6d57ec58fb34d74b6adf50cc2152
+    role: context
+  - path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+    sha256: 868d6af5bb463ac41869ed65820b0e87fadb1de7ccb018fb26170ffe423b2fea
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: research/pathway_additions/2026-10-10/authority-refresh.json
+    sha256: 04880b10a0a610e620ec45af297b1d9b73250fa203444d58da965608635d42ca
+    role: context
+  - path: research/pathway_additions/2026-10-10/mep-source-projection.json
+    sha256: 066c60a725c587667f491d07be838c4154aaaa6fda3b4a4b236dd2c8ae63e2e9
+    role: context
+  - path: research/pathway_additions/2026-10-10/mep-sources.json
+    sha256: cc356441f0e37299918524112ea52c159921942e346018a6b72c29749199c32f
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: fd5f9cb0f730d2d6b57f4ddee6418b8299b934978459c73be57f22c26ba78463
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 56bb3f153ea10e6c3964845ef24303e9362f6104a2ab3c95cf1da1a7ae2d2895
+    role: context
+scope:
+  description: Scientific review of the one new maintained MEP I pathway and the identifier/source
+    inputs on which it relies.
+  selection: Exact file and MetaCyc:NONMEVIPP-PWY identifier assigned for independent
+    review.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  exclusions:
+  - target: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    reason: Reviewed by a different agent; this MEP bundle does not attest the PHB
+      mechanism.
+  - target: Other maintained pathway records
+    reason: Corpus-wide validation supplies structural context, not a new scientific
+      review of those records.
+targets:
+- target_id: MetaCyc:NONMEVIPP-PWY
+  path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+  label: methylerythritol phosphate pathway I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+    role: maintained pathway mechanism and edge-level evidence
+checks:
+- check_id: c-validate
+  name: Final full-corpus validation
+  status: passed
+  required: true
+  summary: 'Exit 0 after source freeze: 235 history records, 159 native/closed-schema/identifier-valid
+    pathways, 8361 evidence blocks, 30 sources, six mechanism documents, deep research
+    contracts and 159 current pages.'
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Executed by the integration agent after final inputs froze; reviewer
+    inspected its receipt and log. This is structural validation, not scientific review
+    of all 159 records.
+- check_id: c-test-pre-freeze
+  name: Earlier full suite with changing inputs
+  status: failed
+  required: false
+  summary: Earlier run ended with 2 failed, 1005 passed and 3 skipped in 328.02s.
+    The site-current and SSSOM-current tests held the pre-polymer schema module while
+    the PHB YAML acquired category polymer. This mixed-state run was superseded by
+    the fresh frozen-input full run.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: just test
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Historical non-gating run; failure is retained rather than represented
+    as a clean pass.
+- check_id: c-test-final
+  name: Final frozen-input full suite
+  status: passed
+  required: true
+  summary: 1008 passed, 3 skipped and 3 warnings in 336.25s. The rerun completed after
+    common schema, both records and generated inputs froze.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Integration-agent full run; reviewer inspected the final log. It supersedes
+    the mixed-input failure without erasing that check history.
+- check_id: c-lint
+  name: Repository lint
+  status: passed
+  required: true
+  summary: Ruff reported all checks passed.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+- check_id: c-diff
+  name: Working tree whitespace check
+  status: passed
+  required: true
+  summary: git diff --check exited 0.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+- check_id: c-cached-diff
+  name: Staged whitespace check
+  status: passed
+  required: false
+  summary: git diff --cached --check exited 0.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+- check_id: c-vendored
+  name: Governed artifact synchronization
+  status: passed
+  required: true
+  summary: All 22 governed artifacts match the pinned CLAW revision.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+- check_id: c-focused
+  name: Independent KGX, graph and LinkML regression tests
+  status: passed
+  required: false
+  summary: 150 tests passed in 62.52s after the polymer category fix.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: .venv/bin/python -m pytest tests/test_kgx_export.py tests/test_graph_view.py
+    tests/test_linkml_schema.py -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+  scope_note: Independent reviewer run; checks common schema/export/graph consumers
+    without replacing the required full suite.
+- check_id: c-imodulondb-datasets
+  name: Structured organism/dataset discovery
+  status: passed
+  required: true
+  summary: The canonical adapter lists E. coli datasets including precise_mg1655.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-imodulondb-dxs
+  name: Structured dxs lookup
+  status: passed
+  required: true
+  summary: Network-enabled retry returned one exact gene and no iModulons. Initial
+    restricted-network attempt failed DNS with exit 2; retry exited 0.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query dxs
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-imodulondb-isph
+  name: Structured ispH lookup
+  status: passed
+  required: true
+  summary: Network-enabled retry returned the exact ispH gene plus nine unrelated
+    substring product matches and no iModulons. Initial restricted-network attempt
+    failed DNS with exit 2; retry exited 0.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query ispH
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-imodulondb-summary
+  name: iModulon component summary
+  status: not_applicable
+  required: false
+  summary: Neither gene query returned an iModulon component; no summarize request
+    was applicable.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-imodulondb
+- check_id: c-render
+  name: Integrated page and graph evidence projection
+  status: passed
+  required: true
+  summary: Final rendering produced 159 pages. For MEP all 68 edges preserve complete
+    evidence arrays/descriptions in KGX, SVG endpoints match the YAML and evidence
+    links resolve.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-render
+  scope_note: Integration-agent final rendering and exported graph audits inspected
+    by this reviewer. Initial default-cache invocation exited 2 because the restricted
+    environment could not write ~/.cache/uv; the explicit writable cache succeeded
+    without a source change.
+- check_id: c-browser
+  name: Optional interactive browser preview
+  status: unavailable
+  required: false
+  summary: CUA reported no browser available. Generated SVG endpoint and evidence-link
+    audits passed.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-render
+- check_id: c-kgx
+  name: Integrated KGX export
+  status: passed
+  required: true
+  summary: The final 159-record export completed; all 68 MEP edge evidence arrays
+    and descriptions were retained, with source categories preserved.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-curation-kgx
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-render
+evidence:
+- evidence_id: e-record
+  kind: record_content
+  reference: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+  locator: 'Complete maintained YAML: identity, taxa, all participants, reactions,
+    68 mechanistic_edges and references'
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: The complete record was inspected, including edge evidence, conditional
+    cofactor notes, reaction direction qualifiers and carrier omission limits.
+  snapshot_sha256: 868d6af5bb463ac41869ed65820b0e87fadb1de7ccb018fb26170ffe423b2fea
+- evidence_id: e-metacyc
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:NONMEVIPP-PWY
+  locator: MetaCyc 22.5 Pathway frame NONMEVIPP-PWY; reaction-list, reaction-layout,
+    predecessor relations, species and explanatory text
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: Nine native reaction frames and eight predecessor relations support the
+    exact MEP I route, both IspH branches and the additional Idi reaction. Native
+    taxon scope and the conflicting final prose sentence about IspG direction were
+    inspected.
+  snapshot_sha256: 979f165dc2dbc2bb49906d4335cad3db7d207b5b4a878ff05f9f57f4ad8c1744
+- evidence_id: e-uniprot
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333+AND+%28gene_exact%3Adxs+OR+gene_exact%3Adxr+OR+gene_exact%3AispD+OR+gene_exact%3AispE+OR+gene_exact%3AispF+OR+gene_exact%3AispG+OR+gene_exact%3AispH+OR+gene_exact%3Aidi%29&format=json&size=100
+  locator: Eight result entries P77488, P45568, Q46893, P62615, P62617, P62620, P62623
+    and Q46822; organism, catalyticActivity, cofactor comments/evidence and Q46822
+    GO cross-reference
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: All nine catalytic edges, 13 cofactor edges and the single explicit Idi
+    cytoplasm annotation were compared with native JSON fields and source evidence
+    codes. The absent IspD evidence code is not invented; alternative metal and oxygen-damage
+    qualifiers are preserved.
+  snapshot_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- evidence_id: e-rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Rhea release 142 (2026-09-02); directed reactions 12606,13719,13430,18438,23865,43606,24490,24827,23285;
+    substrate/product sides, rh:contains1/contains2, Participant and Compound resources;
+    cross-references on master/directional families
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: Merged repeated RDF descriptions were independently traversed. All 43 source
+    chemical-side entries agree with the committed projection, including three retained
+    proton coefficients of 2, 37 retained chemical edges and six explicitly omitted
+    whole-carrier states. Native reaction-family mappings and selected directions
+    were checked.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-isph-primary
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/11818558/
+  locator: Europe PMC MED core PMID:11818558; title, DOI 10.1073/pnas.032658999 and
+    abstract
+  accessed_at: '2026-10-10T20:55:14Z'
+  support: supports
+  summary: The abstract supports IspH production of both IPP and DMAPP in the described
+    engineered E. coli experiment. The measured 5:1 ratio is condition-specific rather
+    than universal.
+  snapshot_sha256: a0f910765e26f86c97b23ba2a66c05d68970a68a16bccd94cd6af2953b628f01
+- evidence_id: e-mechanism-primary
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/12571359/
+  locator: Europe PMC MED core PMID:12571359; title, DOI 10.1073/pnas.0337742100 and
+    abstract
+  accessed_at: '2026-10-10T20:55:14Z'
+  support: partial
+  summary: The abstract supports IspG/IspH activation experiments, both IspH products
+    and flavodoxin/flavodoxin reductase/NADPH activation of IspH. It does not prove
+    a unique physiological donor; its dye-activation 6:1 product ratio remains experiment-specific.
+  snapshot_sha256: d5399d21dd0b6771d8dcbf7e0c7aebe61f13aa06085a8bce2a2eeaf02544c81f
+- evidence_id: e-projection
+  kind: record_content
+  reference: research/pathway_additions/2026-10-10/mep-source-projection.json
+  locator: Complete reaction-side, catalytic, cofactor, localization and omission
+    disposition projection
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: Independent comparison found all 43 Rhea source sides and all eight native
+    predecessor relations represented with matching identifiers, direction, coefficients
+    and explicit omission dispositions.
+  snapshot_sha256: 066c60a725c587667f491d07be838c4154aaaa6fda3b4a4b236dd2c8ae63e2e9
+- evidence_id: e-authorities
+  kind: authority
+  reference: data/identifier_authorities/ontology.json and data/identifier_authorities/sources.json
+  locator: Four complete pinned SemanticSQL input databases, current source-manifest
+    artifacts and regenerated selected-term authority snapshots
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: GO, CHEBI, NCBITaxon and RHEA full-database SHA-256 values match their
+    pinned authority metadata. All 96 current source-manifest input artifacts are
+    available and match declared SHA-256 values; source snapshots supply independent
+    identifier grounding. Final ontology snapshot preserves all 1238 baseline terms
+    unchanged and adds 19; the source snapshot preserves all 1560 baseline terms unchanged
+    and adds 12. Ontology source provenance blocks are unchanged.
+- evidence_id: e-refresh
+  kind: record_content
+  reference: research/pathway_additions/2026-10-10/authority-refresh.json
+  locator: 56 source artifact refresh entries, old/new hashes, versions and digest
+    scopes; existing selected-term comparison
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: supports
+  summary: The deliberate refresh distinguishes 34 recovered pinned artifacts from
+    56 changed official downloads. All 81 previously selected terms from those 56
+    changed inputs retained identical labels and synonyms. The Reactome scopes now
+    describe the successfully retrieved live BioPAX 97 exports and preserve the previous
+    scopes in the ledger.
+  snapshot_sha256: 04880b10a0a610e620ec45af297b1d9b73250fa203444d58da965608635d42ca
+- evidence_id: e-imodulondb
+  kind: database
+  reference: https://imodulondb.org/
+  locator: Canonical kg-microbe-sources datasets and search outputs for e_coli/precise_mg1655
+    queries dxs and ispH
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: context_only
+  summary: The supported MG1655 dataset returned exact genes e_coli/precise_mg1655/b0420
+    (dxs) and e_coli/precise_mg1655/b0029 (ispH); both searches returned zero iModulons.
+    The other nine ispH-query gene hits were substring product matches, not additional
+    ispH genes. No component summarize call was applicable.
+- evidence_id: e-duplicates
+  kind: search
+  reference: Local worktree and original PathwayMech checkout
+  locator: Exact native pathway ID, pathway synonyms, source PMIDs and selected reaction
+    identifiers
+  accessed_at: '2026-10-10T20:51:24Z'
+  support: context_only
+  summary: No second exact maintained MEP I record was found in the bounded search.
+    Existing pyridoxal phosphate biosynthesis shares the Dxs reaction but denotes
+    a different downstream route; prior research listed MEP I as an uncurated candidate.
+  search_scope: rg --no-ignore --hidden searched the task worktree and original checkout
+    for NONMEVIPP-PWY, methylerythritol phosphate pathway, nonmevalonate, PMIDs11818558/12571359
+    and selected Rhea IDs. Hidden and ignored files were included; Git internals,
+    .venv dependencies and generated pages were excluded. This is a bounded repository
+    duplicate search, not a claim of global novelty.
+- evidence_id: e-gates
+  kind: validation
+  reference: /private/tmp/pathwaymech-validate-20261010.log; /private/tmp/pathwaymech-test-20261010.log;
+    /private/tmp/pathwaymech-test-final-20261010.log; /private/tmp/pathwaymech-lint-20261010.log;
+    /private/tmp/pathwaymech-vendored-20261010.log
+  locator: Final integration receipts and independent regression command output
+  accessed_at: '2026-10-10T21:00:26Z'
+  support: supports
+  summary: Final corpus gates were executed by the integration agent after inputs
+    froze. The reviewer inspected their logs and independently ran focused KGX/graph/LinkML
+    tests and whitespace checks. The earlier mixed-input test failure is retained
+    separately.
+- evidence_id: e-render
+  kind: validation
+  reference: /private/tmp/pathwaymech-kgx-audit-20261010.json
+  locator: 'MetaCyc:NONMEVIPP-PWY entry: 68 edges, complete_evidence_and_descriptions_preserved,
+    svg_edge_endpoints_match and svg_evidence_links_resolve'
+  accessed_at: '2026-10-10T20:55:14Z'
+  support: supports
+  summary: The integration audit reports preserved MEP evidence arrays and descriptions
+    in KGX and exact SVG edge endpoints and evidence links. Browser interaction was
+    not inspected because the available CUA environment had no browser.
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact pathway and organism scope
+  outcome: supported
+  summary: MetaCyc:NONMEVIPP-PWY denotes the native MEP I route rather than mevalonate
+    synthesis, the IspG ferredoxin-associated MEP II variant or the shared Dxs precursor
+    reaction alone. The protein set is explicitly E. coli K-12.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-metacyc
+  - e-uniprot
+  - e-duplicates
+  dimensions:
+  - name: taxon
+    value: NCBITaxon:83333 (Escherichia coli K-12)
+    definition: Scope of the eight represented protein assignments, narrower than
+      all taxa listed by the native pathway.
+    evidence_ids:
+    - e-uniprot
+    - e-record
+- assessment_id: a-directions
+  area: graph
+  topic: Membership, direction and pathway ordering
+  outcome: supported
+  summary: All nine native reaction frames and eight native predecessor relations
+    are retained with supported Rhea directions. Both IspH branches directly produce
+    their respective isoprenoid precursor, and Idi is an additional interconversion.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-metacyc
+  - e-rhea
+  - e-projection
+  details: The IspG biosynthetic orientation follows the explicit native reaction
+    layout, independent catalytic annotations and primary mechanism account; a reversed
+    closing prose sentence in the native page is recorded as a source conflict. The
+    selected Idi direction does not assert thermodynamic irreversibility.
+- assessment_id: a-chemistry
+  area: quantity
+  topic: Reaction chemical sides and source coefficients
+  outcome: supported
+  summary: All 37 retained chemical assertions match native Rhea identities, side
+    membership and coefficients; all 43 source side entries have an explicit retained
+    or omitted disposition.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-rhea
+  - e-projection
+  details: 'Following #314, source locators include the exact side rh:contains1 or
+    rh:contains2 relation. IspG production of H+ and the two IspH H+ inputs preserve
+    coefficient 2. The graph itself records participant presence, not flux multiplicity.'
+- assessment_id: a-catalysts
+  area: evidence
+  topic: Catalytic, cofactor and localization support
+  outcome: supported
+  summary: All nine catalyst assignments, 13 cofactor links and one localization link
+    have exact source support with their annotation evidence tiers and conditional
+    notes preserved.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-uniprot
+  details: IspG mixed similarity/experimental evidence remains distinct from the IspH
+    experimental annotation. Alternative Dxr metals are not simultaneous requirements;
+    the IspH degraded [3Fe-4S] state is not promoted to an equivalent catalytic cofactor.
+    Idi cytoplasm uses the explicit GO:0005737 IEA:UniProtKB-SubCell cross-reference.
+- assessment_id: a-limits
+  area: representation
+  topic: Carrier states and experimental scope
+  outcome: supported
+  summary: The explicitly partial representation avoids replacing generic whole redox
+    carriers with their ChEBI prosthetic groups or treating condition-specific assays
+    as exclusive physiological donor evidence.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-rhea
+  - e-isph-primary
+  - e-mechanism-primary
+  - e-projection
+  details: Six omitted carrier-state sides comprise IspG reduced/oxidized flavodoxin
+    and reduced/oxidized generic ferredoxin for each IspH branch. The current database
+    equation and E. coli flavodoxin activation assay are retained as differently scoped
+    evidence. Primary product ratios are not converted into fixed pathway stoichiometry.
+- assessment_id: a-authority
+  area: grounding
+  topic: Independent identity and explicit authority refresh
+  outcome: supported
+  summary: Named entities remain anchored by independent official source/ontology
+    inputs, and the deliberate source refresh records changed bytes without silently
+    reusing stale hashes or provenance.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-authorities
+  - e-refresh
+  details: Rhea 139 identifier authority is distinguished from Rhea 142 reaction evidence.
+    Retained term content was checked during the refresh, and the corrected Reactome
+    digest scopes describe actual retrieved exports.
+- assessment_id: a-transcriptomics
+  area: scope
+  topic: Structured iModulonDB cross-check
+  outcome: supported
+  summary: The covered MG1655 dataset corroborates the dxs and ispH gene keys as context
+    only; it supplies no expression-module or mechanistic claim for this review.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-imodulondb
+- assessment_id: a-gates
+  area: schema
+  topic: Local graph validity and generated representation
+  outcome: supported
+  summary: The full-corpus checks accept the final record and its identifier grounding;
+    MEP graph export preserves all 68 source edges, their evidence and descriptions.
+  target_ids:
+  - MetaCyc:NONMEVIPP-PWY
+  evidence_ids:
+  - e-record
+  - e-gates
+  - e-render
+findings: []
+actions: []
+limitations:
+- The graph is a partial chemical projection, not a balanced stoichiometric or flux
+  model. Six whole-carrier redox-state assertions are omitted because the source RHEA-COMP
+  entities cannot be replaced by their ChEBI prosthetic-group cross-references.
+- Current Rhea/UniProt IspH equations use generic ferredoxin, whereas the inspected
+  E. coli primary abstract supports flavodoxin-dependent activation. The record preserves
+  this difference and does not select an exclusive physiological electron donor.
+- The independent primary-literature review inspected the abstracts and bibliographic
+  metadata of PMID:11818558 and PMID:12571359. Other papers cited inside UniProt annotations
+  were not independently read; source evidence codes remain database annotations.
+- The record represents the E. coli K-12 protein set. It does not establish the same
+  enzyme assignments for all organisms named by the broad native pathway or for every
+  K-12 substrain.
+- iModulonDB searches provide gene identity and transcriptomic context only. No iModulon
+  hit informed a mechanistic assertion, and absence of an expression-module match
+  is not negative biological evidence.
+- Rhea release 142 supplies inspected reaction-side mechanism evidence; pinned SemanticSQL
+  release 139 supplies independent identifier authority. The releases are explicitly
+  distinct, and relevant directed reaction labels were checked for agreement.
+- Whole-pathway localization, complete protein complexes, in vivo flux and universal
+  IPP:DMAPP product ratios are not established by this review.
+- Interactive browser preview was unavailable in this environment. Generated SVG node/edge
+  endpoints, evidence links and KGX projection were checked, but the review does not
+  claim interactive browser QA.
+notes:
+- 'Pre-save review observations led to GitHub issues #312 (Reactome digest-scope provenance)
+  and #314 (MEP source coefficients). Both corrections were inspected before this
+  final observation. No earlier structured finding exists for them, so no resolved
+  finding or predecessor lineage is fabricated here.'
+- The initial inspect captured the pre-fix working tree. The changed coefficient assertions,
+  source projection, final identifier manifest, authority snapshots and common schema
+  were reassessed before the final inspect; final source hashes attest those inspected
+  bytes.
+- Generated authority snapshots are owned by conf/identifier_sources.json, conf/identifier_policy.yaml
+  and the explicit full authority inputs, through scripts/build_source_identifier_snapshot.py
+  and scripts/build_ontology_identifier_snapshot.py. Any future correction belongs
+  to those maintained inputs and builders, followed by regeneration.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/312
+- https://github.com/CultureBotAI/PathwayMech/issues/314
+tags:
+- pathway
+- MEP
+- scientific-review
+- independent
+```
