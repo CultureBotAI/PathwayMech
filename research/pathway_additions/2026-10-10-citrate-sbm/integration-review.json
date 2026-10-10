@@ -1,0 +1,110 @@
+{
+  "audit_type": "Structural integration review only; reviewer authored Sbm scientific record, not independent scientific review",
+  "reviewed_at": "2026-10-10T23:06:34.539716+00:00",
+  "base": "722257adc1882495f8454cc229b8fa0c187cf868",
+  "status": "passed",
+  "authorities": {
+    "conf/identifier_sources.json": {
+      "baseline_entries_preserved": 106,
+      "added_entries": [
+        "metacyc-CPLX0-254",
+        "metacyc-CPLX0-7741",
+        "metacyc-P2-PWY",
+        "metacyc-PWY0-43"
+      ],
+      "final_sha256": "33192380665155203ef45ef7d6a143078dc030bbfd281754f383d602107175d5"
+    },
+    "data/identifier_authorities/ontology.json": {
+      "baseline_sources_preserved": 4,
+      "baseline_terms_preserved": 1305,
+      "new_sources": 0,
+      "new_terms": 14,
+      "final_sha256": "1d4a27d8e22ebe51808d4b0e180f57818e0693263c9eaa768019693bf35c596a"
+    },
+    "data/identifier_authorities/sources.json": {
+      "baseline_sources_preserved": 98,
+      "baseline_terms_preserved": 1609,
+      "new_sources": 4,
+      "new_terms": 13,
+      "final_sha256": "12ef38773f0fe35a8df5a923775efeea6130f092c785cda45f0dfd30bfc90ae2"
+    }
+  },
+  "KGX_edges": {
+    "all_prior_edges_byte_equivalent_as_rows": 7575,
+    "added": 44
+  },
+  "KGX_nodes": {
+    "all_prior_nodes_and_contexts_preserved": 2672,
+    "new_nodes": 24,
+    "nodes_with_extended_contexts": 12,
+    "derived_field_changes": [
+      {
+        "id": "CHEBI:57328",
+        "field": "name",
+        "old": "3'-dephospho-CoA",
+        "new": "3'-dephospho-CoA(2-)"
+      }
+    ]
+  },
+  "issue_324": {
+    "status": "corrected locator exactly retained in final YAML, page and actual KGX evidence",
+    "final_target_sha256": "d074e8d7a820bfd22e788074de1651b62db5f7f8b584162fec14d13d5913b268",
+    "locator": "Results, Interaction of YgfD and Sbm in vitro (P17); Figure 4B and Figure 4C, panel 2; Discussion"
+  },
+  "sbm_source_bodies_rehashed": 25,
+  "sensitive_content_scan": {
+    "scope": "Direct reading of every current dated-research artifact and both new records (not filtered by gitignore)",
+    "files": [
+      "research/pathway_additions/2026-10-10-citrate-sbm/citrate-duplicate-searches.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/citrate-identifiers.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/browser-availability.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/authority-acquisition.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-semantic-dedup-final.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-protein-projection.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/allantoin-search-receipt.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/allantoin-validation.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/allantoin-handoff.md",
+      "research/pathway_additions/2026-10-10-citrate-sbm/citrate-curation.md",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-checks.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-chemistry.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/imodulondb-context.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-curation.md",
+      "research/pathway_additions/2026-10-10-citrate-sbm/citrate-source-manifest.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/citrate-validation.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/README.md",
+      "research/pathway_additions/2026-10-10-citrate-sbm/allantoin-source-manifest.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/record-identifiers.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/allantoin-assessment.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/citrate-source-projection.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-native-projection.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-sources.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-verify.py",
+      "research/pathway_additions/2026-10-10-citrate-sbm/sbm-duplicate-searches.json",
+      "research/pathway_additions/2026-10-10-citrate-sbm/authority-integration.json",
+      "data/pathways/succinate-to-propanoate.yaml",
+      "data/pathways/citrate-lyase-activation.yaml"
+    ],
+    "status": "clean"
+  },
+  "actual_terminal_checks": [
+    {
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just kgx-export --output-dir /private/tmp/pathwaymech-citrate-sbm-kgx",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-citrate-sbm-kgx-audit-cli.log",
+      "log_sha256": "04e7e0049ff5437466f86892fd03ac3cf77bcd6ca30fd5489435ac19e696e674"
+    },
+    {
+      "command": ".venv/bin/python /private/tmp/pathwaymech-citrate-sbm-graph-audit.py --root /private/tmp/pathwaymech-citrate-sbm-20261010 --comparison-kgx-dir /private/tmp/pathwaymech-citrate-sbm-kgx",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-citrate-sbm-graph-audit.log",
+      "log_sha256": "7dd446cd0b98282d0986c31661f6d217d824fbf036af1cc903406bb44e507dfd"
+    },
+    {
+      "command": ".venv/bin/python /private/tmp/pathwaymech-citrate-sbm-integration-review/audit.py",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-citrate-sbm-integration-review/audit.log",
+      "log_sha256": "7708182f8b308a1d5ceee0aea58a34be52e3ffdee430975d337611c1d06faf6f"
+    }
+  ],
+  "derived_name_disposition": "CHEBI:57328 gains a new citrate-record label 3'-dephospho-CoA(2-), which becomes the deterministic global display name. Its prior local labels and categories remain in exact source contexts; no baseline context or category is lost."
+}

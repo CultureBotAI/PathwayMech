@@ -1,0 +1,650 @@
+{
+  "created_at": "2026-10-10T22:59:26.418475+00:00",
+  "candidate": {
+    "pathbank": "PathBank:SMP0002064",
+    "native_member": "PW002050.owl",
+    "metacyc": "MetaCyc:PWY0-41",
+    "scope": "E. coli anaerobic allantoin degradation through the oxamate-producing branch"
+  },
+  "curation_ready": false,
+  "blocking_reason": "An exact external identifier for the experimentally supported AllFGH assembly has not been verified. No local complex identifier or subunit-as-whole-catalyst substitution is acceptable.",
+  "allfgh": {
+    "proteins": [
+      "UniProtKB:Q47208",
+      "UniProtKB:P77129",
+      "UniProtKB:P0AAS5"
+    ],
+    "primary": "PMID:38888336",
+    "experimental_strain": "E. coli K-12 MG1655; BL21(DE3) is the recombinant expression host",
+    "evidence": "Purified coexpressed protein and deletion/complementation identify three component types; tested purified chemistry is the reverse oxamate+carbamoyl-phosphate direction because oxalurate was unavailable.",
+    "physiological_direction": "RHEA:22986, inferred physiological right-to-left with UniProt ECO:0000305 from the paper; purified kinetic assays use the opposite direction.",
+    "stoichiometry": "Unresolved. 139kDa and 1:1:1 are explicit kinetic calculation assumptions, not an experimentally established heterotrimer. Predicted subunit dimers/monomers do not determine complex stoichiometry.",
+    "magnesium": "Figure4C varies MgCl2 0-20mM in crude lysates, and purified assays use10mM Mg2+. Current reviewed UniProt calls Mg2+ a cofactor. This supports condition-dependent activation/annotation, not an exact bound-metal count or a universal physiological Mg requirement.",
+    "locators": [
+      "PMC11326118 Methods: Construction of gene-deleted strains and plasmids",
+      "Results Tables1-3; purification and kinetics sections; Figure4 caption",
+      "Discussion quaternary-structure paragraph; Table4 assumption footnote",
+      "UniProt Q47208/P77129/P0AAS5 FUNCTION/CATALYTIC ACTIVITY/COFACTOR/SUBUNIT comments"
+    ]
+  },
+  "alld": {
+    "protein": "UniProtKB:P77555",
+    "native_complex": "PathBank:SMP0002064/ProteinComplex/4022",
+    "oligomer": "Homodimer, primary23284870 structure and size-exclusion support; native coefficient2",
+    "selected_reaction": "RHEA:15330",
+    "rejected_branch": "Archived NADP alternative; FigureS2 supports NAD rather than NADP at the tested conditions.",
+    "supplement": {
+      "url": "https://journals.plos.org/plosone/article/file?type=supplementary&id=10.1371/journal.pone.0052066.s002",
+      "sha256": "a68774366e4ac29043bcd28d0a68b81af670060530ff8200f7b296aa70af5ba8",
+      "conditions": "0.3mM NAD+ or NADP+;0.15mM allantoate converted by AAH/UGH;AllD20ug/mL added after3min",
+      "visual_observation": "NAD trace rises to about0.8 A340 by about500s;NADP remains nearbaseline. Approximate visual observation, not digitized kinetics; no universal zero activity at all concentrations inferred."
+    },
+    "coupled_assay_limit": "NADPH in FigureS9 reports glutamate-dehydrogenase-linked ammonia release during substrate preparation; it is not evidence for AllD NADP catalysis."
+  },
+  "components": [
+    {
+      "enzyme": "AllB",
+      "protein": "UniProtKB:P77671",
+      "metacyc_complex": "MetaCyc:CPLX-64",
+      "native_complex": "PathBank:SMP0002064/ProteinComplex/1588",
+      "copies": 4,
+      "metal_evidence": "Primary11092864 gel-filtration/crosslinking supports tetramer; EDTA/added-ion activity enhancement supports Co/Ni/Mn alternatives. Primary12486048 measures differently loaded Zn/Co/Ni enzymes, incomplete activation and metal-dependent stereospecificity. Reviewed annotation of two Zn sites must not be rewritten as exactly2Zn measured in every preparation or exclusive in-vivo Zn requirement.",
+      "scope": "Selected S-allantoin reaction is supported for zinc-loaded protein. Cobalt changes stereospecificity; alternatives are not simultaneous cofactors."
+    },
+    {
+      "enzyme": "AllC",
+      "protein": "UniProtKB:P77425",
+      "metacyc_complex": "MetaCyc:CPLX-7524",
+      "native_complex": "PathBank:SMP0002064/ProteinComplex/1589",
+      "copies": 2,
+      "metal_evidence": "Native complex and reviewed primary17362992 support dimer/two-metal active site. Older Zn assignment was based on structural analogy according to native comment; current reviewed UniProt lists Zn and ability to bindMn, primary20038185 calls AAH manganese-dependent. Preserve this provenance/metal uncertainty rather than assert exclusive obligatory Zn.",
+      "chemistry": "Use current step to S-ureidoglycine, not the superseded direct allantoate-to-ureidoglycolate net assignment."
+    },
+    {
+      "enzyme": "AllE",
+      "protein": "UniProtKB:P75713",
+      "native_monomer": "MetaCyc:G6284-MONOMER",
+      "copies": 1,
+      "metal_evidence": "Reviewed Mn cofactor with Co substitution annotation supported by primary20038185; that paper was abstract-only here.",
+      "oligomer": "Reviewed monomer and RCSB1RC6 author biological assembly1 is monomeric. The2024 OXTCase docking discussion calls its AllE reference a dimer; do not elevate that docking shorthand into native assembly evidence."
+    }
+  ],
+  "allk": {
+    "protein": "UniProtKB:P37306",
+    "net": "RHEA:10154",
+    "phosphotransfer_component": "RHEA:30757",
+    "spontaneous_component": "RHEA:57718",
+    "source": "UniProt FUNCTION and separate catalytic comments, PMID36384810 indexed abstract; officialRhea142 sides",
+    "disposition": "Prefer explicit30757 enzyme phosphotransfer plus57718 spontaneous carbamate decay if representing the intermediate. Do not also assert10154 net as a third serial transformation. Never attribute the spontaneous decay toAllK or classify it as a gene-product MolecularActivity.",
+    "component_vector_sum_matches_net": true
+  },
+  "reactions": [
+    {
+      "id": "RHEA:17030",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:15678",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/17029_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_17029_compound_2545",
+            "compound": "http://rdf.rhea-db.org/Compound_2545",
+            "name": [
+              "(S)-allantoin"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15377",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/17029_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_17029_compound_1283",
+            "compound": "http://rdf.rhea-db.org/Compound_1283",
+            "name": [
+              "H2O"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:17536",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/17029_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_17029_compound_4604",
+            "compound": "http://rdf.rhea-db.org/Compound_4604",
+            "name": [
+              "allantoate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15378",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/17029_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_17029_compound_3249",
+            "compound": "http://rdf.rhea-db.org/Compound_3249",
+            "name": [
+              "H(+)"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:15678": -1,
+        "CHEBI:15377": -1,
+        "CHEBI:17536": 1,
+        "CHEBI:15378": 1
+      }
+    },
+    {
+      "id": "RHEA:27486",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:17536",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/27485_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_27485_compound_4604",
+            "compound": "http://rdf.rhea-db.org/Compound_4604",
+            "name": [
+              "allantoate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15377",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/27485_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_27485_compound_1283",
+            "compound": "http://rdf.rhea-db.org/Compound_1283",
+            "name": [
+              "H2O"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15378",
+            "coefficient": 2,
+            "side": "http://rdf.rhea-db.org/27485_L",
+            "contains": "contains2",
+            "participant": "http://rdf.rhea-db.org/Participant_27485_compound_3249",
+            "compound": "http://rdf.rhea-db.org/Compound_3249",
+            "name": [
+              "H(+)"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:59947",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/27485_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_27485_compound_6148",
+            "compound": "http://rdf.rhea-db.org/Compound_6148",
+            "name": [
+              "(S)-2-ureidoglycine"
+            ]
+          },
+          {
+            "chebi": "CHEBI:28938",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/27485_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_27485_compound_1012",
+            "compound": "http://rdf.rhea-db.org/Compound_1012",
+            "name": [
+              "NH4(+)"
+            ]
+          },
+          {
+            "chebi": "CHEBI:16526",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/27485_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_27485_compound_4391",
+            "compound": "http://rdf.rhea-db.org/Compound_4391",
+            "name": [
+              "CO2"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:17536": -1,
+        "CHEBI:15377": -1,
+        "CHEBI:15378": -2,
+        "CHEBI:59947": 1,
+        "CHEBI:28938": 1,
+        "CHEBI:16526": 1
+      }
+    },
+    {
+      "id": "RHEA:25242",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:59947",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/25241_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_25241_compound_6148",
+            "compound": "http://rdf.rhea-db.org/Compound_6148",
+            "name": [
+              "(S)-2-ureidoglycine"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15377",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/25241_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_25241_compound_1283",
+            "compound": "http://rdf.rhea-db.org/Compound_1283",
+            "name": [
+              "H2O"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:57296",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/25241_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_25241_compound_4140",
+            "compound": "http://rdf.rhea-db.org/Compound_4140",
+            "name": [
+              "(S)-ureidoglycolate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:28938",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/25241_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_25241_compound_1012",
+            "compound": "http://rdf.rhea-db.org/Compound_1012",
+            "name": [
+              "NH4(+)"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:59947": -1,
+        "CHEBI:15377": -1,
+        "CHEBI:57296": 1,
+        "CHEBI:28938": 1
+      }
+    },
+    {
+      "id": "RHEA:15330",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:57296",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/15329_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_15329_compound_4140",
+            "compound": "http://rdf.rhea-db.org/Compound_4140",
+            "name": [
+              "(S)-ureidoglycolate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:57540",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/15329_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_15329_compound_3484",
+            "compound": "http://rdf.rhea-db.org/Compound_3484",
+            "name": [
+              "NAD(+)"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:57824",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/15329_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_15329_compound_1605",
+            "compound": "http://rdf.rhea-db.org/Compound_1605",
+            "name": [
+              "N-carbamoyl-2-oxoglycine"
+            ]
+          },
+          {
+            "chebi": "CHEBI:57945",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/15329_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_15329_compound_1650",
+            "compound": "http://rdf.rhea-db.org/Compound_1650",
+            "name": [
+              "NADH"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15378",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/15329_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_15329_compound_3249",
+            "compound": "http://rdf.rhea-db.org/Compound_3249",
+            "name": [
+              "H(+)"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:57296": -1,
+        "CHEBI:57540": -1,
+        "CHEBI:57824": 1,
+        "CHEBI:57945": 1,
+        "CHEBI:15378": 1
+      }
+    },
+    {
+      "id": "RHEA:22986",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:57824",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/22984_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_22984_compound_1605",
+            "compound": "http://rdf.rhea-db.org/Compound_1605",
+            "name": [
+              "N-carbamoyl-2-oxoglycine"
+            ]
+          },
+          {
+            "chebi": "CHEBI:43474",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/22984_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_22984_compound_5518",
+            "compound": "http://rdf.rhea-db.org/Compound_5518",
+            "name": [
+              "phosphate"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:58363",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/22984_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_22984_compound_1815",
+            "compound": "http://rdf.rhea-db.org/Compound_1815",
+            "name": [
+              "oxamate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:58228",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/22984_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_22984_compound_4600",
+            "compound": "http://rdf.rhea-db.org/Compound_4600",
+            "name": [
+              "carbamoyl phosphate"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:57824": -1,
+        "CHEBI:43474": -1,
+        "CHEBI:58363": 1,
+        "CHEBI:58228": 1
+      }
+    },
+    {
+      "id": "RHEA:10154",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:58228",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_4600",
+            "compound": "http://rdf.rhea-db.org/Compound_4600",
+            "name": [
+              "carbamoyl phosphate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:456216",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_2710",
+            "compound": "http://rdf.rhea-db.org/Compound_2710",
+            "name": [
+              "ADP"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15377",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_1283",
+            "compound": "http://rdf.rhea-db.org/Compound_1283",
+            "name": [
+              "H2O"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15378",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_3249",
+            "compound": "http://rdf.rhea-db.org/Compound_3249",
+            "name": [
+              "H(+)"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:17544",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_1123",
+            "compound": "http://rdf.rhea-db.org/Compound_1123",
+            "name": [
+              "hydrogencarbonate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:28938",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_1012",
+            "compound": "http://rdf.rhea-db.org/Compound_1012",
+            "name": [
+              "NH4(+)"
+            ]
+          },
+          {
+            "chebi": "CHEBI:30616",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/10152_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_10152_compound_6372",
+            "compound": "http://rdf.rhea-db.org/Compound_6372",
+            "name": [
+              "ATP"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:58228": -1,
+        "CHEBI:456216": -1,
+        "CHEBI:15377": -1,
+        "CHEBI:15378": -1,
+        "CHEBI:17544": 1,
+        "CHEBI:28938": 1,
+        "CHEBI:30616": 1
+      }
+    },
+    {
+      "id": "RHEA:30757",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:58228",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/30755_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_30755_compound_4600",
+            "compound": "http://rdf.rhea-db.org/Compound_4600",
+            "name": [
+              "carbamoyl phosphate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:456216",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/30755_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_30755_compound_2710",
+            "compound": "http://rdf.rhea-db.org/Compound_2710",
+            "name": [
+              "ADP"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:13941",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/30755_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_30755_compound_4239",
+            "compound": "http://rdf.rhea-db.org/Compound_4239",
+            "name": [
+              "carbamate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:30616",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/30755_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_30755_compound_6372",
+            "compound": "http://rdf.rhea-db.org/Compound_6372",
+            "name": [
+              "ATP"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:58228": -1,
+        "CHEBI:456216": -1,
+        "CHEBI:13941": 1,
+        "CHEBI:30616": 1
+      }
+    },
+    {
+      "id": "RHEA:57718",
+      "sides": {
+        "substrates": [
+          {
+            "chebi": "CHEBI:13941",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/57716_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_57716_compound_4239",
+            "compound": "http://rdf.rhea-db.org/Compound_4239",
+            "name": [
+              "carbamate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15377",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/57716_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_57716_compound_1283",
+            "compound": "http://rdf.rhea-db.org/Compound_1283",
+            "name": [
+              "H2O"
+            ]
+          },
+          {
+            "chebi": "CHEBI:15378",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/57716_R",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_57716_compound_3249",
+            "compound": "http://rdf.rhea-db.org/Compound_3249",
+            "name": [
+              "H(+)"
+            ]
+          }
+        ],
+        "products": [
+          {
+            "chebi": "CHEBI:17544",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/57716_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_57716_compound_1123",
+            "compound": "http://rdf.rhea-db.org/Compound_1123",
+            "name": [
+              "hydrogencarbonate"
+            ]
+          },
+          {
+            "chebi": "CHEBI:28938",
+            "coefficient": 1,
+            "side": "http://rdf.rhea-db.org/57716_L",
+            "contains": "contains1",
+            "participant": "http://rdf.rhea-db.org/Participant_57716_compound_1012",
+            "compound": "http://rdf.rhea-db.org/Compound_1012",
+            "name": [
+              "NH4(+)"
+            ]
+          }
+        ]
+      },
+      "vector": {
+        "CHEBI:13941": -1,
+        "CHEBI:15377": -1,
+        "CHEBI:15378": -1,
+        "CHEBI:17544": 1,
+        "CHEBI:28938": 1
+      }
+    }
+  ],
+  "next_actions": [
+    "Obtain an authorized current EcoCyc export of G6287/G6288/G6289-MONOMER and their component-of target(s), then inspect the exact assembly record and verify all three UniProt crosswalks. Account-required HTML is not an authority source.",
+    "If no primary registry has a native assembly accession, seek upstream registry curation separately; do not mint a local ID or force an enzyme-class/reaction ID to denote the assembly.",
+    "Once assembly identity resolves, curate full branch with unknown AllFGH copy counts, NAD-only AllD chemistry, bounded metal alternatives and explicit AllK component/net choice. Re-run exact authority admission and independent review."
+  ],
+  "not_done": [
+    "No record authored, no authority manifest/snapshot or policy changed, no history/page generated.",
+    "All reactions were independently source-projected, and AllK vector equality checked; a complete curated-record schema/atom-balance/evidence audit remains future work.",
+    "No new regulatory/module graph is proposed.",
+    "This bounded candidate disposition does not exhaust remaining pathway sources."
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "verified_at": "2026-10-10T23:13:17.236675+00:00",
+  "base_commit": "722257adc1882495f8454cc229b8fa0c187cf868",
+  "environment": {
+    "UV_CACHE_DIR": "/private/tmp/pathwaymech-curation-uv-cache",
+    "UV_NO_SYNC": "1"
+  },
+  "checks": [
+    {
+      "command": "just render-pages",
+      "exit_code": 0,
+      "result": "167 records rendered",
+      "log": "/private/tmp/pathwaymech-citrate-sbm-render.log",
+      "log_sha256": "fda3f26afc96f351f927b3d8311c050e644c49a3dd847affdaeaeb99e804c710"
+    },
+    {
+      "command": "just validate",
+      "exit_code": 0,
+      "result": "167 native and closed-schema records; 8731 evidence blocks; identifiers; 248 histories; 30 sources; 6 documentation files; research contract; current pages",
+      "log": "/private/tmp/pathwaymech-citrate-sbm-validate.log",
+      "log_sha256": "71b37f71dd760991ef7b9ae6b2bc0802f3063ab62d3185afd8f3c92be5bd4f15"
+    },
+    {
+      "command": "just test",
+      "exit_code": 0,
+      "result": "1043 passed, 3 skipped, 3 warnings in 351.55 seconds",
+      "log": "/private/tmp/pathwaymech-citrate-sbm-test.log",
+      "log_sha256": "f8fc42dab2ef354b53bcf49ba77007711700f8340597d06ce0c00630a49e19b0"
+    },
+    {
+      "command": "just lint",
+      "exit_code": 0,
+      "result": "All checks passed",
+      "log": "/private/tmp/pathwaymech-citrate-sbm-lint.log",
+      "log_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41"
+    },
+    {
+      "command": "just vendored-check",
+      "exit_code": 0,
+      "result": "22 governed artifacts match a5d562962c75a2ad9efd8160b548df5944315422",
+      "log": "/private/tmp/pathwaymech-citrate-sbm-vendored.log",
+      "log_sha256": "b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6"
+    },
+    {
+      "command": "just review-check --base 722257adc1882495f8454cc229b8fa0c187cf868",
+      "exit_code": 0,
+      "result": "11 valid immutable reviews; declared scopes only",
+      "log": "/private/tmp/pathwaymech-citrate-sbm-review-check.log",
+      "log_sha256": "ae4f3de83b1fc7693c9c78f1777913f026a6d2d1833906bd4fbf281114928b79"
+    }
+  ],
+  "scientific_reviews": [
+    {
+      "review_id": "20261010T231224Z-citrate-independent-review",
+      "yaml": "reviews/structured/20261010T231224Z-citrate-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261010T231224Z-citrate-independent-review/review.md",
+      "yaml_sha256": "237b9541a7f07fd24df532b83ff76ff11e5997464dcd8175ee148c05fab8e38a",
+      "markdown_sha256": "4a7cf45de90e35165fd1987fad288d63246253e76a4df80f66227f2121c4b944",
+      "verdict": "pass_with_limitations",
+      "findings": 0,
+      "all_recorded_inputs_unchanged": true
+    },
+    {
+      "review_id": "20261010T231218Z-sbm-independent-review",
+      "yaml": "reviews/structured/20261010T231218Z-sbm-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261010T231218Z-sbm-independent-review/review.md",
+      "yaml_sha256": "66ab1a92458d00f8b1f98857a4ca406796aff62d78ecb64e0035479d01965c37",
+      "markdown_sha256": "974e71b365a5bec37d3303e674338be715216b10d0c5f8810f57daffea357746",
+      "verdict": "pass_with_limitations",
+      "findings": 0,
+      "all_recorded_inputs_unchanged": true
+    }
+  ],
+  "integration_review": {
+    "path": "research/pathway_additions/2026-10-10-citrate-sbm/integration-review.json",
+    "sha256": "75b3745c4d4d4c9ca6f77c0862ada254d47fc9772c8d543ad5309ea6f742322f",
+    "scope": "Structural integration review only; reviewer authored Sbm scientific record, not independent scientific review",
+    "findings": 0
+  },
+  "staged_integration_review": {
+    "path": "research/pathway_additions/2026-10-10-citrate-sbm/staged-review.json",
+    "sha256": "b0dbcae118aca7d0b1e0726d56c27f460de6a8384d5a23c6d25d11b810d00cdc",
+    "scope": "45-file integration snapshot before final review bundles and verification documentation"
+  },
+  "graph_audit": {
+    "path": "research/pathway_additions/2026-10-10-citrate-sbm/generated-graph-kgx-audit.json",
+    "sha256": "7dd446cd0b98282d0986c31661f6d217d824fbf036af1cc903406bb44e507dfd",
+    "edges": 44,
+    "evidence_blocks": 74,
+    "separate_CLI_and_audit_exit_codes": [
+      0,
+      0
+    ]
+  },
+  "issue": {
+    "number": 324,
+    "url": "https://github.com/CultureBotAI/PathwayMech/issues/324",
+    "severity": "minor",
+    "disposition": "Fixed and independently verified; closure delegated to merging PR",
+    "acceptance": "Exact PMID18950999 Figure4B/Figure4C panel2 locator retained in YAML, rendered page and KGX; biology unchanged"
+  },
+  "history_note": "The first citrate CREATE event inherited the scaffolder actor-name default; the next immutable GENERAL event corrects actor attribution to Codex without rewriting history.",
+  "limitations": [
+    "Sbm annotation and mixed-substrate assays do not resolve enantiomer specificity or establish native physiological flux",
+    "Citrate source access and generic carrier-state limits are retained in its independent review",
+    "No browser surface was available; SVG audit is structural, not browser visual QA",
+    "Local receipts precede PR CI and merge; publication and merge integrity must be verified separately",
+    "Allantoin needs verified external AllFGH assembly identity; additional pathway candidates remain and no exhaustion is claimed"
+  ]
+}
