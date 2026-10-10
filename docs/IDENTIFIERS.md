@@ -80,6 +80,17 @@ The rules do not relax pathway titles, taxon labels or missing identifiers.
 Archive members must be extracted without rewriting bytes, with the exact member
 path and archive digest recorded in `sha256_scope` when the public URL is a ZIP.
 
+`RHEA-COMP` identifies whole generic protein participants, including distinct
+oxidized and reduced carrier states. This is the namespace used by UniProt's
+catalytic-activity cross-references for Rhea `Compound_<id>` objects. The
+`rhea-components-rdf-gz` source kind extracts only explicit `GenericPolypeptide`
+objects from native Rhea RDF, requiring matching numeric IDs and `GENERIC:<id>`
+accessions. It preserves the Rhea name under canonical-label policy. Reactive
+parts such as bound FAD and FADH2 are separate objects and cannot substitute for
+the whole carrier. These generic protein states do not identify a particular
+organism's protein sequence. Declare their participant category explicitly;
+the namespace alone does not establish an organism-specific protein identity.
+
 The optional `sha256_scope` says precisely which artifact was hashed when its
 bytes differ from the representation at the public source URL. For example,
 an OAK Semantic SQL database digest covers the uncompressed SQLite database,

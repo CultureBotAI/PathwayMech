@@ -1,0 +1,610 @@
+id: PathBank:SMP0002051
+label: L-Carnitine Degradation I
+description: The four-reaction PathBank route represents anaerobic L-carnitine reduction to gamma-butyrobetaine
+  through CoA thioesters, using characterized Escherichia coli K-12 Cai proteins. CaiC supplies the initial
+  carnitinyl-CoA pool; CaiD dehydrates it, CaiA reduces crotonobetainyl-CoA, and the CaiB homodimer transfers
+  CoA to another carnitine molecule, releasing gamma-butyrobetaine and regenerating carnitinyl-CoA. Thus
+  ATP-dependent initiation is distinct from the recycling loop. Rhea charge forms and both generic electron-transfer
+  flavoprotein redox states are retained; the exact physiological donor complex is unresolved. FAD bound
+  to CaiA is a separate cofactor. Selected catabolic directions do not imply irreversibility of CaiD or
+  CaiB. This enzyme mechanism does not establish growth or expression in every K-12 strain, and is distinct
+  from aerobic carnitine assimilation. The older native map defines the route boundary; its erroneous
+  or underspecified chemical xrefs are not adopted as exact identities.
+pathway_type: anaerobic-carnitine-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:16347
+  label: (R)-carnitine
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: CHEBI:60932
+  label: (R)-carnitinyl-CoA(3-)
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:60933
+  label: (E)-4-(trimethylammonio)but-2-enoyl-CoA(3-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:61513
+  label: gamma-butyrobetainyl-CoA(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16244
+  label: 4-(trimethylammonio)butanoate
+  category: small_molecule
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: RHEA-COMP:10685
+  label: oxidized [electron-transfer flavoprotein]
+  category: protein
+- id: RHEA-COMP:10686
+  label: reduced [electron-transfer flavoprotein]
+  category: protein
+- id: UniProtKB:P31552
+  label: Crotonobetaine/carnitine--CoA ligase
+  category: protein
+- id: UniProtKB:P31551
+  label: Carnitinyl-CoA dehydratase
+  category: protein
+- id: UniProtKB:P60584
+  label: Crotonobetainyl-CoA reductase
+  category: protein
+- id: UniProtKB:P31572
+  label: L-carnitine CoA-transferase
+  category: protein
+- id: PathBank:SMP0002051/ProteinComplex/4010
+  label: γ-butyrobetainyl-CoA:carnitine CoA transferase
+  category: complex
+reactions:
+- id: RHEA:28515
+  label: CaiC ATP-dependent initial carnitinyl-CoA formation
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:28339
+  label: CaiD carnitinyl-CoA dehydration
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:51586
+  label: CaiA crotonobetainyl-CoA reduction
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:28419
+  label: CaiB CoA transfer to carnitine and gamma-butyrobetaine release
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: carnitine-edge-001
+  subject: CHEBI:16347
+  predicate: consumes
+  object: RHEA:28515
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: Rhea places CHEBI:16347 on the substrates side of directed RHEA:28515, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28515"]/rh:substrates; http://rdf.rhea-db.org/28514_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_4231/rh:compound -> http://rdf.rhea-db.org/Compound_4231/rh:chebi
+- id: carnitine-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:28515
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: Rhea places CHEBI:30616 on the substrates side of directed RHEA:28515, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28515"]/rh:substrates; http://rdf.rhea-db.org/28514_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_6372/rh:compound -> http://rdf.rhea-db.org/Compound_6372/rh:chebi
+- id: carnitine-edge-003
+  subject: CHEBI:57287
+  predicate: consumes
+  object: RHEA:28515
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: Rhea places CHEBI:57287 on the substrates side of directed RHEA:28515, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28515"]/rh:substrates; http://rdf.rhea-db.org/28514_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_1264/rh:compound -> http://rdf.rhea-db.org/Compound_1264/rh:chebi
+- id: carnitine-edge-004
+  subject: RHEA:28515
+  predicate: produces
+  object: CHEBI:60932
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: Rhea places CHEBI:60932 on the products side of directed RHEA:28515, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28515"]/rh:products; http://rdf.rhea-db.org/28514_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+- id: carnitine-edge-005
+  subject: RHEA:28515
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: Rhea places CHEBI:456215 on the products side of directed RHEA:28515, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28515"]/rh:products; http://rdf.rhea-db.org/28514_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_2590/rh:compound -> http://rdf.rhea-db.org/Compound_2590/rh:chebi
+- id: carnitine-edge-006
+  subject: RHEA:28515
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: Rhea places CHEBI:33019 on the products side of directed RHEA:28515, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28515"]/rh:products; http://rdf.rhea-db.org/28514_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_2106/rh:compound -> http://rdf.rhea-db.org/Compound_2106/rh:chebi
+- id: carnitine-edge-007
+  subject: CHEBI:60932
+  predicate: consumes
+  object: RHEA:28339
+  evidence:
+  - reference_id: RHEA:28339
+    source_assertion: Rhea places CHEBI:60932 on the substrates side of directed RHEA:28339, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28339"]/rh:substrates; http://rdf.rhea-db.org/28338_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28338_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+- id: carnitine-edge-008
+  subject: RHEA:28339
+  predicate: produces
+  object: CHEBI:60933
+  evidence:
+  - reference_id: RHEA:28339
+    source_assertion: Rhea places CHEBI:60933 on the products side of directed RHEA:28339, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28339"]/rh:products; http://rdf.rhea-db.org/28338_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28338_compound_6426/rh:compound -> http://rdf.rhea-db.org/Compound_6426/rh:chebi
+- id: carnitine-edge-009
+  subject: RHEA:28339
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:28339
+    source_assertion: Rhea places CHEBI:15377 on the products side of directed RHEA:28339, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28339"]/rh:products; http://rdf.rhea-db.org/28338_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28338_compound_1283/rh:compound -> http://rdf.rhea-db.org/Compound_1283/rh:chebi
+- id: carnitine-edge-010
+  subject: CHEBI:60933
+  predicate: consumes
+  object: RHEA:51586
+  evidence:
+  - reference_id: RHEA:51586
+    source_assertion: Rhea places CHEBI:60933 on the substrates side of directed RHEA:51586, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/51586"]/rh:substrates; http://rdf.rhea-db.org/51584_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_6426/rh:compound -> http://rdf.rhea-db.org/Compound_6426/rh:chebi
+- id: carnitine-edge-011
+  subject: RHEA-COMP:10686
+  predicate: consumes
+  object: RHEA:51586
+  description: This is a whole generic electron-transfer flavoprotein redox state, not free FAD/FADH2
+    and not an identified FixA/FixB complex. Coefficient 1 belongs to the Rhea reference equation.
+  evidence:
+  - reference_id: RHEA:51586
+    source_assertion: Rhea places RHEA-COMP:10686 on the substrates side of directed RHEA:51586, with
+      coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/51586"]/rh:substrates; http://rdf.rhea-db.org/51584_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_10686/rh:compound -> http://rdf.rhea-db.org/Compound_10686/rh:id,
+      rh:name, rdfs:subClassOf
+  - reference_id: UniProtKB:P60584
+    source_assertion: CaiA catalytic activity cross-references RHEA-COMP:10686 as a Rhea component of
+      the electron-transfer flavoprotein reaction. The function annotation proposes, but does not establish,
+      FixA/FixB as donor.
+    source_locator: comments[1].reaction.reactionCrossReferences; comments[0].texts[0] (FUNCTION)
+- id: carnitine-edge-012
+  subject: RHEA:51586
+  predicate: produces
+  object: CHEBI:61513
+  evidence:
+  - reference_id: RHEA:51586
+    source_assertion: Rhea places CHEBI:61513 on the products side of directed RHEA:51586, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/51586"]/rh:products; http://rdf.rhea-db.org/51584_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_6459/rh:compound -> http://rdf.rhea-db.org/Compound_6459/rh:chebi
+- id: carnitine-edge-013
+  subject: RHEA:51586
+  predicate: produces
+  object: RHEA-COMP:10685
+  description: This is a whole generic electron-transfer flavoprotein redox state, not free FAD/FADH2
+    and not an identified FixA/FixB complex. Coefficient 1 belongs to the Rhea reference equation.
+  evidence:
+  - reference_id: RHEA:51586
+    source_assertion: Rhea places RHEA-COMP:10685 on the products side of directed RHEA:51586, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/51586"]/rh:products; http://rdf.rhea-db.org/51584_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_10685/rh:compound -> http://rdf.rhea-db.org/Compound_10685/rh:id,
+      rh:name, rdfs:subClassOf
+  - reference_id: UniProtKB:P60584
+    source_assertion: CaiA catalytic activity cross-references RHEA-COMP:10685 as a Rhea component of
+      the electron-transfer flavoprotein reaction. The function annotation proposes, but does not establish,
+      FixA/FixB as donor.
+    source_locator: comments[1].reaction.reactionCrossReferences; comments[0].texts[0] (FUNCTION)
+- id: carnitine-edge-014
+  subject: RHEA:51586
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:51586
+    source_assertion: Rhea places CHEBI:15378 on the products side of directed RHEA:51586, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/51586"]/rh:products; http://rdf.rhea-db.org/51584_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_3249/rh:compound -> http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: carnitine-edge-015
+  subject: CHEBI:61513
+  predicate: consumes
+  object: RHEA:28419
+  evidence:
+  - reference_id: RHEA:28419
+    source_assertion: Rhea places CHEBI:61513 on the substrates side of directed RHEA:28419, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28419"]/rh:substrates; http://rdf.rhea-db.org/28418_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28418_compound_6459/rh:compound -> http://rdf.rhea-db.org/Compound_6459/rh:chebi
+- id: carnitine-edge-016
+  subject: CHEBI:16347
+  predicate: consumes
+  object: RHEA:28419
+  evidence:
+  - reference_id: RHEA:28419
+    source_assertion: Rhea places CHEBI:16347 on the substrates side of directed RHEA:28419, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28419"]/rh:substrates; http://rdf.rhea-db.org/28418_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28418_compound_4231/rh:compound -> http://rdf.rhea-db.org/Compound_4231/rh:chebi
+- id: carnitine-edge-017
+  subject: RHEA:28419
+  predicate: produces
+  object: CHEBI:60932
+  evidence:
+  - reference_id: RHEA:28419
+    source_assertion: Rhea places CHEBI:60932 on the products side of directed RHEA:28419, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28419"]/rh:products; http://rdf.rhea-db.org/28418_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28418_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+- id: carnitine-edge-018
+  subject: RHEA:28419
+  predicate: produces
+  object: CHEBI:16244
+  evidence:
+  - reference_id: RHEA:28419
+    source_assertion: Rhea places CHEBI:16244 on the products side of directed RHEA:28419, with coefficient
+      1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28419"]/rh:products; http://rdf.rhea-db.org/28418_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28418_compound_5286/rh:compound -> http://rdf.rhea-db.org/Compound_5286/rh:chebi
+- id: carnitine-edge-019
+  subject: UniProtKB:P31552
+  predicate: catalyzes
+  object: RHEA:28515
+  description: CaiC primes the CoA-linked cycle; this ATP-dependent step does not imply one ATP hydrolyzed
+    per subsequent carnitine reduction. Its other betaine substrates lie outside this native four-reaction
+    route.
+  evidence:
+  - reference_id: UniProtKB:P31552
+    source_assertion: UniProt assigns RHEA:28514 catalytic activity to P31552 with ECO:0000269/PubMed:18266698
+      and ECO:0000255/HAMAP-Rule:MF_01524; its function supports the selected pathway transformation.
+    source_locator: comments[3].reaction.reactionCrossReferences; comments[3].reaction.evidences; comments[0].texts[0]
+  - reference_id: RHEA:28515
+    source_assertion: Rhea identifies RHEA:28515 as the left_to_right directed form of RHEA:28514.
+    source_locator: http://rdf.rhea-db.org/28514/rh:directionalReaction; http://rdf.rhea-db.org/28515/rh:substrates,
+      rh:products
+  - reference_id: PMID:18266698
+    quote: the main in vivo role of CaiC was found to be the synthesis of betainyl-CoAs
+- id: carnitine-edge-020
+  subject: UniProtKB:P31551
+  predicate: catalyzes
+  object: RHEA:28339
+  description: The protein accession denotes CaiD enzyme identity; UniProt describes a homotrimer. The
+    catabolic dehydration direction is selected from a reversible hydration/dehydration reaction, not
+    a free-carnitine dehydratase reaction.
+  evidence:
+  - reference_id: UniProtKB:P31551
+    source_assertion: UniProt assigns RHEA:28338 catalytic activity to P31551 with ECO:0000269/PubMed:11551212
+      and ECO:0000255/HAMAP-Rule:MF_01051; its function supports the selected pathway transformation.
+    source_locator: comments[1].reaction.reactionCrossReferences; comments[1].reaction.evidences; comments[0].texts[0]
+  - reference_id: RHEA:28339
+    source_assertion: Rhea identifies RHEA:28339 as the left_to_right directed form of RHEA:28338.
+    source_locator: http://rdf.rhea-db.org/28338/rh:directionalReaction; http://rdf.rhea-db.org/28339/rh:substrates,
+      rh:products
+  - reference_id: PMID:11551212
+    quote: CaiD was shown to be a crotonobetainyl-CoA hydratase
+- id: carnitine-edge-021
+  subject: UniProtKB:P60584
+  predicate: catalyzes
+  object: RHEA:51586
+  description: The protein accession denotes CaiA enzyme identity; UniProt describes a homotetramer. The
+    selected right-to-left direction of Rhea 51584 reduces crotonobetainyl-CoA. Genetic requirement for
+    fixA/fixB does not identify a directly measured physiological carrier complex or its electron-transfer
+    stoichiometry.
+  evidence:
+  - reference_id: UniProtKB:P60584
+    source_assertion: UniProt assigns RHEA:51584 catalytic activity to P60584 with ECO:0000269/PubMed:10978161
+      and ECO:0000255/HAMAP-Rule:MF_01052; its function supports the selected pathway transformation.
+    source_locator: comments[1].reaction.reactionCrossReferences; comments[1].reaction.evidences; comments[0].texts[0]
+  - reference_id: RHEA:51586
+    source_assertion: Rhea identifies RHEA:51586 as the right_to_left directed form of RHEA:51584.
+    source_locator: http://rdf.rhea-db.org/51584/rh:directionalReaction; http://rdf.rhea-db.org/51586/rh:substrates,
+      rh:products
+  - reference_id: PMID:12081978
+    source_assertion: E. coli fixA and fixB mutants failed to reduce carnitine to gamma-butyrobetaine
+      anaerobically. Electron provision by the neighboring fix operon was proposed, rather than a particular
+      donor-protein reaction being directly established.
+    source_locator: Abstract, final two sentences; Europe PMC resultList.result[id=12081978].abstractText
+- id: carnitine-edge-022
+  subject: PathBank:SMP0002051/ProteinComplex/4010
+  predicate: catalyzes
+  object: RHEA:28419
+  description: The native CaiB homodimer transfers CoA from gamma-butyrobetainyl-CoA to fresh carnitine.
+    The selected direction releases gamma-butyrobetaine and regenerates carnitinyl-CoA; the characterized
+    CoA transfer is reversible.
+  evidence:
+  - reference_id: UniProtKB:P31572
+    source_assertion: UniProt assigns RHEA:28418 catalytic activity to P31572 with ECO:0000269/PubMed:11551212
+      and ECO:0000255/HAMAP-Rule:MF_01050; its function supports the selected pathway transformation.
+    source_locator: comments[2].reaction.reactionCrossReferences; comments[2].reaction.evidences; comments[0].texts[0]
+  - reference_id: RHEA:28419
+    source_assertion: Rhea identifies RHEA:28419 as the left_to_right directed form of RHEA:28418.
+    source_locator: http://rdf.rhea-db.org/28418/rh:directionalReaction; http://rdf.rhea-db.org/28419/rh:substrates,
+      rh:products
+  - reference_id: PathBank:SMP0002051
+    source_assertion: Native ReactionCatalysis/5916 connects ProteinComplex/4010 to Reactions/5953; its
+      single protein component is CaiB (UniProt P31572), with stoichiometric coefficient 2.
+    source_locator: 'PW002037.owl: ReactionCatalysis/5916/bp:controller, bp:controlled; ProteinComplex/4010/bp:component,
+      bp:componentStoichiometry'
+- id: carnitine-edge-023
+  subject: PathBank:SMP0002051/ProteinComplex/4010
+  predicate: has_part
+  object: UniProtKB:P31572
+  description: Two copies of CaiB form the source-defined homodimer; the graph represents membership once
+    and preserves the copy number here and in the evidence.
+  evidence:
+  - reference_id: PathBank:SMP0002051
+    source_assertion: The native complex has component Protein/6507, linked to UniProt P31572, with stoichiometric
+      coefficient 2.
+    source_locator: 'PW002037.owl: ProteinComplex/4010/bp:component; Protein/6507/Stoichiometry/2.0/bp:stoichiometricCoefficient;
+      ProteinReference/6507/bp:xref'
+  - reference_id: UniProtKB:P31572
+    source_assertion: CaiB is a homodimer, supported by ECO:0000269/PubMed:15518548 and ECO:0000255/HAMAP-Rule:MF_01050.
+    source_locator: comments[4].texts[0] (SUBUNIT)
+  - reference_id: PMID:15518548
+    quote: two monomers are interlaced to form an interlocked dimer
+- id: carnitine-edge-024
+  subject: UniProtKB:P60584
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: This is FAD bound to CaiA, separate from the flavin reactive part of the generic electron-transfer
+    flavoprotein in the Rhea redox reaction. The ChEBI charge form follows the curated cofactor cross-reference.
+  evidence:
+  - reference_id: UniProtKB:P60584
+    source_assertion: CaiA has FAD (CHEBI:57692) as cofactor and binds one FAD per subunit; the annotation
+      cites ECO:0000269/PubMed:10209289 and ECO:0000255/HAMAP-Rule:MF_01052.
+    source_locator: comments[2].cofactors[0]; comments[2].note.texts[0]
+  - reference_id: PMID:10209289
+    quote: CII contains non-covalently bound FAD in a molar ratio of 1:1.
+- id: carnitine-edge-025
+  subject: RHEA:28515
+  predicate: part_of
+  object: PathBank:SMP0002051
+  description: Manual source correspondence based on the native catalyst and biochemical transformation,
+    not a native Rhea cross-reference or exactMatch. Current Rhea chemistry supplies explicit charge/stereo
+    forms and corrects the older map's chemical-identity defects.
+  evidence:
+  - reference_id: PathBank:SMP0002051
+    source_assertion: PathBank SMP0002051 explicitly includes native Reactions/5950 and its associated
+      catalysis; the controller resolves to P31552.
+    source_locator: 'PW002037.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002051"]/bp:pathwayComponent;
+      ReactionCatalysis/5913/bp:controller, bp:controlled'
+  - reference_id: UniProtKB:P31552
+    source_assertion: The corresponding enzyme annotation identifies RHEA:28514; this provides the independent
+      reaction-family bridge to RHEA:28515, selected in the native catabolic direction.
+    source_locator: comments[3].reaction.reactionCrossReferences; comments[0]
+- id: carnitine-edge-026
+  subject: RHEA:28339
+  predicate: part_of
+  object: PathBank:SMP0002051
+  description: Manual source correspondence based on the native catalyst and biochemical transformation,
+    not a native Rhea cross-reference or exactMatch. Current Rhea chemistry supplies explicit charge/stereo
+    forms and corrects the older map's chemical-identity defects.
+  evidence:
+  - reference_id: PathBank:SMP0002051
+    source_assertion: PathBank SMP0002051 explicitly includes native Reactions/5951 and its associated
+      catalysis; the controller resolves to P31551.
+    source_locator: 'PW002037.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002051"]/bp:pathwayComponent;
+      ReactionCatalysis/5914/bp:controller, bp:controlled'
+  - reference_id: UniProtKB:P31551
+    source_assertion: The corresponding enzyme annotation identifies RHEA:28338; this provides the independent
+      reaction-family bridge to RHEA:28339, selected in the native catabolic direction.
+    source_locator: comments[1].reaction.reactionCrossReferences; comments[0]
+- id: carnitine-edge-027
+  subject: RHEA:51586
+  predicate: part_of
+  object: PathBank:SMP0002051
+  description: Manual source correspondence based on the native catalyst and biochemical transformation,
+    not a native Rhea cross-reference or exactMatch. Current Rhea chemistry supplies explicit charge/stereo
+    forms and corrects the older map's chemical-identity defects.
+  evidence:
+  - reference_id: PathBank:SMP0002051
+    source_assertion: PathBank SMP0002051 explicitly includes native Reactions/5952 and its associated
+      catalysis; the controller resolves to P60584.
+    source_locator: 'PW002037.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002051"]/bp:pathwayComponent;
+      ReactionCatalysis/5915/bp:controller, bp:controlled'
+  - reference_id: UniProtKB:P60584
+    source_assertion: The corresponding enzyme annotation identifies RHEA:51584; this provides the independent
+      reaction-family bridge to RHEA:51586, selected in the native catabolic direction.
+    source_locator: comments[1].reaction.reactionCrossReferences; comments[0]
+- id: carnitine-edge-028
+  subject: RHEA:28419
+  predicate: part_of
+  object: PathBank:SMP0002051
+  description: Manual source correspondence based on the native catalyst and biochemical transformation,
+    not a native Rhea cross-reference or exactMatch. Current Rhea chemistry supplies explicit charge/stereo
+    forms and corrects the older map's chemical-identity defects.
+  evidence:
+  - reference_id: PathBank:SMP0002051
+    source_assertion: PathBank SMP0002051 explicitly includes native Reactions/5953 and its associated
+      catalysis; the controller resolves to P31572 through complex ProteinComplex/4010.
+    source_locator: 'PW002037.owl: Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002051"]/bp:pathwayComponent;
+      ReactionCatalysis/5916/bp:controller, bp:controlled'
+  - reference_id: UniProtKB:P31572
+    source_assertion: The corresponding enzyme annotation identifies RHEA:28418; this provides the independent
+      reaction-family bridge to RHEA:28419, selected in the native catabolic direction.
+    source_locator: comments[2].reaction.reactionCrossReferences; comments[0]
+- id: carnitine-edge-029
+  subject: RHEA:28515
+  predicate: provides_input_for
+  object: RHEA:28339
+  description: CaiC supplies the initial carnitinyl-CoA pool for CaiD; the subsequent CaiB loop recycles
+    that pool.
+  evidence:
+  - reference_id: RHEA:28515
+    source_assertion: CHEBI:60932 is a coefficient-1 product of RHEA:28515; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/28515/rh:products; http://rdf.rhea-db.org/28514_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28514_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+  - reference_id: RHEA:28339
+    source_assertion: CHEBI:60932 is a coefficient-1 substrate of RHEA:28339; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/28339/rh:substrates; http://rdf.rhea-db.org/28338_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28338_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+- id: carnitine-edge-030
+  subject: RHEA:28339
+  predicate: provides_input_for
+  object: RHEA:51586
+  description: The product CHEBI:60933 is the next selected reaction substrate.
+  evidence:
+  - reference_id: RHEA:28339
+    source_assertion: CHEBI:60933 is a coefficient-1 product of RHEA:28339; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/28339/rh:products; http://rdf.rhea-db.org/28338_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28338_compound_6426/rh:compound -> http://rdf.rhea-db.org/Compound_6426/rh:chebi
+  - reference_id: RHEA:51586
+    source_assertion: CHEBI:60933 is a coefficient-1 substrate of RHEA:51586; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/51586/rh:substrates; http://rdf.rhea-db.org/51584_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_6426/rh:compound -> http://rdf.rhea-db.org/Compound_6426/rh:chebi
+- id: carnitine-edge-031
+  subject: RHEA:51586
+  predicate: provides_input_for
+  object: RHEA:28419
+  description: The product CHEBI:61513 is the next selected reaction substrate.
+  evidence:
+  - reference_id: RHEA:51586
+    source_assertion: CHEBI:61513 is a coefficient-1 product of RHEA:51586; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/51586/rh:products; http://rdf.rhea-db.org/51584_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_51584_compound_6459/rh:compound -> http://rdf.rhea-db.org/Compound_6459/rh:chebi
+  - reference_id: RHEA:28419
+    source_assertion: CHEBI:61513 is a coefficient-1 substrate of RHEA:28419; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/28419/rh:substrates; http://rdf.rhea-db.org/28418_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28418_compound_6459/rh:compound -> http://rdf.rhea-db.org/Compound_6459/rh:chebi
+- id: carnitine-edge-032
+  subject: RHEA:28419
+  predicate: provides_input_for
+  object: RHEA:28339
+  description: CaiB regenerates carnitinyl-CoA for another cycle; this material-flow loop does not assert
+    a temporal order from the native pathwayOrder array.
+  evidence:
+  - reference_id: RHEA:28419
+    source_assertion: CHEBI:60932 is a coefficient-1 product of RHEA:28419; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/28419/rh:products; http://rdf.rhea-db.org/28418_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28418_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+  - reference_id: RHEA:28339
+    source_assertion: CHEBI:60932 is a coefficient-1 substrate of RHEA:28339; this shared chemical provides
+      the material connection between the selected reactions.
+    source_locator: http://rdf.rhea-db.org/28339/rh:substrates; http://rdf.rhea-db.org/28338_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_28338_compound_6425/rh:compound -> http://rdf.rhea-db.org/Compound_6425/rh:chebi
+references:
+- id: PathBank:SMP0002051
+  title: PathBank L-Carnitine Degradation I, native BioPAX member PW002037.owl
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: primary archive Last-Modified 2019-08-16; member PW002037.owl
+  source_sha256: 39b0822d459657d796d23dffff8283ff911a64d9f811d29b23ed7133c683a1c5
+- id: RHEA:28515
+  title: Rhea 28515 directed carnitine pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28339
+  title: Rhea 28339 directed carnitine pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:51586
+  title: Rhea 51586 directed carnitine pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28419
+  title: Rhea 28419 directed carnitine pathway reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P31552
+  title: UniProtKB P31552, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P31552.json
+  source_version: '2026_03'
+  source_sha256: 4026a9af16b19911465dce0bf3e7aa1765f79a91a088a1f908ae4ccfdd8c9078
+- id: UniProtKB:P31551
+  title: UniProtKB P31551, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P31551.json
+  source_version: '2026_03'
+  source_sha256: 2f14bc353fb9638bea1e8e8b583450f1df8ff3b2c5cbd114169b89807acd5ba1
+- id: UniProtKB:P60584
+  title: UniProtKB P60584, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P60584.json
+  source_version: '2026_03'
+  source_sha256: fb7c50d1e1b6635a32d938f51f83938b983abbd935b8aacab9c1797ea723a164
+- id: UniProtKB:P31572
+  title: UniProtKB P31572, Escherichia coli K-12
+  url: https://rest.uniprot.org/uniprotkb/P31572.json
+  source_version: '2026_03'
+  source_sha256: fda91b8501d65c986ab6cb82321a3007a736391b430663c51206dd383502f37a
+- id: PMID:18266698
+  title: Role of betaine:CoA ligase (CaiC) in the activation of betaines and the transfer of coenzyme
+    A in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/18266698/
+- id: PMID:11551212
+  title: Involvement of coenzyme A esters and two new enzymes, an enoyl-CoA hydratase and a CoA-transferase,
+    in the hydration of crotonobetaine to L-carnitine by Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/11551212/
+- id: PMID:15518548
+  title: Crystal structure of CaiB, a type-III CoA transferase in carnitine metabolism.
+  url: https://pubmed.ncbi.nlm.nih.gov/15518548/
+- id: PMID:10209289
+  title: Crotonobetaine reductase from Escherichia coli consists of two proteins.
+  url: https://pubmed.ncbi.nlm.nih.gov/10209289/
+- id: PMID:12081978
+  title: The fixA and fixB genes are necessary for anaerobic carnitine reduction in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/12081978/
+- id: PMID:10978161
+  title: Isolation, identification, and synthesis of gamma-butyrobetainyl-CoA and crotonobetainyl-CoA,
+    compounds involved in carnitine metabolism of E. coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/10978161/
+- id: PMID:8060125
+  title: Crotonobetaine reductase from Escherichia coli--a new inducible enzyme of anaerobic metabolization
+    of L(-)-carnitine.
+  url: https://pubmed.ncbi.nlm.nih.gov/8060125/
+- id: PMID:8631699
+  title: Identification and characterization of the caiF gene encoding a potential transcriptional activator
+    of carnitine metabolism in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/8631699/
+- id: PMID:7815937
+  title: Molecular characterization of the cai operon necessary for carnitine metabolism in Escherichia
+    coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/7815937/

@@ -31,7 +31,7 @@ or mechanistic edge.
 - Do not mark an optional field as absent because the source omits it. This
   schema is intentionally small; leave unsupported nodes and edges out.
 - Do not invent a local CURIE. `src/pathwaymech/schema.py` currently accepts
-  `GO`, `gomodel`, `WikiPathways`, `MetaCyc`, `KEGG`, `RHEA`, `MIBiG`,
+  `GO`, `gomodel`, `WikiPathways`, `MetaCyc`, `KEGG`, `RHEA`, `RHEA-COMP`, `MIBiG`,
   `ModelSEED`, `BiGG`, `BV-BRC`, `Reactome`, `PathBank`, `PMN`, `CHEBI`, `CAS`,
   `ChemSpider`, `HMDB`, `LIPIDMAPS`, `PubChem`, `EC`, `ECO`, `Ensembl`,
   `Entrez`, `NCBIProtein`, `SGD`, `TubercuList`, `UniProtKB`, `NCBITaxon`,

@@ -4,7 +4,7 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html and
-ncbi-protein-xml. Source files are
+ncbi-protein-xml and rhea-components-rdf-gz. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -12,6 +12,7 @@ to retain, keeping the checked-in authority small and provenance auditable.
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import re
@@ -28,7 +29,7 @@ import yaml
 SOURCE_NAMESPACES = frozenset(
     {
         "EC", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD", "UniProtKB",
-        "WikiPathways", "gomodel",
+        "WikiPathways", "gomodel", "RHEA-COMP",
     }
 )
 
@@ -288,6 +289,49 @@ def metacyc_terms(text: str) -> Iterator[tuple[str, str, list[str]]]:
     yield "MetaCyc:" + identity[1], label, []
 
 
+def rhea_component_terms(path: Path) -> Iterator[tuple[str, str, list[str]]]:
+    """Read whole generic polypeptides, never their ChEBI reactive parts.
+
+    Rhea RDF calls these GENERIC:<id>; UniProt catalytic-activity xrefs expose
+    the same Compound_<id> objects as RHEA-COMP:<id>. Require the RDF identity,
+    accession, numeric id and explicit GenericPolypeptide class to agree.
+    """
+    rh = "{http://rdf.rhea-db.org/}"
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    rdfs = "{http://www.w3.org/2000/01/rdf-schema#}"
+    seen: set[str] = set()
+    with gzip.open(path, "rb") as stream:
+        depth = 0
+        for event, node in ElementTree.iterparse(stream, events=("start", "end")):
+            if event == "start":
+                depth += 1
+                if depth == 1:
+                    root = node
+                continue
+            if depth == 2:
+                classes = {item.get(rdf + "resource")
+                           for item in node.findall(rdfs + "subClassOf")}
+                if "http://rdf.rhea-db.org/GenericPolypeptide" in classes:
+                    uri = node.get(rdf + "about", "")
+                    match = re.fullmatch(r"http://rdf\.rhea-db\.org/Compound_([0-9]+)", uri)
+                    values = {key: [item.text for item in node.findall(rh + key)]
+                              for key in ("id", "accession", "name")}
+                    if (not match or values["id"] != [match[1]]
+                            or values["accession"] != ["GENERIC:" + match[1]]
+                            or len(values["name"]) != 1 or not values["name"][0]
+                            or not values["name"][0].strip()):
+                        raise ValueError(f"Rhea component has ambiguous identity or name: {uri}")
+                    identifier = "RHEA-COMP:" + match[1]
+                    if identifier in seen:
+                        raise ValueError(f"duplicate Rhea component: {identifier}")
+                    seen.add(identifier)
+                    yield identifier, values["name"][0].strip(), []
+                # Clear only complete top-level subjects, keeping child facts
+                # intact until their enclosing subject has been interpreted.
+                root.clear()
+            depth -= 1
+
+
 def source_terms(kind: str, path: Path) -> Iterator[tuple[str, str, list[str]]]:
     if kind in {"gocam-tar", "mibig-tar"}:
         parser = gocam_terms if kind == "gocam-tar" else mibig_terms
@@ -307,6 +351,8 @@ def source_terms(kind: str, path: Path) -> Iterator[tuple[str, str, list[str]]]:
         yield from biopax_terms(ElementTree.parse(path).getroot())
     elif kind == "pathbank-biopax":
         yield from pathbank_terms(ElementTree.parse(path).getroot())
+    elif kind == "rhea-components-rdf-gz":
+        yield from rhea_component_terms(path)
     elif kind == "metacyc-html":
         yield from metacyc_terms(path.read_text(encoding="utf-8"))
     elif kind == "ncbi-protein-xml":

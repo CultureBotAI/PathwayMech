@@ -1,0 +1,77 @@
+{
+  "recorded_at": "2026-10-10T22:10:45.869856+00:00",
+  "base_commit": "5766cf2fe227afc248a72e455f74f4c5ddda9d97",
+  "checks": [
+    {
+      "check_id": "render",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just render-pages",
+      "exit_code": 0,
+      "summary": "Rendered 163 pathway records.",
+      "log_sha256": "3a5c5dc8d3523c86a8c7768a101643ff6111c5b9d995f195c8aca79475db647a"
+    },
+    {
+      "check_id": "validate",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just validate",
+      "exit_code": 0,
+      "summary": "163 native and closed-schema records; verified identifiers;8561 evidence blocks;30 sources;243 histories;6 documentation files; current pages.",
+      "log_sha256": "3552a3dbdc0350b8c4975ae7bbe75405f014857edeccd13297cb137d2cf12385"
+    },
+    {
+      "check_id": "test",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just test",
+      "exit_code": 0,
+      "summary": "1043 passed,3 skipped,3 upstream deprecation warnings;322.13seconds.",
+      "log_sha256": "12237c037463a60babd6ebabedd8f8bb7e698d75c13ccbc1b12da26f6e7afa25"
+    },
+    {
+      "check_id": "lint",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just lint",
+      "exit_code": 0,
+      "summary": "Ruff passed.",
+      "log_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41"
+    },
+    {
+      "check_id": "vendored",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just vendored-check",
+      "exit_code": 0,
+      "summary": "22 governed artifacts match the pinned CLAW revision.",
+      "log_sha256": "b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6"
+    },
+    {
+      "check_id": "kgx",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just kgx-export --output-dir /private/tmp/pathwaymech-carnitine-putrescine-kgx",
+      "exit_code": 0,
+      "summary": "Exported 163 records; actual external CLI outputs match published downloads byte for byte.",
+      "log_sha256": "5a2e43ff1307947cec40f9281c6601e242d4cbd9e2a25275067d3322215419ca"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check; git diff --cached --check",
+      "exit_code": 0,
+      "summary": "Both unstaged and staged checks passed after adding all batch source, research and generated files."
+    },
+    {
+      "check_id": "structured-reviews",
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just review-check --base 5766cf2fe227afc248a72e455f74f4c5ddda9d97",
+      "exit_code": 0,
+      "summary": "7 immutable review bundles validate; coverage remains their declared scopes.",
+      "log_sha256": "e94ea98fc4e6874df66ae90b24f8b692618bf6e57e0ad16d2f59a7e06a6422c2"
+    }
+  ],
+  "generated_graph_and_export_audit": "generated-graph-kgx-audit.json",
+  "authority_rebuild": "authority-integration.json",
+  "technical_review": "rhea-components-technical-review.json",
+  "reviewed_issues": [
+    "https://github.com/CultureBotAI/PathwayMech/issues/320"
+  ],
+  "limitations": [
+    "CUA reported no available apps or browsers; no visual preview was performed. Actual SVG geometry, endpoints, evidence anchors and complete KGX metadata were independently audited.",
+    "Primary full-text availability and bounded pathway exclusions remain explicit in the curation receipts and independent scientific reviews.",
+    "Three additional candidate handoffs do not establish source exhaustion."
+  ],
+  "independent_scientific_reviews": [
+    "reviews/structured/20261010T221039Z-carnitine-independent-review/review.yaml",
+    "reviews/structured/20261010T221038Z-putrescine-ii-independent-review/review.yaml"
+  ],
+  "original_ignored_source_bundles": "All51 preserved files were rehashed and match the prior baseline exactly."
+}

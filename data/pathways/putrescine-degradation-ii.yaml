@@ -1,0 +1,714 @@
+id: PathBank:SMP0002067
+label: Putrescine Degradation II
+description: The four-enzyme glutamylation core converts putrescine to gamma-aminobutyrate (GABA) through
+  gamma-L-glutamylated intermediates in characterized Escherichia coli K-12 proteins. PuuA ligates the
+  gamma-carboxyl group of L-glutamate to one putrescine nitrogen; PuuB oxidizes the other amine; PuuC
+  oxidizes the aldehyde; PuuD hydrolyzes the glutamyl amide and releases GABA and L-glutamate. Native
+  PuuA dodecamer and PuuD homodimer assemblies are retained. Rhea supplies exact charged chemical forms
+  and balanced equations, correcting conflicting native intermediate structures and the native PuuB equation.
+  This record selects the native NADP-dependent PuuC variant; NAD-dependent activity is also supported.
+  Transport, regulation, the alternative aminotransferase route and downstream GABA-to-succinate metabolism
+  are outside this core. Relative pathway contributions depend on growth conditions; this is not a claim
+  that every core enzyme is indispensable for all putrescine utilization.
+pathway_type: polyamine-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:326268
+  label: 1,4-butanediammonium
+  category: small_molecule
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:58731
+  label: gamma-L-glutamylputrescinium(1+)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:61508
+  label: gamma-glutamyl-gamma-aminobutyraldehyde zwitterion
+  category: small_molecule
+- id: CHEBI:16240
+  label: hydrogen peroxide
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:58800
+  label: 4-(L-gamma-glutamylamino)butanoate
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:59888
+  label: gamma-aminobutyric acid zwitterion
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: UniProtKB:P78061
+  label: Gamma-glutamylputrescine synthetase PuuA
+  category: protein
+- id: UniProtKB:P37906
+  label: Gamma-glutamylputrescine oxidoreductase
+  category: protein
+- id: UniProtKB:P23883
+  label: Gamma-glutamyl-gamma-aminobutyraldehyde dehydrogenase
+  category: protein
+- id: UniProtKB:P76038
+  label: Gamma-glutamyl-gamma-aminobutyrate hydrolase PuuD
+  category: protein
+- id: PathBank:SMP0002067/ProteinComplex/4033
+  label: glutamate-putrescine ligase
+  category: complex
+- id: PathBank:SMP0002067/ProteinComplex/1396
+  label: γ-glutamyl-γ-aminobutyrate hydrolase
+  category: complex
+reactions:
+- id: RHEA:13634
+  label: PuuA-dependent gamma-glutamylation of putrescine
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:28415
+  label: PuuB-dependent oxidative deamination of gamma-glutamylputrescine
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:28411
+  label: PuuC-dependent NADP oxidation of gamma-glutamyl-gamma-aminobutyraldehyde
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:19738
+  label: PuuD-dependent hydrolysis of gamma-glutamyl-GABA
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: putrescine-edge-001
+  subject: CHEBI:326268
+  predicate: consumes
+  object: RHEA:13634
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 substrates 13633_L contains1 Participant_13633_compound_4665, whose compound
+      is CHEBI:326268.
+    source_locator: http://rdf.rhea-db.org/13634 rh:substrates; http://rdf.rhea-db.org/13633_L rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_4665; rh:compound/rh:accession
+- id: putrescine-edge-002
+  subject: CHEBI:29985
+  predicate: consumes
+  object: RHEA:13634
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 substrates 13633_L contains1 Participant_13633_compound_2079, whose compound
+      is CHEBI:29985.
+    source_locator: http://rdf.rhea-db.org/13634 rh:substrates; http://rdf.rhea-db.org/13633_L rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_2079; rh:compound/rh:accession
+- id: putrescine-edge-003
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:13634
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 substrates 13633_L contains1 Participant_13633_compound_6372, whose compound
+      is CHEBI:30616.
+    source_locator: http://rdf.rhea-db.org/13634 rh:substrates; http://rdf.rhea-db.org/13633_L rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_6372; rh:compound/rh:accession
+- id: putrescine-edge-004
+  subject: RHEA:13634
+  predicate: produces
+  object: CHEBI:58731
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 products 13633_R contains1 Participant_13633_compound_5250, whose compound
+      is CHEBI:58731.
+    source_locator: http://rdf.rhea-db.org/13634 rh:products; http://rdf.rhea-db.org/13633_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_5250; rh:compound/rh:accession
+- id: putrescine-edge-005
+  subject: RHEA:13634
+  predicate: produces
+  object: CHEBI:456216
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 products 13633_R contains1 Participant_13633_compound_2710, whose compound
+      is CHEBI:456216.
+    source_locator: http://rdf.rhea-db.org/13634 rh:products; http://rdf.rhea-db.org/13633_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_2710; rh:compound/rh:accession
+- id: putrescine-edge-006
+  subject: RHEA:13634
+  predicate: produces
+  object: CHEBI:43474
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 products 13633_R contains1 Participant_13633_compound_5518, whose compound
+      is CHEBI:43474.
+    source_locator: http://rdf.rhea-db.org/13634 rh:products; http://rdf.rhea-db.org/13633_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_5518; rh:compound/rh:accession
+- id: putrescine-edge-007
+  subject: RHEA:13634
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 products 13633_R contains1 Participant_13633_compound_3249, whose compound
+      is CHEBI:15378.
+    source_locator: http://rdf.rhea-db.org/13634 rh:products; http://rdf.rhea-db.org/13633_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13633_compound_3249; rh:compound/rh:accession
+- id: putrescine-edge-008
+  subject: CHEBI:58731
+  predicate: consumes
+  object: RHEA:28415
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 substrates 28414_L contains1 Participant_28414_compound_5250, whose compound
+      is CHEBI:58731.
+    source_locator: http://rdf.rhea-db.org/28415 rh:substrates; http://rdf.rhea-db.org/28414_L rh:contains1
+      http://rdf.rhea-db.org/Participant_28414_compound_5250; rh:compound/rh:accession
+- id: putrescine-edge-009
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:28415
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 substrates 28414_L contains1 Participant_28414_compound_1198, whose compound
+      is CHEBI:15379.
+    source_locator: http://rdf.rhea-db.org/28415 rh:substrates; http://rdf.rhea-db.org/28414_L rh:contains1
+      http://rdf.rhea-db.org/Participant_28414_compound_1198; rh:compound/rh:accession
+- id: putrescine-edge-010
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:28415
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form. Water follows Rhea and UniProt; the native PathBank equation instead lists a hydron and is not
+    copied.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 substrates 28414_L contains1 Participant_28414_compound_1283, whose compound
+      is CHEBI:15377.
+    source_locator: http://rdf.rhea-db.org/28415 rh:substrates; http://rdf.rhea-db.org/28414_L rh:contains1
+      http://rdf.rhea-db.org/Participant_28414_compound_1283; rh:compound/rh:accession
+- id: putrescine-edge-011
+  subject: RHEA:28415
+  predicate: produces
+  object: CHEBI:61508
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form. The gamma-glutamyl amide topology is grounded independently in ChEBI; the conflicting native
+    SMILES is rejected.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 products 28414_R contains1 Participant_28414_compound_6458, whose compound
+      is CHEBI:61508.
+    source_locator: http://rdf.rhea-db.org/28415 rh:products; http://rdf.rhea-db.org/28414_R rh:contains1
+      http://rdf.rhea-db.org/Participant_28414_compound_6458; rh:compound/rh:accession
+  - reference_id: CHEBI:61508
+    source_assertion: CHEBI:61508 is the gamma-glutamyl-gamma-aminobutyraldehyde zwitterion, charge 0,
+      with SMILES [H]C(=O)CCCNC(=O)CC[C@H]([NH3+])C(=O)[O-].
+    source_locator: ChEBI release255 SemanticSQL statements subject=CHEBI:61508, predicates rdfs:label,
+      chemrof:charge, chemrof:smiles_string
+- id: putrescine-edge-012
+  subject: RHEA:28415
+  predicate: produces
+  object: CHEBI:16240
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 products 28414_R contains1 Participant_28414_compound_3075, whose compound
+      is CHEBI:16240.
+    source_locator: http://rdf.rhea-db.org/28415 rh:products; http://rdf.rhea-db.org/28414_R rh:contains1
+      http://rdf.rhea-db.org/Participant_28414_compound_3075; rh:compound/rh:accession
+- id: putrescine-edge-013
+  subject: RHEA:28415
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 products 28414_R contains1 Participant_28414_compound_1012, whose compound
+      is CHEBI:28938.
+    source_locator: http://rdf.rhea-db.org/28415 rh:products; http://rdf.rhea-db.org/28414_R rh:contains1
+      http://rdf.rhea-db.org/Participant_28414_compound_1012; rh:compound/rh:accession
+- id: putrescine-edge-014
+  subject: CHEBI:61508
+  predicate: consumes
+  object: RHEA:28411
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form. The gamma-glutamyl amide topology is grounded independently in ChEBI; the conflicting native
+    SMILES is rejected.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 substrates 28410_L contains1 Participant_28410_compound_6458, whose compound
+      is CHEBI:61508.
+    source_locator: http://rdf.rhea-db.org/28411 rh:substrates; http://rdf.rhea-db.org/28410_L rh:contains1
+      http://rdf.rhea-db.org/Participant_28410_compound_6458; rh:compound/rh:accession
+  - reference_id: CHEBI:61508
+    source_assertion: CHEBI:61508 is the gamma-glutamyl-gamma-aminobutyraldehyde zwitterion, charge 0,
+      with SMILES [H]C(=O)CCCNC(=O)CC[C@H]([NH3+])C(=O)[O-].
+    source_locator: ChEBI release255 SemanticSQL statements subject=CHEBI:61508, predicates rdfs:label,
+      chemrof:charge, chemrof:smiles_string
+- id: putrescine-edge-015
+  subject: CHEBI:58349
+  predicate: consumes
+  object: RHEA:28411
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 substrates 28410_L contains1 Participant_28410_compound_5188, whose compound
+      is CHEBI:58349.
+    source_locator: http://rdf.rhea-db.org/28411 rh:substrates; http://rdf.rhea-db.org/28410_L rh:contains1
+      http://rdf.rhea-db.org/Participant_28410_compound_5188; rh:compound/rh:accession
+- id: putrescine-edge-016
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:28411
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 substrates 28410_L contains1 Participant_28410_compound_1283, whose compound
+      is CHEBI:15377.
+    source_locator: http://rdf.rhea-db.org/28411 rh:substrates; http://rdf.rhea-db.org/28410_L rh:contains1
+      http://rdf.rhea-db.org/Participant_28410_compound_1283; rh:compound/rh:accession
+- id: putrescine-edge-017
+  subject: RHEA:28411
+  predicate: produces
+  object: CHEBI:58800
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form. The gamma-glutamyl amide topology is grounded independently in ChEBI; the conflicting native
+    SMILES is rejected.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 products 28410_R contains1 Participant_28410_compound_5582, whose compound
+      is CHEBI:58800.
+    source_locator: http://rdf.rhea-db.org/28411 rh:products; http://rdf.rhea-db.org/28410_R rh:contains1
+      http://rdf.rhea-db.org/Participant_28410_compound_5582; rh:compound/rh:accession
+  - reference_id: CHEBI:58800
+    source_assertion: CHEBI:58800 has charge -1 and stereodefined SMILES [NH3+][C@@H](CCC(=O)NCCCC(=O)[O-])C(=O)[O-],
+      preserving the gamma-glutamyl amide.
+    source_locator: ChEBI release255 SemanticSQL statements subject=CHEBI:58800, predicates rdfs:label,
+      chemrof:charge, chemrof:smiles_string
+- id: putrescine-edge-018
+  subject: RHEA:28411
+  predicate: produces
+  object: CHEBI:57783
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 products 28410_R contains1 Participant_28410_compound_3438, whose compound
+      is CHEBI:57783.
+    source_locator: http://rdf.rhea-db.org/28411 rh:products; http://rdf.rhea-db.org/28410_R rh:contains1
+      http://rdf.rhea-db.org/Participant_28410_compound_3438; rh:compound/rh:accession
+- id: putrescine-edge-019
+  subject: RHEA:28411
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 2 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form. Two hydrons are produced; one edge retains the source coefficient explicitly.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 products 28410_R contains2 Participant_28410_compound_3249, whose compound
+      is CHEBI:15378.
+    source_locator: http://rdf.rhea-db.org/28411 rh:products; http://rdf.rhea-db.org/28410_R rh:contains2
+      http://rdf.rhea-db.org/Participant_28410_compound_3249; rh:compound/rh:accession
+- id: putrescine-edge-020
+  subject: CHEBI:58800
+  predicate: consumes
+  object: RHEA:19738
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form. The gamma-glutamyl amide topology is grounded independently in ChEBI; the conflicting native
+    SMILES is rejected.
+  evidence:
+  - reference_id: RHEA:19737
+    source_assertion: RHEA:19738 substrates 19737_L contains1 Participant_19737_compound_5582, whose compound
+      is CHEBI:58800.
+    source_locator: http://rdf.rhea-db.org/19738 rh:substrates; http://rdf.rhea-db.org/19737_L rh:contains1
+      http://rdf.rhea-db.org/Participant_19737_compound_5582; rh:compound/rh:accession
+  - reference_id: CHEBI:58800
+    source_assertion: CHEBI:58800 has charge -1 and stereodefined SMILES [NH3+][C@@H](CCC(=O)NCCCC(=O)[O-])C(=O)[O-],
+      preserving the gamma-glutamyl amide.
+    source_locator: ChEBI release255 SemanticSQL statements subject=CHEBI:58800, predicates rdfs:label,
+      chemrof:charge, chemrof:smiles_string
+- id: putrescine-edge-021
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:19738
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:19737
+    source_assertion: RHEA:19738 substrates 19737_L contains1 Participant_19737_compound_1283, whose compound
+      is CHEBI:15377.
+    source_locator: http://rdf.rhea-db.org/19738 rh:substrates; http://rdf.rhea-db.org/19737_L rh:contains1
+      http://rdf.rhea-db.org/Participant_19737_compound_1283; rh:compound/rh:accession
+- id: putrescine-edge-022
+  subject: RHEA:19738
+  predicate: produces
+  object: CHEBI:59888
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:19737
+    source_assertion: RHEA:19738 products 19737_R contains1 Participant_19737_compound_6180, whose compound
+      is CHEBI:59888.
+    source_locator: http://rdf.rhea-db.org/19738 rh:products; http://rdf.rhea-db.org/19737_R rh:contains1
+      http://rdf.rhea-db.org/Participant_19737_compound_6180; rh:compound/rh:accession
+- id: putrescine-edge-023
+  subject: RHEA:19738
+  predicate: produces
+  object: CHEBI:29985
+  description: Coefficient 1 in the selected catabolic Rhea direction; exact source charge and stereochemical
+    form.
+  evidence:
+  - reference_id: RHEA:19737
+    source_assertion: RHEA:19738 products 19737_R contains1 Participant_19737_compound_2079, whose compound
+      is CHEBI:29985.
+    source_locator: http://rdf.rhea-db.org/19738 rh:products; http://rdf.rhea-db.org/19737_R rh:contains1
+      http://rdf.rhea-db.org/Participant_19737_compound_2079; rh:compound/rh:accession
+- id: putrescine-edge-024
+  subject: PathBank:SMP0002067/ProteinComplex/4033
+  predicate: catalyzes
+  object: RHEA:13634
+  description: The source-defined PuuA dodecamer catalyzes ATP-dependent gamma-glutamylation; the protein
+    subunit is not separately asserted to catalyze as a monomer.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: Catalysis 5960 connects native controller ProteinComplex/4033 to Reactions/5997.
+      The Rhea reconstruction is grounded separately in UniProt, not a native PathBank Rhea xref.
+    source_locator: '#ReactionCatalysis/5960 bp:controller,bp:controlled'
+  - reference_id: UniProtKB:P78061
+    source_assertion: P78061 CATALYTIC ACTIVITY assigns RHEA:13633; ECO:0000269 supports this catalytic
+      annotation.
+    source_locator: primaryAccession; comments[commentType=CATALYTIC ACTIVITY].reaction[reactionCrossReferences.id=RHEA:13633];
+      comments[commentType=FUNCTION]
+  - reference_id: PMID:18495664
+    quote: Purified non-tagged PuuA catalyzed the ATP-dependent gamma-glutamylation of putrescine.
+- id: putrescine-edge-025
+  subject: UniProtKB:P37906
+  predicate: catalyzes
+  object: RHEA:28415
+  description: PuuB catalyzes oxygen-dependent oxidative deamination. UniProt FUNCTION carries ECO:0000269
+    PMID15590624; its catalytic equation and step 2/4 annotation have no separate evidence code and are
+    not upgraded to a purified-enzyme experiment.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: Catalysis 5961 connects native controller Protein/6593 to Reactions/5998. The Rhea
+      reconstruction is grounded separately in UniProt, not a native PathBank Rhea xref.
+    source_locator: '#ReactionCatalysis/5961 bp:controller,bp:controlled'
+  - reference_id: UniProtKB:P37906
+    source_assertion: P37906 CATALYTIC ACTIVITY assigns RHEA:28414; FUNCTION has ECO:0000269 PMID15590624;
+      CATALYTIC ACTIVITY itself has no explicit ECO annotation.
+    source_locator: primaryAccession; comments[commentType=CATALYTIC ACTIVITY].reaction[reactionCrossReferences.id=RHEA:28414];
+      comments[commentType=FUNCTION]
+  - reference_id: PMID:15590624
+    quote: oxidization of gamma-glutamylputrescine
+- id: putrescine-edge-026
+  subject: UniProtKB:P23883
+  predicate: catalyzes
+  object: RHEA:28411
+  description: PuuC catalyzes the selected NADP-dependent reaction (ECO:0000269 PMID15590624). Its NAD-dependent
+    variant is also supported (RHEA:42340/42341); selection here does not imply NADP specificity. Other
+    PuuC aldehyde substrates and downstream reactions are excluded.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: Catalysis 5963 connects native controller Protein/6425 to Reactions/6000. The Rhea
+      reconstruction is grounded separately in UniProt, not a native PathBank Rhea xref.
+    source_locator: '#ReactionCatalysis/5963 bp:controller,bp:controlled'
+  - reference_id: UniProtKB:P23883
+    source_assertion: P23883 CATALYTIC ACTIVITY assigns RHEA:28410; ECO:0000269 supports this catalytic
+      annotation.
+    source_locator: primaryAccession; comments[commentType=CATALYTIC ACTIVITY].reaction[reactionCrossReferences.id=RHEA:28410];
+      comments[commentType=FUNCTION]
+  - reference_id: PMID:15590624
+    quote: dehydrogenation of gamma-glutamyl-gamma-aminobutyraldehyde
+- id: putrescine-edge-027
+  subject: PathBank:SMP0002067/ProteinComplex/1396
+  predicate: catalyzes
+  object: RHEA:19738
+  description: The source-defined PuuD homodimer hydrolyzes the gamma-glutamyl linkage, releasing GABA
+    and L-glutamate; its gene-product node does not imply monomer catalysis.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: Catalysis 5964 connects native controller ProteinComplex/1396 to Reactions/6001.
+      The Rhea reconstruction is grounded separately in UniProt, not a native PathBank Rhea xref.
+    source_locator: '#ReactionCatalysis/5964 bp:controller,bp:controlled'
+  - reference_id: UniProtKB:P76038
+    source_assertion: P76038 CATALYTIC ACTIVITY assigns RHEA:19737; ECO:0000269 supports this catalytic
+      annotation.
+    source_locator: primaryAccession; comments[commentType=CATALYTIC ACTIVITY].reaction[reactionCrossReferences.id=RHEA:19737];
+      comments[commentType=FUNCTION]
+  - reference_id: PMID:16499623
+    quote: gamma-Glutamyl-gamma-aminobutyrate hydrolase (PuuD) was purified
+- id: putrescine-edge-028
+  subject: PathBank:SMP0002067/ProteinComplex/4033
+  predicate: has_part
+  object: UniProtKB:P78061
+  description: The native assembly contains 12 copies of this protein; this is assembly stoichiometry,
+    not a reaction coefficient.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: ProteinComplex/4033 contains Protein/6804 with componentStoichiometry 12.0; ProteinReference/6804
+      links UniProt P78061.
+    source_locator: '#ProteinComplex/4033 bp:component,bp:componentStoichiometry; #Protein/6804/Stoichiometry/12.0;
+      #ProteinReference/6804 bp:xref'
+  - reference_id: UniProtKB:P78061
+    source_assertion: SUBUNIT reports Dodecamer (ECO:0000269 PMID18495664).
+    source_locator: comments[commentType=SUBUNIT].texts
+- id: putrescine-edge-029
+  subject: PathBank:SMP0002067/ProteinComplex/1396
+  predicate: has_part
+  object: UniProtKB:P76038
+  description: The native assembly contains 2 copies of this protein; this is assembly stoichiometry,
+    not a reaction coefficient.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: ProteinComplex/1396 contains Protein/6732 with componentStoichiometry 2.0; ProteinReference/6732
+      links UniProt P76038.
+    source_locator: '#ProteinComplex/1396 bp:component,bp:componentStoichiometry; #Protein/6732/Stoichiometry/2.0;
+      #ProteinReference/6732 bp:xref'
+  - reference_id: UniProtKB:P76038
+    source_assertion: SUBUNIT reports Homodimer (ECO:0000269 PMID16499623).
+    source_locator: comments[commentType=SUBUNIT].texts
+- id: putrescine-edge-030
+  subject: UniProtKB:P78061
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Magnesium is the required metal in the inspected UniProt cofactor annotation. Evidence
+    is ECO:0000269 PMID18495664, not inference from ATP assay presence.
+  evidence:
+  - reference_id: UniProtKB:P78061
+    source_assertion: 'COFACTOR lists Mg(2+) (CHEBI:18420) with ECO:0000269 PMID18495664; note: Requires
+      Mg(2+), that can be substituted by Mn(2+).'
+    source_locator: comments[commentType=COFACTOR].cofactors; note.texts
+- id: putrescine-edge-031
+  subject: UniProtKB:P78061
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Manganese can substitute for magnesium; the two edges do not require simultaneous occupancy
+    by both metals. Evidence is ECO:0000269 PMID18495664, not inference from ATP assay presence.
+  evidence:
+  - reference_id: UniProtKB:P78061
+    source_assertion: 'COFACTOR lists Mn(2+) (CHEBI:29035) with ECO:0000269 PMID18495664; note: Requires
+      Mg(2+), that can be substituted by Mn(2+).'
+    source_locator: comments[commentType=COFACTOR].cofactors; note.texts
+- id: putrescine-edge-032
+  subject: RHEA:13634
+  predicate: part_of
+  object: PathBank:SMP0002067
+  description: This is core biochemical step 1/4. Membership is jointly supported by native reaction membership
+    and the independent UniProt step assertion; no native PathBank-to-Rhea xref is claimed.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: SMP0002067 pathwayComponent explicitly includes Reactions/5997.
+    source_locator: http://identifiers.org/smpdb/SMP0002067 bp:pathwayComponent
+  - reference_id: UniProtKB:P78061
+    source_assertion: 'PATHWAY: 4-aminobutanoate from putrescine: step 1/4; ECO:0000269 PMID18495664.'
+    source_locator: comments[commentType=PATHWAY].texts
+- id: putrescine-edge-033
+  subject: RHEA:28415
+  predicate: part_of
+  object: PathBank:SMP0002067
+  description: This is core biochemical step 2/4. Membership is jointly supported by native reaction membership
+    and the independent UniProt step assertion; no native PathBank-to-Rhea xref is claimed.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: SMP0002067 pathwayComponent explicitly includes Reactions/5998.
+    source_locator: http://identifiers.org/smpdb/SMP0002067 bp:pathwayComponent
+  - reference_id: UniProtKB:P37906
+    source_assertion: 'PATHWAY: 4-aminobutanoate from putrescine: step 2/4; no explicit evidence code.'
+    source_locator: comments[commentType=PATHWAY].texts
+- id: putrescine-edge-034
+  subject: RHEA:28411
+  predicate: part_of
+  object: PathBank:SMP0002067
+  description: This is core biochemical step 3/4. Membership is jointly supported by native reaction membership
+    and the independent UniProt step assertion; no native PathBank-to-Rhea xref is claimed.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: SMP0002067 pathwayComponent explicitly includes Reactions/6000.
+    source_locator: http://identifiers.org/smpdb/SMP0002067 bp:pathwayComponent
+  - reference_id: UniProtKB:P23883
+    source_assertion: 'PATHWAY: 4-aminobutanoate from putrescine: step 3/4; ECO:0000269 PMID22636776 and
+      ECO:0000305 PMID15590624.'
+    source_locator: comments[commentType=PATHWAY].texts
+- id: putrescine-edge-035
+  subject: RHEA:19738
+  predicate: part_of
+  object: PathBank:SMP0002067
+  description: This is core biochemical step 4/4. Membership is jointly supported by native reaction membership
+    and the independent UniProt step assertion; no native PathBank-to-Rhea xref is claimed.
+  evidence:
+  - reference_id: PathBank:SMP0002067
+    source_assertion: SMP0002067 pathwayComponent explicitly includes Reactions/6001.
+    source_locator: http://identifiers.org/smpdb/SMP0002067 bp:pathwayComponent
+  - reference_id: UniProtKB:P76038
+    source_assertion: 'PATHWAY: 4-aminobutanoate from putrescine: step 4/4; no explicit evidence code.'
+    source_locator: comments[commentType=PATHWAY].texts
+- id: putrescine-edge-036
+  subject: RHEA:13634
+  predicate: provides_input_for
+  object: RHEA:28415
+  description: Direct material connection through gamma-L-glutamylputrescinium(1+). This is a chemical
+    sequence, not regulatory activation.
+  evidence:
+  - reference_id: RHEA:13633
+    source_assertion: RHEA:13634 produces CHEBI:58731, the material passed to the following step.
+    source_locator: http://rdf.rhea-db.org/13634 rh:products; side rh:contains1/rh:compound/rh:accession
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 consumes CHEBI:58731, the same chemical form produced by the preceding
+      step.
+    source_locator: http://rdf.rhea-db.org/28415 rh:substrates; side rh:contains1/rh:compound/rh:accession
+- id: putrescine-edge-037
+  subject: RHEA:28415
+  predicate: provides_input_for
+  object: RHEA:28411
+  description: Direct material connection through gamma-glutamyl-gamma-aminobutyraldehyde zwitterion.
+    This is a chemical sequence, not regulatory activation.
+  evidence:
+  - reference_id: RHEA:28414
+    source_assertion: RHEA:28415 produces CHEBI:61508, the material passed to the following step.
+    source_locator: http://rdf.rhea-db.org/28415 rh:products; side rh:contains1/rh:compound/rh:accession
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 consumes CHEBI:61508, the same chemical form produced by the preceding
+      step.
+    source_locator: http://rdf.rhea-db.org/28411 rh:substrates; side rh:contains1/rh:compound/rh:accession
+- id: putrescine-edge-038
+  subject: RHEA:28411
+  predicate: provides_input_for
+  object: RHEA:19738
+  description: Direct material connection through 4-(L-gamma-glutamylamino)butanoate. This is a chemical
+    sequence, not regulatory activation.
+  evidence:
+  - reference_id: RHEA:28410
+    source_assertion: RHEA:28411 produces CHEBI:58800, the material passed to the following step.
+    source_locator: http://rdf.rhea-db.org/28411 rh:products; side rh:contains1/rh:compound/rh:accession
+  - reference_id: RHEA:19737
+    source_assertion: RHEA:19738 consumes CHEBI:58800, the same chemical form produced by the preceding
+      step.
+    source_locator: http://rdf.rhea-db.org/19738 rh:substrates; side rh:contains1/rh:compound/rh:accession
+references:
+- id: PathBank:SMP0002067
+  title: PathBank Putrescine Degradation II native BioPAX pathway
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: primary archive Last-Modified 2019-08-16; member PW002054.owl; accessed 2026-10-10
+  source_sha256: 0aa406cfc7c31bc502c695a85a4d1c5b2bf2c8d9d2de4bba6e45195b5a86585e
+- id: RHEA:13633
+  title: Rhea master RHEA:13633 and its selected catabolic direction
+  url: https://www.rhea-db.org/rhea/13633
+  source_version: Rhea release 142, 2026-09-02; assertions inspected in official rhea.rdf.gz; digest covers
+    complete compressed RDF, not the individual webpage
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28414
+  title: Rhea master RHEA:28414 and its selected catabolic direction
+  url: https://www.rhea-db.org/rhea/28414
+  source_version: Rhea release 142, 2026-09-02; assertions inspected in official rhea.rdf.gz; digest covers
+    complete compressed RDF, not the individual webpage
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28410
+  title: Rhea master RHEA:28410 and its selected catabolic direction
+  url: https://www.rhea-db.org/rhea/28410
+  source_version: Rhea release 142, 2026-09-02; assertions inspected in official rhea.rdf.gz; digest covers
+    complete compressed RDF, not the individual webpage
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:19737
+  title: Rhea master RHEA:19737 and its selected catabolic direction
+  url: https://www.rhea-db.org/rhea/19737
+  source_version: Rhea release 142, 2026-09-02; assertions inspected in official rhea.rdf.gz; digest covers
+    complete compressed RDF, not the individual webpage
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P78061
+  title: Gamma-glutamylputrescine synthetase PuuA — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P78061.json
+  source_version: accessed 2026-10-10; entry version 166; sequence version 2
+  source_sha256: 53e5074fa605000a5642112147053c2c5b3c8e4a45fecf8ea7aa18f2ba932c22
+- id: UniProtKB:P37906
+  title: Gamma-glutamylputrescine oxidoreductase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P37906.json
+  source_version: accessed 2026-10-10; entry version 163; sequence version 2
+  source_sha256: e2c52cd03cf231f49551c23173acd8ce5b5c4782cdeb7917428146506c65ba25
+- id: UniProtKB:P23883
+  title: Gamma-glutamyl-gamma-aminobutyraldehyde dehydrogenase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P23883.json
+  source_version: accessed 2026-10-10; entry version 169; sequence version 2
+  source_sha256: 35285326eb69ddd878709d5b3e5acca6f650bcb7f2b331907cdfccbb332a816e
+- id: UniProtKB:P76038
+  title: Gamma-glutamyl-gamma-aminobutyrate hydrolase PuuD — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P76038.json
+  source_version: accessed 2026-10-10; entry version 171; sequence version 2
+  source_sha256: 55a8b2680c135baf3d69ce723aa81e71fe9ee5f6d53ac626d0a8fa2c229ae8de
+- id: PMID:15590624
+  title: A novel putrescine utilization pathway involves gamma-glutamylated intermediates of Escherichia
+    coli K-12.
+  url: https://pubmed.ncbi.nlm.nih.gov/15590624/
+  source_version: primary abstract in Europe PMC core response accessed 2026-10-10; DOI 10.1074/jbc.m411114200
+  source_sha256: e12c1d8a9c6c63a70230c956dc2bd2f2738ee6e535b0d064985a4fedb4582be3
+- id: PMID:18495664
+  title: gamma-Glutamylputrescine synthetase in the putrescine utilization pathway of Escherichia coli
+    K-12.
+  url: https://pubmed.ncbi.nlm.nih.gov/18495664/
+  source_version: primary abstract in Europe PMC core response accessed 2026-10-10; DOI 10.1074/jbc.m800133200
+  source_sha256: 2ba64d737aee6d12255978ac5bfb29c59ab71c4ece1171bb160e02197a5e2dd4
+- id: PMID:16499623
+  title: Gamma-glutamyl-gamma-aminobutyrate hydrolase in the putrescine utilization pathway of Escherichia
+    coli K-12.
+  url: https://pubmed.ncbi.nlm.nih.gov/16499623/
+  source_version: primary abstract in Europe PMC core response accessed 2026-10-10; DOI 10.1111/j.1574-6968.2006.00137.x
+  source_sha256: e12c1d8a9c6c63a70230c956dc2bd2f2738ee6e535b0d064985a4fedb4582be3
+- id: PMID:22636776
+  title: Pathway and enzyme redundancy in putrescine catabolism in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/22636776/
+  source_version: primary abstract in Europe PMC core response accessed 2026-10-10; DOI 10.1128/jb.05063-11
+  source_sha256: 2ba64d737aee6d12255978ac5bfb29c59ab71c4ece1171bb160e02197a5e2dd4
+- id: CHEBI:58800
+  title: ChEBI CHEBI:58800 exact structure and charge
+  url: https://www.ebi.ac.uk/chebi/CHEBI:58800
+  source_version: ChEBI255; exact issuing-authority statements inspected in SemanticSQL; digest covers
+    the complete uncompressed chebi.db cache, not this webpage
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:61508
+  title: ChEBI CHEBI:61508 exact structure and charge
+  url: https://www.ebi.ac.uk/chebi/CHEBI:61508
+  source_version: ChEBI255; exact issuing-authority statements inspected in SemanticSQL; digest covers
+    the complete uncompressed chebi.db cache, not this webpage
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
