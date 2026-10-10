@@ -26,6 +26,7 @@ from pathwaymech.dram import dram_seed_rows, load_dram_module_steps
 from pathwaymech.gapmind import gapmind_seed_rows, load_gapmind_steps
 from pathwaymech.go import go_seed_rows, load_go_obo
 from pathwaymech.gocam import gocam_to_pathway_record, load_gocam_model
+from pathwaymech.graph_view import graph_html
 from pathwaymech.hadeg import hadeg_seed_rows, load_hadeg_memberships
 from pathwaymech.identifiers import identifier_errors
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
@@ -223,6 +224,8 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
     files["downloads/manifest.json"] = json.dumps(manifest, indent=2) + "\n"
     files["index.html"] = _home_page(records, fingerprint)
     files["pathway_index.json"] = pathway_index_json(records)
+    for name in ("pathway-network.css", "pathway-network.js"):
+        files[f"assets/{name}"] = (Path(__file__).parent / "assets" / name).read_text()
     return files
 
 
@@ -986,7 +989,8 @@ def import_veupathdb_main(argv: list[str] | None = None) -> int:
 
 
 def _page(
-    title: str, body: str, stylesheet_href: str = "style.css", *, homepage: bool = False
+    title: str, body: str, stylesheet_href: str = "style.css", *, homepage: bool = False,
+    extra_head: str = "",
 ) -> str:
     site_root = html.escape(stylesheet_href.removesuffix("style.css"))
     body_class = ' class="home-page"' if homepage else ""
@@ -998,6 +1002,7 @@ def _page(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(plain_label(title))}</title>
   <link rel="stylesheet" href="{html.escape(stylesheet_href)}">
+{extra_head}
 </head>
 <body{body_class}>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -1091,12 +1096,15 @@ def _record_page(record: object, source_path: str | None = None,
     nodes = {identifier: next(iter(values)) if len(values) == 1 else identifier
              for identifier, values in labels.items()}
     components = []
+    component_anchors: dict[str, str] = {}
     for field in ("taxa", "participants", "reactions"):
         for node in getattr(record, field, []):
+            component_anchor = f"component-{len(components) + 1}"
+            component_anchors.setdefault(node["id"], component_anchor)
             kind = node.get("category") or {"taxa": "taxon"}.get(field, field.removesuffix("s"))
             direction = node.get("direction", "")
             components.append(
-                f"<tr><td>{label_html(nodes[node['id']])}<br>"
+                f'<tr id="{component_anchor}"><td>{label_html(nodes[node["id"]])}<br>'
                 f"<code>{html.escape(node['id'])}</code></td>"
                 f"<td>{html.escape(kind.replace('_', ' '))}</td>"
                 f"<td>{html.escape(direction.replace('_', ' '))}</td></tr>"
@@ -1118,7 +1126,7 @@ def _record_page(record: object, source_path: str | None = None,
     references = getattr(record, "references", [])
     ref_anchors = {ref["id"]: f"reference-{number}" for number, ref in enumerate(references, 1)}
     rows = []
-    for edge in record.mechanistic_edges:
+    for edge_number, edge in enumerate(record.mechanistic_edges, 1):
         citations = []
         for evidence in edge.get("evidence", []):
             reference = html.escape(evidence["reference_id"])
@@ -1134,7 +1142,8 @@ def _record_page(record: object, source_path: str | None = None,
                             f"{html.escape(evidence['source_locator'])}</code></details>")
             citations.append(f"<li>{citation}{support}</li>")
         description = html.escape(edge.get("description", ""))
-        rows.append(f"<tr><td>{endpoint(edge['subject'])}</td>"
+        rows.append(f'<tr id="mechanism-edge-{edge_number}">'
+                    f"<td>{endpoint(edge['subject'])}</td>"
                     f"<td>{html.escape(edge['predicate'])}<p>{description}</p></td>"
                     f"<td>{endpoint(edge['object'])}</td><td><ul>{''.join(citations)}</ul></td></tr>")
     edges = ('<div class="table-scroll" role="region" tabindex="0" '
@@ -1164,12 +1173,18 @@ def _record_page(record: object, source_path: str | None = None,
                   if source_path else "")
     clusters = _gene_clusters(getattr(record, "gene_clusters", []))
     identifier = html.escape(getattr(record, "id", ""))
+    if getattr(record, "id", None):
+        component_anchors.setdefault(record.id, "pathway-identity")
     return _page(
         record.label,
-        f"<p><code>{identifier}</code></p><p>{label_html(record.description)}</p>"
-        f"{record_metadata(record)}{provenance}{component_section}<h2>Mechanistic edges</h2>"
+        f'<p id="pathway-identity"><code>{identifier}</code></p>'
+        f"<p>{label_html(record.description)}</p>"
+        f"{record_metadata(record)}{provenance}{graph_html(record, nodes, component_anchors)}"
+        f"{component_section}<h2 id=\"mechanistic-edges\">Mechanistic edges</h2>"
         f"{edges}{clusters}{reference_section}{history_html(record, sessions or [])}",
         stylesheet_href="../style.css",
+        extra_head=('<link rel="stylesheet" href="../assets/pathway-network.css">\n'
+                    '<script src="../assets/pathway-network.js" defer></script>'),
     )
 
 

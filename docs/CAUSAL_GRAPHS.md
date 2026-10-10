@@ -65,6 +65,29 @@ and be explained in the accompanying source manifest when the artifact is a
 batch export. Keep complete raw downloads outside the repository and retain
 the reproducible source projection, manifest, and review ledger.
 
+## Record-page diagrams
+
+The static record pages render every maintained mechanistic edge as a directed
+SVG link to its corresponding evidence-table row. Labels and arrowheads retain
+the declared subject, predicate and object; reaction `direction` remains node
+metadata. In particular, `has_input` still points from activity to participant.
+The layout is a browsing aid, not an inferred sequence or a metabolic flux model.
+Context and cofactor relationships use dashed lines; their exact predicates
+remain visible. Declared isolated participants and reactions are retained without
+inventing connections, and shared labels never merge different identifiers.
+
+SVG diagrams are generated at build time and remain available without JavaScript.
+Local progressive controls add zoom, fit-to-width and node-neighborhood
+highlighting. Highlighting keeps every relationship in the diagram. The complete
+component, edge and evidence tables remain available below it; records with no
+mechanistic edges display an explicit empty state.
+
+The renderer owns `pages/assets/pathway-network.css` and
+`pages/assets/pathway-network.js` as well as each record page. Edit their sources
+under `src/pathwaymech/assets/` and the graph renderer in
+`src/pathwaymech/graph_view.py`, then regenerate through `just render-pages`.
+The page consistency gate checks these assets too.
+
 ## Verification
 
 For each changed record, retain append-only curation history and verify the
