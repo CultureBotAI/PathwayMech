@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from dataclasses import replace
 from pathlib import Path
 
@@ -163,6 +164,22 @@ def test_write_kgx_uses_lf_tsv_with_stable_headers(tmp_path: Path) -> None:
     assert edges_path.read_text(encoding="utf-8").splitlines()[0] == "\t".join(
         EDGE_COLUMNS
     )
+
+
+def test_phb_polymer_is_exported_as_a_chemical_entity(tmp_path: Path) -> None:
+    source = yaml.safe_load(
+        Path("data/pathways/polyhydroxybutanoate-biosynthesis.yaml").read_text(encoding="utf-8")
+    )
+    checked = validate_record(source)
+    nodes_path, _ = write_kgx([checked], tmp_path)
+    with nodes_path.open(encoding="utf-8", newline="") as stream:
+        nodes = {row["id"]: row for row in csv.DictReader(stream, delimiter="\t")}
+
+    polymer = nodes["CHEBI:8298"]
+    assert polymer["category"] == "biolink:ChemicalEntity"
+    assert polymer["source_category"] == "polymer"
+    assert json.loads(polymer["source_contexts"])[0]["category"] == "polymer"
+    assert nodes["CHEBI:57288"]["category"] == "biolink:SmallMolecule"
 
 
 def test_corpus_export_has_no_duplicate_or_dangling_nodes(tmp_path: Path) -> None:

@@ -1,0 +1,860 @@
+# Independent final review of H16 polyhydroxybutanoate biosynthesis
+
+- Review: 20261010T210052Z-phb-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-10T20:49:30Z
+- Finished UTC: 2026-10-10T21:00:52Z
+- Reviewer: Codex /root/pathway_candidate_inventory (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Independent review of the complete final H16 core PHB record supports all three reactions, eleven participants and twenty edges. No remaining actionable findings were identified. Corrected crosswalk provenance (#313) and polymer export (#315) were verified. Class-level n/n+1 polymer representation, bounded isoenzyme scope and evidence-specific experimental limitations remain explicit.
+
+## Scope And Provenance
+
+One named maintained pathway, all fields and all 20 edges; native evidence and generated representation assessed for this record.
+
+Selection: Exact assigned file data/pathways/polyhydroxybutanoate-biosynthesis.yaml and MetaCyc:PWY1-3.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 32792ef3d9ecaa185817bc0f72fdc3bf50b4e540.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY1-3 | data/pathways/polyhydroxybutanoate-biosynthesis.yaml | maintained | polyhydroxybutanoate biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Native full-corpus validation | passed | True | MetaCyc:PWY1-3 | Final exit 0: 159 native and closed-LinkML records, identifier/label authorities, 8361 evidence blocks, 30 sources, six documentation files, research contract, 235 history records and current pages for all 159 records. |
+| Fresh full repository tests after final input freeze | passed | True | MetaCyc:PWY1-3 | 1008 passed, 3 skipped, 3 warnings in 336.25 seconds; terminal exit 0 confirmed by parent. This fresh process replaces the earlier mixed-state exploratory run. |
+| Repository lint | passed | True | MetaCyc:PWY1-3 | All ruff checks passed. |
+| Whitespace integrity | passed | True | MetaCyc:PWY1-3 | Working-tree and cached diff checks exited0. |
+| CLAW-governed artifact integrity | passed | True | MetaCyc:PWY1-3 | All22 governed artifacts match the pinned CLAW revision. |
+| Earlier test process across the polymer edit | failed | False | MetaCyc:PWY1-3 | Before final freeze, 2 failed, 1005 passed, 3 skipped. Both failures rejected category polymer from a process with the old imported Python schema while reading the updated PHB record. This is preserved as a superseded exploratory run, not the final acceptance check. |
+| Native browser visual preview | unavailable | False | MetaCyc:PWY1-3 | Parent CUA had no browser available. No browser visual review is claimed; generated SVG endpoint and evidence-link audit passed for all 20 PHB edges and current-page checking passed. |
+| Canonical pre-assessment and final-input inspection | passed | True | MetaCyc:PWY1-3 | Initial default uv cache invocation failed with permission exit 2; UV_CACHE_DIR=/private/tmp/pathwaymech-uv-cache rerun succeeded before assessment. After issue 315 changed record/schema bytes, final inputs were re-read, reassessed and re-inspected; original hashes were not silently replaced. |
+| Independent PHB source-to-graph verification | passed | True | MetaCyc:PWY1-3 | All 20 maintained edges checked against inspected native sources; this complements scientific reading, not a substitute for it. |
+| Actual PHB polymer export and graph type | passed | True | MetaCyc:PWY1-3 | Final actual-record export uses ChemicalEntity/polymer and preserves all 20 edge evidence arrays plus n/n+1 context. |
+| Structured transcriptomic source applicability | passed | False | MetaCyc:PWY1-3 | Parent ran the canonical catalog adapter: initial DNS exit 2, network-enabled retry exit 0. Reviewer inspected all 28 returned dataset rows. No target-strain dataset; no expression absence inferred. |
+
+## Scientific And Domain Assessments
+
+### Exact MetaCyc route and strain scope
+
+identity: supported. Targets: MetaCyc:PWY1-3.
+
+MetaCyc PWY1-3 denotes the supported three-step PHB route. The maintained record explicitly selects H16 core phaCAB proteins; it does not replace PHB with the general PHA umbrella or extend H16 proteins to all species in MetaCyc.
+
+### Reaction orientation, local edges and source coverage
+
+graph: supported. Targets: MetaCyc:PWY1-3.
+
+All 20 edges have local declared endpoints and source-specific support: 12 chemical participation, three catalysis, three membership and two order edges. The chosen biosynthetic directions agree with native pathway layouts and Rhea directional members; reversible thiolase family identity is not erased.
+
+### Core catalysts and experimental versus inferred annotations
+
+evidence: supported. Targets: MetaCyc:PWY1-3.
+
+Exact H16 PhaA, PhaB and PhaC identities and functions are supported. The record retains mixed PhaA activity evidence, PhaB experimental FUNCTION evidence separately from its unqualified activity field, and PhaC similarity-based activity separately from experimental function/primary polymerization support.
+
+### Polymer class and chain-extension states
+
+representation: supported. Targets: MetaCyc:PWY1-3.
+
+CHEBI:8298 is a polymer class. Explicit polymer category now preserves ChemicalEntity export and chemical rendering. Edge descriptions/evidence retain source n versus n+1, although those states share one class node. This bounded graph does not purport to be an atom-mapped, chain-instance or stoichiometric model.
+
+### Bounded core-route completeness
+
+completeness: supported. Targets: MetaCyc:PWY1-3.
+
+The three-step core route is complete within its declared scope. Alternative H16 isoenzymes, granule architecture, regulation, degradation, copolymer synthesis and initiation chemistry are excluded explicitly. NADPH is a cosubstrate; no permanent cofactor or universal subcellular/oligomer-state assertions are invented.
+
+### Source identity, primary excerpts and corrected crosswalk evidence
+
+provenance: supported. Targets: MetaCyc:PWY1-3.
+
+Native objects, raw artifact digests and reference metadata were inspected. All three primary excerpts are exact; 17 artifact digests match. The five membership/order edges now distinguish MetaCyc membership/order evidence from separately cited Rhea native-to-directed crosswalk evidence, correcting the concern in GitHub #313. TSV digest scope is explicit.
+
+### Verification of issue 315 correction
+
+consistency: supported. Targets: MetaCyc:PWY1-3.
+
+The previously reported polymer-as-SmallMolecule fallback is corrected in the final record/schema/exporter. Independent actual-record KGX inspection confirms ChemicalEntity with source_category polymer while acetyl-CoA remains SmallMolecule. This records an applied correction associated with GitHub #315, not a structured resolved disposition without a prior review finding.
+
+### iModulonDB context applicability
+
+scope: not_applicable. Targets: MetaCyc:PWY1-3.
+
+The canonical dataset list has no matching H16/Cupriavidus/Ralstonia dataset. No component-level search is applicable and the absence is not biological evidence.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| record | data/pathways/polyhydroxybutanoate-biosynthesis.yaml; Entire YAML: identity, taxa, all 11 participants, three reactions, 20 edges and ten references. | supports | Entire final record read. Class-level PHB states and core H16 operon scope are explicit. |
+| metacyc | https://pathway.yeastgenome.org/getxml?META:PWY1-3; Pathway[@frameid='PWY1-3']/common-name, reaction-list, reaction-ordering, reaction-layout, species and About This Pathway comment | supports | Native MetaCyc 22.5 specifies three reactions and two predecessor links. Condensation, R-specific reduction and polymer extension establish this exact PHB route. Native broad species coverage does not make the selected proteins universal. |
+| native-thiolase | https://pathway.yeastgenome.org/getxml?META:ACETYL-COA-ACETYLTRANSFER-RXN; Reaction: left, right, reaction-direction, dblink and name-slot | supports | Native frame has acetyl-CoA coefficient 2, reversible family and Rhea 21039 cross-reference; pathway layout selects condensation. |
+| native-reductase | https://pathway.yeastgenome.org/getxml?META:RXN-5901; Reaction: left, right, reaction-direction, dblink and name-slot | supports | Native right-to-left reduction agrees with Rhea 45798 and retains R stereochemistry. |
+| native-polymerase | https://pathway.yeastgenome.org/getxml?META:RXN1-42; Reaction: left, right, reaction-direction, dblink and name-slot | supports | Native left-to-right polymer reaction distinguishes N-Name substrate and N+1-Name product with monomer-CoA input and CoA release. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; RDF subjects 21036/21037/21039, 45796/45798, 15405/15406; linked reaction sides, rh:contains1/rh:contains2, participant compounds, rdfs:seeAlso, and Compound_14464/Compound_14465. | supports | Independent raw RDF inspection verified all 12 chemical participant sides, acetyl-CoA coefficient 2, the three master/directional relationships and exact MetaCyc crosswalks. POLYMER:14464 is n and POLYMER:14465 is n+1; both have underlying CHEBI:8298. |
+| rhea-directions | https://ftp.expasy.org/databases/rhea/tsv/rhea-directions.tsv; Rows with RHEA_ID_MASTER 21036, 45796 and 15405. | supports | Uncompressed TSV confirms LR 21037, RL 45798, and LR 15406. Its manifest digest explicitly covers the downloaded uncompressed TSV. |
+| uniprot-p14611 | https://rest.uniprot.org/uniprotkb/P14611.json; primaryAccession, proteinDescription, organism.taxonId, genes, FUNCTION, CATALYTIC ACTIVITY and PATHWAY comments; observed response release header 2026_03 | supports | PhaA/H16_A1438, taxon 381666. Catalytic Rhea 21036 carries ECO:0000269 and ECO:0000255; FUNCTION explicitly supports condensation and also reverse cleavage. |
+| uniprot-p14697 | https://rest.uniprot.org/uniprotkb/P14697.json; primaryAccession, proteinDescription, organism.taxonId, genes, FUNCTION, CATALYTIC ACTIVITY and PATHWAY comments; observed response release header 2026_03 | supports | PhaB/H16_A1439, taxon 381666. Specific Rhea 45796 is distinct from generic Rhea 22256. Catalytic activity has no evidence list, whereas FUNCTION has ECO:0000269; record attaches that code to FUNCTION. |
+| uniprot-p23608 | https://rest.uniprot.org/uniprotkb/P23608.json; primaryAccession, proteinDescription, organism.taxonId, genes, FUNCTION, CATALYTIC ACTIVITY and PATHWAY comments; observed response release header 2026_03 | supports | PhaC/H16_A1437, taxon 381666. Rhea 15405 catalytic activity is ECO:0000250 from P45370; experimental FUNCTION annotation is ECO:0000269 from PMID:2670936. Distinction is preserved. |
+| primary-thiolase | https://pubmed.ncbi.nlm.nih.gov/2670935/; Europe PMC core result id=2670935: title, DOI, abstractText. | supports | Primary abstract describes H16 DNA clones and biochemical activities in recombinant E. coli lysates, with sequence-defined phbA/phbB. The record excerpt is exact and does not claim assays were exclusively in wild-type H16. |
+| primary-reductase | https://pubmed.ncbi.nlm.nih.gov/23913421/; Europe PMC core result id=23913421: title, DOI, abstractText; independently opened PubMed abstract. | supports | Primary abstract compares wild-type PhaB and engineered variants and supports the NADPH/acetoacetyl-CoA ternary complex. The maintained exact excerpt does not import mutant kinetic enhancement into the native route. |
+| primary-polymerase | https://pubmed.ncbi.nlm.nih.gov/22369488/; Europe PMC core result id=22369488: title, DOI, abstractText; independently opened PubMed abstract. | supports | PhaC polymerizes the R monomer; the experimental protein is an affinity-tagged derivative in the native organism. PHB-primed versus unprimed fractions support elongation context; they do not prove a universal initiation mechanism. |
+| primary-h16-context | https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC3326396/unicode; BioC PMC3326396 passages at offsets 10358, 11941, 19117, 24822, 61827; Table 1 strain genealogy. | supports | Inspected H16 phaC amplification, Re1034 H16 ΔphaC lineage, Re2018 tagged replacement construction and wild-type comparison. The record does not conflate engineered-strain observations with every native H16 molecule. |
+| primary-scope | https://pubmed.ncbi.nlm.nih.gov/20729355/; Europe PMC core results id=20729355 and id=2670936: titles, DOIs and complete abstracts. | context_only | Operon/phbC characterization supports the core route. PhaB1 and PhaB3 contributions vary by growth medium; the explicit exclusion of alternative isoenzymes is an honest bounded scope, not a claim of their absence. |
+| chemical-taxonomy-authorities | ChEBI and NCBI Taxonomy issuing authorities through preserved SemanticSQL and official OLS/UniProt taxon APIs; /Users/marcin/.data/oaklib/chebi.db and ncbitaxon.db rdfs:label rows for all eight ChEBI IDs and NCBITaxon:381666; OLS CHEBI:8298 and CHEBI:57315 terms; taxon 381666 JSON. | supports | All canonical chemical labels and H16 taxon label match authority rows. Official polymer term denotes a polyester polymer, not a small molecule. Strain synonyms explain the primary literature names. |
+| imodulondb | https://imodulondb.org/; Canonical kg-microbe-sources imodulondb datasets output: all 28 dataset rows in /private/tmp/pathwaymech-imodulondb-datasets-20261010.json (Markdown). | context_only | No Cupriavidus/Ralstonia/H16 dataset in this bounded catalog. Thus component/gene searches are not applicable; this is not negative pathway or expression evidence. |
+| history-search | Local review/report and cross-Mech research inventory; rg --no-ignore --hidden -l -i across reviews, reports and research/cross_mech for PWY1-3 and polyhydroxybutanoate/polyhydroxybutyrate biosynthesis. | context_only | Only the pre-existing cross-Mech research lead matched; no prior structured PHB finding was located in this bounded search. Corrected GitHub findings are therefore assessments, not fabricated structured resolved lineage. |
+| source-graph-check | /private/tmp/pathwaymech-phb-independent-review/source-graph-check.json; Independent check_source_graph.py output and independently merged raw Rhea RDF statements. | supports | All 12 chemical edges, three catalyst edges, three pathway memberships and two ordering edges checked. Three primary quotes match exactly and all 17 source artifact hashes match the source manifest. |
+| polymer-export | /private/tmp/pathwaymech-phb-independent-review/export-check.json; Final actual PHB KGX node/edge TSV and rendered node data inspection. | supports | Explicit category polymer is accepted by both schemas, exports as biolink:ChemicalEntity, retains polymer source context, and is styled as chemical. Both PHB n and n+1 edge descriptions and evidence survive export. |
+| gate-validate | /private/tmp/pathwaymech-validate-20261010.log; Complete command output inspected; parent confirmed actual terminal exit status. | supports | Final worktree integration receipt; full-corpus scope and terminal results are retained in checks. |
+| gate-test | /private/tmp/pathwaymech-test-final-20261010.log; Complete command output inspected; parent confirmed actual terminal exit status. | supports | Final worktree integration receipt; full-corpus scope and terminal results are retained in checks. |
+| gate-lint | /private/tmp/pathwaymech-lint-20261010.log; Complete command output inspected; parent confirmed actual terminal exit status. | supports | Final worktree integration receipt; full-corpus scope and terminal results are retained in checks. |
+| gate-vendored | /private/tmp/pathwaymech-vendored-20261010.log; Complete command output inspected; parent confirmed actual terminal exit status. | supports | Final worktree integration receipt; full-corpus scope and terminal results are retained in checks. |
+
+## Limits And Additional Notes
+
+- The PHB polymer is a chemical class shared by n and n+1 edges; distinct physical chain states and stoichiometric coefficients are preserved in descriptions/source evidence, not schema-level instance or coefficient slots.
+- Core phaCAB scope excludes alternative H16 isoenzymes, regulatory/granule context, degradation, copolymers and a definitive initiation mechanism.
+- Primary evidence inspection comprises all five preserved abstracts plus selected PhaC full-text methods/results/strain passages; this is not an exhaustive literature review. Database annotation evidence tiers and tagged/recombinant experimental systems remain distinct.
+- Native browser preview was unavailable to the parent (CUA had no browser). Actual SVG endpoint/evidence-link auditing and page consistency checks support representation; no visual browser review is claimed.
+- Raw downloads, local ontology databases and command receipts reside in external caches; stable URLs, input/artifact hashes and maintained source projections support reproduction.
+- Required integration gate receipts were executed by the parent on the same final worktree and inspected by this reviewer; the scientific assessment itself was independent.
+- GitHub issues 313 and 315 were corrected before this final observation. No structured predecessor was found in the bounded hidden/ignored-inclusive review search; findings are therefore not fabricated as resolved lineage.
+- The canonical iModulonDB datasets artifact has a .json suffix but contains Markdown; all 28 rows were inspected.
+- An initial temporary export-check helper assumed raw edge IDs survived as suffixes and failed its lookup; correcting the helper to match exact subject/predicate/object triples verified all exported edge evidence. This was a reviewer-helper error, not a record/export defect.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261010T210052Z-phb-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent final review of H16 polyhydroxybutanoate biosynthesis
+started_at: '2026-10-10T20:49:30Z'
+finished_at: '2026-10-10T21:00:52Z'
+reviewer:
+  identity: Codex /root/pathway_candidate_inventory
+  kind: agent
+  independence: independent
+  independence_basis: This reviewer authored the separate MEP record, not PHB or its
+    fixes. Read the complete final PHB YAML and independently inspected native XML,
+    raw RDF, UniProt, authority labels and primary evidence. Prior root findings were
+    disclosed and rechecked; no PHB record/source/code edits were made by this reviewer.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: Independent review of the complete final H16 core PHB record supports all
+  three reactions, eleven participants and twenty edges. No remaining actionable findings
+  were identified. Corrected crosswalk provenance (#313) and polymer export (#315)
+  were verified. Class-level n/n+1 polymer representation, bounded isoenzyme scope
+  and evidence-specific experimental limitations remain explicit.
+source:
+  git_revision: 32792ef3d9ecaa185817bc0f72fdc3bf50b4e540
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 19ffa6ed3dd7fcc4999bac635029850cbc3aa4d5877e2c35f5662f98049ee664
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    sha256: 31480b5959f3b596fa758d0272b7b2400a9b23b33b52af7349f999ae6dad8d45
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: research/pathway_additions/2026-10-10/phb-curation.md
+    sha256: 88dbf9eb95e82089c09bffbd4d1b4a7aba6b17b52102d57fcb3b5b0967386499
+    role: context
+  - path: research/pathway_additions/2026-10-10/phb-source-manifest.json
+    sha256: 4828814e59986b2b69fbcc5b8241950226321903342f24f4eca5cbd0f6166e2c
+    role: context
+  - path: research/pathway_additions/2026-10-10/phb-source-projection.json
+    sha256: f27cea07790da05a344266a3b10df8d88ef75eb2117e3bf1e78b60c4c44c12cb
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 061e5b1a0575c3fbc5ec484c4b76ab29b531f4f90798ff90f6ca4977acda8841
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: e1d2f085f8e257170a434400265a400ffac07e4aa23b1b830a8fde990ba6a520
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: fd5f9cb0f730d2d6b57f4ddee6418b8299b934978459c73be57f22c26ba78463
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 56bb3f153ea10e6c3964845ef24303e9362f6104a2ab3c95cf1da1a7ae2d2895
+    role: context
+  - path: tests/test_kgx_export.py
+    sha256: 636682164cc70d97b0484c89678b61c2d6f5559bccd29118d69174ec07a3e235
+    role: context
+scope:
+  description: One named maintained pathway, all fields and all 20 edges; native evidence
+    and generated representation assessed for this record.
+  selection: Exact assigned file data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    and MetaCyc:PWY1-3.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY1-3
+  exclusions:
+  - target: Other PathwayMech records
+    reason: Scientific verdict applies only to PHB; integration checks run on the
+      full corpus.
+  - target: Alternative H16 isoenzymes and PHB granule/regulatory/degradation mechanisms
+    reason: Outside the explicitly selected core phaCAB route; their absence from
+      this graph is not an absence claim.
+targets:
+- target_id: MetaCyc:PWY1-3
+  path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+  label: polyhydroxybutanoate biosynthesis
+  kind: maintained
+  record_class: PathwayRecord
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    role: Maintained pathway record; pages are generated from this YAML.
+checks:
+- check_id: validate
+  name: Native full-corpus validation
+  status: passed
+  required: true
+  summary: 'Final exit 0: 159 native and closed-LinkML records, identifier/label authorities,
+    8361 evidence blocks, 30 sources, six documentation files, research contract,
+    235 history records and current pages for all 159 records.'
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-validate
+  scope_note: Executed by parent on frozen final worktree; reviewer inspected complete
+    log /private/tmp/pathwaymech-validate-20261010.log.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: test
+  name: Fresh full repository tests after final input freeze
+  status: passed
+  required: true
+  summary: 1008 passed, 3 skipped, 3 warnings in 336.25 seconds; terminal exit 0 confirmed
+    by parent. This fresh process replaces the earlier mixed-state exploratory run.
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-test
+  scope_note: All 1011 collected tests across the repository; scientific coverage
+    of this review remains one PHB record. Reviewer inspected complete /private/tmp/pathwaymech-test-final-20261010.log.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: lint
+  name: Repository lint
+  status: passed
+  required: true
+  summary: All ruff checks passed.
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-lint
+  scope_note: Full repository; parent executed, reviewer inspected complete output.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: diff-check
+  name: Whitespace integrity
+  status: passed
+  required: true
+  summary: Working-tree and cached diff checks exited0.
+  command: git diff --check; git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  scope_note: Parent executed both checks for the complete change; review saver separately
+    checks review input integrity.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: vendored
+  name: CLAW-governed artifact integrity
+  status: passed
+  required: true
+  summary: All22 governed artifacts match the pinned CLAW revision.
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-vendored
+  scope_note: Parent executed the actual canonical command; reviewer inspected log.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: earlier-mixed-state-test
+  name: Earlier test process across the polymer edit
+  status: failed
+  required: false
+  summary: Before final freeze, 2 failed, 1005 passed, 3 skipped. Both failures rejected
+    category polymer from a process with the old imported Python schema while reading
+    the updated PHB record. This is preserved as a superseded exploratory run, not
+    the final acceptance check.
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 1
+  expected_exit_code: 0
+  scope_note: Parent identified mixed-state process; reviewer inspected the actual
+    failure log /private/tmp/pathwaymech-test-20261010.log. A fresh full run after
+    freeze is the required test check.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: browser-preview
+  name: Native browser visual preview
+  status: unavailable
+  required: false
+  summary: Parent CUA had no browser available. No browser visual review is claimed;
+    generated SVG endpoint and evidence-link audit passed for all 20 PHB edges and
+    current-page checking passed.
+  scope_note: /private/tmp/pathwaymech-kgx-audit-20261010.json read by reviewer; page
+    checks are repository-wide, PHB graph conclusions are bounded to its 20 edges.
+  target_ids:
+  - MetaCyc:PWY1-3
+- check_id: inspect
+  name: Canonical pre-assessment and final-input inspection
+  status: passed
+  required: true
+  summary: Initial default uv cache invocation failed with permission exit 2; UV_CACHE_DIR=/private/tmp/pathwaymech-uv-cache
+    rerun succeeded before assessment. After issue 315 changed record/schema bytes,
+    final inputs were re-read, reassessed and re-inspected; original hashes were not
+    silently replaced.
+  target_ids:
+  - MetaCyc:PWY1-3
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-uv-cache uv run python scripts/record_review.py
+    inspect --targets /private/tmp/pathwaymech-phb-independent-review/targets.yaml
+    --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+    --input src/pathwaymech/kgx.py --input src/pathwaymech/graph_view.py --input tests/test_kgx_export.py
+    --input research/pathway_additions/2026-10-10/phb-curation.md --input research/pathway_additions/2026-10-10/phb-source-manifest.json
+    --input research/pathway_additions/2026-10-10/phb-source-projection.json --input
+    .claude/skills/review-yaml-record/SKILL.md --input .claude/skills/add-pathway/SKILL.md
+    --input docs/record-reviews.md --input docs/record-review-profile.md --input docs/CAUSAL_GRAPHS.md
+    --input docs/CURATION.md --input docs/HARMONIZATION.md --input justfile --input
+    CLAUDE.md
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: source-graph
+  name: Independent PHB source-to-graph verification
+  status: passed
+  required: true
+  summary: All 20 maintained edges checked against inspected native sources; this
+    complements scientific reading, not a substitute for it.
+  target_ids:
+  - MetaCyc:PWY1-3
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-uv-cache uv run python /private/tmp/pathwaymech-phb-independent-review/check_source_graph.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - source-graph-check
+- check_id: polymer-export
+  name: Actual PHB polymer export and graph type
+  status: passed
+  required: true
+  summary: Final actual-record export uses ChemicalEntity/polymer and preserves all
+    20 edge evidence arrays plus n/n+1 context.
+  target_ids:
+  - MetaCyc:PWY1-3
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-uv-cache uv run python /private/tmp/pathwaymech-phb-independent-review/check_export.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - polymer-export
+- check_id: imodulondb
+  name: Structured transcriptomic source applicability
+  status: passed
+  required: false
+  summary: 'Parent ran the canonical catalog adapter: initial DNS exit 2, network-enabled
+    retry exit 0. Reviewer inspected all 28 returned dataset rows. No target-strain
+    dataset; no expression absence inferred.'
+  target_ids:
+  - MetaCyc:PWY1-3
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - imodulondb
+evidence:
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+  locator: 'Entire YAML: identity, taxa, all 11 participants, three reactions, 20
+    edges and ten references.'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Entire final record read. Class-level PHB states and core H16 operon scope
+    are explicit.
+- evidence_id: metacyc
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY1-3
+  locator: Pathway[@frameid='PWY1-3']/common-name, reaction-list, reaction-ordering,
+    reaction-layout, species and About This Pathway comment
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Native MetaCyc 22.5 specifies three reactions and two predecessor links.
+    Condensation, R-specific reduction and polymer extension establish this exact
+    PHB route. Native broad species coverage does not make the selected proteins universal.
+  snapshot_sha256: 3469d020b1a4685466f2739fe280849df9578d2a20e798a95bed3e847de4f03d
+- evidence_id: native-thiolase
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:ACETYL-COA-ACETYLTRANSFER-RXN
+  locator: 'Reaction: left, right, reaction-direction, dblink and name-slot'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Native frame has acetyl-CoA coefficient 2, reversible family and Rhea 21039
+    cross-reference; pathway layout selects condensation.
+  snapshot_sha256: a66c6ecab35e4e7964861d27d4da987c92c6cfcdb5ee738c976a3a4df0404497
+- evidence_id: native-reductase
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-5901
+  locator: 'Reaction: left, right, reaction-direction, dblink and name-slot'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Native right-to-left reduction agrees with Rhea 45798 and retains R stereochemistry.
+  snapshot_sha256: cc6b0ecaa266bda62063d65e988a23c69b32267092aa2a02f666560f3f2e505e
+- evidence_id: native-polymerase
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN1-42
+  locator: 'Reaction: left, right, reaction-direction, dblink and name-slot'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Native left-to-right polymer reaction distinguishes N-Name substrate and
+    N+1-Name product with monomer-CoA input and CoA release.
+  snapshot_sha256: 09b7528d8d485251100ac9dd317fe991cea2207f0d035a700f6952cc9fd9ebd6
+- evidence_id: rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: RDF subjects 21036/21037/21039, 45796/45798, 15405/15406; linked reaction
+    sides, rh:contains1/rh:contains2, participant compounds, rdfs:seeAlso, and Compound_14464/Compound_14465.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Independent raw RDF inspection verified all 12 chemical participant sides,
+    acetyl-CoA coefficient 2, the three master/directional relationships and exact
+    MetaCyc crosswalks. POLYMER:14464 is n and POLYMER:14465 is n+1; both have underlying
+    CHEBI:8298.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: rhea-directions
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/tsv/rhea-directions.tsv
+  locator: Rows with RHEA_ID_MASTER 21036, 45796 and 15405.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Uncompressed TSV confirms LR 21037, RL 45798, and LR 15406. Its manifest
+    digest explicitly covers the downloaded uncompressed TSV.
+  snapshot_sha256: deae1911da372c70ee8fc97992809c7923e63b288a8702fc4396edcb2633fb04
+- evidence_id: uniprot-p14611
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P14611.json
+  locator: primaryAccession, proteinDescription, organism.taxonId, genes, FUNCTION,
+    CATALYTIC ACTIVITY and PATHWAY comments; observed response release header 2026_03
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: PhaA/H16_A1438, taxon 381666. Catalytic Rhea 21036 carries ECO:0000269
+    and ECO:0000255; FUNCTION explicitly supports condensation and also reverse cleavage.
+  snapshot_sha256: f0350ba62a6ee34cb4779818b74e12706c596c04d122b415426ec5b6d94ccf12
+- evidence_id: uniprot-p14697
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P14697.json
+  locator: primaryAccession, proteinDescription, organism.taxonId, genes, FUNCTION,
+    CATALYTIC ACTIVITY and PATHWAY comments; observed response release header 2026_03
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: PhaB/H16_A1439, taxon 381666. Specific Rhea 45796 is distinct from generic
+    Rhea 22256. Catalytic activity has no evidence list, whereas FUNCTION has ECO:0000269;
+    record attaches that code to FUNCTION.
+  snapshot_sha256: 6e051efb8f2f3e64e82a612d3edaf8f5e7267a20574d4d3be501df9d0b8c73b5
+- evidence_id: uniprot-p23608
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P23608.json
+  locator: primaryAccession, proteinDescription, organism.taxonId, genes, FUNCTION,
+    CATALYTIC ACTIVITY and PATHWAY comments; observed response release header 2026_03
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: PhaC/H16_A1437, taxon 381666. Rhea 15405 catalytic activity is ECO:0000250
+    from P45370; experimental FUNCTION annotation is ECO:0000269 from PMID:2670936.
+    Distinction is preserved.
+  snapshot_sha256: a5fbd1b61fc65f9dac2ab13a7aac95c6bcd4a8fab38267f544b1d62d57618d62
+- evidence_id: primary-thiolase
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/2670935/
+  locator: 'Europe PMC core result id=2670935: title, DOI, abstractText.'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Primary abstract describes H16 DNA clones and biochemical activities in
+    recombinant E. coli lysates, with sequence-defined phbA/phbB. The record excerpt
+    is exact and does not claim assays were exclusively in wild-type H16.
+  snapshot_sha256: f3c9af0beb92e41816780b975a36221cba2842dd49ade5805540bfa9fd67dcbc
+- evidence_id: primary-reductase
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/23913421/
+  locator: 'Europe PMC core result id=23913421: title, DOI, abstractText; independently
+    opened PubMed abstract.'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Primary abstract compares wild-type PhaB and engineered variants and supports
+    the NADPH/acetoacetyl-CoA ternary complex. The maintained exact excerpt does not
+    import mutant kinetic enhancement into the native route.
+  snapshot_sha256: f3c9af0beb92e41816780b975a36221cba2842dd49ade5805540bfa9fd67dcbc
+- evidence_id: primary-polymerase
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/22369488/
+  locator: 'Europe PMC core result id=22369488: title, DOI, abstractText; independently
+    opened PubMed abstract.'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: PhaC polymerizes the R monomer; the experimental protein is an affinity-tagged
+    derivative in the native organism. PHB-primed versus unprimed fractions support
+    elongation context; they do not prove a universal initiation mechanism.
+  snapshot_sha256: f3c9af0beb92e41816780b975a36221cba2842dd49ade5805540bfa9fd67dcbc
+- evidence_id: primary-h16-context
+  kind: primary_source
+  reference: https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC3326396/unicode
+  locator: BioC PMC3326396 passages at offsets 10358, 11941, 19117, 24822, 61827;
+    Table 1 strain genealogy.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Inspected H16 phaC amplification, Re1034 H16 ΔphaC lineage, Re2018 tagged
+    replacement construction and wild-type comparison. The record does not conflate
+    engineered-strain observations with every native H16 molecule.
+  snapshot_sha256: a899e51946a7c6e290b681562f6ba511d008de44ab2f618fcef731b17722b237
+- evidence_id: primary-scope
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/20729355/
+  locator: 'Europe PMC core results id=20729355 and id=2670936: titles, DOIs and complete
+    abstracts.'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: context_only
+  summary: Operon/phbC characterization supports the core route. PhaB1 and PhaB3 contributions
+    vary by growth medium; the explicit exclusion of alternative isoenzymes is an
+    honest bounded scope, not a claim of their absence.
+  snapshot_sha256: f3c9af0beb92e41816780b975a36221cba2842dd49ade5805540bfa9fd67dcbc
+- evidence_id: chemical-taxonomy-authorities
+  kind: authority
+  reference: ChEBI and NCBI Taxonomy issuing authorities through preserved SemanticSQL
+    and official OLS/UniProt taxon APIs
+  locator: /Users/marcin/.data/oaklib/chebi.db and ncbitaxon.db rdfs:label rows for
+    all eight ChEBI IDs and NCBITaxon:381666; OLS CHEBI:8298 and CHEBI:57315 terms;
+    taxon 381666 JSON.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: All canonical chemical labels and H16 taxon label match authority rows.
+    Official polymer term denotes a polyester polymer, not a small molecule. Strain
+    synonyms explain the primary literature names.
+- evidence_id: imodulondb
+  kind: database
+  reference: https://imodulondb.org/
+  locator: 'Canonical kg-microbe-sources imodulondb datasets output: all 28 dataset
+    rows in /private/tmp/pathwaymech-imodulondb-datasets-20261010.json (Markdown).'
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: context_only
+  summary: No Cupriavidus/Ralstonia/H16 dataset in this bounded catalog. Thus component/gene
+    searches are not applicable; this is not negative pathway or expression evidence.
+  search_scope: All 28 rows of the actual canonical dataset adapter output were inspected,
+    including organism names and keys; no broader absence claim.
+- evidence_id: history-search
+  kind: search
+  reference: Local review/report and cross-Mech research inventory
+  locator: rg --no-ignore --hidden -l -i across reviews, reports and research/cross_mech
+    for PWY1-3 and polyhydroxybutanoate/polyhydroxybutyrate biosynthesis.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: context_only
+  summary: Only the pre-existing cross-Mech research lead matched; no prior structured
+    PHB finding was located in this bounded search. Corrected GitHub findings are
+    therefore assessments, not fabricated structured resolved lineage.
+  search_scope: Included hidden and ignored files under reviews/, reports/ and research/cross_mech/
+    in this worktree; excluded .git and .venv internals. This establishes no prior
+    PHB review within that scope, not global pathway exhaustion.
+- evidence_id: source-graph-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-phb-independent-review/source-graph-check.json
+  locator: Independent check_source_graph.py output and independently merged raw Rhea
+    RDF statements.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: All 12 chemical edges, three catalyst edges, three pathway memberships
+    and two ordering edges checked. Three primary quotes match exactly and all 17
+    source artifact hashes match the source manifest.
+- evidence_id: polymer-export
+  kind: validation
+  reference: /private/tmp/pathwaymech-phb-independent-review/export-check.json
+  locator: Final actual PHB KGX node/edge TSV and rendered node data inspection.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Explicit category polymer is accepted by both schemas, exports as biolink:ChemicalEntity,
+    retains polymer source context, and is styled as chemical. Both PHB n and n+1
+    edge descriptions and evidence survive export.
+- evidence_id: gate-validate
+  kind: validation
+  reference: /private/tmp/pathwaymech-validate-20261010.log
+  locator: Complete command output inspected; parent confirmed actual terminal exit
+    status.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Final worktree integration receipt; full-corpus scope and terminal results
+    are retained in checks.
+  snapshot_sha256: ee22a7f926088416ef721834d777e3e385e7a6a25404e60c45410c92bff5ad0e
+- evidence_id: gate-test
+  kind: validation
+  reference: /private/tmp/pathwaymech-test-final-20261010.log
+  locator: Complete command output inspected; parent confirmed actual terminal exit
+    status.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Final worktree integration receipt; full-corpus scope and terminal results
+    are retained in checks.
+  snapshot_sha256: 5513cbd598095e77b3062ae0e72ee68ffa65987209bccacffad7bf18c18273f5
+- evidence_id: gate-lint
+  kind: validation
+  reference: /private/tmp/pathwaymech-lint-20261010.log
+  locator: Complete command output inspected; parent confirmed actual terminal exit
+    status.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Final worktree integration receipt; full-corpus scope and terminal results
+    are retained in checks.
+  snapshot_sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+- evidence_id: gate-vendored
+  kind: validation
+  reference: /private/tmp/pathwaymech-vendored-20261010.log
+  locator: Complete command output inspected; parent confirmed actual terminal exit
+    status.
+  accessed_at: '2026-10-10T21:00:52Z'
+  support: supports
+  summary: Final worktree integration receipt; full-corpus scope and terminal results
+    are retained in checks.
+  snapshot_sha256: b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact MetaCyc route and strain scope
+  outcome: supported
+  summary: MetaCyc PWY1-3 denotes the supported three-step PHB route. The maintained
+    record explicitly selects H16 core phaCAB proteins; it does not replace PHB with
+    the general PHA umbrella or extend H16 proteins to all species in MetaCyc.
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - record
+  - metacyc
+  - chemical-taxonomy-authorities
+  dimensions:
+  - name: taxon-scope
+    value: NCBITaxon:381666, Cupriavidus necator H16
+    definition: Selected organism-specific enzyme context; primary literature synonyms
+      are Alcaligenes eutrophus and Ralstonia eutropha H16.
+    evidence_ids:
+    - uniprot-p14611
+    - uniprot-p14697
+    - uniprot-p23608
+    - chemical-taxonomy-authorities
+- assessment_id: chemistry
+  area: graph
+  topic: Reaction orientation, local edges and source coverage
+  outcome: supported
+  summary: 'All 20 edges have local declared endpoints and source-specific support:
+    12 chemical participation, three catalysis, three membership and two order edges.
+    The chosen biosynthetic directions agree with native pathway layouts and Rhea
+    directional members; reversible thiolase family identity is not erased.'
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - rhea
+  - rhea-directions
+  - native-thiolase
+  - native-reductase
+  - native-polymerase
+  - source-graph-check
+  metrics:
+  - name: Mechanistic edges individually reviewed
+    value: 20
+    unit: edges
+    definition: All maintained edges checked against nearest inspected evidence.
+    denominator: 20
+    minimum: 0
+    maximum: 20
+- assessment_id: protein-evidence
+  area: evidence
+  topic: Core catalysts and experimental versus inferred annotations
+  outcome: supported
+  summary: Exact H16 PhaA, PhaB and PhaC identities and functions are supported. The
+    record retains mixed PhaA activity evidence, PhaB experimental FUNCTION evidence
+    separately from its unqualified activity field, and PhaC similarity-based activity
+    separately from experimental function/primary polymerization support.
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - uniprot-p14611
+  - uniprot-p14697
+  - uniprot-p23608
+  - primary-thiolase
+  - primary-reductase
+  - primary-polymerase
+  - primary-h16-context
+  dimensions:
+  - name: evidence-tier
+    value: Inspected structured database assertions plus primary experimental abstracts
+      and bounded PhaC full-text passages
+    definition: Not all source annotations are direct experiments; similarity and
+      experiment are distinguished at their native fields.
+    evidence_ids:
+    - uniprot-p14611
+    - uniprot-p14697
+    - uniprot-p23608
+    - primary-h16-context
+- assessment_id: polymer-scope
+  area: representation
+  topic: Polymer class and chain-extension states
+  outcome: supported
+  summary: CHEBI:8298 is a polymer class. Explicit polymer category now preserves
+    ChemicalEntity export and chemical rendering. Edge descriptions/evidence retain
+    source n versus n+1, although those states share one class node. This bounded
+    graph does not purport to be an atom-mapped, chain-instance or stoichiometric
+    model.
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - record
+  - rhea
+  - chemical-taxonomy-authorities
+  - polymer-export
+- assessment_id: omissions
+  area: completeness
+  topic: Bounded core-route completeness
+  outcome: supported
+  summary: The three-step core route is complete within its declared scope. Alternative
+    H16 isoenzymes, granule architecture, regulation, degradation, copolymer synthesis
+    and initiation chemistry are excluded explicitly. NADPH is a cosubstrate; no permanent
+    cofactor or universal subcellular/oligomer-state assertions are invented.
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - record
+  - metacyc
+  - primary-scope
+  - primary-h16-context
+- assessment_id: provenance
+  area: provenance
+  topic: Source identity, primary excerpts and corrected crosswalk evidence
+  outcome: supported
+  summary: 'Native objects, raw artifact digests and reference metadata were inspected.
+    All three primary excerpts are exact; 17 artifact digests match. The five membership/order
+    edges now distinguish MetaCyc membership/order evidence from separately cited
+    Rhea native-to-directed crosswalk evidence, correcting the concern in GitHub #313.
+    TSV digest scope is explicit.'
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - rhea
+  - rhea-directions
+  - source-graph-check
+  - record
+  - history-search
+- assessment_id: export-correction
+  area: consistency
+  topic: Verification of issue 315 correction
+  outcome: supported
+  summary: 'The previously reported polymer-as-SmallMolecule fallback is corrected
+    in the final record/schema/exporter. Independent actual-record KGX inspection
+    confirms ChemicalEntity with source_category polymer while acetyl-CoA remains
+    SmallMolecule. This records an applied correction associated with GitHub #315,
+    not a structured resolved disposition without a prior review finding.'
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - polymer-export
+  - chemical-taxonomy-authorities
+  - record
+- assessment_id: transcriptomics
+  area: scope
+  topic: iModulonDB context applicability
+  outcome: not_applicable
+  summary: The canonical dataset list has no matching H16/Cupriavidus/Ralstonia dataset.
+    No component-level search is applicable and the absence is not biological evidence.
+  target_ids:
+  - MetaCyc:PWY1-3
+  evidence_ids:
+  - imodulondb
+findings: []
+actions: []
+limitations:
+- The PHB polymer is a chemical class shared by n and n+1 edges; distinct physical
+  chain states and stoichiometric coefficients are preserved in descriptions/source
+  evidence, not schema-level instance or coefficient slots.
+- Core phaCAB scope excludes alternative H16 isoenzymes, regulatory/granule context,
+  degradation, copolymers and a definitive initiation mechanism.
+- Primary evidence inspection comprises all five preserved abstracts plus selected
+  PhaC full-text methods/results/strain passages; this is not an exhaustive literature
+  review. Database annotation evidence tiers and tagged/recombinant experimental systems
+  remain distinct.
+- Native browser preview was unavailable to the parent (CUA had no browser). Actual
+  SVG endpoint/evidence-link auditing and page consistency checks support representation;
+  no visual browser review is claimed.
+- Raw downloads, local ontology databases and command receipts reside in external
+  caches; stable URLs, input/artifact hashes and maintained source projections support
+  reproduction.
+- Required integration gate receipts were executed by the parent on the same final
+  worktree and inspected by this reviewer; the scientific assessment itself was independent.
+notes:
+- GitHub issues 313 and 315 were corrected before this final observation. No structured
+  predecessor was found in the bounded hidden/ignored-inclusive review search; findings
+  are therefore not fabricated as resolved lineage.
+- The canonical iModulonDB datasets artifact has a .json suffix but contains Markdown;
+  all 28 rows were inspected.
+- An initial temporary export-check helper assumed raw edge IDs survived as suffixes
+  and failed its lookup; correcting the helper to match exact subject/predicate/object
+  triples verified all exported edge evidence. This was a reviewer-helper error, not
+  a record/export defect.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/313
+- https://github.com/CultureBotAI/PathwayMech/issues/315
+tags:
+- phb
+- independent-review
+- core-route
+- polymer
+```

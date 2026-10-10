@@ -23,6 +23,12 @@ role. A chemical may be both a reaction participant and an enzyme cofactor;
 the incident edges distinguish those roles. Cellular components and biological
 processes are context nodes, not metabolites to consume.
 
+Use `polymer` for a supported chemical polymer class. It exports as
+`biolink:ChemicalEntity` and renders as a chemical node, avoiding the default
+small-molecule classification for an uncategorized ChEBI participant. This
+category does not distinguish individual chain lengths; preserve those source
+states explicitly in the incident edge evidence and descriptions.
+
 - `has_input` and `has_output` preserve an activity model's assertions without
   claiming chemical destruction or synthesis. Both point from activity to
   participant. `consumes` points from participant to reaction or pathway;

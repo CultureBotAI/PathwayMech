@@ -1,0 +1,26 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/kgx.py
+  slug: polymer-category
+session:
+  id: 2026-10-10T205239Z-Codex-04028d
+  timestamp: '2026-10-10T20:52:39Z'
+  actors:
+  - type: ai_agent
+    name: Codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/315
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve chemical polymer typing through validation, KGX and pathway diagrams
+  details: The exported PHB node inherited biolink SmallMolecule from the CHEBI prefix when
+    its YAML category was omitted. Added an explicit polymer enum to both local validators,
+    mapped it to biolink ChemicalEntity in KGX and to the chemical diagram style, and declared
+    it on the PHB participant. A regression test exports the actual PHB record and checks
+    category, source category and context while retaining acetyl-CoA as a small molecule.
+    Generic prefix defaults and other records are unchanged.

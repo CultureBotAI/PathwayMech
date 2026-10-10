@@ -1,0 +1,931 @@
+id: MetaCyc:NONMEVIPP-PWY
+label: methylerythritol phosphate pathway I
+description: The methylerythritol phosphate (MEP/DOXP) route converts pyruvate and D-glyceraldehyde 3-phosphate
+  to isopentenyl diphosphate (IPP) and dimethylallyl diphosphate (DMAPP). This record represents the Escherichia
+  coli K-12 enzyme set; the native MetaCyc pathway also lists K-12 MG1655 and Brucella abortus. IspH directly
+  supplies both products; Idi is an additional interconversion, not an obligatory route to DMAPP. Variant
+  I uses flavodoxin for IspG. Current Rhea IspH equations use generic ferredoxin, whereas primary E. coli
+  assays support flavodoxin-dependent activation; unresolved carrier-state edges are omitted. This partial
+  chemical graph is not a stoichiometric flux model, and source reaction directions do not imply irreversibility.
+pathway_type: isoprenoid-precursor-biosynthesis
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:59776
+  label: D-glyceraldehyde 3-phosphate
+  category: small_molecule
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15378
+  label: H(+)
+  category: small_molecule
+- id: CHEBI:57792
+  label: 1-deoxy-D-xylulose 5-phosphate
+  category: small_molecule
+- id: CHEBI:16526
+  label: CO2
+  category: small_molecule
+- id: UniProtKB:P77488
+  label: 1-deoxy-D-xylulose-5-phosphate synthase
+  category: protein
+- id: CHEBI:57783
+  label: NADPH
+  category: small_molecule
+- id: CHEBI:58262
+  label: 2-C-methyl-D-erythritol 4-phosphate
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(+)
+  category: small_molecule
+- id: UniProtKB:P45568
+  label: 1-deoxy-D-xylulose 5-phosphate reductoisomerase
+  category: protein
+- id: CHEBI:37563
+  label: CTP
+  category: small_molecule
+- id: CHEBI:57823
+  label: 4-CDP-2-C-methyl-D-erythritol
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate
+  category: small_molecule
+- id: UniProtKB:Q46893
+  label: 2-C-methyl-D-erythritol 4-phosphate cytidylyltransferase
+  category: protein
+- id: CHEBI:30616
+  label: ATP
+  category: small_molecule
+- id: CHEBI:57919
+  label: 4-CDP-2-C-methyl-D-erythritol 2-phosphate
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP
+  category: small_molecule
+- id: UniProtKB:P62615
+  label: 4-diphosphocytidyl-2-C-methyl-D-erythritol kinase
+  category: protein
+- id: CHEBI:58483
+  label: 2-C-methyl-D-erythritol 2,4-cyclic diphosphate
+  category: small_molecule
+- id: CHEBI:60377
+  label: CMP
+  category: small_molecule
+- id: UniProtKB:P62617
+  label: 2-C-methyl-D-erythritol 2,4-cyclodiphosphate synthase
+  category: protein
+- id: CHEBI:128753
+  label: (2E)-4-hydroxy-3-methylbut-2-enyl diphosphate
+  category: small_molecule
+- id: CHEBI:15377
+  label: H2O
+  category: small_molecule
+- id: UniProtKB:P62620
+  label: 4-hydroxy-3-methylbut-2-en-1-yl diphosphate synthase (flavodoxin)
+  category: protein
+- id: CHEBI:128769
+  label: isopentenyl diphosphate
+  category: small_molecule
+- id: UniProtKB:P62623
+  label: 4-hydroxy-3-methylbut-2-enyl diphosphate reductase
+  category: protein
+- id: CHEBI:57623
+  label: dimethylallyl diphosphate
+  category: small_molecule
+- id: UniProtKB:Q46822
+  label: Isopentenyl-diphosphate Delta-isomerase
+  category: protein
+- id: CHEBI:18420
+  label: Mg(2+)
+  category: cofactor
+- id: CHEBI:58937
+  label: thiamine diphosphate
+  category: cofactor
+- id: CHEBI:29035
+  label: Mn(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: Co(2+)
+  category: cofactor
+- id: CHEBI:60240
+  label: a divalent metal cation
+  category: cofactor
+- id: CHEBI:49883
+  label: '[4Fe-4S] cluster'
+  category: cofactor
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:12606
+  label: Dxs condensation to 1-deoxy-D-xylulose 5-phosphate
+  direction: left_to_right
+- id: RHEA:13719
+  label: Dxr rearrangement and reduction to MEP
+  direction: right_to_left
+- id: RHEA:13430
+  label: IspD cytidylylation of MEP
+  direction: left_to_right
+- id: RHEA:18438
+  label: IspE phosphorylation of CDP-ME
+  direction: left_to_right
+- id: RHEA:23865
+  label: IspF formation of methylerythritol cyclic diphosphate
+  direction: left_to_right
+- id: RHEA:43606
+  label: IspG reduction to HMBPP (flavodoxin reaction family)
+  direction: right_to_left
+- id: RHEA:24490
+  label: IspH HMBPP reduction to IPP (chemical-side projection)
+  direction: right_to_left
+- id: RHEA:24827
+  label: IspH HMBPP reduction to DMAPP (chemical-side projection)
+  direction: right_to_left
+- id: RHEA:23285
+  label: Idi interconversion of IPP to DMAPP
+  direction: left_to_right
+mechanistic_edges:
+- id: edge-001
+  subject: CHEBI:59776
+  predicate: consumes
+  object: RHEA:12606
+  evidence:
+  - reference_id: RHEA:12606
+    source_assertion: Rhea RHEA:12606 places CHEBI:59776 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12606']/rh:substrates; http://rdf.rhea-db.org/12605_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_12605_compound_6062/rh:compound; http://rdf.rhea-db.org/Compound_6062/rh:accession
+- id: edge-002
+  subject: CHEBI:15361
+  predicate: consumes
+  object: RHEA:12606
+  evidence:
+  - reference_id: RHEA:12606
+    source_assertion: Rhea RHEA:12606 places CHEBI:15361 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12606']/rh:substrates; http://rdf.rhea-db.org/12605_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_12605_compound_3719/rh:compound; http://rdf.rhea-db.org/Compound_3719/rh:accession
+- id: edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:12606
+  evidence:
+  - reference_id: RHEA:12606
+    source_assertion: Rhea RHEA:12606 places CHEBI:15378 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12606']/rh:substrates; http://rdf.rhea-db.org/12605_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_12605_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-004
+  subject: RHEA:12606
+  predicate: produces
+  object: CHEBI:57792
+  evidence:
+  - reference_id: RHEA:12606
+    source_assertion: Rhea RHEA:12606 places CHEBI:57792 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12606']/rh:products; http://rdf.rhea-db.org/12605_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_12605_compound_2654/rh:compound; http://rdf.rhea-db.org/Compound_2654/rh:accession
+- id: edge-005
+  subject: RHEA:12606
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: RHEA:12606
+    source_assertion: Rhea RHEA:12606 places CHEBI:16526 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12606']/rh:products; http://rdf.rhea-db.org/12605_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_12605_compound_4391/rh:compound; http://rdf.rhea-db.org/Compound_4391/rh:accession
+- id: edge-006
+  subject: UniProtKB:P77488
+  predicate: catalyzes
+  object: RHEA:12606
+  evidence:
+  - reference_id: UniProtKB:P77488
+    source_assertion: 'UniProt UniProtKB:P77488 assigns catalytic activity to RHEA:12605, the reaction
+      family of RHEA:12606; organism NCBITaxon:83333. Annotation evidence: ECO:0000269.'
+    source_locator: results[primaryAccession='P77488'].comments[1].reaction
+- id: edge-007
+  subject: CHEBI:57792
+  predicate: consumes
+  object: RHEA:13719
+  evidence:
+  - reference_id: RHEA:13719
+    source_assertion: Rhea RHEA:13719 places CHEBI:57792 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13719']/rh:substrates; http://rdf.rhea-db.org/13717_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13717_compound_2654/rh:compound; http://rdf.rhea-db.org/Compound_2654/rh:accession
+- id: edge-008
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:13719
+  evidence:
+  - reference_id: RHEA:13719
+    source_assertion: Rhea RHEA:13719 places CHEBI:57783 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13719']/rh:substrates; http://rdf.rhea-db.org/13717_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13717_compound_3438/rh:compound; http://rdf.rhea-db.org/Compound_3438/rh:accession
+- id: edge-009
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:13719
+  evidence:
+  - reference_id: RHEA:13719
+    source_assertion: Rhea RHEA:13719 places CHEBI:15378 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13719']/rh:substrates; http://rdf.rhea-db.org/13717_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13717_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-010
+  subject: RHEA:13719
+  predicate: produces
+  object: CHEBI:58262
+  evidence:
+  - reference_id: RHEA:13719
+    source_assertion: Rhea RHEA:13719 places CHEBI:58262 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13719']/rh:products; http://rdf.rhea-db.org/13717_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13717_compound_3223/rh:compound; http://rdf.rhea-db.org/Compound_3223/rh:accession
+- id: edge-011
+  subject: RHEA:13719
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:13719
+    source_assertion: Rhea RHEA:13719 places CHEBI:58349 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13719']/rh:products; http://rdf.rhea-db.org/13717_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13717_compound_5188/rh:compound; http://rdf.rhea-db.org/Compound_5188/rh:accession
+- id: edge-012
+  subject: UniProtKB:P45568
+  predicate: catalyzes
+  object: RHEA:13719
+  evidence:
+  - reference_id: UniProtKB:P45568
+    source_assertion: 'UniProt UniProtKB:P45568 assigns catalytic activity to RHEA:13717, the reaction
+      family of RHEA:13719; organism NCBITaxon:83333. Annotation evidence: ECO:0000269.'
+    source_locator: results[primaryAccession='P45568'].comments[1].reaction
+- id: edge-013
+  subject: CHEBI:58262
+  predicate: consumes
+  object: RHEA:13430
+  evidence:
+  - reference_id: RHEA:13430
+    source_assertion: Rhea RHEA:13430 places CHEBI:58262 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13430']/rh:substrates; http://rdf.rhea-db.org/13429_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13429_compound_3223/rh:compound; http://rdf.rhea-db.org/Compound_3223/rh:accession
+- id: edge-014
+  subject: CHEBI:37563
+  predicate: consumes
+  object: RHEA:13430
+  evidence:
+  - reference_id: RHEA:13430
+    source_assertion: Rhea RHEA:13430 places CHEBI:37563 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13430']/rh:substrates; http://rdf.rhea-db.org/13429_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13429_compound_6434/rh:compound; http://rdf.rhea-db.org/Compound_6434/rh:accession
+- id: edge-015
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:13430
+  evidence:
+  - reference_id: RHEA:13430
+    source_assertion: Rhea RHEA:13430 places CHEBI:15378 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13430']/rh:substrates; http://rdf.rhea-db.org/13429_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13429_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-016
+  subject: RHEA:13430
+  predicate: produces
+  object: CHEBI:57823
+  evidence:
+  - reference_id: RHEA:13430
+    source_assertion: Rhea RHEA:13430 places CHEBI:57823 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13430']/rh:products; http://rdf.rhea-db.org/13429_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13429_compound_1305/rh:compound; http://rdf.rhea-db.org/Compound_1305/rh:accession
+- id: edge-017
+  subject: RHEA:13430
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:13430
+    source_assertion: Rhea RHEA:13430 places CHEBI:33019 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13430']/rh:products; http://rdf.rhea-db.org/13429_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_13429_compound_2106/rh:compound; http://rdf.rhea-db.org/Compound_2106/rh:accession
+- id: edge-018
+  subject: UniProtKB:Q46893
+  predicate: catalyzes
+  object: RHEA:13430
+  evidence:
+  - reference_id: UniProtKB:Q46893
+    source_assertion: 'UniProt UniProtKB:Q46893 assigns catalytic activity to RHEA:13429, the reaction
+      family of RHEA:13430; organism NCBITaxon:83333. Annotation evidence: no evidence code supplied on
+      this source field.'
+    source_locator: results[primaryAccession='Q46893'].comments[1].reaction
+- id: edge-019
+  subject: CHEBI:57823
+  predicate: consumes
+  object: RHEA:18438
+  evidence:
+  - reference_id: RHEA:18438
+    source_assertion: Rhea RHEA:18438 places CHEBI:57823 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18438']/rh:substrates; http://rdf.rhea-db.org/18437_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_18437_compound_1305/rh:compound; http://rdf.rhea-db.org/Compound_1305/rh:accession
+- id: edge-020
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:18438
+  evidence:
+  - reference_id: RHEA:18438
+    source_assertion: Rhea RHEA:18438 places CHEBI:30616 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18438']/rh:substrates; http://rdf.rhea-db.org/18437_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_18437_compound_6372/rh:compound; http://rdf.rhea-db.org/Compound_6372/rh:accession
+- id: edge-021
+  subject: RHEA:18438
+  predicate: produces
+  object: CHEBI:57919
+  evidence:
+  - reference_id: RHEA:18438
+    source_assertion: Rhea RHEA:18438 places CHEBI:57919 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18438']/rh:products; http://rdf.rhea-db.org/18437_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_18437_compound_1085/rh:compound; http://rdf.rhea-db.org/Compound_1085/rh:accession
+- id: edge-022
+  subject: RHEA:18438
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:18438
+    source_assertion: Rhea RHEA:18438 places CHEBI:456216 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18438']/rh:products; http://rdf.rhea-db.org/18437_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_18437_compound_2710/rh:compound; http://rdf.rhea-db.org/Compound_2710/rh:accession
+- id: edge-023
+  subject: RHEA:18438
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:18438
+    source_assertion: Rhea RHEA:18438 places CHEBI:15378 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18438']/rh:products; http://rdf.rhea-db.org/18437_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_18437_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-024
+  subject: UniProtKB:P62615
+  predicate: catalyzes
+  object: RHEA:18438
+  evidence:
+  - reference_id: UniProtKB:P62615
+    source_assertion: 'UniProt UniProtKB:P62615 assigns catalytic activity to RHEA:18437, the reaction
+      family of RHEA:18438; organism NCBITaxon:83333. Annotation evidence: ECO:0000269.'
+    source_locator: results[primaryAccession='P62615'].comments[1].reaction
+- id: edge-025
+  subject: CHEBI:57919
+  predicate: consumes
+  object: RHEA:23865
+  evidence:
+  - reference_id: RHEA:23865
+    source_assertion: Rhea RHEA:23865 places CHEBI:57919 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23865']/rh:substrates; http://rdf.rhea-db.org/23864_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_23864_compound_1085/rh:compound; http://rdf.rhea-db.org/Compound_1085/rh:accession
+- id: edge-026
+  subject: RHEA:23865
+  predicate: produces
+  object: CHEBI:58483
+  evidence:
+  - reference_id: RHEA:23865
+    source_assertion: Rhea RHEA:23865 places CHEBI:58483 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23865']/rh:products; http://rdf.rhea-db.org/23864_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_23864_compound_2953/rh:compound; http://rdf.rhea-db.org/Compound_2953/rh:accession
+- id: edge-027
+  subject: RHEA:23865
+  predicate: produces
+  object: CHEBI:60377
+  evidence:
+  - reference_id: RHEA:23865
+    source_assertion: Rhea RHEA:23865 places CHEBI:60377 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23865']/rh:products; http://rdf.rhea-db.org/23864_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_23864_compound_3543/rh:compound; http://rdf.rhea-db.org/Compound_3543/rh:accession
+- id: edge-028
+  subject: UniProtKB:P62617
+  predicate: catalyzes
+  object: RHEA:23865
+  evidence:
+  - reference_id: UniProtKB:P62617
+    source_assertion: 'UniProt UniProtKB:P62617 assigns catalytic activity to RHEA:23864, the reaction
+      family of RHEA:23865; organism NCBITaxon:83333. Annotation evidence: ECO:0000255, ECO:0000269.'
+    source_locator: results[primaryAccession='P62617'].comments[1].reaction
+- id: edge-029
+  subject: CHEBI:58483
+  predicate: consumes
+  object: RHEA:43606
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:43606
+    source_assertion: Rhea RHEA:43606 places CHEBI:58483 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/43606']/rh:substrates; http://rdf.rhea-db.org/43604_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_43604_compound_2953/rh:compound; http://rdf.rhea-db.org/Compound_2953/rh:accession
+- id: edge-030
+  subject: RHEA:43606
+  predicate: produces
+  object: CHEBI:128753
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:43606
+    source_assertion: Rhea RHEA:43606 places CHEBI:128753 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/43606']/rh:products; http://rdf.rhea-db.org/43604_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_43604_compound_2971/rh:compound; http://rdf.rhea-db.org/Compound_2971/rh:accession
+- id: edge-031
+  subject: RHEA:43606
+  predicate: produces
+  object: CHEBI:15377
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:43606
+    source_assertion: Rhea RHEA:43606 places CHEBI:15377 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/43606']/rh:products; http://rdf.rhea-db.org/43604_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_43604_compound_1283/rh:compound; http://rdf.rhea-db.org/Compound_1283/rh:accession
+- id: edge-032
+  subject: RHEA:43606
+  predicate: produces
+  object: CHEBI:15378
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:43606
+    source_assertion: Rhea RHEA:43606 places CHEBI:15378 on its products side; coefficient 2.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/43606']/rh:products; http://rdf.rhea-db.org/43604_L/rh:contains2;
+      http://rdf.rhea-db.org/Participant_43604_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-033
+  subject: UniProtKB:P62620
+  predicate: catalyzes
+  object: RHEA:43606
+  evidence:
+  - reference_id: UniProtKB:P62620
+    source_assertion: 'UniProt UniProtKB:P62620 assigns catalytic activity to RHEA:43604, the reaction
+      family of RHEA:43606; organism NCBITaxon:83333. Annotation evidence: ECO:0000255, ECO:0000269.'
+    source_locator: results[primaryAccession='P62620'].comments[1].reaction
+- id: edge-034
+  subject: CHEBI:128753
+  predicate: consumes
+  object: RHEA:24490
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24490
+    source_assertion: Rhea RHEA:24490 places CHEBI:128753 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24490']/rh:substrates; http://rdf.rhea-db.org/24488_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_24488_compound_2971/rh:compound; http://rdf.rhea-db.org/Compound_2971/rh:accession
+- id: edge-035
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:24490
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24490
+    source_assertion: Rhea RHEA:24490 places CHEBI:15378 on its substrates side; coefficient 2.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24490']/rh:substrates; http://rdf.rhea-db.org/24488_R/rh:contains2;
+      http://rdf.rhea-db.org/Participant_24488_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-036
+  subject: RHEA:24490
+  predicate: produces
+  object: CHEBI:128769
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24490
+    source_assertion: Rhea RHEA:24490 places CHEBI:128769 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24490']/rh:products; http://rdf.rhea-db.org/24488_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_24488_compound_4425/rh:compound; http://rdf.rhea-db.org/Compound_4425/rh:accession
+- id: edge-037
+  subject: RHEA:24490
+  predicate: produces
+  object: CHEBI:15377
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24490
+    source_assertion: Rhea RHEA:24490 places CHEBI:15377 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24490']/rh:products; http://rdf.rhea-db.org/24488_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_24488_compound_1283/rh:compound; http://rdf.rhea-db.org/Compound_1283/rh:accession
+- id: edge-038
+  subject: UniProtKB:P62623
+  predicate: catalyzes
+  object: RHEA:24490
+  description: The supported IspH chemical conversion is retained. Its UniProt/Rhea generic ferredoxin
+    equation does not establish the E. coli physiological donor; flavodoxin-dependent activation was observed
+    in PMID:12571359.
+  evidence:
+  - reference_id: UniProtKB:P62623
+    source_assertion: 'UniProt UniProtKB:P62623 assigns catalytic activity to RHEA:24488, the reaction
+      family of RHEA:24490; organism NCBITaxon:83333. Annotation evidence: ECO:0000269.'
+    source_locator: results[primaryAccession='P62623'].comments[1].reaction
+- id: edge-039
+  subject: CHEBI:128753
+  predicate: consumes
+  object: RHEA:24827
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24827
+    source_assertion: Rhea RHEA:24827 places CHEBI:128753 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24827']/rh:substrates; http://rdf.rhea-db.org/24825_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_24825_compound_2971/rh:compound; http://rdf.rhea-db.org/Compound_2971/rh:accession
+- id: edge-040
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:24827
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24827
+    source_assertion: Rhea RHEA:24827 places CHEBI:15378 on its substrates side; coefficient 2.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24827']/rh:substrates; http://rdf.rhea-db.org/24825_R/rh:contains2;
+      http://rdf.rhea-db.org/Participant_24825_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:accession
+- id: edge-041
+  subject: RHEA:24827
+  predicate: produces
+  object: CHEBI:57623
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24827
+    source_assertion: Rhea RHEA:24827 places CHEBI:57623 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24827']/rh:products; http://rdf.rhea-db.org/24825_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_24825_compound_1833/rh:compound; http://rdf.rhea-db.org/Compound_1833/rh:accession
+- id: edge-042
+  subject: RHEA:24827
+  predicate: produces
+  object: CHEBI:15377
+  description: 'Chemical-side projection only: source generic electron-carrier states are not represented.
+    This edge does not establish a balanced complete reaction or the physiological donor identity.'
+  evidence:
+  - reference_id: RHEA:24827
+    source_assertion: Rhea RHEA:24827 places CHEBI:15377 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24827']/rh:products; http://rdf.rhea-db.org/24825_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_24825_compound_1283/rh:compound; http://rdf.rhea-db.org/Compound_1283/rh:accession
+- id: edge-043
+  subject: UniProtKB:P62623
+  predicate: catalyzes
+  object: RHEA:24827
+  description: The supported IspH chemical conversion is retained. Its UniProt/Rhea generic ferredoxin
+    equation does not establish the E. coli physiological donor; flavodoxin-dependent activation was observed
+    in PMID:12571359.
+  evidence:
+  - reference_id: UniProtKB:P62623
+    source_assertion: 'UniProt UniProtKB:P62623 assigns catalytic activity to RHEA:24825, the reaction
+      family of RHEA:24827; organism NCBITaxon:83333. Annotation evidence: ECO:0000269.'
+    source_locator: results[primaryAccession='P62623'].comments[2].reaction
+- id: edge-044
+  subject: CHEBI:128769
+  predicate: consumes
+  object: RHEA:23285
+  evidence:
+  - reference_id: RHEA:23285
+    source_assertion: Rhea RHEA:23285 places CHEBI:128769 on its substrates side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23285']/rh:substrates; http://rdf.rhea-db.org/23284_L/rh:contains1;
+      http://rdf.rhea-db.org/Participant_23284_compound_4425/rh:compound; http://rdf.rhea-db.org/Compound_4425/rh:accession
+- id: edge-045
+  subject: RHEA:23285
+  predicate: produces
+  object: CHEBI:57623
+  evidence:
+  - reference_id: RHEA:23285
+    source_assertion: Rhea RHEA:23285 places CHEBI:57623 on its products side; coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23285']/rh:products; http://rdf.rhea-db.org/23284_R/rh:contains1;
+      http://rdf.rhea-db.org/Participant_23284_compound_1833/rh:compound; http://rdf.rhea-db.org/Compound_1833/rh:accession
+- id: edge-046
+  subject: UniProtKB:Q46822
+  predicate: catalyzes
+  object: RHEA:23285
+  description: Additional IPP/DMAPP interconversion. IspH already produces both products; this is not
+    an obligatory DMAPP-forming step. Left-to-right is the source-selected orientation, not a claim of
+    irreversibility.
+  evidence:
+  - reference_id: UniProtKB:Q46822
+    source_assertion: 'UniProt UniProtKB:Q46822 assigns catalytic activity to RHEA:23284, the reaction
+      family of RHEA:23285; organism NCBITaxon:83333. Annotation evidence: ECO:0000269.'
+    source_locator: results[primaryAccession='Q46822'].comments[1].reaction
+- id: edge-047
+  subject: RHEA:43606
+  predicate: precedes
+  object: RHEA:24490
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists RXN-15878 as a predecessor reaction of ISPH2-RXN. The
+      reviewed reaction mappings are RHEA:43606 and RHEA:24490, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='ISPH2-RXN']/predecessor-reactions/Reaction[@frameid='RXN-15878']
+- id: edge-048
+  subject: RHEA:43606
+  predicate: precedes
+  object: RHEA:24827
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists RXN-15878 as a predecessor reaction of RXN0-884. The
+      reviewed reaction mappings are RHEA:43606 and RHEA:24827, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='RXN0-884']/predecessor-reactions/Reaction[@frameid='RXN-15878']
+- id: edge-049
+  subject: RHEA:23865
+  predicate: precedes
+  object: RHEA:43606
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists RXN0-302 as a predecessor reaction of RXN-15878. The
+      reviewed reaction mappings are RHEA:23865 and RHEA:43606, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='RXN-15878']/predecessor-reactions/Reaction[@frameid='RXN0-302']
+- id: edge-050
+  subject: RHEA:13719
+  predicate: precedes
+  object: RHEA:13430
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists DXPREDISOM-RXN as a predecessor reaction of 2.7.7.60-RXN.
+      The reviewed reaction mappings are RHEA:13719 and RHEA:13430, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='2.7.7.60-RXN']/predecessor-reactions/Reaction[@frameid='DXPREDISOM-RXN']
+- id: edge-051
+  subject: RHEA:12606
+  predicate: precedes
+  object: RHEA:13719
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists DXS-RXN as a predecessor reaction of DXPREDISOM-RXN.
+      The reviewed reaction mappings are RHEA:12606 and RHEA:13719, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='DXPREDISOM-RXN']/predecessor-reactions/Reaction[@frameid='DXS-RXN']
+- id: edge-052
+  subject: RHEA:13430
+  predicate: precedes
+  object: RHEA:18438
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists 2.7.7.60-RXN as a predecessor reaction of 2.7.1.148-RXN.
+      The reviewed reaction mappings are RHEA:13430 and RHEA:18438, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='2.7.1.148-RXN']/predecessor-reactions/Reaction[@frameid='2.7.7.60-RXN']
+- id: edge-053
+  subject: RHEA:18438
+  predicate: precedes
+  object: RHEA:23865
+  description: Native pathway ordering projected to the reviewed reaction mappings.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists 2.7.1.148-RXN as a predecessor reaction of RXN0-302.
+      The reviewed reaction mappings are RHEA:18438 and RHEA:23865, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='RXN0-302']/predecessor-reactions/Reaction[@frameid='2.7.1.148-RXN']
+- id: edge-054
+  subject: RHEA:24490
+  predicate: precedes
+  object: RHEA:23285
+  description: Native ordering places optional Idi after the IPP-forming IspH branch; the separate IspH
+    DMAPP-producing branch is retained and does not require Idi.
+  evidence:
+  - reference_id: MetaCyc:NONMEVIPP-PWY
+    source_assertion: MetaCyc NONMEVIPP-PWY lists ISPH2-RXN as a predecessor reaction of IPPISOM-RXN.
+      The reviewed reaction mappings are RHEA:24490 and RHEA:23285, respectively.
+    source_locator: Pathway[@frameid='NONMEVIPP-PWY']/reaction-ordering[Reaction/@frameid='IPPISOM-RXN']/predecessor-reactions/Reaction[@frameid='ISPH2-RXN']
+- id: edge-055
+  subject: UniProtKB:P77488
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Binds 1 Mg(2+) ion per subunit.
+  evidence:
+  - reference_id: UniProtKB:P77488
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P77488. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='P77488'].comments[2].cofactors[0] and note
+- id: edge-056
+  subject: UniProtKB:P77488
+  predicate: has_cofactor
+  object: CHEBI:58937
+  description: Binds 1 thiamine pyrophosphate per subunit.
+  evidence:
+  - reference_id: UniProtKB:P77488
+    source_assertion: 'UniProt lists CHEBI:58937 as a cofactor of UniProtKB:P77488. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='P77488'].comments[3].cofactors[0] and note
+- id: edge-057
+  subject: UniProtKB:P45568
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Divalent cation. Prefers Mg(2+), Mn(2+) or Co(2+). These listed metal possibilities do
+    not assert that all three metals are simultaneously required.
+  evidence:
+  - reference_id: UniProtKB:P45568
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P45568. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='P45568'].comments[2].cofactors[0] and note
+- id: edge-058
+  subject: UniProtKB:P45568
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Divalent cation. Prefers Mg(2+), Mn(2+) or Co(2+). These listed metal possibilities do
+    not assert that all three metals are simultaneously required.
+  evidence:
+  - reference_id: UniProtKB:P45568
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P45568. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='P45568'].comments[2].cofactors[1] and note
+- id: edge-059
+  subject: UniProtKB:P45568
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Divalent cation. Prefers Mg(2+), Mn(2+) or Co(2+). These listed metal possibilities do
+    not assert that all three metals are simultaneously required.
+  evidence:
+  - reference_id: UniProtKB:P45568
+    source_assertion: 'UniProt lists CHEBI:48828 as a cofactor of UniProtKB:P45568. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='P45568'].comments[2].cofactors[2] and note
+- id: edge-060
+  subject: UniProtKB:Q46893
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: These listed metal possibilities do not assert that all three metals are simultaneously
+    required. The source field supplies no evidence code; no direct experimental claim is inferred.
+  evidence:
+  - reference_id: UniProtKB:Q46893
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:Q46893. Annotation evidence:
+      no evidence code supplied on this source field.'
+    source_locator: results[primaryAccession='Q46893'].comments[2].cofactors[0] and note
+- id: edge-061
+  subject: UniProtKB:Q46893
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: These listed metal possibilities do not assert that all three metals are simultaneously
+    required. The source field supplies no evidence code; no direct experimental claim is inferred.
+  evidence:
+  - reference_id: UniProtKB:Q46893
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:Q46893. Annotation evidence:
+      no evidence code supplied on this source field.'
+    source_locator: results[primaryAccession='Q46893'].comments[2].cofactors[1] and note
+- id: edge-062
+  subject: UniProtKB:Q46893
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: These listed metal possibilities do not assert that all three metals are simultaneously
+    required. The source field supplies no evidence code; no direct experimental claim is inferred.
+  evidence:
+  - reference_id: UniProtKB:Q46893
+    source_assertion: 'UniProt lists CHEBI:48828 as a cofactor of UniProtKB:Q46893. Annotation evidence:
+      no evidence code supplied on this source field.'
+    source_locator: results[primaryAccession='Q46893'].comments[2].cofactors[2] and note
+- id: edge-063
+  subject: UniProtKB:P62617
+  predicate: has_cofactor
+  object: CHEBI:60240
+  description: Binds 1 divalent metal cation per subunit.
+  evidence:
+  - reference_id: UniProtKB:P62617
+    source_assertion: 'UniProt lists CHEBI:60240 as a cofactor of UniProtKB:P62617. Annotation evidence:
+      ECO:0000255, ECO:0000269.'
+    source_locator: results[primaryAccession='P62617'].comments[3].cofactors[0] and note
+- id: edge-064
+  subject: UniProtKB:P62620
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: Binds 1 [4Fe-4S] cluster.
+  evidence:
+  - reference_id: UniProtKB:P62620
+    source_assertion: 'UniProt lists CHEBI:49883 as a cofactor of UniProtKB:P62620. Annotation evidence:
+      ECO:0000255, ECO:0000269.'
+    source_locator: results[primaryAccession='P62620'].comments[2].cofactors[0] and note
+- id: edge-065
+  subject: UniProtKB:P62623
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: Was shown to bind 1 [3Fe-4S] cluster per subunit (PubMed:15469281, PubMed:19569147, PubMed:20080550).
+    However, it initially contains a [4Fe-4S] cluster which easily degrades into a [3Fe-4S] form in the
+    presence of oxygen (PubMed:12706830, PubMed:20080550, PubMed:22137895, PubMed:22687151).
+  evidence:
+  - reference_id: UniProtKB:P62623
+    source_assertion: 'UniProt lists CHEBI:49883 as a cofactor of UniProtKB:P62623. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='P62623'].comments[3].cofactors[0] and note
+- id: edge-066
+  subject: UniProtKB:Q46822
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Binds 1 Mg(2+) ion per subunit. The magnesium ion binds only when substrate is bound.
+  evidence:
+  - reference_id: UniProtKB:Q46822
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:Q46822. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='Q46822'].comments[2].cofactors[0] and note
+- id: edge-067
+  subject: UniProtKB:Q46822
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Binds 1 Mn(2+) ion per subunit.
+  evidence:
+  - reference_id: UniProtKB:Q46822
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:Q46822. Annotation evidence:
+      ECO:0000269.'
+    source_locator: results[primaryAccession='Q46822'].comments[3].cofactors[0] and note
+- id: edge-068
+  subject: UniProtKB:Q46822
+  predicate: located_in
+  object: GO:0005737
+  description: Contextual localization of Idi only; does not establish localization or exclusivity for
+    other pathway proteins.
+  evidence:
+  - reference_id: UniProtKB:Q46822
+    source_assertion: UniProt lists cytoplasm (SL-0086) and explicitly cross-references GO:0005737 for
+      Q46822. The GO location cross-reference has evidence IEA:UniProtKB-SubCell.
+    source_locator: results[primaryAccession='Q46822'].uniProtKBCrossReferences[database='GO'][id='GO:0005737'].properties;
+      comments[7].subcellularLocations
+references:
+- id: MetaCyc:NONMEVIPP-PWY
+  title: MetaCyc methylerythritol phosphate pathway I, native pathway definition
+  url: https://pathway.yeastgenome.org/getxml?META:NONMEVIPP-PWY
+  source_version: MetaCyc 22.5; retrieved 2026-10-10
+  source_sha256: 979f165dc2dbc2bb49906d4335cad3db7d207b5b4a878ff05f9f57f4ad8c1744
+- id: RHEA:12606
+  title: 'Rhea 12606: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/12606
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:13719
+  title: 'Rhea 13719: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/13719
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:13430
+  title: 'Rhea 13430: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/13430
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:18438
+  title: 'Rhea 18438: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/18438
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:23865
+  title: 'Rhea 23865: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/23865
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:43606
+  title: 'Rhea 43606: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/43606
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:24490
+  title: 'Rhea 24490: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/24490
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:24827
+  title: 'Rhea 24827: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/24827
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:23285
+  title: 'Rhea 23285: source-oriented reaction definition'
+  url: https://www.rhea-db.org/rhea/23285
+  source_version: 142 (2026-09-02); exact input is the complete official rhea.rdf.gz archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P77488
+  title: 'UniProtKB P77488: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/P77488.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:P45568
+  title: 'UniProtKB P45568: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/P45568.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:Q46893
+  title: 'UniProtKB Q46893: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/Q46893.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:P62615
+  title: 'UniProtKB P62615: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/P62615.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:P62617
+  title: 'UniProtKB P62617: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/P62617.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:P62620
+  title: 'UniProtKB P62620: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/P62620.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:P62623
+  title: 'UniProtKB P62623: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/P62623.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: UniProtKB:Q46822
+  title: 'UniProtKB Q46822: Escherichia coli K-12 enzyme annotation'
+  url: https://rest.uniprot.org/uniprotkb/Q46822.json
+  source_version: retrieved 2026-10-10; digest scope is the complete eight-entry batch JSON
+  source_sha256: f4b9963571d05122d6a5327dac5e0dcb3893ff688190ba9a394c99d7902e27fb
+- id: PMID:11818558
+  title: 'Studies on the nonmevalonate terpene biosynthetic pathway: metabolic role of IspH (LytB) protein.'
+  citation: DOI:10.1073/pnas.032658999
+  url: https://pubmed.ncbi.nlm.nih.gov/11818558/
+  source_version: abstract inspected 2026-10-10; Europe PMC MED core JSON
+  source_sha256: a0f910765e26f86c97b23ba2a66c05d68970a68a16bccd94cd6af2953b628f01
+- id: PMID:12571359
+  title: 'The deoxyxylulose phosphate pathway of isoprenoid biosynthesis: studies on the mechanisms of
+    the reactions catalyzed by IspG and IspH protein.'
+  citation: DOI:10.1073/pnas.0337742100
+  url: https://pubmed.ncbi.nlm.nih.gov/12571359/
+  source_version: abstract inspected 2026-10-10; Europe PMC MED core JSON
+  source_sha256: d5399d21dd0b6771d8dcbf7e0c7aebe61f13aa06085a8bce2a2eeaf02544c81f

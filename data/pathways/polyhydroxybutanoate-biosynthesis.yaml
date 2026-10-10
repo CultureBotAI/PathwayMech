@@ -1,0 +1,323 @@
+id: MetaCyc:PWY1-3
+label: polyhydroxybutanoate biosynthesis
+description: 'The core PhaA-PhaB-PhaC route in Cupriavidus necator H16 (called Ralstonia eutropha or Alcaligenes
+  eutrophus H16 in the primary literature) condenses two acetyl-CoA molecules, reduces acetoacetyl-CoA
+  with NADPH to (R)-3-hydroxybutanoyl-CoA, and extends poly[(R)-3-hydroxybutanoate] by one monomer with
+  release of CoA. The graph represents the biosynthetic direction and the core phaCAB enzymes, not every
+  alternative H16 isoenzyme. The polymer node is a chemical class: its input and output edges distinguish
+  chains of length n and n+1 in their descriptions; they are not the same physical chain state.'
+pathway_type: storage-polymer-biosynthesis
+taxa:
+- id: NCBITaxon:381666
+  label: Cupriavidus necator H16
+participants:
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:57286
+  label: acetoacetyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57315
+  label: (R)-3-hydroxybutanoyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:8298
+  label: poly[(R)-3-hydroxybutanoate]
+  category: polymer
+- id: UniProtKB:P14611
+  label: Acetyl-CoA acetyltransferase
+  category: protein
+- id: UniProtKB:P14697
+  label: Acetoacetyl-CoA reductase
+  category: protein
+- id: UniProtKB:P23608
+  label: Poly(3-hydroxyalkanoate) polymerase subunit PhaC
+  category: protein
+reactions:
+- id: RHEA:21037
+  label: acetyl-CoA condensation to acetoacetyl-CoA
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:45798
+  label: NADPH-dependent reduction to (R)-3-hydroxybutanoyl-CoA
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:15406
+  label: poly[(R)-3-hydroxybutanoate] chain extension from n to n+1
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: phb-edge-001
+  subject: CHEBI:57288
+  predicate: consumes
+  object: RHEA:21037
+  description: Two acetyl-CoA molecules are condensed; the graph records participation, while the source
+    equation supplies coefficient 2.
+  evidence:
+  - reference_id: RHEA:21037
+    source_assertion: Rhea assigns CHEBI:57288 to the substrates of the directed reaction RHEA:21037.
+      The source equation has coefficient 2 for acetyl-CoA.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21037']/rh:substrates; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-002
+  subject: RHEA:21037
+  predicate: produces
+  object: CHEBI:57286
+  evidence:
+  - reference_id: RHEA:21037
+    source_assertion: Rhea assigns CHEBI:57286 to the products of the directed reaction RHEA:21037.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21037']/rh:products; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-003
+  subject: RHEA:21037
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:21037
+    source_assertion: Rhea assigns CHEBI:57287 to the products of the directed reaction RHEA:21037.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21037']/rh:products; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-004
+  subject: CHEBI:57286
+  predicate: consumes
+  object: RHEA:45798
+  evidence:
+  - reference_id: RHEA:45798
+    source_assertion: Rhea assigns CHEBI:57286 to the substrates of the directed reaction RHEA:45798.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rh:substrates; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-005
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:45798
+  evidence:
+  - reference_id: RHEA:45798
+    source_assertion: Rhea assigns CHEBI:57783 to the substrates of the directed reaction RHEA:45798.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rh:substrates; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-006
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:45798
+  evidence:
+  - reference_id: RHEA:45798
+    source_assertion: Rhea assigns CHEBI:15378 to the substrates of the directed reaction RHEA:45798.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rh:substrates; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-007
+  subject: RHEA:45798
+  predicate: produces
+  object: CHEBI:57315
+  evidence:
+  - reference_id: RHEA:45798
+    source_assertion: Rhea assigns CHEBI:57315 to the products of the directed reaction RHEA:45798.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rh:products; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-008
+  subject: RHEA:45798
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:45798
+    source_assertion: Rhea assigns CHEBI:58349 to the products of the directed reaction RHEA:45798.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rh:products; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-009
+  subject: CHEBI:57315
+  predicate: consumes
+  object: RHEA:15406
+  evidence:
+  - reference_id: RHEA:15406
+    source_assertion: Rhea assigns CHEBI:57315 to the substrates of the directed reaction RHEA:15406.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15406']/rh:substrates; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-010
+  subject: CHEBI:8298
+  predicate: consumes
+  object: RHEA:15406
+  description: The input is the poly[(R)-3-hydroxybutanoate] chain of length n. CHEBI:8298 is the shared
+    polymer class, not an identifier for a particular chain length.
+  evidence:
+  - reference_id: RHEA:15406
+    source_assertion: Rhea assigns CHEBI:8298 to the substrates of the directed reaction RHEA:15406. The
+      substrate polymer is POLYMER:14464, [(3R)-hydroxybutanoate](n), linked to CHEBI:8298.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15406']/rh:substrates; rh:contains/rh:compound/rh:underlyingChebi;
+      rh:polymerizationIndex
+- id: phb-edge-011
+  subject: RHEA:15406
+  predicate: produces
+  object: CHEBI:8298
+  description: The output is the extended poly[(R)-3-hydroxybutanoate] chain of length n+1, distinct from
+    the input chain state despite sharing the generic polymer class identifier.
+  evidence:
+  - reference_id: RHEA:15406
+    source_assertion: Rhea assigns CHEBI:8298 to the products of the directed reaction RHEA:15406. The
+      product polymer is POLYMER:14465, [(3R)-hydroxybutanoate](n+1), linked to CHEBI:8298.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15406']/rh:products; rh:contains/rh:compound/rh:underlyingChebi;
+      rh:polymerizationIndex
+- id: phb-edge-012
+  subject: RHEA:15406
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:15406
+    source_assertion: Rhea assigns CHEBI:57287 to the products of the directed reaction RHEA:15406.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15406']/rh:products; rh:contains/rh:compound/rh:chebi
+- id: phb-edge-013
+  subject: UniProtKB:P14611
+  predicate: catalyzes
+  object: RHEA:21037
+  evidence:
+  - reference_id: UniProtKB:P14611
+    source_assertion: UniProt assigns PhaA to RHEA:21036 (ECO:0000269 and ECO:0000255) and describes condensation
+      of two acetyl-CoA units. RHEA:21037 is the selected biosynthetic direction.
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction[reactionCrossReferences.id='RHEA:21036'];
+      comments[commentType='FUNCTION']
+  - reference_id: PMID:2670935
+    quote: beta-ketothiolase and acetoacetyl-CoA reductase enzyme activities
+    source_locator: Abstract
+- id: phb-edge-014
+  subject: UniProtKB:P14697
+  predicate: catalyzes
+  object: RHEA:45798
+  evidence:
+  - reference_id: UniProtKB:P14697
+    source_assertion: UniProt assigns PhaB to the specific RHEA:45796 acetoacetyl-CoA reaction; its FUNCTION
+      statement supports chiral reduction to (R)-3-hydroxybutyryl-CoA with ECO:0000269. RHEA:45798 is
+      the biosynthetic direction.
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction[reactionCrossReferences.id='RHEA:45796'];
+      comments[commentType='FUNCTION']
+  - reference_id: PMID:23913421
+    quote: PhaB forms a ternary complex with NADPH and acetoacetyl-CoA.
+    source_locator: Abstract
+- id: phb-edge-015
+  subject: UniProtKB:P23608
+  predicate: catalyzes
+  object: RHEA:15406
+  evidence:
+  - reference_id: UniProtKB:P23608
+    source_assertion: UniProt assigns PhaC to RHEA:15405 with ECO:0000250; its FUNCTION statement independently
+      describes PHB polymerization with ECO:0000269. The directed chain-extension reaction is RHEA:15406.
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction[reactionCrossReferences.id='RHEA:15405'];
+      comments[commentType='FUNCTION']
+  - reference_id: PMID:22369488
+    quote: catalyzes the formation of PHB from (R)-3-hydroxybutyryl-CoA
+    source_locator: Abstract
+- id: phb-edge-016
+  subject: RHEA:21037
+  predicate: part_of
+  object: MetaCyc:PWY1-3
+  evidence:
+  - reference_id: MetaCyc:PWY1-3
+    source_assertion: MetaCyc PWY1-3 declares native reaction ACETYL-COA-ACETYLTRANSFER-RXN as a pathway
+      member.
+    source_locator: Pathway[@frameid='PWY1-3']/reaction-list/Reaction[@frameid='ACETYL-COA-ACETYLTRANSFER-RXN']
+  - reference_id: RHEA:21037
+    source_assertion: Rhea links RHEA:21039 to MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN. Master RHEA:21036
+      identifies RHEA:21039 as its bidirectional member and RHEA:21037 as a directional member; RHEA:21037
+      selects acetyl-CoA condensation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21039']/rdfs:seeAlso; rdf:Description[@rdf:about='http://rdf.rhea-db.org/21036']/rh:bidirectionalReaction
+      and rh:directionalReaction
+- id: phb-edge-017
+  subject: RHEA:45798
+  predicate: part_of
+  object: MetaCyc:PWY1-3
+  evidence:
+  - reference_id: MetaCyc:PWY1-3
+    source_assertion: MetaCyc PWY1-3 declares native reaction RXN-5901 as a pathway member.
+    source_locator: Pathway[@frameid='PWY1-3']/reaction-list/Reaction[@frameid='RXN-5901']
+  - reference_id: RHEA:45798
+    source_assertion: Rhea directly cross-references RHEA:45798 to MetaCyc:RXN-5901 in rdfs:seeAlso.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rdfs:seeAlso[@rdf:resource='http://identifiers.org/biocyc/METACYC:RXN-5901']
+- id: phb-edge-018
+  subject: RHEA:15406
+  predicate: part_of
+  object: MetaCyc:PWY1-3
+  evidence:
+  - reference_id: MetaCyc:PWY1-3
+    source_assertion: MetaCyc PWY1-3 declares native reaction RXN1-42 as a pathway member.
+    source_locator: Pathway[@frameid='PWY1-3']/reaction-list/Reaction[@frameid='RXN1-42']
+  - reference_id: RHEA:15406
+    source_assertion: Rhea directly cross-references RHEA:15406 to MetaCyc:RXN1-42 in rdfs:seeAlso.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15406']/rdfs:seeAlso[@rdf:resource='http://identifiers.org/biocyc/METACYC:RXN1-42']
+- id: phb-edge-019
+  subject: RHEA:21037
+  predicate: precedes
+  object: RHEA:45798
+  evidence:
+  - reference_id: MetaCyc:PWY1-3
+    source_assertion: MetaCyc PWY1-3 declares ACETYL-COA-ACETYLTRANSFER-RXN as a predecessor of RXN-5901.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='RXN-5901']/predecessor-reactions/Reaction[@frameid='ACETYL-COA-ACETYLTRANSFER-RXN']
+  - reference_id: RHEA:21037
+    source_assertion: Rhea links RHEA:21039 to MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN. Master RHEA:21036
+      identifies RHEA:21039 as its bidirectional member and RHEA:21037 as a directional member; RHEA:21037
+      selects acetyl-CoA condensation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/21039']/rdfs:seeAlso; rdf:Description[@rdf:about='http://rdf.rhea-db.org/21036']/rh:bidirectionalReaction
+      and rh:directionalReaction
+  - reference_id: RHEA:45798
+    source_assertion: Rhea directly cross-references RHEA:45798 to MetaCyc:RXN-5901 in rdfs:seeAlso.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rdfs:seeAlso[@rdf:resource='http://identifiers.org/biocyc/METACYC:RXN-5901']
+- id: phb-edge-020
+  subject: RHEA:45798
+  predicate: precedes
+  object: RHEA:15406
+  evidence:
+  - reference_id: MetaCyc:PWY1-3
+    source_assertion: MetaCyc PWY1-3 declares RXN-5901 as a predecessor of RXN1-42.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='RXN1-42']/predecessor-reactions/Reaction[@frameid='RXN-5901']
+  - reference_id: RHEA:45798
+    source_assertion: Rhea directly cross-references RHEA:45798 to MetaCyc:RXN-5901 in rdfs:seeAlso.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/45798']/rdfs:seeAlso[@rdf:resource='http://identifiers.org/biocyc/METACYC:RXN-5901']
+  - reference_id: RHEA:15406
+    source_assertion: Rhea directly cross-references RHEA:15406 to MetaCyc:RXN1-42 in rdfs:seeAlso.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15406']/rdfs:seeAlso[@rdf:resource='http://identifiers.org/biocyc/METACYC:RXN1-42']
+references:
+- id: MetaCyc:PWY1-3
+  title: MetaCyc polyhydroxybutanoate biosynthesis
+  url: https://pathway.yeastgenome.org/getxml?META:PWY1-3
+  source_version: '22.5'
+  source_sha256: 3469d020b1a4685466f2739fe280849df9578d2a20e798a95bed3e847de4f03d
+- id: RHEA:21037
+  title: Rhea 21037 directed PHB biosynthetic reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:45798
+  title: Rhea 45798 directed PHB biosynthetic reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:15406
+  title: Rhea 15406 directed PHB biosynthetic reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P14611
+  title: UniProtKB P14611, Cupriavidus necator H16
+  url: https://rest.uniprot.org/uniprotkb/P14611.json
+  source_version: '2026_03'
+  source_sha256: f0350ba62a6ee34cb4779818b74e12706c596c04d122b415426ec5b6d94ccf12
+- id: UniProtKB:P14697
+  title: UniProtKB P14697, Cupriavidus necator H16
+  url: https://rest.uniprot.org/uniprotkb/P14697.json
+  source_version: '2026_03'
+  source_sha256: 6e051efb8f2f3e64e82a612d3edaf8f5e7267a20574d4d3be501df9d0b8c73b5
+- id: UniProtKB:P23608
+  title: UniProtKB P23608, Cupriavidus necator H16
+  url: https://rest.uniprot.org/uniprotkb/P23608.json
+  source_version: '2026_03'
+  source_sha256: a5fbd1b61fc65f9dac2ab13a7aac95c6bcd4a8fab38267f544b1d62d57618d62
+- id: PMID:2670935
+  title: Poly-beta-hydroxybutyrate biosynthesis in Alcaligenes eutrophus H16. Characterization of the
+    genes encoding beta-ketothiolase and acetoacetyl-CoA reductase.
+  url: https://pubmed.ncbi.nlm.nih.gov/2670935/
+- id: PMID:23913421
+  title: Directed evolution and structural analysis of NADPH-dependent Acetoacetyl Coenzyme A (Acetoacetyl-CoA)
+    reductase from Ralstonia eutropha reveals two mutations responsible for enhanced kinetics.
+  url: https://pubmed.ncbi.nlm.nih.gov/23913421/
+- id: PMID:22369488
+  title: 'Purification of polyhydroxybutyrate synthase from its native organism, Ralstonia eutropha: implications
+    for the initiation and elongation of polymer formation in vivo.'
+  url: https://pubmed.ncbi.nlm.nih.gov/22369488/
