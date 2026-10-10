@@ -1,0 +1,90 @@
+{
+  "target": "data/pathways/cyanate-degradation.yaml",
+  "target_sha256": "7972d75389eb8cc316ff268467d6846351fc313850aa165ae51983bf87ed717f",
+  "checks": [
+    {
+      "check": "native and closed LinkML schema",
+      "result": "passed",
+      "detail": "One target record; 13 participants, 3 reactions, 26 edges."
+    },
+    {
+      "check": "exact chemistry and independent atom/charge balance",
+      "result": "passed",
+      "detail": "All 13 retained side occurrences, source containsN coefficients, directions and exact locators match full Rhea RDF. All 3 reactions balance. One pass sums to cyanate+2H++water\u2192ammonium+CO2; no net RHEA:11121 double count."
+    },
+    {
+      "check": "native MetaCyc pathway and assembly bridges",
+      "result": "passed",
+      "detail": "All 3 native memberships, cycle predecessor links, Rhea unifications, MG1655 scope, spontaneous flag, CynS 10 copies and qualified CynT coefficient 2 verified. Excluded Can object independently resolves to P61517."
+    },
+    {
+      "check": "native BioPAX defects preserved",
+      "result": "passed",
+      "detail": "Reparsed raw PW002099 to confirm mixed CynT/Can complex, spontaneous=false flag and neutral carbamic-acid xref/formula. These do not control the curated chemistry or assembly."
+    },
+    {
+      "check": "primary literal excerpts",
+      "result": "passed",
+      "detail": "4 exact excerpts checked against complete indexed abstracts; each paper\u226425 quoted words. Publisher 1993 full text additionally inspected via web, without a local PDF digest claim."
+    },
+    {
+      "check": "protein provenance and canonical ontology labels",
+      "result": "passed",
+      "detail": "Reviewed K-12 proteins, experimental CynT zinc and cytoplasm annotations rechecked. All named ontology IDs/labels match full primary Semantic SQL databases; native complexes use exact source labels."
+    },
+    {
+      "check": "source byte integrity",
+      "result": "passed",
+      "detail": "Verified 20 preserved/fresh downloaded bodies (including rejected HTML, explicitly unusable), PathBank ZIP/member, and retained Rhea source receipt paths. Reference digest scopes are explicit."
+    },
+    {
+      "check": "actual target KGX export and scope",
+      "result": "passed",
+      "detail": "18 nodes/26 edges preserve all 53 evidence blocks, descriptions and reference metadata. Spontaneous RHEA:15650 exports as BiochemicalReaction; two enzyme steps as MolecularActivity; true assemblies as MacromolecularComplex. No forbidden net reaction, mixed Can/CynT assembly or annotated-only CynX transport."
+    }
+  ],
+  "counts": {
+    "participants": 13,
+    "reactions": 3,
+    "edges": 26,
+    "rhea_side_edges": 13,
+    "evidence_blocks": 53,
+    "named_nodes": 18
+  },
+  "atom_charge_balances": {
+    "RHEA:18490": {
+      "charge": 0,
+      "C": 0,
+      "N": 0,
+      "O": 0,
+      "H": 0
+    },
+    "RHEA:15650": {
+      "charge": 0,
+      "C": 0,
+      "H": 0,
+      "N": 0,
+      "O": 0
+    },
+    "RHEA:10750": {
+      "charge": 0,
+      "C": 0,
+      "O": 0,
+      "H": 0
+    }
+  },
+  "one_pass_net_coefficients": {
+    "CHEBI:29195": -1,
+    "CHEBI:15378": -2,
+    "CHEBI:16526": 1,
+    "CHEBI:28938": 1,
+    "CHEBI:15377": -1
+  },
+  "primary_quoted_word_counts": {
+    "10801492": 12,
+    "1740425": 10,
+    "3110153": 6
+  },
+  "command": ".venv/bin/python /private/tmp/pathwaymech-cyanate-monapterin-evidence/cyanate/check_cyanate.py",
+  "scope": "Narrow author checks, not an independent scientific review or integrated full gates; parent owns final gate receipts."
+}

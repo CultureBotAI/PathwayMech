@@ -1,0 +1,765 @@
+schema_version: 1.0.0
+review_id: 20261010T224232Z-monapterin-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of tetrahydromonapterin biosynthesis
+started_at: '2026-10-10T22:34:44Z'
+finished_at: '2026-10-10T22:42:32Z'
+reviewer:
+  identity: Codex independent monapterin scientific reviewer (/root/pathway_authority_cache)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: A different agent authored the target YAML and its mechanistic
+    research notes. This reviewer did not edit those files and independently inspected
+    the complete target, raw primary text, native source objects and issuing-authority
+    chemistry. This reviewer authored the separate cyanate record in this batch and
+    the previously merged supporting PathBank authority parser/policy; independence
+    is claimed for this target scientific assessment, not for that supporting implementation.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The established pathway and three asserted enzyme reactions are supported.
+  Independent checks verify all 12 Rhea chemical-side occurrences, 24 local edges
+  and 43 evidence blocks, native complex identity and stoichiometry, bound FolE zinc
+  and exact scoped primary evidence. No corrective finding remains. The graph explicitly
+  lacks the unresolved dephosphorylation step; this is a qualified scientific pass
+  for the accurately delimited record, not a claim of a complete mechanism or native
+  E. coli cofactor function.
+source:
+  git_revision: b02726e03fd7e67d210057f150e029fcb343b928
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: d1d18735600fe87f44822cfbc2448c82c10764fec2d45a9780a52c694a892d63
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 99bed8802c3065cb6507ac8ede109003bb15dbdb5aa34a5144009c511be0a3e3
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: c27cf7c60f28d3c9b0a7f1a0f5fe742a4f0327ae03274f216234a36eb675791d
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 0785abf8d16e50ace357fb19ce6b497e1c0f25c0f1ca7f69c0831bcec6d64bcf
+    role: context
+  - path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+    sha256: 0349c62d93993252bdab4e11a477eaca142eb516c59961721a317ed333eda182
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/authority-integration.json
+    sha256: d56eaa6e465d48d142bb8671eee422f22a6e9034bc45594325f4fdc29fb0ffe7
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/generated-graph-kgx-audit.json
+    sha256: 8d5c6b749e1eeee109d17b2c1d94e32a0280f4126391e82dc0005c6d5e2278eb
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/imodulondb-context.json
+    sha256: f86563b154e135140747eb037300171aabdc742e07aa0511e8fb7dc0bfb57cef
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/monapterin-curation.md
+    sha256: 859ec8762111b0aa5e65426eff9c37bfc0f56f1f0d174207a2734698d7bd1992
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/monapterin-identifiers.json
+    sha256: 5afa8cf45422da289db03a1f58a2efbdbb2d11112697e11b7afc314e668e4102
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/monapterin-search-ledger.json
+    sha256: c1b56f6c48a659e6f0d6b0bff126b5fddc92c3b3ceaafbc58a9aa727e6acd4b2
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/monapterin-source-manifest.json
+    sha256: 71401b46c862c6e209632508c16aa488174fe330d5973c7644cfb62e2f9b2f46
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/monapterin-source-projection.json
+    sha256: 9b7381a9fc47f11d438666a0c12490a3898944e7412b3e4d79eef64a93371752
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/monapterin-validation.json
+    sha256: dde3476501876b85d2d6d0927042f36c88c7001891c41b04bf3c754338d03741
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+scope:
+  description: Independent scientific review of one maintained record, including every
+    local node, edge and cited reference plus bounded later-literature context for
+    the explicit mechanistic gap.
+  selection: Exact MetaCyc:PWY0-1433 and data/pathways/tetrahydromonapterin-biosynthesis.yaml
+    assigned by integration agent.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY0-1433
+  exclusions:
+  - target: data/pathways/cyanate-degradation.yaml
+    reason: Authored by this reviewer and independently assessed by another agent;
+      excluded from this scientific verdict.
+  - target: Other maintained records and all uninspected literature
+    reason: Corpus gates are technical validation, not fresh scientific assessment
+      of other records or proof of exhaustive literature coverage.
+targets:
+- target_id: MetaCyc:PWY0-1433
+  path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+  label: tetrahydromonapterin biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+    role: maintained_curation
+checks:
+- check_id: c-initial-inspect
+  name: Governed initial input inspection
+  status: passed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Initial canonical inspection preceded assessment and captured final target
+    SHA 0349c62 plus then-current authority inputs.
+  evidence_ids:
+  - e-record
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-monapterin-review-targets.yaml
+    --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+    --input docs/CAUSAL_GRAPHS.md --input conf/identifier_policy.yaml --input conf/identifier_sources.json
+    --input data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-scratch-attempt
+  name: Reviewer scratch replay initial syntax failure
+  status: failed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Initial non-gating execution exited 1 for a reviewer-script Python token
+    typo (num or1). Corrected to num or 1 before successful replay. No repository
+    input was changed by this correction.
+  evidence_ids:
+  - e-source-check
+  command: .venv/bin/python /private/tmp/pathwaymech-monapterin-review/replay.py
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: c-source-replay
+  name: Independent full-source replay
+  status: passed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: 'Final replay exits 0: six checks, 21 nodes, 24 edges, 43 evidence blocks;
+    final target SHA verified.'
+  evidence_ids:
+  - e-source-check
+  - e-rhea
+  - e-record
+  command: .venv/bin/python /private/tmp/pathwaymech-monapterin-review/replay.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-prior
+  name: Prior exact review occurrence search
+  status: passed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: No matches before this bundle; hidden and ignored files included.
+  evidence_ids:
+  - e-prior-search
+  command: rg -n -uu 'MetaCyc:PWY0-1433|tetrahydromonapterin-biosynthesis|tetrahydromonapterin
+    biosynthesis' reviews reports
+  exit_code: 1
+  expected_exit_code: 1
+- check_id: c-diff
+  name: Working-tree whitespace gate
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Exit 0 on frozen inputs.
+  evidence_ids:
+  - e-record
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-staged-diff
+  name: Staged additions whitespace gate
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Exit 0; root staging covers newly added records and generated artifacts.
+  evidence_ids:
+  - e-record
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-validate
+  name: Integrated validate
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: 165 native/closed records and identifier labels, 8657 evidence blocks,
+    30 sources, 245 history records, 6 documentation files, research contract and
+    current pages pass.
+  evidence_ids:
+  - e-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  scope_note: Executed by integration agent /root in this batch on frozen inputs;
+    this reviewer inspected actual logs and exit receipts rather than duplicating
+    the heavy corpus gate.
+- check_id: c-test
+  name: Integrated test
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: 1043 passed, 3 skipped, 3 upstream deprecation warnings; actual final process
+    exit 0.
+  evidence_ids:
+  - e-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  scope_note: Executed by integration agent /root in this batch on frozen inputs;
+    this reviewer inspected actual logs and exit receipts rather than duplicating
+    the heavy corpus gate.
+- check_id: c-lint
+  name: Integrated lint
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Ruff reports all checks passed; exit 0.
+  evidence_ids:
+  - e-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  scope_note: Executed by integration agent /root in this batch on frozen inputs;
+    this reviewer inspected actual logs and exit receipts rather than duplicating
+    the heavy corpus gate.
+- check_id: c-render
+  name: Integrated render
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Rendered 165 pathway records; exit 0.
+  evidence_ids:
+  - e-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  scope_note: Executed by integration agent /root in this batch on frozen inputs;
+    this reviewer inspected actual logs and exit receipts rather than duplicating
+    the heavy corpus gate.
+- check_id: c-vendored
+  name: Integrated vendored
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: 22 governed vendored files match; exit 0.
+  evidence_ids:
+  - e-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  scope_note: Executed by integration agent /root in this batch on frozen inputs;
+    this reviewer inspected actual logs and exit receipts rather than duplicating
+    the heavy corpus gate.
+- check_id: c-generated
+  name: Generated graph and actual CLI KGX audit
+  status: passed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Delegated actual audit exits 0; separate CLI export also exits 0. Monapterin
+    24 edges/43 evidence preserve exact contents, nodes and SVG/evidence links.
+  evidence_ids:
+  - e-generated
+  command: /private/tmp/pathwaymech-cyanate-monapterin-graph-audit.py --root /private/tmp/pathwaymech-cyanate-monapterin-20261010
+    --comparison-kgx-dir /private/tmp/pathwaymech-cyanate-monapterin-kgx
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-datasets-first
+  name: Initial context inventory network attempt
+  status: failed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Initial sandbox attempt failed DNS with exit 2; authorized network retry
+    passed. This superseded retrieval is not a scientific negative result.
+  evidence_ids:
+  - e-context
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  exit_code: 2
+  expected_exit_code: 0
+- check_id: c-context-datasets
+  name: Canonical iModulonDB datasets
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Delegated root command exited 0; actual adapter output and preserved hash
+    inspected.
+  evidence_ids:
+  - e-context
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb datasets
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-context-folx
+  name: Canonical iModulonDB folx
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Delegated root command exited 0; actual adapter output and preserved hash
+    inspected.
+  evidence_ids:
+  - e-context
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query folX
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-context-folm
+  name: Canonical iModulonDB folm
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Delegated root command exited 0; actual adapter output and preserved hash
+    inspected.
+  evidence_ids:
+  - e-context
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources
+    imodulondb search --organism e_coli --dataset precise_mg1655 --query folM
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-context-summary
+  name: iModulon component summary
+  status: not_applicable
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1433
+  summary: Neither search returned an iModulon component. No component was available
+    for a scientifically relevant summarize call; zero hits is not evidence of no
+    regulation.
+  evidence_ids:
+  - e-context
+evidence:
+- evidence_id: e-record
+  kind: record_content
+  reference: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+  locator: Entire maintained YAML; 21 named nodes, 24 mechanistic edges and 43 edge
+    evidence blocks
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Read complete target, then rechecked final frozen input. Local endpoints,
+    all references, direction, scope and evidence placement were assessed.
+  snapshot_sha256: 0349c62d93993252bdab4e11a477eaca142eb516c59961721a317ed333eda182
+- evidence_id: e-native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY0-1433
+  locator: Pathway common-name, reaction-list, reaction-layout and hypothetical-reactions;
+    complete RXN0-6368 XML separately inspected
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Public MetaCyc 22.5 defines this exact pathway and flags RXN0-6368 as hypothetical.
+    The asserted three enzyme reactions are distinct from the unasserted dephosphorylation
+    reaction. No latest licensed-release claim is made.
+  snapshot_sha256: 7c8efe87343da2bf566f4e7cedb6c6eca964e9eb12b6a83f5fc94cc86e205280
+- evidence_id: e-native-complexes
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:FOLE-CPLX
+  locator: FOLE-CPLX and FOLXTET-CPLX components/coefficient; GTP-CYCLOHYDRO-I-MONOMER
+    and H2NTPEPIM-MONOMER UniProt xrefs; GTP-CYCLOHYDRO-I-RXN, H2NTPEPIM-RXN and RXN0-6367
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Both full native complex-to-monomer-to-reviewed-UniProt chains were checked,
+    with coefficients 10 and 8 and native MG1655 scope. The three native reaction
+    bridges and FolM right-to-left native layout resolve to the selected Rhea chemistry.
+    Raw body hashes are preserved in target references and independently verified.
+  snapshot_sha256: 02a1387ca3463fcdc819710574fdcfaba6688579873fd069a9c172e1333320e8
+- evidence_id: e-rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: 'Rhea 142 full RDF: masters 17473/28346/34847 and directions 17474/28347/34848,
+    reaction sides, contains1, compounds, ChEBI forms; excluded family 34843/34844'
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Independent complete-RDF parsing selected 52 source subjects. All 12 asserted
+    chemical-side occurrences and exact coefficients are supported; all three equations
+    balance by atoms and charge. Master 28346 has directionalReaction 28347 and bidirectionalReaction
+    28349. Existence of 34844 establishes chemistry, not physiological catalyst assignment.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-proteins
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0A6T5.json
+  locator: 'Reviewed UniProt 2026_03 P0A6T5, P0AC19 and P0AFS3 complete JSON: accession/taxon,
+    indexed comments, database cross-references, subunit and binding annotations'
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: All three exact proteins have K-12 provenance. Catalytic and subunit assertions
+    were checked at their target locators; the absence of a separate ECO code on some
+    annotations is not promoted to purified-enzyme evidence. FolM NADPH chemistry
+    is distinct from NADH or quinonoid recycling. Each exact response body was rehashed
+    against the reference metadata.
+- evidence_id: e-primary-main
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2805310/
+  locator: PMID 19897652; full Methods/Results/Discussion text and Fig. 3 caption,
+    especially panels A-C versus D; FolM substrate/cofactor experiments
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: MG1655 oxidized-pterin profiling is separate from K-12 JP2255 tyrA complementation
+    expressing heterologous Pseudomonas PhhA/B. The latter supports scoped FolX/FolM
+    involvement. Purified FolM reduces dihydromonapterin with NADPH under the reported
+    pH 6 and 22-23 C assay conditions. The sole eight-word quotation is literal. The
+    paper does not identify the intervening phosphatase or a native E. coli aromatic-hydroxylase
+    cofactor role.
+  snapshot_sha256: 68ab2338bf7b5aaddc524e871c65061800e345948a99211b46e58979e384cfab
+- evidence_id: e-primary-zinc
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC17616/
+  locator: PMID 11087827; E. coli GTP cyclohydrolase I Results, zinc content and active-site
+    substitutions
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Purified protein contains 0.9 +/- 0.1 zinc ions per subunit; metal-chelating
+    substitutions affect bound zinc and activity. This supports the FolE complex cofactor
+    edge as direct bound-metal evidence, beyond a buffer or assay condition.
+  snapshot_sha256: c19ca35524232472e1074d366912a18bee286c1d089e78072184489bfb850743
+- evidence_id: e-primary-assemblies
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/10378270/
+  locator: Complete indexed abstracts for PMID 9182560, 9651328, 10378270 and 12297008
+    in primary-substrate-literature.json
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: The older FolX apparent-mass estimate suggested a hexamer. Later purified-protein
+    and 2.9-A crystal studies support a homooctamer, including two head-to-head tetramers.
+    FolE is a pentamer of dimers. The target preserves the FolX disagreement and uses
+    8 and 10 subunits respectively; full articles and figure pixels for these abstracts
+    were not inspected.
+  snapshot_sha256: 15d1026bffa483f1a581938170be3b0d34d7d61dc86abfde4f8eb67b43f4ca3d
+- evidence_id: e-later-nudb
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC5404538/
+  locator: PMID 28223385; relevant full Methods/Results/Discussion, W3110 genetic
+    background, NudB/folX/folM suppressor analysis
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: context_only
+  summary: The studied NudB step is in the competing neopterin folate branch. Genetic
+    suppression does not assign a dihydromonapterin-triphosphate phosphatase or directly
+    measure the proposed unstable pterin flux.
+  snapshot_sha256: 26ed4fa5cdb265e38122dfcde92ab5fe8d6639421a298a7721026e962d40f433
+- evidence_id: e-later-folq
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC11267939/
+  locator: PMID 38888337; substrate specificity Table 1, reaction stoichiometry and
+    Discussion; Lreu_1276/FolQ3
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: context_only
+  summary: The Limosilactobacillus reuteri enzyme converts dihydroneopterin triphosphate
+    to its monophosphate plus diphosphate. Dihydromonapterin triphosphate was not
+    among the 17 listed tested substrates. Neither positive nor negative activity
+    on that untested substrate, nor an E. coli catalyst assignment, follows.
+  snapshot_sha256: e528e4088f05f60ccb2d7e70d57512778c762fece5364527dfa70683a5216c56
+- evidence_id: e-later-engineering
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/39603333/
+  locator: Corrected indexed primary abstract; DOI 10.1016/j.ymben.2024.11.011
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: context_only
+  summary: Inspected engineered N-methylserotonin pathway abstract does not resolve
+    the physiological missing dephosphorylation step. Publisher full text was unavailable
+    and is not claimed inspected. A separate mistaken PMID request was rejected after
+    metadata inspection.
+  snapshot_sha256: 71c89c41c020c1225d2df2060fca4c692aa079074862593aaefe8fe7bf1cbb05
+- evidence_id: e-pathbank-conflict
+  kind: database
+  reference: https://pathbank.org/pathways/SMP0002057
+  locator: 'Native archive member PW002043.owl: Compound/PW_C011995, its SmallMoleculeReference
+    and ChemicalStructure plus reaction occurrence'
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: The native object is actually dihydromethysticin, formula C15H16O5, with
+    CHEBI:1034670 and PubChem 229852 xrefs and a non-pterin SMILES. These bytes were
+    directly inspected. The target correctly uses independently verified dihydromonapterin
+    CHEBI:71175 and does not claim these erroneous identities are exact matches.
+  snapshot_sha256: 03f2f79e67f9cfc36a279d2bc1c409d75df5b5a5c5952f830422f490429f635f
+- evidence_id: e-authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-10-cyanate-monapterin/authority-integration.json
+  locator: Full baseline term/source equality check and exact target label checks
+    against full ChEBI/NCBITaxon SQL authorities plus current source snapshots
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Final ontology grows 1293 to 1305 terms and source snapshot 1598 to 1609,
+    with all baseline terms and source metadata unchanged. Manifest grows 100 to 106
+    verified bodies. Eight historical selected-out ChEBI entries and three GO terms
+    are retained as documented. Rhea 139 supplies identity authority while official
+    Rhea 142 supplies explicitly versioned mechanism evidence.
+  snapshot_sha256: d56eaa6e465d48d142bb8671eee422f22a6e9034bc45594325f4fdc29fb0ffe7
+- evidence_id: e-source-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-monapterin-review/source-replay.json
+  locator: Independent reviewer replay.py, rhea-independent.json, all raw reference
+    digests and actual target KGX export
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: 'Six narrow checks pass on the final target hash: all exact chemistry sides,
+    native identities/assemblies/gap, reviewed protein claims, chemical/taxon labels,
+    20 reference body digests and 43 evidence blocks in actual exported edges.'
+  snapshot_sha256: b4586051aad6c6de7c7169d7309e9f0356db5266cda1aaeea185f3da8f0cdce6
+- evidence_id: e-context
+  kind: database
+  reference: research/pathway_additions/2026-10-10-cyanate-monapterin/imodulondb-context.json
+  locator: Canonical datasets then e_coli/precise_mg1655 searches folX and folM; raw
+    Markdown outputs independently inspected
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: context_only
+  summary: The searches return b2303 (folX) and b1606 (folM), each with zero module
+    hits. No component therefore required summarize. These are bounded computational
+    identity contexts, not proof of catalysis, flux, pathway identity or absence of
+    regulation.
+  snapshot_sha256: f86563b154e135140747eb037300171aabdc742e07aa0511e8fb7dc0bfb57cef
+- evidence_id: e-generated
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-cyanate-monapterin/generated-graph-kgx-audit.json
+  locator: Final programmatic SVG and independently generated corpus CLI KGX audit,
+    monapterin row
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: All 24 monapterin edges, 43 evidence blocks, 21 named nodes and 20 drawn
+    SVG nodes are preserved with valid local links, endpoints and bounded geometry.
+    Complete export categories/contexts match corpus declarations; download bytes
+    match separate CLI bytes. The missing dephosphorylation/handoff remains visibly
+    unasserted. This is not a browser visual inspection.
+  snapshot_sha256: 8d5c6b749e1eeee109d17b2c1d94e32a0280f4126391e82dc0005c6d5e2278eb
+- evidence_id: e-gates
+  kind: validation
+  reference: /private/tmp/pathwaymech-cyanate-monapterin-{validate,test,lint,render,vendored}.log
+  locator: Actual final root-executed frozen-input corpus gate logs and explicit exit
+    receipts
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Delegated final gate receipts were inspected independently. Deterministic
+    corpus consistency does not establish the scientific claims assessed above.
+- evidence_id: e-prior-search
+  kind: search
+  reference: reviews/ and reports/
+  locator: rg -n -uu 'MetaCyc:PWY0-1433|tetrahydromonapterin-biosynthesis|tetrahydromonapterin
+    biosynthesis' reviews reports
+  accessed_at: '2026-10-10T22:42:32Z'
+  support: supports
+  summary: Exit 1 means no prior review/report occurrence for this exact target among
+    these bounded directories before saving this bundle. Hidden and ignored files
+    were included. No previous finding is being silently retired.
+  search_scope: Entire reviews/ and reports/ of the active worktree, including hidden
+    and ignored files; not a search for all scientific literature.
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact established pathway identity and experimental scope
+  outcome: supported
+  summary: MetaCyc PWY0-1433 exactly denotes the established tetrahydromonapterin
+    pathway. K-12 protein provenance is supported; native assembly records are specifically
+    MG1655. The graph does not inflate a single enzyme reaction into a whole route
+    or transfer the Pseudomonas cofactor role to E. coli.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-native
+  - e-primary-main
+  - e-proteins
+  - e-record
+  dimensions:
+  - name: taxon
+    value: NCBITaxon:83333 Escherichia coli K-12
+    definition: Overall protein/pathway provenance; JP2255 complementation and MG1655
+      profiling remain explicitly distinct.
+    evidence_ids:
+    - e-primary-main
+    - e-proteins
+- assessment_id: a-chemistry
+  area: grounding
+  topic: All chemical sides, direction, stereochemistry and native source conflict
+  outcome: supported
+  summary: Edges 001-012 preserve exact directed Rhea forms and all 12 coefficients,
+    including protons, water and nicotinamide charges. Each equation balances. Dihydromethysticin
+    in native PathBank is demonstrably a different molecule and is not imported. The
+    selected ChEBI tetrahydromonapterin term does not invent an unasserted ring stereoconfiguration.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-rhea
+  - e-authority
+  - e-pathbank-conflict
+  - e-source-check
+- assessment_id: a-catalysis
+  area: evidence
+  topic: Catalyst assignments and assay boundaries
+  outcome: supported
+  summary: Edges 013-015 connect exact native complexes or reviewed FolM to the three
+    supported reactions. FolX reversibility and FolM NADPH-specific assay conditions
+    are retained. Native/reviewed statements without separate ECO annotations remain
+    identified as such; primary support is separately scoped.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-native-complexes
+  - e-proteins
+  - e-primary-main
+  - e-primary-assemblies
+- assessment_id: a-components
+  area: representation
+  topic: Assembly stoichiometry and bound zinc
+  outcome: supported
+  summary: Edges 016-017 distinguish protein membership from complex catalysis and
+    retain coefficients 10 for FolE and 8 for FolX. The earlier probable-hexamer estimate
+    is preserved against later octamer crystallography. Edge 018 uses directly measured
+    bound zinc and mutational evidence, not free assay-metal presence.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-native-complexes
+  - e-primary-assemblies
+  - e-primary-zinc
+  - e-proteins
+- assessment_id: a-bridges
+  area: graph
+  topic: Native reaction membership and material handoff
+  outcome: supported
+  summary: Edges 019-021 explicitly bridge the exact native reaction objects to the
+    chosen Rhea family members. Edge 020 correctly distinguishes rh:bidirectionalReaction
+    28349 from rh:directionalReaction 28347. Edge 022 links only the identical dihydroneopterin-triphosphate
+    product/substrate, without a fabricated FolX-to-FolM edge.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-native
+  - e-native-complexes
+  - e-rhea
+  - e-source-check
+- assessment_id: a-genetics
+  area: scope
+  topic: FolX/FolM contribution versus heterologous rescue and metabolite profiling
+  outcome: supported
+  summary: Edges 023-024 are supported by Fig. 3D K-12 JP2255 deletion/complementation
+    with heterologous PhhA/B. The record keeps this separate from panels A-C MG1655
+    iodine-oxidized pterin profiling. It does not treat those results as direct identification
+    of the missing phosphatase or a native E. coli physiological cofactor function.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-primary-main
+  - e-record
+- assessment_id: a-gap
+  area: completeness
+  topic: Unresolved dephosphorylation is an explicit scientific limitation
+  outcome: unknown
+  summary: The pathway is supported, but its asserted molecular mechanism is intentionally
+    incomplete. RXN0-6368/RHEA34844 remains unasserted because no inspected evidence
+    assigns the necessary E. coli enzyme chemistry. NudB suppressor studies, L. reuteri
+    FolQ3 with a different tested substrate and the available engineered-serotonin
+    abstract do not close this bounded gap. No universal claim that no future or uninspected
+    paper resolves it is made.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-native
+  - e-primary-main
+  - e-later-nudb
+  - e-later-folq
+  - e-later-engineering
+  - e-record
+- assessment_id: a-artifacts
+  area: graph
+  topic: Graph and KGX preserve the reviewed scope
+  outcome: supported
+  summary: All local endpoints and evidence remain intact in actual target KGX and
+    delegated corpus/page audit. Generic water/hydron pool nodes do not constitute
+    an asserted intermediate handoff. The hypothetical step and FolX-to-FolM transfer
+    edge are absent, and incompleteness is stated on the record.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-record
+  - e-generated
+  - e-source-check
+- assessment_id: a-provenance
+  area: provenance
+  topic: Source digest scope, frozen input refresh and context retrieval
+  outcome: supported
+  summary: All 20 target reference body hashes were independently matched. Public
+    MetaCyc 22.5, UniProt 2026_03, Rhea 142 mechanistic RDF and Rhea 139 identity
+    authority are distinguished. Final authority snapshots preserve all baseline values.
+    iModulonDB gene hits are contextual only, and failed initial retrievals are disclosed
+    rather than treated as evidence.
+  target_ids:
+  - MetaCyc:PWY0-1433
+  evidence_ids:
+  - e-authority
+  - e-source-check
+  - e-context
+  - e-rhea
+findings: []
+actions: []
+limitations:
+- Dihydromonapterin-triphosphate dephosphorylation remains an explicit unresolved
+  mechanism. The graph is not a complete mass-flow or flux model and asserts neither
+  a phosphatase nor the excluded RHEA:34844 reaction.
+- Original FolX oligomer and FolE assembly papers PMID 9182560, 9651328, 10378270
+  and 12297008 were inspected as complete indexed abstracts only. Full primary main-pathway
+  and zinc article text was read; figure captions, not figure pixels or supplements,
+  were inspected.
+- The later NudB and FolQ3 full-text sections do not identify the missing E. coli
+  catalyst. The 2024 N-methylserotonin paper was limited to its primary abstract;
+  the bounded search is not a claim that no uninspected literature could resolve the
+  gap.
+- JP2255 complementation uses heterologous Pseudomonas PhhA/B. MG1655 profiling used
+  iodine oxidation and does not establish the original redox state of all secreted
+  pterins. Native E. coli physiological cofactor function is not established here.
+- The public MetaCyc mechanism snapshot is version 22.5. Current UniProt and Rhea
+  mechanistic sources provide independent support, but this is not a statement about
+  the latest licensed MetaCyc release.
+- iModulonDB gene hits and zero returned module hits are computational context, not
+  direct mechanism evidence or negative evidence for regulation.
+- Programmatic SVG/KGX checks do not replace browser visual inspection. No browser
+  surface was available, and none is claimed.
+notes:
+- The target was frozen before initial governed inspection. Initial shared authority
+  snapshots were replaced during integration; this reviewer explicitly compared every
+  baseline term and source metadata, checked the additions against raw authorities
+  and re-inspected final inputs before saving. The target remained unchanged at the
+  exact SHA-256 retained in source.inputs.
+- Root identified and the author corrected the pre-review FolX family locator to distinguish
+  bidirectional 28349 from directional 28347. The final exact source triple was independently
+  verified. This is a positive corrected assessment, not a fabricated resolved finding
+  without a predecessor bundle.
+- An ignored-inclusive prior-review search returned no occurrence for this exact target
+  in reviews/ or reports/. Empty findings is scoped to this reviewed record and does
+  not retire any unrelated prior finding.
+- Failed reviewer scratch syntax and initial contextual network attempts are retained
+  as non-required superseded checks; all required final gates passed.
+links:
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC2805310/
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC17616/
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC5404538/
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC11267939/
+tags:
+- monapterin
+- independent-scientific-review
+- explicit-mechanistic-gap
+- rhea
+- metacyc

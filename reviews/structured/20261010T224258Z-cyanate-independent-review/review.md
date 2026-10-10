@@ -1,0 +1,907 @@
+# Independent scientific review of cyanate degradation
+
+- Review: 20261010T224258Z-cyanate-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-10T22:33:47Z
+- Finished UTC: 2026-10-10T22:42:58Z
+- Reviewer: Codex independent cyanate reviewer (/root/verify_graph_publication) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Complete review of 18 named nodes, 3 reactions, 26 edges and 53 evidence blocks finds no corrective scientific defect. Chemistry, conditional physiology, assembly distinctions and spontaneous-step category are supported. Required gates pass. Three cited primary papers remain abstract-only, CynT oligomer size remains bounded, and browser visual QA was unavailable.
+
+## Scope And Provenance
+
+Complete scientific assessment of the frozen native CynS/CynT cyanate recycling record and its generated graph/export.
+
+Selection: Exact assigned MetaCyc:CYANCAT-PWY record; no sampling.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base b02726e03fd7e67d210057f150e029fcb343b928.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:CYANCAT-PWY | data/pathways/cyanate-degradation.yaml | maintained | cyanate degradation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent source and chemistry replay | passed | False | MetaCyc:CYANCAT-PWY | All13 side occurrences,18 identities,17 source hashes and4 quotes pass; every26edge assertion assessed. |
+| Independent actual exported-record replay | passed | False | MetaCyc:CYANCAT-PWY | All26 edges and53 evidence blocks preserved; spontaneous category and absence of catalyst verified. |
+| Integrated validate gate | passed | True | MetaCyc:CYANCAT-PWY | 165 records pass full native/closed schema and identifier-label gates; 8657 evidence blocks,30 sources,245 histories,6 documentation files and current pages. |
+| Integrated test gate | passed | True | MetaCyc:CYANCAT-PWY | 1043 passed, 3 skipped and 3 upstream dependency warnings in 332.25 seconds; completed full-suite log inspected. |
+| Integrated lint gate | passed | True | MetaCyc:CYANCAT-PWY | Ruff reports all checks passed. |
+| Integrated render gate | passed | False | MetaCyc:CYANCAT-PWY | 165 pathway pages rendered. |
+| Integrated vendored gate | passed | False | MetaCyc:CYANCAT-PWY | All22 governed artifacts match the pinned CLAW revision. |
+| Integrated kgx-audit-cli gate | passed | False | MetaCyc:CYANCAT-PWY | Separate actual CLI export generated from165 records; target replay matches. |
+| Unstaged patch whitespace | passed | True | MetaCyc:CYANCAT-PWY | git diff --check passed. |
+| Staged patch whitespace | passed | False | MetaCyc:CYANCAT-PWY | git diff --cached --check passed. |
+
+## Scientific And Domain Assessments
+
+### Exact pathway and taxon scope
+
+identity: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+Native CYANCAT-PWY denotes the explicit cyanase/carbamate-decay/CynT recycling cycle. Native pathway and assembly annotation ground MG1655; broader current K-12 proteins and K-12 HfrR5 experiments are correctly distinguished. The selected route is a named two-enzyme pathway with a spontaneous intermediate step.
+
+### Edges001-013 and exact reaction sides
+
+grounding: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+All13 occurrences and exact charged chemical identities match native Rhea. Carbamate decay consumes two protons; hydration uses right-to-left10750. The net11121 reaction is correctly omitted to avoid double-counting the explicit intermediate and decay.
+
+### Edges014-018 and026: assembly, catalyst, cofactor and location
+
+evidence: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+CynS belongs to a native homodecamer that catalyzes18490. CynT belongs to its separate assembly without a universally fixed size. Its reversible hydration selection, zinc cofactor and cytoplasm annotation retain exact source grades. Bicarbonate is a chemical substrate, not a CynS cofactor.
+
+### Edges019-025: membership, ordering and inferred pool connection
+
+graph: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+Three membership edges use exact native reaction bridges. Three native predecessor edges preserve carbamate,CO2 and bicarbonate continuity. The extra18490-to10750 shared-CO2 connection is explicitly inferred from chemical sides and the documented recycling role, not represented as native ordering or quantitative flux.
+
+### Nonenzymatic step and draft correction322
+
+graph: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+RXN0-5222 spontaneity supports the final RHEA15650 step without a catalyst. The final target has no molecular_activity override; actual KGX category is BiochemicalReaction. This positively verifies the draft correction documented in GitHub322 without asserting structured finding lineage.
+
+### Conditional physiology and source conflicts
+
+scope: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+The low/high CO2 phenotype is accurately conditional. Distinct Can, unsupported mixed Can/CynT complex, uncertain CynX transport, neutral carbamic acid and broad induction/growth extensions are not promoted into this bounded mechanism. Exclusion is not a claim that an annotation or transport function is impossible.
+
+### Every evidence block and short quotation
+
+provenance: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+All53 evidence blocks have inspected nearest-source support and retain structured assertions as such. All17 hashes and4 short literal quotations match the preserved source bytes. Three target primary papers remain abstract-only; the1993 paper was additionally inspected through its author-uploaded full text.
+
+### Bounded transcriptomic cross-check
+
+evidence: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+Canonical adapter output supplies exact cyn gene context and no matching module names. It is not used for direct catalysis, pathway identity, regulatory edges or negative biological conclusions.
+
+### Generated artifacts and final input integrity
+
+provenance: supported. Targets: MetaCyc:CYANCAT-PWY.
+
+Generated page/KGX preserve the frozen scientific graph and evidence. Authority labels agree with independently read sources. Initial reviewed input hashes are unchanged; new authority/generated inputs were read before the final inspector. Required gates pass; no browser visual or interaction inspection is claimed.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-native-path | https://pathway.yeastgenome.org/getxml?META:CYANCAT-PWY; Pathway CYANCAT-PWY reaction-list, reaction-ordering, reaction-layout, species and enzymes-not-used | supports | Independently read native MetaCyc 22.5 XML. Exact named three-step CynS/CynT recycling cycle, three predecessor links, R2L carbon-dioxide hydration and MG1655 annotation are explicit. The route is more specific than generic cyanate catabolism. |
+| e-native-assemblies | Native MetaCyc CYANLY-CPLX/CARBODEHYDRAT-CPLX and corresponding MONOMER objects; component/coefficient/comment; catalyzes/Enzymatic-Reaction/reaction; species; monomer dblink UNIPROT unification | supports | Independent parsing confirms cyanase ten-copy P00816 assembly and separate P0ABE9 CynT assembly. CynT coefficient two is qualified as probably a dimer; monomer text describes two or four depending on bicarbonate. Membership without fixed size is supported. Both selected complexes explicitly name TAX-511145. |
+| e-native-reactions | Native MetaCyc R524-RXN, RXN0-5222 and RXN0-5224 XML; left/right, reaction-direction, spontaneous, dblink RHEA unification; /private/tmp/pathwaymech-cyanate-independent-review/native-replay.json | supports | Exact native bridges are 18490, 15650 and bidirectional 10751. RXN0-5222 explicitly sets spontaneous true. Native pathway direction and Rhea directional membership jointly select 10750. All source identifiers and exact source assertions were inspected. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Merged RDF subjects 18489/18490,15649/15650,10748/10750/10751; substrates/products, containsN, participant compound and chebi | supports | Independent full-RDF streaming replay verifies all 13 reaction-side occurrences, including coefficient two for the carbamate-step proton. Hydration uses master 10748 right-side substrates. All three equations balance atoms and formal charge using independently queried ChEBI formulas. The three-step sum is a consistency check, not a physiological flux measurement. |
+| e-uniprot | https://rest.uniprot.org/uniprotkb/P0ABE9.json; https://rest.uniprot.org/uniprotkb/P00816.json; primaryAccession, proteinDescription, organism, FUNCTION, CATALYTIC ACTIVITY, SUBUNIT, COFACTOR, GO:0005737 cross-reference | supports | Exact reviewed K-12 entries independently read. CynT reaction 10748, reversible hydration/recycling, zinc per subunit and oligomer have ECO:0000269 PMID1740425. Cytoplasm has IDA:EcoCyc/ECO:0000314 with that paper. CynS net reaction 11120 and decamer annotation have no inline experimental code; the graph uses independently supported explicit intermediate chemistry and assembly evidence. |
+| e-primary-chemistry | PMID:3110153 DOI:10.1016/s0021-9258(18)48040-4; PMID:1740425 DOI:10.1016/s0021-9258(19)50586-5; Complete indexed Europe PMC core abstractText; cyanate-primary-extra.json | supports | Independently inspected complete abstracts. Isotope results support bicarbonate as substrate rather than activator and exclude water as a substrate of the cyanase step. CynT purification supports zinc, an oligomer and the recycling interpretation. No full-text access to these two papers is claimed; the omitted abstract equation was not reconstructed as a quote. |
+| e-primary-structure | PMID:10801492 DOI:10.1016/s0969-2126(00)00134-9; Complete indexed Europe PMC abstract, Background and Results; primary-10801492.json | supports | The independently read structure abstract supports functional E. coli cyanase as a decamer assembled from five dimers, with active sites involving neighboring subunits. The target correctly assigns catalysis to the native assembly. |
+| e-physiology | https://www.researchgate.net/publication/14754117_A_physiological_role_for_cyanate-induced_carbonic_anhydrase_in_Escherichia_coli; Author-uploaded primary full text PMID8444806 DOI10.1128/jb.175.5.1443-1451.1993; Methods, Table1, carbonic-anhydrase assay/Table2, mutant controls and pp1447-1450; indexed abstract independently read | supports | Independent web inspection confirms K-12 derivatives and HfrR5-derived mutants. Cyanate-use loss in the cynT mutant at 0.03% CO2 is rescued at 3%; enzyme controls support the conditional recycling interpretation. CynX phenotypes remain unresolved in these experiments. This does not establish a new direct MG1655 experiment or a universal CynT requirement. Publisher/PMC attempts failed; no downloaded PDF digest is claimed. |
+| e-source-conflicts | PathBank PW002099.owl; MetaCyc CPLX0-7521/EG12319-MONOMER; reviewed UniProt P61517/P17583; PMID14563877 and11316870 abstracts; ProteinComplex1171 protein/reference/xref chains; enzymes-not-used component-to-P61517; Can SUBUNIT; CynX FUNCTION evidence scope | supports | Independently parsed PathBank complex combines P0ABE9 and P61517, whereas native selected CynT and Can assemblies are distinct. Can compensation does not prove this mixed complex; its source tetramer/current dimer discrepancy stays excluded context. Neutral native carbamic acid is not substituted for Rhea carbamate. CynX transporter annotation without inline experimental code is not promoted to demonstrated transport; the older negative phenotype does not prove transport impossible. |
+| e-identities | Pinned ChEBI255, GO2026-07-26, NCBITaxon2026-07-12 and Rhea139 SemanticSQL; current frozen identifier snapshots; /private/tmp/pathwaymech-cyanate-independent-review/identity-replay.json; exact18 target IDs and labels | supports | All 18 named labels independently match frozen authority terms and native protein/pathway objects. Direct SQL verifies every ontology label, seven reaction-metabolite formulas/charges and exact taxon. Rhea139 label identity agrees with Rhea142 chemical sides; these release roles are kept distinct. |
+| e-source-replay | Independent source/chemistry/quote replay; /private/tmp/pathwaymech-cyanate-independent-review/replay.py; source-replay.json; native-replay.json | supports | Independent source reads and scripts verify all 53 evidence blocks, all 17 cited response-body/compressed-source hashes, all four literal short quotations, all13 side occurrences and all native catalyst/membership/order bridges. No author projection was imported by the full RDF replay. |
+| e-export | Independent inspection of actual integrated CLI KGX and generated target SVG; /private/tmp/pathwaymech-cyanate-independent-review/export-replay.py and export-replay.json | supports | All26 KGX edges preserve endpoints, mapped predicates, full evidence, descriptions and reference metadata; all26 SVG triples agree. Spontaneous RHEA15650 actually exports as biolink:BiochemicalReaction and has no catalyst. Four exploratory selector/mapping assertions failed in reviewer scratch, then were corrected against native field semantics; all final assertions pass without target or exporter edits. |
+| e-integration | Additive authority integration and delegated programmatic SVG/KGX audit; research/pathway_additions/2026-10-10-cyanate-monapterin/authority-integration.json; generated-graph-kgx-audit.json; actual CLI output under /private/tmp/pathwaymech-cyanate-monapterin-kgx | supports | Read completed receipts and actual output independently. Canonical authority rebuild preserves existing entries. Target page has17 connected SVG nodes,26 edges and53 evidence blocks; taxon is a scope declaration among18 named nodes. Separate CLI downloads match published outputs. Structural audit was executed by the other agent; it is not scientific or browser visual review. |
+| e-imodulondb | Canonical kg-microbe-sources adapter; root-executed datasets and e_coli/precise_mg1655 search query cyn; research/pathway_additions/2026-10-10-cyanate-monapterin/imodulondb-context.json; /private/tmp/pathwaymech-cyanate-monapterin-imodulondb-cyn.md | context_only | Reviewer independently read the actual completed adapter output. CynR b0338,CynT b0339,CynS b0340,CynX b0341 are gene-name hits; tcyN b1917 is a substring false positive. Zero module-name hits supplies no catalytic, membership or negative biological evidence; no module summary was called. |
+| e-prior-search | Local reviews and reports corpus; rg --no-ignore --hidden -n CYANCAT-PWY&#124;cyanate-degradation&#124;cyanate degradation reviews reports | context_only | No earlier exact-target structured or legacy review was found in this bounded ignored-inclusive search. No predecessor lineage is invented. GitHub322 is acknowledged as a prior draft correction, not fabricated as a structured predecessor. |
+| e-receipts | Frozen author receipts and independently read raw source bodies; research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-sources.json; cyanate-curation.md; cyanate-source-projection.json; cyanate-validation.json | context_only | Manifest separates exact XML/JSON response-body hashes, uncompressed BioPAX member, compressed Rhea RDF and failed access attempts. All17 target source digests were replayed. Source-specific conflicts and access limitations are retained; authority snapshots are identity gates rather than replacements for scientific evidence. |
+| e-gate-validate | Integration agent completed gate log; /private/tmp/pathwaymech-cyanate-monapterin-validate.log | supports | 165 records pass full native/closed schema and identifier-label gates; 8657 evidence blocks,30 sources,245 histories,6 documentation files and current pages. Root/assigned integration agent reports exit0; this reviewer read the actual completed log. |
+| e-gate-test | Integration agent completed gate log; /private/tmp/pathwaymech-cyanate-monapterin-test.log | supports | 1043 passed, 3 skipped and 3 upstream dependency warnings in 332.25 seconds; completed full-suite log inspected. Root/assigned integration agent reports exit0; this reviewer read the actual completed log. |
+| e-gate-lint | Integration agent completed gate log; /private/tmp/pathwaymech-cyanate-monapterin-lint.log | supports | Ruff reports all checks passed. Root/assigned integration agent reports exit0; this reviewer read the actual completed log. |
+| e-gate-render | Integration agent completed gate log; /private/tmp/pathwaymech-cyanate-monapterin-render.log | supports | 165 pathway pages rendered. Root/assigned integration agent reports exit0; this reviewer read the actual completed log. |
+| e-gate-vendored | Integration agent completed gate log; /private/tmp/pathwaymech-cyanate-monapterin-vendored.log | supports | All22 governed artifacts match the pinned CLAW revision. Root/assigned integration agent reports exit0; this reviewer read the actual completed log. |
+| e-gate-kgx-audit-cli | Integration agent completed gate log; /private/tmp/pathwaymech-cyanate-monapterin-kgx-audit-cli.log | supports | Separate actual CLI export generated from165 records; target replay matches. Root/assigned integration agent reports exit0; this reviewer read the actual completed log. |
+
+## Limits And Additional Notes
+
+- PMIDs1740425,3110153 and10801492 were read as complete indexed abstracts, not inaccessible full texts. Publisher/PMC requests for8444806 failed in this review, but author-uploaded primary full-text sections were independently inspected on ResearchGate; no PDF byte hash is claimed.
+- CynT oligomer size is source-qualified and condition-dependent; the graph asserts native component membership without universal stoichiometry. MG1655 annotation is not conflated with direct HfrR5 experimental provenance.
+- No browser surfaces were available. SVG/KGX checks are programmatic and do not establish rendered visual quality or interaction behavior.
+- Full-corpus required gates were run once by root, not rerun by this reviewer. Actual completed logs, final input hashes and exact target exports were independently inspected.
+- Raw downloaded evidence and reviewer scratch receipts reside under /private/tmp; committed source manifests preserve exact source URLs, retrieval lineage, locators and digest scopes. No source-exhaustion or public-release licensing determination is made.
+- No maintained YAML, shared authority, history or generated artifact was edited by this reviewer. Only this new immutable review bundle is persisted.
+- GitHub322 draft correction is verified as current content; no fictitious previous_occurrences entry is created. Local prior-review search included ignored and hidden files.
+- The maintained cyanate YAML owns the generated target page and its KGX content. Regeneration uses just render-pages and the pathwaymech CLI, with src/pathwaymech/kgx.py owning export mappings. Frozen identifier snapshots are generated by scripts/build_source_identifier_snapshot.py and scripts/build_ontology_identifier_snapshot.py; conf/identifier_sources.json and their independent source inputs own future authority corrections. Generated files should not be hand-patched.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261010T224258Z-cyanate-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of cyanate degradation
+started_at: '2026-10-10T22:33:47Z'
+finished_at: '2026-10-10T22:42:58Z'
+reviewer:
+  identity: Codex independent cyanate reviewer (/root/verify_graph_publication)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Separate agents authored the cyanate record, source receipts
+    and shared integration. This reviewer did not edit those inputs. Earlier work
+    by this reviewer screened distinct next candidates, excluded from this review.
+    Native XML, full Rhea RDF, UniProt records, primary abstracts and selected primary
+    full-text sections were independently inspected; corpus gates were executed by
+    root and their completed logs independently read.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: Complete review of 18 named nodes, 3 reactions, 26 edges and 53 evidence
+  blocks finds no corrective scientific defect. Chemistry, conditional physiology,
+  assembly distinctions and spontaneous-step category are supported. Required gates
+  pass. Three cited primary papers remain abstract-only, CynT oligomer size remains
+  bounded, and browser visual QA was unavailable.
+source:
+  git_revision: b02726e03fd7e67d210057f150e029fcb343b928
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: d1d18735600fe87f44822cfbc2448c82c10764fec2d45a9780a52c694a892d63
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 99bed8802c3065cb6507ac8ede109003bb15dbdb5aa34a5144009c511be0a3e3
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: c27cf7c60f28d3c9b0a7f1a0f5fe742a4f0327ae03274f216234a36eb675791d
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 0785abf8d16e50ace357fb19ce6b497e1c0f25c0f1ca7f69c0831bcec6d64bcf
+    role: context
+  - path: data/pathways/cyanate-degradation.yaml
+    sha256: 7972d75389eb8cc316ff268467d6846351fc313850aa165ae51983bf87ed717f
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 77632d2883c161785f010b2c2e39bcd22215000bf4375aab586f3b7f9185d145
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/MetaCyc_CYANCAT-PWY.html
+    sha256: c7f79606973e0ddb76857d6c73cc7b2f40eefe75be0e52ee3b7378756e75a993
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/authority-integration.json
+    sha256: d56eaa6e465d48d142bb8671eee422f22a6e9034bc45594325f4fdc29fb0ffe7
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-curation.md
+    sha256: c00916faf9b4a61f331dee0dd5a1c6f2e7abd2cdd4c0a3a91c8a9f2fc31b6aec
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-duplicate-searches.json
+    sha256: 3e2bae0c57d74a3cf2077195b941f224805ba72af5b2405278fa29fb6e083425
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-identifiers.json
+    sha256: c1d230b4011420e728dbb2ce9aec117a3030ef20f981386cfe2c0758056221e3
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-source-projection.json
+    sha256: 95dd10bdb2bdc3ab332a01d8488a640a1f0f7d5e72939c9220238a7a5e78b79c
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-sources.json
+    sha256: ae36dcde00c3e874dba37dbbf7babbe4fb2f1e53e8810c639e8014089e7288b4
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-validation.json
+    sha256: f60c559a071d87fe21bb5e1f22e85d69380111a464e3b6e5c12cf2158c2104a1
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/generated-graph-kgx-audit.json
+    sha256: 8d5c6b749e1eeee109d17b2c1d94e32a0280f4126391e82dc0005c6d5e2278eb
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/generated-graph-kgx-audit.md
+    sha256: b983e112fe4f5cf44e1acebbce4575c8c0bd9726daa7fe919d4a7bb239d614be
+    role: context
+  - path: research/pathway_additions/2026-10-10-cyanate-monapterin/imodulondb-context.json
+    sha256: f86563b154e135140747eb037300171aabdc742e07aa0511e8fb7dc0bfb57cef
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: e1d2f085f8e257170a434400265a400ffac07e4aa23b1b830a8fde990ba6a520
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+scope:
+  description: Complete scientific assessment of the frozen native CynS/CynT cyanate
+    recycling record and its generated graph/export.
+  selection: Exact assigned MetaCyc:CYANCAT-PWY record; no sampling.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:CYANCAT-PWY
+  exclusions:
+  - target: MetaCyc:PWY0-1433 and all other pathway records
+    reason: Independent scientific review here covers only cyanate; other records
+      receive shared deterministic gates.
+  - target: Transport, cyanate generation, broad nitrogen assimilation, regulation
+      and alternative carbonic anhydrases
+    reason: Outside the selected native pathway boundary; relevant conflicting source
+      claims were checked as context.
+targets:
+- target_id: MetaCyc:CYANCAT-PWY
+  path: data/pathways/cyanate-degradation.yaml
+  label: cyanate degradation
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cyanate-degradation.yaml
+    role: maintained
+checks:
+- check_id: c-sources
+  name: Independent source and chemistry replay
+  status: passed
+  required: false
+  summary: All13 side occurrences,18 identities,17 source hashes and4 quotes pass;
+    every26edge assertion assessed.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: .venv/bin/python /private/tmp/pathwaymech-cyanate-independent-review/replay.py;
+    independent native XML and read-only authority SQL queries
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-source-replay
+  - e-identities
+  - e-native-reactions
+- check_id: c-export
+  name: Independent actual exported-record replay
+  status: passed
+  required: false
+  summary: All26 edges and53 evidence blocks preserved; spontaneous category and absence
+    of catalyst verified.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: .venv/bin/python /private/tmp/pathwaymech-cyanate-independent-review/export-replay.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-export
+- check_id: c-gate-validate
+  name: Integrated validate gate
+  status: passed
+  required: true
+  summary: 165 records pass full native/closed schema and identifier-label gates;
+    8657 evidence blocks,30 sources,245 histories,6 documentation files and current
+    pages.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gate-validate
+  scope_note: Executed by root or its delegated integration agent on the165-record
+    corpus; independently inspected by this reviewer. Scientific verdict covers only
+    the declared cyanate target.
+- check_id: c-gate-test
+  name: Integrated test gate
+  status: passed
+  required: true
+  summary: 1043 passed, 3 skipped and 3 upstream dependency warnings in 332.25 seconds;
+    completed full-suite log inspected.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gate-test
+  scope_note: Executed by root or its delegated integration agent on the165-record
+    corpus; independently inspected by this reviewer. Scientific verdict covers only
+    the declared cyanate target.
+- check_id: c-gate-lint
+  name: Integrated lint gate
+  status: passed
+  required: true
+  summary: Ruff reports all checks passed.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gate-lint
+  scope_note: Executed by root or its delegated integration agent on the165-record
+    corpus; independently inspected by this reviewer. Scientific verdict covers only
+    the declared cyanate target.
+- check_id: c-gate-render
+  name: Integrated render gate
+  status: passed
+  required: false
+  summary: 165 pathway pages rendered.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gate-render
+  scope_note: Executed by root or its delegated integration agent on the165-record
+    corpus; independently inspected by this reviewer. Scientific verdict covers only
+    the declared cyanate target.
+- check_id: c-gate-vendored
+  name: Integrated vendored gate
+  status: passed
+  required: false
+  summary: All22 governed artifacts match the pinned CLAW revision.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 bash
+    scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gate-vendored
+  scope_note: Executed by root or its delegated integration agent on the165-record
+    corpus; independently inspected by this reviewer. Scientific verdict covers only
+    the declared cyanate target.
+- check_id: c-gate-kgx-audit-cli
+  name: Integrated kgx-audit-cli gate
+  status: passed
+  required: false
+  summary: Separate actual CLI export generated from165 records; target replay matches.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-cyanate-monapterin-kgx
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gate-kgx-audit-cli
+  scope_note: Executed by root or its delegated integration agent on the165-record
+    corpus; independently inspected by this reviewer. Scientific verdict covers only
+    the declared cyanate target.
+- check_id: c-diff
+  name: Unstaged patch whitespace
+  status: passed
+  required: true
+  summary: git diff --check passed.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: c-cached-diff
+  name: Staged patch whitespace
+  status: passed
+  required: false
+  summary: git diff --cached --check passed.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+evidence:
+- evidence_id: e-native-path
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:CYANCAT-PWY
+  locator: Pathway CYANCAT-PWY reaction-list, reaction-ordering, reaction-layout,
+    species and enzymes-not-used
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independently read native MetaCyc 22.5 XML. Exact named three-step CynS/CynT
+    recycling cycle, three predecessor links, R2L carbon-dioxide hydration and MG1655
+    annotation are explicit. The route is more specific than generic cyanate catabolism.
+  snapshot_sha256: b17720281237373171f0d50634cdc8119636a945e63db65ad0a1a6681274e4cd
+- evidence_id: e-native-assemblies
+  kind: database
+  reference: Native MetaCyc CYANLY-CPLX/CARBODEHYDRAT-CPLX and corresponding MONOMER
+    objects
+  locator: component/coefficient/comment; catalyzes/Enzymatic-Reaction/reaction; species;
+    monomer dblink UNIPROT unification
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independent parsing confirms cyanase ten-copy P00816 assembly and separate
+    P0ABE9 CynT assembly. CynT coefficient two is qualified as probably a dimer; monomer
+    text describes two or four depending on bicarbonate. Membership without fixed
+    size is supported. Both selected complexes explicitly name TAX-511145.
+- evidence_id: e-native-reactions
+  kind: database
+  reference: Native MetaCyc R524-RXN, RXN0-5222 and RXN0-5224 XML
+  locator: left/right, reaction-direction, spontaneous, dblink RHEA unification; /private/tmp/pathwaymech-cyanate-independent-review/native-replay.json
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Exact native bridges are 18490, 15650 and bidirectional 10751. RXN0-5222
+    explicitly sets spontaneous true. Native pathway direction and Rhea directional
+    membership jointly select 10750. All source identifiers and exact source assertions
+    were inspected.
+  snapshot_sha256: c23453271af6e05af59e48f89318d97da8ff8df89d1452f93f5168b208f266a7
+- evidence_id: e-rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Merged RDF subjects 18489/18490,15649/15650,10748/10750/10751; substrates/products,
+    containsN, participant compound and chebi
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independent full-RDF streaming replay verifies all 13 reaction-side occurrences,
+    including coefficient two for the carbamate-step proton. Hydration uses master
+    10748 right-side substrates. All three equations balance atoms and formal charge
+    using independently queried ChEBI formulas. The three-step sum is a consistency
+    check, not a physiological flux measurement.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-uniprot
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0ABE9.json; https://rest.uniprot.org/uniprotkb/P00816.json
+  locator: primaryAccession, proteinDescription, organism, FUNCTION, CATALYTIC ACTIVITY,
+    SUBUNIT, COFACTOR, GO:0005737 cross-reference
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Exact reviewed K-12 entries independently read. CynT reaction 10748, reversible
+    hydration/recycling, zinc per subunit and oligomer have ECO:0000269 PMID1740425.
+    Cytoplasm has IDA:EcoCyc/ECO:0000314 with that paper. CynS net reaction 11120
+    and decamer annotation have no inline experimental code; the graph uses independently
+    supported explicit intermediate chemistry and assembly evidence.
+- evidence_id: e-primary-chemistry
+  kind: primary_source
+  reference: PMID:3110153 DOI:10.1016/s0021-9258(18)48040-4; PMID:1740425 DOI:10.1016/s0021-9258(19)50586-5
+  locator: Complete indexed Europe PMC core abstractText; cyanate-primary-extra.json
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independently inspected complete abstracts. Isotope results support bicarbonate
+    as substrate rather than activator and exclude water as a substrate of the cyanase
+    step. CynT purification supports zinc, an oligomer and the recycling interpretation.
+    No full-text access to these two papers is claimed; the omitted abstract equation
+    was not reconstructed as a quote.
+  snapshot_sha256: df06243c0ed668ce4e1309ed48f85529b8876c78161e7e5527129a99e4574ac5
+- evidence_id: e-primary-structure
+  kind: primary_source
+  reference: PMID:10801492 DOI:10.1016/s0969-2126(00)00134-9
+  locator: Complete indexed Europe PMC abstract, Background and Results; primary-10801492.json
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: The independently read structure abstract supports functional E. coli cyanase
+    as a decamer assembled from five dimers, with active sites involving neighboring
+    subunits. The target correctly assigns catalysis to the native assembly.
+  snapshot_sha256: fbed8047b523df94f3c6f6730cfd02f16a08828c582a35ba689cdbe025123907
+- evidence_id: e-physiology
+  kind: primary_source
+  reference: https://www.researchgate.net/publication/14754117_A_physiological_role_for_cyanate-induced_carbonic_anhydrase_in_Escherichia_coli
+  locator: Author-uploaded primary full text PMID8444806 DOI10.1128/jb.175.5.1443-1451.1993;
+    Methods, Table1, carbonic-anhydrase assay/Table2, mutant controls and pp1447-1450;
+    indexed abstract independently read
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independent web inspection confirms K-12 derivatives and HfrR5-derived
+    mutants. Cyanate-use loss in the cynT mutant at 0.03% CO2 is rescued at 3%; enzyme
+    controls support the conditional recycling interpretation. CynX phenotypes remain
+    unresolved in these experiments. This does not establish a new direct MG1655 experiment
+    or a universal CynT requirement. Publisher/PMC attempts failed; no downloaded
+    PDF digest is claimed.
+- evidence_id: e-source-conflicts
+  kind: database
+  reference: PathBank PW002099.owl; MetaCyc CPLX0-7521/EG12319-MONOMER; reviewed UniProt
+    P61517/P17583; PMID14563877 and11316870 abstracts
+  locator: ProteinComplex1171 protein/reference/xref chains; enzymes-not-used component-to-P61517;
+    Can SUBUNIT; CynX FUNCTION evidence scope
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independently parsed PathBank complex combines P0ABE9 and P61517, whereas
+    native selected CynT and Can assemblies are distinct. Can compensation does not
+    prove this mixed complex; its source tetramer/current dimer discrepancy stays
+    excluded context. Neutral native carbamic acid is not substituted for Rhea carbamate.
+    CynX transporter annotation without inline experimental code is not promoted to
+    demonstrated transport; the older negative phenotype does not prove transport
+    impossible.
+  snapshot_sha256: d8616300c7c407dffc277f8247cfc95ea3a9f9c6ad4a3ef4dcd8dc2f3bfec604
+- evidence_id: e-identities
+  kind: authority
+  reference: Pinned ChEBI255, GO2026-07-26, NCBITaxon2026-07-12 and Rhea139 SemanticSQL;
+    current frozen identifier snapshots
+  locator: /private/tmp/pathwaymech-cyanate-independent-review/identity-replay.json;
+    exact18 target IDs and labels
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: All 18 named labels independently match frozen authority terms and native
+    protein/pathway objects. Direct SQL verifies every ontology label, seven reaction-metabolite
+    formulas/charges and exact taxon. Rhea139 label identity agrees with Rhea142 chemical
+    sides; these release roles are kept distinct.
+  snapshot_sha256: fa4493416c7edd3e40ed273ae204bf5396a8f9a19fa58d2be732975d63a58a2c
+- evidence_id: e-source-replay
+  kind: validation
+  reference: Independent source/chemistry/quote replay
+  locator: /private/tmp/pathwaymech-cyanate-independent-review/replay.py; source-replay.json;
+    native-replay.json
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Independent source reads and scripts verify all 53 evidence blocks, all
+    17 cited response-body/compressed-source hashes, all four literal short quotations,
+    all13 side occurrences and all native catalyst/membership/order bridges. No author
+    projection was imported by the full RDF replay.
+  snapshot_sha256: 48ec6de1f81878b59362fecd5705907dfb8c2177033245006c85c98b4b8e3e51
+- evidence_id: e-export
+  kind: validation
+  reference: Independent inspection of actual integrated CLI KGX and generated target
+    SVG
+  locator: /private/tmp/pathwaymech-cyanate-independent-review/export-replay.py and
+    export-replay.json
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: All26 KGX edges preserve endpoints, mapped predicates, full evidence, descriptions
+    and reference metadata; all26 SVG triples agree. Spontaneous RHEA15650 actually
+    exports as biolink:BiochemicalReaction and has no catalyst. Four exploratory selector/mapping
+    assertions failed in reviewer scratch, then were corrected against native field
+    semantics; all final assertions pass without target or exporter edits.
+  snapshot_sha256: 8ca97b752c02b106c932573814bd97ca0407c1c2bf6bcf2df838b5fb278d69b3
+- evidence_id: e-integration
+  kind: validation
+  reference: Additive authority integration and delegated programmatic SVG/KGX audit
+  locator: research/pathway_additions/2026-10-10-cyanate-monapterin/authority-integration.json;
+    generated-graph-kgx-audit.json; actual CLI output under /private/tmp/pathwaymech-cyanate-monapterin-kgx
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Read completed receipts and actual output independently. Canonical authority
+    rebuild preserves existing entries. Target page has17 connected SVG nodes,26 edges
+    and53 evidence blocks; taxon is a scope declaration among18 named nodes. Separate
+    CLI downloads match published outputs. Structural audit was executed by the other
+    agent; it is not scientific or browser visual review.
+  snapshot_sha256: 8d5c6b749e1eeee109d17b2c1d94e32a0280f4126391e82dc0005c6d5e2278eb
+- evidence_id: e-imodulondb
+  kind: database
+  reference: Canonical kg-microbe-sources adapter; root-executed datasets and e_coli/precise_mg1655
+    search query cyn
+  locator: research/pathway_additions/2026-10-10-cyanate-monapterin/imodulondb-context.json;
+    /private/tmp/pathwaymech-cyanate-monapterin-imodulondb-cyn.md
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: context_only
+  summary: Reviewer independently read the actual completed adapter output. CynR b0338,CynT
+    b0339,CynS b0340,CynX b0341 are gene-name hits; tcyN b1917 is a substring false
+    positive. Zero module-name hits supplies no catalytic, membership or negative
+    biological evidence; no module summary was called.
+  snapshot_sha256: edd929c90cd6946caa1d3aad5f9ec77a793f93d629045f67c731dd7b6828c50d
+- evidence_id: e-prior-search
+  kind: search
+  reference: Local reviews and reports corpus
+  locator: rg --no-ignore --hidden -n CYANCAT-PWY|cyanate-degradation|cyanate degradation
+    reviews reports
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: context_only
+  summary: No earlier exact-target structured or legacy review was found in this bounded
+    ignored-inclusive search. No predecessor lineage is invented. GitHub322 is acknowledged
+    as a prior draft correction, not fabricated as a structured predecessor.
+  search_scope: All hidden and ignored files under reviews and reports; Git internals,
+    virtual environments and bytecode excluded. This is not literature or source exhaustion.
+- evidence_id: e-receipts
+  kind: record_content
+  reference: Frozen author receipts and independently read raw source bodies
+  locator: research/pathway_additions/2026-10-10-cyanate-monapterin/cyanate-sources.json;
+    cyanate-curation.md; cyanate-source-projection.json; cyanate-validation.json
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: context_only
+  summary: Manifest separates exact XML/JSON response-body hashes, uncompressed BioPAX
+    member, compressed Rhea RDF and failed access attempts. All17 target source digests
+    were replayed. Source-specific conflicts and access limitations are retained;
+    authority snapshots are identity gates rather than replacements for scientific
+    evidence.
+  snapshot_sha256: ae36dcde00c3e874dba37dbbf7babbe4fb2f1e53e8810c639e8014089e7288b4
+- evidence_id: e-gate-validate
+  kind: validation
+  reference: Integration agent completed gate log
+  locator: /private/tmp/pathwaymech-cyanate-monapterin-validate.log
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: 165 records pass full native/closed schema and identifier-label gates;
+    8657 evidence blocks,30 sources,245 histories,6 documentation files and current
+    pages. Root/assigned integration agent reports exit0; this reviewer read the actual
+    completed log.
+  snapshot_sha256: 9b007dae28a8b7621e7eea5a8d999027ccf86e480e4e0e8017bc44fe06c073b7
+- evidence_id: e-gate-test
+  kind: validation
+  reference: Integration agent completed gate log
+  locator: /private/tmp/pathwaymech-cyanate-monapterin-test.log
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: 1043 passed, 3 skipped and 3 upstream dependency warnings in 332.25 seconds;
+    completed full-suite log inspected. Root/assigned integration agent reports exit0;
+    this reviewer read the actual completed log.
+  snapshot_sha256: 456ea5b2251f582ae936eaff538a4fbc9dd97b21cb62807737b3f65ff10936ea
+- evidence_id: e-gate-lint
+  kind: validation
+  reference: Integration agent completed gate log
+  locator: /private/tmp/pathwaymech-cyanate-monapterin-lint.log
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Ruff reports all checks passed. Root/assigned integration agent reports
+    exit0; this reviewer read the actual completed log.
+  snapshot_sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+- evidence_id: e-gate-render
+  kind: validation
+  reference: Integration agent completed gate log
+  locator: /private/tmp/pathwaymech-cyanate-monapterin-render.log
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: 165 pathway pages rendered. Root/assigned integration agent reports exit0;
+    this reviewer read the actual completed log.
+  snapshot_sha256: cdf9c94d6566032b6fe43843e5e1c4605a19a8fc7dfcfb6158f1edd1b55b3948
+- evidence_id: e-gate-vendored
+  kind: validation
+  reference: Integration agent completed gate log
+  locator: /private/tmp/pathwaymech-cyanate-monapterin-vendored.log
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: All22 governed artifacts match the pinned CLAW revision. Root/assigned
+    integration agent reports exit0; this reviewer read the actual completed log.
+  snapshot_sha256: b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6
+- evidence_id: e-gate-kgx-audit-cli
+  kind: validation
+  reference: Integration agent completed gate log
+  locator: /private/tmp/pathwaymech-cyanate-monapterin-kgx-audit-cli.log
+  accessed_at: '2026-10-10T22:42:58Z'
+  support: supports
+  summary: Separate actual CLI export generated from165 records; target replay matches.
+    Root/assigned integration agent reports exit0; this reviewer read the actual completed
+    log.
+  snapshot_sha256: 1063bf2940299e097f7c7a7940b6e90abb1e06217fe728c096c0d656f4968086
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact pathway and taxon scope
+  outcome: supported
+  summary: Native CYANCAT-PWY denotes the explicit cyanase/carbamate-decay/CynT recycling
+    cycle. Native pathway and assembly annotation ground MG1655; broader current K-12
+    proteins and K-12 HfrR5 experiments are correctly distinguished. The selected
+    route is a named two-enzyme pathway with a spontaneous intermediate step.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-native-path
+  - e-native-assemblies
+  - e-uniprot
+  - e-physiology
+  - e-identities
+  dimensions:
+  - name: taxon-scope
+    value: NCBITaxon:511145 native MG1655 annotation; UniProt83333 K-12 and primary
+      HfrR5 derivatives
+    definition: Annotation and experimental scopes remain separate; no direct MG1655
+      experiment is invented.
+    evidence_ids:
+    - e-native-path
+    - e-native-assemblies
+    - e-physiology
+- assessment_id: a-chemistry
+  area: grounding
+  topic: Edges001-013 and exact reaction sides
+  outcome: supported
+  summary: All13 occurrences and exact charged chemical identities match native Rhea.
+    Carbamate decay consumes two protons; hydration uses right-to-left10750. The net11121
+    reaction is correctly omitted to avoid double-counting the explicit intermediate
+    and decay.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-rhea
+  - e-native-reactions
+  - e-primary-chemistry
+  - e-identities
+  - e-source-replay
+- assessment_id: a-catalysts
+  area: evidence
+  topic: 'Edges014-018 and026: assembly, catalyst, cofactor and location'
+  outcome: supported
+  summary: CynS belongs to a native homodecamer that catalyzes18490. CynT belongs
+    to its separate assembly without a universally fixed size. Its reversible hydration
+    selection, zinc cofactor and cytoplasm annotation retain exact source grades.
+    Bicarbonate is a chemical substrate, not a CynS cofactor.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-native-assemblies
+  - e-uniprot
+  - e-primary-structure
+  - e-primary-chemistry
+  dimensions:
+  - name: component-role
+    value: Native cyanase and CynT assemblies catalyze; P00816/P0ABE9 are components
+    definition: Membership does not imply autonomous monomer catalysis; uncertain
+      CynT size is retained.
+    evidence_ids:
+    - e-native-assemblies
+    - e-uniprot
+    - e-primary-structure
+  - name: evidence-tier
+    value: Native structured assembly annotation, experimental ECO:0000269/0000314
+      and primary abstracts
+    definition: No inline code on CynS SUBUNIT is invented; cytoplasm uses the explicit
+      GO annotation.
+    evidence_ids:
+    - e-uniprot
+    - e-primary-chemistry
+    - e-primary-structure
+- assessment_id: a-cycle
+  area: graph
+  topic: 'Edges019-025: membership, ordering and inferred pool connection'
+  outcome: supported
+  summary: Three membership edges use exact native reaction bridges. Three native
+    predecessor edges preserve carbamate,CO2 and bicarbonate continuity. The extra18490-to10750
+    shared-CO2 connection is explicitly inferred from chemical sides and the documented
+    recycling role, not represented as native ordering or quantitative flux.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-native-path
+  - e-native-reactions
+  - e-rhea
+  - e-uniprot
+  - e-physiology
+- assessment_id: a-spontaneous
+  area: graph
+  topic: Nonenzymatic step and draft correction322
+  outcome: supported
+  summary: RXN0-5222 spontaneity supports the final RHEA15650 step without a catalyst.
+    The final target has no molecular_activity override; actual KGX category is BiochemicalReaction.
+    This positively verifies the draft correction documented in GitHub322 without
+    asserting structured finding lineage.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-native-reactions
+  - e-export
+  - e-integration
+- assessment_id: a-scope
+  area: scope
+  topic: Conditional physiology and source conflicts
+  outcome: supported
+  summary: The low/high CO2 phenotype is accurately conditional. Distinct Can, unsupported
+    mixed Can/CynT complex, uncertain CynX transport, neutral carbamic acid and broad
+    induction/growth extensions are not promoted into this bounded mechanism. Exclusion
+    is not a claim that an annotation or transport function is impossible.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-physiology
+  - e-source-conflicts
+  - e-receipts
+  dimensions:
+  - name: physiological-condition
+    value: CynT-dependent cyanate use at0.03%CO2 with3%CO2 rescue in tested K-12 derivatives
+    definition: Conditional primary phenotype, not universal enzyme essentiality.
+    evidence_ids:
+    - e-physiology
+- assessment_id: a-provenance
+  area: provenance
+  topic: Every evidence block and short quotation
+  outcome: supported
+  summary: All53 evidence blocks have inspected nearest-source support and retain
+    structured assertions as such. All17 hashes and4 short literal quotations match
+    the preserved source bytes. Three target primary papers remain abstract-only;
+    the1993 paper was additionally inspected through its author-uploaded full text.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-source-replay
+  - e-receipts
+  - e-physiology
+- assessment_id: a-context
+  area: evidence
+  topic: Bounded transcriptomic cross-check
+  outcome: supported
+  summary: Canonical adapter output supplies exact cyn gene context and no matching
+    module names. It is not used for direct catalysis, pathway identity, regulatory
+    edges or negative biological conclusions.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-imodulondb
+- assessment_id: a-products
+  area: provenance
+  topic: Generated artifacts and final input integrity
+  outcome: supported
+  summary: Generated page/KGX preserve the frozen scientific graph and evidence. Authority
+    labels agree with independently read sources. Initial reviewed input hashes are
+    unchanged; new authority/generated inputs were read before the final inspector.
+    Required gates pass; no browser visual or interaction inspection is claimed.
+  target_ids:
+  - MetaCyc:CYANCAT-PWY
+  evidence_ids:
+  - e-export
+  - e-integration
+  - e-identities
+  - e-gate-validate
+  - e-gate-test
+  - e-gate-lint
+findings: []
+actions: []
+limitations:
+- PMIDs1740425,3110153 and10801492 were read as complete indexed abstracts, not inaccessible
+  full texts. Publisher/PMC requests for8444806 failed in this review, but author-uploaded
+  primary full-text sections were independently inspected on ResearchGate; no PDF
+  byte hash is claimed.
+- CynT oligomer size is source-qualified and condition-dependent; the graph asserts
+  native component membership without universal stoichiometry. MG1655 annotation is
+  not conflated with direct HfrR5 experimental provenance.
+- No browser surfaces were available. SVG/KGX checks are programmatic and do not establish
+  rendered visual quality or interaction behavior.
+- Full-corpus required gates were run once by root, not rerun by this reviewer. Actual
+  completed logs, final input hashes and exact target exports were independently inspected.
+- Raw downloaded evidence and reviewer scratch receipts reside under /private/tmp;
+  committed source manifests preserve exact source URLs, retrieval lineage, locators
+  and digest scopes. No source-exhaustion or public-release licensing determination
+  is made.
+notes:
+- No maintained YAML, shared authority, history or generated artifact was edited by
+  this reviewer. Only this new immutable review bundle is persisted.
+- GitHub322 draft correction is verified as current content; no fictitious previous_occurrences
+  entry is created. Local prior-review search included ignored and hidden files.
+- The maintained cyanate YAML owns the generated target page and its KGX content.
+  Regeneration uses just render-pages and the pathwaymech CLI, with src/pathwaymech/kgx.py
+  owning export mappings. Frozen identifier snapshots are generated by scripts/build_source_identifier_snapshot.py
+  and scripts/build_ontology_identifier_snapshot.py; conf/identifier_sources.json
+  and their independent source inputs own future authority corrections. Generated
+  files should not be hand-patched.
+tags:
+- independent-scientific-review
+- cyanate
+- CynS
+- CynT
+- Rhea142
+```

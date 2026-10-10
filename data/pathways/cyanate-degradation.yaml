@@ -1,0 +1,511 @@
+id: MetaCyc:CYANCAT-PWY
+label: cyanate degradation
+description: The CynS/CynT bicarbonate-recycling route annotated for Escherichia coli K-12 MG1655 converts
+  cyanate to ammonium and carbon dioxide. The cyanase homodecamer first forms carbamate from cyanate and
+  bicarbonate; carbamate then decomposes spontaneously. Zinc-containing CynT hydrates carbon dioxide to
+  replenish bicarbonate. The graph selects this physiological hydration direction of a reversible reaction.
+  K-12 mutant experiments support the recycling role at 0.03% CO2, with rescue of the cynT deletion at
+  3% CO2; they do not establish an unconditional requirement for CynT. This record represents the explicit
+  intermediate route, not an additional parallel net cyanase reaction.
+pathway_type: cyanate-catabolism-and-bicarbonate-recycling
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:29195
+  label: cyanate
+  category: small_molecule
+- id: CHEBI:17544
+  label: hydrogencarbonate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:13941
+  label: carbamate
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P00816
+  label: Cyanate hydratase
+  category: protein
+- id: UniProtKB:P0ABE9
+  label: Carbonic anhydrase 1
+  category: protein
+- id: MetaCyc:CYANLY-CPLX
+  label: cyanase
+  category: complex
+- id: MetaCyc:CARBODEHYDRAT-CPLX
+  label: carbonic anhydrase 1
+  category: complex
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:18490
+  label: cyanate + hydrogencarbonate + H(+) => carbamate + CO2
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:15650
+  label: carbamate + 2 H(+) => NH4(+) + CO2
+  direction: left_to_right
+- id: RHEA:10750
+  label: CO2 + H2O => hydrogencarbonate + H(+)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: cyanate-edge-001
+  subject: CHEBI:29195
+  predicate: consumes
+  object: RHEA:18490
+  evidence:
+  - reference_id: RHEA:18490
+    source_assertion: Rhea RHEA:18490 assigns CHEBI:29195 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18490']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18489_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18489_compound_1057'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-002
+  subject: CHEBI:17544
+  predicate: consumes
+  object: RHEA:18490
+  evidence:
+  - reference_id: RHEA:18490
+    source_assertion: Rhea RHEA:18490 assigns CHEBI:17544 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18490']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18489_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18489_compound_1123'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:18490
+  evidence:
+  - reference_id: RHEA:18490
+    source_assertion: Rhea RHEA:18490 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18490']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18489_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18489_compound_3249'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-004
+  subject: RHEA:18490
+  predicate: produces
+  object: CHEBI:13941
+  evidence:
+  - reference_id: RHEA:18490
+    source_assertion: Rhea RHEA:18490 assigns CHEBI:13941 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18490']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18489_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18489_compound_4239'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-005
+  subject: RHEA:18490
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: RHEA:18490
+    source_assertion: Rhea RHEA:18490 assigns CHEBI:16526 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18490']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18489_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18489_compound_4391'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-006
+  subject: CHEBI:13941
+  predicate: consumes
+  object: RHEA:15650
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 assigns CHEBI:13941 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15650']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/15649_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_15649_compound_4239'];
+      rh:compound/rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: MetaCyc RXN0-5222 explicitly sets spontaneous=true for carbamate decomposition to
+      ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: cyanate-edge-007
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:15650
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 assigns CHEBI:15378 to its substrates, with coefficient 2 in rh:contains2.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15650']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/15649_L']/rh:contains2[@rdf:resource='http://rdf.rhea-db.org/Participant_15649_compound_3249'];
+      rh:compound/rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: MetaCyc RXN0-5222 explicitly sets spontaneous=true for carbamate decomposition to
+      ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: cyanate-edge-008
+  subject: RHEA:15650
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 assigns CHEBI:28938 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15650']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/15649_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_15649_compound_1012'];
+      rh:compound/rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: MetaCyc RXN0-5222 explicitly sets spontaneous=true for carbamate decomposition to
+      ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: cyanate-edge-009
+  subject: RHEA:15650
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 assigns CHEBI:16526 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15650']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/15649_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_15649_compound_4391'];
+      rh:compound/rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: MetaCyc RXN0-5222 explicitly sets spontaneous=true for carbamate decomposition to
+      ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: cyanate-edge-010
+  subject: CHEBI:16526
+  predicate: consumes
+  object: RHEA:10750
+  evidence:
+  - reference_id: RHEA:10750
+    source_assertion: Rhea RHEA:10750 assigns CHEBI:16526 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10750']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_10748_compound_4391'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-011
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:10750
+  evidence:
+  - reference_id: RHEA:10750
+    source_assertion: Rhea RHEA:10750 assigns CHEBI:15377 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10750']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_10748_compound_1283'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-012
+  subject: RHEA:10750
+  predicate: produces
+  object: CHEBI:17544
+  evidence:
+  - reference_id: RHEA:10750
+    source_assertion: Rhea RHEA:10750 assigns CHEBI:17544 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10750']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_10748_compound_1123'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-013
+  subject: RHEA:10750
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:10750
+    source_assertion: Rhea RHEA:10750 assigns CHEBI:15378 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10750']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_10748_compound_3249'];
+      rh:compound/rh:chebi
+- id: cyanate-edge-014
+  subject: MetaCyc:CYANLY-CPLX
+  predicate: has_part
+  object: UniProtKB:P00816
+  description: CynS is the cyanase subunit; catalysis belongs to its native homodecamer. MetaCyc supplies
+    the MG1655 assembly assignment, while the structural study concerns E. coli cyanase.
+  evidence:
+  - reference_id: MetaCyc:CYANLY-CPLX
+    source_assertion: MetaCyc cyanase CYANLY-CPLX contains ten copies of CYANLY-MONOMER.
+    source_locator: Protein[@frameid='CYANLY-CPLX']/component[Protein/@frameid='CYANLY-MONOMER']/coefficient
+  - reference_id: MetaCyc:CYANLY-MONOMER
+    source_assertion: MetaCyc CYANLY-MONOMER unifies its protein identity with UniProt P00816.
+    source_locator: Protein[@frameid='CYANLY-MONOMER']/dblink[dblink-db='UNIPROT',dblink-relationship='unification']/dblink-oid
+  - reference_id: UniProtKB:P00816
+    source_assertion: Reviewed UniProt P00816 describes a homodecamer made of five homodimers; its SUBUNIT
+      comment has no inline experimental evidence code.
+    source_locator: primaryAccession; comments[commentType='SUBUNIT'].texts
+  - reference_id: PMID:10801492
+    quote: The enzyme is functionally active as a homodecamer of 17 kDa subunits
+    source_locator: Europe PMC core resultList.result[id='10801492'].abstractText, Background
+- id: cyanate-edge-015
+  subject: MetaCyc:CARBODEHYDRAT-CPLX
+  predicate: has_part
+  object: UniProtKB:P0ABE9
+  description: The graph asserts the CynT component of its own assembly without a fixed oligomer size.
+    It does not adopt the PathBank complex that combines CynT with the distinct Can protein.
+  evidence:
+  - reference_id: MetaCyc:CARBODEHYDRAT-CPLX
+    source_assertion: MetaCyc CARBODEHYDRAT-CPLX contains CARBODEHYDRAT-MONOMER. Its coefficient 2 is
+      qualified by the component comment as probably a dimer.
+    source_locator: Protein[@frameid='CARBODEHYDRAT-CPLX']/component/Protein; component/coefficient; component/comment
+  - reference_id: MetaCyc:CARBODEHYDRAT-MONOMER
+    source_assertion: MetaCyc CARBODEHYDRAT-MONOMER unifies with UniProt P0ABE9; its comment describes
+      oligomers of two or four subunits depending on bicarbonate.
+    source_locator: Protein[@frameid='CARBODEHYDRAT-MONOMER']/dblink[dblink-db='UNIPROT',dblink-relationship='unification'];
+      comment
+  - reference_id: UniProtKB:P0ABE9
+    source_assertion: UniProt describes P0ABE9 as an oligomer, with ECO:0000269 citing PMID:1740425.
+    source_locator: comments[commentType='SUBUNIT'].texts
+  - reference_id: PMID:1740425
+    quote: behave as an oligomer in solution
+    source_locator: Europe PMC core resultList.result[id='1740425'].abstractText
+- id: cyanate-edge-016
+  subject: MetaCyc:CYANLY-CPLX
+  predicate: catalyzes
+  object: RHEA:18490
+  description: This is the explicit cyanase conversion to carbamate. Bicarbonate is a substrate, not a
+    cofactor; water is not a substrate of this step. The subsequent nonenzymatic decomposition is a separate
+    node.
+  evidence:
+  - reference_id: MetaCyc:CYANLY-CPLX
+    source_assertion: MetaCyc CYANLY-CPLX catalyzes CYANLY-ENZRXN, whose reaction is R524-RXN.
+    source_locator: Protein[@frameid='CYANLY-CPLX']/catalyzes/Enzymatic-Reaction[@frameid='CYANLY-ENZRXN']/reaction/Reaction/@frameid
+  - reference_id: MetaCyc:R524-RXN
+    source_assertion: MetaCyc R524-RXN forms carbamate and carbon dioxide from cyanate, bicarbonate and
+      a proton; its RHEA unification cross-reference is 18490.
+    source_locator: Reaction[@frameid='R524-RXN']/left; right; dblink[dblink-db='RHEA',dblink-relationship='unification']/dblink-oid
+  - reference_id: PMID:3110153
+    quote: Bicarbonate (not CO2) is the substrate.
+    source_locator: Europe PMC core resultList.result[id='3110153'].abstractText
+  - reference_id: MetaCyc:CYANLY-CPLX
+    source_assertion: The native cyanase assembly CYANLY-CPLX has species TAX-511145, Escherichia coli
+      K-12 MG1655.
+    source_locator: Protein[@frameid='CYANLY-CPLX']/species/Organism[@frameid='TAX-511145']
+- id: cyanate-edge-017
+  subject: MetaCyc:CARBODEHYDRAT-CPLX
+  predicate: catalyzes
+  object: RHEA:10750
+  description: CynT accelerates bicarbonate regeneration. Selecting hydration for this pathway does not
+    make carbonic anhydrase irreversible.
+  evidence:
+  - reference_id: MetaCyc:CARBODEHYDRAT-CPLX
+    source_assertion: MetaCyc CARBODEHYDRAT-CPLX catalyzes CARBODEHYDRAT-ENZRXN, whose reaction is RXN0-5224.
+    source_locator: Protein[@frameid='CARBODEHYDRAT-CPLX']/catalyzes/Enzymatic-Reaction/reaction/Reaction/@frameid
+  - reference_id: MetaCyc:RXN0-5224
+    source_assertion: MetaCyc RXN0-5224 is reversible bicarbonate/proton interconversion with carbon dioxide/water
+      and unifies with bidirectional RHEA:10751.
+    source_locator: Reaction[@frameid='RXN0-5224']/reaction-direction; left; right; dblink[dblink-db='RHEA']/dblink-oid
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: The CYANCAT-PWY reaction layout selects RXN0-5224 in R2L direction, consuming carbon
+      dioxide and regenerating bicarbonate.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-layout[Reaction/@frameid='RXN0-5224']/direction;
+      left-primaries; right-primaries
+  - reference_id: UniProtKB:P0ABE9
+    source_assertion: Reviewed UniProt P0ABE9 assigns the RHEA:10748 carbonic-anhydrase reaction and reversible
+      carbon-dioxide hydration, with ECO:0000269 citing PMID:1740425.
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction; comments[commentType='FUNCTION'].texts
+  - reference_id: RHEA:10750
+    source_assertion: Rhea RHEA:10750 is the right-to-left member of master RHEA:10748, consuming carbon
+      dioxide and water and producing bicarbonate and a proton.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/10750']/rh:substrates and rh:products
+  - reference_id: MetaCyc:CARBODEHYDRAT-CPLX
+    source_assertion: The native CynT assembly CARBODEHYDRAT-CPLX has species TAX-511145, Escherichia
+      coli K-12 MG1655.
+    source_locator: Protein[@frameid='CARBODEHYDRAT-CPLX']/species/Organism[@frameid='TAX-511145']
+- id: cyanate-edge-018
+  subject: UniProtKB:P0ABE9
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Zinc binding is supported for the CynT subunit. No bicarbonate cofactor relation is asserted
+    for CynS because bicarbonate participates chemically.
+  evidence:
+  - reference_id: UniProtKB:P0ABE9
+    source_assertion: UniProt P0ABE9 assigns Zn(2+) CHEBI:29105 and one zinc ion per subunit, with ECO:0000269
+      citing PMID:1740425.
+    source_locator: comments[commentType='COFACTOR'].cofactors; comments[commentType='COFACTOR'].note.texts
+  - reference_id: PMID:1740425
+    quote: 1 Zn2+/subunit (24 kDa)
+    source_locator: Europe PMC core resultList.result[id='1740425'].abstractText
+- id: cyanate-edge-019
+  subject: RHEA:18490
+  predicate: part_of
+  object: MetaCyc:CYANCAT-PWY
+  evidence:
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: MetaCyc CYANCAT-PWY explicitly includes R524-RXN in its reaction list.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-list/Reaction[@frameid='R524-RXN']
+  - reference_id: MetaCyc:R524-RXN
+    source_assertion: MetaCyc R524-RXN has the unification cross-reference RHEA:18490.
+    source_locator: Reaction[@frameid='R524-RXN']/dblink[dblink-db='RHEA',dblink-relationship='unification']/dblink-oid
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: MetaCyc CYANCAT-PWY explicitly lists Escherichia coli K-12 MG1655 (TAX-511145) among
+      its species.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/species/Organism[@frameid='TAX-511145']
+  description: MG1655 scope comes from native pathway and assembly curation. The current reviewed protein
+    entries cover K-12; the 1993 physiology experiments used K-12 derivatives including HfrR5-derived
+    mutants, not a new direct MG1655 experiment.
+- id: cyanate-edge-020
+  subject: RHEA:15650
+  predicate: part_of
+  object: MetaCyc:CYANCAT-PWY
+  description: The spontaneous carbamate decay is retained as a pathway step without an enzyme assignment.
+  evidence:
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: MetaCyc CYANCAT-PWY explicitly includes RXN0-5222 in its reaction list.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-list/Reaction[@frameid='RXN0-5222']
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: MetaCyc RXN0-5222 has the unification cross-reference RHEA:15650.
+    source_locator: Reaction[@frameid='RXN0-5222']/dblink[dblink-db='RHEA',dblink-relationship='unification']/dblink-oid
+- id: cyanate-edge-021
+  subject: RHEA:10750
+  predicate: part_of
+  object: MetaCyc:CYANCAT-PWY
+  evidence:
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: MetaCyc CYANCAT-PWY explicitly includes RXN0-5224 in its reaction list.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-list/Reaction[@frameid='RXN0-5224']
+  - reference_id: MetaCyc:RXN0-5224
+    source_assertion: RXN0-5224 unifies with bidirectional RHEA:10751, and CYANCAT-PWY selects its bicarbonate-regenerating
+      direction.
+    source_locator: Reaction[@frameid='RXN0-5224']/dblink[dblink-db='RHEA']/dblink-oid; reaction-direction
+  - reference_id: RHEA:10750
+    source_assertion: RHEA:10751 and directional RHEA:10750 are both members of master RHEA:10748.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748']/rh:bidirectionalReaction
+      and rh:directionalReaction
+- id: cyanate-edge-022
+  subject: RHEA:18490
+  predicate: provides_input_for
+  object: RHEA:15650
+  description: The shared carbamate links these steps. The cycle represents available chemical input,
+    not fixed flux or retention of every carbon dioxide molecule.
+  evidence:
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: CYANCAT-PWY names R524-RXN as a predecessor of RXN0-5222; its reaction layouts identify
+      the shared carbamate pool.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-ordering[Reaction/@frameid='RXN0-5222']/predecessor-reactions/Reaction[@frameid='R524-RXN'];
+      reaction-layout
+- id: cyanate-edge-023
+  subject: RHEA:15650
+  predicate: provides_input_for
+  object: RHEA:10750
+  description: The shared carbon dioxide links these steps. The cycle represents available chemical input,
+    not fixed flux or retention of every carbon dioxide molecule.
+  evidence:
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: CYANCAT-PWY names RXN0-5222 as a predecessor of RXN0-5224; its reaction layouts
+      identify the shared carbon dioxide pool.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-ordering[Reaction/@frameid='RXN0-5224']/predecessor-reactions/Reaction[@frameid='RXN0-5222'];
+      reaction-layout
+- id: cyanate-edge-024
+  subject: RHEA:10750
+  predicate: provides_input_for
+  object: RHEA:18490
+  description: The shared bicarbonate links these steps. The cycle represents available chemical input,
+    not fixed flux or retention of every carbon dioxide molecule.
+  evidence:
+  - reference_id: MetaCyc:CYANCAT-PWY
+    source_assertion: CYANCAT-PWY names RXN0-5224 as a predecessor of R524-RXN; its reaction layouts identify
+      the shared bicarbonate pool.
+    source_locator: Pathway[@frameid='CYANCAT-PWY']/reaction-ordering[Reaction/@frameid='R524-RXN']/predecessor-reactions/Reaction[@frameid='RXN0-5224'];
+      reaction-layout
+  - reference_id: PMID:8444806
+    source_assertion: K-12 cynT deletion mutants retained cyanase but failed to degrade cyanate at 0.03%
+      CO2; 3% CO2 rescued the phenotype, supporting a conditional bicarbonate-regeneration role.
+    source_locator: Europe PMC core resultList.result[id='8444806'].abstractText; full article pp.1443,1447-1450
+- id: cyanate-edge-025
+  subject: RHEA:18490
+  predicate: provides_input_for
+  object: RHEA:10750
+  description: Carbon dioxide from the first step can also enter the shared carbon-dioxide pool used by
+    CynT. This connection is inferred from the explicit intermediate chemistry and documented recycling
+    role; it is not a separate native ordering claim or quantitative carbon-routing measurement.
+  evidence:
+  - reference_id: RHEA:18490
+    source_assertion: RHEA:18490 directly produces carbon dioxide CHEBI:16526 alongside carbamate.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18490']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18489_R']/rh:contains1;
+      rh:compound/rh:chebi
+  - reference_id: RHEA:10750
+    source_assertion: RHEA:10750 consumes carbon dioxide CHEBI:16526 and water to regenerate bicarbonate.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/10750']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/10748_R']/rh:contains1;
+      rh:compound/rh:chebi
+  - reference_id: UniProtKB:P0ABE9
+    source_assertion: UniProt assigns CynT the apparent role of hydrating carbon dioxide formed during
+      cyanase-dependent decomposition, limiting cellular bicarbonate depletion (ECO:0000269; PMID:1740425).
+    source_locator: comments[commentType='FUNCTION'].texts
+- id: cyanate-edge-026
+  subject: UniProtKB:P0ABE9
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P0ABE9
+    source_assertion: UniProt P0ABE9 carries GO:0005737 cytoplasm with IDA:EcoCyc and ECO:0000314 citing
+      PMID:1740425.
+    source_locator: uniProtKBCrossReferences[database='GO',id='GO:0005737'].properties and evidences
+references:
+- id: MetaCyc:CYANCAT-PWY
+  title: MetaCyc CYANCAT-PWY, cyanate degradation
+  url: https://pathway.yeastgenome.org/getxml?META:CYANCAT-PWY
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: b17720281237373171f0d50634cdc8119636a945e63db65ad0a1a6681274e4cd
+- id: MetaCyc:CYANLY-CPLX
+  title: MetaCyc CYANLY-CPLX, cyanase assembly
+  url: https://pathway.yeastgenome.org/getxml?META:CYANLY-CPLX
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: d01be1fb963b2cf6810652e2384dc62bb95fe1db8054a241e7587cbc78b1b5fc
+- id: MetaCyc:CARBODEHYDRAT-CPLX
+  title: MetaCyc CARBODEHYDRAT-CPLX, carbonic anhydrase 1 assembly
+  url: https://pathway.yeastgenome.org/getxml?META:CARBODEHYDRAT-CPLX
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 3b3f5d614dbfab6259369c422f57f7d987d079560ad2dd93027cdfb52decd6eb
+- id: MetaCyc:CYANLY-MONOMER
+  title: MetaCyc CYANLY-MONOMER, CynS protein
+  url: https://pathway.yeastgenome.org/getxml?META:CYANLY-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 52f5689607688518f909ab6a57c473aa180b1c1b6004b2405b1be861822bd6d4
+- id: MetaCyc:CARBODEHYDRAT-MONOMER
+  title: MetaCyc CARBODEHYDRAT-MONOMER, CynT protein
+  url: https://pathway.yeastgenome.org/getxml?META:CARBODEHYDRAT-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 51720cf32a26f75c730471e00ec89cf9e31ebe6b559da08e94ca6371099f9952
+- id: MetaCyc:R524-RXN
+  title: MetaCyc R524-RXN, initial cyanase reaction
+  url: https://pathway.yeastgenome.org/getxml?META:R524-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 527dd2a63280a1e13045fb93f61395d95cfe953060aeabacddba6d68fc71bbdb
+- id: MetaCyc:RXN0-5222
+  title: MetaCyc RXN0-5222, spontaneous carbamate decomposition
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5222
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 079f6290beaaa757c83d0ef8fdf3e0eeef3ed2c02cd9aa37f8e469e068b21d36
+- id: MetaCyc:RXN0-5224
+  title: MetaCyc RXN0-5224, reversible carbonic anhydrase reaction
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5224
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 0f8ea48758c659d86a3f3fb429d73ee60560ab80646e4233481caa7e4cf3ffb5
+- id: UniProtKB:P00816
+  title: Reviewed UniProtKB P00816
+  url: https://rest.uniprot.org/uniprotkb/P00816.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: 42ffef7261c2f41152920f412a89a733fa4c705bc77c9c53b85d1ef4f4a6bd14
+- id: UniProtKB:P0ABE9
+  title: Reviewed UniProtKB P0ABE9
+  url: https://rest.uniprot.org/uniprotkb/P0ABE9.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: 30187217560b5439f03bc6d16210c8821d4ef168a35c81c78604bbeb3009b64a
+- id: RHEA:18490
+  title: Rhea 18490 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:15650
+  title: Rhea 15650 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:10750
+  title: Rhea 10750 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:1740425
+  title: Carbonic anhydrase in Escherichia coli. A product of the cyn operon.
+  url: https://pubmed.ncbi.nlm.nih.gov/1740425/
+  source_version: Europe PMC core metadata retrieved 2026-10-10
+  source_sha256: df06243c0ed668ce4e1309ed48f85529b8876c78161e7e5527129a99e4574ac5
+- id: PMID:3110153
+  title: Bicarbonate is a recycling substrate for cyanase.
+  url: https://pubmed.ncbi.nlm.nih.gov/3110153/
+  source_version: Europe PMC core metadata retrieved 2026-10-10
+  source_sha256: df06243c0ed668ce4e1309ed48f85529b8876c78161e7e5527129a99e4574ac5
+- id: PMID:8444806
+  title: A physiological role for cyanate-induced carbonic anhydrase in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/8444806/
+  source_version: Europe PMC core metadata retrieved 2026-10-10
+  source_sha256: 9c6db5e6b7f2138911dcf45b4c9e5a87239947c5b3943820215c9d5a85f55e8e
+- id: PMID:10801492
+  title: Structure of cyanase reveals that a novel dimeric and decameric arrangement of subunits is required
+    for formation of the enzyme active site.
+  url: https://pubmed.ncbi.nlm.nih.gov/10801492/
+  source_version: Europe PMC core metadata retrieved 2026-10-10
+  source_sha256: fbed8047b523df94f3c6f6730cfd02f16a08828c582a35ba689cdbe025123907
