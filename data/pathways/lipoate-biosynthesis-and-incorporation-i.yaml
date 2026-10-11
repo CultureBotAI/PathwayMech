@@ -1,0 +1,550 @@
+id: MetaCyc:PWY0-501
+label: lipoate biosynthesis and incorporation I
+description: The complete two-step endogenous LipB-LipA route in E. coli K-12 transfers an octanoyl group
+  from ACP to a target-protein lysine, then inserts sulfur at C6 and C8. The endpoint is protein-bound
+  dihydrolipoyl state, following the native MetaCyc boundary and current Rhea chemistry. Whole ACP, target-protein,
+  ferredoxin and cluster-carrier states remain distinct from reactive-part ChEBI moieties. Rhea 142 formally
+  releases Fe(III), consumes oxidized ferredoxin and uses four hydrons, whereas MetaCyc 22.5 releases
+  Fe(II), consumes reduced ferredoxin and uses six; those net conventions are preserved as a source conflict,
+  not resolved into a measured physiological electron balance. LipB has active monomer/trimer annotations;
+  the native LipA dimer is retained alongside the UniProt monomer/dimer alternative. The selected proteins
+  are K-12, while primary biochemical abstracts generally report E. coli without independently establishing
+  every strain detail. The older PathBank donor labeled acetyl-ACP is rejected. Fatty-acid synthesis,
+  LplA salvage, Fe-S cluster regeneration, and downstream lipoyl-cofactor turnover are outside the two-step
+  boundary.
+pathway_type: lipoate-biosynthesis-and-incorporation
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:17319
+  label: 5'-deoxyadenosine
+  category: small_molecule
+- id: CHEBI:29034
+  label: iron(3+)
+  category: small_molecule
+- id: CHEBI:29919
+  label: hydrosulfide
+  category: small_molecule
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: RHEA-COMP:10000
+  label: oxidized [2Fe-2S]-[ferredoxin]
+  category: protein
+- id: RHEA-COMP:10001
+  label: reduced [2Fe-2S]-[ferredoxin]
+  category: protein
+- id: RHEA-COMP:10475
+  label: N(6)-[(R)-dihydrolipoyl]-L-lysyl-[protein]
+  category: protein
+- id: RHEA-COMP:14568
+  label: '[[Fe-S] cluster scaffold protein carrying a second [4Fe-4S](2+) cluster]'
+  category: protein
+- id: RHEA-COMP:14569
+  label: '[[Fe-S] cluster scaffold protein]'
+  category: protein
+- id: RHEA-COMP:9636
+  label: octanoyl-[ACP]
+  category: protein
+- id: RHEA-COMP:9685
+  label: holo-[ACP]
+  category: protein
+- id: RHEA-COMP:9752
+  label: L-lysyl-[protein]
+  category: protein
+- id: RHEA-COMP:9928
+  label: N(6)-octanoyl-L-lysyl-[protein]
+  category: protein
+- id: UniProtKB:P60720
+  label: Octanoyltransferase
+  category: protein
+- id: UniProtKB:P60716
+  label: Lipoyl synthase
+  category: protein
+- id: MetaCyc:CPLX0-782
+  label: lipoyl synthase
+  category: complex
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:17666
+  label: octanoyl-[ACP] + L-lysyl-[protein] => N(6)-octanoyl-L-lysyl-[protein] + holo-[ACP] + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16586
+  label: '[[Fe-S] cluster scaffold protein carrying a second [4Fe-4S](2+) cluster] + N(6)-octanoyl-L-lysyl-[protein]
+    + 2 oxidized [2Fe-2S]-[ferredoxin] + 2 S-adenosyl-L-methionine + 4 H(+) => [[Fe-S] cluster scaffold
+    protein] + N(6)-[(R)-dihydrolipoyl]-L-lysyl-[protein] + 4 Fe(3+) + 2 hydrogen sulfide + 2 5''-deoxyadenosine
+    + 2 L-methionine + 2 reduced [2Fe-2S]-[ferredoxin]'
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: lipoate-edge-001
+  subject: RHEA-COMP:9636
+  predicate: consumes
+  object: RHEA:17666
+  evidence:
+  - reference_id: RHEA:17666
+    source_assertion: RHEA:17666 assigns RHEA-COMP:9636 to substrates, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/17666 rh:substrates; http://rdf.rhea-db.org/17665_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17665_compound_9636; rh:compound http://rdf.rhea-db.org/Compound_9636
+- id: lipoate-edge-002
+  subject: RHEA-COMP:9752
+  predicate: consumes
+  object: RHEA:17666
+  evidence:
+  - reference_id: RHEA:17666
+    source_assertion: RHEA:17666 assigns RHEA-COMP:9752 to substrates, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/17666 rh:substrates; http://rdf.rhea-db.org/17665_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17665_compound_9752; rh:compound http://rdf.rhea-db.org/Compound_9752
+- id: lipoate-edge-003
+  subject: RHEA:17666
+  predicate: produces
+  object: RHEA-COMP:9928
+  evidence:
+  - reference_id: RHEA:17666
+    source_assertion: RHEA:17666 assigns RHEA-COMP:9928 to products, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/17666 rh:products; http://rdf.rhea-db.org/17665_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17665_compound_9928; rh:compound http://rdf.rhea-db.org/Compound_9928
+- id: lipoate-edge-004
+  subject: RHEA:17666
+  predicate: produces
+  object: RHEA-COMP:9685
+  evidence:
+  - reference_id: RHEA:17666
+    source_assertion: RHEA:17666 assigns RHEA-COMP:9685 to products, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/17666 rh:products; http://rdf.rhea-db.org/17665_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17665_compound_9685; rh:compound http://rdf.rhea-db.org/Compound_9685
+- id: lipoate-edge-005
+  subject: RHEA:17666
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:17666
+    source_assertion: RHEA:17666 assigns CHEBI:15378 to products, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/17666 rh:products; http://rdf.rhea-db.org/17665_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17665_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249
+- id: lipoate-edge-006
+  subject: RHEA-COMP:14568
+  predicate: consumes
+  object: RHEA:16586
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns RHEA-COMP:14568 to substrates, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:substrates; http://rdf.rhea-db.org/16585_L rh:contains1
+      http://rdf.rhea-db.org/Participant_16585_compound_14568; rh:compound http://rdf.rhea-db.org/Compound_14568
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-007
+  subject: RHEA-COMP:9928
+  predicate: consumes
+  object: RHEA:16586
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns RHEA-COMP:9928 to substrates, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:substrates; http://rdf.rhea-db.org/16585_L rh:contains1
+      http://rdf.rhea-db.org/Participant_16585_compound_9928; rh:compound http://rdf.rhea-db.org/Compound_9928
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-008
+  subject: RHEA-COMP:10000
+  predicate: consumes
+  object: RHEA:16586
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns RHEA-COMP:10000 to substrates, coefficient 2. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:substrates; http://rdf.rhea-db.org/16585_L rh:contains2
+      http://rdf.rhea-db.org/Participant_16585_compound_10000; rh:compound http://rdf.rhea-db.org/Compound_10000
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-009
+  subject: CHEBI:59789
+  predicate: consumes
+  object: RHEA:16586
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns CHEBI:59789 to substrates, coefficient 2. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:substrates; http://rdf.rhea-db.org/16585_L rh:contains2
+      http://rdf.rhea-db.org/Participant_16585_compound_6127; rh:compound http://rdf.rhea-db.org/Compound_6127
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-010
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:16586
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns CHEBI:15378 to substrates, coefficient 4. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:substrates; http://rdf.rhea-db.org/16585_L rh:contains4
+      http://rdf.rhea-db.org/Participant_16585_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-011
+  subject: RHEA:16586
+  predicate: produces
+  object: RHEA-COMP:14569
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns RHEA-COMP:14569 to products, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains1
+      http://rdf.rhea-db.org/Participant_16585_compound_14569; rh:compound http://rdf.rhea-db.org/Compound_14569
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-012
+  subject: RHEA:16586
+  predicate: produces
+  object: RHEA-COMP:10475
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns RHEA-COMP:10475 to products, coefficient 1. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains1
+      http://rdf.rhea-db.org/Participant_16585_compound_10475; rh:compound http://rdf.rhea-db.org/Compound_10475
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-013
+  subject: RHEA:16586
+  predicate: produces
+  object: CHEBI:29034
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns CHEBI:29034 to products, coefficient 4. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains4
+      http://rdf.rhea-db.org/Participant_16585_compound_4615; rh:compound http://rdf.rhea-db.org/Compound_4615
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-014
+  subject: RHEA:16586
+  predicate: produces
+  object: CHEBI:29919
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns CHEBI:29919 to products, coefficient 2. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains2
+      http://rdf.rhea-db.org/Participant_16585_compound_3841; rh:compound http://rdf.rhea-db.org/Compound_3841
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-015
+  subject: RHEA:16586
+  predicate: produces
+  object: CHEBI:17319
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns CHEBI:17319 to products, coefficient 2. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains2
+      http://rdf.rhea-db.org/Participant_16585_compound_2028; rh:compound http://rdf.rhea-db.org/Compound_2028
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-016
+  subject: RHEA:16586
+  predicate: produces
+  object: CHEBI:57844
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns CHEBI:57844 to products, coefficient 2. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains2
+      http://rdf.rhea-db.org/Participant_16585_compound_2530; rh:compound http://rdf.rhea-db.org/Compound_2530
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-017
+  subject: RHEA:16586
+  predicate: produces
+  object: RHEA-COMP:10001
+  evidence:
+  - reference_id: RHEA:16586
+    source_assertion: RHEA:16586 assigns RHEA-COMP:10001 to products, coefficient 2. Whole carrier states
+      are retained where the source uses a generic polypeptide.
+    source_locator: http://rdf.rhea-db.org/16586 rh:products; http://rdf.rhea-db.org/16585_R rh:contains2
+      http://rdf.rhea-db.org/Participant_16585_compound_10001; rh:compound http://rdf.rhea-db.org/Compound_10001
+  description: Current Rhea net equation, including its Fe(III)/ferredoxin convention; this is not a measured
+    physiological electron balance. MetaCyc 22.5 instead releases Fe(II), consumes reduced ferredoxin
+    and uses six hydrons. The complete source discrepancy is retained in the curation ledger.
+- id: lipoate-edge-018
+  subject: UniProtKB:P60720
+  predicate: catalyzes
+  object: RHEA:17666
+  evidence:
+  - reference_id: UniProtKB:P60720
+    source_assertion: K-12 LipB FUNCTION supports octanoyl transfer with experimental citations 15642479/16342964;
+      the separate RHEA:17665 catalytic annotation is HAMAP ECO:0000255. SUBUNIT reports active monomer
+      and homotrimer with ECO:0000269 PMID:15642479.
+    source_locator: /organism/taxonId; /comments/0; /comments/1; /comments/4
+  - reference_id: PMID:12591875
+    source_assertion: Purified E. coli LipB transfers octanoyl or lipoyl groups from ACP thioesters to
+      a pyruvate-dehydrogenase lipoyl domain. The upstream TTG start yields functional protein; the historically
+      assigned ATG yields an inactive truncated form.
+    source_locator: /resultList/result[id="12591875"]/abstractText
+  - reference_id: PMID:15642479
+    source_assertion: The primary abstract reports purified LipB transfer of octanoyl-ACP to apo-H protein,
+      with apparent Km values for both substrates. It does not separately document the oligomer comparison
+      in the inspected abstract.
+    source_locator: /resultList/result[id="15642479"]/abstractText
+  - reference_id: PMID:16342964
+    source_assertion: An isolated octanoyl-C169 LipB thioester transfers its acyl group to an E. coli
+      PDH domain or back to ACP; the paper supports an acyl-enzyme mechanism and reversibility in vitro.
+    source_locator: /resultList/result[id="16342964"]/abstractText
+  - reference_id: RHEA:17666
+    source_assertion: RHEA:17665 links directional member RHEA:17666; the selected left-to-right member
+      is the physiological octanoyl transfer.
+    source_locator: http://rdf.rhea-db.org/17665 rh:directionalReaction http://rdf.rhea-db.org/17666
+  description: The protein node includes the experimentally annotated active monomer; a separate stable
+    external homotrimer identity was not established. Selecting physiological transfer does not deny the
+    measured reverse reaction.
+- id: lipoate-edge-019
+  subject: MetaCyc:CPLX0-782
+  predicate: catalyzes
+  object: RHEA:16586
+  evidence:
+  - reference_id: MetaCyc:RXN0-949
+    source_assertion: RXN0-949 lists ENZRXN0-1087 with catalyst CPLX0-782 and explicitly unifies RHEA:16586.
+      Core octanoyl-to-dihydrolipoyl chemistry agrees, while formal iron/ferredoxin/hydron conventions
+      differ from Rhea 142.
+    source_locator: Reaction[@frameid="RXN0-949"]/enzymatic-reaction; dblink[dblink-db="RHEA"]; left;
+      right
+  - reference_id: UniProtKB:P60716
+    source_assertion: Reviewed K-12 LipA supports sulfur insertion into protein-bound octanoyl groups,
+      not free octanoate. Its catalytic activity links RHEA:16585 with HAMAP inference and experimental
+      PMID:15157071.
+    source_locator: /organism/taxonId; /comments/0; /comments/1
+  - reference_id: PMID:14700636
+    source_assertion: Restoring LipA converted a deuterated octanoyl PDH domain to a lipoylated domain.
+      Octanoyl-domain and octanoyl-PDH substrates also underwent sulfur insertion in vitro.
+    source_locator: /resultList/result[id="14700636"]/abstractText
+  - reference_id: PMID:15157071
+    source_assertion: Octanoylated glycine-cleavage H protein is a LipA substrate. Deuterium transfer
+      and two SAM cleavages per formed lipoyl group support radical attack on the protein-bound chain.
+    source_locator: /resultList/result[id="15157071"]/abstractText
+  - reference_id: PMID:15740115
+    source_assertion: The primary experiment identifies LipA itself as the sulfur source and finds that
+      both sulfur atoms of a lipoyl group derive from the same polypeptide.
+    source_locator: /resultList/result[id="15740115"]/abstractText
+  description: The catalyst is the native annotated dimer, not an assertion that only dimers can function.
+    Current UniProt also allows monomers. The 2004 two-polypeptide mechanistic interpretation is qualified
+    by the 2005 same-polypeptide sulfur result; neither proves every formal Rhea redox participant in
+    vivo.
+- id: lipoate-edge-020
+  subject: UniProtKB:P60716
+  predicate: part_of
+  object: MetaCyc:CPLX0-782
+  evidence:
+  - reference_id: MetaCyc:CPLX0-782
+    source_assertion: CPLX0-782 contains two copies of EG11306-MONOMER.
+    source_locator: Protein[@frameid="CPLX0-782"]/component/Protein; component/coefficient
+  - reference_id: MetaCyc:EG11306-MONOMER
+    source_assertion: EG11306-MONOMER has explicit UNIPROT P60716 unification and MG1655 native taxonomy.
+    source_locator: Protein[@frameid="EG11306-MONOMER"]/dblink[dblink-db="UNIPROT"]; species/Organism
+  - reference_id: UniProtKB:P60716
+    source_assertion: SUBUNIT states monomer or homodimer without an explicit evidence code; it does not
+      establish a uniquely required oligomer.
+    source_locator: /comments/5
+  description: Two subunits in this native dimer. The record retains the source assembly without rejecting
+    the monomer alternative.
+- id: lipoate-edge-021
+  subject: UniProtKB:P60716
+  predicate: has_cofactor
+  object: CHEBI:49883
+  evidence:
+  - reference_id: UniProtKB:P60716
+    source_assertion: COFACTOR assigns CHEBI:49883 and two [4Fe-4S] clusters per subunit, with HAMAP ECO:0000255
+      and experimental ECO:0000269 PMID:15362861.
+    source_locator: /comments/2/cofactors; /comments/2/note
+  - reference_id: PMID:15362861
+    source_assertion: E. coli LipA accommodates two distinct [4Fe-4S] clusters per polypeptide. Mutational
+      and spectroscopic experiments distinguish the two cysteine-binding motifs and their requirement
+      for turnover.
+    source_locator: /resultList/result[id="15362861"]/abstractText
+  description: CHEBI:49883 denotes the cluster class, not a fixed oxidation state. Rhea whole-carrier
+    nodes separately retain the formal cluster states used in the reaction equation.
+- id: lipoate-edge-022
+  subject: UniProtKB:P60720
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P60720
+    source_assertion: SUBCELLULAR LOCATION annotates cytoplasm via HAMAP MF_00013, ECO:0000255; this is
+      inferred localization, not an inspected fractionation experiment.
+    source_locator: /comments/5/subcellularLocations
+- id: lipoate-edge-023
+  subject: UniProtKB:P60716
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P60716
+    source_assertion: SUBCELLULAR LOCATION annotates cytoplasm via HAMAP MF_00206, ECO:0000255; this is
+      inferred localization, not an inspected fractionation experiment.
+    source_locator: /comments/6/subcellularLocations
+- id: lipoate-edge-024
+  subject: RHEA:17666
+  predicate: part_of
+  object: MetaCyc:PWY0-501
+  evidence:
+  - reference_id: MetaCyc:PWY0-501
+    source_assertion: PWY0-501 explicitly lists RXN0-947 and selects its L2R layout. The pathway has exactly
+      two reaction-list members.
+    source_locator: Pathway[@frameid="PWY0-501"]/reaction-list; reaction-layout
+  - reference_id: MetaCyc:RXN0-947
+    source_assertion: RXN0-947 explicitly unifies RHEA:17666.
+    source_locator: Reaction[@frameid="RXN0-947"]/dblink[dblink-db="RHEA"]
+- id: lipoate-edge-025
+  subject: RHEA:16586
+  predicate: part_of
+  object: MetaCyc:PWY0-501
+  evidence:
+  - reference_id: MetaCyc:PWY0-501
+    source_assertion: PWY0-501 explicitly lists RXN0-949 and selects its L2R layout. The pathway has exactly
+      two reaction-list members.
+    source_locator: Pathway[@frameid="PWY0-501"]/reaction-list; reaction-layout
+  - reference_id: MetaCyc:RXN0-949
+    source_assertion: RXN0-949 explicitly unifies RHEA:16586. For LipA this is a route/core-chemistry
+      bridge; versioned formal redox differences remain documented.
+    source_locator: Reaction[@frameid="RXN0-949"]/dblink[dblink-db="RHEA"]
+- id: lipoate-edge-026
+  subject: RHEA:17666
+  predicate: provides_input_for
+  object: RHEA:16586
+  evidence:
+  - reference_id: MetaCyc:PWY0-501
+    source_assertion: RXN0-949 explicitly follows RXN0-947; both layouts share Octanoylated-domains.
+    source_locator: Pathway[@frameid="PWY0-501"]/reaction-ordering; reaction-layout
+  - reference_id: RHEA:17666
+    source_assertion: The LipB product whole state RHEA-COMP:9928 is the identical octanoyl-protein state
+      consumed by RHEA:16586.
+    source_locator: http://rdf.rhea-db.org/17665_R rh:contains1; http://rdf.rhea-db.org/16585_L rh:contains1;
+      rh:compound http://rdf.rhea-db.org/Compound_9928
+  description: The route is assembly on the target protein. Neither free lipoate synthesis nor LplA-dependent
+    salvage is appended.
+references:
+- id: MetaCyc:PWY0-501
+  title: lipoate biosynthesis and incorporation I
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-501
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: a94cb0070944764fa0d8140597ce9c8f9cfa2bd4667772ed95d47e1dfa18343b
+- id: MetaCyc:RXN0-947
+  title: octanoyl transfer
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-947
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 5771ba18461be457ae5d89f0ef60e651c2fc7a49a4b94c9baaae88fcfe6ebd7b
+- id: MetaCyc:RXN0-949
+  title: lipoyl synthase reaction; native redox convention
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-949
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 6cf86334548c16e9c79ce3baac56d57b97826812a1f9c450b4bcb289df1ee383
+- id: MetaCyc:CPLX0-782
+  title: lipoyl synthase native dimer
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-782
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: c518f4e6a9c35e933d20bea27eee5c9f8c07bb0165d81b8383f0e9e2b25f8e0f
+- id: MetaCyc:EG11306-MONOMER
+  title: LipA native subunit
+  url: https://pathway.yeastgenome.org/getxml?META:EG11306-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 9c6f8441af500be9320be4a4c7c579157f8ebf3f37853a8c8e8025dc8080b634
+- id: MetaCyc:EG11591-MONOMER
+  title: LipB native protein
+  url: https://pathway.yeastgenome.org/getxml?META:EG11591-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 6aa4842a5e144cf99e5e883cfdd8f6228f1ec81474347fa1e188e8da4857f24c
+- id: UniProtKB:P60720
+  title: Octanoyltransferase
+  url: https://rest.uniprot.org/uniprotkb/P60720.json
+  source_version: UniProt 2026_03; full current entry retrieved 2026-10-11 UTC
+  source_sha256: ad34e89fdedc2381f53895fbb1f7c2eaee6a3ca20e1899f97eab0a5bdc3012ca
+- id: UniProtKB:P60716
+  title: Lipoyl synthase
+  url: https://rest.uniprot.org/uniprotkb/P60716.json
+  source_version: UniProt 2026_03; full current entry retrieved 2026-10-11 UTC
+  source_sha256: c50683fac74d9e13ccfb51dd3e8b5c8e5e80752e3efa3287a921b27561473905
+- id: PMID:12591875
+  title: The Escherichia coli lipB gene encodes lipoyl (octanoyl)-acyl carrier protein:protein transferase.
+  url: https://pubmed.ncbi.nlm.nih.gov/12591875/
+  source_version: 2003; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: a472b6d22088bb8303fa27ab19f3d4e4c8a1e3030a21e8b36f1fba0d7e702da7
+- id: PMID:14700636
+  title: Assembly of the covalent linkage between lipoic acid and its cognate enzymes.
+  url: https://pubmed.ncbi.nlm.nih.gov/14700636/
+  source_version: 2003; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: e11ccc42fbf832f87e65fb77cbd34056dfc7a35de461fc14910ee27be68aac6b
+- id: PMID:15157071
+  title: Lipoyl synthase requires two equivalents of S-adenosyl-L-methionine to synthesize one equivalent
+    of lipoic acid.
+  url: https://pubmed.ncbi.nlm.nih.gov/15157071/
+  source_version: 2004; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: 1b3e264d65e394390d51627c27424f8a262d4e854e106d8e09fa420766a5a536
+- id: PMID:15362861
+  title: Escherichia coli lipoyl synthase binds two distinct [4Fe-4S] clusters per polypeptide.
+  url: https://pubmed.ncbi.nlm.nih.gov/15362861/
+  source_version: 2004; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: a67a361c544956852f079e4ed3471c9ebce25db4cc65002efe94d2cdf090da3c
+- id: PMID:15642479
+  title: Expression, purification, and physical characterization of Escherichia coli lipoyl(octanoyl)transferase.
+  url: https://pubmed.ncbi.nlm.nih.gov/15642479/
+  source_version: 2005; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: feeb415dc45af7e45640ef7f025ac748d60d8d925c37538fcb81a5d502fa15dd
+- id: PMID:15740115
+  title: 'Mechanistic investigations of lipoic acid biosynthesis in Escherichia coli: both sulfur atoms
+    in lipoic acid are contributed by the same lipoyl synthase polypeptide.'
+  url: https://pubmed.ncbi.nlm.nih.gov/15740115/
+  source_version: 2005; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: 47015d23a8fc45f71d702a6e14814045ff4301c9a0bc8c1bbe2906406a12d735
+- id: PMID:16342964
+  title: The reaction of LipB, the octanoyl-[acyl carrier protein]:protein N-octanoyltransferase of lipoic
+    acid synthesis, proceeds through an acyl-enzyme intermediate.
+  url: https://pubmed.ncbi.nlm.nih.gov/16342964/
+  source_version: 2005; primary indexed abstract inspected via Europe PMC core JSON, not full article;
+    digest covers retained response
+  source_sha256: b33094913a12253642bb60d6ace6773250732e89ef69285b05e18b17c4f8335c
+- id: RHEA:17666
+  title: Rhea directional reaction 17666
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF; exact triples identified
+    in edge locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:16586
+  title: Rhea directional reaction 16586
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF; exact triples identified
+    in edge locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
