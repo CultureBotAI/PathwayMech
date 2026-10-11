@@ -1,0 +1,815 @@
+id: GO:0019270
+label: aerobactin biosynthetic process
+description: 'Complete four-transformation aerobactin biosynthesis in Klebsiella pneumoniae hvKP1: IucD
+  hydroxylates lysine, IucB acetylates hydroxylysine, and IucA and IucC successively attach two building-block
+  equivalents to citrate. The 2018 reconstruction uses hvKP1-derived enzyme preparations expressed in
+  E. coli; the host does not establish endogenous E. coli pathway scope. The four native hvKP1 GenPept
+  identities are retained, including IucA’s historical hypothetical-protein label and its experimentally
+  identified 574-residue accession. The primary papers establish the source genes and describe recombinant
+  preparations; the full sequences of all engineered constructs were not independently recovered, so exact
+  native-to-tagged or fusion-protein sequence equality is not asserted. Gene-product enables relations
+  preserve activity without asserting monomer sufficiency: IucA is experimentally tetrameric, whereas
+  IucC shows ATP-associated dimer/tetramer variation. IucD and IucB preparation behavior does not establish
+  a fixed hvKP1 stoichiometry. CHEBI:63796 is the issued lysine-S class with unspecified citrate-derived
+  stereocenter. The hvKP1 experiments select its 3S,2′S member; this graph does not assert acceptance
+  of the 3R member or an exact stereochemical identity between the class and that measured product. Both
+  ligations use the native/Rhea ATP-to-AMP-plus-diphosphate convention, supported by the primary adenylation
+  mechanism; the conflicting IUBMB IucA ATP-to-ADP equation is recorded as a source disagreement. The
+  E. coli plasmid MetaCyc annotations ground the shared chemical pathway definition, not hvKP1 protein
+  equivalence. Transport, iron loading, generic virulence effects, upstream precursor biosynthesis and
+  unsupported localization or regulation are outside this complete biosynthetic boundary.'
+pathway_type: aerobactin-biosynthesis
+taxa:
+- id: NCBITaxon:1267897
+  label: Klebsiella pneumoniae hvKP1
+participants:
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:16947
+  label: citrate(3-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:32551
+  label: L-lysinium(1+)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:57820
+  label: N(6)-hydroxy-L-lysine zwitterion
+  category: small_molecule
+- id: CHEBI:58122
+  label: N(6)-acetyl-N(6)-hydroxy-L-lysine zwitterion
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:58396
+  label: aerobactinate(3-)
+  category: small_molecule
+- id: CHEBI:63796
+  label: N(alpha)-citryl-N(epsilon)-acetyl-N(epsilon)-hydroxylysine(3-)
+  category: small_molecule
+- id: NCBIProtein:EMB09144.1
+  label: hypothetical protein G057_19877 [Klebsiella pneumoniae hvKP1]
+  category: protein
+- id: NCBIProtein:EMB09145.1
+  label: IucB [Klebsiella pneumoniae hvKP1]
+  category: protein
+- id: NCBIProtein:EMB09146.1
+  label: IucC [Klebsiella pneumoniae hvKP1]
+  category: protein
+- id: NCBIProtein:EMB09147.1
+  label: IucD [Klebsiella pneumoniae hvKP1]
+  category: protein
+reactions:
+- id: RHEA:23229
+  label: L-lysine + NADPH + O2 => N(6)-hydroxy-L-lysine + NADP(+) + H2O
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:22389
+  label: N(6)-hydroxy-L-lysine + acetyl-CoA => N(6)-acetyl-N(6)-hydroxy-L-lysine + CoA
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:32164
+  label: N(6)-acetyl-N(6)-hydroxy-L-lysine + citrate + ATP => N(2)-citryl-N(6)-acetyl-N(6)-hydroxy-L-lysine
+    + AMP + diphosphate + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:32168
+  label: N(2)-citryl-N(6)-acetyl-N(6)-hydroxy-L-lysine + N(6)-acetyl-N(6)-hydroxy-L-lysine + ATP => aerobactin
+    + AMP + diphosphate + H(+)
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: aerobactin-edge-001
+  subject: CHEBI:32551
+  predicate: consumes
+  object: RHEA:23229
+  evidence:
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:32551 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:substrates http://rdf.rhea-db.org/23228_L; http://rdf.rhea-db.org/23228_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_3235; rh:compound http://rdf.rhea-db.org/Compound_3235;
+      rh:chebi
+- id: aerobactin-edge-002
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:23229
+  evidence:
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:57783 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:substrates http://rdf.rhea-db.org/23228_L; http://rdf.rhea-db.org/23228_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_3438; rh:compound http://rdf.rhea-db.org/Compound_3438;
+      rh:chebi
+- id: aerobactin-edge-003
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:23229
+  evidence:
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:15379 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:substrates http://rdf.rhea-db.org/23228_L; http://rdf.rhea-db.org/23228_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_1198; rh:compound http://rdf.rhea-db.org/Compound_1198;
+      rh:chebi
+- id: aerobactin-edge-004
+  subject: RHEA:23229
+  predicate: produces
+  object: CHEBI:57820
+  evidence:
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:57820 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:products http://rdf.rhea-db.org/23228_R; http://rdf.rhea-db.org/23228_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_2821; rh:compound http://rdf.rhea-db.org/Compound_2821;
+      rh:chebi
+- id: aerobactin-edge-005
+  subject: RHEA:23229
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:58349 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:products http://rdf.rhea-db.org/23228_R; http://rdf.rhea-db.org/23228_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_5188; rh:compound http://rdf.rhea-db.org/Compound_5188;
+      rh:chebi
+- id: aerobactin-edge-006
+  subject: RHEA:23229
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:15377 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:products http://rdf.rhea-db.org/23228_R; http://rdf.rhea-db.org/23228_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_1283; rh:compound http://rdf.rhea-db.org/Compound_1283;
+      rh:chebi
+- id: aerobactin-edge-007
+  subject: CHEBI:57820
+  predicate: consumes
+  object: RHEA:22389
+  evidence:
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:57820 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:substrates http://rdf.rhea-db.org/22388_L; http://rdf.rhea-db.org/22388_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_2821; rh:compound http://rdf.rhea-db.org/Compound_2821;
+      rh:chebi
+- id: aerobactin-edge-008
+  subject: CHEBI:57288
+  predicate: consumes
+  object: RHEA:22389
+  evidence:
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:57288 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:substrates http://rdf.rhea-db.org/22388_L; http://rdf.rhea-db.org/22388_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_4271; rh:compound http://rdf.rhea-db.org/Compound_4271;
+      rh:chebi
+- id: aerobactin-edge-009
+  subject: RHEA:22389
+  predicate: produces
+  object: CHEBI:58122
+  evidence:
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:58122 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:products http://rdf.rhea-db.org/22388_R; http://rdf.rhea-db.org/22388_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+- id: aerobactin-edge-010
+  subject: RHEA:22389
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:57287 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:products http://rdf.rhea-db.org/22388_R; http://rdf.rhea-db.org/22388_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_1264; rh:compound http://rdf.rhea-db.org/Compound_1264;
+      rh:chebi
+- id: aerobactin-edge-011
+  subject: CHEBI:58122
+  predicate: consumes
+  object: RHEA:32164
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:58122 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:substrates http://rdf.rhea-db.org/32163_L; http://rdf.rhea-db.org/32163_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+- id: aerobactin-edge-012
+  subject: CHEBI:16947
+  predicate: consumes
+  object: RHEA:32164
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:16947 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:substrates http://rdf.rhea-db.org/32163_L; http://rdf.rhea-db.org/32163_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_5244; rh:compound http://rdf.rhea-db.org/Compound_5244;
+      rh:chebi
+- id: aerobactin-edge-013
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:32164
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:30616 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:substrates http://rdf.rhea-db.org/32163_L; http://rdf.rhea-db.org/32163_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_6372; rh:compound http://rdf.rhea-db.org/Compound_6372;
+      rh:chebi
+- id: aerobactin-edge-014
+  subject: RHEA:32164
+  predicate: produces
+  object: CHEBI:63796
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:63796 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:products http://rdf.rhea-db.org/32163_R; http://rdf.rhea-db.org/32163_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_7047; rh:compound http://rdf.rhea-db.org/Compound_7047;
+      rh:chebi
+  - reference_id: CHEBI:63796
+    source_assertion: The authoritative InChI fixes the lysine stereocenter but leaves the citrate-derived
+      center unspecified (/t9-,14?/m0/s1).
+    source_locator: statements[subject=CHEBI:63796,predicate=chemrof:inchi_string]
+  - reference_id: PMID:29618511
+    source_assertion: IucA produced and IucC consumed the 3S,2′S citryl-ahLys stereoisomer in the hvKP1
+      enzyme experiments.
+    source_locator: PMC5961048 Results/Aerobactin synthetase stereoselectivity, sec6/p[1]; Figure 5; original
+      PDF p.7844
+  description: CHEBI:63796 is the issued lysine-S class with unspecified citrate-derived stereocenter.
+    The hvKP1 experiments select its 3S,2′S member; this graph does not assert acceptance of the 3R member
+    or an exact stereochemical identity between the class and that measured product.
+- id: aerobactin-edge-015
+  subject: RHEA:32164
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:456215 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:products http://rdf.rhea-db.org/32163_R; http://rdf.rhea-db.org/32163_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_2590; rh:compound http://rdf.rhea-db.org/Compound_2590;
+      rh:chebi
+- id: aerobactin-edge-016
+  subject: RHEA:32164
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:33019 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:products http://rdf.rhea-db.org/32163_R; http://rdf.rhea-db.org/32163_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_2106; rh:compound http://rdf.rhea-db.org/Compound_2106;
+      rh:chebi
+- id: aerobactin-edge-017
+  subject: RHEA:32164
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:products http://rdf.rhea-db.org/32163_R; http://rdf.rhea-db.org/32163_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249;
+      rh:chebi
+- id: aerobactin-edge-018
+  subject: CHEBI:63796
+  predicate: consumes
+  object: RHEA:32168
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:63796 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:substrates http://rdf.rhea-db.org/32167_L; http://rdf.rhea-db.org/32167_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_7047; rh:compound http://rdf.rhea-db.org/Compound_7047;
+      rh:chebi
+  - reference_id: CHEBI:63796
+    source_assertion: The authoritative InChI fixes the lysine stereocenter but leaves the citrate-derived
+      center unspecified (/t9-,14?/m0/s1).
+    source_locator: statements[subject=CHEBI:63796,predicate=chemrof:inchi_string]
+  - reference_id: PMID:29618511
+    source_assertion: IucA produced and IucC consumed the 3S,2′S citryl-ahLys stereoisomer in the hvKP1
+      enzyme experiments.
+    source_locator: PMC5961048 Results/Aerobactin synthetase stereoselectivity, sec6/p[1]; Figure 5; original
+      PDF p.7844
+  description: CHEBI:63796 is the issued lysine-S class with unspecified citrate-derived stereocenter.
+    The hvKP1 experiments select its 3S,2′S member; this graph does not assert acceptance of the 3R member
+    or an exact stereochemical identity between the class and that measured product.
+- id: aerobactin-edge-019
+  subject: CHEBI:58122
+  predicate: consumes
+  object: RHEA:32168
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:58122 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:substrates http://rdf.rhea-db.org/32167_L; http://rdf.rhea-db.org/32167_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+- id: aerobactin-edge-020
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:32168
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:30616 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:substrates http://rdf.rhea-db.org/32167_L; http://rdf.rhea-db.org/32167_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_6372; rh:compound http://rdf.rhea-db.org/Compound_6372;
+      rh:chebi
+- id: aerobactin-edge-021
+  subject: RHEA:32168
+  predicate: produces
+  object: CHEBI:58396
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:58396 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:products http://rdf.rhea-db.org/32167_R; http://rdf.rhea-db.org/32167_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_4057; rh:compound http://rdf.rhea-db.org/Compound_4057;
+      rh:chebi
+- id: aerobactin-edge-022
+  subject: RHEA:32168
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:456215 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:products http://rdf.rhea-db.org/32167_R; http://rdf.rhea-db.org/32167_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_2590; rh:compound http://rdf.rhea-db.org/Compound_2590;
+      rh:chebi
+- id: aerobactin-edge-023
+  subject: RHEA:32168
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:33019 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:products http://rdf.rhea-db.org/32167_R; http://rdf.rhea-db.org/32167_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_2106; rh:compound http://rdf.rhea-db.org/Compound_2106;
+      rh:chebi
+- id: aerobactin-edge-024
+  subject: RHEA:32168
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:products http://rdf.rhea-db.org/32167_R; http://rdf.rhea-db.org/32167_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249;
+      rh:chebi
+- id: aerobactin-edge-025
+  subject: NCBIProtein:EMB09147.1
+  predicate: enables
+  object: RHEA:23229
+  evidence:
+  - reference_id: NCBIProtein:EMB09147.1
+    source_assertion: The original GenPept entry EMB09147.1 identifies the hvKP1 gene product and its
+      native protein sequence; function is supplied by the separately cited primary experiments.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09147.1']/GBSeq_source; GBSeq_feature-table/GBFeature[GBFeature_key='CDS'];
+      GBSeq_sequence
+  - reference_id: PMID:29618511
+    source_assertion: Figure 1 places IucD at lysine N6 hydroxylation; Results report the hvKP1 four-protein
+      reconstitution and the unobserved free hydroxylysine intermediate.
+    source_locator: PMC5961048 Figure 1; Results/sec4 (In vitro aerobactin reconstitution), Figure 3;
+      Discussion/sec10/p[2]; Experimental procedures/sec12/p[1]
+  description: The hvKP1 IucD preparation supplied the lysine hydroxylation step in the four-enzyme reconstruction;
+    Figure 1 assigns NADPH, oxygen and FAD to this step. Free hydroxylysine was not detected in the IucD-only
+    assay, so that observation is not claimed as direct product identification.
+- id: aerobactin-edge-026
+  subject: NCBIProtein:EMB09145.1
+  predicate: enables
+  object: RHEA:22389
+  evidence:
+  - reference_id: NCBIProtein:EMB09145.1
+    source_assertion: The original GenPept entry EMB09145.1 identifies the hvKP1 gene product and its
+      native protein sequence; function is supplied by the separately cited primary experiments.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09145.1']/GBSeq_source; GBSeq_feature-table/GBFeature[GBFeature_key='CDS'];
+      GBSeq_sequence
+  - reference_id: PMID:29618511
+    source_assertion: IucD plus IucB produced the acetylated hydroxylated lysine building block; the four
+      proteins were derived from hvKP1.
+    source_locator: PMC5961048 Figure 1; Results/sec4 (In vitro aerobactin reconstitution), Figure 3;
+      Discussion/sec10/p[2]; Experimental procedures/sec12/p[1]
+  description: The hvKP1 IucB preparation, together with IucD, produced N6-acetyl-N6-hydroxylysine in
+    the reconstructed pathway. The assay used a cleavable fusion preparation; the E. coli native IucB
+    hexamer annotation is not transferred to this hvKP1 protein.
+- id: aerobactin-edge-027
+  subject: NCBIProtein:EMB09144.1
+  predicate: enables
+  object: RHEA:32164
+  evidence:
+  - reference_id: NCBIProtein:EMB09144.1
+    source_assertion: The original GenPept entry EMB09144.1 identifies the hvKP1 gene product and its
+      native protein sequence; function is supplied by the separately cited primary experiments.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09144.1']/GBSeq_source; GBSeq_feature-table/GBFeature[GBFeature_key='CDS'];
+      GBSeq_sequence
+  - reference_id: PMID:29618511
+    source_assertion: Adding IucA to IucD and IucB generated citryl-ahLys; adding IucC completed aerobactin
+      synthesis in the hvKP1 system.
+    source_locator: PMC5961048 Figure 1; Results/sec4 (In vitro aerobactin reconstitution), Figure 3;
+      Discussion/sec10/p[2]; Experimental procedures/sec12/p[1]
+  - reference_id: PMID:27253399
+    source_assertion: The experimentally selected hvKP1 IucA is explicitly EMB09144.1 (574 residues);
+      native gel, size exclusion and SAXS support a tetramer despite a computational monomer prediction.
+    source_locator: PMC4928626 Methods/sec2.1/p[1] (Cloning, Expression, and Purification of hvKP IucA);
+      Results/sec3.3 (Quaternary Structure), Figures 4-6
+  - reference_id: PMID:32432457
+    source_assertion: IucA forms the citryl-adenylate intermediate and then the amide product with AMP
+      and diphosphate; the data support sequential ATP, citrate and ahLys binding.
+    source_locator: PMC7325057 Methods/S8/P16; Results/S11/P31; Discussion/S14/P40
+  - reference_id: EC:6.3.2.38
+    source_assertion: The Reaction field instead lists 2 ATP plus water yielding 2 ADP and 2 phosphates,
+      despite an AMP-forming systematic name. That conflicting database equation is not the selected Rhea/native
+      representation.
+    source_locator: ExplorEnz EC6.3.2.38 fields Reaction, Systematic name and Comments
+  description: The hvKP1 IucA gene product enables the first citrate ligation. Direct solution measurements
+    support a tetramer of the selected 574-residue protein. This gene-product role does not claim monomer
+    sufficiency. Both substrate selection and stereoselectivity were tested in the complete pathway study.
+- id: aerobactin-edge-028
+  subject: NCBIProtein:EMB09146.1
+  predicate: enables
+  object: RHEA:32168
+  evidence:
+  - reference_id: NCBIProtein:EMB09146.1
+    source_assertion: The original GenPept entry EMB09146.1 identifies the hvKP1 gene product and its
+      native protein sequence; function is supplied by the separately cited primary experiments.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09146.1']/GBSeq_source; GBSeq_feature-table/GBFeature[GBFeature_key='CDS'];
+      GBSeq_sequence
+  - reference_id: PMID:29618511
+    source_assertion: IucC converted the IucA-produced citryl-ahLys intermediate to aerobactin; it did
+      not replace the first IucA ligation.
+    source_locator: PMC5961048 Figure 1; Results/sec4 (In vitro aerobactin reconstitution), Figure 3;
+      Discussion/sec10/p[2]; Experimental procedures/sec12/p[1]
+  - reference_id: PMID:29618511
+    source_assertion: Wild-type IucC occupies tetramer and dimer populations, with ATP-associated conditions
+      favoring dimer; the crystal structure used a surface mutant.
+    source_locator: PMC5961048 Results/sec8 (X-ray crystal structure of IucC), sec9 (Quaternary structure),
+      Figure 7
+  description: The hvKP1 IucC gene product enables the second ligation. Wild-type solution studies detected
+    tetramer and dimer populations with an ATP-associated shift toward dimer; the crystal structure used
+    a surface mutant. This role does not assert monomer sufficiency or a fixed assembly under all conditions.
+- id: aerobactin-edge-029
+  subject: RHEA:23229
+  predicate: part_of
+  object: GO:0019270
+  evidence:
+  - reference_id: GO:0019270
+    source_assertion: GO:0019270 denotes aerobactin biosynthesis, the complete formation of the hydroxamate
+      siderophore.
+    source_locator: results[0]/id; name; definition/text
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: 'AEROBACTINSYN-PWY explicitly includes 1.14.13.59-RXN among its four reactions;
+      its layout selects L2R. '
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="1.14.13.59-RXN"]/direction
+  - reference_id: MetaCyc:1.14.13.59-RXN
+    source_assertion: The native reaction has the explicit RHEA unification cross-reference 23229, preserving
+      the selected forward reaction identity.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:23229
+    source_assertion: Master RHEA:23228 links the selected directed reaction RHEA:23229, whose substrate
+      and product sides specify forward synthesis.
+    source_locator: http://rdf.rhea-db.org/23228 rh:directionalReaction http://rdf.rhea-db.org/23229;
+      http://rdf.rhea-db.org/23229 rh:substrates/rh:products
+- id: aerobactin-edge-030
+  subject: RHEA:22389
+  predicate: part_of
+  object: GO:0019270
+  evidence:
+  - reference_id: GO:0019270
+    source_assertion: GO:0019270 denotes aerobactin biosynthesis, the complete formation of the hydroxamate
+      siderophore.
+    source_locator: results[0]/id; name; definition/text
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: 'AEROBACTINSYN-PWY explicitly includes N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN
+      among its four reactions; its layout selects L2R. '
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN"]/direction
+  - reference_id: MetaCyc:N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN
+    source_assertion: The native reaction has the explicit RHEA unification cross-reference 22389, preserving
+      the selected forward reaction identity.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:22389
+    source_assertion: Master RHEA:22388 links the selected directed reaction RHEA:22389, whose substrate
+      and product sides specify forward synthesis.
+    source_locator: http://rdf.rhea-db.org/22388 rh:directionalReaction http://rdf.rhea-db.org/22389;
+      http://rdf.rhea-db.org/22389 rh:substrates/rh:products
+- id: aerobactin-edge-031
+  subject: RHEA:32164
+  predicate: part_of
+  object: GO:0019270
+  evidence:
+  - reference_id: GO:0019270
+    source_assertion: GO:0019270 denotes aerobactin biosynthesis, the complete formation of the hydroxamate
+      siderophore.
+    source_locator: results[0]/id; name; definition/text
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: 'AEROBACTINSYN-PWY explicitly includes RXN-13054 among its four reactions; its layout
+      selects L2R. '
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-13054"]/direction
+  - reference_id: MetaCyc:RXN-13054
+    source_assertion: The native reaction has the explicit RHEA unification cross-reference 32164, preserving
+      the selected forward reaction identity.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:32164
+    source_assertion: Master RHEA:32163 links the selected directed reaction RHEA:32164, whose substrate
+      and product sides specify forward synthesis.
+    source_locator: http://rdf.rhea-db.org/32163 rh:directionalReaction http://rdf.rhea-db.org/32164;
+      http://rdf.rhea-db.org/32164 rh:substrates/rh:products
+- id: aerobactin-edge-032
+  subject: RHEA:32168
+  predicate: part_of
+  object: GO:0019270
+  evidence:
+  - reference_id: GO:0019270
+    source_assertion: GO:0019270 denotes aerobactin biosynthesis, the complete formation of the hydroxamate
+      siderophore.
+    source_locator: results[0]/id; name; definition/text
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: 'AEROBACTINSYN-PWY explicitly includes RXN-13056 among its four reactions; its layout
+      selects L2R. '
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-13056"]/direction
+  - reference_id: MetaCyc:RXN-13056
+    source_assertion: The native reaction has the explicit RHEA unification cross-reference 32168, preserving
+      the selected forward reaction identity.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:32168
+    source_assertion: Master RHEA:32167 links the selected directed reaction RHEA:32168, whose substrate
+      and product sides specify forward synthesis.
+    source_locator: http://rdf.rhea-db.org/32167 rh:directionalReaction http://rdf.rhea-db.org/32168;
+      http://rdf.rhea-db.org/32168 rh:substrates/rh:products
+- id: aerobactin-edge-033
+  subject: RHEA:23229
+  predicate: provides_input_for
+  object: RHEA:22389
+  evidence:
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: The native reaction-ordering places 1.14.13.59-RXN before N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN.
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-ordering
+  - reference_id: RHEA:23229
+    source_assertion: RHEA:23229 assigns CHEBI:57820 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/23229 rh:products http://rdf.rhea-db.org/23228_R; http://rdf.rhea-db.org/23228_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_23228_compound_2821; rh:compound http://rdf.rhea-db.org/Compound_2821;
+      rh:chebi
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:57820 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:substrates http://rdf.rhea-db.org/22388_L; http://rdf.rhea-db.org/22388_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_2821; rh:compound http://rdf.rhea-db.org/Compound_2821;
+      rh:chebi
+  description: The source products and substrates independently identify the shared chemical intermediate.
+- id: aerobactin-edge-034
+  subject: RHEA:22389
+  predicate: provides_input_for
+  object: RHEA:32164
+  evidence:
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: The native reaction-ordering places N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN before
+      RXN-13054.
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-ordering
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:58122 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:products http://rdf.rhea-db.org/22388_R; http://rdf.rhea-db.org/22388_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:58122 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:substrates http://rdf.rhea-db.org/32163_L; http://rdf.rhea-db.org/32163_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+  description: The source products and substrates independently identify the shared chemical intermediate.
+- id: aerobactin-edge-035
+  subject: RHEA:32164
+  predicate: provides_input_for
+  object: RHEA:32168
+  evidence:
+  - reference_id: MetaCyc:AEROBACTINSYN-PWY
+    source_assertion: The native reaction-ordering places RXN-13054 before RXN-13056.
+    source_locator: Pathway[@frameid="AEROBACTINSYN-PWY"]/reaction-ordering
+  - reference_id: RHEA:32164
+    source_assertion: RHEA:32164 assigns CHEBI:63796 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32164 rh:products http://rdf.rhea-db.org/32163_R; http://rdf.rhea-db.org/32163_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_32163_compound_7047; rh:compound http://rdf.rhea-db.org/Compound_7047;
+      rh:chebi
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:63796 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:substrates http://rdf.rhea-db.org/32167_L; http://rdf.rhea-db.org/32167_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_7047; rh:compound http://rdf.rhea-db.org/Compound_7047;
+      rh:chebi
+  description: CHEBI:63796 is the issued lysine-S class with unspecified citrate-derived stereocenter.
+    The hvKP1 experiments select its 3S,2′S member; this graph does not assert acceptance of the 3R member
+    or an exact stereochemical identity between the class and that measured product.
+- id: aerobactin-edge-036
+  subject: RHEA:22389
+  predicate: provides_input_for
+  object: RHEA:32168
+  evidence:
+  - reference_id: RHEA:22389
+    source_assertion: RHEA:22389 assigns CHEBI:58122 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22389 rh:products http://rdf.rhea-db.org/22388_R; http://rdf.rhea-db.org/22388_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_22388_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+  - reference_id: RHEA:32168
+    source_assertion: RHEA:32168 assigns CHEBI:58122 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/32168 rh:substrates http://rdf.rhea-db.org/32167_L; http://rdf.rhea-db.org/32167_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_32167_compound_4878; rh:compound http://rdf.rhea-db.org/Compound_4878;
+      rh:chebi
+  description: A second equivalent of the IucB-produced building block supplies IucC; the first two transformations
+    operate twice per aerobactin molecule.
+- id: aerobactin-edge-037
+  subject: NCBIProtein:EMB09144.1
+  predicate: part_of
+  object: NCBITaxon:1267897
+  evidence:
+  - reference_id: NCBIProtein:EMB09144.1
+    source_assertion: The native source feature identifies Klebsiella pneumoniae hvKP1, strain hvKP1 and
+      taxon:1267897.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09144.1']/GBSeq_feature-table/GBFeature[GBFeature_key='source']/GBFeature_quals
+- id: aerobactin-edge-038
+  subject: NCBIProtein:EMB09145.1
+  predicate: part_of
+  object: NCBITaxon:1267897
+  evidence:
+  - reference_id: NCBIProtein:EMB09145.1
+    source_assertion: The native source feature identifies Klebsiella pneumoniae hvKP1, strain hvKP1 and
+      taxon:1267897.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09145.1']/GBSeq_feature-table/GBFeature[GBFeature_key='source']/GBFeature_quals
+- id: aerobactin-edge-039
+  subject: NCBIProtein:EMB09146.1
+  predicate: part_of
+  object: NCBITaxon:1267897
+  evidence:
+  - reference_id: NCBIProtein:EMB09146.1
+    source_assertion: The native source feature identifies Klebsiella pneumoniae hvKP1, strain hvKP1 and
+      taxon:1267897.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09146.1']/GBSeq_feature-table/GBFeature[GBFeature_key='source']/GBFeature_quals
+- id: aerobactin-edge-040
+  subject: NCBIProtein:EMB09147.1
+  predicate: part_of
+  object: NCBITaxon:1267897
+  evidence:
+  - reference_id: NCBIProtein:EMB09147.1
+    source_assertion: The native source feature identifies Klebsiella pneumoniae hvKP1, strain hvKP1 and
+      taxon:1267897.
+    source_locator: GBSeq[GBSeq_accession-version='EMB09147.1']/GBSeq_feature-table/GBFeature[GBFeature_key='source']/GBFeature_quals
+- id: aerobactin-edge-041
+  subject: NCBIProtein:EMB09147.1
+  predicate: has_cofactor
+  object: CHEBI:57692
+  evidence:
+  - reference_id: PMID:29618511
+    source_assertion: Figure 1 depicts FAD with IucD lysine hydroxylation; the reconstituted hvKP1 pathway
+      used FAD as cofactor.
+    source_locator: PMC5961048 Figure 1; Results/sec4 (In vitro aerobactin reconstitution); original PDF
+      pp.7842-7843
+  description: FAD is the enzyme cofactor, distinct from consumed NADPH. This statement retains the diagram
+    and reconstitution scope; it does not import the E. coli soluble-construct tetramer.
+- id: aerobactin-edge-042
+  subject: NCBIProtein:EMB09144.1
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: PMID:27253399
+    source_assertion: The ATP-bound hvKP1 IucA structure contains Mg2+ coordinated by ATP and enzyme side
+      chains, providing direct active-site metal-binding evidence.
+    source_locator: PMC4928626 Results/sec3.2/p[1] (Active Site), Figure 2A
+  description: Supported Mg2+ association in the ATP-bound enzyme, rather than an obligatory free-metal
+    requirement inferred only from assay MgATP. IucC metal placement in 2018 was modeled from IucA and
+    is not a separate direct IucC cofactor assertion.
+- id: aerobactin-edge-043
+  subject: GO:0019270
+  predicate: part_of
+  object: NCBITaxon:1267897
+  evidence:
+  - reference_id: PMID:29618511
+    source_assertion: All four iucA-D genes were obtained from the hvKP1 clinical isolate; purified preparations
+      reconstituted the full pathway. E. coli was the heterologous expression host.
+    source_locator: PMC5961048 Experimental procedures/sec12/p[1]; Results/sec4 and Figure 3
+  - reference_id: NCBITaxon:1267897
+    source_assertion: NCBI Taxonomy independently identifies taxon1267897 as Klebsiella pneumoniae hvKP1.
+    source_locator: TaxaSet/Taxon/TaxId; ScientificName
+references:
+- id: GO:0019270
+  title: 'Gene Ontology: aerobactin biosynthetic process'
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:0019270
+  source_version: QuickGO original JSON retrieved 2026-10-11
+  source_sha256: 7c17433871618734211ebf40f3688e4d7ce672edce32bdae9552649b810678e1
+- id: MetaCyc:AEROBACTINSYN-PWY
+  title: MetaCyc aerobactin biosynthesis
+  url: https://pathway.yeastgenome.org/getxml?META:AEROBACTINSYN-PWY
+  source_version: MetaCyc 22.5; original XML retrieved 2026-10-11
+  source_sha256: 077a58019ad4884c170aeda858cbf7eeb08de49e5cf39729d3aab0a08b931a2a
+- id: MetaCyc:1.14.13.59-RXN
+  title: MetaCyc native reaction 1.14.13.59-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:1.14.13.59-RXN
+  source_version: MetaCyc 22.5; original XML retrieved 2026-10-11
+  source_sha256: 391ee0de591b25c9233a4fa4d9ab65f6cb39c6de58cfc0e09462291c392f35c1
+- id: RHEA:23229
+  title: Rhea directed reaction 23229
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; hash covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN
+  title: MetaCyc native reaction N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:N6-HYDROXYLYSINE-O-ACETYLTRANSFERASE-RXN
+  source_version: MetaCyc 22.5; original XML retrieved 2026-10-11
+  source_sha256: b1a7c8592b592f483fbd6ca1694be7ad982d30313c253f0a05c8c6fc82f3b7b5
+- id: RHEA:22389
+  title: Rhea directed reaction 22389
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; hash covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:RXN-13054
+  title: MetaCyc native reaction RXN-13054
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-13054
+  source_version: MetaCyc 22.5; original XML retrieved 2026-10-11
+  source_sha256: d8f700ae72a67048f290dddecd0ede20aef5eaa47253938f77a81115d55aa263
+- id: RHEA:32164
+  title: Rhea directed reaction 32164
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; hash covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:RXN-13056
+  title: MetaCyc native reaction RXN-13056
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-13056
+  source_version: MetaCyc 22.5; original XML retrieved 2026-10-11
+  source_sha256: af35ca30a54e5d2f0e69f9c757a51aa3a00bcd11c4beb7046bad84fd93589d50
+- id: RHEA:32168
+  title: Rhea directed reaction 32168
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; hash covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: NCBIProtein:EMB09144.1
+  title: hypothetical protein G057_19877 [Klebsiella pneumoniae hvKP1]
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=EMB09144.1,EMB09145.1,EMB09146.1,EMB09147.1&retmode=xml
+  source_version: NCBI GenPept original four-record batch retrieved 2026-10-11; hash covers complete batch;
+    entries updated 2013-02-07
+  source_sha256: b0d21b01a6cd2e85625bd1713fafd2def712e80db63f7fefea5d17049c21776b
+- id: NCBIProtein:EMB09145.1
+  title: IucB [Klebsiella pneumoniae hvKP1]
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=EMB09144.1,EMB09145.1,EMB09146.1,EMB09147.1&retmode=xml
+  source_version: NCBI GenPept original four-record batch retrieved 2026-10-11; hash covers complete batch;
+    entries updated 2013-02-07
+  source_sha256: b0d21b01a6cd2e85625bd1713fafd2def712e80db63f7fefea5d17049c21776b
+- id: NCBIProtein:EMB09146.1
+  title: IucC [Klebsiella pneumoniae hvKP1]
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=EMB09144.1,EMB09145.1,EMB09146.1,EMB09147.1&retmode=xml
+  source_version: NCBI GenPept original four-record batch retrieved 2026-10-11; hash covers complete batch;
+    entries updated 2013-02-07
+  source_sha256: b0d21b01a6cd2e85625bd1713fafd2def712e80db63f7fefea5d17049c21776b
+- id: NCBIProtein:EMB09147.1
+  title: IucD [Klebsiella pneumoniae hvKP1]
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=EMB09144.1,EMB09145.1,EMB09146.1,EMB09147.1&retmode=xml
+  source_version: NCBI GenPept original four-record batch retrieved 2026-10-11; hash covers complete batch;
+    entries updated 2013-02-07
+  source_sha256: b0d21b01a6cd2e85625bd1713fafd2def712e80db63f7fefea5d17049c21776b
+- id: NCBITaxon:1267897
+  title: 'NCBI Taxonomy: Klebsiella pneumoniae hvKP1'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=1267897&retmode=xml
+  source_version: NCBI Taxonomy original XML retrieved 2026-10-11
+  source_sha256: 3daff0230c3c341165bba0009111bf77aeec707b8f7b3af005e6324b8b3a15d0
+- id: PMID:29618511
+  title: Structural and functional delineation of aerobactin biosynthesis in hypervirulent Klebsiella
+    pneumoniae
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5961048/
+  source_version: Original research article; retained PMC HTML retrieved 2026-10-11
+  source_sha256: c77b02de555a96e8cce88e3d6000a3231d8a1f0e5a9efdbc7fd753637109256c
+- id: PMID:27253399
+  title: Structural and Functional Characterization of Aerobactin Synthetase IucA from a Hypervirulent
+    Pathotype of Klebsiella pneumoniae
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4928626/
+  source_version: Original research article; retained PMC HTML retrieved 2026-10-11
+  source_sha256: 2084bc473dde1a33306f2f0b0c1cfc55d7d061bafd3ba3bdfac6b80619586db8
+- id: PMID:32432457
+  title: The Siderophore Synthetase IucA of the Aerobactin Biosynthetic Pathway Uses an Ordered Mechanism
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7325057/
+  source_version: Original research article; retained PMC HTML retrieved 2026-10-11
+  source_sha256: 7d763303a9ceb74a944a9708db8314c8f0e347cf8b70bef7e2679a0f72f300cb
+- id: EC:6.3.2.38
+  title: IUBMB ExplorEnz EC 6.3.2.38
+  url: https://www.enzyme-database.org/query.php?ec=6.3.2.38
+  source_version: Original ExplorEnz HTML retrieved 2026-10-11; entry last modified 2019
+  source_sha256: a9b8b5a163399264bcb2b75b6066286a54679be997c4af832643f0be087e78ab
+- id: MetaCyc:CPD-14069
+  title: MetaCyc N-citryl-N-acetyl-N-hydroxy-L-lysine
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-14069
+  source_version: MetaCyc 22.5; original XML retrieved 2026-10-11
+  source_sha256: 6960735fe0ce8a31b62a040ce8b46e1864737167dc8589b398443283edd3a7a5
+- id: CHEBI:63796
+  title: ChEBI N(alpha)-citryl-N(epsilon)-acetyl-N(epsilon)-hydroxylysine(3-)
+  url: https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/
+  source_version: ChEBI 255; hash covers the uncompressed original Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f

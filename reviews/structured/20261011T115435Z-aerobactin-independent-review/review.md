@@ -1,0 +1,864 @@
+# Independent scientific review of complete hvKP1 aerobactin biosynthesis
+
+- Review: 20261011T115435Z-aerobactin-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T11:43:07.577207Z
+- Finished UTC: 2026-10-11T11:54:35.636215Z
+- Reviewer: Codex independent aerobactin reviewer (/root/verify_graph_publication) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+All four native transformations and the hvKP1 biochemical implementation are supported, with explicit stereochemical-class, construct, assembly and assay limitations. No corrective finding. All seven final corpus gates passed; the suite reported 1131 passed, 3 skipped and 3 warnings. Independent original-source and generated-evidence checks also passed.
+
+## Scope And Provenance
+
+One complete maintained aerobactin record, including all four reactions, 22 participants, 43 mechanistic edges, 75 evidence blocks and 21 references.
+
+Selection: Explicitly assigned GO:0019270 record
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 4391f0eec8d4fbe86870041245f246be48ecce18.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| GO:0019270 | data/pathways/aerobactin-biosynthesis.yaml | maintained | aerobactin biosynthetic process |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Governed initial and final inspection | passed | False | GO:0019270 | Initial canonical inspection preceded the maintained-record assessment. Final inspect completed exit0 after all25 prior inputs were independently rehashed unchanged and new final-context inputs were assessed. The final source contains48 exact input attestations. |
+| Independent original-source replay | passed | False | GO:0019270 | Actual independent external session86495 exited0 before integration; identical target/author bytes are now maintained.47 original bodies,24 Rhea sides,four balances,four native translations and43-edge/75-evidence actual KGX parity passed. This historical source check is separate from the final corpus gates. |
+| Independent integrated authority and input audit | passed | False | GO:0019270 | Reviewer-executed terminal0 checks copied originals, complete baseline authority preservation, new exact protein identities and all target canonical labels. |
+| Final shared render | passed | False | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/render.txt SHA256 2b171eb06381025c34c729d7e153dd4990543067022c80fd8f297a2e135811a9. |
+| Final shared validate | passed | True | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/validate.txt SHA256 b9d54a6ce6187894a74250b3e7c6e9be81b1b1c9e9b92ece38d74ae70fd6163b. |
+| Final shared test | passed | True | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/test.txt SHA256 fea299159c3a5a0a5c87f85f9d481886c81ef1bd09cc9e53b2226aae412154d0. 1131 passed, 3 skipped, 3 warnings in 512.67s (0:08:32). |
+| Final shared lint | passed | True | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/lint.txt SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41. |
+| Final shared identifiers | passed | False | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/identifiers.txt SHA256 0a7346a653548b03e170ba11b9d1f9b7230521ff14fcf6433ec2a7f6d4f3e8a6. |
+| Final shared kgx | passed | False | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/kgx.txt SHA256 d9e0ce569f6f5dec0ef1c9a7e4bbb6176d2bb2bc92a27746e310561d18cff09b. |
+| Final shared diff | passed | True | GO:0019270 | Root-executed terminal exit0; reviewer inspected and rehashed exact archived log research/pathway_additions/2026-10-11-next-210/final-checks/diff.txt SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. This was the actual unstaged check; it does not assert that subsequently staged or untracked files have passed a staged whitespace check. |
+| Vendored governed artifacts | passed | False | GO:0019270 | Root actual session65499 exited0, all22 governed artifacts match. The initial sandbox DNS failure is preserved in the integration receipt; no initial success is claimed. |
+
+## Scientific And Domain Assessments
+
+### Complete pathway identity and native boundary
+
+identity: supported. Targets: GO:0019270.
+
+The exact biosynthetic process includes both building-block transformations and both successive citrate ligations. No shortened module or uptake/virulence wrapper replaces the full route.
+
+### Exact source directions, charge and stoichiometry
+
+grounding: supported. Targets: GO:0019270.
+
+All four selected directed reactions and24 side edges match original current Rhea. Atom and charge balances pass. The intermediate is explicitly a stereochemically broader issued class; chemical continuity does not imply acceptance of its unmeasured member.
+
+### Exact strain, gene products and experimental constructs
+
+evidence: supported. Targets: GO:0019270.
+
+The native hvKP1 genes and four CDS translations are exact. The primary papers identify their source and preparations. E. coli expression hosts, tagged/fusion proteins and IucC mutant structures are kept separate from native sequence claims.
+
+### Catalysis, cofactor and assembly limits
+
+evidence: supported. Targets: GO:0019270.
+
+Gene-product enables edges correctly retain role evidence without asserting monomer sufficiency. IucA tetramer and Mg coordination are directly supported; IucC preparation-dependent assemblies, modeled Mg and IucD/IucB assay limits remain qualified.
+
+### Preserved ATP and stereochemical source disagreements
+
+consistency: supported. Targets: GO:0019270.
+
+The record exposes the ExplorEnz ADP conflict and native-class stereochemical limit rather than treating either as exact primary evidence. Selected AMP chemistry and the measured 3S member have separate original support.
+
+### Edge-local support and complete flow
+
+graph: supported. Targets: GO:0019270.
+
+Each native ordering assertion is restricted to its original predecessor facts. Separate directed Rhea product/substrate statements ground connectivity, including the second building-block equivalent. All43 edges and75 evidence blocks survive actual export.
+
+### Molecular boundary and applicable expression context
+
+completeness: supported. Targets: GO:0019270.
+
+The complete biosynthetic route remains represented without unsupported transport, regulation or localization. The dated full iModulon inventory has no applicable hvKP1 dataset; the assessment makes no biological absence inference.
+
+### Final corpus checks and generated evidence
+
+consistency: supported. Targets: GO:0019270.
+
+All required final gates passed on stable maintained science/authority bytes. Every target assertion and source locator remains present in its generated evidence row; all43 edge evidence/reference payloads remain exact in KGX.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-record | data/pathways/aerobactin-biosynthesis.yaml; Entire maintained YAML; all declarations, edges and reference metadata | supports | Complete target reread following canonical inspection; unchanged from independently inspected external draft. |
+| e-go | https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0019270; results[id=GO:0019270], definition and canonical name | supports | The issuing GO definition denotes aerobactin biosynthesis, consistent with the complete four-reaction native boundary. |
+| e-native | https://pathway.yeastgenome.org/getxml?META:AEROBACTINSYN-PWY; Pathway reaction-list, reaction-layout, predecessors; four original reaction objects and explicit Rhea unification cross-references | supports | All four native objects are retained. E. coli plasmid annotations ground shared chemistry without transferring their proteins or strain to hvKP1. Upstream precursors, uptake and iron loading are outside the definition. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Master/directional families 23228→23229,22388→22389,32163→32164,32167→32168; substrates/products/containsN/compound/chebi | supports | Independent full original RDF replay confirms all 24 chemical sides, four balances and the weighted 2/2/1/1 net. Both ligations form AMP and diphosphate. |
+| e-stereo | http://purl.obolibrary.org/obo/CHEBI_63796; Original ChEBI255 SQL formula/charge/InChI; independently compared native CPD-14069 InChI | supports | The native and ChEBI structures agree at class level: /t9-,14? fixes the lysine center and leaves the citrate center unspecified. The record explicitly represents the experimentally selected 3S member within this broader class. |
+| e-sequence | https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&amp;id=EMB09144.1,EMB09145.1,EMB09146.1,EMB09147.1&amp;retmode=xml; All four GBSeq accession-version/definition/sequence/source qualifiers; separate original AOIZ01000119.1 CDS intervals | supports | Original hvKP1 taxon1267897 and strain qualifiers match. Independently translated native CDS sequences exactly match IucA574, IucB315, IucC577 and IucD425 residues. Native sequence identity is distinguished from modified experimental preparations. |
+| e-2016 | https://pmc.ncbi.nlm.nih.gov/articles/PMC4928626/; Methods2.1; Results3.2/Figure2A,3.3,3.4 | supports | Exact EMB09144.1 574-residue construct is specified. Native gel, SEC and SAXS support IucA tetramer despite a PISA monomer prediction; ATP-bound Mg coordination is direct. Surrogate nucleophile work is not substituted for the later native-pathway reconstruction. |
+| e-2018 | https://pmc.ncbi.nlm.nih.gov/articles/PMC5961048/; Sections3,4,6/Figure5,8,9,10 paragraph2,12 and14; original PDF Figures1 and5 at printed pages7842 and7844 independently rendered/read | supports | Four hvKP1-derived preparations reconstruct the route. IucD plus IucB supplies acetylhydroxylysine, while free hydroxylysine was not detected with IucD alone. Figure5 establishes the selected 3S,2′S intermediate. IucC M5 structure differs from wild-type preparations; wild-type solution dimers/tetramers shift with ATP. FAD is included in reconstruction and Figure1. |
+| e-2020 | https://pmc.ncbi.nlm.nih.gov/articles/PMC7325057/; S5/P13; S8/P16; S11/P31; S14/P40 | supports | Wild-type IucA identity, AMP-coupled assay and citryl-adenylate mechanism support AMP production. Ordered ATP/citrate/acetylhydroxylysine binding is qualified as the study mechanism, without transferring unrelated comparison-protein claims. |
+| e-atp-conflict | https://www.enzyme-database.org/query.php?ec=6.3.2.38; Original Reaction field versus Systematic name | supports | The inspected issuing page gives 2ATP plus water to 2ADP plus phosphate despite its AMP-forming systematic name. The record explicitly preserves this disagreement and separately grounds the selected AMP chemistry. |
+| e-replay | research/pathway_additions/2026-10-11-next-210/independent-original-source-replay.json; Independent original body hashes, native boundary, Rhea family/sides/balances, four genomic translations, InChI bridge and actual export | supports | Actual independent session86495 exited0: 47 originals,24 sides,four balances,four CDS translations and all43 edges/75 evidence retained. An earlier scratch run was interrupted to replace inefficient whole-file hashing; its honest failure disposition remains external. |
+| e-preparation | research/pathway_additions/2026-10-11-next-210/independent-preparation-audit.json; All 25 initial inspection inputs and 12 copied author files; complete baseline authority dictionaries and source manifest; original four-record GenPept batch | supports | All initially inspected bytes remain unchanged. Every baseline authority term/metadata entry and all458 prior source inputs are preserved;10 ontology and4 GenPept terms were added. The original hvKP1 qualifiers and every current node label match the canonical authorities. |
+| e-context | research/pathway_additions/2026-10-11-next-210/imodulondb-integrated-replay.json; Retained complete 09:48 UTC inventory, original body hash and unchanged canonical client; context successor with zero network requests | supports | Actual offline replay reproduces20 organisms and28 datasets. No Klebsiella/hvKP1 entry is present in that retained inventory; the pneumoniae name hit is Streptococcus. Dataset applicability is not biological absence; E. coli expression hosts do not establish hvKP1 expression context. |
+| e-gates | research/pathway_additions/2026-10-11-next-210/integration-receipt.json; All seven final gate command/timing/exit/log receipts, source-input stability and vendored result | supports | Reviewer inspected actual archived and external logs and rehashed them. Complete211-record corpus validation,1131 passed/3 skipped/3 warnings full suite, lint, identifier check, render, KGX and unstaged diff check passed. Vendored22 artifacts passed after the preserved sandbox DNS failure. |
+| e-generated | research/pathway_additions/2026-10-11-next-210/generated-graph-kgx-audit.json; Exact GO:0019270 page, all28 SVG nodes/43 edges/75 evidence; separate CLI KGX and baseline preservation | supports | Delegated structural audit passed and reviewer independently checked every page evidence row/link plus exact KGX evidence, references and descriptions. The audit preserves all210 prior records,889 baseline files and9868 exported edges. This is programmatic inspection, not browser visual QA. |
+
+## Limits And Additional Notes
+
+- CHEBI:63796 fixes the lysine center but leaves the citrate-derived center unspecified. The experiments select the 3S,2′S member; the description and edge evidence preserve that qualification. No exact stereochemical equivalence or acceptance of the 3R member is inferred.
+- Native hvKP1 CDS translations are exact. Full sequences of all tagged, fusion and mutant experimental constructs and the complete 2018 supplement were not independently recovered; native-to-construct sequence equality is not asserted.
+- IucD-only free hydroxylysine was not detected in the reconstruction. Its role is supported by the combined IucD/IucB experiment, native chemistry and the primary mechanistic interpretation, with that assay limit explicit.
+- IucB/IucD preparation behavior does not establish a fixed native assembly. IucC shows ATP-associated dimer/tetramer mixtures; functional enables relations do not assert monomer sufficiency.
+- The ExplorEnz IucA ATP-to-ADP equation conflicts with its AMP-forming systematic name and with the inspected primary mechanism and native/Rhea equations. The record retains the conflict and uses the supported AMP convention.
+- The iModulon assessment concerns the complete inventory retrieved at 09:48 UTC on 2026-10-11. It is an offline replay, not a fresh retrieval or evidence of biological absence. The reviewer contributed this contextual assessment.
+- No browser visual QA is claimed. Programmatic generated-page and KGX evidence checks are distinguished from source-based scientific assessment.
+- The prior external scientific preflight began at 11:25:02 UTC and finished at 11:28:56 UTC. The maintained target was first canonically inspected at 11:43:07 UTC after the actual base was established. The target and all copied author inputs remained byte-identical; this report completes the canonical workflow rather than retroactively labeling the external preflight a saved review.
+- Final inspection assessed newly available gate/graph/iModulon receipts and the generated page. All25 initially captured inputs were unchanged; none was silently rehashed after modification. The final48-input source list includes the maintained preparation and independent scientific-replay receipts.
+- The reviewer did not repeat the expensive full corpus suite. Root-executed checks are attested from the original exact logs and actual terminal receipts. Final source checking and programmatic page/KGX comparison were independently performed.
+- The independent generated-target scratch initially selected only mechanism edges, then incorrectly treated source_records as the pathway owner. Both reviewer-only selector assumptions were corrected to inspect all explicit graph links and the exact target edge-ID namespace; the successful receipt discloses them and no product finding resulted.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of complete hvKP1 aerobactin biosynthesis
+started_at: '2026-10-11T11:43:07.577207Z'
+reviewer:
+  identity: Codex independent aerobactin reviewer (/root/verify_graph_publication)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: This reviewer did not author the aerobactin record, author dossiers,
+    or shared authority integration. The reviewer independently assessed the external
+    draft and original sources before integration, then invoked canonical inspection
+    at the actual merged base and rechecked the maintained bytes. The reviewer authored
+    the bounded iModulon applicability assessment; that contextual contribution is
+    disclosed and supplies no biochemical claim.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: All four native transformations and the hvKP1 biochemical implementation
+  are supported, with explicit stereochemical-class, construct, assembly and assay
+  limitations. No corrective finding. All seven final corpus gates passed; the suite
+  reported 1131 passed, 3 skipped and 3 warnings. Independent original-source and
+  generated-evidence checks also passed.
+scope:
+  description: One complete maintained aerobactin record, including all four reactions,
+    22 participants, 43 mechanistic edges, 75 evidence blocks and 21 references.
+  selection: Explicitly assigned GO:0019270 record
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - GO:0019270
+  exclusions:
+  - target: Other pathway records and future bacillibactin authority work
+    reason: Outside this single-record scientific verdict.
+  - target: Transport, iron loading, generic virulence and upstream lysine/citrate
+      synthesis
+    reason: Outside the complete native aerobactin biosynthetic boundary.
+targets:
+- target_id: GO:0019270
+  path: data/pathways/aerobactin-biosynthesis.yaml
+  label: aerobactin biosynthetic process
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/aerobactin-biosynthesis.yaml
+    role: maintained_record
+findings: []
+actions: []
+limitations:
+- CHEBI:63796 fixes the lysine center but leaves the citrate-derived center unspecified.
+  The experiments select the 3S,2′S member; the description and edge evidence preserve
+  that qualification. No exact stereochemical equivalence or acceptance of the 3R
+  member is inferred.
+- Native hvKP1 CDS translations are exact. Full sequences of all tagged, fusion and
+  mutant experimental constructs and the complete 2018 supplement were not independently
+  recovered; native-to-construct sequence equality is not asserted.
+- IucD-only free hydroxylysine was not detected in the reconstruction. Its role is
+  supported by the combined IucD/IucB experiment, native chemistry and the primary
+  mechanistic interpretation, with that assay limit explicit.
+- IucB/IucD preparation behavior does not establish a fixed native assembly. IucC
+  shows ATP-associated dimer/tetramer mixtures; functional enables relations do not
+  assert monomer sufficiency.
+- The ExplorEnz IucA ATP-to-ADP equation conflicts with its AMP-forming systematic
+  name and with the inspected primary mechanism and native/Rhea equations. The record
+  retains the conflict and uses the supported AMP convention.
+- The iModulon assessment concerns the complete inventory retrieved at 09:48 UTC on
+  2026-10-11. It is an offline replay, not a fresh retrieval or evidence of biological
+  absence. The reviewer contributed this contextual assessment.
+- No browser visual QA is claimed. Programmatic generated-page and KGX evidence checks
+  are distinguished from source-based scientific assessment.
+notes:
+- The prior external scientific preflight began at 11:25:02 UTC and finished at 11:28:56
+  UTC. The maintained target was first canonically inspected at 11:43:07 UTC after
+  the actual base was established. The target and all copied author inputs remained
+  byte-identical; this report completes the canonical workflow rather than retroactively
+  labeling the external preflight a saved review.
+- Final inspection assessed newly available gate/graph/iModulon receipts and the generated
+  page. All25 initially captured inputs were unchanged; none was silently rehashed
+  after modification. The final48-input source list includes the maintained preparation
+  and independent scientific-replay receipts.
+- The reviewer did not repeat the expensive full corpus suite. Root-executed checks
+  are attested from the original exact logs and actual terminal receipts. Final source
+  checking and programmatic page/KGX comparison were independently performed.
+- The independent generated-target scratch initially selected only mechanism edges,
+  then incorrectly treated source_records as the pathway owner. Both reviewer-only
+  selector assumptions were corrected to inspect all explicit graph links and the
+  exact target edge-ID namespace; the successful receipt discloses them and no product
+  finding resulted.
+evidence:
+- evidence_id: e-record
+  kind: record_content
+  reference: data/pathways/aerobactin-biosynthesis.yaml
+  locator: Entire maintained YAML; all declarations, edges and reference metadata
+  accessed_at: '2026-10-11T11:49:48.217616Z'
+  support: supports
+  summary: Complete target reread following canonical inspection; unchanged from independently
+    inspected external draft.
+  snapshot_sha256: 3e4e50965749a9fa9dfe6319fd1462cc8329c10b7f4ab5363e7b486f2f32e3d4
+- evidence_id: e-go
+  kind: authority
+  reference: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0019270
+  locator: results[id=GO:0019270], definition and canonical name
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: The issuing GO definition denotes aerobactin biosynthesis, consistent with
+    the complete four-reaction native boundary.
+  snapshot_sha256: 7c17433871618734211ebf40f3688e4d7ce672edce32bdae9552649b810678e1
+- evidence_id: e-native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:AEROBACTINSYN-PWY
+  locator: Pathway reaction-list, reaction-layout, predecessors; four original reaction
+    objects and explicit Rhea unification cross-references
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: All four native objects are retained. E. coli plasmid annotations ground
+    shared chemistry without transferring their proteins or strain to hvKP1. Upstream
+    precursors, uptake and iron loading are outside the definition.
+  snapshot_sha256: 077a58019ad4884c170aeda858cbf7eeb08de49e5cf39729d3aab0a08b931a2a
+- evidence_id: e-rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Master/directional families 23228→23229,22388→22389,32163→32164,32167→32168;
+    substrates/products/containsN/compound/chebi
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: Independent full original RDF replay confirms all 24 chemical sides, four
+    balances and the weighted 2/2/1/1 net. Both ligations form AMP and diphosphate.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-stereo
+  kind: authority
+  reference: http://purl.obolibrary.org/obo/CHEBI_63796
+  locator: Original ChEBI255 SQL formula/charge/InChI; independently compared native
+    CPD-14069 InChI
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: 'The native and ChEBI structures agree at class level: /t9-,14? fixes the
+    lysine center and leaves the citrate center unspecified. The record explicitly
+    represents the experimentally selected 3S member within this broader class.'
+  snapshot_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- evidence_id: e-sequence
+  kind: database
+  reference: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=EMB09144.1,EMB09145.1,EMB09146.1,EMB09147.1&retmode=xml
+  locator: All four GBSeq accession-version/definition/sequence/source qualifiers;
+    separate original AOIZ01000119.1 CDS intervals
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: Original hvKP1 taxon1267897 and strain qualifiers match. Independently
+    translated native CDS sequences exactly match IucA574, IucB315, IucC577 and IucD425
+    residues. Native sequence identity is distinguished from modified experimental
+    preparations.
+  snapshot_sha256: b0d21b01a6cd2e85625bd1713fafd2def712e80db63f7fefea5d17049c21776b
+- evidence_id: e-2016
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC4928626/
+  locator: Methods2.1; Results3.2/Figure2A,3.3,3.4
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: Exact EMB09144.1 574-residue construct is specified. Native gel, SEC and
+    SAXS support IucA tetramer despite a PISA monomer prediction; ATP-bound Mg coordination
+    is direct. Surrogate nucleophile work is not substituted for the later native-pathway
+    reconstruction.
+  snapshot_sha256: 2084bc473dde1a33306f2f0b0c1cfc55d7d061bafd3ba3bdfac6b80619586db8
+- evidence_id: e-2018
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC5961048/
+  locator: Sections3,4,6/Figure5,8,9,10 paragraph2,12 and14; original PDF Figures1
+    and5 at printed pages7842 and7844 independently rendered/read
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: Four hvKP1-derived preparations reconstruct the route. IucD plus IucB supplies
+    acetylhydroxylysine, while free hydroxylysine was not detected with IucD alone.
+    Figure5 establishes the selected 3S,2′S intermediate. IucC M5 structure differs
+    from wild-type preparations; wild-type solution dimers/tetramers shift with ATP.
+    FAD is included in reconstruction and Figure1.
+  snapshot_sha256: c77b02de555a96e8cce88e3d6000a3231d8a1f0e5a9efdbc7fd753637109256c
+- evidence_id: e-2020
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC7325057/
+  locator: S5/P13; S8/P16; S11/P31; S14/P40
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: Wild-type IucA identity, AMP-coupled assay and citryl-adenylate mechanism
+    support AMP production. Ordered ATP/citrate/acetylhydroxylysine binding is qualified
+    as the study mechanism, without transferring unrelated comparison-protein claims.
+  snapshot_sha256: 7d763303a9ceb74a944a9708db8314c8f0e347cf8b70bef7e2679a0f72f300cb
+- evidence_id: e-atp-conflict
+  kind: authority
+  reference: https://www.enzyme-database.org/query.php?ec=6.3.2.38
+  locator: Original Reaction field versus Systematic name
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: The inspected issuing page gives 2ATP plus water to 2ADP plus phosphate
+    despite its AMP-forming systematic name. The record explicitly preserves this
+    disagreement and separately grounds the selected AMP chemistry.
+  snapshot_sha256: a9b8b5a163399264bcb2b75b6066286a54679be997c4af832643f0be087e78ab
+- evidence_id: e-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-210/independent-original-source-replay.json
+  locator: Independent original body hashes, native boundary, Rhea family/sides/balances,
+    four genomic translations, InChI bridge and actual export
+  accessed_at: '2026-10-11T11:28:56.547410Z'
+  support: supports
+  summary: 'Actual independent session86495 exited0: 47 originals,24 sides,four balances,four
+    CDS translations and all43 edges/75 evidence retained. An earlier scratch run
+    was interrupted to replace inefficient whole-file hashing; its honest failure
+    disposition remains external.'
+  snapshot_sha256: 7529ffd816e13a664ee3b4c30f2b45b8243e5557ffa8202c5b0ac1f3b05a6b32
+- evidence_id: e-preparation
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-210/independent-preparation-audit.json
+  locator: All 25 initial inspection inputs and 12 copied author files; complete baseline
+    authority dictionaries and source manifest; original four-record GenPept batch
+  accessed_at: '2026-10-11T11:54:35.636215Z'
+  support: supports
+  summary: All initially inspected bytes remain unchanged. Every baseline authority
+    term/metadata entry and all458 prior source inputs are preserved;10 ontology and4
+    GenPept terms were added. The original hvKP1 qualifiers and every current node
+    label match the canonical authorities.
+  snapshot_sha256: 823d6086c93c983ab4098fe9b923ed80e0875f2db570d3ddb16f6a2c5d04564b
+- evidence_id: e-context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-210/imodulondb-integrated-replay.json
+  locator: Retained complete 09:48 UTC inventory, original body hash and unchanged
+    canonical client; context successor with zero network requests
+  accessed_at: '2026-10-11T11:54:35.636215Z'
+  support: supports
+  summary: Actual offline replay reproduces20 organisms and28 datasets. No Klebsiella/hvKP1
+    entry is present in that retained inventory; the pneumoniae name hit is Streptococcus.
+    Dataset applicability is not biological absence; E. coli expression hosts do not
+    establish hvKP1 expression context.
+  snapshot_sha256: ebb148630adda0bb6efcb9201ff37be4261b6dbf42f7619ca5c64b51be5fa6ca
+- evidence_id: e-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-210/integration-receipt.json
+  locator: All seven final gate command/timing/exit/log receipts, source-input stability
+    and vendored result
+  accessed_at: '2026-10-11T11:54:35.636215Z'
+  support: supports
+  summary: Reviewer inspected actual archived and external logs and rehashed them.
+    Complete211-record corpus validation,1131 passed/3 skipped/3 warnings full suite,
+    lint, identifier check, render, KGX and unstaged diff check passed. Vendored22
+    artifacts passed after the preserved sandbox DNS failure.
+  snapshot_sha256: 3c21638e55bcce2ba4d6996a7dd52e2f594b9827ccf4b8c9925b7c2745926f85
+- evidence_id: e-generated
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-210/generated-graph-kgx-audit.json
+  locator: Exact GO:0019270 page, all28 SVG nodes/43 edges/75 evidence; separate CLI
+    KGX and baseline preservation
+  accessed_at: '2026-10-11T11:54:35.636215Z'
+  support: supports
+  summary: Delegated structural audit passed and reviewer independently checked every
+    page evidence row/link plus exact KGX evidence, references and descriptions. The
+    audit preserves all210 prior records,889 baseline files and9868 exported edges.
+    This is programmatic inspection, not browser visual QA.
+  snapshot_sha256: e0652c1eaa78f854006a7f06f13828925d178b26f6478a16d6b7617cf52958b4
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Complete pathway identity and native boundary
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-go
+  - e-native
+  - e-record
+  summary: The exact biosynthetic process includes both building-block transformations
+    and both successive citrate ligations. No shortened module or uptake/virulence
+    wrapper replaces the full route.
+- assessment_id: a-chemistry
+  area: grounding
+  topic: Exact source directions, charge and stoichiometry
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-rhea
+  - e-stereo
+  - e-replay
+  summary: All four selected directed reactions and24 side edges match original current
+    Rhea. Atom and charge balances pass. The intermediate is explicitly a stereochemically
+    broader issued class; chemical continuity does not imply acceptance of its unmeasured
+    member.
+- assessment_id: a-proteins
+  area: evidence
+  topic: Exact strain, gene products and experimental constructs
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-sequence
+  - e-2016
+  - e-2018
+  summary: The native hvKP1 genes and four CDS translations are exact. The primary
+    papers identify their source and preparations. E. coli expression hosts, tagged/fusion
+    proteins and IucC mutant structures are kept separate from native sequence claims.
+  dimensions:
+  - name: experimental_source_strain
+    value: Klebsiella pneumoniae hvKP1; NCBITaxon:1267897
+    definition: Source of the selected genes; not the heterologous expression host.
+    evidence_ids:
+    - e-sequence
+    - e-2018
+- assessment_id: a-roles
+  area: evidence
+  topic: Catalysis, cofactor and assembly limits
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-2016
+  - e-2018
+  - e-2020
+  summary: Gene-product enables edges correctly retain role evidence without asserting
+    monomer sufficiency. IucA tetramer and Mg coordination are directly supported;
+    IucC preparation-dependent assemblies, modeled Mg and IucD/IucB assay limits remain
+    qualified.
+- assessment_id: a-conflicts
+  area: consistency
+  topic: Preserved ATP and stereochemical source disagreements
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-stereo
+  - e-atp-conflict
+  - e-2018
+  - e-2020
+  summary: The record exposes the ExplorEnz ADP conflict and native-class stereochemical
+    limit rather than treating either as exact primary evidence. Selected AMP chemistry
+    and the measured 3S member have separate original support.
+- assessment_id: a-graph
+  area: graph
+  topic: Edge-local support and complete flow
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-native
+  - e-rhea
+  - e-record
+  - e-replay
+  summary: Each native ordering assertion is restricted to its original predecessor
+    facts. Separate directed Rhea product/substrate statements ground connectivity,
+    including the second building-block equivalent. All43 edges and75 evidence blocks
+    survive actual export.
+- assessment_id: a-context
+  area: completeness
+  topic: Molecular boundary and applicable expression context
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-native
+  - e-context
+  - e-preparation
+  summary: The complete biosynthetic route remains represented without unsupported
+    transport, regulation or localization. The dated full iModulon inventory has no
+    applicable hvKP1 dataset; the assessment makes no biological absence inference.
+- assessment_id: a-integration
+  area: consistency
+  topic: Final corpus checks and generated evidence
+  outcome: supported
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  - e-generated
+  - e-preparation
+  summary: All required final gates passed on stable maintained science/authority
+    bytes. Every target assertion and source locator remains present in its generated
+    evidence row; all43 edge evidence/reference payloads remain exact in KGX.
+review_id: 20261011T115435Z-aerobactin-independent-review
+finished_at: '2026-10-11T11:54:35.636215Z'
+source:
+  git_revision: 4391f0eec8d4fbe86870041245f246be48ecce18
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: c950ccdfff311b4d7218d9464e7d2ac1f7612c2a45192f776afd31e0f94d4d46
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 13d8b26b103606fca1cbfd9ff6437d1f8fffdb56c906d107d2df19b0d97e16b9
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: b42803525afd75f8e80ec24169fe548f8beac0ecc2df1275cd414786ec7c8583
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: e4e64b078da1e35bd80d66f63ed82f219819a8b9fa40d5cb9bbbff793d2d3823
+    role: context
+  - path: data/pathways/aerobactin-biosynthesis.yaml
+    sha256: 3e4e50965749a9fa9dfe6319fd1462cc8329c10b7f4ab5363e7b486f2f32e3d4
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/GO_0019270.html
+    sha256: abeb61a0d9deb317aaa009e9d92980068c9a95c112ae9d50fb1bf0c42c0ec174
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-209/imodulondb-dataset-inventory.json
+    sha256: d84677b8bd4bcb4114f4ae918186f28fe5faceba702fc195e62296f259c42fce
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-209/imodulondb-runner-availability.json
+    sha256: e478aa48f52e3a7a167361c134f0d13e4cf765eb147ed607bc0052a90956d9c3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-authority-inputs.json
+    sha256: 9334d09488944cbbf631a491e9faba41c0658ed6484264bd40e5748c04643824
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-curation.md
+    sha256: 76ece114794dff2bf150ad62f3946f99e99807f479b4dd4d9e595015baf2a3c2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-identifiers.json
+    sha256: 6cff19bd79189df3b844312e04f328e877ac24c042c8615f2dfa3a8ef34f9051
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-primary-index.json
+    sha256: 98b78c54d274f6124fac9c97b7a964d6dcd49c1e4189a2298d58cff853576ccb
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-replay.py
+    sha256: 365babc5fecad46064972fd66a58b3338ee7825a55c4e49c22a3a29b2ad4629f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-source-manifest.json
+    sha256: a6835ebcc69fadcd2c04fb6f22d4deb39b96cffa68fc2048756b305fd892ef65
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-source-projection.json
+    sha256: 1f97e6c094571a0e322886f30433f1da9c2baa322bcea5ac3bb8a41744b0e7e7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/aerobactin-validation.json
+    sha256: c14e6f0b40c3736b27dada30f5ee351487761ad455b22d18dc74b1eab1e0b7d5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/author-copy-receipt.json
+    sha256: 7e76b3a0cdf45347404cb6cf23b6e207e0a1438969515988ef87aa10ede21118
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/authority-integration.json
+    sha256: a0a539501cb8cd45febe39b42b57d4e8d1caae076a002adfe798403cdf09aa03
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/cohort-records.json
+    sha256: 812bf58e04a8bc63886b378ea10792f9d9c453dc585b75563bd24cb52df0ab34
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/diff.txt
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/identifiers.txt
+    sha256: 0a7346a653548b03e170ba11b9d1f9b7230521ff14fcf6433ec2a7f6d4f3e8a6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/kgx.txt
+    sha256: d9e0ce569f6f5dec0ef1c9a7e4bbb6176d2bb2bc92a27746e310561d18cff09b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/lint.txt
+    sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/render.txt
+    sha256: 2b171eb06381025c34c729d7e153dd4990543067022c80fd8f297a2e135811a9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/test.txt
+    sha256: fea299159c3a5a0a5c87f85f9d481886c81ef1bd09cc9e53b2226aae412154d0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/validate.txt
+    sha256: b9d54a6ce6187894a74250b3e7c6e9be81b1b1c9e9b92ece38d74ae70fd6163b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/final-checks/vendored.txt
+    sha256: b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/generated-graph-kgx-audit.json
+    sha256: e0652c1eaa78f854006a7f06f13828925d178b26f6478a16d6b7617cf52958b4
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/imodulondb-applicability.json
+    sha256: 21b4bdfda652179a13ad15149232fc5f67ba677247fe197d1ad703ab4b5864fb
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/imodulondb-integrated-replay.json
+    sha256: ebb148630adda0bb6efcb9201ff37be4261b6dbf42f7619ca5c64b51be5fa6ca
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/imodulondb-offline-replay.json
+    sha256: ba288a4eb4c74347ee7a2979da7837b1be7312ac0f3a2d706545dc96eb60f64f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/imodulondb-replay.py
+    sha256: 02779a518e830b6c6395a7687eff27fa20249f1ea9050ac46c2ae8342d118ba8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/imodulondb-source-manifest.json
+    sha256: c5208ffacceea1ba1846d0a18cc72860dc6da8cade45771a45cab3f92f2721bc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/independent-original-source-replay.json
+    sha256: 7529ffd816e13a664ee3b4c30f2b45b8243e5557ffa8202c5b0ac1f3b05a6b32
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/independent-preparation-audit.json
+    sha256: 823d6086c93c983ab4098fe9b923ed80e0875f2db570d3ddb16f6a2c5d04564b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/independent-scientific-preflight.json
+    sha256: 525c18a485befa9f6283b6a8c14fbb1e42d53e4aacd7085a133b660267ccda75
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/integration-receipt.json
+    sha256: 3c21638e55bcce2ba4d6996a7dd52e2f594b9827ccf4b8c9925b7c2745926f85
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-210/merged-baseline-equivalence.json
+    sha256: 7ddea650bf281539b91d44313a54798d4d7713782546092d7a7ffbf3bdc2d611
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+checks:
+- check_id: c-inspect
+  name: Governed initial and final inspection
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-210-aerobactin-canonical-review/targets.yaml
+    --input .claude/skills/add-pathway/SKILL.md --input .claude/skills/review-yaml-record/SKILL.md
+    --input CLAUDE.md --input conf/identifier_policy.yaml --input conf/identifier_sources.json
+    --input data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/CAUSAL_GRAPHS.md --input docs/CURATION.md --input docs/HARMONIZATION.md
+    --input docs/record-review-profile.md --input docs/record-reviews.md --input justfile
+    --input pages/records/GO_0019270.html --input research/pathway_additions/2026-10-11-next-209/imodulondb-dataset-inventory.json
+    --input research/pathway_additions/2026-10-11-next-209/imodulondb-runner-availability.json
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-authority-inputs.json
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-curation.md
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-identifiers.json
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-primary-index.json
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-replay.py --input
+    research/pathway_additions/2026-10-11-next-210/aerobactin-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-source-projection.json
+    --input research/pathway_additions/2026-10-11-next-210/aerobactin-validation.json
+    --input research/pathway_additions/2026-10-11-next-210/author-copy-receipt.json
+    --input research/pathway_additions/2026-10-11-next-210/authority-integration.json
+    --input research/pathway_additions/2026-10-11-next-210/cohort-records.json --input
+    research/pathway_additions/2026-10-11-next-210/final-checks/diff.txt --input research/pathway_additions/2026-10-11-next-210/final-checks/identifiers.txt
+    --input research/pathway_additions/2026-10-11-next-210/final-checks/kgx.txt --input
+    research/pathway_additions/2026-10-11-next-210/final-checks/lint.txt --input research/pathway_additions/2026-10-11-next-210/final-checks/render.txt
+    --input research/pathway_additions/2026-10-11-next-210/final-checks/test.txt --input
+    research/pathway_additions/2026-10-11-next-210/final-checks/validate.txt --input
+    research/pathway_additions/2026-10-11-next-210/final-checks/vendored.txt --input
+    research/pathway_additions/2026-10-11-next-210/generated-graph-kgx-audit.json
+    --input research/pathway_additions/2026-10-11-next-210/imodulondb-applicability.json
+    --input research/pathway_additions/2026-10-11-next-210/imodulondb-integrated-replay.json
+    --input research/pathway_additions/2026-10-11-next-210/imodulondb-offline-replay.json
+    --input research/pathway_additions/2026-10-11-next-210/imodulondb-replay.py --input
+    research/pathway_additions/2026-10-11-next-210/imodulondb-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-210/independent-original-source-replay.json
+    --input research/pathway_additions/2026-10-11-next-210/independent-preparation-audit.json
+    --input research/pathway_additions/2026-10-11-next-210/independent-scientific-preflight.json
+    --input research/pathway_additions/2026-10-11-next-210/integration-receipt.json
+    --input research/pathway_additions/2026-10-11-next-210/merged-baseline-equivalence.json
+    --input src/pathwaymech/schema.py
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-record
+  - e-preparation
+  summary: Initial canonical inspection preceded the maintained-record assessment.
+    Final inspect completed exit0 after all25 prior inputs were independently rehashed
+    unchanged and new final-context inputs were assessed. The final source contains48
+    exact input attestations.
+- check_id: c-independent-source
+  name: Independent original-source replay
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    .venv/bin/python /private/tmp/pathwaymech-aerobactin-independent-review-20261011/replay.py
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-replay
+  summary: Actual independent external session86495 exited0 before integration; identical
+    target/author bytes are now maintained.47 original bodies,24 Rhea sides,four balances,four
+    native translations and43-edge/75-evidence actual KGX parity passed. This historical
+    source check is separate from the final corpus gates.
+- check_id: c-preparation
+  name: Independent integrated authority and input audit
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    .venv/bin/python /private/tmp/pathwaymech-next-210-aerobactin-canonical-review/prepare-audit.py
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-preparation
+  summary: Reviewer-executed terminal0 checks copied originals, complete baseline
+    authority preservation, new exact protein identities and all target canonical
+    labels.
+- check_id: c-render
+  name: Final shared render
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just render-pages
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/render.txt SHA256
+    2b171eb06381025c34c729d7e153dd4990543067022c80fd8f297a2e135811a9.
+- check_id: c-validate
+  name: Final shared validate
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just validate
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/validate.txt SHA256
+    b9d54a6ce6187894a74250b3e7c6e9be81b1b1c9e9b92ece38d74ae70fd6163b.
+- check_id: c-test
+  name: Final shared test
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just test
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/test.txt SHA256
+    fea299159c3a5a0a5c87f85f9d481886c81ef1bd09cc9e53b2226aae412154d0. 1131 passed,
+    3 skipped, 3 warnings in 512.67s (0:08:32).
+- check_id: c-lint
+  name: Final shared lint
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just lint
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/lint.txt SHA256
+    df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.
+- check_id: c-identifiers
+  name: Final shared identifiers
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just check-identifiers
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/identifiers.txt
+    SHA256 0a7346a653548b03e170ba11b9d1f9b7230521ff14fcf6433ec2a7f6d4f3e8a6.
+- check_id: c-kgx
+  name: Final shared kgx
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just kgx-export --output-dir
+    /private/tmp/pathwaymech-next-210-initial-kgx
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/kgx.txt SHA256
+    d9e0ce569f6f5dec0ef1c9a7e4bbb6176d2bb2bc92a27746e310561d18cff09b.
+- check_id: c-diff
+  name: Final shared diff
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-210-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root-executed terminal exit0; reviewer inspected and rehashed exact archived
+    log research/pathway_additions/2026-10-11-next-210/final-checks/diff.txt SHA256
+    e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. This was the
+    actual unstaged check; it does not assert that subsequently staged or untracked
+    files have passed a staged whitespace check.
+- check_id: c-vendored
+  name: Vendored governed artifacts
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just vendored-check
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - GO:0019270
+  evidence_ids:
+  - e-gates
+  summary: Root actual session65499 exited0, all22 governed artifacts match. The initial
+    sandbox DNS failure is preserved in the integration receipt; no initial success
+    is claimed.
+```

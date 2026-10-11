@@ -1,0 +1,105 @@
+"""Assess exact hvKP1 applicability from a dated, retained inventory; no network."""
+
+import hashlib
+import importlib.util
+import json
+import sys
+from dataclasses import asdict
+from datetime import UTC, datetime
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent
+PRIOR = Path('/private/tmp/pathwaymech-next-209-20261011/research/pathway_additions/2026-10-11-next-209')
+
+def digest(path):
+    h = hashlib.sha256()
+    with path.open('rb') as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+def save(name, obj):
+    (OUT / name).write_text(json.dumps(obj, indent=2) + '\n')
+
+started = datetime.now(UTC).isoformat()
+inv_path = PRIOR / 'imodulondb-dataset-inventory.json'
+runner_path = PRIOR / 'imodulondb-runner-availability.json'
+inv = json.loads(inv_path.read_text())
+runner = json.loads(runner_path.read_text())
+assert digest(inv_path) == 'd84677b8bd4bcb4114f4ae918186f28fe5faceba702fc195e62296f259c42fce'
+assert digest(runner_path) == 'e478aa48f52e3a7a167361c134f0d13e4cf765eb147ed607bc0052a90956d9c3'
+module_path = Path(runner['fallback_module'])
+assert digest(module_path) == inv['module_sha256'] == runner['fallback_module_sha256']
+originals = []
+bodies = {}
+for source in inv['originals']:
+    path = Path(source['path'])
+    assert digest(path) == source['sha256']
+    assert path.stat().st_size == source['bytes']
+    bodies[source['url']] = json.loads(path.read_bytes())
+    originals.append(dict(source))
+assert len(originals) == 1
+spec = importlib.util.spec_from_file_location('retained_imodulondb', module_path)
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
+spec.loader.exec_module(module)
+requested_urls = []
+def transport(url):
+    requested_urls.append(url)
+    return bodies[url]
+client = module.ImodulonDBClient(transport=transport)
+rows = json.loads(json.dumps([asdict(row) for row in client.organism_datasets()]))
+assert rows == inv['datasets']
+assert len(rows) == 20
+assert sum(len(row['datasets']) for row in rows) == 28
+raw = bodies['https://imodulondb.org/api/datasets']
+assert len(raw) == len(rows)
+# Every native object and all its fields are inspected, not a search that skips ignored files.
+terms = ['klebsiella', 'hvkp1', '1267897', 'k_pneumoniae']
+hits = {term: [row for row in raw if term in json.dumps(row).lower()] for term in terms}
+assert all(not found for found in hits.values())
+ambiguous = [row for row in raw if 'pneumoniae' in json.dumps(row).lower()]
+assert len(ambiguous) == 1 and ambiguous[0]['name'] == 'Streptococcus pneumoniae'
+assert ambiguous[0]['datasets'] == ['precise718']
+limits = [
+    'Assessment is of the original inventory retrieved on 2026-10-11 at 09:48 UTC; no new network request or present-day coverage claim.',
+    'The console runner result is a reused historical observation, not a new availability test; this execution only replays the unchanged canonical Python client.',
+    'No applicable organism entry is present in this complete retained response. This is a dataset-coverage disposition, not evidence that genes, pathway expression or iModulon membership are absent.',
+    'Escherichia coli heterologous expression hosts in the biochemical studies do not establish expression applicability to Klebsiella pneumoniae hvKP1.',
+    'Reassess if the organism scope changes or a newer inventory is selected; no claim of whole-source exhaustion.'
+]
+assessment = {
+    'status': 'not_applicable_for_selected_scope',
+    'assessed_at': datetime.now(UTC).isoformat(),
+    'target': {'record_id': 'GO:0019270', 'organism': 'Klebsiella pneumoniae hvKP1', 'taxon_id': 'NCBITaxon:1267897'},
+    'inventory_observed_at': inv['checked_at'],
+    'original_retrieved_at': originals[0]['retrieved_at'],
+    'prior_inventory_path': str(inv_path), 'prior_inventory_sha256': digest(inv_path),
+    'organisms_returned': len(rows), 'datasets_returned': sum(len(row['datasets']) for row in rows),
+    'searched_native_fields': 'All fields of all 20 original organism objects, including IDs, names, descriptions and dataset IDs.',
+    'matching_native_objects_by_term': hits,
+    'pneumoniae_name_disambiguation': {'matches': ambiguous, 'disposition': 'Streptococcus pneumoniae is a different genus/species, not an hvKP1 dataset.'},
+    'applicable_gene_searches': [], 'applicable_component_summaries': [],
+    'decision': 'No gene search or component summary is applicable to the selected exact hvKP1 scope in this retained inventory.',
+    'limits': limits,
+}
+save('applicability.json', assessment)
+save('source-manifest.json', {
+    'source_scope': 'Reused original iModulonDB dataset inventory and unchanged parser; no network acquisition performed by this assessment.',
+    'originals': originals,
+    'inputs': [{'path': str(p), 'sha256': digest(p), 'bytes': p.stat().st_size} for p in [inv_path, runner_path, module_path]],
+    'historical_runner_observed_at': runner['checked_at'],
+    'historical_runner_exit_code': runner['exit_code'],
+})
+report = {
+    'status': 'passed', 'started_at': started, 'finished_at': datetime.now(UTC).isoformat(),
+    'script_sha256': digest(Path(__file__)), 'module_sha256': digest(module_path),
+    'network_requests': 0, 'replayed_urls': requested_urls,
+    'native_body_count': len(originals), 'organism_count': len(rows), 'dataset_count': sum(len(row['datasets']) for row in rows),
+    'assertions': ['Original body byte length and SHA256', 'Unchanged canonical parser SHA256', 'Full normalized inventory equality', 'Every native object checked for exact organism aliases', 'Streptococcus pneumoniae disambiguated', 'No unsupported cross-species expression transfer'],
+    'input_manifest_sha256': digest(OUT / 'source-manifest.json'),
+    'applicability_sha256': digest(OUT / 'applicability.json'),
+    'limits': limits,
+}
+save('offline-replay.json', report)
+print(json.dumps(report))
