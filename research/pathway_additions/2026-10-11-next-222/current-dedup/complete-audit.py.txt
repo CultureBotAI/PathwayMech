@@ -1,0 +1,45 @@
+import json,yaml,hashlib,re
+from pathlib import Path
+A=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-221-20261011');T=Path('/private/tmp/pathwaymech-next-222-author-20261011/draft/adenine-and-adenosine-salvage-ii.yaml')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(p):return json.loads(p.read_text())
+def dump(name,x):(A/name).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+d=yaml.load(T.read_text(),Loader=yaml.CSafeLoader);author=load(T.parent.parent/'authority-proposal.json');baseline={}
+for fn in ['ontology.json','sources.json']:baseline.update(load(R/'data/identifier_authorities'/fn)['terms'])
+rows=[]
+for n in [d,*d['taxa'],*d['participants'],*d['reactions']]:
+ old=baseline.get(n['id']);rows.append({'id':n['id'],'label':n['label'],'category':n.get('category'),'direction':n.get('direction'),'baseline_authority':old,'status':'exact canonical label already present' if old and n['label']==old['label'] else 'present with different source label' if old else 'new named identifier requiring production authority selection'})
+# Audit every nonmaintained YAML, including parse failures and any complete record.
+other=[];parse_failures=[];nonrecords=0
+for line in (A/'all-files.txt').read_text().splitlines():
+ p=Path(line)
+ if '/data/pathways/' in line or p.suffix.lower() not in {'.yml','.yaml'}:continue
+ try:x=yaml.load(p.read_text(),Loader=yaml.CSafeLoader)
+ except Exception as exc:parse_failures.append({'path':str(p),'sha256':sha(p),'error':str(exc)});continue
+ if not isinstance(x,dict) or not {'id','reactions','mechanistic_edges'}<=x.keys():nonrecords+=1;continue
+ nodes={z['id']:z for z in x.get('participants',[])};matches=[]
+ for z in x['reactions']:
+  ins=set();outs=set()
+  for e in x['mechanistic_edges']:
+   if e['predicate']=='consumes' and e['object']==z['id']:ins.add(e['subject'])
+   if e['predicate']=='produces' and e['subject']==z['id']:outs.add(e['object'])
+   if e['predicate']=='has_input' and e['subject']==z['id']:ins.add(e['object'])
+   if e['predicate']=='has_output' and e['subject']==z['id']:outs.add(e['object'])
+  def match(ids,names,pat):return any(i in names or re.search(pat,nodes.get(i,{}).get('label',''),re.I) for i in ids)
+  if match(ins,{'CHEBI:17596'},r'^inosine$') and match(ins,{'CHEBI:30616','CHEBI:15422'},r'^ATP(?:$|\W)|^adenosine.*triphosphate$') and match(outs,{'CHEBI:58053','CHEBI:17202'},r'^(?:IMP(?:$|\W)|inosin(?:e|ic).*?(?:phosphate|acid))'):matches.append(z['id'])
+ other.append({'path':str(p),'sha256':sha(p),'id':x['id'],'reaction_count':len(x['reactions']),'terminal_chemistry_matches':matches})
+assert not any(x['terminal_chemistry_matches'] for x in other)
+mentions=load(A/'prior-and-other-mentions.json');counts={}
+for x in mentions:counts[x['classification']]=counts.get(x['classification'],0)+1
+# These full narrative prior assessments were read directly. All JSON/TSV mentions
+# also carry hashes and extracted exact identity/terminal context in mentions.
+read_prior=[]
+for rel,disposition in [
+ ('research/pathway_additions/2026-10-11-next-189/adenine-salvage-curation.md','Complete salvageIII has four steps via hypoxanthine/Hpt-Gpt; explicitly identifies PWY6611 as separate kinase alternative. Issue351 correction kept source-specific ordering/Rhea evidence separate.'),
+ ('research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-curation.md','Complete P121 phosphorolysis/Apt route endsAMP; separately identifies legacyPathBank2083 three-step kinase core and transport. Frozen naming is not current equivalence.'),
+ ('research/pathway_additions/2026-10-11-next-201/discovery-scout-pathbank.json','Explicitly ranks PWY6611/SMP2083 as strong followup, not authored then; independent complete current boundary now includes the fresh downstream interface.'),
+ ('research/pathway_additions/2026-10-11-next-189/adenine-salvage-resolved-review-audit.json','Saved resolved findings concern source-specific connectivity provenance of salvageIII, not rejection or coverage of this complete candidate.'),
+ ('research/pathway_additions/2026-10-11-next-189/adenine-salvage-independent-review-audit.json','Saved scientific review of salvageIII is a distinct pathway assessment; shared sources/alternative descriptions are not complete candidate coverage.')]:
+ p=R/rel;text=p.read_text();read_prior.append({'path':str(p),'sha256':sha(p),'bytes_read':len(text.encode()),'disposition':disposition})
+dump('completion.json',{'target_sha256':sha(T),'named_authority_adoption_scope':rows,'new_named_ids':[x['id'] for x in rows if x['baseline_authority'] is None],'different_existing_labels':[x for x in rows if x['baseline_authority'] and x['baseline_authority']['label']!=x['label']],'nonmaintained_yaml':{'records_checked':other,'nonrecord_yaml_count':nonrecords,'parse_failures':parse_failures},'matched_file_classifications':counts,'read_prior_assessments':read_prior,'limits':'This duplicate/adoption audit does not supersede independent scientific review. It reports exact reviewed tree and canonical authority delta, not global source exhaustion. Root must bridge actual merged tree to the same tree hash before adoption.'})
+print(json.dumps({'named_ids':len(rows),'new_named_ids':[x['id'] for x in rows if x['baseline_authority'] is None],'existing_label_differences':[x['id'] for x in rows if x['baseline_authority'] and x['baseline_authority']['label']!=x['label']],'nonmaintained_records':len(other),'yaml_parse_failures':parse_failures,'match_classes':counts},indent=2))

@@ -1,0 +1,53 @@
+"""Run the documented curation gates after the completed salvage II integration."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-222-20261011')
+OUT = Path('/private/tmp/pathwaymech-next-222-integration-20261011/gates')
+BASE = 'd8e3888528088e7bba468df57056f9f0e588b463'
+TREE = '929b9b0578a280aed04e20cf33d412b13ba0d822'
+TARGET_HASH = '8b8eb42ace01b8d663ecff30a85e47d6de7b25e7cde785b268655ab281153157'
+
+# Root must review/adopt the separately sealed authority outputs first.
+import sys
+assert __debug__ and sys.dont_write_bytecode
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip() == BASE
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip() == TREE
+assert hashlib.sha256((ROOT / 'data/pathways/adenine-and-adenosine-salvage-ii.yaml').read_bytes()).hexdigest() == TARGET_HASH
+code_hashes = {
+    'conf/identifier_policy.yaml': '17d57f17b473fb2810a5ae944ea932076d682fd6808f8d1cb0275c08c6395271',
+    'docs/IDENTIFIERS.md': '6d53f756899d00f8186cd586482480ea15297802432f7876fe05d53d18ad0e43',
+    'scripts/build_source_identifier_snapshot.py': '6a19e47fe29ccce62862ef6fb28ac30b69729dc46c2cae2de14cc6ac6103ddbc',
+    'tests/test_pathbank_identifier_authority.py': '00e07396f395862232f0e91cd600646f9e30538cbbf331c890ce72326bf743f6',
+    'tests/test_ncbi_gene_identifier_authority.py': '9329a72bc011f3a41086106e65147472f9f1ef49568916da03816e6fc77aa86d',
+}
+for name, expected in code_hashes.items():
+    assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, name
+assert (ROOT / '.venv').resolve() == Path('/private/tmp/pathwaymech-next-195-20261011/.venv')
+
+OUT.mkdir(exist_ok=False)
+env = dict(os.environ, UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache', PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=str(ROOT / 'src'))
+checks = []
+commands = [('render', ['just', 'render-pages']), ('validate', ['just', 'validate']), ('test', ['just', 'test']), ('lint', ['just', 'lint']), ('kgx', ['just', 'kgx-export', '--output-dir', str(OUT / 'kgx')]), ('whitespace', ['git', 'diff', '--check'])]
+for name, command in commands:
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    log = OUT / (name + '.log')
+    with log.open('x') as stream:
+        result = subprocess.run(command, cwd=ROOT, env=env, stdout=stream, stderr=subprocess.STDOUT)
+    check = dict(name=name, command=command, started_at=started, finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat(), exit_code=result.returncode, log=str(log), log_sha256=hashlib.sha256(log.read_bytes()).hexdigest())
+    checks.append(check)
+    with (OUT / (name + '-receipt.json')).open('x') as stream:
+        json.dump(check, stream, indent=2)
+        stream.write('\n')
+    print(json.dumps(check), flush=True)
+    if result.returncode:
+        print(log.read_text()[-5000:], flush=True)
+        break
+with (OUT / 'execution.json').open('x') as stream:
+    json.dump(dict(checks=checks, all_requested_ran=len(checks)==len(commands), all_passed=len(checks)==len(commands) and all(c['exit_code']==0 for c in checks)), stream, indent=2)
+    stream.write('\n')
+raise SystemExit(0 if len(checks)==len(commands) and all(c['exit_code']==0 for c in checks) else 1)

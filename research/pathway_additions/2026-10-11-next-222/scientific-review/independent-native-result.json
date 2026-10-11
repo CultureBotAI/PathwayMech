@@ -1,0 +1,117 @@
+{
+  "status": "pass",
+  "started_at": "2026-10-11T21:56:12.816029+00:00",
+  "finished_at": "2026-10-11T21:56:43.305086+00:00",
+  "target_sha256": "11ceb3fe99f2ed2966bb8a68faf8fa836a6a4a9e94b2bc0c499bb1119fd3cddd",
+  "original_rhea_sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf",
+  "chemistry": [
+    {
+      "id": "RHEA:21141",
+      "master": "http://rdf.rhea-db.org/21140",
+      "direction": "left_to_right",
+      "label": "inosine + ATP => IMP + ADP + H(+)",
+      "sides": {
+        "substrates": {
+          "CHEBI:17596": 1,
+          "CHEBI:30616": 1
+        },
+        "products": {
+          "CHEBI:58053": 1,
+          "CHEBI:456216": 1,
+          "CHEBI:15378": 1
+        }
+      }
+    },
+    {
+      "id": "RHEA:24409",
+      "master": "http://rdf.rhea-db.org/24408",
+      "direction": "left_to_right",
+      "label": "adenosine + H2O + H(+) => inosine + NH4(+)",
+      "sides": {
+        "substrates": {
+          "CHEBI:16335": 1,
+          "CHEBI:15377": 1,
+          "CHEBI:15378": 1
+        },
+        "products": {
+          "CHEBI:17596": 1,
+          "CHEBI:28938": 1
+        }
+      }
+    },
+    {
+      "id": "RHEA:27644",
+      "master": "http://rdf.rhea-db.org/27642",
+      "direction": "right_to_left",
+      "label": "alpha-D-ribose 1-phosphate + adenine => adenosine + phosphate",
+      "sides": {
+        "substrates": {
+          "CHEBI:57720": 1,
+          "CHEBI:16708": 1
+        },
+        "products": {
+          "CHEBI:16335": 1,
+          "CHEBI:43474": 1
+        }
+      }
+    }
+  ],
+  "sides": 14,
+  "native_member_types": {
+    "Pathway": [
+      "http://identifiers.org/smpdb/SMP0000809"
+    ],
+    "Catalysis": [
+      "#ReactionCatalysis/6011",
+      "#TransportCatalysis/436",
+      "#ReactionCatalysis/6013",
+      "#ReactionCatalysis/6017"
+    ],
+    "BiochemicalReaction": [
+      "#Reactions/6053",
+      "#Reactions/6047",
+      "#Reactions/6049"
+    ],
+    "Transport": [
+      "#Transports/505"
+    ]
+  },
+  "controls": [
+    {
+      "mutation": "reverse RHEA:21141",
+      "rejected": true,
+      "reason": "direction RHEA:21141"
+    },
+    {
+      "mutation": "reverse RHEA:24409",
+      "rejected": true,
+      "reason": "direction RHEA:24409"
+    },
+    {
+      "mutation": "reverse RHEA:27644",
+      "rejected": true,
+      "reason": "direction RHEA:27644"
+    },
+    {
+      "mutation": "coefficient",
+      "rejected": true,
+      "reason": "chemical side RHEA:27644"
+    },
+    {
+      "mutation": "transport",
+      "rejected": true,
+      "reason": "transport side"
+    },
+    {
+      "mutation": "interface",
+      "rejected": true,
+      "reason": "interface typing"
+    },
+    {
+      "mutation": "PurR",
+      "rejected": true,
+      "reason": "PurR scope"
+    }
+  ],
+  "method": "Four fresh streaming XML scans of complete original Rhea gzip; reverse master links and explicit substrate/product resources; complete native BioPAX membership and bounded original PWML interface. No author projection imported."
+}

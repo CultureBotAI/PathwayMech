@@ -1,0 +1,114 @@
+"""Independent probes against authentic source originals and final adapter bytes."""
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+from datetime import datetime, timezone
+from xml.etree import ElementTree as ET
+
+OUT = Path(__file__).resolve().parent
+CODE = Path('/private/tmp/pathwaymech-next-222-authority-implementation-20261011/repo')
+SELECTION = Path('/private/tmp/pathwaymech-next-222-authority-selection-20261011/selection-provisional.json')
+EXPECTED = {
+    'scripts/build_source_identifier_snapshot.py': '6a19e47fe29ccce62862ef6fb28ac30b69729dc46c2cae2de14cc6ac6103ddbc',
+    'conf/identifier_policy.yaml': '17d57f17b473fb2810a5ae944ea932076d682fd6808f8d1cb0275c08c6395271',
+    'docs/IDENTIFIERS.md': '6d53f756899d00f8186cd586482480ea15297802432f7876fe05d53d18ad0e43',
+    'tests/test_pathbank_identifier_authority.py': '00e07396f395862232f0e91cd600646f9e30538cbbf331c890ce72326bf743f6',
+    'tests/test_ncbi_gene_identifier_authority.py': '9329a72bc011f3a41086106e65147472f9f1ef49568916da03816e6fc77aa86d',
+}
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+for path, expected in EXPECTED.items():
+    assert sha(CODE / path) == expected, path
+selection = json.loads(SELECTION.read_text())
+spec = importlib.util.spec_from_file_location('independent_authority_probe', CODE / 'scripts/build_source_identifier_snapshot.py')
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+inputs = {}
+positives = []
+for item in selection['selected_new_inputs']:
+    entry = item['manifest_entry']
+    original = Path(item['original_path'])
+    assert sha(original) == entry['sha256']
+    terms = list(module.source_terms(entry['kind'], original, url=entry['url'], version=entry['version']))
+    by_id = {i: (label, synonyms) for i, label, synonyms in terms}
+    assert len(by_id) == len(terms)
+    selected = {i: by_id[i] for i in item['ids']}
+    assert all(label == selection['named_ids'][i] for i, (label, _) in selected.items())
+    positives.append({'key': entry['key'], 'original_path': str(original), 'original_sha256': sha(original),
+                      'native_terms_emitted': len(terms), 'selected_native_terms': selected})
+    inputs[entry['key']] = (entry, original)
+assert sum(len(p['selected_native_terms']) for p in positives) == 14
+negatives = []
+
+
+def reject(name, run, diagnostic):
+    try:
+        run()
+    except ValueError as error:
+        assert diagnostic in str(error), (name, error)
+        negatives.append({'name': name, 'rejected': True, 'diagnostic': str(error)})
+    else:
+        raise AssertionError('Incorrect acceptance: ' + name)
+
+
+for key, replacement in [('pathbank-SMP0002083', 'SMP0000809'), ('pathbank-SMP0000809', 'SMP0002083')]:
+    entry, original = inputs[key]
+    wrong_url = entry['url'].replace(key.split('-', 1)[1], replacement)
+    reject(key + '-wrong-requested-root',
+           lambda e=entry, p=original, u=wrong_url: list(module.source_terms(e['kind'], p, url=u)), 'PathBank')
+for key in ['ncbi-gene-945851', 'ncbi-gene-948224']:
+    entry, original = inputs[key]
+    wrong_url = entry['url'].replace('id=' + key.rsplit('-', 1)[1], 'id=999999999')
+    reject(key + '-request-body-disagreement',
+           lambda e=entry, p=original, u=wrong_url: list(module.source_terms(e['kind'], p, url=u)), 'NCBI Gene')
+    root = ET.fromstring(original.read_bytes())
+    track = root.find('Entrezgene/Entrezgene_track-info/Gene-track')
+    assert track is not None and not track.findall('Gene-track_status')
+    ET.SubElement(track, 'Gene-track_status', {'value': 'secondary'}).text = '1'
+    mutated = OUT / (key + '-secondary-utf16.xml')
+    mutated.write_bytes(ET.tostring(root, encoding='utf-16', xml_declaration=True))
+    reject(key + '-explicit-secondary-utf16',
+           lambda e=entry, p=mutated: list(module.source_terms(e['kind'], p, url=e['url'])), 'status')
+
+entry, original = inputs['ncbi-gene-948224']
+root = ET.fromstring(original.read_bytes())
+org = root.find('Entrezgene/Entrezgene_source/BioSource/BioSource_org/Org-ref')
+taxa = [n for n in org.find('Org-ref_db') if n.findtext('Dbtag_db') == 'taxon']
+assert len(taxa) == 1
+taxon = taxa[0].find('Dbtag_tag/Object-id/Object-id_id')
+assert taxon.text == '511145'
+taxon.text = '83333'
+mutated = OUT / 'gene948224-other-taxon.xml'
+mutated.write_bytes(ET.tostring(root, encoding='utf-8', xml_declaration=True))
+original_link = OUT / 'gene948224-original.xml'
+original_link.symlink_to(original)
+records = OUT / 'unselected-records'
+records.mkdir()
+(records / 'selector.yaml').write_text('id: GO:0008150\n')
+entries = [dict(entry, path=original_link.name), dict(entry, key='conflicting-original', path=mutated.name, sha256=sha(mutated))]
+for reverse in [False, True]:
+    manifest = OUT / ('conflict-reverse.json' if reverse else 'conflict-forward.json')
+    manifest.write_text(json.dumps(entries[::-1] if reverse else entries))
+    reject('native-taxon-conflict-before-selection-' + str(reverse),
+           lambda p=manifest: module.build_snapshot(p, records, OUT), 'conflicting NCBI Gene')
+
+for path, expected in EXPECTED.items():
+    assert sha(CODE / path) == expected
+for entry, path in inputs.values():
+    assert sha(path) == entry['sha256']
+report = {'status': 'passed_independent_original_source_probes', 'at': datetime.now(timezone.utc).isoformat(),
+          'code_files': EXPECTED, 'selection_sha256': sha(SELECTION), 'helper_sha256': sha(__file__),
+          'positives': positives, 'negative_controls': negatives,
+          'limits': ['Bounded independent probes supplement full source review and author tests.',
+                     'Full retained2251-term baseline reproduction and author seal are still required for code acceptance.',
+                     'No production source snapshot, shared cache or maintained repository writes.']}
+with (OUT / 'probes.json').open('x') as stream:
+    json.dump(report, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': report['status'], 'positive_originals': len(positives), 'selected_labels': 14,
+                  'negative_controls_passed': len(negatives), 'receipt_sha256': sha(OUT / 'probes.json')}))

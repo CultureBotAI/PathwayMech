@@ -4,7 +4,7 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,
-metacyc-protein-xml and
+metacyc-protein-xml, ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile and metanetx-chemical-html. Source files are
 never generated from curated labels. The corpus only selects which identifiers
@@ -27,13 +27,14 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, unquote, urldefrag, urljoin, urlsplit
 from xml.etree import ElementTree
+from xml.parsers import expat
 
 import yaml
 
 SOURCE_NAMESPACES = frozenset(
     {
-        "EC", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD", "UniProtKB",
-        "WikiPathways", "gomodel", "RHEA-COMP", "KEGG", "metanetx.chemical",
+        "EC", "Entrez", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD",
+        "UniProtKB", "WikiPathways", "gomodel", "RHEA-COMP", "KEGG", "metanetx.chemical",
     }
 )
 
@@ -184,7 +185,25 @@ def biopax_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str
                 yield xrefs[key], labels[0], labels[1:]
 
 
-def pathbank_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str]]]:
+def _pathbank_request(url: str) -> str | None:
+    """Only a native per-pathway request can select a multi-Pathway export."""
+    parsed = urlsplit(url)
+    if not (parsed.path.startswith("/view/") or parsed.path.endswith("/download")):
+        return None  # Legacy archive artifacts still require a single Pathway.
+    request = re.fullmatch(r"/view/(SMP[0-9]+)/download", parsed.path)
+    if (
+        parsed.scheme != "https" or parsed.netloc != "pathbank.org"
+        or parsed.fragment or any(char.isspace() for char in url) or not request
+        or parse_qsl(parsed.query, keep_blank_values=True, strict_parsing=True)
+        != [("type", "owl_markup")]
+    ):
+        raise ValueError("PathBank selection requires an exact official BioPAX download URL")
+    return request[1]
+
+
+def pathbank_terms(
+    root: ElementTree.Element, *, url: str = "",
+) -> Iterator[tuple[str, str, list[str]]]:
     """Read one native pathway and its declared local graph objects, not xref labels.
 
     SMPDB unification assertions establish the PathBank accession; a PathWhiz
@@ -222,33 +241,98 @@ def pathbank_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[s
             if uri in index:
                 raise ValueError(f"PathBank source has duplicate RDF subject: {uri}")
             index[uri] = node
+    def native_accession(pathway: ElementTree.Element) -> str:
+        accessions = set()
+        for link in pathway.findall(bp + "xref"):
+            xref = index.get(urljoin(base, link.get(rdf + "resource", "")))
+            if xref is None or xref.tag != bp + "UnificationXref":
+                continue
+            databases = {
+                (item.text or "").strip().casefold() for item in xref.findall(bp + "db")
+            }
+            if "smpdb" not in databases:
+                continue
+            if databases != {"smpdb"}:
+                raise ValueError("PathBank SMPDB unification xref has conflicting databases")
+            values = {(item.text or "").strip() for item in xref.findall(bp + "id")}
+            if not values or any(not re.fullmatch(r"SMP[0-9]+", value) for value in values):
+                raise ValueError("PathBank pathway has an invalid native SMPDB accession")
+            accessions.update(values)
+        if len(accessions) != 1:
+            raise ValueError(
+                "PathBank pathway requires one unambiguous SMPDB unification accession"
+            )
+        accession = next(iter(accessions))
+        about = pathway.get(rdf + "about", "")
+        if about.startswith(("http://identifiers.org/smpdb/", "https://identifiers.org/smpdb/")):
+            if not re.fullmatch(r"https?://identifiers\.org/smpdb/" + accession, about):
+                raise ValueError("PathBank pathway URI and SMPDB xref must agree")
+        return accession
+
     pathways = root.findall(bp + "Pathway")
-    if len(pathways) != 1:
-        raise ValueError("PathBank authority requires exactly one native Pathway")
-    pathway = pathways[0]
-    accessions = set()
-    for link in pathway.findall(bp + "xref"):
-        xref = index.get(urljoin(base, link.get(rdf + "resource", "")))
-        if xref is None or xref.tag != bp + "UnificationXref":
-            continue
-        databases = {
-            (item.text or "").strip().casefold() for item in xref.findall(bp + "db")
-        }
-        if "smpdb" not in databases:
-            continue
-        if databases != {"smpdb"}:
-            raise ValueError("PathBank SMPDB unification xref has conflicting databases")
-        values = {(item.text or "").strip() for item in xref.findall(bp + "id")}
-        if not values or any(not re.fullmatch(r"SMP[0-9]+", value) for value in values):
-            raise ValueError("PathBank pathway has an invalid native SMPDB accession")
-        accessions.update(values)
-    if len(accessions) != 1:
-        raise ValueError("PathBank pathway requires one unambiguous SMPDB unification accession")
-    accession = next(iter(accessions))
-    about = pathway.get(rdf + "about", "")
-    if about.startswith(("http://identifiers.org/smpdb/", "https://identifiers.org/smpdb/")):
-        if not re.fullmatch(r"https?://identifiers\.org/smpdb/" + accession, about):
-            raise ValueError("PathBank pathway URI and SMPDB xref must agree")
+    requested = _pathbank_request(url)
+    if requested is None:
+        if len(pathways) != 1:
+            raise ValueError("PathBank authority requires exactly one native Pathway")
+        pathway = pathways[0]
+        accession = native_accession(pathway)
+    else:
+        by_accession: dict[str, ElementTree.Element] = {}
+        for candidate in pathways:
+            accession = native_accession(candidate)
+            if not re.fullmatch(
+                r"https?://identifiers\.org/smpdb/" + accession,
+                candidate.get(rdf + "about", ""),
+            ):
+                raise ValueError("PathBank selected export requires matching native pathway URIs")
+            if accession in by_accession:
+                raise ValueError("PathBank source repeats a native pathway accession")
+            by_accession[accession] = candidate
+        if requested not in by_accession:
+            raise ValueError("PathBank request and native pathway accessions disagree")
+        pathway, accession = by_accession[requested], requested
+
+        def resolve(link: ElementTree.Element) -> ElementTree.Element:
+            uri = urljoin(base, link.get(rdf + "resource", ""))
+            if uri not in index:
+                raise ValueError(f"PathBank source has an unresolved pathway link: {uri}")
+            return index[uri]
+
+        def processes(node: ElementTree.Element) -> list[ElementTree.Element]:
+            result = [resolve(link) for link in node.findall(bp + "pathwayComponent")]
+            for link in node.findall(bp + "pathwayOrder"):
+                step = resolve(link)
+                if step.tag not in {bp + "PathwayStep", bp + "BiochemicalPathwayStep"}:
+                    raise ValueError("PathBank pathwayOrder must identify a native pathway step")
+                result.extend(
+                    resolve(link) for tag in ("stepProcess", "stepConversion")
+                    for link in step.findall(bp + tag)
+                )
+            return result
+
+        primary = processes(pathway)
+        expanded = list(primary)
+        for node in primary:
+            if node.tag == bp + "Catalysis":
+                expanded.extend(resolve(link) for link in node.findall(bp + "controlled"))
+        if "SubPathway" in labels(pathway) or not any(
+            node.tag in {bp + "BiochemicalReaction", bp + "Transport"} for node in expanded
+        ):
+            raise ValueError(
+                "PathBank requested source must contain the primary pathway definition"
+            )
+        attached = {subject(node) for node in primary if node.tag == bp + "Pathway"}
+        for other in pathways:
+            if other is pathway:
+                continue
+            members = processes(other)
+            if (
+                subject(other) not in attached or "SubPathway" not in labels(other)
+                or not members or any(node.tag != bp + "Interaction" for node in members)
+            ):
+                raise ValueError(
+                    "PathBank additional pathways must be attached native interface stubs"
+                )
     names = labels(pathway)
     if not names:
         raise ValueError("PathBank pathway lacks a native label")
@@ -257,7 +341,7 @@ def pathbank_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[s
 
     graph_types = {
         bp + kind for kind in (
-            "BiochemicalReaction", "Complex", "PhysicalEntity", "SmallMolecule",
+            "BiochemicalReaction", "Transport", "Complex", "PhysicalEntity", "SmallMolecule",
             "Protein", "Dna", "Rna", "DnaRegion", "RnaRegion",
         )
     }
@@ -732,6 +816,128 @@ def kegg_terms(text: str, kind: str, url: str) -> list[tuple[str, str, list[str]
     return terms
 
 
+def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]], str]:
+    """Read one directly requested, non-redirected Gene record and its native taxon.
+
+    Status omission is accepted as omission, not an explicit live assertion.
+    The official external DOCTYPE is allowed without loading its DTD. Internal
+    subsets and entities are rejected by the XML parser in every encoding.
+    """
+    request = urlsplit(url)
+    fields = parse_qsl(request.query, keep_blank_values=True, strict_parsing=True)
+    query = dict(fields)
+    if (
+        request.scheme != "https" or request.netloc != "eutils.ncbi.nlm.nih.gov"
+        or request.path != "/entrez/eutils/efetch.fcgi" or request.fragment
+        or any(char.isspace() for char in url)
+        or len(fields) != 3 or set(query) != {"db", "id", "rettype"}
+        or query.get("db") != "gene" or query.get("rettype") != "xml"
+        or not re.fullmatch(r"[1-9][0-9]*", query.get("id", ""))
+    ):
+        raise ValueError("NCBI Gene source requires one exact official gene EFetch XML request")
+
+    def doctype(name: str, system: str | None, public: str | None, internal: int) -> None:
+        if (
+            name != "Entrezgene-Set" or internal
+            or system != "https://www.ncbi.nlm.nih.gov/data_specs/dtd/NCBI_Entrezgene.dtd"
+            or public != "-//NLM//DTD NCBI-Entrezgene, 21st January 2005//EN"
+        ):
+            raise ValueError("NCBI Gene source has an unsupported DOCTYPE")
+
+    def entity(*args: Any) -> None:
+        raise ValueError("NCBI Gene authority does not allow XML entities")
+
+    raw = path.read_bytes()
+    parser = expat.ParserCreate()
+    parser.StartDoctypeDeclHandler = doctype
+    parser.EntityDeclHandler = entity
+    parser.ExternalEntityRefHandler = entity
+    parser.SetParamEntityParsing(expat.XML_PARAM_ENTITY_PARSING_NEVER)
+    parser.Parse(raw, True)
+    root = ElementTree.fromstring(raw)
+
+    def one(
+        parent: ElementTree.Element, tag: str, *, optional: bool = False,
+    ) -> ElementTree.Element:
+        nodes = parent.findall(tag)
+        if len(nodes) != 1 and not (optional and not nodes):
+            raise ValueError(f"NCBI Gene source requires one direct {tag}")
+        return nodes[0] if nodes else ElementTree.Element(tag)
+
+    def text(parent: ElementTree.Element, tag: str, *, optional: bool = False) -> str:
+        nodes = parent.findall(tag)
+        if optional and not nodes:
+            return ""
+        node = one(parent, tag)
+        value = (node.text or "").strip()
+        if len(node) or not value:
+            raise ValueError(f"NCBI Gene source requires a nonempty scalar {tag}")
+        if any(not _metacyc_protein_name_character(ord(char)) for char in value):
+            raise ValueError(f"NCBI Gene source has invalid characters in {tag}")
+        return value
+
+    if root.tag != "Entrezgene-Set" or len(root) != 1 or root[0].tag != "Entrezgene":
+        raise ValueError("NCBI Gene source requires exactly one direct Entrezgene")
+    gene = root[0]
+    track = one(one(gene, "Entrezgene_track-info"), "Gene-track")
+    gid = text(track, "Gene-track_geneid")
+    if gid != query["id"]:
+        raise ValueError("NCBI Gene native ID and requested ID disagree")
+    status = one(track, "Gene-track_status", optional=True)
+    if track.findall("Gene-track_status") and (
+        len(status) or status.attrib != {"value": "live"}
+        or (status.text or "").strip() not in {"", "0"}
+    ):
+        raise ValueError("NCBI Gene explicit status is not an unambiguous live record")
+    if track.findall("Gene-track_current-id") or track.findall("Gene-track_discontinue-date"):
+        raise ValueError("NCBI Gene redirected or discontinued records are not supported")
+    gene_ref = one(one(gene, "Entrezgene_gene"), "Gene-ref")
+    label = text(gene_ref, "Gene-ref_locus")
+    if (
+        any(char.isspace() for char in label) or any(char in label for char in "<>&")
+        or label in {gid, "Entrez:" + gid}
+        or label.casefold() in {"unknown", "error", "not-found", "not_found", "null"}
+    ):
+        raise ValueError("NCBI Gene source lacks a resolved native locus symbol")
+    formal = one(gene_ref, "Gene-ref_formal-name", optional=True)
+    if gene_ref.findall("Gene-ref_formal-name"):
+        nomenclature = one(formal, "Gene-nomenclature")
+        symbol = text(nomenclature, "Gene-nomenclature_symbol", optional=True)
+        if symbol and symbol != label:
+            raise ValueError("NCBI Gene locus and formal symbol disagree")
+    synonyms = []
+    syn = one(gene_ref, "Gene-ref_syn", optional=True)
+    for node in syn:
+        if node.tag != "Gene-ref_syn_E" or len(node) or not (node.text or "").strip():
+            raise ValueError("NCBI Gene source has a malformed native synonym")
+        value = node.text.strip()
+        if (
+            any(char in value for char in "<>&")
+            or any(not _metacyc_protein_name_character(ord(char)) for char in value)
+        ):
+            raise ValueError("NCBI Gene source has an invalid native synonym")
+        synonyms.append(value)
+    locus_tag = text(gene_ref, "Gene-ref_locus-tag", optional=True)
+    if locus_tag:
+        if any(char.isspace() for char in locus_tag) or any(char in locus_tag for char in "<>&"):
+            raise ValueError("NCBI Gene source has an invalid native locus tag")
+        synonyms.append(locus_tag)
+
+    org = one(one(one(one(gene, "Entrezgene_source"), "BioSource"), "BioSource_org"), "Org-ref")
+    text(org, "Org-ref_taxname")
+    tags = one(org, "Org-ref_db")
+    taxon_tags = [
+        node for node in tags if node.tag == "Dbtag" and text(node, "Dbtag_db") == "taxon"
+    ]
+    if len(taxon_tags) != 1:
+        raise ValueError("NCBI Gene source requires one unambiguous native taxon")
+    native_taxon = one(one(taxon_tags[0], "Dbtag_tag"), "Object-id")
+    taxon = text(native_taxon, "Object-id_id")
+    if len(native_taxon) != 1 or not re.fullmatch(r"[1-9][0-9]*", taxon):
+        raise ValueError("NCBI Gene source requires a positive numeric taxon ID")
+    return ("Entrez:" + gid, label, sorted(set(synonyms) - {label})), taxon
+
+
 def source_terms(
     kind: str, path: Path, *, url: str | None = None, version: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
@@ -752,13 +958,16 @@ def source_terms(
     elif kind == "biopax":
         yield from biopax_terms(ElementTree.parse(path).getroot())
     elif kind == "pathbank-biopax":
-        yield from pathbank_terms(ElementTree.parse(path).getroot())
+        yield from pathbank_terms(ElementTree.parse(path).getroot(), url=url or "")
     elif kind == "rhea-components-rdf-gz":
         yield from rhea_component_terms(path)
     elif kind == "metacyc-html":
         yield from metacyc_terms(path.read_bytes().decode("utf-8", errors="surrogateescape"))
     elif kind == "metacyc-protein-xml":
         yield from metacyc_protein_terms(path, url=url or "", version=version or "")
+    elif kind == "ncbi-entrezgene-xml":
+        term, _ = _ncbi_gene_record(path, url or "")
+        yield term
     elif kind in KEGG_SOURCE_TYPES:
         yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
     elif kind == "metanetx-chemical-html":
@@ -789,6 +998,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metanetx_assertions: dict[str, str] = {}
     metacyc_names: dict[str, set[str]] = {}
     metacyc_xml_ids: set[str] = set()
+    gene_assertions: dict[str, tuple[str, tuple[str, ...], str]] = {}
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
@@ -809,9 +1019,19 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         metadata["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
-        for identifier, label, synonyms in source_terms(
-            entry["kind"], path, url=entry["url"], version=entry["version"],
-        ):
+        if entry["kind"] == "ncbi-entrezgene-xml":
+            term, taxon = _ncbi_gene_record(path, entry["url"])
+            identifier, label, synonyms = term
+            assertion = (label, tuple(synonyms), taxon)
+            if identifier in gene_assertions and gene_assertions[identifier] != assertion:
+                raise ValueError(f"conflicting NCBI Gene native assertions for {identifier}")
+            gene_assertions[identifier] = assertion
+            parsed_terms = [term]
+        else:
+            parsed_terms = source_terms(
+                entry["kind"], path, url=entry["url"], version=entry["version"],
+            )
+        for identifier, label, synonyms in parsed_terms:
             if entry["kind"] in {"metacyc-protein-xml", "metacyc-html"}:
                 names = metacyc_names.setdefault(identifier, set())
                 names.add(label)

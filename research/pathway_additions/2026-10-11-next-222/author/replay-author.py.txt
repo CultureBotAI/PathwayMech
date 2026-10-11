@@ -1,0 +1,310 @@
+"""External author replay: original RDF direction/sides and fail-closed publication.
+
+This checks an external author proposal, not maintained production authorities or
+scientific-review approval. Every consumed semantic file is SHA-256 bound before
+use and rehashed before the accepted bundle and success receipt appear together.
+"""
+import sys
+sys.dont_write_bytecode = True
+from pathlib import Path
+import argparse, collections, csv, gzip, hashlib, json, re, shutil, sqlite3
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
+from lxml import html, etree
+import yaml
+
+def now(): return datetime.now(timezone.utc).isoformat()
+def require(ok, code, detail=''):
+    if not ok: raise ValueError(f'{code}: {detail}')
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for block in iter(lambda: f.read(1024*1024), b''): h.update(block)
+    return h.hexdigest()
+def dump(path, value):
+    Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False)+'\n')
+
+class Bindings:
+    def __init__(self, manifest):
+        self.manifest = Path(manifest).resolve()
+        self.manifest_hash = sha(self.manifest)
+        self.data = json.loads(self.manifest.read_text())
+        require(self.data['version'] == 1, 'INPUT_MANIFEST_VERSION')
+        self.entries = {}
+        self.start = {}
+        for role, entry in self.data['inputs'].items(): self.add(entry, role)
+    def add(self, entry, role):
+        p = str(Path(entry['path']).absolute())
+        require(re.fullmatch('[0-9a-f]{64}',entry['sha256']), 'INPUT_HASH_FORMAT', p)
+        if p in self.entries:
+            require(self.entries[p]['sha256'] == entry['sha256'], 'CONFLICTING_INPUT_HASH', p)
+            self.entries[p]['roles'].append(role)
+        else: self.entries[p] = {'path':p,'sha256':entry['sha256'],'roles':[role]}
+    def path(self, role): return Path(self.data['inputs'][role]['path'])
+    def verify(self, path):
+        p = str(Path(path).absolute())
+        expected = self.entries[p]['sha256']
+        observed = sha(p)
+        require(observed == expected, 'INPUT_HASH_MISMATCH', {'path':p,'expected':expected,'observed':observed})
+        self.start[p] = observed
+        return observed
+    def bytes(self, path):
+        p = str(Path(path).absolute()); raw = Path(p).read_bytes()
+        observed = hashlib.sha256(raw).hexdigest()
+        require(observed == self.entries[p]['sha256'], 'INPUT_HASH_MISMATCH', p)
+        self.start[p] = observed
+        return raw
+    def text(self, role): return self.bytes(self.path(role)).decode()
+    def json(self, role): return json.loads(self.text(role))
+    def check_all(self):
+        require(sha(self.manifest) == self.manifest_hash, 'MANIFEST_CHANGED')
+        for p in self.entries: self.verify(p)
+    def final(self):
+        require(set(self.start) == set(self.entries), 'UNVERIFIED_SEMANTIC_INPUT')
+        self.check_all()
+        return list(self.entries.values())
+
+RH = 'http://rdf.rhea-db.org/'
+NS = {'rh':RH,'rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+WRAPPER = '<root '+' '.join(f'xmlns:{k}="{v}"' for k,v in NS.items())+'>'
+
+def original_rhea(raw_gzip, record, projection):
+    """Resolve exact selected objects, reverse master links and native side URIs.
+
+    Neither numeric Rhea offsets nor stored orientations supply the direction.
+    Every master is discovered by its rh:directionalReaction link in original RDF;
+    direction is then determined by native master_L/master_R substrate/product
+    resources. All projected properties are compared to freshly parsed originals.
+    """
+    raw = gzip.decompress(raw_gzip).decode()
+    starts = {}
+    for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',raw):
+        starts.setdefault(m[1],[]).append(m.start())
+    nodes = {}
+    def get(uri):
+        if uri in nodes: return nodes[uri]
+        require(uri in starts, 'RDF_OBJECT_MISSING', uri)
+        props = {}
+        for start in starts[uri]:
+            end = raw.index('</rdf:Description>',start)+len('</rdf:Description>')
+            node = ET.fromstring(WRAPPER+raw[start:end]+'</root>')[0]
+            for child in node:
+                key = child.tag.split('}',1)[1]
+                value = child.get('{'+NS['rdf']+'}resource') or child.text
+                if value not in props.setdefault(key,[]): props[key].append(value)
+        nodes[uri] = props
+        return props
+    evidence = []
+    for reaction in [r for r in record['reactions'] if r['id'].startswith('RHEA:')]:
+        rid = reaction['id']; uri = RH+rid.split(':')[1]; n = get(uri)
+        require(n.get('accession') == [rid] and n.get('id') == [rid.split(':')[1]] and n.get('status') == [RH+'Approved'] and RH+'DirectionalReaction' in n.get('subClassOf',[]), 'RDF_DIRECTIONAL_IDENTITY', rid)
+        # Search every original link to this exact URI, then identify its enclosing
+        # RDF subject. The selected record/projection never supplies the master ID.
+        masters = []
+        token = '<rh:directionalReaction rdf:resource="'+uri+'"/>'
+        for match in re.finditer(re.escape(token),raw):
+            start = raw.rfind('<rdf:Description rdf:about="',0,match.start())
+            match_master = re.match(r'<rdf:Description rdf:about="([^"]+)">',raw[start:])
+            require(match_master is not None,'RDF_MASTER_SUBJECT',rid)
+            master_uri = match_master[1]
+            if master_uri not in masters: masters.append(master_uri)
+        require(len(masters) == 1,'RDF_UNIQUE_MASTER',{'id':rid,'masters':masters})
+        master_uri = masters[0]; master = get(master_uri); mid = master_uri.removeprefix(RH)
+        require(master.get('accession') == ['RHEA:'+mid] and master.get('id') == [mid] and master.get('status') == [RH+'Approved'] and RH+'Reaction' in master.get('subClassOf',[]) and uri in master.get('directionalReaction',[]), 'RDF_MASTER_IDENTITY', rid)
+        left,right = master_uri+'_L',master_uri+'_R'
+        require(set(master.get('side',[])) == {left,right} and len(master['side']) == 2, 'RDF_MASTER_SIDES',rid)
+        pair = (n.get('substrates'),n.get('products'))
+        if pair == ([left],[right]): direction = 'left_to_right'
+        elif pair == ([right],[left]): direction = 'right_to_left'
+        else: raise ValueError('RDF_ORIENTATION_UNRESOLVED: '+rid)
+        require(reaction['direction'] == direction,'NATIVE_DIRECTION_MISMATCH',{'id':rid,'declared':reaction['direction'],'native':direction,'master':'RHEA:'+mid,'substrates':n['substrates'],'products':n['products']})
+        require(n.get('equation') == [reaction['label']], 'NATIVE_EQUATION_MISMATCH', rid)
+        sides = {}
+        for side,predicate in [('substrates','consumes'),('products','produces')]:
+            expected = {}
+            for sid in n[side]:
+                s = get(sid)
+                for participant in s['contains']:
+                    coefs = [int(key[8:]) for key,values in s.items() if re.fullmatch(r'contains\d+',key) and participant in values]
+                    require(len(coefs) == 1,'RDF_COEFFICIENT',participant)
+                    cu = get(participant)['compound'];require(len(cu)==1,'RDF_COMPOUND',participant)
+                    compound = get(cu[0]); accession = compound['accession'][0]
+                    cid = accession if accession.startswith('CHEBI:') else 'RHEA-COMP:'+cu[0].split('Compound_')[1]
+                    require(cid not in expected,'DUPLICATE_RDF_CHEMICAL_SIDE',cid)
+                    expected[cid] = coefs[0]
+            actual = {}
+            for edge in record['mechanistic_edges']:
+                if edge['predicate'] == predicate and edge['object' if predicate == 'consumes' else 'subject'] == rid:
+                    cid = edge['subject' if predicate == 'consumes' else 'object']
+                    require(cid not in actual,'DUPLICATE_RECORD_CHEMICAL_SIDE',cid)
+                    coefficient = re.search(r'^Stoichiometric coefficient (\d+)\.',edge['description'])
+                    require(coefficient is not None,'COEFFICIENT_MISSING',edge['id'])
+                    actual[cid] = int(coefficient[1])
+            require(expected == actual,'NATIVE_CHEMICAL_SIDE_MISMATCH',{'id':rid,'side':side,'native':expected,'actual':actual})
+            sides[side] = expected
+        evidence.append({'reaction':rid,'master':'RHEA:'+mid,'native_direction':direction,'declared_direction':reaction['direction'],'native_substrate_resources':n['substrates'],'native_product_resources':n['products'],'chemical_sides':sides})
+    require(len(evidence)==3 and sum(len(v) for e in evidence for v in e['chemical_sides'].values())==14,'FULL_CHEMISTRY_COUNTS')
+    derived=[]
+    for e in evidence:
+        rid=e['reaction']; sides={}
+        for side in ['substrates','products']:
+            vals=[]
+            for side_uri in nodes[RH+rid.split(':')[1]][side]:
+                for part in get(side_uri)['contains']:
+                    c_uri=get(part)['compound'][0]; c=get(c_uri)
+                    vals.append({'participant':part,'compound_uri':c_uri,'id':c['accession'][0],'coefficient':next(int(k[8:]) for k,v in get(side_uri).items() if re.fullmatch(r'contains\d+',k) and part in v),'formula':c['formula'][0],'charge':int(c['charge'][0])})
+            sides[side]=vals
+        balance=collections.Counter()
+        for side,sign in [('substrates',-1),('products',1)]:
+            for c in sides[side]:
+                for atom,num in re.findall(r'([A-Z][a-z]?)(\d*)',c['formula']):balance[atom]+=sign*c['coefficient']*int(num or 1)
+                balance['charge']+=sign*c['coefficient']*c['charge']
+        require(not any(balance.values()),'CHEMICAL_BALANCE',rid)
+        derived.append({'id':rid,'master':e['master'],'direction':e['native_direction'],'equation':get(RH+rid.split(':')[1])['equation'][0],'sides':sides,'balance':dict(balance)})
+    require(derived==projection,'DERIVED_CHEMISTRY_PROJECTION_MISMATCH')
+    return nodes,evidence,len(starts)
+
+BP={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':NS['rdf']}
+def native_owl(raw):
+ root=etree.fromstring(raw);out={}
+ for n in root:
+  key=n.get('{'+BP['rdf']+'}ID') or n.get('{'+BP['rdf']+'}about')
+  if not key:continue
+  p={}
+  for c in n:p.setdefault(etree.QName(c).localname,[]).append(c.get('{'+BP['rdf']+'}resource') or c.text)
+  require(key not in out,'DUPLICATE_BIOPAX_ID',key);out[key]={'type':etree.QName(n).localname,'properties':p}
+ return root,out
+
+def complete_native(doc,raw,linked_raw,projection,pwml):
+ root,o=native_owl(raw);lr,linked=native_owl(linked_raw)
+ require(o==projection['current_pathbank'] and linked==projection['linked_pathbank'],'NATIVE_BIOPAX_PROJECTION')
+ pb='PathBank:SMP0002083';interface='PathBank:SMP0000809';t=pb+'/Transports/505';edges=doc['mechanistic_edges']
+ triples=[(x['subject'],x['predicate'],x['object']) for x in edges];require(len(triples)==len(set(triples)),'DUPLICATE_ASSERTION')
+ rx={x['id']:x for x in doc['reactions']};require(set(rx)=={'RHEA:27644','RHEA:24409','RHEA:21141',t,interface},'COMPLETE_EVENT_BOUNDARY')
+ main=o['http://identifiers.org/smpdb/SMP0002083'];require(main['type']=='Pathway' and set(main['properties']['pathwayComponent'])=={'http://identifiers.org/smpdb/SMP0000809','#Reactions/6047','#Reactions/6049','#Reactions/6053','#Transports/505','#ReactionCatalysis/6011','#ReactionCatalysis/6013','#ReactionCatalysis/6017','#TransportCatalysis/436'},'NATIVE_MEMBERSHIP_SET')
+ require(set(x[2] for x in triples if x[:2]==(pb,'has_part'))==set(rx),'RECORD_MEMBERSHIP_SET')
+ for n,c in [('6047','6011'),('6049','6013'),('6053','6017')]:
+  require(o['Reactions/'+n]['type']=='BiochemicalReaction' and o['ReactionCatalysis/'+c]['properties']['controlled']==['#Reactions/'+n],'NATIVE_CATALYSIS')
+ transport=o['Transports/505'];require(transport['type']=='Transport' and transport['properties']['conversionDirection']==['LEFT_TO_RIGHT'] and rx[t]['direction']=='left_to_right','TRANSPORT_DIRECTION')
+ for side,pred in [('left','has_input'),('right','has_output')]:
+  native={pb+'/'+x.lstrip('#') for x in transport['properties'][side]};actual={x[2] for x in triples if x[:2]==(t,pred)};require(actual==native and len(native)==2,'COMPLETE_TRANSPORT_SIDE',side)
+  for x in transport['properties'][side]:require(o[x.lstrip('#')+'/Stoichiometry/1.0']['properties']=={'physicalEntity':[x],'stoichiometricCoefficient':['1.0']},'TRANSPORT_COEFFICIENT',x)
+ require(rx[interface].get('category')=='biological_process' and 'direction' not in rx[interface],'OPAQUE_INTERFACE_TYPE')
+ require(o['http://identifiers.org/smpdb/SMP0000809']['properties']['pathwayComponent']==['#SubPathwayInteractions/581268'] and o['SubPathwayInteractions/581268']['type']=='Interaction' and o['SubPathwayInteractions/581268']['properties']['participant']==['#Compound/PW_C000114_Cytoplasm'],'NATIVE_INTERFACE')
+ require((interface,'has_input',pb+'/Compound/PW_C000114_Cytoplasm') in triples and not any(p in {'consumes','produces'} and interface in [s,z] for s,p,z in triples),'INTERFACE_NOT_CHEMICAL_REACTION')
+ fragment=re.search(r'<sub-pathways>.*?</sub-pathways>',pwml,re.S);require(fragment is not None,'PWML_INTERFACE_FRAGMENT')
+ sub=etree.fromstring(fragment.group(0).encode());require(sub.xpath('sub-pathway/id/text()')==['581268'] and sub.xpath('sub-pathway/reference-pathway-id/text()')==['551'] and sub.xpath('sub-pathway/sub-pathway-inputs/sub-pathway-input/element-id/text()')==['114'] and sub.xpath('sub-pathway/sub-pathway-inputs/sub-pathway-input/element-type/text()')==['Compound'],'PWML_INTERFACE_INPUT')
+ for k,g in [('Compound/PW_C000024_Periplasmic_Space','GO:0042597'),('Compound/PW_C040034_Periplasmic_Space','GO:0042597'),('Compound/PW_C000024_Cytosol','GO:0005829'),('Compound/PW_C040034_Cytosol','GO:0005829'),('Compound/PW_C000114_Cytosol','GO:0005829'),('Compound/PW_C000114_Cytoplasm','GO:0005737')]:require((pb+'/'+k,'located_in',g) in triples,'NATIVE_COMPARTMENT_PRESERVATION',k)
+ require((t,'provides_input_for','RHEA:27644') in triples and ('RHEA:27644','provides_input_for','RHEA:24409') in triples and ('RHEA:24409','provides_input_for','RHEA:21141') in triples,'NATIVE_CORE_CONNECTIVITY')
+ require(not any(p=='provides_input_for' and interface in [s,z] for s,p,z in triples),'UNSUPPORTED_INTERFACE_TRANSFER')
+ required=[('MetaCyc:DEOD-CPLX','catalyzes','RHEA:27644'),('UniProtKB:P22333','catalyzes','RHEA:24409'),('MetaCyc:CPLX0-322','catalyzes','RHEA:21141'),('UniProtKB:P31466','catalyzes',t),('MetaCyc:PC00033','inhibits','Entrez:948224'),('CHEBI:16708','activates','Entrez:945851')]
+ require(set(required)<=set(triples),'COMPLETE_SUPPORTED_BIOLOGY')
+ require(not any(s=='MetaCyc:PC00033' and z in {'Entrez:945851','UniProtKB:P22333','UniProtKB:P0ABP8'} and p in {'inhibits','regulates'} for s,p,z in triples),'PURR_SCOPE')
+ return root,lr,{'native_elementary_events':4,'native_biochemical_events':3,'native_opaque_interfaces':1,'transport_sides':4,'native_component_count':9,'expanded_connected_pathways':False}
+
+def execute(manifest,output):
+ started=now();b=Bindings(manifest)
+ require(set(b.data['inputs'])=={'helper','record','runtime_binding','authority_proposal','authority_inputs','projection','references','pathbank','linked_pathbank','pwml','rhea','style','preflight','assessment'},'INPUT_ROLES')
+ require(b.path('helper').resolve()==Path(__file__).resolve(),'HELPER_PATH');b.verify(__file__)
+ doc=yaml.safe_load(b.text('record'));projection=b.json('projection')
+ # Directions, full material sides and projection all freshly replay before gates.
+ nodes,directions,count=original_rhea(b.bytes(b.path('rhea')),doc,projection['rhea'])
+ roots={};roots['PathBank:SMP0002083'],roots['PathBank:SMP0000809'],boundary=complete_native(doc,b.bytes(b.path('pathbank')),b.bytes(b.path('linked_pathbank')),projection,b.text('pwml'))
+ print('CHECKPOINT native chemistry and full boundary passed',flush=True)
+ runtime=b.json('runtime_binding');R=Path(runtime['source_root'])
+ for x in runtime['files']:b.add(x,'runtime')
+ refs=b.json('references')
+ for id,x in refs.items():b.add(x,'reference:'+id)
+ sources=b.json('authority_inputs')['sources']
+ for x in sources:b.add(x,'authority:'+x['key'])
+ print('CHECKPOINT hashing complete semantic input set',flush=True);b.check_all()
+ proposal=b.json('authority_proposal');declared=[doc,*doc['taxa'],*doc['participants'],*doc['reactions']];ids={n['id'] for n in declared}
+ require(set(proposal['terms'])==ids,'EXACT_AUTHORITY_SELECTION')
+ # Independent selected-label extraction from each issuing source, not a copied target label.
+ observed={};sourcekeys={s['key']:s for s in sources};connections={}
+ for x in sources:
+  key,kind=x['key'],x['kind'];p=Path(x['path']);selected={i for i,v in proposal['terms'].items() if v['source']==key}
+  if kind=='semantic-sql':
+   db=sqlite3.connect(p.resolve().as_uri()+'?mode=ro',uri=True);connections[key]=db
+   for id in selected:
+    lab=db.execute("SELECT value FROM statements WHERE subject=? AND predicate='rdfs:label'",(id,)).fetchall();require(len(lab)==1,'ISSUING_SQL_LABEL',id);observed[id]=lab[0][0]
+  elif kind=='uniprot':
+   j=json.loads(b.bytes(p));id='UniProtKB:'+j['primaryAccession'];require(j['entryType']=='UniProtKB reviewed (Swiss-Prot)' and j['organism']['taxonId']==83333,'UP_SCOPE',id);observed[id]=j['proteinDescription']['recommendedName']['fullName']['value']
+  elif kind=='metacyc-protein-xml':
+   xroot=etree.fromstring(b.bytes(p));fid=key.removeprefix('metacyc-');require(xroot.xpath('metadata/query/text()')==['META:'+fid] and xroot.xpath('metadata/PGDB[@orgid="META"]/@version')==['27.0'],'META_QUERY_SCOPE',fid);main=xroot.xpath('Protein[@frameid=$i and @orgid="META"]',i=fid);require(len(main)==1,'META_NATIVE_PROTEIN',fid);observed['MetaCyc:'+fid]=main[0].findtext('common-name')
+   member,protein,copies={'DEOD-CPLX':('DEOD-MONOMER','P0ABP8',6),'CPLX0-322':('GSK-MONOMER','P0AEW6',2),'PC00033':('PD00219','P0ACP7',2)}[fid]
+   require(main[0].xpath('component[Protein/@frameid=$m]/coefficient/text()',m=member)==[str(copies)],'NATIVE_ASSEMBLY',fid)
+   require(any(e['subject']=='MetaCyc:'+fid and e['predicate']=='has_part' and e['object']=='UniProtKB:'+protein for e in doc['mechanistic_edges']),'ASSEMBLY_EDGE',fid)
+  elif kind=='ncbi-entrezgene-xml':
+   xroot=etree.fromstring(b.bytes(p));gid=key.removeprefix('ncbi-gene-');genes=xroot.xpath('/Entrezgene-Set/Entrezgene');require(len(genes)==1 and genes[0].xpath('Entrezgene_track-info/Gene-track/Gene-track_geneid/text()')==[gid],'NCBI_GENE_ID',gid);require(xroot.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()')==['511145'],'NCBI_GENE_TAXON',gid);observed['Entrez:'+gid]=genes[0].findtext('Entrezgene_gene/Gene-ref/Gene-ref_locus')
+  elif kind=='pathbank-biopax':
+   xr,oo=native_owl(b.bytes(p));pid=key.removeprefix('pathbank-');accession='http://identifiers.org/smpdb/'+pid;require(oo[accession]['type']=='Pathway' and '#Reference/SMPDB_'+pid in oo[accession]['properties']['xref'],'PATHBANK_ROOT');require(oo['Reference/SMPDB_'+pid]['properties']=={'id':[pid],'db':['SMPDB']},'PATHBANK_UNIFICATION')
+   for id in selected:
+    local=id.split('/',1)[1] if '/' in id else accession;require(local in oo,'PATHBANK_OBJECT',id);observed[id]=oo[local]['properties']['displayName'][0]
+  elif kind=='rhea-rdf':
+   for id in selected:observed[id]=nodes[RH+id.split(':')[1]]['equation'][0]
+  else:raise ValueError('UNKNOWN_AUTHOR_SOURCE_KIND: '+kind)
+  require(key in proposal['sources'],'UNDECLARED_PROPOSAL_SOURCE',key)
+  for f in ['url','version','sha256','license']:require(proposal['sources'][key][f]==x[f],'PROPOSAL_SOURCE_BINDING',key+':'+f)
+ require(set(observed)==ids,'ISSUING_AUTHORITY_COVERAGE')
+ for n in declared:require(n['label']==observed[n['id']]==proposal['terms'][n['id']]['label'],'ISSUING_LABEL_MISMATCH',n['id'])
+ chebi=connections[next(k for k in connections if k.startswith('chebi-'))]
+ for r in projection['rhea']:
+  for side in r['sides'].values():
+   for c in side:
+    vals=dict(chebi.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('chemrof:generalized_empirical_formula','chemrof:charge')",(c['id'],)));require(vals.get('chemrof:generalized_empirical_formula')==c['formula'] and int(vals['chemrof:charge'])==c['charge'],'ISSUING_FORMULA_CHARGE',c['id'])
+ for db in connections.values():db.close()
+ # Source accession bridges for native subunits, not name similarity.
+ for cid,up in [('GSK-MONOMER','P0AEW6'),('PD00219','P0ACP7')]:
+  xr=etree.fromstring(b.bytes(refs['MetaCyc:'+cid]['path']));require(xr.xpath('/ptools-xml/Protein[@frameid=$i]/dblink[dblink-db="UNIPROT"]/dblink-oid/text()',i=cid)==[up],'COMPONENT_UNIPROT_BRIDGE',cid)
+ byref={x['id']:x for x in doc['references']};require(set(byref)==set(refs),'REFERENCE_COVERAGE')
+ for rid,r in byref.items():require(r['source_sha256']==refs[rid]['sha256'],'REFERENCE_DIGEST',rid)
+ anchor_count=0
+ for edge in doc['mechanistic_edges']:
+  for ev in edge['evidence']:
+   require(0<len(ev.get('source_assertion',''))<=400 and ev.get('source_locator'),'COMPACT_EVIDENCE',edge['id']);rid=ev['reference_id'];loc=ev['source_locator'];p=Path(refs[rid]['path'])
+   if rid.startswith('UniProtKB:'):
+    j=json.loads(b.bytes(p))
+    for pointer in re.findall(r'/(?:comments/\d+|genes/\d+|primaryAccession)\b',loc):
+     z=j
+     for key in pointer.strip('/').split('/'):z=z[int(key)] if isinstance(z,list) else z[key]
+     anchor_count+=1
+   if rid in roots:
+    for kind,attr,val in re.findall(r"bp:([A-Za-z]+)\[@rdf:(ID|about)='([^']+)'\]",loc):require(len(roots[rid].xpath('//bp:'+kind+'[@rdf:'+attr+'=$v]',namespaces=BP,v=val))==1,'BIOPAX_EVIDENCE_ANCHOR',{'edge':edge['id'],'kind':kind,'value':val});anchor_count+=1
+   if p.suffix=='.html' and rid.startswith('PMID:'):
+    x=html.fromstring(b.bytes(p))
+    for tag,key in re.findall(r'(section|figure|table)#([A-Za-z0-9_-]+)',loc):
+     found=x.xpath('//*[@id=$id]',id=key);require(len(found)==1 and found[0].tag==tag,'PRIMARY_DOM_ANCHOR',{'reference':rid,'anchor':key,'tag':tag});anchor_count+=1
+ sys.path.insert(0,str(R/'src'))
+ from pathwaymech.schema import validate_record
+ from pathwaymech.strict import strict_errors
+ from pathwaymech.identifiers import identifier_errors
+ from pathwaymech.cli import render_site
+ from pathwaymech.kgx import write_kgx,LOCAL_PREDICATE_CURIES
+ for name,m in list(sys.modules.items()):
+  if name.startswith('pathwaymech') and getattr(m,'__file__',None):require(str(Path(m.__file__).absolute()) in b.entries,'UNBOUND_RUNTIME_IMPORT',m.__file__)
+ record=validate_record(doc);require(not (errors:=strict_errors([b.path('record')],R)),'CLOSED_SCHEMA',errors)
+ out=Path(output).absolute();require(not out.exists(),'OUTPUT_ALREADY_EXISTS');work=out/'work';work.mkdir(parents=True)
+ stage=work/'canonical-gate';(stage/'data/pathways').mkdir(parents=True);(stage/'conf').mkdir();(stage/'data/pathways/candidate.yaml').write_bytes(b.bytes(b.path('record')));(stage/'authority.json').write_bytes(b.bytes(b.path('authority_proposal')))
+ policy={'version':1,'namespaces':{p:{'snapshot':'authority.json','policy':'canonical'} for p in sorted({i.split(':')[0] for i in ids})},'contextual_labels':[]};(stage/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(policy,sort_keys=False));require(not (errors:=identifier_errors(stage)),'AUTHOR_CANONICAL_PROPOSAL_GATE',errors)
+ files=render_site([record],{record.id:'data/pathways/adenine-and-adenosine-salvage-ii.yaml'});site=work/'generated-site';site.mkdir()
+ for name,body in files.items():p=site/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(body)
+ (site/'style.css').write_bytes(b.bytes(b.path('style')))
+ pages=[p for p in files if p.startswith('records/')];require(len(pages)==1,'RECORD_PAGE_COUNT');h=html.fromstring(files[pages[0]]);gedges=h.xpath('//*[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]');gnodes=h.xpath('//*[@data-node-id]');require(len(gedges)==len(doc['mechanistic_edges']),'SVG_EDGE_PRESERVATION');require({x.get('data-node-id') for x in gnodes}=={x[k] for x in doc['mechanistic_edges'] for k in ['subject','object']},'SVG_NODE_PRESERVATION')
+ write_kgx([record],work/'kgx')
+ with (work/'kgx/edges.tsv').open() as f:rows=list(csv.DictReader(f,delimiter='\t'))
+ require(len(rows)==len(doc['mechanistic_edges']),'KGX_EDGE_COUNT')
+ for inp,row in zip(doc['mechanistic_edges'],rows,strict=True):
+  require((inp['subject'],LOCAL_PREDICATE_CURIES[inp['predicate']],inp['object'])==(row['subject'],row['predicate'],row['object']),'KGX_TRIPLE');require(json.loads(row['evidence'])==inp['evidence'],'KGX_EVIDENCE');require({x['id']:x for x in json.loads(row['reference_metadata'])}=={e['reference_id']:byref[e['reference_id']] for e in inp['evidence']},'KGX_REFERENCE_METADATA')
+ dump(work/'native-replay.json',{'directions':directions,'source_subject_count':count,'boundary':boundary,'chemical_sides':14,'primary_and_native_anchors_checked':anchor_count})
+ result={'status':'External author checks passed; not independent review or production authority approval','record_sha256':b.data['inputs']['record']['sha256'],'elementary_events':4,'interface_events':1,'reactions':5,'named_ids':len(ids),'edges':len(rows),'references':len(refs),'runtime_files':len(runtime['files']),'source_authorities':len(sources),'canonical_policy':'Exact labels; no contextual exemptions; external proposal only','schema':'Local and closed LinkML pass','outputs':'Every graph edge and evidence item preserved through SVG and KGX'};dump(work/'author-checks.json',result)
+ outputs={str(p.relative_to(work)):sha(p) for p in sorted(work.rglob('*')) if p.is_file()};print('CHECKPOINT pre-publication',flush=True)
+ final=b.final();require({str(p.relative_to(work)) for p in work.rglob('*') if p.is_file()}==set(outputs),'OUTPUT_SET_CHANGED')
+ for rel,expected in outputs.items():require(sha(work/rel)==expected,'OUTPUT_HASH_MISMATCH',rel)
+ require(sha(b.manifest)==b.manifest_hash,'MANIFEST_CHANGED_AT_PUBLICATION')
+ receipt={'status':'success','started_at':started,'finished_at':now(),'manifest':str(b.manifest),'manifest_sha256':b.manifest_hash,'record_sha256':result['record_sha256'],'helper_sha256':b.data['inputs']['helper']['sha256'],'all_semantic_inputs_hashed_before_use_and_rehashed_before_publication':True,'inputs':final,'outputs':outputs,'publication':'Validated outputs and success receipt renamed together to accepted. Failed controls publish no accepted success. Filesystem rechecks are bounded, not an atomic external snapshot.','scope':result['status']};dump(work/'success-receipt.json',receipt);work.rename(out/'accepted');print(json.dumps({'status':'success','accepted':str(out/'accepted'),'inputs':len(final),'outputs':len(outputs)},indent=2),flush=True)
+
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--manifest',required=True);parser.add_argument('--output',required=True);args=parser.parse_args()
+ try:execute(args.manifest,args.output)
+ except Exception as exc:print(json.dumps({'status':'failed','error':str(exc),'type':type(exc).__name__,'at':now()},indent=2),file=sys.stderr,flush=True);raise

@@ -1,0 +1,121 @@
+"""Exercise external candidate authority code without writing production output."""
+from datetime import datetime, timezone
+from pathlib import Path
+from xml.etree import ElementTree as ET
+import hashlib
+import importlib.util
+import json
+import sys
+import yaml
+
+OUT = Path(__file__).parent
+REPO = OUT / 'repo'
+AUTHOR = Path('/private/tmp/pathwaymech-next-222-author-20261011')
+PREFLIGHT = Path('/private/tmp/pathwaymech-next-222-preflight-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+
+def sha(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+def dump(name, value):
+    (OUT / 'checks' / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+started = datetime.now(timezone.utc).isoformat()
+code = REPO / 'scripts/build_source_identifier_snapshot.py'
+spec = importlib.util.spec_from_file_location('candidate_source_builder', code)
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
+spec.loader.exec_module(module)
+manifest = REPO / 'conf/identifier_sources.json'
+entries = json.loads(manifest.read_bytes())
+bindings = {str(code): sha(code), str(manifest): sha(manifest)}
+for source in entries:
+    path = CACHE / source['path']
+    observed = sha(path)
+    assert observed == source['sha256'], source['key']
+    bindings[str(path)] = observed
+for path in sorted((REPO / 'data/pathways').rglob('*.yaml')):
+    bindings[str(path)] = sha(path)
+for rel in ['conf/identifier_policy.yaml', 'data/identifier_authorities/sources.json']:
+    path = REPO / rel
+    bindings[str(path)] = sha(path)
+
+author_inputs = json.loads((AUTHOR / 'authority-inputs.json').read_bytes())
+observed = []
+for item in author_inputs['sources']:
+    if item['kind'] not in {'pathbank-biopax', 'ncbi-entrezgene-xml', 'metacyc-protein-xml'}:
+        continue
+    path = Path(item['path'])
+    assert sha(path) == item['sha256'], item['key']
+    bindings[str(path)] = item['sha256']
+    version = '27.0' if item['kind'] == 'metacyc-protein-xml' else item['version']
+    terms = list(module.source_terms(item['kind'], path, url=item['url'], version=version))
+    observed.append({'key': item['key'], 'path': str(path), 'sha256': sha(path),
+                     'kind': item['kind'], 'production_version': version, 'terms': terms})
+all_terms = {identifier: (label, aliases) for item in observed for identifier, label, aliases in item['terms']}
+target = json.loads((AUTHOR / 'provisional-target.json').read_bytes())
+selected = [node for node in target['named_ids'] if node['id'].startswith(('Entrez:', 'PathBank:', 'MetaCyc:'))]
+for node in selected:
+    assert node['id'] in all_terms, node['id']
+    assert all_terms[node['id']][0] == node['label'], node
+assert len(selected) == 14
+main = next(item for item in observed if item['key'] == 'pathbank-SMP0002083')
+assert not any(identifier == 'PathBank:SMP0000809' for identifier, _, _ in main['terms'])
+assert not any('SubPathwayInteractions/' in identifier for item in observed for identifier, _, _ in item['terms'])
+assert all('Entrez:' + gid in all_terms for gid in ['948224','945851'])
+
+legacy = PREFLIGHT / 'raw/PW002071.owl'
+bindings[str(legacy)] = sha(legacy)
+legacy_terms = list(module.pathbank_terms(ET.fromstring(legacy.read_bytes())))
+assert any(identifier == 'PathBank:SMP0002083/Transports/505' for identifier, _, _ in legacy_terms)
+dump('original-source-results.json', {'started_at': started, 'target_sha256': target['record_sha256'],
+     'code_sha256': bindings[str(code)], 'selected_original_identity_count': len(selected),
+     'originals': observed, 'legacy_transport_now_present': True,
+     'scope': 'External code parses original bytes; no production snapshot or record is adopted.'})
+print('Original sources passed; rebuilding unchanged baseline corpus in memory', flush=True)
+
+result = module.build_snapshot(manifest, REPO / 'data/pathways', CACHE)
+expected_raw = (REPO / 'data/identifier_authorities/sources.json').read_bytes()
+expected = json.loads(expected_raw)
+current_ids = module.corpus_ids(REPO / 'data/pathways')
+assert not any(identifier.startswith('Entrez:') for identifier in current_ids)
+current_expected_terms = {identifier: term for identifier, term in expected['terms'].items() if identifier in current_ids}
+current_sources = {term['source'] for term in current_expected_terms.values()}
+current_expected = {'version': expected['version'], 'terms': current_expected_terms,
+                    'sources': {key: value for key, value in expected['sources'].items() if key in current_sources}}
+assert result == current_expected
+retained_ids = sorted(expected['terms'].keys() - current_ids)
+assert len(retained_ids) == 21
+dump('current-corpus-projection.json', {'record_count': 222, 'terms': len(result['terms']),
+     'exact_expected_current_corpus_projection': True, 'no_current_entrez_ids': True,
+     'retained_unused_ids': retained_ids,
+     'explanation': 'The published baseline intentionally retains authority terms for identifiers no longer selected by current records. Their preservation requires an explicit identifier selection.'})
+selection = OUT / 'retained-identifiers'
+selection.mkdir(exist_ok=True)
+selection_file = selection / 'identifiers.yaml'
+selection_file.write_text(yaml.safe_dump({'id': next(iter(expected['terms'])),
+      'participants': [{'id': identifier} for identifier in sorted(expected['terms'])]}))
+bindings[str(selection_file)] = sha(selection_file)
+print('Current corpus projection passed; reproducing all retained identifiers in memory', flush=True)
+retained_result = module.build_snapshot(manifest, selection, CACHE)
+assert retained_result == expected
+serialized = (json.dumps(retained_result, indent=2, ensure_ascii=False) + '\n').encode()
+assert serialized == expected_raw
+assert len(list((REPO / 'data/pathways').rglob('*.yaml'))) == 222
+for name, digest in bindings.items():
+    assert sha(Path(name)) == digest, name
+dump('original-input-bindings.json', bindings)
+dump('baseline-corpus-reproduction.json', {'started_at': started,
+     'finished_at': datetime.now(timezone.utc).isoformat(), 'base_commit': '0227eb43e306d989240369c083b717230ef2ede1',
+     'record_count': 222, 'source_manifest_entries': len(entries),
+     'current_corpus_authority_terms': len(result['terms']),
+     'authority_terms': len(retained_result['terms']), 'authority_sources': len(retained_result['sources']),
+     'authority_sha256': hashlib.sha256(serialized).hexdigest(),
+     'byte_identical_to_published_baseline': True, 'bound_input_count': len(bindings),
+     'all_inputs_rehashed_unchanged': True,
+     'scope': 'In-memory current-corpus projection and complete retained-ID baseline source-authority regression. The selection contains IDs only, not purported source labels. No output snapshot file was written and no candidate authority build was performed.'})
+print('Unchanged baseline reproduction and final input rehash passed', flush=True)

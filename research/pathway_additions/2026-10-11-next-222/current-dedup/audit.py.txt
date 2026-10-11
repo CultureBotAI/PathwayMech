@@ -1,0 +1,97 @@
+"""Read-only reviewed-tree, ignored-file and semantic pathway coverage audit."""
+import sys
+sys.dont_write_bytecode=True
+import json,yaml,hashlib,re,subprocess,collections,os
+from pathlib import Path
+from datetime import datetime,timezone
+A=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-221-20261011');T=Path('/private/tmp/pathwaymech-next-222-author-20261011/draft/adenine-and-adenosine-salvage-ii.yaml');HEAD='0227eb43e306d989240369c083b717230ef2ede1';TREE='929b9b0578a280aed04e20cf33d412b13ba0d822';TSHA='11ceb3fe99f2ed2966bb8a68faf8fa836a6a4a9e94b2bc0c499bb1119fd3cddd'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(name,x):(A/name).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def run(cmd):
+ p=subprocess.run(cmd,capture_output=True);assert p.returncode in [0,1],p.stderr.decode();return p
+rev=run(['git','-C',str(R),'rev-parse','HEAD','HEAD^{tree}']);assert rev.stdout.decode().splitlines()==[HEAD,TREE]
+tree=run(['git','-C',str(R),'ls-tree','-r','--full-tree','-z',HEAD]);(A/'reviewed-tree-ls-tree.raw').write_bytes(tree.stdout);blobs={}
+for b in tree.stdout.split(b'\0'):
+ if not b:continue
+ attrs,path=b.split(b'\t',1);mode,kind,h=attrs.decode().split();blobs[path.decode()]={'mode':mode,'kind':kind,'git_blob':h}
+def bound(p):
+ b=p.read_bytes();rel=str(p.relative_to(R));h=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest();assert blobs[rel]['git_blob']==h,(rel,h,blobs[rel]);return {'path':str(p),'relative':rel,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b),'reviewed_git_blob':h}
+# Administrative and installed-runtime files cannot be pathway owners. No research,
+# cache, source, generated, hidden or ignored application directory is excluded.
+exclude=['!**/.git','!**/.git/**','!**/.venv','!**/.venv/**']
+cmd=['rg','--files','--no-ignore','--hidden','--follow',str(R)]
+for x in exclude:cmd+=['-g',x]
+inventory=run(cmd);(A/'all-files.txt').write_bytes(inventory.stdout);(A/'all-files-errors.txt').write_bytes(inventory.stderr);files=[Path(p) for p in inventory.stdout.decode().splitlines()]
+symlinks=[]
+for base,dirs,fs in os.walk(R,followlinks=False):
+ for n in dirs+fs:
+  p=Path(base)/n
+  if p.is_symlink():symlinks.append({'path':str(p),'target':os.readlink(p),'resolved':str(p.resolve()),'excluded':'.venv' in p.parts or '.git' in p.parts})
+patterns={
+ 'identity':['SMP0002083','PW002071','PWY-6611','adenine and adenosine salvage II','adenine and adenosine salvage V','adenosine nucleosides salvage V'],
+ 'direction_and_boundary':['RHEA:27642','RHEA:27643','RHEA:27644','RHEA:27645','RHEA:24408','RHEA:24409','RHEA:24410','RHEA:24411','RHEA:21140','RHEA:21141','RHEA:21142','RHEA:21143','INOSINEKIN-RXN','ADENPHOSPHOR-RXN','ADENODEAMIN-RXN','R01131','Transports/505','Reactions/6053','SMP0000809','SubPathwayInteractions/581268','inosine kinase','inosine-kinase','inosine phosphorylation'],
+ 'proteins_genes_regulation':['P0ABP8','P22333','P0AEW6','P31466','P0ACP7','DEOD-CPLX','CPLX0-322','PC00033','Entrez:948224','Entrez:945851','yieG','adeP','purP'],
+ 'exact_references':['765747','7665468','7721718','10879466','32857952','24214977','21572102','30337572','6198438','8165228','PMC3159470','10.1074/jbc.M113.523340','10.1016/j.molcel.2020.08.005','10.1007/BF00269424','10.1093/nar/gkr307','GO:0006166','GO:0006168','GO:0006169','GO:0010140']}
+searches=[];matched=set()
+for key,terms in patterns.items():
+ command=['rg','--no-ignore','--hidden','--follow','--text','-i','--files-with-matches','-F']
+ for term in terms:command+=['-e',term]
+ command += [str(R)]
+ for x in exclude:command+=['-g',x]
+ r=run(command);(A/(key+'-matches.txt')).write_bytes(r.stdout);(A/(key+'-errors.txt')).write_bytes(r.stderr);paths=r.stdout.decode().splitlines();matched.update(paths);searches.append({'class':key,'command':command,'exit_code':r.returncode,'matched_files':paths,'stderr_empty':not r.stderr})
+# Every YAML file under the maintained ownership directory is found independently
+# of Git's tracked-file list and ignore rules, including followed symlinks.
+recordpaths=sorted(p for p in files if '/data/pathways/' in str(p) and p.suffix.lower() in {'.yaml','.yml'});records=[];checks=[];related=[];target=yaml.load(T.read_text(),Loader=yaml.CSafeLoader);assert sha(T)==TSHA
+family={'adenine_to_adenosine':{'RHEA:27644'},'opposite_adenosine_to_adenine':{'RHEA:27643'},'adenosine_to_inosine':{'RHEA:24409'},'inosine_kinase':{'RHEA:21140','RHEA:21141','RHEA:21142','RHEA:21143','MetaCyc:INOSINEKIN-RXN','KEGG:R01131'}}
+needle_refs={x['id'] for x in target['references']};targettriples={(x['subject'],x['predicate'],x['object']) for x in target['mechanistic_edges']}
+def sides(d,r):
+ ins=set();outs=set()
+ for e in d['mechanistic_edges']:
+  s,p,o=e['subject'],e['predicate'],e['object']
+  if p=='consumes' and o==r:ins.add(s)
+  if p=='produces' and s==r:outs.add(o)
+  if p=='has_input' and s==r:ins.add(o)
+  if p=='has_output' and s==r:outs.add(o)
+ return ins,outs
+for p in recordpaths:
+ d=yaml.load(p.read_text(),Loader=yaml.CSafeLoader);assert isinstance(d,dict) and d.get('id');nodes={n['id']:n for section in ['participants','taxa','reactions'] for n in d.get(section,[])};rids={n['id'] for n in d['reactions']};refs={r['id'] for r in d['references']};rcheck=[]
+ for r in d['reactions']:
+  ins,outs=sides(d,r['id'])
+  def match(xs,ids,pat):return any(x in ids or re.search(pat,nodes.get(x,{}).get('label',''),re.I) for x in xs)
+  # Formula-specific aliases and native display names both count; charge variants
+  # are diagnostic identity approximations here, never exact chemical mappings.
+  ino=match(ins,{'CHEBI:17596'},r'^inosine$');atp=match(ins,{'CHEBI:30616','CHEBI:15422'},r'^ATP(?:$|\W)|^adenosine.*triphosphate$');imp=match(outs,{'CHEBI:58053','CHEBI:17202'},r'^(?:IMP(?:$|\W)|inosin(?:e|ic).*?(?:phosphate|acid))')
+  adenine=match(ins,{'CHEBI:16708'},r'^adenine$');ado=match(outs,{'CHEBI:16335'},r'^adenosine$');inoout=match(outs,{'CHEBI:17596'},r'^inosine$');adoin=match(ins,{'CHEBI:16335'},r'^adenosine$')
+  row={'record':d['id'],'reaction':r['id'],'label':r['label'],'declared_direction':r.get('direction'),'inputs':[{'id':x,'label':nodes.get(x,{}).get('label')} for x in sorted(ins)],'outputs':[{'id':x,'label':nodes.get(x,{}).get('label')} for x in sorted(outs)],'terminal_chemistry_match':ino and atp and imp,'adenine_ribosylation_candidate':adenine and ado,'adenosine_deamination_candidate':adoin and inoout,'inosine_input':ino,'IMP_output':imp};checks.append(row);rcheck.append(row)
+ b=bound(p);b.update({'id':d['id'],'label':d['label'],'description':d['description'],'taxa':d['taxa'],'reaction_nodes':d['reactions'],'reaction_checks':rcheck,'reference_ids':sorted(refs),'exact_target_triples_shared':sorted(targettriples&{(x['subject'],x['predicate'],x['object']) for x in d['mechanistic_edges']})});records.append(b)
+ overlap={k:sorted(v&rids) for k,v in family.items() if v&rids}
+ if overlap or any(x['inosine_input'] or x['IMP_output'] for x in rcheck) or re.search('adenine|adenosine|purine|guanine|guanosine',d['label'],re.I):related.append({'id':d['id'],'label':d['label'],'path':str(p),'sha256':b['sha256'],'directional_family_overlap':overlap,'shared_reference_ids':sorted(refs&needle_refs),'reaction_checks':rcheck,'taxa':d['taxa']})
+assert len(records)==222;assert len({x['id'] for x in records})==222
+identity_matches=[x['id'] for x in records if x['id'] in {'PathBank:SMP0002083','MetaCyc:PWY-6611'} or x['label'].casefold()==target['label'].casefold()];terminal=[x for x in checks if x['terminal_chemistry_match']]
+# Other YAML surfaces (historical drafts/reports/config) are read and classified.
+other_records=[]
+for p in files:
+ if p in recordpaths or p.suffix.lower() not in {'.yaml','.yml'}:continue
+ try:d=yaml.load(p.read_text(),Loader=yaml.CSafeLoader)
+ except Exception:continue
+ if isinstance(d,dict) and {'id','reactions','mechanistic_edges'}<=d.keys():other_records.append({'path':str(p),'sha256':sha(p),'id':d['id'],'label':d.get('label'),'reactions':d['reactions'],'is_candidate_exact_id':d['id'] in {'PathBank:SMP0002083','MetaCyc:PWY-6611'},'classification':'Outside maintained data/pathways; historical/review artifact, not current owner'})
+authorities=[]
+for rel,expected,key in [('conf/identifier_sources.json',624,None),('data/identifier_authorities/ontology.json',1871,'terms'),('data/identifier_authorities/sources.json',2251,'terms')]:
+ p=R/rel;d=json.loads(p.read_text());assert len(d if key is None else d[key])==expected;b=bound(p);b.update({'entry_count':expected,'count_field':key or 'list'});authorities.append(b)
+mentions=[]
+for name in sorted(matched):
+ p=Path(name);rel=p.relative_to(R);classification=next((part for part in ['data/pathways','research','reviews','history','data/identifier_authorities','pages','output','tests','conf'] if str(rel).startswith(part+'/')),'other');data=p.read_bytes();item={'path':name,'relative':str(rel),'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'classification':classification}
+ if classification in {'research','reviews','history'}:
+  text=data.decode('utf-8','replace');hitcontexts=[]
+  for word in patterns['identity']+['INOSINEKIN-RXN','inosine kinase','inosine-kinase']:
+   hits=list(re.finditer(re.escape(word),text,re.I));
+   if hits:
+    hitcontexts.append({'query':word,'count':len(hits),'first_context':text[max(0,hits[0].start()-160):hits[0].end()+340]})
+  item['read_identity_terminal_contexts']=hitcontexts
+ mentions.append(item)
+# All tracked blob identities and current bytes are rechecked after parsing.
+for x in records+authorities:assert sha(Path(x['path']))==x['sha256']
+end=run(['git','-C',str(R),'rev-parse','HEAD','HEAD^{tree}']);assert end.stdout==rev.stdout
+result={'started_and_finished_scope':datetime.now(timezone.utc).isoformat(),'root':str(R),'reviewed_HEAD':HEAD,'reviewed_tree':TREE,'target':{'path':str(T),'sha256':TSHA,'id':target['id'],'label':target['label'],'named_nodes':len([target,*target['taxa'],*target['participants'],*target['reactions']]),'edges':len(target['mechanistic_edges']),'boundary':'Full4 elementary events + explicitly non-elementary SMP0000809 interface, unchanged'},'inventory_command':cmd,'inventory_file_count':len(files),'searches':searches,'symlinks':symlinks,'excluded':[{'path':'.git','reason':'Git administrative objects/refs are not pathway owners; exact HEAD/tree separately read/bound'},{'path':'.venv','reason':'Installed Python environment internals are not pathway records; shared195 environment explicitly bound as execution runtime'}],'ignored_hidden_follow_symlinks':True,'binary_file_contents_in_lexical_search':True,'record_count':len(records),'reaction_instance_count':len(checks),'identity_record_matches':identity_matches,'terminal_chemistry_matches':terminal,'all_record_bytes_verified_against_reviewed_tree':True,'authority_baseline':authorities,'read_only_git_commands':['rev-parse HEAD HEAD^{tree}','ls-tree -r --full-tree -z HEAD'],'no_git_mutation':True,'conclusion':'No current complete candidate duplicate found; exact target boundary retained. Not a source-exhaustion or whole-computer absence claim.'}
+dump('audit.json',result);dump('record-bindings-and-chemistry.json',records);dump('related-record-comparison.json',related);dump('prior-and-other-mentions.json',mentions);dump('nonmaintained-record-shaped-yamls.json',other_records)
+print(json.dumps({'records':len(records),'reaction_instances':len(checks),'identity_record_matches':identity_matches,'terminal_chemistry_matches':terminal,'related_records':[(x['id'],x['label']) for x in related],'file_count':len(files),'nonmaintained_record_shaped_yamls':len(other_records),'authority_baseline':authorities},indent=2))

@@ -1,0 +1,25 @@
+"""Exercise real execute() with one late mutation injected at final recheck.
+Only an external copied record or the probe's own generated output is changed;
+no check is bypassed or mocked. The helper and all source inputs stay unchanged.
+"""
+import sys
+sys.dont_write_bytecode=True
+import importlib.util,json,hashlib,shutil
+from pathlib import Path
+A=Path('/private/tmp/pathwaymech-next-222-author-20261011');mode=sys.argv[1];out=A/'publication-controls'/mode;out.mkdir(parents=True);m=json.loads((A/'replay-manifest.json').read_text());record=out/'candidate.yaml';shutil.copy2(m['inputs']['record']['path'],record);m['inputs']['record']['path']=str(record);mp=out/'manifest.json';mp.write_text(json.dumps(m,indent=2)+'\n')
+spec=importlib.util.spec_from_file_location('checked_author',A/'replay-author.py');helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(helper);original=helper.Bindings.final;result=out/'result'
+def final(self):
+ if mode=='late-record':
+  record.write_bytes(record.read_bytes()+b'\n# changed after complete checks\n')
+  print('INJECTION record bytes changed immediately before original final binding check',flush=True)
+  return original(self)
+ checked=original(self)
+ if mode=='late-output':
+  p=result/'work/kgx/edges.tsv';p.write_bytes(p.read_bytes()+b'CORRUPTED_OUTPUT\n');print('INJECTION output changed after original final input check, before original output guard',flush=True)
+ else:raise ValueError('Unknown mode')
+ return checked
+helper.Bindings.final=final
+try:helper.execute(mp,result)
+except Exception as exc:
+ expected='INPUT_HASH_MISMATCH' if mode=='late-record' else 'OUTPUT_HASH_MISMATCH';passed=expected in str(exc) and not (result/'accepted').exists();receipt={'control':mode,'expected':expected,'actual_error':str(exc),'passed':passed,'accepted_directory_absent':not (result/'accepted').exists(),'helper_sha256':hashlib.sha256((A/'replay-author.py').read_bytes()).hexdigest(),'manifest_sha256':hashlib.sha256(mp.read_bytes()).hexdigest(),'scope':'Original execute and final binding/output guards; monkeypatch only injects corruption at their boundary'};(out/'control-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt,indent=2),flush=True);sys.exit(0 if passed else 1)
+raise SystemExit('ERROR: late mutation was accepted')

@@ -1,0 +1,258 @@
+"""Correct only external source selection after the preserved failed build."""
+
+import copy
+import hashlib
+import importlib.util
+import json
+import os
+import subprocess
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent
+OLD = Path('/private/tmp/pathwaymech-next-222-authority-canonical-20261011')
+ROOT = Path('/private/tmp/pathwaymech-next-222-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities')
+PYTHON = Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+BULK_KEY = 'uniprot-ecoli-reviewed-cofactors'
+REMOVED = {'uniprot-P0ACP7', 'uniprot-P31466'}
+bindings = {}
+
+
+def capture(path, expected=None):
+    path = Path(path).absolute()
+    body = path.read_bytes()
+    digest = hashlib.sha256(body).hexdigest()
+    assert expected is None or digest == expected, str(path)
+    row = {'path': str(path), 'resolved_path': str(path.resolve(strict=True)),
+           'sha256': digest, 'bytes': len(body)}
+    assert str(path) not in bindings or bindings[str(path)] == row, str(path)
+    bindings[str(path)] = row
+    return body
+
+
+def read(path, expected=None):
+    return json.loads(capture(path, expected))
+
+
+def save(name, value):
+    with (OUT / name).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def git_state():
+    for expression, expected in [('HEAD', 'd8e3888528088e7bba468df57056f9f0e588b463'),
+                                  ('HEAD^{tree}', '929b9b0578a280aed04e20cf33d412b13ba0d822')]:
+        assert subprocess.check_output(['git', 'rev-parse', expression], cwd=ROOT, text=True).strip() == expected
+
+
+assert __debug__ and sys.dont_write_bytecode
+assert Path(sys.executable).resolve(strict=True) == PYTHON.resolve(strict=True)
+assert Path(sys.prefix).resolve(strict=True) == PYTHON.parent.parent.resolve(strict=True)
+git_state()
+capture(__file__)
+handoff = read(OLD / 'handoff.json', '9e8be692d4e5738bab475b9187dfc6213a7d0d27e377646189f168618a2ba5be')
+for row in handoff['artifacts']:
+    capture(OLD / row['path'], row['sha256'])
+initial = read(OLD / 'selection-final.json', '0cfc2ed5d4367c91f702390325d5932973b6accde9c400630b499b33f262dc94')
+for row in initial['captured_inputs']:
+    capture(row['path'], row['sha256'])
+    assert bindings[row['path']] == row
+
+# Preserve every regular failed-attempt artifact, including both actual native
+# outputs and execution receipts. The large symlink source overlay is described
+# by its manifest and before-original-hashes receipt rather than recaptured here.
+attempt_paths = sorted(path for path in OLD.rglob('*') if path.is_file() and not path.is_symlink())
+for path in attempt_paths:
+    capture(path)
+root_receipt = read(OLD / 'root-terminal-receipt.json')
+assert root_receipt['actual_exit_code'] == 1
+assert root_receipt['native_builder_exit_codes'] == {'sources': 0, 'ontology': 0}
+diagnostic = read(OLD / 'canonical-attempt1-diagnostic.json')
+assert diagnostic['actual_term_count'] == diagnostic['expected_term_count'] == 2265
+assert len(diagnostic['differences']) == 4
+executions = read(OLD / 'canonical-build/execution.json')
+assert len(executions) == 2 and all(row['exit_code'] == 0 for row in executions)
+for row in executions:
+    capture(row['log'], row['log_sha256'])
+
+manifest = read(ROOT / 'conf/identifier_sources.json')
+before = {name: read(ROOT / f'data/identifier_authorities/{name}.json') for name in ['ontology', 'sources']}
+assert (len(manifest), len(before['ontology']['terms']), len(before['sources']['terms'])) == (624, 1871, 2251)
+bulk_rows = [(index, row) for index, row in enumerate(manifest) if row['key'] == BULK_KEY]
+assert len(bulk_rows) == 1
+bulk_index, bulk_entry = bulk_rows[0]
+assert bulk_index == 74 and bulk_entry['kind'] == 'uniprot'
+bulk_path = CACHE / 'sources' / bulk_entry['path']
+bulk = read(bulk_path, bulk_entry['sha256'])
+assert len(bulk['results']) == 6067
+metadata = {key: bulk_entry[key] for key in ['url', 'version', 'license', 'sha256']}
+assert metadata == before['sources']['sources'][BULK_KEY]
+assert metadata['version'] == '2026_03' and metadata['license'] == 'CC-BY-4.0'
+
+plan_path = ROOT / 'reports/causal_graph_review/uniprot-cofactor-plan.json'
+decisions_path = ROOT / 'reports/causal_graph_review/uniprot-cofactor-decisions.json'
+plan = read(plan_path)['sources'][BULK_KEY]
+decisions = read(decisions_path)['sources'][BULK_KEY]
+assert plan == decisions
+assert plan['sha256'] == bulk_entry['sha256'] and plan['url'] == bulk_entry['url']
+assert plan['entries'] == len(bulk['results'])
+assert plan['headers']['X-UniProt-Release'] == metadata['version']
+assert plan['headers']['X-UniProt-Release-Date'] == '02-September-2026'
+assert plan['headers']['Date'] == 'Mon, 05 Oct 2026 06:17:54 GMT'
+recovery_path = CACHE / 'source-recovery.json'
+recovery = [row for row in read(recovery_path) if row['key'] == BULK_KEY]
+assert len(recovery) == 1
+recovery = recovery[0]
+assert recovery['status'] == 'verified_downloaded'
+assert recovery['response_url'] == bulk_entry['url']
+assert recovery['expected_sha256'] == recovery['retrieved_sha256'] == bulk_entry['sha256']
+assert Path(recovery['retrieved_path']).resolve(strict=True) == bulk_path.resolve(strict=True)
+assert recovery['size'] == bulk_path.stat().st_size
+capture(CACHE / 'recover_sources.py')
+all_inputs = [row for row in read(CACHE / 'all-source-inputs.json') if row['key'] == BULK_KEY]
+assert len(all_inputs) == 1 and all_inputs[0]['sha256'] == bulk_entry['sha256']
+assert all_inputs[0]['refresh_required'] is False
+capture(ROOT / 'reports/causal_graph_review/source-digest-verification.json')
+
+sys.path.insert(0, str(ROOT / 'src'))
+parser_path = ROOT / 'scripts/build_source_identifier_snapshot.py'
+capture(parser_path, '6a19e47fe29ccce62862ef6fb28ac30b69729dc46c2cae2de14cc6ac6103ddbc')
+spec = importlib.util.spec_from_file_location('accepted_source_parser', parser_path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+wanted = {'UniProtKB:P0ACP7', 'UniProtKB:P31466'}
+bulk_terms = {identifier: {'label': label, 'synonyms': sorted(set(aliases) - {label}), 'source': BULK_KEY}
+              for identifier, label, aliases in module.source_terms('uniprot', bulk_path)
+              if identifier in wanted}
+assert set(bulk_terms) == wanted
+comparisons = []
+for identifier in sorted(wanted):
+    accession = identifier.split(':')[1]
+    matches = [(index, row) for index, row in enumerate(bulk['results']) if row.get('primaryAccession') == accession]
+    assert len(matches) == 1
+    native_index, native = matches[0]
+    original = next(row for row in initial['selected_new_inputs'] if row['key'] == 'uniprot-' + accession)
+    single = read(original['original_path'], original['manifest_entry']['sha256'])
+    # Compare the complete field projection requested by the bulk HTTP query.
+    # entryAudit is absent from that request/payload and is not inferred for it.
+    projected_single = {
+        'entryType': single['entryType'], 'primaryAccession': single['primaryAccession'],
+        'organism': {'taxonId': single['organism']['taxonId']},
+        'proteinDescription': single['proteinDescription'],
+        'comments': [row for row in single.get('comments', []) if row['commentType'] in {'COFACTOR', 'CAUTION'}],
+        'uniProtKBCrossReferences': [row for row in single['uniProtKBCrossReferences'] if row['database'] == 'BioCyc'],
+        'extraAttributes': {'uniParcId': single['extraAttributes']['uniParcId']},
+    }
+    assert native == projected_single, accession
+    assert native['entryType'] == 'UniProtKB reviewed (Swiss-Prot)'
+    assert native['organism']['taxonId'] == 83333
+    single_terms = list(module.source_terms('uniprot', Path(original['original_path'])))
+    assert len(single_terms) == 1
+    single_id, label, aliases = single_terms[0]
+    assert single_id == identifier
+    assert bulk_terms[identifier] == {'label': label, 'synonyms': sorted(set(aliases) - {label}), 'source': BULK_KEY}
+    old_term = initial['selected_source_terms'][identifier]
+    assert bulk_terms[identifier] == {**old_term, 'source': BULK_KEY}
+    comparisons.append({'id': identifier, 'bulk_json_pointer': '/results/' + str(native_index),
+                        'complete_bulk_native_object': native, 'individual_input': bindings[original['original_path']],
+                        'individual_entry_audit': single['entryAudit'],
+                        'complete_requested_projection_equal': True, 'parser_term': bulk_terms[identifier],
+                        'version_boundary': 'Existing bulk release metadata remains 2026_03; individual entryAudit is separate evidence.'})
+
+# Native checks of earlier UniProt entries supplement the actual full-manifest
+# first-attempt result. No source snapshot builder is invoked by this helper.
+prefix_checks = []
+for index, entry in enumerate(manifest[:bulk_index]):
+    if entry['kind'] != 'uniprot':
+        continue
+    path = CACHE / 'sources' / entry['path']
+    capture(path, entry['sha256'])
+    matches = [identifier for identifier, _, _ in module.source_terms('uniprot', path) if identifier in wanted]
+    assert not matches
+    prefix_checks.append({'manifest_index': index, 'key': entry['key'], 'sha256': entry['sha256'], 'matching_ids': matches})
+
+selection = copy.deepcopy(initial)
+selection['status'] = 'prepared_successor_source_selection; full canonical rebuild not executed'
+selection['prepared_at'] = datetime.now(UTC).isoformat()
+selection['predecessor_canonical_selection'] = bindings[str(OLD / 'selection-final.json')]
+selection['predecessor_canonical_handoff'] = bindings[str(OLD / 'handoff.json')]
+selection['selected_new_inputs'] = [row for row in initial['selected_new_inputs'] if row['key'] not in REMOVED]
+selection['redundant_new_inputs_not_added'] = [row for row in initial['selected_new_inputs'] if row['key'] in REMOVED]
+assert len(selection['selected_new_inputs']) == 5 and len(selection['redundant_new_inputs_not_added']) == 2
+selection['selected_source_terms'].update(bulk_terms)
+selection['expected_new_source_metadata'] = {key: value for key, value in initial['expected_new_source_metadata'].items() if key not in REMOVED}
+selection['counts']['manifest_proposed'] = 629
+selection['counts']['source_bodies_added'] = 5
+selection['counts']['source_metadata_added'] = 5
+selection['reused_inputs'] = [{'key': BULK_KEY, 'ids': sorted(wanted), 'manifest_index': bulk_index,
+                             'existing_entry_preserved': bulk_entry, 'metadata_preserved': metadata,
+                             'original_input': bindings[str(bulk_path)]}]
+selection['source_parser_traces'] = [row for row in initial['source_parser_traces'] if row['source'] not in REMOVED]
+selection['source_parser_traces'].append({'source': BULK_KEY, 'original_sha256': bulk_entry['sha256'],
+                                        'selected_ids': sorted(wanted), 'native_entry_count': 6067,
+                                        'method': 'accepted production source_terms on original existing bulk; no full snapshot builder invoked'})
+proposed = manifest + [row['manifest_entry'] for row in selection['selected_new_inputs']]
+assert len(proposed) == 629 and proposed[:624] == manifest
+for field in ['key', 'path']:
+    assert len({row[field] for row in proposed}) == len(proposed)
+for row in initial['selected_new_inputs']:
+    assert not os.path.lexists(row['proposed_cache_destination'])
+for name in ['ontology', 'sources']:
+    expected_terms = selection['selected_ontology_terms' if name == 'ontology' else 'selected_source_terms']
+    extra_metadata = {} if name == 'ontology' else selection['expected_new_source_metadata']
+    expected = {'version': before[name]['version'], 'terms': before[name]['terms'] | expected_terms,
+                'sources': before[name]['sources'] | extra_metadata}
+    # Diagnostic agreement does not turn a failed run into an accepted build:
+    # it lacks final full-original checks and the one-record canonical gate.
+    assert read(OLD / f'canonical-build/{name}.json') == expected
+support = {'status': 'native_bulk_support_verified_for_successor_selection',
+           'bulk_input': bindings[str(bulk_path)], 'bulk_manifest_entry': bulk_entry, 'manifest_index': bulk_index,
+           'preserved_source_metadata': metadata, 'original_acquisition_provenance': plan,
+           'provenance_paths': [bindings[str(plan_path)], bindings[str(decisions_path)], bindings[str(recovery_path)]],
+           'byte_identical_recovery': recovery, 'native_comparisons': comparisons,
+           'earlier_uniprot_checks': prefix_checks,
+           'production_precedence': 'build_snapshot retains the first manifest source for repeated identifiers; it merges aliases only within that same source.',
+           'classification': 'External expected-source-selection defect; the existing product parser followed its established first-source behavior.',
+           'limits': ['Reduced bulk payload is an exact native query response, not a complete single-entry record.',
+                      'Bulk release 2026_03 comes from preserved issuing response headers, not individual entryAudit.',
+                      'Taxon 83333 is retained; no inference that these protein authority rows are MG1655-specific.',
+                      'Both individual scientific originals and their HTTP receipts remain bound and unchanged.',
+                      'Failed canonical outputs remain diagnostic only; successor execution must pass all original preservation gates.']}
+save('native-bulk-support.json', support)
+capture(OUT / 'native-bulk-support.json')
+selection['native_bulk_support'] = bindings[str(OUT / 'native-bulk-support.json')]
+selection['failed_attempt'] = {'classification': support['classification'],
+                             'root_terminal_receipt': bindings[str(OLD / 'root-terminal-receipt.json')],
+                             'diagnostic': bindings[str(OLD / 'canonical-attempt1-diagnostic.json')],
+                             'actual_native_executions': executions,
+                             'preserved_regular_artifacts': [bindings[str(path)] for path in attempt_paths],
+                             'actual_root_exit_code': 1,
+                             'status': 'failed; not upgraded to success by subsequent interpretation'}
+selection['delta_from_initial_selection'] = {
+    'omitted_redundant_manifest_keys': sorted(REMOVED), 'term_source_changes': {key: {'before': initial['selected_source_terms'][key]['source'], 'after': BULK_KEY} for key in sorted(wanted)},
+    'unchanged': ['624 prior manifest entries and order', '1871 prior ontology terms and all metadata',
+                  '2251 prior source terms and all metadata', '14 new source IDs, labels and ten aliases',
+                  'two new SQL ontology terms', 'corrected record and scientific original bindings',
+                  'production code, policy, tests and runtime', 'all fail-closed output-preservation checks'],
+    'manifest_count': {'before': 631, 'after': 629}, 'new_source_metadata': {'before': 7, 'after': 5}}
+selection['scope'] = [
+    'Successor selection only; no full candidate authority snapshot created in this directory.',
+    'Five new originals plus one existing native bulk authority supply fourteen new source terms.',
+    'Both omitted per-entry authority originals remain scientific evidence and bound short inputs.',
+    'All existing terms/metadata and source ordering remain exact; no product parser change is proposed.',
+    'Initial sealed package, failed native outputs, raw logs and actual exit receipts remain immutable.',
+    'Root owns full canonical execution after independent review; no success is claimed before that run.']
+for row in list(bindings.values()):
+    capture(row['path'], row['sha256'])
+    assert bindings[row['path']] == row
+git_state()
+selection['captured_inputs'] = list(bindings.values())
+save('manifest-proposed.json', proposed)
+save('selection-final.json', selection)
+print(json.dumps({'status': selection['status'], 'short_inputs': len(bindings), 'manifest_count': len(proposed),
+                  'new_source_terms': len(selection['selected_source_terms']), 'new_source_metadata': len(selection['expected_new_source_metadata']),
+                  'selection_sha256': hashlib.sha256((OUT / 'selection-final.json').read_bytes()).hexdigest(),
+                  'manifest_sha256': hashlib.sha256((OUT / 'manifest-proposed.json').read_bytes()).hexdigest()}))

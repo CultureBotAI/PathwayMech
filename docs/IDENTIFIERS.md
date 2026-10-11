@@ -105,14 +105,28 @@ obsolete equations are not retained as synonyms. Other terms continue to use
 their pinned sources. The current selection adds two preQ₀ reactions absent from
 the prior corpus; the cohort audit verifies that all earlier terms are unchanged.
 
-The `pathbank-biopax` source kind reads one native PathBank BioPAX Level 3
-pathway per artifact. Its linked SMPDB unification accession establishes the
+The `pathbank-biopax` source kind reads a native PathBank BioPAX Level 3
+primary pathway per artifact. Its linked SMPDB unification accession establishes the
 `PathBank:SMP...` identity; an identifiers.org SMPDB pathway URI must agree.
 A PathWhiz `PW...` filename never establishes an SMPDB accession. The native
-pathway title remains a canonical label assertion. Declared local reactions and
+pathway title remains a canonical label assertion. Declared local reactions, transport events and
 physical entities use `PathBank:SMP.../<native-local-id>` and are marked
 `source_context`, including objects without a biological label. Their existence
 does not itself establish pathway membership or catalytic function.
+
+An exact official per-pathway download URL
+(`https://pathbank.org/view/SMP.../download?type=owl_markup`) can select the
+primary definition from an export that also contains attached `SubPathway`
+interface stubs. The request must agree with the native SMPDB assertion; neither
+the first XML object nor the filename selects the pathway. Extra Pathway objects
+must be explicitly attached stubs containing native Interaction objects, not
+unrelated or expanded definitions. Only the selected primary pathway supplies a
+canonical pathway term. An interface's independently downloaded definition can
+provide its own canonical title. Legacy archive inputs still require exactly
+one Pathway. Native Interaction objects are not emitted as reaction authorities.
+Compartment-scoped physical objects keep distinct local IDs even when they share
+a chemical reference; identity alone does not assert material transfer or exact
+chemical equivalence between those objects.
 
 PathBank's external chemical and protein cross-reference labels are not emitted
 as ChEBI or UniProt authority terms: those identifiers still require their own
@@ -126,6 +140,27 @@ sequence equivalence; those claims need independent edge evidence. It does not
 extend to PathBank reaction labels or pathway titles in a MetaCyc record.
 Archive members must be extracted without rewriting bytes, with the exact member
 path and archive digest recorded in `sha256_scope` when the public URL is a ZIP.
+
+`ncbi-entrezgene-xml` supplies `Entrez` gene symbols from a single original NCBI
+EFetch XML response. Its official HTTPS URL must request one positive numeric
+ID with `db=gene` and `rettype=xml`; the direct Gene-track ID must agree. A single
+direct Gene-ref supplies the canonical locus symbol, explicit native synonyms
+and locus tag. Nested homologs, protein products and external database links do
+not become gene aliases or independent authorities. A formal nomenclature symbol,
+when present, must agree with the locus. Entrez labels use canonical-or-synonym
+comparison without a contextual exemption.
+
+Gene sources must have one unambiguous native taxon and organism name. Repeated
+sources for an ID must agree on the locus, aliases and taxon before corpus
+selection. Native status omission is permitted as omission, not an observed
+explicit live-status assertion. Explicit secondary/discontinued status,
+contradictory status, current-ID redirects and discontinue dates are unsupported
+and fail. The standard external NCBI Entrezgene DOCTYPE is accepted without
+loading a DTD or resolving external entities; internal subsets and entity
+declarations fail in every supported XML encoding. Original bytes and their
+acquisition/update-date provenance are retained. No status or strain equivalence
+is added to the source. Missing Entrez authority terms fail the snapshot builder
+and identifier gate.
 
 `RHEA-COMP` identifies whole generic protein participants, including distinct
 oxidized and reduced carrier states. This is the namespace used by UniProt's

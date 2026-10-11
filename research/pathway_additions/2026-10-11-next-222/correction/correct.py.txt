@@ -1,0 +1,40 @@
+import sys
+sys.dont_write_bytecode=True
+import json,hashlib,re,shutil
+from pathlib import Path
+from lxml import etree
+import yaml
+from datetime import datetime,timezone
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-222-author-20261011');P=Path('/private/tmp/pathwaymech-next-222-preflight-20261011')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(p,x):p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+h=json.loads((A/'handoff.json').read_text());assert sha(A/'handoff.json')=='ba5c228f3b0564e8bc8164fbf925079194babe6b87cacc81cd73562f2744aa9a'
+for x in h['artifacts']:assert sha(A/x['path'])==x['sha256'],x['path']
+original=A/'draft/adenine-and-adenosine-salvage-ii.yaml';before=yaml.load(original.read_text(),Loader=yaml.CSafeLoader);after=json.loads(json.dumps(before));edge=next(x for x in after['mechanistic_edges'] if x['id']=='aas2-032');ev=edge['evidence'][1];assert ev['reference_id']=='PathBank:SMP0002083/PWML'
+ev['source_assertion']='Native sub-pathway581268 references pathway551 and declares Compound114 as a sub-pathway-input. Sub-pathway-visualization595297 refers to581268 and contains a compound visualization with side Left.'
+ev['source_locator']='Original PWML lines24-38: sub-pathways/sub-pathway[id=581268]/reference-pathway-id=551 and sub-pathway-inputs/sub-pathway-input/element-id=114, element-type=Compound; lines8627-8645: sub-pathway-visualizations/sub-pathway-visualization[id=595297, sub-pathway-id=581268]/sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side=Left'
+changes=[]
+def compare(a,b,p=''):
+ if type(a)!=type(b):changes.append({'field':p,'before':a,'after':b});return
+ if isinstance(a,dict):
+  assert a.keys()==b.keys()
+  for k in a:compare(a[k],b[k],p+'.'+k if p else k)
+ elif isinstance(a,list):
+  assert len(a)==len(b)
+  for i,(x,y) in enumerate(zip(a,b)):compare(x,y,p+f'[{i}]')
+ elif a!=b:changes.append({'field':p,'before':a,'after':b})
+compare(before,after);assert {x['field'] for x in changes}=={'mechanistic_edges[31].evidence[1].source_assertion','mechanistic_edges[31].evidence[1].source_locator'}
+raw=(P/'raw/SMP0002083-current.pwml').read_text();s=re.search(r'<sub-pathways>.*?</sub-pathways>',raw,re.S);v=re.search(r'<sub-pathway-visualizations>.*?</sub-pathway-visualizations>',raw,re.S);assert s and v
+sx=etree.fromstring(s.group().encode());vx=etree.fromstring(v.group().encode());assert sx.xpath('sub-pathway[id="581268"]/reference-pathway-id/text()')==['551'];assert sx.xpath('sub-pathway[id="581268"]/sub-pathway-inputs/sub-pathway-input/element-id/text()')==['114'];assert sx.xpath('sub-pathway[id="581268"]/sub-pathway-inputs/sub-pathway-input/element-type/text()')==['Compound'];assert vx.xpath('sub-pathway-visualization[id="595297"]/sub-pathway-id/text()')==['581268'];assert vx.xpath('sub-pathway-visualization[id="595297"]/sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side/text()')==['Left'];assert 'Aspartate' not in s.group()
+(C/'draft').mkdir();target=C/'draft/adenine-and-adenosine-salvage-ii.yaml';target.write_text(yaml.safe_dump(after,sort_keys=False,width=110,allow_unicode=True))
+dump(C/'correction-delta.json',{'issue':422,'url':'https://github.com/CultureBotAI/PathwayMech/issues/422','finding_key':'salvage-ii-pwml-interface-evidence-locator','original':str(original),'original_sha256':sha(original),'corrected':str(target),'corrected_sha256':sha(target),'parsed_field_changes':changes,'all_other_parsed_fields_unchanged':True,'unchanged_counts':{'named_nodes':47,'edges':57,'references':23,'elementary_events':4,'opaque_interface':1,'chemical_sides':14},'native_original':{'path':str(P/'raw/SMP0002083-current.pwml'),'sha256':sha(P/'raw/SMP0002083-current.pwml')},'fresh_native_assertions_checked':['581268 reference-pathway551','Compound114 explicit input','595297 visualization references581268','Native side Left','Interface block does not name Aspartate Metabolism'],'native_document_limit':'Whole original PWML still has invalid option prefix elsewhere; bounded intact fragments are parsed without rewriting original'})
+dump(C/'predecessor-preservation.json',{'at':datetime.now(timezone.utc).isoformat(),'author_handoff':str(A/'handoff.json'),'sha256':sha(A/'handoff.json'),'artifacts_rehashed':len(h['artifacts']),'mismatches':[],'original_target_sha256':sha(original)})
+m=json.loads((A/'replay-manifest.json').read_text());m['inputs']['record']={'path':str(target),'sha256':sha(target)};dump(C/'replay-manifest.json',m)
+# Preserve exact checked helper, source and authority bindings by reference. It
+# remains immutable in the author directory; only the record role is changed.
+for fn in ['run-controls.py','run-publication-control.py']:
+ code=(A/fn).read_text().replace("A=Path('/private/tmp/pathwaymech-next-222-author-20261011')", "A=Path('/private/tmp/pathwaymech-next-222-correction-20261011')")
+ code=code.replace("HELPER=A/'replay-author.py'", "HELPER=Path('/private/tmp/pathwaymech-next-222-author-20261011/replay-author.py')")
+ code=code.replace("A/'replay-author.py'", "Path('/private/tmp/pathwaymech-next-222-author-20261011/replay-author.py')")
+ (C/fn).write_text(code)
+print(json.dumps({'corrected_target':str(target),'sha256':sha(target),'changed_fields':len(changes),'original_artifacts_rehashed':len(h['artifacts']),'helper_sha256':sha(A/'replay-author.py')},indent=2))

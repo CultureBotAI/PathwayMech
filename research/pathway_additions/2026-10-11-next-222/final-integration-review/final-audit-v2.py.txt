@@ -1,0 +1,109 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,csv,io,re,subprocess
+import yaml
+from lxml import html
+from xml.etree import ElementTree as ET
+
+ROOT=Path('/private/tmp/pathwaymech-next-222-20261011')
+HERE=Path(__file__).parent
+D=ROOT/'research/pathway_additions/2026-10-11-next-222'
+BASE='d8e3888528088e7bba468df57056f9f0e588b463'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def readj(p):return json.loads(p.read_text())
+def rows(raw):return list(csv.DictReader(io.StringIO(raw.decode()),delimiter='\t'))
+inspection=readj(HERE/'native-inspect.json')
+def stable():
+    for item in inspection['source']['inputs']:assert sha(ROOT/item['path'])==item['sha256'],item['path']
+stable()
+target=ROOT/'data/pathways/adenine-and-adenosine-salvage-ii.yaml'
+record=yaml.safe_load(target.read_bytes());original=yaml.safe_load((D/'author/draft/adenine-and-adenosine-salvage-ii.yaml.txt').read_bytes())
+initial=readj(D/'scientific-review/review.json');successor=readj(D/'science-reassessment/review.json')
+assert sha(target)==successor['target']['sha256']=='8b8eb42ace01b8d663ecff30a85e47d6de7b25e7cde785b268655ab281153157'
+assert sha(D/'scientific-review/review.json')==successor['previous_review']['sha256']
+restored=json.loads(json.dumps(record))
+for key in ['source_assertion','source_locator']:restored['mechanistic_edges'][31]['evidence'][1][key]=original['mechanistic_edges'][31]['evidence'][1][key]
+assert restored==original
+assert len(initial['edges'])==len(record['mechanistic_edges'])==57
+for old,edge in zip(initial['edges'],record['mechanistic_edges'],strict=True):
+    assert all(old[k]==edge[k] for k in ['id','subject','predicate','object'])
+    assert old['evidence_items_read']==len(edge['evidence'])
+    assert set(old['reference_ids'])=={e['reference_id'] for e in edge['evidence']}
+assert successor['unresolved_actionable_findings']==0
+reference_bindings={}
+for b in initial['source_and_runtime_bindings']:
+    for role in b['roles']:
+        if role.startswith('reference:'):reference_bindings[role.removeprefix('reference:')]=b
+rehashed=[];inherited=[]
+for ref in record['references']:
+    b=reference_bindings[ref['id']]
+    assert b['sha256']==ref['source_sha256']
+    p=Path(b['path'])
+    if p.stat().st_size < 25_000_000:
+        assert sha(p)==b['sha256'];rehashed.append(ref['id'])
+    else:inherited.append(ref['id'])
+
+pwml=Path(reference_bindings['PathBank:SMP0002083/PWML']['path'])
+raw=pwml.read_text()
+sub=ET.fromstring(re.search(r'<sub-pathway>.*?</sub-pathway>',raw,re.S)[0])
+visual=ET.fromstring(re.search(r'<sub-pathway-visualization>.*?</sub-pathway-visualization>',raw,re.S)[0])
+assert [sub.findtext('id'),sub.findtext('reference-pathway-id'),sub.findtext('sub-pathway-inputs/sub-pathway-input/element-id'),sub.findtext('sub-pathway-inputs/sub-pathway-input/element-type')]==['581268','551','114','Compound']
+assert [visual.findtext('id'),visual.findtext('sub-pathway-id'),visual.findtext('sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side')]==['595297','581268','Left']
+assert 'Aspartate' not in ET.tostring(sub,encoding='unicode')
+assert 'side=Left' in record['mechanistic_edges'][31]['evidence'][1]['source_locator']
+
+page=ROOT/'pages/records/PathBank_SMP0002083.html'
+doc=html.fromstring(page.read_bytes())
+nodes=doc.xpath("//a[contains(concat(' ',normalize-space(@class),' '),' graph-node ')]")
+edges=doc.xpath("//*[contains(concat(' ',normalize-space(@class),' '),' graph-edge ')]")
+assert len(nodes)==45 and len(edges)==57
+assert {e.get('data-node-id') for e in nodes}=={record['id']}|{x['id'] for x in record['participants']+record['reactions']}
+for n,(source,rendered) in enumerate(zip(record['mechanistic_edges'],edges,strict=True),1):
+    assert [rendered.get('data-'+k) for k in ['subject','predicate','object']]==[source[k] for k in ['subject','predicate','object']]
+    assert rendered.get('href')=='#mechanism-edge-'+str(n)
+    row=doc.get_element_by_id('mechanism-edge-'+str(n))
+    for evidence in source['evidence']:
+        assert evidence['source_assertion'] in row.text_content()
+        assert evidence['source_locator'] in row.text_content()
+assert sha(page)==readj(D/'maintained-validation/graph-audit.json')['graph']['sha256']
+
+old_nodes=rows(subprocess.check_output(['git','show',BASE+':pages/downloads/nodes.tsv'],cwd=ROOT))
+old_edges=rows(subprocess.check_output(['git','show',BASE+':pages/downloads/edges.tsv'],cwd=ROOT))
+new_nodes=rows((ROOT/'pages/downloads/nodes.tsv').read_bytes());new_edges=rows((ROOT/'pages/downloads/edges.tsv').read_bytes())
+node_index={r['id']:r for r in new_nodes};edge_index={r['id']:r for r in new_edges}
+for edge in old_edges:assert edge_index[edge['id']]==edge
+for node in old_nodes:
+    current=json.loads(node_index[node['id']]['source_contexts'])
+    for context in json.loads(node['source_contexts']):assert context in current
+target_contexts={}
+for node in new_nodes:
+    cs=[x for x in json.loads(node['source_contexts']) if x['record_id']==record['id']]
+    if cs:assert len(cs)==1;target_contexts[node['id']]=cs[0]
+assert len(target_contexts)==47
+for group in ['taxa','participants','reactions']:
+    for node in record[group]:assert target_contexts[node['id']]=={'record_id':record['id'],'collection':group,**node}
+target_edges=[e for e in new_edges if e['id'].startswith('pathwaymech:PathBank_SMP0002083_aas2-')]
+assert len(target_edges)==57
+for edge in record['mechanistic_edges']:
+    hits=[x for x in target_edges if '_'+edge['id']+'_' in x['id']];assert len(hits)==1
+    row=hits[0]
+    assert row['subject']==edge['subject'] and row['object']==edge['object']
+    assert json.loads(row['evidence'])==edge['evidence']
+    expected=[r for r in record['references'] if r['id'] in {e['reference_id'] for e in edge['evidence']}]
+    assert sorted(json.loads(row['reference_metadata']),key=lambda x:x['id'])==sorted(expected,key=lambda x:x['id'])
+potassium=node_index['CHEBI:29103']
+assert potassium['source_category']=='cofactor|small_molecule'
+assert target_contexts['CHEBI:29103']['category']=='small_molecule'
+assert len([x for x in json.loads(potassium['source_contexts']) if x['category']=='cofactor'])==6
+
+gates=readj(D/'maintained-validation/gates/execution.json')
+assert gates['all_requested_ran'] and gates['all_passed']
+for check in gates['checks']:
+    assert check['exit_code']==0
+    wrapper=readj(D/'maintained-validation/gates'/str(check['name']+'.log.json'))
+    assert hashlib.sha256(wrapper['text'].encode()).hexdigest()==check['log_sha256']==wrapper['source_sha256']
+    assert Path(check['log']).read_bytes()==wrapper['text'].encode()
+stable()
+report={'status':'passed','finished_at':datetime.now(timezone.utc).isoformat(),'source_inspect_sha256':sha(HERE/'native-inspect.json'),'all_65_inspected_inputs_rechecked':True,'record_sha256':sha(target),'edge_reconciliation':{'edges':57,'evidence':81,'named_ids':47,'references':23,'all_original_fields_except_two_corrections_unchanged':True,'inherited_original_science_sha256':sha(D/'scientific-review/review.json'),'accepted_scientific_successor_sha256':sha(D/'science-reassessment/review.json')},'reference_binding_hashes_match_record':23,'fresh_small_original_reference_hashes':rehashed,'large_reference_hashes_inherited_from_sealed_full_original_replay':inherited,'fresh_pwml_fragment_check':{'subpathway':'581268','reference_pathway':'551','input_compound':'114','visualization':'595297','side':'Left'},'actual_svg':{'nodes':45,'edges':57,'evidence':81,'sha256':sha(page),'scope':'programmatic; no browser or screenshot claim'},'kgx':{'prior_edges_equal':len(old_edges),'prior_source_contexts_preserved':sum(len(json.loads(n['source_contexts'])) for n in old_nodes),'target_contexts':47,'target_edges_with_full_evidence_and_refs':57,'potassium_category_union':'Supported: six prior cofactor contexts remain, while this pathway records condition-dependent small-molecule activation; no new has_cofactor edge for potassium.'},'root_gate_logs_recovered_and_rehashed':6,'findings':[],'scope':'Final maintained integration audit plus explicit reconciliation of inherited complete scientific assessment; not a new whole-literature or whole-corpus scientific review.','script_sha256':sha(Path(__file__))}
+with (HERE/'final-integration-report.json').open('x') as stream:json.dump(report,stream,indent=2);stream.write('\n')
+print(json.dumps(report,indent=2))

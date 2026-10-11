@@ -1,0 +1,318 @@
+"""Build reviewed salvage authorities externally; no apply mode exists."""
+
+import argparse
+import hashlib
+import json
+import os
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
+from pathlib import Path
+
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def main():
+    if not __debug__ or not sys.dont_write_bytecode:
+        raise RuntimeError('Assertions must be enabled and bytecode disabled')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output-dir', type=Path, required=True)
+    args = parser.parse_args()
+    base = Path(__file__).resolve().parent
+    root = Path('/private/tmp/pathwaymech-next-222-20261011')
+    cache = Path('/private/tmp/pathwaymech-curation-authorities')
+    selection_path = base / 'selection-final.json'
+    out = args.output_dir.absolute()
+    if os.path.lexists(out):
+        raise FileExistsError(out)
+    if out.parent != base or out.parent.resolve(strict=True) != base:
+        raise ValueError('Output must be a new direct child of the external canonical directory')
+    expected_head = 'd8e3888528088e7bba468df57056f9f0e588b463'
+    expected_tree = '929b9b0578a280aed04e20cf33d412b13ba0d822'
+    started = datetime.now(UTC).isoformat()
+    bindings = {}
+
+    def capture(path, expected=None):
+        path = Path(path).absolute()
+        body = path.read_bytes()
+        identity = (str(path.resolve(strict=True)), hashlib.sha256(body).hexdigest())
+        if expected is not None and identity[1] != expected:
+            raise ValueError('Input digest mismatch: ' + str(path))
+        if str(path) in bindings and bindings[str(path)][:2] != identity:
+            raise ValueError('Input changed during capture: ' + str(path))
+        bindings[str(path)] = (*identity, body)
+        return body
+
+    def recheck():
+        for name, (resolved, digest, _) in bindings.items():
+            if str(Path(name).resolve(strict=True)) != resolved or sha(name) != digest:
+                raise ValueError('Input changed after capture: ' + name)
+
+    def git_state():
+        for expression, expected in [('HEAD', expected_head), ('HEAD^{tree}', expected_tree)]:
+            actual = subprocess.check_output(['git', 'rev-parse', expression], cwd=root, text=True).strip()
+            if actual != expected:
+                raise ValueError('Production baseline changed: ' + expression)
+
+    def inventory(directory, patterns):
+        command = ['rg', '-uu', '-L', '--files']
+        for pattern in patterns:
+            command += ['-g', pattern]
+        return sorted(subprocess.check_output(command + [str(directory)], cwd=root, text=True).splitlines())
+
+    git_state()
+    exact_python = Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+    if Path(sys.executable).resolve(strict=True) != exact_python.resolve(strict=True) or Path(
+        sys.prefix
+    ).resolve(strict=True) != exact_python.parent.parent.resolve(strict=True):
+        raise ValueError('Unexpected interpreter or environment')
+    selection = json.loads(capture(selection_path,
+        '0cfc2ed5d4367c91f702390325d5932973b6accde9c400630b499b33f262dc94'))
+    capture(__file__)
+    lock = selection['preparation_baseline']
+    assert lock['root'] == str(root)
+    assert lock['actual_merged_commit'] == expected_head
+    assert lock['actual_merged_tree'] == expected_tree and lock['current_records'] == 222
+    assert lock['python_version'] == sys.version
+    assert lock['prefix'] == str(Path(sys.prefix).resolve(strict=True))
+    for row in selection['captured_inputs']:
+        capture(row['path'], row['sha256'])
+        if str(Path(row['path']).resolve(strict=True)) != row['resolved_path']:
+            raise ValueError('Selection input path changed: ' + row['path'])
+        assert len(bindings[row['path']][2]) == row['bytes']
+    for row in selection['reviewed_files']:
+        capture(root / row['path'], row['after_sha256'])
+    runtime_inventory = inventory('src', ['*.py', '*.yaml', '*.yml', '*.json'])
+    corpus_inventory = inventory('data/pathways', ['*.yaml'])
+    assert runtime_inventory == lock['runtime_files']
+    assert corpus_inventory == lock['corpus_files']
+    # The importing process and both subprocesses use the same exact installed
+    # YAML implementation, repository runtime, interpreter, and dependency lock.
+    sys.path.insert(0, str(root / 'src'))
+    import yaml
+
+    yaml_root = Path(yaml.__file__).parent
+    assert inventory(yaml_root, ['*.py', '*.so', '*.pyd']) == lock['yaml_files']
+    target = Path(selection['corrected_target']['path'])
+    target_bytes = capture(target,
+        '8b8eb42ace01b8d663ecff30a85e47d6de7b25e7cde785b268655ab281153157')
+    record = yaml.safe_load(target_bytes)
+    named = {node['id']: node['label'] for node in
+             [record, *record['taxa'], *record['participants'], *record['reactions']]}
+    assert named == selection['named_ids'] and len(named) == 47
+    before = {name: json.loads(capture(root / f'data/identifier_authorities/{name}.json'))
+              for name in ['ontology', 'sources']}
+    prior = json.loads(capture(root / 'conf/identifier_sources.json'))
+    entries = [row['manifest_entry'] for row in selection['selected_new_inputs']]
+    manifest = prior + entries
+    assert len(prior) == 624 and len(manifest) == 631
+    assert len(before['ontology']['terms']) == 1871
+    assert len(before['sources']['terms']) == 2251
+    assert json.loads(capture(base / 'manifest-proposed.json',
+        'f9f342c0b3c26c58ebb04cd6848e3c7a0dd27813e79c773e1941e31b4cc803f9')) == manifest
+    for field in ['key', 'path']:
+        assert len({entry[field] for entry in manifest}) == len(manifest), field
+    locations = {entry['path']: cache / 'sources' / entry['path'] for entry in prior}
+    for row in selection['selected_new_inputs']:
+        locations[row['manifest_entry']['path']] = Path(row['original_path'])
+        assert not os.path.lexists(row['proposed_cache_destination'])
+    originals = []
+    for entry in manifest:
+        relative = Path(entry['path'])
+        if relative.is_absolute() or '..' in relative.parts:
+            raise ValueError('Unsafe manifest cache path')
+        path = locations[entry['path']]
+        originals.append({'key': entry['key'], 'path': str(path),
+                          'resolved_path': str(path.resolve(strict=True)),
+                          'sha256': entry['sha256'], 'bytes': path.stat().st_size})
+    databases = []
+    for row in lock['databases']:
+        path = Path(row['path'])
+        assert str(path.resolve(strict=True)) == row['resolved_path']
+        assert (path.stat().st_size, path.stat().st_mtime_ns) == (row['size'], row['mtime_ns'])
+        assert before['ontology']['sources'][row['source_key']] == row['metadata']
+        databases.append({'path': row['path'], 'resolved_path': row['resolved_path'],
+                          'sha256': row['metadata']['sha256'], 'bytes': row['size'],
+                          'source_key': row['source_key']})
+    assert len(originals) == 631 and len(databases) == 4
+
+    def verify_original(row):
+        path = Path(row['path'])
+        if (str(path.resolve(strict=True)) != row['resolved_path']
+                or path.stat().st_size != row['bytes'] or sha(path) != row['sha256']):
+            raise ValueError('Original body path or digest changed: ' + str(path))
+        return row
+
+    def full_original_check(phase):
+        begin = datetime.now(UTC).isoformat()
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            checked = list(pool.map(verify_original, originals + databases))
+        receipt = {'phase': phase, 'started_at': begin, 'finished_at': datetime.now(UTC).isoformat(),
+                   'source_bodies': len(originals), 'whole_sql_databases': len(databases), 'checked': checked}
+        path = out / (phase + '-original-hashes.json')
+        save(path, receipt)
+        capture(path)
+        print(json.dumps({'phase': phase, 'source_bodies': len(originals),
+                          'whole_sql_databases': len(databases), 'status': 'passed'}), flush=True)
+
+    recheck()
+    out.mkdir(parents=False, exist_ok=False)
+    full_original_check('before')
+    recheck()
+    overlay = out / 'source-cache'
+    overlay.mkdir()
+    for entry in manifest:
+        destination = overlay / entry['path']
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.symlink_to(locations[entry['path']])
+    save(out / 'identifier_sources.json', manifest)
+    selected = out / 'selected-identifiers'
+    selected.mkdir()
+    # IDs only, never labels: include every historical snapshot ID so current
+    # corpus coverage cannot silently drop the 21 retained unused source terms.
+    all_ids = (set(before['ontology']['terms']) | set(before['sources']['terms'])
+               | set(selection['selected_ontology_terms']) | set(selection['selected_source_terms']))
+    with (selected / 'ids.yaml').open('x') as stream:
+        yaml.safe_dump({'id': 'GO:0008150', 'participants': [{'id': i} for i in sorted(all_ids)]},
+                       stream, sort_keys=False)
+    capture(selected / 'ids.yaml')
+    capture(out / 'identifier_sources.json')
+    ontology_command = [sys.executable, '-B', str(root / 'scripts/build_ontology_identifier_snapshot.py')]
+    for prefix, filename in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+        ontology_command += ['--source', prefix + '=' + str(cache / (filename + '.db'))]
+    ontology_command += ['--corpus', str(selected), '--rhea-updates',
+                         str(root / 'conf/rhea_identifier_updates.json'), '--cache-dir', str(overlay),
+                         '--output', str(out / 'ontology.json')]
+    commands = {
+        'ontology': ontology_command,
+        'sources': [sys.executable, '-B', str(root / 'scripts/build_source_identifier_snapshot.py'),
+                    '--manifest', str(out / 'identifier_sources.json'), '--cache-dir', str(overlay),
+                    '--records', str(selected), '--output', str(out / 'sources.json')],
+    }
+    environment = {key: value for key, value in os.environ.items()
+                   if key not in {'PYTHONOPTIMIZE', 'PYTHONHOME'}}
+    environment.update({'PYTHONPATH': str(root / 'src'), 'UV_NO_SYNC': '1',
+                        'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONSAFEPATH': '1',
+                        'PYTHONNOUSERSITE': '1', 'UV_CACHE_DIR': str(out / 'unused-uv-cache')})
+
+    def run(pair):
+        name, command = pair
+        log = out / (name + '.log')
+        begin = datetime.now(UTC).isoformat()
+        with log.open('x') as stream:
+            process = subprocess.run(command, cwd=root, check=False, env=environment,
+                                     stdout=stream, stderr=subprocess.STDOUT)
+        receipt = {'command': command, 'started_at': begin, 'finished_at': datetime.now(UTC).isoformat(),
+                   'exit_code': process.returncode, 'log': str(log), 'log_sha256': sha(log)}
+        save(out / (name + '-execution.json'), receipt)
+        print(json.dumps({'builder': name, 'exit_code': process.returncode}), flush=True)
+        return receipt
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        checks = list(pool.map(run, commands.items()))
+    save(out / 'execution.json', checks)
+    for name in commands:
+        capture(out / (name + '.log'))
+        capture(out / (name + '-execution.json'))
+    capture(out / 'execution.json')
+    if any(check['exit_code'] != 0 for check in checks):
+        raise ValueError('Canonical builder failed; no maintained outputs written')
+    deltas = {}
+    for name, expected_count in [('ontology', 1873), ('sources', 2265)]:
+        after = json.loads(capture(out / (name + '.json')))
+        expected_terms = selection['selected_ontology_terms' if name == 'ontology' else 'selected_source_terms']
+        new_metadata = {} if name == 'ontology' else selection['expected_new_source_metadata']
+        assert not (before[name]['terms'].keys() & expected_terms.keys())
+        assert not (before[name]['sources'].keys() & new_metadata.keys())
+        # Equality checks both full prior metadata and exact native aliases,
+        # rejecting extra terms, source entries, top-level fields or removals.
+        expected = {'version': before[name]['version'],
+                    'terms': before[name]['terms'] | expected_terms,
+                    'sources': before[name]['sources'] | new_metadata}
+        assert after == expected, name
+        assert len(after['terms']) == expected_count
+        delta = {}
+        for field in ['terms', 'sources']:
+            delta[field] = {'before': len(before[name][field]), 'after': len(after[field]),
+                            'added': sorted(after[field].keys() - before[name][field].keys()),
+                            'changed_existing': [], 'removed': []}
+        deltas[name] = {'sha256': sha(out / (name + '.json')), **delta}
+    sandbox = out / 'one-record-validation'
+    for relative in ['data/pathways', 'data/identifier_authorities', 'conf']:
+        (sandbox / relative).mkdir(parents=True, exist_ok=True)
+    for path, body in [
+        (sandbox / 'data/pathways' / target.name, target_bytes),
+        (sandbox / 'conf/identifier_policy.yaml', capture(root / 'conf/identifier_policy.yaml')),
+        *[(sandbox / f'data/identifier_authorities/{name}.json', capture(out / (name + '.json')))
+          for name in before],
+    ]:
+        with path.open('xb') as stream:
+            stream.write(body)
+        capture(path)
+    gate_command = [sys.executable, '-B', '-c',
+                    'import json,sys; from pathlib import Path; '
+                    'from pathwaymech.identifiers import identifier_errors; '
+                    'errors=identifier_errors(Path(sys.argv[1])); '
+                    'print(json.dumps(errors)); sys.exit(1 if errors else 0)', str(sandbox)]
+    gate = run(('one-record-identifiers', gate_command))
+    capture(out / 'one-record-identifiers.log')
+    capture(out / 'one-record-identifiers-execution.json')
+    assert gate['exit_code'] == 0
+    errors = json.loads((out / 'one-record-identifiers.log').read_text())
+    assert errors == []
+    save(out / 'one-record-identifiers.json',
+         {'errors': errors, 'target_sha256': sha(target), 'execution': gate,
+          'scope': 'Canonical identifier check only; scientific review and full corpus gates remain separate'})
+    capture(out / 'one-record-identifiers.json')
+    full_original_check('final')
+    assert inventory('src', ['*.py', '*.yaml', '*.yml', '*.json']) == runtime_inventory
+    assert inventory('data/pathways', ['*.yaml']) == corpus_inventory
+    assert inventory(yaml_root, ['*.py', '*.so', '*.pyd']) == lock['yaml_files']
+    for entry in manifest:
+        destination = overlay / entry['path']
+        assert destination.is_symlink()
+        assert os.readlink(destination) == str(locations[entry['path']])
+        assert destination.resolve(strict=True) == locations[entry['path']].resolve(strict=True)
+    for row in selection['selected_new_inputs']:
+        assert not os.path.lexists(row['proposed_cache_destination'])
+    git_state()
+    report = {
+        'status': 'passed_external_canonical_build',
+        'started_at': started, 'finished_at': datetime.now(UTC).isoformat(),
+        'baseline_commit': expected_head, 'baseline_tree': expected_tree,
+        'selection_sha256': sha(selection_path), 'target_sha256': sha(target),
+        'helper_sha256': sha(__file__), 'commands': checks, 'manifest_count': len(manifest),
+        'snapshots': deltas, 'all_prior_terms_and_metadata_preserved': True,
+        'prior_manifest_exact_prefix': manifest[:624] == prior,
+        'one_record_identifier_errors': errors, 'one_record_execution': gate,
+        'runtime_inventory': runtime_inventory, 'corpus_inventory': corpus_inventory,
+        'yaml_runtime_inventory': lock['yaml_files'], 'selected_identifier_count': len(all_ids),
+        'bindings': [{'path': name, 'resolved_path': row[0], 'sha256': row[1], 'bytes': len(row[2])}
+                     for name, row in bindings.items()],
+        'source_hash_receipts': [str(out / (phase + '-original-hashes.json')) for phase in ['before', 'final']],
+        'limits': ['External canonical outputs require independent review before maintained adoption.',
+                   'Scientific correction and independent science review remain separate.',
+                   'No maintained files, shared cache originals, or Git state written.',
+                   'Canonical builders and one-record identifiers are not full corpus gates.'],
+    }
+    serialized = json.dumps(report, indent=2, ensure_ascii=False) + '\n'
+    # Deliberately after slow hashes, commands, output checks, and serialization.
+    # Every captured code/input/output byte is checked before exclusive success.
+    recheck()
+    with (out / 'report.json').open('x') as stream:
+        stream.write(serialized)
+    print(json.dumps({'status': report['status'], 'manifest': len(manifest), 'snapshots': deltas}), flush=True)
+
+
+if __name__ == '__main__':
+    main()

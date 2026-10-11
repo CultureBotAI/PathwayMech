@@ -1,0 +1,26 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/build_source_identifier_snapshot.py
+  slug: pathbank-entrez-authorities
+session:
+  id: 2026-10-11T222144Z-codex-836220
+  timestamp: '2026-10-11T22:21:44Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    agent_tool: codex
+events:
+- type: EDIT
+  outcome: changed
+  summary: Validate native PathBank and Entrez Gene identifiers for source authority
+  details: Added official PathBank per-pathway BioPAX authority handling for pathway, attached
+    sub-pathway stubs and Transport identities, plus strict native NCBI Entrez Gene EFetch
+    authority support. Native identifier, locus, taxon and record-status checks reject malformed
+    or conflicting records before output; source DTD bytes remain bound without resolving
+    external entities. The authority implementation and independent root review passed focused
+    checks, authentic-source probes and negative controls. All 2251 historical authority terms
+    reproduce byte exactly, with 2230 selected by current records and 21 retained historical
+    terms. Original failed attempts and their corrected successors remain archived in research/pathway_additions/2026-10-11-next-222.
+    Separate canonical authority adoption and full maintained gates are required and are not
+    claimed passed by this event.

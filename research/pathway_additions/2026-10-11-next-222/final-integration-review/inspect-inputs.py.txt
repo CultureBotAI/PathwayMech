@@ -1,0 +1,23 @@
+from pathlib import Path
+import subprocess,json,os,datetime,hashlib
+
+ROOT=Path('/private/tmp/pathwaymech-next-222-20261011')
+HERE=Path(__file__).parent
+D='research/pathway_additions/2026-10-11-next-222/'
+paths=['CLAUDE.md','justfile','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','docs/IDENTIFIERS.md','docs/record-reviews.md','docs/record-review-profile.md','conf/record_review.yaml','schema/record_review.yaml','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/identifiers.py','src/pathwaymech/kgx.py','src/pathwaymech/graph_view.py','scripts/record_review.py','.claude/skills/add-pathway/SKILL.md','.claude/skills/review-yaml-record/SKILL.md','conf/identifier_policy.yaml','conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json','scripts/build_source_identifier_snapshot.py','tests/test_pathbank_identifier_authority.py','tests/test_ncbi_gene_identifier_authority.py','pages/records/PathBank_SMP0002083.html','pages/downloads/nodes.tsv','pages/downloads/edges.tsv','pages/downloads/manifest.json','pages/pathway_index.json','pages/browse.html','pages/index.html','history/records/adenine-and-adenosine-salvage-ii/2026-10-11T222142Z-codex-6cbad0.yaml','history/infrastructure/pathbank-entrez-authorities/2026-10-11T222144Z-codex-836220.yaml']
+paths += [D+x for x in ['README.md','scientific-review/review.json','scientific-review/review.md','science-reassessment/review.json','science-reassessment/review.md','science-reassessment/delta-result.json','author/reference-bindings.json','author/authority-inputs.json','author/draft/adenine-and-adenosine-salvage-ii.yaml.txt','canonical-authorities/report.json','canonical-authorities/selection-final.json','canonical-authorities/failed-attempt/root-terminal-receipt.json','canonical-authorities/failed-attempt/canonical-attempt1-diagnostic.json','independent-adoption-review.json','root-adoption.json','maintained-validation/gates/execution.json','maintained-validation/graph-audit.json','maintained-validation/preservation.json','maintained-validation/root-adoption.json','maintained-validation/successor-status.json','current-dedup/audit.json','current-dedup/report.md','current-dedup/related-record-comparison.json','current-dedup/actual-merged-corpus-bridge.json']]
+paths += [D+'maintained-validation/gates/'+n+'.log.json' for n in ['render','validate','test','lint','kgx','whitespace']]
+targets=Path('/private/tmp/pathwaymech-next-222-canonical-review-20261011/targets.yaml')
+assert all((ROOT/p).is_file() for p in paths),[p for p in paths if not (ROOT/p).is_file()]
+with (HERE/'targets.yaml').open('xb') as f:f.write(targets.read_bytes())
+command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(HERE/'targets.yaml')]
+for p in paths:command+=['--input',p]
+start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+result=subprocess.run(command,cwd=ROOT,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'},capture_output=True)
+with (HERE/'native-inspect.json').open('xb') as f:f.write(result.stdout)
+with (HERE/'native-inspect.stderr').open('xb') as f:f.write(result.stderr)
+receipt={'command':command,'started_at':start,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exit_code':result.returncode,'stdout_sha256':hashlib.sha256(result.stdout).hexdigest(),'stderr_sha256':hashlib.sha256(result.stderr).hexdigest()}
+with (HERE/'inspect-receipt.json').open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+assert result.returncode==0,result.stderr.decode()
+doc=json.loads(result.stdout)
+print(json.dumps({'status':doc['status'],'git_revision':doc['source']['git_revision'],'input_files':len(doc['source']['inputs']),'inspect_sha256':receipt['stdout_sha256']},indent=2))
