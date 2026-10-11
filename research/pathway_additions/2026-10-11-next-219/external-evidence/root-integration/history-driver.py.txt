@@ -1,0 +1,36 @@
+"""Invoke the repository's native scaffolder with exact structured arguments."""
+import datetime
+import json
+import os
+import subprocess
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+OUT = Path('/private/tmp/pathwaymech-next-219-history-receipt.json')
+assert not OUT.exists()
+PREFIX = [str(ROOT/'.venv/bin/python'), 'scripts/new_history_record.py']
+common = ['--outcome','changed','--agent-tool','codex']
+commands = [
+    PREFIX + common + ['--kind','record','--slug','nitrate-reduction-i-denitrification','--target-root','data/pathways','--event','CREATE','--summary','Add the complete native nitrate reduction I denitrification pathway','--issue','https://github.com/CultureBotAI/PathwayMech/issues/407','--details','Add MetaCyc:DENITRIFICATION-PWY with all five native objects, qualified nitrate/nitrite exchange, PAO1 context,39 participants,75 edges,156 evidence blocks and73 references. Preserve carrier specificity, compartments, transport-mode uncertainty, historical preparations and sequence differences, inferred cofactor/assembly tiers and source conflicts. The full original external scientific review and independent correction review support exact target7c5b3ca9. Anr source locator and NarK1 membrane-scope corrections are adopted. Current corpus gates, integration replay and canonical scientific review follow. Dossier: research/pathway_additions/2026-10-11-next-219.'],
+    PREFIX + common + ['--kind','infrastructure','--slug','denitrification-authorities-and-review-evidence','--path','research/pathway_additions/2026-10-11-next-219/README.md','--event','CREATE','--summary','Preserve denitrification source authorities and immutable review evidence','--issue','https://github.com/CultureBotAI/PathwayMech/issues/407','--details','Adopt25 new exact source inputs and11 ChEBI terms through completed canonical builders, preserving572 prior manifest entries,1835 ontology terms,2187 source terms and424 metadata rows. Preserve original author/full review, correction/independent reassessment, failures and source constraints as distinct immutable evidence with lossless wrappers and explicit aliases. Source bodies and databases remain external. Actual ED merged baseae927944 has reviewed-tree equality. Full corpus gates and canonical maintained review follow the archived root acceptance receipts.'],
+    PREFIX + common + ['--kind','infrastructure','--slug','denitrification-authorities-and-review-evidence','--path','research/pathway_additions/2026-10-11-next-219/denitrification-replay.py','--event','EDIT','--summary','Fix replay helper lint while preserving guarded import order','--issue','https://github.com/CultureBotAI/PathwayMech/issues/409','--details','Targeted repositoryRuff found12 findings in original helper4b5a7559. Preserve those exact bytes in external-evidence/helper-formatting/denitrification-replay-original.py.txt and retain the original packaging maps. New helper70387ce2 renames O to ORIGINAL_AUTHOR and the single unused loop binding acc to _unused_accession, documents six intentional delayed imports, inserts the import separator and wraps comments/constant strings. Complete executable ASTs match after only those two name normalizations. Four historical map references explicitly resolve to the unchanged-byte archive. Target7c5b3ca9 remains exact. TargetedRuff passes; full gates and current integrated source replay follow.'],
+]
+results = []
+environment = dict(os.environ, PYTHONPATH=str(ROOT/'src'), UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache')
+for command in commands:
+    result = subprocess.run(command,cwd=ROOT,env=environment,text=True,capture_output=True)
+    results.append({'command':command,'exit_code':result.returncode,'stdout':result.stdout,'stderr':result.stderr})
+    assert result.returncode == 0, result.stderr
+    print(result.stdout,end='',flush=True)
+receipt = {'status':'native_history_scaffolded_before_render','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'commands':results,'earlier_failed_just_invocation':{'session':77921,'exit_code':1,'terminal_chunk':'382d11','cause':'The variadic just recipe interpolated multiword summary/details into its shell without preserving argument quoting. Argparse rejected the invocation; no history was created by that failed attempt. The successor calls the same official scripts/new_history_record.py directly with structured subprocess arguments.'}}
+with OUT.open('x') as stream:
+    json.dump(receipt,stream,indent=2);stream.write('\n')
+archive = ROOT/'research/pathway_additions/2026-10-11-next-219/external-evidence/root-integration'
+archive.mkdir()
+for name,raw in [('history-receipt.json',OUT.read_bytes()),('history-driver.py.txt',Path(__file__).read_bytes())]:
+    with (archive/name).open('xb') as stream:
+        stream.write(raw)
+issue = {'number':409,'url':'https://github.com/CultureBotAI/PathwayMech/issues/409','create_terminal':{'session':54844,'exit_code':0,'chunk':'f943ff'},'duplicate_title_search':{'exit_code':0,'chunk':'7f55a0','matches':[]}}
+with (archive/'helper-lint-issue.json').open('x') as stream:
+    json.dump(issue,stream,indent=2);stream.write('\n')
+print(json.dumps({'status':receipt['status'],'history_count':len(results)}),flush=True)

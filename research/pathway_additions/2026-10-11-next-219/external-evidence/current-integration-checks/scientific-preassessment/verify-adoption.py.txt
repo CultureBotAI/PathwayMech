@@ -1,0 +1,50 @@
+from pathlib import Path
+import base64,hashlib,importlib.util,json,subprocess,datetime,yaml
+repo=Path('/private/tmp/pathwaymech-next-219-20261011');R=Path('/private/tmp/pathwaymech-next-219-independent-scientific-review');D=repo/'research/pathway_additions/2026-10-11-next-219';C=Path('/private/tmp/pathwaymech-denitrification-correction-20261011')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def read(p):return json.loads(Path(p).read_bytes())
+def met(p):return {'path':str(p),'sha256':sha(Path(p).read_bytes()),'bytes':Path(p).stat().st_size}
+def gitbody(p):return subprocess.check_output(['git','show','HEAD:'+p],cwd=repo)
+started=datetime.datetime.now(datetime.timezone.utc).isoformat();target=repo/'data/pathways/nitrate-reduction-i-denitrification.yaml';b=target.read_bytes();assert sha(b)=='7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd';assert b==(C/'draft/nitrate-reduction-i-denitrification.yaml').read_bytes();record=yaml.safe_load(b)
+core=read('/private/tmp/pathwaymech-next-219-core-root-adoption.json');assert sha(Path('/private/tmp/pathwaymech-next-219-core-root-adoption.json').read_bytes())=='1f4892db8046fef96b9c4246f28cc82b300ca665c80ba69fbf56f3cf8236964a'
+for p,h in core['maintained_owner_hashes'].items():assert sha((repo/p).read_bytes())==h
+plan=read(D/'external-evidence/packaging/copy-plan.json');wrappers=0
+
+def original_bytes(row):
+ p=repo/row['destination'];bb=p.read_bytes()
+ if row['mode']=='exact_bytes':return bb
+ assert row['mode']=='lossless_json_wrapper';w=json.loads(bb);assert w['format']=='lossless-immutable-evidence-v1'
+ orig=w['content'].encode('utf-8') if w['encoding']=='utf-8' else base64.b64decode(w['content'],validate=True)
+ assert sha(orig)==w['original_sha256'] and len(orig)==w['original_bytes'];return orig
+for row in plan['copy_entries']:
+ p=repo/row['destination'];assert sha(p.read_bytes())==row['destination_sha256'];assert sha(original_bytes(row))==row['sha256'];wrappers+=row['mode']!='exact_bytes'
+for row in plan['exact_byte_aliases']:assert sha(original_bytes(row))==row['sha256']
+internal=external=0
+for row in plan['formal_input_resolution']:
+ if row['external']:external+=1;continue
+ # Exact archived owner mapping is authoritative; current original path is not substituted.
+ assert sha(original_bytes(row))==row['sha256'],row;internal+=1
+for p in sorted((C/'draft').iterdir()):
+ if p.is_file() and p.suffix not in ['.yaml']:assert p.read_bytes()==(D/'draft'/p.name).read_bytes(),p
+assert (D/'denitrification-replay.py').read_bytes()==(C/'denitrification-replay.py').read_bytes()
+# Freshly verify all 25 issuing originals and unchanged canonical extraction.
+spec=importlib.util.spec_from_file_location('sourcebuilder',repo/'scripts/build_source_identifier_snapshot.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+manifest=read(repo/'conf/identifier_sources.json');oldmanifest=json.loads(gitbody('conf/identifier_sources.json'));oldby={r['key']:r for r in oldmanifest};by={r['key']:r for r in manifest};assert all(by[k]==v for k,v in oldby.items());additions=[x for x in manifest if x['key'] not in oldby];assert len(additions)==25
+source=read(repo/'data/identifier_authorities/sources.json');ont=read(repo/'data/identifier_authorities/ontology.json');preservation={}
+for rel,now in [('data/identifier_authorities/sources.json',source),('data/identifier_authorities/ontology.json',ont)]:
+ old=json.loads(gitbody(rel));assert all(now['terms'][k]==v for k,v in old['terms'].items());assert all(now['sources'][k]==v for k,v in old['sources'].items());preservation[rel]={'old_terms':len(old['terms']),'new_terms':len(now['terms']),'preserved_metadata':len(old['sources'])}
+parsed=[]
+for row in additions:
+ path=Path('/private/tmp/pathwaymech-curation-authorities/sources')/row['path'];assert sha(path.read_bytes())==row['sha256'];terms=list(m.source_terms(row['kind'],path,url=row['url']));assert len(terms)==1
+ cid,label,syn=terms[0];current=source['terms'][cid];assert current['source']==row['key'] and current['label']==label;assert set(current['synonyms'])==set(syn)
+ parsed.append({'id':cid,'label':label,'synonyms':syn,'source_key':row['key'],'source_version':row['version'],'original_path':str(path),'original_sha256':row['sha256']})
+allnodes=[record]+record['taxa']+record['participants']+record['reactions'];labels=[]
+for node in allnodes:
+ cid=node['id'];table=source['terms'] if cid in source['terms'] else ont['terms'];term=table[cid];assert node['label'] in [term['label']]+term.get('synonyms',[]),(cid,node['label'],term)
+ labels.append({'id':cid,'record_label':node['label'],'authority_label':term['label'],'source':term['source']})
+assert len(allnodes)==46
+# Current ignored/hidden and symlink-inclusive search: hits are retained, never called an empty inventory.
+cmd=['rg','-uu','--follow','-n','--no-heading','-i','-e','DENITRIFICATION-PWY|nitrate reduction I \\(denitrification\\)|TRANS-RXN0-239|RXN-11236|RXN-15838|NITRIC-OXIDE-REDUCTASE-RXN|RXN-12130|16391109|17400734|21109633|GO:0019333|M00529','.','-g','!.git','-g','!.venv'];p=subprocess.run(cmd,cwd=repo,capture_output=True);assert p.returncode in [0,1];(R/'current-dedup-hits.txt').write_bytes(p.stdout);(R/'current-dedup-stderr.txt').write_bytes(p.stderr)
+hitpaths=sorted({line.split(':',1)[0] for line in p.stdout.decode().splitlines()});maintained=[x for x in hitpaths if x.startswith('./data/pathways/')];assert maintained==['./data/pathways/nitrate-reduction-i-denitrification.yaml']
+report={'status':'passed_read_only_maintained_adoption_precheck','started_at':started,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'git_base':subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip(),'target':met(target),'core_receipt':met('/private/tmp/pathwaymech-next-219-core-root-adoption.json'),'copied_evidence':{'exact_or_wrapped':len(plan['copy_entries']),'wrappers_roundtrip':wrappers,'aliases':len(plan['exact_byte_aliases']),'internal_formal_resolutions':internal,'external_formal_resolutions_not_rehashed_again':external},'authority_preservation':preservation,'manifest_preserved':len(oldmanifest),'manifest_additions':len(additions),'original_extractions':parsed,'all_named_labels':labels,'dedup':{'command':cmd,'exit_code':p.returncode,'stdout':met(R/'current-dedup-hits.txt'),'hit_paths':hitpaths,'maintained_record_hits':maintained,'scope':'Ignored/hidden/followed current worktree; prior root and independent original-checkout scans remain separately retained. All research/archive/menu hits preserved and distinguished from maintained records.'},'pending':['current integrated replay','history/render/full corpus gates','generated graph assessment','final canonical review save'],'no_maintained_writes':True}
+(R/'adoption-precheck.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'pass','copies':len(plan['copy_entries']),'aliases':len(plan['exact_byte_aliases']),'formal_internal':internal,'formal_external':external,'new_sources':len(parsed),'named_ids':len(labels),'maintained_hits':maintained}))

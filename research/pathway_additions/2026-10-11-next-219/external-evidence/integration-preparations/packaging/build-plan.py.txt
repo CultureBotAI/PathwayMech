@@ -1,0 +1,178 @@
+"""Lossless external-only archive plan for two sealed integration preparations."""
+from pathlib import Path
+from datetime import datetime, timezone
+import base64
+import hashlib
+import json
+import os
+import stat
+import subprocess
+
+OUT = Path(__file__).absolute().parent
+REPO = Path('/private/tmp/pathwaymech-next-219-20261011')
+D = Path('research/pathway_additions/2026-10-11-next-219')
+PREFIX = D / 'external-evidence/integration-preparations'
+PRE = Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011')
+CURRENT = Path('/private/tmp/pathwaymech-denitrification-integrated-replay-formatting-successor-20261011')
+ROOTS = [(PRE, 'original'), (CURRENT, 'formatting-successor')]
+ANCHORS = {
+    PRE / 'preformatting-preparation.json': '39504076a4bfd87fab5ad258ac30f7288389224c62c02dfd14427d4cbafe60b1',
+    CURRENT / 'completion.json': '92df5adae7e64d0e20be2e85616bff0165bfcf7f864ef8f5483711af0427cc6c',
+    CURRENT / 'handoff.json': 'cb296a2051fdcd0140f3671027966f5a304f767a15b6e3f518458d1eebde71ec',
+    CURRENT / 'expected-bindings.json': '169e23ec869e76b2ad8499dc4ab37e43b5cbfe155ea97b341a8ce187c355970c',
+}
+started = datetime.now(timezone.utc).isoformat()
+files, directories, links, copies = [], [], [], []
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def capture(path):
+    path = Path(path).absolute()
+    assert path.is_file() and not path.is_symlink()
+    resolved = str(path.resolve(strict=True))
+    raw = path.read_bytes()
+    assert str(path.resolve(strict=True)) == resolved
+    return raw, {'path': str(path), 'resolved_path': resolved, 'sha256': digest(raw), 'bytes': len(raw), 'source_mode': oct(stat.S_IMODE(path.lstat().st_mode))}
+
+def write(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+for path, expected in ANCHORS.items():
+    assert capture(path)[1]['sha256'] == expected
+pre_seal = json.loads((PRE / 'preformatting-preparation.json').read_bytes())
+current_seal = json.loads((CURRENT / 'completion.json').read_bytes())
+assert len(pre_seal['files']) == 102 and len(current_seal['proof_artifacts']) == 108
+for row in pre_seal['files'] + current_seal['proof_artifacts']:
+    assert capture(row['path'])[1]['sha256'] == row['sha256']
+for root, group in ROOTS:
+    for directory, subdirs, names in os.walk(root, followlinks=False):
+        path = Path(directory)
+        directories.append({'path': str(path), 'mode': oct(stat.S_IMODE(path.lstat().st_mode)), 'entries': sorted(subdirs + names), 'disposition': 'observation-only; no directory metadata installed'})
+        for name in list(subdirs) + names:
+            path = Path(directory) / name
+            if path.is_symlink():
+                target = os.readlink(path)
+                links.append({'path': str(path), 'link_target': target, 'link_target_sha256': digest(os.fsencode(target)), 'resolved_path': str(path.resolve(strict=False)), 'dangling': not path.exists(), 'source_mode': oct(stat.S_IMODE(path.lstat().st_mode)), 'disposition': 'fixture link observation only; no installed link'})
+                if name in subdirs:
+                    subdirs.remove(name)
+            elif path.is_file():
+                raw, row = capture(path)
+                relative = path.relative_to(root)
+                row.update({'source_group': group, 'relative_path': str(relative)})
+                files.append(row)
+                components = [('captured-python-cache' if part == '__pycache__' else 'captured-ruff-cache' if part == '.ruff_cache' else 'gitignore-observation.txt' if part == '.gitignore' else part) for part in relative.parts]
+                destination = PREFIX / group / Path(*components)
+                if destination.suffix == '.py':
+                    destination = destination.with_name(destination.name + '.txt')
+                reasons = []
+                try:
+                    decoded = raw.decode('utf-8')
+                    text = '\x00' not in decoded
+                except UnicodeDecodeError:
+                    decoded, text = None, False
+                if not text:
+                    reasons.append('binary or non-text bytes')
+                if any(line.rstrip(b'\r\n').endswith((b' ', b'\t')) for line in raw.splitlines(keepends=True)) or raw.endswith(b'\n\n'):
+                    reasons.append('whitespace-sensitive original bytes')
+                if path.suffix in {'.log', '.stdout', '.stderr', '.tsv', '.yaml', '.yml', '.jsonl', '.diff'}:
+                    reasons.append('historical log/tabular/YAML text kept inert')
+                if any(part.startswith('controls-attempt-') for part in relative.parts) and path.name != 'results.json':
+                    reasons.append('isolated guard fixture; may contain intentionally invalid or mutated content')
+                source = path
+                mode = 'exact_bytes'
+                if reasons:
+                    mode = 'lossless_json_wrapper'
+                    encoding, content = ('utf-8', decoded) if text else ('base64', base64.b64encode(raw).decode('ascii'))
+                    payload = {'format': 'lossless-immutable-evidence-v1', 'original_sha256': row['sha256'], 'original_bytes': row['bytes'], 'encoding': encoding, 'content': content}
+                    source = OUT / 'payload' / (row['sha256'] + '.json')
+                    if source.exists():
+                        assert json.loads(source.read_bytes()) == payload
+                    else:
+                        write(source, payload)
+                    destination = destination.with_name(destination.name + '.bytes.json')
+                assert not destination.is_absolute() and '..' not in destination.parts
+                assert destination.is_relative_to(PREFIX) and '__pycache__' not in destination.parts
+                assert not os.path.lexists(REPO / destination), ('Destination occupied', destination)
+                copies.append({**row, 'copy_source': str(source), 'destination': str(destination), 'destination_sha256': digest(source.read_bytes()), 'mode': mode, 'installation_mode': '0644', 'wrapper_reasons': reasons, 'role': 'Immutable integration preparation evidence; not an executable helper or current scientific approval'})
+            else:
+                assert path.is_dir(), ('Unsupported special entry', path)
+assert len(files) == 213
+assert len(copies) == len({row['path'] for row in copies}) == len({row['destination'] for row in copies})
+owners = {row['path']: row['destination'] for row in copies}
+for row in links:
+    row['observed_target_archive_owner'] = owners.get(row['resolved_path'])
+    if not row['dangling']:
+        assert row['observed_target_archive_owner'] is not None
+
+for row in copies:
+    raw = Path(row['copy_source']).read_bytes()
+    assert digest(raw) == row['destination_sha256']
+    if row['mode'] == 'lossless_json_wrapper':
+        payload = json.loads(raw)
+        recovered = payload['content'].encode('utf-8') if payload['encoding'] == 'utf-8' else base64.b64decode(payload['content'], validate=True)
+        assert digest(recovered) == row['sha256'] == payload['original_sha256']
+        assert len(recovered) == row['bytes'] == payload['original_bytes']
+    else:
+        assert digest(raw) == row['sha256']
+    destination = OUT / 'preview' / row['destination']
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open('xb') as stream:
+        stream.write(raw)
+    destination.chmod(0o644)
+empty = OUT / 'empty'
+empty.mkdir()
+check = subprocess.run(['git', 'diff', '--no-index', '--check', str(empty), str(OUT / 'preview')], capture_output=True, text=True)
+assert check.returncode in [0, 1] and not check.stdout and not check.stderr
+negative = OUT / 'whitespace-negative'
+negative.mkdir()
+(negative / 'bad.txt').write_bytes(b'control \n')
+bad = subprocess.run(['git', 'diff', '--no-index', '--check', str(empty), str(negative)], capture_output=True, text=True)
+assert bad.returncode not in [0, 1] and 'trailing whitespace' in bad.stdout
+assert not list((OUT / 'preview').rglob('*.py'))
+ignored = subprocess.run(['git', 'check-ignore', '--no-index', '--stdin'], input='\n'.join(row['destination'] for row in copies)+'\n', cwd=REPO, capture_output=True, text=True)
+assert ignored.returncode == 1 and not ignored.stdout and not ignored.stderr
+for row in files:
+    assert capture(row['path'])[1] == {key: row[key] for key in ['path', 'resolved_path', 'sha256', 'bytes', 'source_mode']}
+for row in directories:
+    path = Path(row['path'])
+    assert sorted(os.listdir(path)) == row['entries'] and oct(stat.S_IMODE(path.lstat().st_mode)) == row['mode']
+for row in links:
+    path = Path(row['path'])
+    assert path.is_symlink() and os.readlink(path) == row['link_target']
+    assert str(path.resolve(strict=False)) == row['resolved_path'] and (not path.exists()) == row['dangling']
+validation = {
+    'status': 'passed_external_lossless_integration_proof_archive_checks',
+    'physical_regular_files': len(files), 'copies': len(copies),
+    'exact_byte_copies': sum(row['mode'] == 'exact_bytes' for row in copies),
+    'lossless_wrappers': sum(row['mode'] == 'lossless_json_wrapper' for row in copies),
+    'original_total_bytes': sum(row['bytes'] for row in files),
+    'directory_observations': len(directories), 'link_observations': len(links),
+    'dangling_links': sum(row['dangling'] for row in links),
+    'predecessor_sealed_artifacts': 102, 'successor_sealed_artifacts': 108,
+    'additional_postseal_receipts': ['original/preformatting-preparation.json', 'formatting-successor/completion.json', 'formatting-successor/handoff.json'],
+    'one_canonical_destination_per_regular_external_file': True,
+    'all_sealed_digests_and_source_censuses_rechecked': True,
+    'all_wrappers_roundtrip': True, 'no_active_python_or_installed_links': True,
+    'all_destinations_absent_and_nonignored': True,
+    'whitespace_check': {'exit_code': check.returncode, 'stdout': check.stdout, 'stderr': check.stderr, 'scope': 'No diagnostics. no-index exit1 indicates different trees, not whitespace failure.'},
+    'whitespace_negative_control': {'exit_code': bad.returncode, 'stdout': bad.stdout, 'stderr': bad.stderr},
+    'maintained_writes': [], 'scientific_replay_run': False,
+}
+plan = {
+    'status': 'sealed_external_archive_plan_not_applied', 'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat(),
+    'destination_repo': str(REPO), 'destination_prefix': str(PREFIX),
+    'anchors': [{'path': str(path), 'sha256': value} for path, value in ANCHORS.items()],
+    'copy_entries': copies, 'regular_file_inventory': files,
+    'directory_observations': directories, 'symlink_observations': links,
+    'validation': validation,
+    'closure': 'Only physical files of the two sealed preparation directories are archived. Nested source/runtime/database paths in expected-bindings and receipts remain references, not recursive copy instructions. Future positive execution and independent wrapper/scientific review outputs are excluded and append in separate packages.',
+    'census_scope': 'os.walk/listdir/lstat include ignored and hidden directories, binary bytecode, mutation fixtures and live/dangling links. Links are not followed or installed.',
+    'application_contract': ['Root independently verifies every original/resolved path and digest, wrapper/payload digest and absent nonignored destination before exclusive copy.', 'Copy only copy_source bytes to the declared destination with mode0644. No symlink installation, no wrapper decoding into maintained history, no live Python archive.', 'Preserve original metadata paths and hashes; archived files are immutable evidence, not relocated replay dependencies.', 'One canonical archive path is assigned per physical external regular file. Duplicate content at different original paths remains separately traceable; total original content is below2MB and no source/DB dependency is bulk copied.', 'Root owns dossier README/history and any later positive/review proof append.'],
+}
+write(OUT / 'validation.json', validation)
+write(OUT / 'copy-plan.json', plan)
+print(json.dumps({'status': plan['status'], 'copy_plan_sha256': digest((OUT / 'copy-plan.json').read_bytes()), 'validation_sha256': digest((OUT / 'validation.json').read_bytes()), 'counts': {key: value for key, value in validation.items() if type(value) is int}}))

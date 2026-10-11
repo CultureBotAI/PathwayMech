@@ -1,0 +1,67 @@
+{
+  "checks": [
+    {
+      "name": "independent complete parsed target/dossier delta and handoff rehash",
+      "command": "python -B /private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/inspect-delta.py",
+      "exit_code": 0,
+      "terminal_chunk": "8ccf64",
+      "result": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/initial-inputs-and-delta.json",
+        "sha256": "95c5ccfe44a9e8519cdf09f98e4635165eaf9e219b4bd37f11364b244bd79dd6",
+        "bytes": 26309
+      }
+    },
+    {
+      "name": "initial focused harness attempt",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -B /private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/affected-checks.py",
+      "session": 50129,
+      "exit_code": 1,
+      "terminal_chunk": "d20013",
+      "result": "Review harness extracted a comment continuation without its comment prefix, causing IndentationError before executing the helper guard section. Original-source checks before that point are not used as a complete pass. This is not a product finding.",
+      "log": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/affected-checks.log",
+        "sha256": "7ad884b9e79357e4e065f5c5ddef1232505bf4705fd25f3a7588c4119dec8f83",
+        "bytes": 571
+      }
+    },
+    {
+      "name": "corrected independent affected-source, negative, schema and KGX checks",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/affected-checks-v2.py",
+      "session": 33337,
+      "exit_code": 0,
+      "terminal_chunk": "2c9850",
+      "log": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/affected-checks-v2.log",
+        "sha256": "ca3c310dea88466abd0ebf5bb99ef013eaeeb8632d3ec5244e2d7ed3462db00e",
+        "bytes": 110
+      },
+      "result": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/affected-checks-v2.json",
+        "sha256": "a45a87b008694369ef0cc157643992c50323f896ae2b246e084cee37aced1fff",
+        "bytes": 7376
+      }
+    },
+    {
+      "name": "inspected author full successor source replay",
+      "source_execution_receipt": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-20261011/execution.json",
+        "sha256": "713c14e6db1430ef1d5938bdf76f9ba49c7a7d96001c3f869b03a3ec524dbfa0",
+        "bytes": 893
+      },
+      "source_result": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-20261011/replay-successor.json",
+        "sha256": "f94a25d9173c934e8713bef1aeb8923d362ff09c722c4bc7c92cb9dec0bb43d0",
+        "bytes": 184553
+      },
+      "source_log": {
+        "path": "/private/tmp/pathwaymech-denitrification-correction-20261011/replay-successor.log",
+        "sha256": "fc1cca2b0668dd67105a9603c3f7460246c97dd3cb8552090d183969782607ae",
+        "bytes": 2982
+      },
+      "reported_session": 71109,
+      "reported_terminal_chunk": "587c1d",
+      "reported_exit_code": 0,
+      "scope": "Independently read/rehashed author execution and output; this reviewer did not observe that author process terminal directly. No duplicate full unrelated-database replay claimed."
+    }
+  ]
+}

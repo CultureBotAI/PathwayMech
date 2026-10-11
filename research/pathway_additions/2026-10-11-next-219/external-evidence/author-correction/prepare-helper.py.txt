@@ -1,0 +1,126 @@
+from pathlib import Path
+r=Path(__file__).resolve().parent
+o=Path('/private/tmp/pathwaymech-denitrification-author-20261011')
+s=(o/'denitrification-replay.py').read_text()
+s=s.replace('R = Path(__file__).resolve().parent\nD = R / "draft"','R = Path(__file__).resolve().parent\nO = Path("/private/tmp/pathwaymech-denitrification-author-20261011")\nD = R / "draft"')
+s=s.replace('    D / "denitrification-curation.md",','    D / "denitrification-curation.md",\n    R / "predecessor-preservation.json",\n    R / "correction.json",')
+s=s.replace('for row in manifest["prior_proof_inputs"]:', 'for row in readj(R / "predecessor-preservation.json")["files"]:\n    bind(row["path"], row["sha256"])\nfor row in manifest["prior_proof_inputs"]:')
+s=s.replace('R / "imod', 'O / "imod').replace('R / "raw"', 'O / "raw"')
+marker='# Actual closed-schema validation and complete KGX export, with byte-level edge evidence parity.'
+insert=r'''
+# Issue407 semantic source guards. Synchronized mutant projections ensure these
+# reject the original provenance defects rather than merely stale target hashes.
+old_record = yaml.safe_load(original(O / "draft/nitrate-reduction-i-denitrification.yaml"))
+old_edges = {e["id"]: e for e in old_record["mechanistic_edges"]}
+primary_tree = html.fromstring(original(paths["PMID:17400734"]))
+primary_selector = "//article/section[2]/section/section[4]/p"
+primary_p = primary_tree.xpath(primary_selector)
+assert len(primary_p) >= 2
+assert "nucleotide exchanges" in " ".join(primary_p[1].itertext())
+assert "Anr box consensus motif" in " ".join(primary_p[1].itertext())
+assert "No obvious promoter activity" in " ".join(primary_p[1].itertext())
+
+
+def check_corrections(candidate, projected):
+    by_id = {e["id"]: e for e in candidate["mechanistic_edges"]}
+    anr = by_id["denitrification-edge-063"]["evidence"][1]
+    assert anr["source_assertion"] == old_edges["denitrification-edge-063"]["evidence"][1]["source_assertion"]
+    selected = primary_tree.xpath(anr["source_locator"].removeprefix("XPath "))
+    assert [etree.tostring(p) for p in selected] == [
+        etree.tostring(p) for p in primary_p[:2]
+    ], "Anr experimental motif paragraph must be included with expression paragraph"
+    nark = by_id["denitrification-edge-074"]
+    loc = nark["evidence"][0]
+    selected_json = []
+    for pointer in loc["source_locator"].removeprefix("JSON pointer ").split("; "):
+        value = readj(paths[loc["reference_id"]])
+        for bit in pointer.strip("/").split("/"):
+            value = value[int(bit)] if isinstance(value, list) else value[bit]
+        selected_json.append(value)
+    assert len(selected_json) == 2
+    annotation, xref = selected_json
+    assert annotation["commentType"] == "SUBCELLULAR LOCATION"
+    subcellular = annotation["subcellularLocations"][0]
+    assert subcellular["location"]["value"] == "Membrane"
+    assert subcellular["topology"]["value"] == "Multi-pass membrane protein"
+    code = subcellular["location"]["evidences"][0]
+    assert code == {"evidenceCode": "ECO:0000256", "source": "ARBA", "id": "ARBA00004141"}
+    assert xref["database"] == "GO" and xref["id"] == nark["object"] == "GO:0016020"
+    assert {"key": "GoTerm", "value": "C:membrane"} in xref["properties"]
+    assert {"key": "GoEvidenceType", "value": "IEA:UniProtKB-SubCell"} in xref["properties"]
+    for text in [subcellular["location"]["value"], subcellular["topology"]["value"], code["evidenceCode"], code["id"], xref["id"]]:
+        assert text in loc["source_assertion"], ("Missing original source scope", text)
+    assert "does not specify the inner/plasma membrane" in loc["source_assertion"]
+    assert "no direct localization assay" in nark["description"]
+    assert next(p for p in candidate["participants"] if p["id"] == xref["id"]) == {
+        "id": "GO:0016020", "label": "membrane", "category": "cellular_component"
+    }
+    for e in (anr, loc):
+        matches = [s for s in projected["evidence_spans"] if all(
+            s[k] == e[k] for k in ("reference_id", "source_locator", "source_assertion")
+        )]
+        assert len(matches) == 1, "Corrected graph evidence must match its source projection"
+    assert candidate["reactions"] == old_record["reactions"]
+    for edge in candidate["mechanistic_edges"]:
+        if edge["id"] not in {"denitrification-edge-063", "denitrification-edge-074"}:
+            assert edge == old_edges[edge["id"]], "Unrelated edge changed"
+
+
+check_corrections(record, projection)
+correction_negative = []
+
+
+def synchronized_mutant(edge_id, field, value):
+    candidate = deepcopy(record)
+    projected = deepcopy(projection)
+    edge = next(e for e in candidate["mechanistic_edges"] if e["id"] == edge_id)
+    index = 1 if edge_id == "denitrification-edge-063" else 0
+    before = deepcopy(edge["evidence"][index])
+    if field.startswith("evidence."):
+        edge["evidence"][index][field.split(".", 1)[1]] = value
+    else:
+        edge[field] = value
+    after = edge["evidence"][index]
+    row = next(s for s in projected["evidence_spans"] if all(
+        s[k] == before[k] for k in ("reference_id", "source_locator", "source_assertion")
+    ))
+    row.update(after)
+    if row["kind"] == "html":
+        row["selectors"] = [after["source_locator"].removeprefix("XPath ")]
+        payload = [[etree.tostring(p, encoding="unicode") for p in primary_tree.xpath(sel)]
+                   for sel in row["selectors"]]
+    else:
+        row["selectors"] = after["source_locator"].removeprefix("JSON pointer ").split("; ")
+        payload = []
+        for sel in row["selectors"]:
+            v = readj(row["path"])
+            for bit in sel.strip("/").split("/"):
+                v = v[int(bit)] if isinstance(v, list) else v[bit]
+            payload.append(v)
+    row["payload_sha256"] = digest(json.dumps(payload, sort_keys=True).encode())
+    return candidate, projected
+
+
+for name, edge_id, field, value in [
+    ("original Anr p1-only selector with synchronized projection", "denitrification-edge-063",
+     "evidence.source_locator", old_edges["denitrification-edge-063"]["evidence"][1]["source_locator"]),
+    ("unsupported inner-membrane object with synchronized evidence", "denitrification-edge-074",
+     "object", "GO:0005886"),
+    ("original over-specific annotation assertion with synchronized projection", "denitrification-edge-074",
+     "evidence.source_assertion", old_edges["denitrification-edge-074"]["evidence"][0]["source_assertion"]),
+    ("wrong GO functional cross-reference with synchronized projection", "denitrification-edge-074",
+     "evidence.source_locator", "JSON pointer /comments/0; /uniProtKBCrossReferences/19"),
+    ("inference promoted to experiment with synchronized projection", "denitrification-edge-074",
+     "evidence.source_assertion", next(e for e in record["mechanistic_edges"] if e["id"] == "denitrification-edge-074")["evidence"][0]["source_assertion"].replace("ECO:0000256", "ECO:0000269")),
+]:
+    candidate, projected = synchronized_mutant(edge_id, field, value)
+    try:
+        check_corrections(candidate, projected)
+    except (AssertionError, KeyError, ValueError):
+        correction_negative.append(name)
+    else:
+        raise AssertionError(("Issue407 negative accepted", name))
+'''
+assert marker in s;s=s.replace(marker,insert+'\n'+marker)
+s=s.replace('    "negative_controls": negative,','    "negative_controls": negative,\n    "issue407_source_semantic_negative_controls": correction_negative,\n    "predecessor_files_preserved": len(readj(R / "predecessor-preservation.json")["files"]),')
+(r/'denitrification-replay.py').write_text(s)

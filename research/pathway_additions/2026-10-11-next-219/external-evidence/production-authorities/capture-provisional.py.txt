@@ -1,0 +1,197 @@
+"""Freeze the prospective ED authority baseline and audit original source inputs.
+
+No maintained writes, cache changes, successor-candidate reads or final
+production selection. This is provenance preparation, not scientific approval.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import sqlite3
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+ROOT = Path('/private/tmp/pathwaymech-next-218-20261011')
+OUT = Path(__file__).absolute().parent
+AUTHOR = Path('/private/tmp/pathwaymech-denitrification-author-20261011')
+REVIEW = Path('/private/tmp/pathwaymech-denitrification-whole-record-review-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities')
+
+
+def require(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def save(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+def main():
+    require(__debug__, 'Optimized Python is unsupported')
+    bindings = {}
+    def capture(path, expected=None):
+        path = Path(path).absolute()
+        data = path.read_bytes()
+        h = sha(data)
+        require(expected is None or h == expected, f'Hash changed: {path}')
+        value = {'path': str(path), 'resolved_path': str(path.resolve(strict=True)), 'sha256': h, 'bytes': len(data)}
+        require(str(path) not in bindings or bindings[str(path)] == value, f'Conflicting capture: {path}')
+        bindings[str(path)] = value
+        return data
+
+    def recheck():
+        for p, row in bindings.items():
+            require(str(Path(p).resolve(strict=True)) == row['resolved_path'] and sha(Path(p).read_bytes()) == row['sha256'], f'Final input changed: {p}')
+
+    capture(__file__)
+    owner_names = ['conf/identifier_sources.json', 'conf/identifier_policy.yaml', 'conf/rhea_identifier_updates.json',
+                   'data/identifier_authorities/ontology.json', 'data/identifier_authorities/sources.json']
+    before = {rel: capture(ROOT / rel) for rel in owner_names}
+    runtime_paths = sorted(p for p in (ROOT / 'src').rglob('*') if p.is_file() and p.suffix in {'.py', '.yaml', '.yml', '.json'})
+    runtime_paths += [ROOT / 'scripts/build_source_identifier_snapshot.py', ROOT / 'scripts/build_ontology_identifier_snapshot.py']
+    for p in runtime_paths:
+        capture(p)
+    corpus = sorted((ROOT / 'data/pathways').rglob('*.yaml'))
+    for p in corpus:
+        capture(p)
+    handoff = json.loads(capture(AUTHOR / 'handoff.json', '0ef89da5e817db1fa1fcca9d1af80d47fb509c61cad250ed5308ee5666c45187'))
+    capture(REVIEW / 'completion.json', 'ec98836a2505683b42162caed76ee3cdf855050b8c6184917604b3f8a890969b')
+    for item in handoff['author_inputs']:
+        capture(item['path'], item['sha256'])
+    acquisitions = []
+    for p in sorted(AUTHOR.glob('acquisition-*.json')):
+        value = json.loads(capture(p))
+        def walk(v, locator=''):
+            if isinstance(v, dict):
+                if {'path', 'url', 'sha256'} <= v.keys():
+                    acquisitions.append({'receipt': str(p), 'receipt_sha256': bindings[str(p)]['sha256'], 'locator': locator, 'observation': v})
+                for k, x in v.items():
+                    walk(x, locator + '/' + k)
+            elif isinstance(v, list):
+                for index, x in enumerate(v):
+                    walk(x, locator + '/' + str(index))
+        walk(value)
+    recheck()
+    sys.path.insert(0, str(ROOT))
+    import yaml
+    from scripts import build_source_identifier_snapshot as source
+    from scripts import build_ontology_identifier_snapshot as ontology
+    record = yaml.safe_load(Path(handoff['record']['path']).read_bytes())
+    proposal = json.loads((AUTHOR / 'draft/denitrification-authority-proposal.json').read_bytes())
+    require(proposal['record_sha256'] == handoff['record']['sha256'], 'Original proposal target mismatch')
+    manifest = json.loads(before['conf/identifier_sources.json'])
+    snapshots = {name: json.loads(before[f'data/identifier_authorities/{name}.json']) for name in ['ontology', 'sources']}
+    named = {record['id']: record['label']}
+    for group in ['taxa', 'participants', 'reactions', 'gene_clusters']:
+        for node in record.get(group, []):
+            require(node['id'] not in named, 'Duplicate named ID')
+            named[node['id']] = node['label']
+    wanted = {r['selected_ids'][0].split(':')[1] for r in proposal['sources'] if r['kind'] == 'uniprot'}
+    batch_hits, batches = {x: [] for x in sorted(wanted)}, []
+    for entry in manifest:
+        if entry['kind'] != 'uniprot':
+            continue
+        path = CACHE / 'sources' / entry['path']
+        body = capture(path, entry['sha256'])
+        obj = json.loads(body)
+        parsed = list(source.source_terms('uniprot', path, url=entry['url']))
+        hits = []
+        for index, raw in enumerate(obj.get('results', [obj])):
+            ident = raw.get('primaryAccession')
+            if ident in wanted:
+                locator = '/results/' + str(index) if 'results' in obj else ''
+                terms = [t for t in parsed if t[0] == 'UniProtKB:' + ident]
+                require(len(terms) == 1, 'Batch native identity ambiguity')
+                hit = {'entry': entry, 'source_path': str(path), 'locator': locator, 'native': raw, 'term': terms[0]}
+                batch_hits[ident].append(hit)
+                hits.append(ident)
+        batches.append({'manifest_entry': entry, 'path': str(path), 'sha256': sha(body), 'bytes': len(body), 'matching_accessions': hits})
+    original_checks = []
+    for item in proposal['sources']:
+        path = Path(item['path'])
+        body = capture(path, item['sha256'])
+        parsed = [list(row) for row in source.source_terms(item['kind'], path, url=item['url'])]
+        require(parsed == item['extracted_terms'] and [t[0] for t in parsed] == item['selected_ids'], 'Proposed native terms differ')
+        matches = [a for a in acquisitions if a['observation']['path'] == str(path) and a['observation']['url'] == item['url'] and a['observation']['sha256'] == item['sha256'] and a['observation'].get('status') == 200]
+        require(matches, f'No successful original acquisition: {path}')
+        if item['kind'] == 'metacyc-html':
+            database = re.search(rb'MetaCyc version ([0-9]+\.[0-9]+)\.', body)
+            frontend = re.search(rb'Pathway Tools version ([0-9]+\.[0-9]+)', body)
+            require(database and frontend, 'Missing explicit MetaCyc version fields')
+            version_evidence = {'database': database.group(0).decode(), 'software': frontend.group(0).decode(),
+                                'locator': 'Native HTML footer; separate database and software designations'}
+        else:
+            obj = json.loads(body)
+            require(obj['primaryAccession'] == parsed[0][0].split(':')[1], 'UniProt accession mismatch')
+            version_evidence = {'entryAudit': obj['entryAudit'], 'locator': '/entryAudit',
+                                'entry_type': obj['entryType'], 'taxon_id': obj['organism']['taxonId'],
+                                'release_not_inferred_from_entry_date': True}
+        original_checks.append({'proposal_entry': item, 'canonical_parsed_terms': parsed,
+                                'version_evidence': version_evidence, 'acquisition_proofs': matches,
+                                'existing_selected_terms': {i: snapshots['sources']['terms'].get(i) for i in item['selected_ids']}})
+    ontology_ids = ontology.walk_identifiers(record, {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'})
+    # This additional ID is an explicit correction handoff from the author,
+    # not a claim to have read or accepted the mutable successor record.
+    prospective_ids = ontology_ids | {'GO:0016020'}
+    ontology_checks = []
+    for prefix, filename in [('GO','go'), ('CHEBI','chebi'), ('NCBITaxon','ncbitaxon'), ('RHEA','rhea')]:
+        selected = sorted(i for i in prospective_ids if i.startswith(prefix + ':'))
+        if not selected:
+            continue
+        db = CACHE / (filename + '.db')
+        owners = [key for key in snapshots['ontology']['sources'] if key.startswith(prefix.lower() + '-') and key != 'rhea-rdf-142']
+        require(len(owners) == 1, 'Ambiguous ontology source')
+        owner = owners[0]
+        with sqlite3.connect(db.resolve().as_uri() + '?mode=ro', uri=True) as con:
+            terms, missing = ontology.extract_terms(con, selected, owner)
+        require(not missing, f'Unresolved ontology IDs: {missing}')
+        require(all(i not in snapshots['ontology']['terms'] or snapshots['ontology']['terms'][i] == term for i, term in terms.items()), 'Existing ontology term differs')
+        ontology_checks.append({'path': str(db), 'resolved_path': str(db.resolve()), 'pinned_metadata': snapshots['ontology']['sources'][owner],
+                                'selected_terms': terms, 'new_ids': sorted(set(terms) - set(snapshots['ontology']['terms'])),
+                                'whole_database_hash_status': 'Deferred to final canonical builder; this preparation only reads selected SQLite rows.'})
+    recheck()
+    require(sorted((ROOT / 'data/pathways').rglob('*.yaml')) == corpus, 'Corpus membership changed')
+    require(sorted(p for p in (ROOT / 'src').rglob('*') if p.is_file() and p.suffix in {'.py', '.yaml', '.yml', '.json'}) == runtime_paths[:-2], 'Runtime membership changed')
+    baseline = {'status': 'provisional_frozen_ED_working_authority_baseline_not_actual_ED_merge',
+                'at': datetime.now(timezone.utc).isoformat(), 'repo_root': str(ROOT),
+                'observed_head': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+                'observed_head_tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),
+                'baseline_files': {rel: sha(data) for rel,data in before.items()},
+                'runtime_files': {str(p.relative_to(ROOT)): bindings[str(p)]['sha256'] for p in runtime_paths},
+                'corpus_files': {str(p.relative_to(ROOT)): bindings[str(p)]['sha256'] for p in corpus},
+                'current_records':len(corpus), 'original_candidate_sha256':handoff['record']['sha256'],
+                'author_handoff_sha256':bindings[str(AUTHOR/'handoff.json')]['sha256'],
+                'limits':['Actual ED merge/base bridge and corrected sealed candidate are required before final selection.', 'No maintained writes or scientific approval.']}
+    for rel, data in before.items():
+        destination = OUT / 'baseline' / rel
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with destination.open('xb') as stream:
+            stream.write(data)
+    save(OUT / 'provisional-baseline-lock.json', baseline)
+    report = {'status':'original_source_and_provisional_baseline_assessed_final_selection_pending',
+              'baseline_lock_sha256':sha((OUT/'provisional-baseline-lock.json').read_bytes()),
+              'original_named_nodes':named, 'source_checks':original_checks,
+              'retained_uniprot_batch_audit':batches, 'batch_matches':batch_hits,
+              'ontology_checks':ontology_checks, 'reference_only_ontology_ids':sorted(ontology_ids-set(named)),
+              'bindings':list(bindings.values()), 'maintained_writes':[], 'cache_writes':[],
+              'limits':baseline['limits'] + ['Whole ontology DB digests not rehashed by this preliminary selected-row assessment.']}
+    save(OUT/'preliminary-assessment.json',report)
+    print(json.dumps({'status':report['status'],'baseline_sha256':report['baseline_lock_sha256'],
+                      'assessment_sha256':sha((OUT/'preliminary-assessment.json').read_bytes()),
+                      'baseline_records':len(corpus),'source_inputs':len(original_checks),'retained_uniprot_inputs':len(batches),
+                      'matching_existing_batch_entries':sum(len(v) for v in batch_hits.values()),
+                      'ontology_selected_ids':sum(len(r['selected_terms']) for r in ontology_checks)},indent=2))
+
+
+if __name__ == '__main__':
+    main()

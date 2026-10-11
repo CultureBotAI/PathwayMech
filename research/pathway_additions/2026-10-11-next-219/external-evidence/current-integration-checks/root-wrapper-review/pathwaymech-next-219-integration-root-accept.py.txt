@@ -1,0 +1,50 @@
+from pathlib import Path
+import hashlib, json, os
+from datetime import datetime, timezone
+from collections import Counter
+P=Path('/private/tmp/pathwaymech-denitrification-integrated-replay-formatting-successor-20261011')
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+OUT=Path('/private/tmp/pathwaymech-next-219-integration-root-acceptance.json')
+def sha(p):
+ with Path(p).open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
+def checked(name,h):
+ p=P/name; assert sha(p)==h,(name,'digest'); return json.loads(p.read_text())
+c=checked('completion.json','92df5adae7e64d0e20be2e85616bff0165bfcf7f864ef8f5483711af0427cc6c')
+h=checked('handoff.json','cb296a2051fdcd0140f3671027966f5a304f767a15b6e3f518458d1eebde71ec')
+d=checked('expected-bindings.json','169e23ec869e76b2ad8499dc4ab37e43b5cbfe155ea97b341a8ce187c355970c')
+assert sha(P/'integration-replay.py')=='ea2a81e32c238dd702a887a0df1e8da2f42a4c224a2fd378fa74cc52fbc4b133'
+for row in c['proof_artifacts']:
+ p=Path(row['path']); assert p.is_relative_to(P); assert sha(p)==row['sha256']; assert p.stat().st_size==row['bytes']
+for row in c['fixture_link_observations']:
+ p=Path(row['path']); assert p.is_symlink(); assert os.readlink(p)==row['link_target']; assert str(p.resolve())==row['resolved_path']; assert (not p.exists())==row['dangling']
+for row in c['directory_observations_before_seal']:
+ p=Path(row['path']); actual={x.name for x in p.iterdir()}; previous=set(row['entries']); assert previous<=actual
+ if p!=P: assert previous==actual,(str(p),actual-previous)
+ else: assert actual-previous=={'completion.json','handoff.json'}
+files={r['path']:r for r in d['files']}; assert len(files)==len(d['files'])==2652
+roles=Counter(row['role'] for row in d['files']); deferred=set(d['deferred_source_digest_paths'])
+assert len(deferred)==1088; checked_formal=0
+for row in d['files']:
+ p=Path(row['path']); assert p.is_file(); assert str(p.resolve(strict=True))==row['resolved_path']
+ if str(p) not in deferred: assert sha(p)==row['sha256']; checked_formal+=1
+assert checked_formal==1564
+sources=json.loads((R/'conf/identifier_sources.json').read_text()); assert len(sources)==597
+production={r['path']:r['sha256'] for r in d['production_authority_sources']}; assert len(production)==626
+for row in sources:
+ p=str(Path('/private/tmp/pathwaymech-curation-authorities/sources')/row['path'])
+ assert production[p]==row['sha256']==files[p]['sha256']
+for row in d['production_whole_sources']: assert files[row['path']]['sha256']==row['sha256']
+assert len(d['production_whole_sources'])==4
+for item in d['inventories']:
+ root=Path(item['root']); actual=[]
+ for parent, dirs, names in os.walk(root,followlinks=False):
+  dirs[:]=[x for x in dirs if x!='__pycache__']
+  for name in dirs: assert not (Path(parent)/name).is_symlink()
+  for name in names:
+   p=Path(parent)/name
+   if p.suffix in {'.pyc','.pyo'}: continue
+   if p.is_file(): actual.append(str(p))
+ assert sorted(actual)==item['paths'],(root,'inventory')
+report={'status':'root_read_and_accepted_for_actual_integrated_execution','at':datetime.now(timezone.utc).isoformat(),'driver_sha256':sha(P/'integration-replay.py'),'preparer_sha256':sha(P/'prepare-bindings.py'),'manifest_sha256':sha(P/'expected-bindings.json'),'handoff_sha256':sha(P/'handoff.json'),'completion_sha256':sha(P/'completion.json'),'script_sha256':sha(__file__),'root_review':'Read entire integration driver, preparer, README, handoff, completion scope, all guard case names and role boundaries. Independently checked all sealed proof files, links and directory additions, all nondeferred formal bindings and complete current production manifest closure. Prior accepted source/chemistry review reused; no positive science claimed.','proof_files_rehashed':len(c['proof_artifacts']),'binding_role_counts':dict(roles),'formal_bindings_rehashed':checked_formal,'source_digest_paths_deferred_to_execution':len(deferred),'manifest_entries_covered':len(sources),'production_whole_SQL_sources':4,'inventories_rechecked':[{ 'root':i['root'],'count':len(i['paths'])} for i in d['inventories']],'independent_wrapper_review':'requested /root/ed_pr_adversarial; not yet received','limits':c['limits'],'positive_run':False}
+with OUT.open('x') as f: json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps({'status':report['status'],'path':str(OUT),'sha256':sha(OUT),'formal':checked_formal,'source_deferred':len(deferred)}))

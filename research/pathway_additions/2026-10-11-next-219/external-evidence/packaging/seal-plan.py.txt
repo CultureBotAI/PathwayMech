@@ -1,0 +1,176 @@
+"""Seal the immutable external plan without applying it or streaming databases."""
+from pathlib import Path
+from datetime import datetime, timezone
+import base64
+import hashlib
+import json
+import os
+import stat
+import subprocess
+
+OUT = Path(__file__).absolute().parent
+REPO = Path('/private/tmp/pathwaymech-next-219-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-219')
+PEER = Path('/private/tmp/pathwaymech-denitrification-copy-plan-bounded-readonly-review.json')
+PEER_SUCCESSOR = Path('/private/tmp/pathwaymech-denitrification-copy-plan-bounded-readonly-review-successor.json')
+BRIDGE = Path('/private/tmp/pathwaymech-next-219-merged-baseline-bridge.json')
+PINNED = {
+    OUT / 'copy-plan.json': '14fa939c6ddd6d6529aab4a7acb7ed40f059bb5eeca29f2813ebe5df05d366f9',
+    OUT / 'validation.json': 'e9a5e768abf0e7e23ef7495c005469e362eded63c93d9609dabd9e2ada0c4a42',
+    PEER: '7fe253d3691ec6610fe94c7ae1c84646f43e4661912d5dafdd3bc34da7c98c26',
+    PEER_SUCCESSOR: '129cff76065d68a74e69b386e64002749eaa4d6017dd24a51e983ea9f9ba4898',
+    BRIDGE: '91cc3bc656065ce1d813bd432c75f8c20920880aedc2218a8b5a7db7028c4b82',
+}
+started = datetime.now(timezone.utc).isoformat()
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def describe(path):
+    path = Path(path).absolute()
+    raw = path.read_bytes()
+    return {'path': str(path), 'resolved_path': str(path.resolve(strict=True)), 'sha256': digest(raw), 'bytes': len(raw)}
+
+def write(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+def recovered(row):
+    raw = Path(row['copy_source']).read_bytes()
+    assert digest(raw) == row['destination_sha256']
+    if row['mode'] == 'lossless_json_wrapper':
+        wrapper = json.loads(raw)
+        assert wrapper['format'] == 'lossless-immutable-evidence-v1'
+        if wrapper['encoding'] == 'utf-8':
+            raw = wrapper['content'].encode('utf-8')
+        else:
+            assert wrapper['encoding'] == 'base64'
+            raw = base64.b64decode(wrapper['content'], validate=True)
+        assert digest(raw) == wrapper['original_sha256']
+        assert len(raw) == wrapper['original_bytes']
+    else:
+        assert row['mode'] == 'exact_bytes'
+    assert digest(raw) == row['sha256'] and len(raw) == row['bytes']
+    return raw
+
+for path, expected in PINNED.items():
+    assert describe(path)['sha256'] == expected, path
+plan = json.loads((OUT / 'copy-plan.json').read_bytes())
+validation = json.loads((OUT / 'validation.json').read_bytes())
+assert plan['validation'] == validation
+peer = json.loads(PEER.read_bytes())
+successor = json.loads(PEER_SUCCESSOR.read_bytes())
+assert peer['plan_sha256'] == PINNED[OUT / 'copy-plan.json']
+assert successor['plan_sha256'] == PINNED[OUT / 'copy-plan.json']
+assert 'passed' in successor['status']
+assert '7fe253d3691ec6610fe94c7ae1c84646f43e4661912d5dafdd3bc34da7c98c26' in json.dumps(successor)
+for row in plan['input_bindings']:
+    assert describe(row['path']) == row, ('Changed small input', row['path'])
+for row in plan['directory_observations']:
+    path = Path(row['path'])
+    assert sorted(os.listdir(path)) == row['entries']
+    assert oct(stat.S_IMODE(path.lstat().st_mode)) == row['mode']
+for row in plan['symlink_observations']:
+    path = Path(row['path'])
+    assert path.is_symlink() and os.readlink(path) == row['link_target']
+    assert digest(os.fsencode(os.readlink(path))) == row['link_target_sha256']
+    assert str(path.resolve(strict=False)) == row['resolved_path']
+    assert (not path.exists()) == row['dangling']
+for row in plan['issuing_databases_retained_external']:
+    path = Path(row['path'])
+    assert str(path.resolve(strict=True)) == row['resolved_path']
+    assert path.stat().st_size == row['bytes']
+    assert row['fresh_hash_in_this_packaging_run'] is False
+destinations = {row['destination']: row for row in plan['copy_entries']}
+assert len(destinations) == 226
+for row in plan['copy_entries']:
+    recovered(row)
+    destination = Path(row['destination'])
+    assert not destination.is_absolute() and '..' not in destination.parts
+    assert destination.is_relative_to(DOSSIER)
+    assert destination != DOSSIER / 'README.md'
+    assert '__pycache__' not in destination.parts
+    assert not os.path.lexists(REPO / destination), ('Occupied destination', destination)
+    preview = OUT / 'preview' / destination
+    assert preview.is_file() and not preview.is_symlink()
+    assert digest(preview.read_bytes()) == row['destination_sha256']
+    assert stat.S_IMODE(preview.stat().st_mode) == 0o644
+for row in plan['exact_byte_aliases']:
+    owner = destinations[row['destination']]
+    assert owner['sha256'] == row['sha256']
+    assert owner['mode'] == row['mode']
+    assert len(recovered(owner)) == row['bytes']
+assert len(plan['formal_input_resolution']) == 1611
+assert all(row['owner_sha256'] == row['sha256'] for row in plan['formal_input_resolution'])
+bridge = json.loads(BRIDGE.read_bytes())
+head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
+tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=REPO, text=True).strip()
+assert head == bridge['merge'] == 'ae9279447c78b868289f24a847efe06efce2e167'
+assert tree == bridge['tree'] == plan['observed_baseline']['tree']
+support = []
+support_sources = [
+    (OUT / 'copy-plan.json', 'copy-plan.json'),
+    (OUT / 'validation.json', 'validation.json'),
+    (OUT / 'build-plan.py', 'build-plan.py.txt'),
+    (OUT / 'README.md', 'README.md'),
+    (OUT / 'execution.json', 'execution.json'),
+    (Path(__file__), 'seal-plan.py.txt'),
+    (PEER, 'bounded-readonly-review-original.json'),
+    (PEER_SUCCESSOR, 'bounded-readonly-review-successor.json'),
+    (BRIDGE, 'merged-baseline-bridge.json'),
+]
+for source, name in support_sources:
+    row = describe(source)
+    row.update({'copy_source': str(source), 'destination': str(DOSSIER / 'external-evidence/packaging' / name), 'destination_sha256': row['sha256'], 'mode': 'exact_bytes', 'installation_mode': '0644'})
+    assert not os.path.lexists(REPO / row['destination'])
+    assert row['destination'] not in destinations
+    raw = source.read_bytes()
+    raw.decode('utf-8')
+    assert not any(line.rstrip(b'\r\n').endswith((b' ', b'\t')) for line in raw.splitlines(keepends=True))
+    assert not raw.endswith(b'\n\n')
+    support.append(row)
+all_destinations = list(destinations) + [row['destination'] for row in support]
+all_destinations += [str(DOSSIER / 'external-evidence/packaging' / name) for name in ['final-seal.json', 'handoff.json']]
+assert len(all_destinations) == len(set(all_destinations))
+ignored = subprocess.run(['git', 'check-ignore', '--no-index', '--stdin'], input='\n'.join(all_destinations)+'\n', cwd=REPO, text=True, capture_output=True)
+assert ignored.returncode == 1 and not ignored.stdout and not ignored.stderr
+checks = {
+    'status': 'passed_final_external_packaging_seal', 'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat(),
+    'plan': describe(OUT / 'copy-plan.json'), 'validation': describe(OUT / 'validation.json'),
+    'small_bindings_rehashed': len(plan['input_bindings']), 'copies_recovered_and_preview_rehashed': len(destinations),
+    'aliases_recovered': len(plan['exact_byte_aliases']), 'formal_resolution_rows_checked': len(plan['formal_input_resolution']),
+    'directory_censuses_rechecked': len(plan['directory_observations']), 'symlinks_rechecked': len(plan['symlink_observations']),
+    'whole_issuing_sources_metadata_only': len(plan['issuing_databases_retained_external']),
+    'whole_issuing_source_scope': 'Three SQL databases and one Rhea RDF gzip, stat and resolved-path checks only; no whole database bytes opened by this seal.',
+    'current_base': {'commit': head, 'tree': tree, 'bridge': describe(BRIDGE)},
+    'bounded_peer_review_original': describe(PEER), 'bounded_peer_review_successor': describe(PEER_SUCCESSOR),
+    'support_inputs': [describe(source) for source, _ in support_sources],
+    'ignored_destination_check': {'exit_code': ignored.returncode, 'stdout': ignored.stdout, 'stderr': ignored.stderr, 'destinations_checked': len(all_destinations)},
+    'destinations_absent': True, 'maintained_writes': [],
+    'limits': ['Packaging checks only; no new scientific or independent source approval.', 'No helper execution, source science replay, full corpus tests or large database rehash.', 'The bounded reviewer corrects original source-type wording in a separate immutable successor; both receipts are preserved.', 'A later current authority and integration package remains separate.'],
+}
+write(OUT / 'final-seal.json', checks)
+row = describe(OUT / 'final-seal.json')
+row.update({'copy_source': row['path'], 'destination': str(DOSSIER / 'external-evidence/packaging/final-seal.json'), 'destination_sha256': row['sha256'], 'mode': 'exact_bytes', 'installation_mode': '0644'})
+support.append(row)
+handoff = {
+    'status': 'sealed_external_lossless_denitrification_copy_plan_ready_for_root_adoption',
+    'sealed_at': datetime.now(timezone.utc).isoformat(), 'preparer': '/root/ed_whole_record_review',
+    'contribution_disclosure': 'Prepared this evidence packaging plan. Bounded peer review is independently attributed; no current denitrification whole-record scientific approval is asserted by this packaging task.',
+    'copy_plan': describe(OUT / 'copy-plan.json'), 'validation': describe(OUT / 'validation.json'), 'final_seal': describe(OUT / 'final-seal.json'),
+    'main_copy_entries': len(plan['copy_entries']), 'exact_byte_aliases': len(plan['exact_byte_aliases']),
+    'packaging_support_entries': support, 'support_entry_count': len(support),
+    'total_copies_excluding_handoff': len(plan['copy_entries']) + len(support),
+    'handoff_recommended_destination': str(DOSSIER / 'external-evidence/packaging/handoff.json'),
+    'handoff_digest_contract': 'Root independently observes this final handoff digest and records it in its external adoption receipt; this file does not self-assert a digest.',
+    'active_target': plan['target'], 'active_helper': plan['active_helper'],
+    'corrected_review': {'path': '/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/review.json', 'sha256': 'fc9cf70c358646c30e6fbc4393338a606f06e47bb942b89255b1d53d42834c24'},
+    'actual_merged_baseline': checks['current_base'],
+    'preservation': 'Original and corrected author/review attempts, ignored and hidden physical artifacts, fixtures and binary data are explicitly preserved or retained externally; historical paths and aliases retain exact bytes; no installed links.',
+    'root_adoption_contract': plan['application_contract'],
+    'scope_limits': checks['limits'] + ['Source bodies, whole issuing sources, adapter and original helper absolute dependencies remain external.', 'Only root may adopt the intended main and support copies, maintained record, authorities, dossier README/history, integration gates and canonical review.'],
+    'maintained_writes': [],
+}
+write(OUT / 'handoff.json', handoff)
+print(json.dumps({'status': handoff['status'], 'handoff': describe(OUT / 'handoff.json'), 'final_seal': describe(OUT / 'final-seal.json'), 'copy_entries': len(destinations), 'support_entries': len(support), 'maintained_writes': []}))

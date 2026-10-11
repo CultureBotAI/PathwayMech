@@ -1,0 +1,81 @@
+from pathlib import Path
+import ast,copy,csv,datetime,hashlib,json,sqlite3,sys
+import yaml
+from lxml import etree,html
+from collections import Counter
+O=Path('/private/tmp/pathwaymech-denitrification-author-20261011');C=Path('/private/tmp/pathwaymech-denitrification-correction-20261011');R=Path('/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011');repo=Path('/private/tmp/pathwaymech-next-218-20261011')
+def fh(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+def meta(p):return {'path':str(p),'sha256':fh(p),'bytes':Path(p).stat().st_size}
+started=datetime.datetime.now(datetime.timezone.utc).isoformat();original=yaml.safe_load((O/'draft/nitrate-reduction-i-denitrification.yaml').read_bytes());current=yaml.safe_load((C/'draft/nitrate-reduction-i-denitrification.yaml').read_bytes());projection=load(C/'draft/denitrification-source-projection.json');oldp=load(O/'draft/denitrification-source-projection.json');manifest=load(C/'draft/denitrification-source-manifest.json');paths=projection['references_to_original_paths'];byid={e['id']:e for e in current['mechanistic_edges']}
+prior=load(C/'predecessor-preservation.json');before=[]
+for row in prior['files']:
+ p=Path(row['path']);assert str(p.resolve(strict=True))==row['resolved_path'];assert fh(p)==row['sha256'],p;before.append(row)
+# Direct original sources, not the author's selected fact projection.
+article=Path(paths['PMID:17400734']);tree=html.fromstring(article.read_bytes());paras=tree.xpath('//article/section[2]/section/section[4]/p');up=load(paths['UniProtKB:G3XD60']);go=Path('/private/tmp/pathwaymech-curation-authorities/go.db');goh=fh(go);assert goh=='018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd'
+with sqlite3.connect('file:'+str(go)+'?mode=ro&immutable=1',uri=True) as db:
+ rows=[{'predicate':p,'value':v,'object':o} for p,v,o in db.execute('select predicate,value,object from statements where subject=?',('GO:0016020',))]
+ versions=list(db.execute("select subject,predicate,object,value from statements where predicate in ('owl:versionIRI','owl:versionInfo')"))
+assert {'predicate':'rdfs:label','value':'membrane','object':None} in rows
+assert {'predicate':'oio:hasOBONamespace','value':'cellular_component','object':None} in rows
+assert not any(r['predicate']=='owl:deprecated' and str(r['value']).lower() in ['true','1'] for r in rows)
+assert any(r[3]=='2026-07-26' for r in versions)
+assert next(r['value'] for r in rows if r['predicate']=='IAO:0000115')=='A lipid bilayer along with all the proteins and protein complexes embedded in it and attached to it.'
+
+def check_claims(doc):
+ e={x['id']:x for x in doc['mechanistic_edges']};a=e['denitrification-edge-063']['evidence'][1];s=tree.xpath(a['source_locator'].removeprefix('XPath '));assert len(s)==2 and s==paras[:2];txt=[' '.join(p.itertext()) for p in s];assert 'gene complementation' in txt[0] and 'Anr box consensus motif' in txt[1] and 'nucleotide exchanges' in txt[1] and 'No obvious promoter activity' in txt[1]
+ n=e['denitrification-edge-074'];assert n['object']=='GO:0016020';assert len(n['evidence'])==2
+ v=n['evidence'][0];selected=[]
+ for pointer in v['source_locator'].removeprefix('JSON pointer ').split('; '):
+  x=up
+  for bit in pointer.strip('/').split('/'):x=x[int(bit)] if isinstance(x,list) else x[bit]
+  selected.append(x)
+ assert selected[0]['subcellularLocations'][0]['location']['value']=='Membrane'
+ assert selected[1]['database']=='GO' and selected[1]['id']=='GO:0016020'
+ assert 'ECO:0000256' in v['source_assertion'] and 'ARBA00004141' in v['source_assertion'] and 'does not specify the inner/plasma membrane' in v['source_assertion']
+ assert n['evidence'][1]['reference_id']=='GO:0016020' and 'does not assert plasma-membrane specificity' in n['evidence'][1]['source_assertion']
+ assert next(x for x in doc['participants'] if x['id']=='GO:0016020')['category']=='cellular_component'
+ assert next(x for x in doc['references'] if x['id']=='GO:0016020')['source_sha256']==goh
+check_claims(current)
+negatives=[]
+for name,mut in [('Anr predecessor p1-only',lambda d:d['mechanistic_edges'][62]['evidence'][1].update(source_locator=original['mechanistic_edges'][62]['evidence'][1]['source_locator'])),('NarK1 predecessor specific object',lambda d:d['mechanistic_edges'][73].update(object='GO:0005886')),('NarK1 predecessor unsupported assertion',lambda d:d['mechanistic_edges'][73]['evidence'][0].update(source_assertion=original['mechanistic_edges'][73]['evidence'][0]['source_assertion'])),('NarK1 wrong GO function pointer',lambda d:d['mechanistic_edges'][73]['evidence'][0].update(source_locator='JSON pointer /comments/0; /uniProtKBCrossReferences/19')),('inference promoted to experiment',lambda d:d['mechanistic_edges'][73]['evidence'][0].update(source_assertion=d['mechanistic_edges'][73]['evidence'][0]['source_assertion'].replace('ECO:0000256','ECO:0000269'))),('generic membrane miscategorized as molecule',lambda d:d['participants'][-1].update(category='small_molecule'))]:
+ m=copy.deepcopy(current);mut(m)
+ try:check_claims(m)
+ except (AssertionError,KeyError):negatives.append({'case':name,'result':'rejected'})
+ else:raise AssertionError('independent negative accepted: '+name)
+# Rebuild the exact three affected source payloads directly.
+affected=[]
+for index in [138,151,154]:
+ span=projection['evidence_spans'][index];payload=[]
+ if span['kind']=='html':payload=[[etree.tostring(x,encoding='unicode') for x in tree.xpath(s)] for s in span['selectors']]
+ elif span['kind']=='json':
+  for s in span['selectors']:
+   v=up
+   for bit in s.strip('/').split('/'):v=v[int(bit)] if isinstance(v,list) else v[bit]
+   payload.append(v)
+ else:assert span['kind']=='sql';payload=[rows]
+ digest=hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest();assert digest==span['payload_sha256'];affected.append({'index':index,'payload_sha256':digest,'reference_id':span['reference_id']})
+assert current['reactions']==original['reactions'];assert current['participants'][:-1]==original['participants'];assert current['references'][:-1]==original['references']
+assert all(a==b for i,(a,b) in enumerate(zip(original['mechanistic_edges'],current['mechanistic_edges'],strict=True)) if i not in [62,73]);assert projection['native_sides']==oldp['native_sides'];assert projection['full_members']==oldp['full_members'];assert manifest['bodies']==load(O/'draft/denitrification-source-manifest.json')['bodies'];assert manifest['issuing_databases']==load(O/'draft/denitrification-source-manifest.json')['issuing_databases']
+# Original functions remain exact AST; full unrelated chemistry control code remains unchanged in helper diff.
+oldast=ast.parse((O/'denitrification-replay.py').read_bytes());newast=ast.parse((C/'denitrification-replay.py').read_bytes());fnames=['digest','filehash','bind','original','readj','fresh','check_graph']
+for name in fnames:
+ a=next(x for x in oldast.body if isinstance(x,ast.FunctionDef) and x.name==name);b=next(x for x in newast.body if isinstance(x,ast.FunctionDef) and x.name==name);assert ast.dump(a,include_attributes=False)==ast.dump(b,include_attributes=False),name
+# Run the actual issue-specific source guard block unchanged; this is narrower than a full source replay.
+code=(C/'denitrification-replay.py').read_text();section='# Issue407 semantic source guards.'+code.split('# Issue407 semantic source guards.',1)[1].split('# Actual closed-schema validation',1)[0]
+ns={'O':O,'yaml':yaml,'original':lambda p:Path(p).read_bytes(),'html':html,'etree':etree,'paths':paths,'readj':load,'record':current,'projection':projection,'deepcopy':copy.deepcopy,'digest':lambda b:hashlib.sha256(b).hexdigest(),'json':json}
+exec(compile(section,str(C/'denitrification-replay.py')+'::issue407','exec'),ns);assert len(ns['correction_negative'])==5
+sys.path.insert(0,str(repo/'src'));from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.kgx import write_kgx,kgx_nodes,kgx_edges
+vr=validate_record(current);assert not strict_errors([C/'draft/nitrate-reduction-i-denitrification.yaml'],repo)
+np,ep=write_kgx([vr],R/'kgx');nodes=kgx_nodes([vr]);edges=kgx_edges([vr]);assert len(nodes)==46 and len(edges)==75
+with ep.open() as f: exported=list(csv.DictReader(f,delimiter='\t'))
+assert sum(len(json.loads(x['evidence'])) for x in exported)==156
+assert Counter((e.subject,e.object,e.evidence) for e in edges)==Counter((e['subject'],e['object'],e['evidence']) for e in exported)
+# End-of-check preservation of all predecessor paths, including hidden files and prior mutation fixtures.
+for row in before:assert str(Path(row['path']).resolve(strict=True))==row['resolved_path'] and fh(row['path'])==row['sha256']
+receipt={'status':'passed_independent_affected_source_and_schema_checks','started_at':started,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':meta(C/'draft/nitrate-reduction-i-denitrification.yaml'),'helper':meta(C/'denitrification-replay.py'),'predecessor_files_freshly_preserved':len(before),'go':{'path':str(go),'sha256':goh,'statements':rows,'versions':versions},'primary_original':meta(article),'uniprot_original':meta(Path(paths['UniProtKB:G3XD60'])),'affected_payloads':affected,'independent_negative_controls':negatives,'actual_helper_correction_controls':ns['correction_negative'],'unchanged_helper_AST_functions':fnames,'unchanged_reactions':5,'unchanged_edges':73,'native_sides_unchanged':True,'original_body_manifest_unchanged':True,'kgx':{'nodes':46,'edges':75,'evidence':156,'nodes_file':meta(np),'edges_file':meta(ep)},'scope':'Focused independent source/authority/schema/KGX reassessment; full unchanged chemistry reused from original independent assessment and inspected successor author full replay, not a claimed second independent full-database replay.'}
+with (R/'affected-checks-v2.json').open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+print(json.dumps({'status':'pass','negative_controls':len(negatives),'author_source_guards':len(ns['correction_negative']),'preserved':len(before),'kgx':[len(nodes),len(edges),156]}))

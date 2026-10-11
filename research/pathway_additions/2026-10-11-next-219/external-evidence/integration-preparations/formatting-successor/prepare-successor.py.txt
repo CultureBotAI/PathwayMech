@@ -1,0 +1,93 @@
+"""Prepare a separately reviewable wrapper for root's lint-only helper successor."""
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent
+PRE = Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011')
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+assert sha((PRE / 'preformatting-preparation.json').read_bytes()) == '39504076a4bfd87fab5ad258ac30f7288389224c62c02dfd14427d4cbafe60b1'
+for row in json.loads((PRE / 'preformatting-preparation.json').read_bytes())['files']:
+    assert sha(Path(row['path']).read_bytes()) == row['sha256']
+text = (PRE / 'integration-replay.py').read_text()
+text = text.replace('Bind the unchanged corrected denitrification helper', 'Bind the lint-only corrected denitrification helper successor')
+text = text.replace('import argparse\n', 'import argparse\nimport ast\n')
+text = text.replace('HELPER_SHA = "4b5a755963216f9e04e9bfb6b3b1413f12f30db60d06532dfc2aabe1580bd971"', 'HELPER_SHA = "70387ce2410f5582ce1f5a9073ec37ed723caf0789eac75445df6c37f0422d5e"\nORIGINAL_HELPER_SHA = "4b5a755963216f9e04e9bfb6b3b1413f12f30db60d06532dfc2aabe1580bd971"\nFORMATTING_RECEIPT = Path("/private/tmp/pathwaymech-next-219-helper-lint-fix/successor.json")\nFORMATTING_RECEIPT_SHA = "60e28ef23a294b3b4443ccb4ae697a9241d05f5b2d48abfcb244801086029b54"\nORIGINAL_ARCHIVE = "research/pathway_additions/2026-10-11-next-219/external-evidence/helper-formatting/denitrification-replay-original.py.txt"')
+text = text.replace('bound[str(CORRECTED_HELPER)]["sha256"] == HELPER_SHA', 'bound[str(CORRECTED_HELPER)]["sha256"] == ORIGINAL_HELPER_SHA')
+anchor = '    for name in IMOD_METADATA:\n        require(str(ORIGINAL_AUTHOR / "imod" / name) in bound, "Original absolute iMod metadata unbound")'
+replacement = '''    require(str(repo / ORIGINAL_ARCHIVE) in bound and bound[str(repo / ORIGINAL_ARCHIVE)]["sha256"] == ORIGINAL_HELPER_SHA, "Original corrected archive is not bound")
+    require(str(FORMATTING_RECEIPT) in bound and bound[str(FORMATTING_RECEIPT)]["sha256"] == FORMATTING_RECEIPT_SHA, "Root formatting receipt is not bound")
+    for name in IMOD_METADATA:
+        require(str(ORIGINAL_AUTHOR / "imod" / name) in bound, "Original absolute iMod metadata unbound")'''
+assert text.count(anchor) == 1
+text = text.replace(anchor, replacement)
+start = text.index('\ndef source_dependencies(')
+new_functions = '''
+def formatting_relation(original, successor):
+    """Normalize only the root-declared path name and one unused loop binding."""
+    left, right = ast.parse(original), ast.parse(successor)
+    left_names = [node for node in ast.walk(left) if isinstance(node, ast.Name)]
+    right_names = [node for node in ast.walk(right) if isinstance(node, ast.Name)]
+    require(not any(node.id in {"ORIGINAL_AUTHOR", "_unused_accession"} for node in left_names), "Original normalization-name collision")
+    original_path_names = [node for node in left_names if node.id == "O"]
+    renamed_path_names = [node for node in right_names if node.id == "ORIGINAL_AUTHOR"]
+    require(original_path_names and len(original_path_names) == len(renamed_path_names), "Original-author rename coverage differs")
+    require(not any(node.id == "O" for node in right_names), "Partial original-author rename")
+    unused_names = [node for node in right_names if node.id == "_unused_accession"]
+    require(len(unused_names) == 1 and isinstance(unused_names[0].ctx, ast.Store), "Unused rename is not a single write-only binding")
+    expected_iter = ast.dump(ast.parse('[(3, "Q59647"), (4, "Q59646")]', mode='eval').body, include_attributes=False)
+    loops = [node for node in right.body if isinstance(node, ast.For) and ast.dump(node.iter, include_attributes=False) == expected_iter]
+    require(len(loops) == 1, "Renamed CIF loop differs")
+    loop = loops[0]
+    require(isinstance(loop.target, ast.Tuple) and [node.id for node in loop.target.elts] == ["entity", "_unused_accession"], "Unexpected unused-binding target")
+    require(not any(isinstance(node, ast.Name) and node.id in {"acc", "_unused_accession"} for statement in loop.body for node in ast.walk(statement)), "Unused loop binding is read inside loop")
+    loop_index = right.body.index(loop)
+    require(not any(isinstance(node, ast.Name) and node.id in {"acc", "_unused_accession"} and isinstance(node.ctx, ast.Load) for statement in right.body[loop_index + 1:] for node in ast.walk(statement)), "Renamed loop binding is read later")
+    for node in renamed_path_names:
+        node.id = "O"
+    unused_names[0].id = "acc"
+    original_ast = ast.dump(left, include_attributes=False)
+    successor_ast = ast.dump(right, include_attributes=False)
+    require(original_ast == successor_ast, "Executable AST differs beyond declared name normalizations")
+    return {"normalized_ast_equal": True, "normalized_ast_sha256": digest(original_ast.encode()), "original_author_name_occurrences": len(original_path_names), "single_unused_binding_normalized": True, "original_bytes": len(original), "successor_bytes": len(successor)}
+
+
+def check_formatting_lineage(document, repo, helper):
+    bound = {row["path"]: row for row in document["files"]}
+    for path in [CORRECTED_HELPER, repo / ORIGINAL_ARCHIVE, helper, FORMATTING_RECEIPT]:
+        check_entry(bound[str(path)])
+    original = CORRECTED_HELPER.read_bytes()
+    archived = (repo / ORIGINAL_ARCHIVE).read_bytes()
+    successor = helper.read_bytes()
+    require(original == archived and digest(original) == ORIGINAL_HELPER_SHA, "Original corrected helper preservation differs")
+    require(digest(successor) == HELPER_SHA, "Active helper differs")
+    receipt = read_json(FORMATTING_RECEIPT.read_bytes())
+    require(receipt["original_sha256"] == ORIGINAL_HELPER_SHA and receipt["successor_sha256"] == HELPER_SHA and receipt["target_sha256"] == TARGET_SHA, "Root formatting identities differ")
+    require(receipt["original_archive"] == ORIGINAL_ARCHIVE, "Original archive ownership differs")
+    require(len(receipt["historical_resolution_successor"]) == 4, "Historical alias successor coverage differs")
+    for row in receipt["historical_resolution_successor"]:
+        require(row["unchanged_byte_owner"] == ORIGINAL_ARCHIVE and row["sha256"] == ORIGINAL_HELPER_SHA and row["original_row"]["sha256"] == ORIGINAL_HELPER_SHA, "Historical original-helper bytes reassigned")
+    return formatting_relation(original, successor)
+
+'''
+text = text[:start] + new_functions + text[start:]
+text = text.replace('    check_source_coverage(document, helper)\n    check_inventories', '    check_source_coverage(document, helper)\n    formatting_evidence = check_formatting_lineage(document, repo, helper)\n    check_inventories')
+text = text.replace('            "unchanged_corrected_helper_original": str(CORRECTED_HELPER),', '            "original_corrected_helper": {"path": str(CORRECTED_HELPER), "sha256": ORIGINAL_HELPER_SHA},\n            "formatting_root_receipt": {"path": str(FORMATTING_RECEIPT), "sha256": FORMATTING_RECEIPT_SHA},\n            "formatting_evidence": formatting_evidence,')
+text = text.replace('Unchanged corrected denitrification helper checks', 'Normalized-AST-equivalent corrected denitrification helper successor checks')
+with (ROOT / 'integration-replay.py').open('x') as stream:
+    stream.write(text)
+prepare = (PRE / 'prepare-bindings.py').read_text()
+prepare = prepare.replace("add(driver.CORRECTED_HELPER, 'formal', driver.HELPER_SHA)", "add(driver.CORRECTED_HELPER, 'formal', driver.ORIGINAL_HELPER_SHA)\nadd(REPO / driver.ORIGINAL_ARCHIVE, 'formal', driver.ORIGINAL_HELPER_SHA)")
+prepare = prepare.replace("'adapt-driver.py', 'pattern-provenance.json'", "'prepare-successor.py', 'successor-provenance.json'")
+prepare = prepare.replace("files = {}\n", "PINNED[driver.FORMATTING_RECEIPT] = driver.FORMATTING_RECEIPT_SHA\nPINNED[Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011/preformatting-preparation.json')] = '39504076a4bfd87fab5ad258ac30f7288389224c62c02dfd14427d4cbafe60b1'\nPINNED[Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011/controls-attempt-1/results.json')] = 'a00adc4547ba8cfe8e498618268b0c236b75bcb270d6083de38955c8cc0f90fc'\nfiles = {}\n")
+prepare = prepare.replace('driver.check_source_coverage(document, HELPER)\n', 'driver.check_source_coverage(document, HELPER)\ndriver.check_formatting_lineage(document, REPO, HELPER)\n')
+with (ROOT / 'prepare-bindings.py').open('x') as stream:
+    stream.write(prepare)
+with (ROOT / 'boundary-controls.py').open('x') as stream:
+    stream.write((PRE / 'boundary-controls.py').read_text())
+with (ROOT / 'successor-provenance.json').open('x') as stream:
+    json.dump({'predecessor_preparation': {'path': str(PRE / 'preformatting-preparation.json'), 'sha256': '39504076a4bfd87fab5ad258ac30f7288389224c62c02dfd14427d4cbafe60b1'}, 'predecessor_driver_sha256': sha((PRE / 'integration-replay.py').read_bytes()), 'root_formatting_receipt': {'path': '/private/tmp/pathwaymech-next-219-helper-lint-fix/successor.json', 'sha256': '60e28ef23a294b3b4443ccb4ae697a9241d05f5b2d48abfcb244801086029b54'}, 'changes': ['Pin active helper70387ce and exact original4b5a external/archive owners.', 'Verify normalized full AST equivalence under only consistent original-author path variable rename and one unused CIF-loop binding rename.', 'Bind root formatting receipt and its four historical original-byte owner dispositions.', 'Preserve previous preparation and controls; no source/record/helper/maintained mutation by this task.'], 'expected_binding_preparation_pending': True, 'full_replay_pending': True}, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': 'prepared_lint_successor_driver_for_verification', 'driver_sha256': sha(text.encode()), 'maintained_writes': []}))

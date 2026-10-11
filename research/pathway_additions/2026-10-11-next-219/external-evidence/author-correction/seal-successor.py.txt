@@ -1,0 +1,65 @@
+"""Seal only after the complete successor replay has actually terminated successfully."""
+import argparse
+import hashlib
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+
+p=argparse.ArgumentParser()
+p.add_argument('--session',required=True,type=int)
+p.add_argument('--chunk',required=True)
+a=p.parse_args()
+r=Path(__file__).resolve().parent
+
+def h(path):
+    with path.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+
+def item(path):
+    return {'path':str(path),'sha256':h(path),'bytes':path.stat().st_size}
+
+def write(path,x):
+    with path.open('x') as f:json.dump(x,f,indent=2);f.write('\n')
+
+result=json.loads((r/'replay-successor.json').read_text())
+assert result['status']=='passed_author_source_replay_not_independent_approval'
+assert result['kgx']['nodes']==46 and result['kgx']['edges']==75 and result['kgx']['evidence']==156
+assert result['native_members']==5 and result['native_sides']==29
+assert len(result['issue407_source_semantic_negative_controls'])==5
+preserved=json.loads((r/'predecessor-preservation.json').read_text())
+for row in preserved['files']:
+    q=Path(row['path']);assert str(q.resolve(strict=True))==row['resolved_path'];assert h(q)==row['sha256'],q
+for row in result['all_bound_inputs']:
+    q=Path(row['path']);assert str(q.resolve(strict=True))==row['resolved_path']
+    if q.stat().st_size<100_000_000:assert h(q)==row['sha256'],q
+execution={'observed_at':datetime.now(UTC).isoformat(),'session_id':a.session,'terminal_chunk':a.chunk,'exit_code':0,'helper':item(r/'denitrification-replay.py'),'validation':item(r/'replay-successor.json'),'log':item(r/'replay-successor.log'),'scope':'Full external author source replay; not independent scientific approval or corpus validation.'}
+write(r/'execution.json',execution)
+write(r/'console-transcripts.json',{'logs':[{'path':str(q),'sha256':h(q),'text':q.read_text()} for q in sorted(r.glob('*.log'))]})
+inputs=[*sorted((r/'draft').iterdir()),r/'denitrification-replay.py',r/'correction.json',r/'predecessor-preservation.json',r/'replay-successor.json',r/'execution.json',r/'console-transcripts.json']
+support=[q for q in sorted(r.iterdir()) if q.is_file() and q not in inputs and q.name not in {'handoff.json','handoff-verification.json'}]
+fix=json.loads((r/'correction.json').read_text())
+handoff={
+ 'status':'external_author_successor_ready_for_independent_reassessment',
+ 'created_at':datetime.now(UTC).isoformat(),
+ 'identity':'MetaCyc:DENITRIFICATION-PWY',
+ 'issue':'https://github.com/CultureBotAI/PathwayMech/issues/407',
+ 'finding_keys':fix['finding_keys'],
+ 'previous_external_assessment':fix['prior_review'],
+ 'canonical_previous_occurrences':'None fabricated: the predecessor is an external assessment, not a canonical saved review.',
+ 'original_record':fix['original_record'],
+ 'record':item(r/'draft/nitrate-reduction-i-denitrification.yaml'),
+ 'helper':item(r/'denitrification-replay.py'),
+ 'validation':item(r/'replay-successor.json'),
+ 'execution':execution,
+ 'counts':{**fix['counts'],'kgx_nodes':46},
+ 'bounded_delta':fix['changes'],
+ 'preservation':{'original_existing_files':len(preserved['files']),'manifest':item(r/'predecessor-preservation.json'),'final_rehash_passed':True},
+ 'author_inputs':[item(q) for q in inputs],
+ 'support_files':[item(q) for q in support],
+ 'authority_proposal':item(r/'draft/denitrification-authority-proposal.json'),
+ 'additional_authority':'GO:0016020 membrane; active cellular_component from original GO2026-07-26 Semantic SQL, original fullDB digest018a7ef0. Existing25 original source-body selections unchanged.',
+ 'scientific_scope':'Five native members, transport-mode uncertainty, all29 chemical sides and every other edge remain unchanged. Only Anr provenance and NarK1 generic localization scope are corrected.',
+ 'limits':['Independent successor review pending; no maintained canonical verdict is asserted.','Native antiport remains an explicit database convention; exact PAO1 transport mode/catalyst unresolved.','Other proteins retain their supported specific plasma-membrane locations; NarK1 is generic inferred membrane, not direct localization.','All original primary-access, current-sequence/construct differences, cofactor/assembly tiers and computational-only iMod context limits remain.','One main-text claim remains web-inspected without a local full-main-text body; no broader source-replay claim.','Helper retains explicit original external package dependencies; maintained portable integration is separate.'],
+ 'no_maintained_or_github_writes':True,
+}
+write(r/'handoff.json',handoff)
+print(json.dumps({'handoff':item(r/'handoff.json'),'record':handoff['record'],'helper':handoff['helper'],'validation':handoff['validation'],'execution':item(r/'execution.json'),'authority_proposal':handoff['authority_proposal']}))

@@ -1,0 +1,24 @@
+from pathlib import Path
+from datetime import UTC,datetime
+import json,hashlib,yaml
+R=Path(__file__).parent;D=R/'draft';H=lambda b:hashlib.sha256(b).hexdigest()
+def j(n):return json.loads((D/n).read_text())
+def save(n,v):(D/n).write_text(json.dumps(v,indent=2)+'\n')
+p=D/'nitrate-reduction-i-denitrification.yaml';r=yaml.safe_load(p.read_text());pr=j('denitrification-source-projection.json');m=j('denitrification-source-manifest.json')
+e=next(e for e in r['mechanistic_edges'] if e['subject']=='UniProtKB:Q59647' and e['predicate']=='enables')
+path=R/'raw/uniprot-Q59647.json';u=json.loads(path.read_text());s='/comments/0';text='The inferred FUNCTION annotation (ECO:0000250) states proton-pump activity. This source statement is retained as a conflict and is not adopted as a transport or energy-coupling assertion.'
+block=dict(reference_id='UniProtKB:Q59647',source_locator='JSON pointer '+s,source_assertion=text);e['evidence'].append(block)
+payload=[u['comments'][0]];pr['evidence_spans'].append(dict(reference_id=block['reference_id'],path=str(path),sha256=H(path.read_bytes()),kind='json',selectors=[s],payload_sha256=H(json.dumps(payload,sort_keys=True).encode()),source_assertion=text,source_locator=block['source_locator']))
+web=dict(reference_id='DOI:10.1126/science.1195591',source_assertion='The structural discussion states that no obvious D/K proton-pumping channel or hydrogen-bond network connects cytoplasm and periplasm, consistent with cNOR lacking proton-pumping ability.',source_locator='Original author-uploaded main article, Science 330 pp.1666–1670 (2010), final structural discussion paragraph beginning “Considering the regions of cNOR”; Figure 4 context; web-inspected text, no local full-text body')
+e['evidence'].append(web);pr['web_inspected_evidence']=[web]
+note=dict(note_created_at=datetime.now(UTC).isoformat(),reference_id=web['reference_id'],url=next(x['url'] for x in r['references'] if x['id']==web['reference_id']),observed_scope='Original author-uploaded main article rendered by web open/find; main text and structural paragraphs read. This note is an access attestation, not an original source body or full-text digest.',locations=['p1667 NorBC architecture and heme/Fe centers','final discussion, Figure4 D/K pathway comparison'],failed_accesses=['raw/science-1195591.pdf HTTP403 HTML','raw/science-1195591-SI.pdf HTTP403 HTML','ResearchGate download via web tool returned internal error'],source_assertion=web['source_assertion'],source_locator=web['source_locator'])
+save('denitrification-web-access.json',note)
+p.write_text(yaml.safe_dump(r,sort_keys=False,width=100,allow_unicode=True));h=H(p.read_bytes())
+pr.update(record_sha256=h,evidence_count=sum(len(e['evidence']) for e in r['mechanistic_edges']))
+for n in ['denitrification-source-projection.json','denitrification-source-manifest.json','denitrification-authority-proposal.json','denitrification-chemistry-and-scope.json','denitrification-coverage.json','denitrification-identifiers.json']:
+ v=pr if n=='denitrification-source-projection.json' else j(n);v['record_sha256']=h
+ if n=='denitrification-coverage.json':v['source_assertion_count']=len(pr['evidence_spans']);v['web_inspected_assertion_count']=1
+ if n=='denitrification-source-manifest.json':
+  v['prior_proof_inputs'] += [dict(path=str(R/'build-attempt1-receipt.json'),resolved_path=str((R/'build-attempt1-receipt.json').resolve()),sha256=H((R/'build-attempt1-receipt.json').read_bytes())),dict(path=str(R/'build-attempt2-receipt.json'),resolved_path=str((R/'build-attempt2-receipt.json').resolve()),sha256=H((R/'build-attempt2-receipt.json').read_bytes()))]
+ save(n,v)
+print(json.dumps(dict(record_sha256=h,edges=len(r['mechanistic_edges']),evidence=pr['evidence_count'],local_assertions=len(pr['evidence_spans']),web_assertions=1)))

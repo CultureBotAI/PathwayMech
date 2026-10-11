@@ -1,0 +1,50 @@
+from pathlib import Path
+from dataclasses import asdict
+from datetime import UTC, datetime
+from concurrent.futures import ThreadPoolExecutor
+import hashlib,json,sys,urllib.request,urllib.error
+R=Path(__file__).parent/'imod';a=Path('/private/tmp/claw-published-duf-offline-20261007/src/kg_microbe_sources/imodulondb.py');H=lambda b:hashlib.sha256(b).hexdigest(); ah=H(a.read_bytes());assert ah=='1901c6ab519795051d0b70b57412c4ad463949b3dd02a49d05936464e6fd4aa2';sys.path.insert(0,str(a.parent.parent))
+from kg_microbe_sources.imodulondb import ImodulonDBClient
+manifest=[];raw={}
+def fetch(u):
+ at=datetime.now(UTC).isoformat()
+ try:r=urllib.request.urlopen(u,timeout=60)
+ except urllib.error.HTTPError as e:r=e
+ b=r.read();p=R/'raw'/(H(u.encode())+'.json');assert not p.exists();p.write_bytes(b)
+ manifest.append(dict(url=u,path=str(p),sha256=H(b),status=r.code,started_at=at,finished_at=datetime.now(UTC).isoformat())); assert r.code==200,(u,r.code);raw[u]=json.loads(b);return raw[u]
+c=ImodulonDBClient(transport=fetch);out={'started_at':datetime.now(UTC).isoformat(),'queries':{},'components':{},'genes':{}}
+queries=['narG','narH','narI','narK1','narK2','nirS','norB','norC','nosZ','nirM','anr','dnr','narL','denitrification','nitrate reduction']
+def run(pair):
+ d,q=pair
+ try:v=asdict(c.search('p_aeruginosa',d,q))
+ except Exception as e:v={'error':repr(e)}
+ return d,q,v
+with ThreadPoolExecutor(max_workers=4) as p:
+ for d,q,v in p.map(run,[(d,q) for d in ['precise364','precise411'] for q in queries]):out['queries'].setdefault(d,{})[q]=v
+for d,rows in out['queries'].items():
+ ks=sorted({h['k'] for v in rows.values() for h in v.get('imodulons',[])})
+ for k in ks:
+  try:v=asdict(c.imodulon_genes('p_aeruginosa',d,k))
+  except Exception as e:v={'error':repr(e)}
+  out['components'].setdefault(d,{})[str(k)]=v
+ for locus in ['PA3875','PA3874','PA3872','PA3876','PA0519','PA0524','PA0523','PA3392']:
+  try:v=asdict(c.gene('p_aeruginosa',d,locus))
+  except Exception as e:v={'error':repr(e)}
+  out['genes'].setdefault(d,{})[locus]=v
+rep=ImodulonDBClient(transport=lambda u:raw[u])
+def replay(fn,args,expected):
+ try:v=asdict(fn(*args))
+ except Exception as e:v={'error':repr(e)}
+ assert v==expected,(args,v,expected)
+for d,rows in out['queries'].items():
+ for q,v in rows.items():replay(rep.search,('p_aeruginosa',d,q),v)
+for d,rows in out['components'].items():
+ for k,v in rows.items():replay(rep.imodulon_genes,('p_aeruginosa',d,int(k)),v)
+for d,rows in out['genes'].items():
+ for k,v in rows.items():replay(rep.gene,('p_aeruginosa',d,k),v)
+for x in manifest:assert H(Path(x['path']).read_bytes())==x['sha256']
+assert H(a.read_bytes())==ah
+out.update(finished_at=datetime.now(UTC).isoformat(),status='exact original-body parser replay passed including preserved source/parser errors',scope='Current source-declared P. aeruginosa datasets and PAO1 locus queries. Computational context only; gene/table membership is not catalytic, regulatory, flux or exact historical-strain evidence. No absence inference from nonhits/errors.',adapter={'path':str(a),'sha256':ah})
+for n,v in [('context.json',out),('context-manifest.json',manifest)]:
+ with (R/n).open('x') as f:json.dump(v,f,indent=2);f.write('\n')
+print(json.dumps({'bodies':len(manifest),'queries':len(queries)*2,'components':{d:list(x) for d,x in out['components'].items()},'errors':{d:{q:v for q,v in rows.items() if 'error'in v} for d,rows in out['queries'].items()}}))

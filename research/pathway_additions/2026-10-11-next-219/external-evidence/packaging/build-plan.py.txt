@@ -1,0 +1,321 @@
+"""External-only lossless denitrification evidence plan; no maintained apply mode."""
+from pathlib import Path
+from datetime import datetime, timezone
+import base64
+import hashlib
+import json
+import os
+import re
+import stat
+import subprocess
+
+OUT = Path(__file__).absolute().parent
+REPO = Path('/private/tmp/pathwaymech-next-219-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-219')
+A = Path('/private/tmp/pathwaymech-denitrification-author-20261011')
+C = Path('/private/tmp/pathwaymech-denitrification-correction-20261011')
+R = Path('/private/tmp/pathwaymech-denitrification-whole-record-review-20261011')
+S = Path('/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011')
+U = Path('/private/tmp/pathwaymech-next-219-current-dedup')
+ROOT_PROOF = Path('/private/tmp/pathwaymech-denitrification-root-whole-review-adoption-20261011.json')
+ROOT_CORRECTION = Path('/private/tmp/pathwaymech-denitrification-root-correction-adoption-20261011.json')
+ED_MERGE = Path('/private/tmp/pathwaymech-next-218-publication-watch/actual-merge.json')
+ANCHORS = {
+    A / 'handoff.json': '0ef89da5e817db1fa1fcca9d1af80d47fb509c61cad250ed5308ee5666c45187',
+    R / 'completion.json': 'ec98836a2505683b42162caed76ee3cdf855050b8c6184917604b3f8a890969b',
+    C / 'handoff.json': '165488e9856288c962586a2127b1efe9cad848a1e49833fe1f76e2218ca8e860',
+    S / 'completion.json': '2b612a79e87163ef9be611aae557cdbb4dd9bfd691fe09f50d7367ceaa660c36',
+    ROOT_CORRECTION: '66b383c783076074db64db9ec7aa0f7d68defd34b40b31c91646a7019cb89385',
+    ED_MERGE: '454464400cb372fd1abc65b028234931e45766daf1ae0ec44f048ee04a3cb61e',
+    U / 'root-disposition.json': 'be46269089365ccf7f9cb1f5581917e939a696411c81484bc10dac7eaef8961e',
+}
+TARGET_SHA = '7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd'
+HELPER_SHA = '4b5a755963216f9e04e9bfb6b3b1413f12f30db60d06532dfc2aabe1580bd971'
+started = datetime.now(timezone.utc).isoformat()
+bindings = {}
+inventory = {}
+directories = []
+symlinks = []
+dispositions = {}
+copies = []
+aliases = []
+retained = []
+canonical = {}
+formal = []
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def capture(path, expected=None):
+    path = Path(path).absolute()
+    resolved = path.resolve(strict=True)
+    raw = path.read_bytes()
+    row = {'path': str(path), 'resolved_path': str(resolved), 'sha256': sha(raw), 'bytes': len(raw)}
+    assert path.resolve(strict=True) == resolved
+    if expected:
+        assert row['sha256'] == expected, (path, expected, row['sha256'])
+    if str(path) in bindings:
+        assert bindings[str(path)] == row, ('Changed input', path)
+    bindings[str(path)] = row
+    return raw
+
+def read(path):
+    return json.loads(capture(path))
+
+def write_json(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(value, stream, ensure_ascii=False, indent=2)
+        stream.write('\n')
+
+def whitespace(raw):
+    return any(line.rstrip(b'\r\n').endswith((b' ', b'\t')) for line in raw.splitlines(keepends=True)) or raw.endswith(b'\n\n')
+
+def safe_relative(relative):
+    names = []
+    for component in Path(relative).parts:
+        assert component not in ['..', '/']
+        if component == '__pycache__': component = 'captured-python-cache'
+        if component == '.ruff_cache': component = 'captured-ruff-cache'
+        if component == '.gitignore': component = 'gitignore-observation.txt'
+        names.append(component)
+    return Path(*names)
+
+def package(path, destination, role, active=False, force_wrapper=False):
+    path = Path(path).absolute()
+    if str(path) in dispositions:
+        return dispositions[str(path)]
+    raw = capture(path)
+    original_sha = sha(raw)
+    destination = Path(destination)
+    assert destination.is_relative_to(DOSSIER) and not destination.is_absolute() and '..' not in destination.parts
+    assert destination != DOSSIER / 'README.md'
+    assert '__pycache__' not in destination.parts
+    try:
+        decoded = raw.decode('utf-8')
+        text = '\x00' not in decoded
+    except UnicodeDecodeError:
+        decoded, text = None, False
+    wrap = force_wrapper or not text or whitespace(raw) or path.suffix in {'.log', '.stderr', '.stdout', '.jsonl', '.tsv', '.diff'} or '.yaml' in path.name or '.yml' in path.name
+    if active:
+        assert not wrap, ('Active byte-exact dependency would require wrapper', path)
+    elif destination.suffix == '.py':
+        destination = destination.with_name(destination.name + '.txt')
+    if not active and original_sha in canonical:
+        owner = canonical[original_sha]
+        row = {**bindings[str(path)], 'disposition': 'content-addressed-exact-byte-alias', 'destination': owner['destination'], 'mode': owner['mode'], 'role': role}
+        aliases.append(row)
+        dispositions[str(path)] = row
+        return row
+    mode = 'exact_bytes'
+    source = path
+    if wrap:
+        mode = 'lossless_json_wrapper'
+        encoding, content = ('utf-8', decoded) if text else ('base64', base64.b64encode(raw).decode('ascii'))
+        wrapper = {'format': 'lossless-immutable-evidence-v1', 'original_sha256': original_sha, 'original_bytes': len(raw), 'encoding': encoding, 'content': content}
+        source = OUT / 'payload' / (original_sha + '.json')
+        if not source.exists(): write_json(source, wrapper)
+        else: assert json.loads(source.read_text()) == wrapper
+        destination = destination.with_name(destination.name + '.bytes.json')
+    assert not any(row['destination'] == str(destination) for row in copies), destination
+    row = {**bindings[str(path)], 'disposition': 'planned-copy', 'destination': str(destination), 'copy_source': str(source), 'destination_sha256': sha(source.read_bytes()), 'mode': mode, 'role': role}
+    copies.append(row)
+    canonical.setdefault(original_sha, row)
+    dispositions[str(path)] = row
+    return row
+
+def archive(path, group, relative=None, force_wrapper=False):
+    relative = safe_relative(relative or Path(path).name)
+    return package(path, DOSSIER / 'external-evidence' / group / relative, 'Immutable historical evidence; no canonical or independent approval is implied', force_wrapper=force_wrapper)
+
+def external(path, reason, expected=None):
+    path = Path(path).absolute()
+    if str(path) in dispositions:
+        if expected: assert dispositions[str(path)]['sha256'] == expected
+        return dispositions[str(path)]
+    capture(path, expected)
+    row = {**bindings[str(path)], 'disposition': 'retained-external', 'reason': reason}
+    retained.append(row)
+    dispositions[str(path)] = row
+    return row
+
+def scan(root, group):
+    # No gitignore filtering; includes hidden/cache/fixture files. Never follows links.
+    for directory, dirs, files in os.walk(root, followlinks=False):
+        directory = Path(directory)
+        entries = sorted(dirs + files)
+        directories.append({'path': str(directory), 'mode': oct(stat.S_IMODE(directory.lstat().st_mode)), 'entries': entries, 'disposition': 'directory-observation-only'})
+        for name in list(dirs) + files:
+            p = directory / name
+            if p.is_symlink():
+                target = os.readlink(p)
+                symlinks.append({'path': str(p), 'link_target': target, 'link_target_sha256': sha(os.fsencode(target)), 'resolved_path': str(p.resolve(strict=False)), 'dangling': not p.exists(), 'disposition': 'observation-only-no-installed-link'})
+                if name in dirs: dirs.remove(name)
+            elif p.is_file():
+                capture(p)
+                inventory[str(p)] = {'group': group, 'relative': str(p.relative_to(root)), **bindings[str(p)]}
+            elif name in files:
+                raise AssertionError(('Unsupported special file', p))
+
+capture(__file__)
+for path, digest in ANCHORS.items(): capture(path, digest)
+assert sha((C / 'denitrification-replay.py').read_bytes()) == HELPER_SHA
+assert sha((C / 'draft/nitrate-reduction-i-denitrification.yaml').read_bytes()) == TARGET_SHA
+roots = [(A, 'author-original'), (R, 'independent-original-review'), (C, 'author-correction'), (S, 'independent-correction-review'), (U, 'root-current-dedup')]
+for root, group in roots: scan(root, group)
+head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
+tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=REPO, text=True).strip()
+
+# Only these unchanged current inputs remain active in the future dossier.
+active = []
+for path in [C / 'denitrification-replay.py', C / 'correction.json', C / 'predecessor-preservation.json']:
+    active.append(package(path, DOSSIER / path.name, 'Exact current corrected helper-relative input; unchanged external dependency contract', active=True))
+for path in sorted((C / 'draft').iterdir()):
+    if path.suffix != '.yaml':
+        active.append(package(path, DOSSIER / 'draft' / path.name, 'Exact current draft helper input', active=True))
+for name in ['context.json', 'context-manifest.json', 'inventory.json', 'inventory-manifest.json', 'adapter.json']:
+    active.append(package(A / 'imod' / name, DOSSIER / 'imod' / name, 'Exact iMod metadata mirror; unchanged helper still reads the original absolute external O/imod location', active=True))
+
+raw_roots = [A / 'raw', A / 'imod/raw']
+for path_string, item in sorted(inventory.items()):
+    path = Path(path_string)
+    if path_string in dispositions: continue
+    if any(path.is_relative_to(root) for root in raw_roots):
+        external(path, 'Original source/HTTP/iMod body remains external with exact path, resolved identity and digest. No redistribution or new scientific approval.')
+    elif any(part in {'.ruff_cache', '__pycache__'} for part in path.parts) and not any('fixture' in part for part in path.parts):
+        external(path, 'Ignored/hidden interpreter or lint cache retained externally with a full census and digest observation; no cache directory installed.')
+    else:
+        archive(path, item['group'], item['relative'], force_wrapper=any('fixture' in part for part in path.parts))
+archive(ROOT_PROOF, 'root-acceptance')
+archive(ROOT_CORRECTION, 'root-acceptance')
+archive(ED_MERGE, 'actual-ed-merge')
+
+manifest = read(C / 'draft/denitrification-source-manifest.json')
+whole = {}
+for row in manifest['issuing_databases']:
+    p = Path(row['path']); resolved = p.resolve(strict=True)
+    assert str(resolved) == row['resolved_path']
+    observed = {**row, 'bytes': p.stat().st_size, 'disposition': 'retained-external-whole-database', 'fresh_hash_in_this_packaging_run': False, 'hash_scope': 'Declared original complete database digest; previously streamed by completed author/independent source replay, not re-streamed solely for packaging.'}
+    whole[str(p)] = observed
+    dispositions[str(p)] = observed
+for row in manifest['bodies']:
+    external(row['path'], 'Original source body remains external; current original manifest and acquisition receipts retain retrieval scope.', row['sha256'])
+
+def resolve(label, row):
+    original_path = Path(row['path']).absolute()
+    expected = row['sha256']
+    assert re.fullmatch('[0-9a-f]{64}', expected)
+    key = str(original_path)
+    if key in whole:
+        assert whole[key]['sha256'] == expected
+        owner = whole[key]
+        disposition = 'external-whole-database-declared-digest-not-rehashed'
+    else:
+        raw = capture(original_path)
+        if sha(raw) != expected:
+            matches = [x for x in inventory.values() if x['sha256'] == expected]
+            assert matches, ('Historical bytes have no preserved owner', label, original_path, expected, sha(raw))
+            selected = sorted(matches, key=lambda x: x['path'])[0]
+            owner = dispositions[selected['path']]
+            disposition = 'historical-digest-resolved-to-preserved-exact-byte-owner'
+        else:
+            if key not in dispositions:
+                resolved = original_path.resolve(strict=True)
+                if any(resolved.is_relative_to(root) for root in raw_roots):
+                    owner = external(original_path, 'Historical fixture path aliases an external original body through an observed raw-directory symlink.', expected)
+                elif '/src/' in key or '/scripts/' in key:
+                    rel = Path(original_path.parts[3]) / Path(*original_path.parts[4:])
+                    owner = archive(original_path, 'historical-runtime', rel)
+                else:
+                    owner = archive(original_path, 'external-proof-inputs', Path(expected[:16]) / original_path.name)
+            else:
+                owner = dispositions[key]
+            disposition = owner['disposition']
+    resolution = {'set': label, 'path': key, 'sha256': expected, 'resolution': disposition, 'owner_path': owner['path'], 'owner_sha256': owner['sha256'], 'destination': owner.get('destination'), 'mode': owner.get('mode'), 'external': owner['disposition'].startswith('retained-external')}
+    formal.append(resolution)
+
+ah, ch = read(A / 'handoff.json'), read(C / 'handoff.json')
+formal_sets = [
+    ('original-author-inputs', ah['author_inputs']),
+    ('original-author-historical-preparation', ah['historical_preparation_and_support']),
+    ('original-author-prior-proofs', ah['prior_proof_inputs']),
+    ('original-author-argument-controls', ah['argument_guard_checks']),
+    ('original-author-replay-bindings', read(A / 'replay-attempt3.json')['all_bound_inputs']),
+    ('original-review-artifacts', read(R / 'completion.json')['artifacts']),
+    ('original-review-inputs', read(R / 'initial-inputs.json')['inputs']),
+    ('corrected-author-inputs', ch['author_inputs']),
+    ('corrected-author-support', ch['support_files']),
+    ('corrected-predecessor-preservation', read(C / 'predecessor-preservation.json')['files']),
+    ('corrected-helper-replay-bindings', read(C / 'replay-successor.json')['all_bound_inputs']),
+    ('corrected-review-artifacts', read(S / 'completion.json')['artifacts']),
+    ('corrected-review-inputs', read(S / 'initial-inputs-and-delta.json')['current_inputs']),
+    ('corrected-source-prior-proofs', manifest['prior_proof_inputs']),
+    ('corrected-source-bodies', manifest['bodies']),
+]
+for label, rows in formal_sets:
+    for row in rows: resolve(label, row)
+
+# Verify all copied wrappers/aliases can recover their exact original bytes.
+destinations = {x['destination']: x for x in copies}
+for row in copies:
+    source = Path(row['copy_source'])
+    raw = source.read_bytes()
+    assert sha(raw) == row['destination_sha256']
+    if row['mode'] == 'lossless_json_wrapper':
+        wrapped = json.loads(raw)
+        original = wrapped['content'].encode('utf-8') if wrapped['encoding'] == 'utf-8' else base64.b64decode(wrapped['content'], validate=True)
+        assert sha(original) == row['sha256'] == wrapped['original_sha256'] and len(original) == row['bytes'] == wrapped['original_bytes']
+    else:
+        assert sha(raw) == row['sha256']
+    assert not (REPO / row['destination']).exists() and not (REPO / row['destination']).is_symlink(), ('Destination occupied', row['destination'])
+for row in aliases:
+    assert destinations[row['destination']]['sha256'] == row['sha256']
+assert set(inventory) <= set(dispositions)
+
+# Preview only inside this owned external directory, with all artifacts regular0644.
+preview = OUT / 'preview'
+empty = OUT / 'empty'
+empty.mkdir()
+for row in copies:
+    p = preview / row['destination']; p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open('xb') as f: f.write(Path(row['copy_source']).read_bytes())
+    p.chmod(0o644)
+active_python = [str(p.relative_to(preview)) for p in preview.rglob('*.py')]
+assert active_python == [str(DOSSIER / 'denitrification-replay.py')], active_python
+check_argv = ['git', 'diff', '--no-index', '--check', str(empty), str(preview)]
+check = subprocess.run(check_argv, capture_output=True, text=True)
+assert check.returncode in [0, 1] and not check.stdout and not check.stderr, (check.returncode, check.stdout, check.stderr)
+negative_dir = OUT / 'whitespace-control'; negative_dir.mkdir()
+(negative_dir / 'bad.txt').write_bytes(b'control \n')
+negative_argv = ['git', 'diff', '--no-index', '--check', str(empty), str(negative_dir)]
+negative = subprocess.run(negative_argv, capture_output=True, text=True)
+assert negative.returncode not in [0, 1] and 'trailing whitespace' in negative.stdout
+
+# Post-preparation preservation includes every regular input and every directory/link census.
+for row in list(bindings.values()): capture(row['path'], row['sha256'])
+for row in directories:
+    p = Path(row['path'])
+    assert sorted(os.listdir(p)) == row['entries'], ('Source directory changed', p)
+for row in symlinks:
+    p = Path(row['path'])
+    assert p.is_symlink() and os.readlink(p) == row['link_target'] and str(p.resolve(strict=False)) == row['resolved_path'] and (not p.exists()) == row['dangling']
+
+validation = {'status': 'passed_external_packaging_checks', 'copy_entries': len(copies), 'exact_byte_aliases': len(aliases), 'formal_resolutions': len(formal), 'inventory_regular_files': len(inventory), 'retained_external_files': len(retained), 'whole_databases_not_rehashed': len(whole), 'symlink_observations': len(symlinks), 'directory_observations': len(directories), 'fresh_small_file_bindings': len(bindings), 'all_inventory_members_disposed': True, 'all_wrappers_roundtrip': True, 'all_aliases_resolve_to_exact_bytes': True, 'all_source_bytes_paths_and_censuses_unchanged': True, 'new_destinations_absent': True, 'active_python_files': active_python, 'whitespace_check': {'argv': check_argv, 'exit_code': check.returncode, 'stdout': check.stdout, 'stderr': check.stderr, 'interpretation': 'No whitespace diagnostics; no-index1 means files differ, not a whitespace failure.'}, 'whitespace_negative_control': {'argv': negative_argv, 'exit_code': negative.returncode, 'stdout': negative.stdout, 'stderr': negative.stderr}, 'maintained_writes': []}
+plan = {
+    'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat(), 'status': 'external_lossless_copy_plan_not_applied',
+    'destination_repo': str(REPO), 'destination_dossier': str(DOSSIER),
+    'observed_baseline': {'commit': head, 'tree': tree, 'scope': 'Observed next219 worktree baseline only. ActualED merge/tree bridge and current production authority package are separate root work; no publication status claimed.'},
+    'anchors': [bindings[str(p)] for p in ANCHORS],
+    'target': bindings[str(C / 'draft/nitrate-reduction-i-denitrification.yaml')], 'active_helper': bindings[str(C / 'denitrification-replay.py')],
+    'copy_entries': copies, 'exact_byte_aliases': aliases, 'formal_input_resolution': formal,
+    'inventory_regular_files': list(inventory.values()), 'directory_observations': directories, 'symlink_observations': symlinks,
+    'retained_external': retained, 'issuing_databases_retained_external': list(whole.values()),
+    'input_bindings': list(bindings.values()),
+    'replay_contract': {'active_adjacent_inputs': [{'path': x['path'], 'sha256': x['sha256'], 'destination': x['destination']} for x in active], 'current_helper_relative_scope': 'R=helper parent; draft/*.json plus draft/denitrification-curation.md, predecessor-preservation.json and correction.json. --record remains caller explicit, not a hard-coded archived target.', 'unchanged_absolute_dependencies': 'Original author O/raw and O/imod plus all484 predecessor-preservation paths,17source prior proofs,4whole databases, original adapter and caller runtime remain external absolute dependencies. Mirrored imod metadata is preservation only, not consumed by the unchanged helper.', 'original_body_counts': {'source_response_bodies': len(manifest['bodies']), 'accepted_source_bodies': ah['accepted_original_bodies'], 'rejected_access_response_bodies': ah['rejected_access_response_bodies'], 'imod_original_bodies': ah['imod_original_bodies']}, 'scope': 'No science rerun or portable/current maintained-runtime replay claim. A separate integrated binding wrapper and current corpus checks remain required.'},
+    'application_contract': ['Root independently reviews this external plan; no apply mode is supplied.', 'Verify each original path/digest/resolved identity plus payload destination digest before exclusive copying. Do not reinterpret historical paths as current successors.', 'Copy only declared copy_source bytes to new repository-relative destination with mode0644. Check ignored destinations explicitly and refuse collisions.', 'Aliases are content-addressed preservation mappings, not installed filesystem symlinks. Decode wrappers only for external reconstruction/checking, never in-place rewriting of maintained historical artifacts.', 'Do not copy raw sources, whole databases, original caches or external runtime environments into the dossier.', 'Root owns maintained target/core authorities, dossier README, history, rendering, current full gates, canonical review and PR lifecycle.', 'Future authority preparation and actualED merged-base acceptance belong to separately sealed later packages.', 'Archive this plan/validation/build script and final handoff as packaging provenance after independent adoption; scripts must be inert .py.txt.', 'Current corrected helper still has external dependencies. Packaging does not assert source independence, scientific approval, portability, source exhaustion or licensing clearance.'],
+    'inventory_scope': 'os.walk/listdir/lstat include ignored and hidden files, caches, fixtures, binary files, directories and dangling links. Directory symlinks are not followed; explicit formal-path aliases through them are separately resolved. No file is silently omitted.',
+    'validation': validation,
+}
+write_json(OUT / 'validation.json', validation)
+write_json(OUT / 'copy-plan.json', plan)
+print(json.dumps({'status': plan['status'], 'copy_plan_sha256': sha((OUT / 'copy-plan.json').read_bytes()), 'validation_sha256': sha((OUT / 'validation.json').read_bytes()), 'counts': {k:v for k,v in validation.items() if isinstance(v,int) and not isinstance(v,bool)}}))

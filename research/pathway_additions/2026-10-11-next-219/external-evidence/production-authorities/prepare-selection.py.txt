@@ -1,0 +1,202 @@
+"""Select denitrification authorities after corrected-candidate and actual-base seals.
+
+External outputs only. This producer does not mutate the shared cache, invoke
+the scientific helper, or confer independent scientific approval.
+"""
+import argparse
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import sqlite3
+import subprocess
+import sys
+import unicodedata
+from datetime import datetime, timezone
+
+HERE = Path(__file__).absolute().parent
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities')
+
+
+def require(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+def main():
+    require(__debug__, 'Optimized Python is unsupported')
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ['repo-root', 'candidate-handoff', 'record', 'proposal', 'actual-base-receipt', 'output-dir']:
+        parser.add_argument('--' + name, required=True, type=Path)
+    for name in ['candidate-handoff-sha256', 'record-sha256', 'proposal-sha256', 'actual-base-receipt-sha256', 'merged-commit']:
+        parser.add_argument('--' + name, required=True)
+    args = parser.parse_args()
+    root = args.repo_root.absolute()
+    out = args.output_dir.absolute()
+    require(not os.path.lexists(out), 'Output already exists')
+    require(not out.resolve().is_relative_to(root.resolve()) and not out.resolve().is_relative_to(CACHE.resolve()), 'Output inside protected tree')
+    bound = {}
+    def capture(path, expected=None):
+        path = Path(path).absolute()
+        raw = path.read_bytes()
+        digest = hashlib.sha256(raw).hexdigest()
+        require(expected is None or digest == expected, f'Input digest: {path}')
+        row = {'path': str(path), 'resolved_path': str(path.resolve(strict=True)), 'sha256': digest}
+        require(str(path) not in bound or bound[str(path)] == row, f'Input recapture: {path}')
+        bound[str(path)] = row
+        return raw
+    def recheck():
+        for p, row in bound.items():
+            require(str(Path(p).resolve(strict=True)) == row['resolved_path'] and hashlib.sha256(Path(p).read_bytes()).hexdigest() == row['sha256'], f'Changed input: {p}')
+    capture(__file__)
+    lock = json.loads(capture(HERE / 'provisional-baseline-lock.json', '84b701f7b44833a81210ff2b0048f10d1681b7177b9d04bd81cbb737152a97f7'))
+    assessment = json.loads(capture(HERE / 'preliminary-assessment.json', '0f2b225a78cf7d97948a062b7b2d575fe6fe96ebee74ff52931ce9803296172a'))
+    for item in assessment['bindings']:
+        capture(item['path'], item['sha256'])
+        require(str(Path(item['path']).resolve(strict=True)) == item['resolved_path'], 'Preliminary input identity changed')
+    candidate = json.loads(capture(args.candidate_handoff, args.candidate_handoff_sha256))
+    record_bytes = capture(args.record, args.record_sha256)
+    proposal = json.loads(capture(args.proposal, args.proposal_sha256))
+    base_receipt = json.loads(capture(args.actual_base_receipt, args.actual_base_receipt_sha256))
+    def bound_pair(value, path, digest):
+        if isinstance(value, dict):
+            if value.get('path') == str(path) and value.get('sha256') == digest:
+                return True
+            return any(bound_pair(v, path, digest) for v in value.values())
+        return isinstance(value, list) and any(bound_pair(v, path, digest) for v in value)
+    require(bound_pair(candidate, args.record, args.record_sha256), 'Corrected handoff must bind exact target')
+    require(bound_pair(candidate, args.proposal, args.proposal_sha256), 'Corrected handoff must bind exact proposal')
+    # Root supplies the independently observed actual merge receipt. Requiring
+    # its exact commit text and the known complete tree avoids silently treating
+    # the original reviewed head as an actual merge.
+    require(args.merged_commit in json.dumps(base_receipt), 'Actual merge receipt does not name supplied commit')
+    merged_tree = subprocess.check_output(['git','rev-parse',args.merged_commit+'^{tree}'],cwd=root,text=True).strip()
+    require(merged_tree == lock['observed_head_tree'], 'Actual merged tree differs from frozen reviewed ED tree')
+    baseline = {**lock['baseline_files'], **lock['runtime_files'], **lock['corpus_files']}
+    current = {}
+    for rel, expected in baseline.items():
+        current[rel] = capture(root / rel, expected)
+    requests = ''.join(args.merged_commit + ':' + rel + '\n' for rel in baseline).encode()
+    process = subprocess.run(['git','cat-file','--batch'],cwd=root,input=requests,capture_output=True,check=True)
+    cursor = 0
+    for rel, expected in baseline.items():
+        end = process.stdout.index(b'\n',cursor)
+        fields = process.stdout[cursor:end].split()
+        require(len(fields) == 3 and fields[1] == b'blob', 'Merged source object missing')
+        size = int(fields[2]); start = end + 1; body = process.stdout[start:start+size]; cursor = start+size+1
+        require(hashlib.sha256(body).hexdigest() == expected, f'Merged baseline bytes differ: {rel}')
+    require(cursor == len(process.stdout), 'Extra batch output')
+    runtime = sorted(str(p.relative_to(root)) for p in (root/'src').rglob('*') if p.is_file() and p.suffix in {'.py','.yaml','.yml','.json'})
+    require(runtime == sorted(r for r in lock['runtime_files'] if r.startswith('src/')), 'Runtime inventory differs')
+    require(sorted(str(p.relative_to(root)) for p in (root/'data/pathways').rglob('*.yaml')) == sorted(lock['corpus_files']), 'Current corpus differs from frozen ED baseline')
+    recheck()
+    sys.path.insert(0,str(root))
+    import yaml
+    from scripts import build_source_identifier_snapshot as source
+    from scripts import build_ontology_identifier_snapshot as ontology
+    record = yaml.safe_load(record_bytes)
+    require(proposal['record_sha256'] == args.record_sha256, 'Corrected proposal record mismatch')
+    original = [r['proposal_entry'] for r in assessment['source_checks']]
+    require(proposal['sources'] == original, 'Original source inputs changed; needs explicit successor assessment')
+    manifest = json.loads(current['conf/identifier_sources.json'])
+    before = {n:json.loads(current[f'data/identifier_authorities/{n}.json']) for n in ['ontology','sources']}
+    policy = yaml.safe_load(current['conf/identifier_policy.yaml'])
+    named = {record['id']:record['label']}; sections = {record['id']:'record'}
+    for group in ['taxa','participants','reactions','gene_clusters']:
+        for node in record.get(group,[]):
+            require(node['id'] not in named,'Duplicate node')
+            named[node['id']] = node['label']; sections[node['id']] = group
+    labels = []
+    def label_check(ident,term):
+        if ident not in named:
+            return
+        prefix=ident.split(':')[0]
+        contextual=[r for r in policy['contextual_labels'] if r['namespace']==prefix and sections[ident] in r['sections'] and record['id'].split(':')[0] in r['record_prefixes']]
+        allowed=[term['label']] + (term['synonyms'] if policy['namespaces'][prefix]['policy']=='canonical_or_synonym' else [])
+        norm=lambda s:' '.join(unicodedata.normalize('NFKC',s).split()).casefold()
+        require(contextual or norm(named[ident]) in {norm(s) for s in allowed},f'Label mismatch: {ident}')
+        labels.append({'id':ident,'record_label':named[ident],'authority':term,'contextual_policy':contextual,'policy_change':False})
+    new=[];selected={}
+    for row in assessment['source_checks']:
+        old=row['proposal_entry']; ident=old['selected_ids'][0]; original_path=Path(old['path'])
+        capture(original_path,old['sha256'])
+        parsed=[list(t) for t in source.source_terms(old['kind'],original_path,url=old['url'])]
+        require(parsed==old['extracted_terms'],'Native source parsing changed')
+        require(ident not in before['sources']['terms'],'Unexpected existing authority term')
+        require(not any(e['url']==old['url'] or e['sha256']==old['sha256'] for e in manifest),'Reusable exact production source appeared')
+        ident,label,synonyms=parsed[0];ev=row['version_evidence']
+        acquired=row['acquisition_proofs'][0]['observation']['finished_at']
+        if old['kind']=='metacyc-html':
+            version=ev['database'].rstrip('.')+'; '+ev['software']+'; original HTML retrieved '+acquired
+            license_value='MetaCyc source terms; only native identifier/name facts retained, no raw database redistributed'
+        else:
+            audit=ev['entryAudit']
+            version=f"UniProt entry version {audit['entryVersion']}; last annotation update {audit['lastAnnotationUpdateDate']}; original retrieved {acquired}"
+            license_value='CC-BY-4.0'
+            require(not assessment['batch_matches'][ident.split(':')[1]],'Original batch reuse must be considered')
+        key=old['key']+'-2026-10-11'; rel='denitrification/'+key+original_path.suffix
+        require(not any(e['key']==key or e['path']==rel for e in manifest),'Manifest collision')
+        require(not os.path.lexists(CACHE/'sources'/rel),'Shared cache collision')
+        entry={'key':key,'kind':old['kind'],'path':rel,'url':old['url'],'version':version,'license':license_value,'sha256':old['sha256']}
+        term={'label':label,'synonyms':sorted(set(synonyms)-{label}),'source':key}
+        new.append({'original_path':str(original_path),'manifest_entry':entry,'selected_ids':[ident],
+                    'prospective_cache_path':str(CACHE/'sources'/rel),'current_cache_state':'absent_no_copy',
+                    'acquisition_proof':[{'path':p['receipt'],'sha256':p['receipt_sha256'],'locator':p['locator'],'observation':p['observation']} for p in row['acquisition_proofs']],
+                    'version_evidence':ev,'parsed_terms':parsed})
+        selected[ident]=term;label_check(ident,term)
+    ont_ids=ontology.walk_identifiers(record,{'GO','CHEBI','NCBITaxon','RHEA'})
+    require(ont_ids==set(proposal['ontology_ids']),'Corrected ontology coverage mismatch')
+    terms={};ont_checks=[]
+    for row in assessment['ontology_checks']:
+        owner=next(iter(row['selected_terms'].values()))['source']; prefix=next(iter(row['selected_terms'])).split(':')[0]
+        ids=sorted(i for i in ont_ids if i.startswith(prefix+':'))
+        db=Path(row['path'])
+        require(str(db.resolve(strict=True))==row['resolved_path'],'Ontology DB identity changed')
+        with sqlite3.connect(db.resolve().as_uri()+'?mode=ro',uri=True) as con:
+            extracted,missing=ontology.extract_terms(con,ids,owner)
+        require(not missing and extracted==row['selected_terms'],'Selected ontology rows changed')
+        for i,t in extracted.items():
+            require(i not in before['ontology']['terms'] or before['ontology']['terms'][i]==t,'Existing ontology authority changed')
+            label_check(i,t)
+        terms.update(extracted);ont_checks.append(row)
+    require(set(terms)==ont_ids and set(named)==set(selected)|(set(terms)&set(named)),'Named coverage incomplete')
+    merged=copy.deepcopy(before)
+    merged['ontology']['terms'].update(terms);merged['sources']['terms'].update(selected)
+    for row in new:
+        e=row['manifest_entry'];merged['sources']['sources'][e['key']]={k:e[k] for k in ['url','version','license','sha256']}
+    for name in before:
+        for field in ['terms','sources']:
+            require(all(merged[name][field][k]==v for k,v in before[name][field].items()),'Prior authority metadata changed')
+    recheck()
+    require(not os.path.lexists(out),'Late output collision')
+    out.mkdir()
+    newlock={**lock,'repo_root':str(root),'actual_merged_commit':args.merged_commit,'actual_merged_tree':merged_tree,
+             'actual_base_receipt':bound[str(args.actual_base_receipt.absolute())],
+             'base_status':'Exact original frozen ED bytes verified against root-attested actual merge commit; no new remote lifecycle query by selector.'}
+    selection={'status':'external_selection_requires_canonical_builders_and_independent_root_review',
+               'at':datetime.now(timezone.utc).isoformat(),'preparation_baseline':newlock,
+               'target':{'path':str(args.record),'sha256':args.record_sha256},'selected_new_inputs':new,'reused_inputs':[],
+               'selected_source_terms':selected,'selected_ontology_terms':terms,'ontology_checks':ont_checks,
+               'label_policy_checks':labels,'captured_inputs':list(bound.values()),
+               'counts':{'named_ids':len(named),'new_manifest_inputs':len(new),'manifest_before':len(manifest),'manifest_after':len(manifest)+len(new),
+                         'ontology_before':len(before['ontology']['terms']),'ontology_after':len(merged['ontology']['terms']),
+                         'source_before':len(before['sources']['terms']),'source_after':len(merged['sources']['terms'])},
+               'limits':['Authority preparation, not independent scientific approval or maintained adoption.',
+                         'Whole ontology source digests remain to be verified by the canonical external builder.',
+                         'All original batch metadata remains unchanged; new individual versions are not transferred to old batches.']}
+    save(out/'selection.json',selection);save(out/'prospective-identifier-sources.json',manifest+[r['manifest_entry'] for r in new])
+    save(out/'proposed-manifest-additions.json',[r['manifest_entry'] for r in new])
+    for name in merged:
+        save(out/('prospective-'+name+'.json'),merged[name])
+    print(json.dumps({'status':selection['status'],'counts':selection['counts'],'selection_sha256':hashlib.sha256((out/'selection.json').read_bytes()).hexdigest()}))
+
+
+if __name__=='__main__':
+    main()

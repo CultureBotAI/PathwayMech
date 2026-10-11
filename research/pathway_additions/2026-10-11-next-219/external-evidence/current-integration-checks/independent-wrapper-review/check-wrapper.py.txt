@@ -1,0 +1,107 @@
+"""Read-only bounded verification of the sealed wrapper; no positive science run."""
+from pathlib import Path
+from datetime import datetime, UTC
+import ast
+import collections
+import copy
+import hashlib
+import importlib.util
+import json
+
+OUT = Path('/private/tmp/pathwaymech-denitrification-wrapper-independent-review-20261011')
+ROOT = Path('/private/tmp/pathwaymech-denitrification-integrated-replay-formatting-successor-20261011')
+REPO = Path('/private/tmp/pathwaymech-next-219-20261011')
+pins = {
+    'handoff.json': 'cb296a2051fdcd0140f3671027966f5a304f767a15b6e3f518458d1eebde71ec',
+    'integration-replay.py': 'ea2a81e32c238dd702a887a0df1e8da2f42a4c224a2fd378fa74cc52fbc4b133',
+    'expected-bindings.json': '169e23ec869e76b2ad8499dc4ab37e43b5cbfe155ea97b341a8ce187c355970c',
+}
+started = datetime.now(UTC).isoformat()
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+def require(ok, label):
+    if not ok:
+        raise RuntimeError(label)
+
+for name, expected in pins.items():
+    require(sha(ROOT/name)==expected, 'Root pin '+name)
+handoff=json.loads((ROOT/'handoff.json').read_bytes())
+require(sha(handoff['completion']['path'])==handoff['completion']['sha256'], 'Completion pin')
+completion=json.loads(Path(handoff['completion']['path']).read_bytes())
+for row in completion['proof_artifacts']:
+    p=Path(row['path'])
+    require(sha(p)==row['sha256'] and p.stat().st_size==row['bytes'], 'Sealed artifact '+str(p))
+
+spec=importlib.util.spec_from_file_location('denit_driver',ROOT/'integration-replay.py')
+d=importlib.util.module_from_spec(spec);spec.loader.exec_module(d)
+document,own=d.capture_manifest(ROOT/'expected-bindings.json',pins['expected-bindings.json'])
+helper=Path(document['helper'])
+d.check_contract(document,REPO,helper)
+d.check_inventories(document['inventories'],document['files'])
+d.check_source_coverage(document,helper)
+formatting=d.check_formatting_lineage(document,REPO,helper)
+formal=[];source_paths=[]
+for row in document['files']:
+    path=Path(row['path'])
+    require(str(path.resolve(strict=True))==row['resolved_path'], 'All declared path identities')
+    if row['role'] not in {'source','prior_proof'}:
+        d.check_entry(row);formal.append(row)
+    else:
+        source_paths.append(row)
+require(len(formal)==1564 and len(document['files'])==2652,'Declared binding counts')
+manifest=d.read_json((REPO/'conf/identifier_sources.json').read_bytes())
+production={row['path']:row for row in document['production_authority_sources']}
+bound={row['path']:row for row in document['files']}
+require(len(production)==len(document['production_authority_sources']),'Production duplicate paths')
+closure=[]
+for entry in manifest:
+    p=str(Path('/private/tmp/pathwaymech-curation-authorities/sources')/entry['path'])
+    require(p in production and p in bound and production[p]['sha256']==bound[p]['sha256']==entry['sha256'],'Current manifest closure '+p)
+    closure.append({'key':entry['key'],'path':p,'sha256':entry['sha256']})
+require(len(closure)==597,'Complete current source manifest')
+whole=document['production_whole_sources']
+require(len({row['path'] for row in whole})==4,'Distinct production SQL')
+for row in whole:
+    require(row in document['production_authority_sources'] and bound[row['path']]['sha256']==row['sha256'],'Production SQL exact closure')
+
+original=d.CORRECTED_HELPER.read_bytes();active=helper.read_bytes()
+left=ast.parse(original);right=ast.parse(active)
+old_names=[node for node in ast.walk(left) if isinstance(node,ast.Name)]
+new_names=[node for node in ast.walk(right) if isinstance(node,ast.Name)]
+require(len([x for x in old_names if x.id=='O'])==9,'Original name occurrences')
+require(len([x for x in new_names if x.id=='ORIGINAL_AUTHOR'])==9,'Successor name occurrences')
+renamed=[x for x in new_names if x.id=='_unused_accession']
+require(len(renamed)==1 and isinstance(renamed[0].ctx,ast.Store),'Only unused store binding')
+for node in new_names:
+    if node.id=='ORIGINAL_AUTHOR':node.id='O'
+renamed[0].id='acc'
+normalized=ast.dump(right,include_attributes=False)
+require(normalized==ast.dump(left,include_attributes=False),'Independent full normalized AST')
+require(hashlib.sha256(normalized.encode()).hexdigest()==formatting['normalized_ast_sha256'],'Normalization digest')
+negative=[]
+for label,changed in [
+    ('changed literal source path',active.replace(b'pathwaymech-denitrification-author-20261011',b'pathwaymech-denitrification-author-20261012',1)),
+    ('extra executable assertion',active+b'\nassert False\n'),
+    ('newly read renamed loop binding',active.replace(b'for entity, _unused_accession in [(3, "Q59647"), (4, "Q59646")]:',b'for entity, _unused_accession in [(3, "Q59647"), (4, "Q59646")]:\n    print(_unused_accession)',1)),
+]:
+    require(changed!=active,'Negative really changed')
+    try:
+        d.formatting_relation(original,changed)
+    except d.IntegrityError as error:
+        negative.append({'case':label,'rejected':True,'message':str(error)})
+    else:
+        raise RuntimeError('Accepted bad normalization '+label)
+
+controls_path=ROOT/'controls-attempt-1/results.json'
+require(sha(controls_path)==handoff['controls']['sha256'],'Controls seal')
+controls=json.loads(controls_path.read_bytes())
+require(len(controls['cases'])==65 and all(c['passed'] for c in controls['cases']),'65 bounded control outcomes')
+require(controls['driver']['sha256']==pins['integration-replay.py'],'Controls exact driver')
+require(not handoff['positive_replay_executed'] and not completion['full_scientific_replay_run'],'No positive claimed')
+for name,expected in pins.items():require(sha(ROOT/name)==expected,'Final sealed pin '+name)
+d.recheck_formal_inputs(document,own)
+result={'status':'passed_independent_bounded_wrapper_checks','started_at':started,'finished_at':datetime.now(UTC).isoformat(),'pins':pins,'sealed_proof_artifacts_rehashed':len(completion['proof_artifacts']),'total_bindings':len(bound),'non_source_bindings_freshly_hashed':len(formal),'source_or_prior_proof_paths_identity_only':len(source_paths),'inventories':[{'root':x['root'],'count':len(x['paths']),'ignored_and_hidden_included':True,'cache_exclusions':['__pycache__','*.pyc','*.pyo']} for x in document['inventories']],'current_production_manifest_entries':len(closure),'current_manifest_closure':closure,'production_source_paths':len(production),'distinct_production_SQL':whole,'normalized_AST':formatting,'independent_negative_controls':negative,'sealed_author_control_cases_read':65,'source_scope':document['source_scope'],'positive_replay_executed_by_reviewer':False,'whole_databases_streamed_by_reviewer':False,'maintained_or_sealed_writes':False,'limits':['Formal/current runtime and accepted artifact hashes were checked; 1,088 source/prior-proof bindings received identity and declared-closure checks only, not redundant full hashing.','The sealed author control receipt is attributed evidence, not a claim all 65 cases were independently rerun; three additional in-memory negative formatting checks were executed.','Scientific interpretation, complete source replay, whole-source digest validation and actual terminal success remain separate.']}
+with (OUT/'checks.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':result['status'],'checks_sha256':sha(OUT/'checks.json'),'current_manifest':len(closure),'formal_hashes':len(formal),'negative_controls':len(negative),'positive_replay':False}))

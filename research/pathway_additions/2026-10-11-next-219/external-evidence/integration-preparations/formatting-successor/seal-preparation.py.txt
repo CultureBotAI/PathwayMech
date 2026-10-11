@@ -1,0 +1,55 @@
+"""Seal current preparation after fresh small formal checks, without source replay."""
+from pathlib import Path
+import hashlib
+import importlib.util
+import json
+import os
+
+ROOT = Path(__file__).resolve().parent
+PRE = Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011')
+spec = importlib.util.spec_from_file_location('integration_driver', ROOT / 'integration-replay.py')
+d = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(d)
+document, own = d.capture_manifest(ROOT / 'expected-bindings.json', '169e23ec869e76b2ad8499dc4ab37e43b5cbfe155ea97b341a8ce187c355970c')
+repo, helper = Path(document['repo']['path']), Path(document['helper'])
+d.check_contract(document, repo, helper)
+d.check_source_coverage(document, helper)
+formatting = d.check_formatting_lineage(document, repo, helper)
+d.recheck_formal_inputs(document, own)
+assert hashlib.sha256((PRE / 'preformatting-preparation.json').read_bytes()).hexdigest() == '39504076a4bfd87fab5ad258ac30f7288389224c62c02dfd14427d4cbafe60b1'
+prior = json.loads((PRE / 'preformatting-preparation.json').read_bytes())
+for row in prior['files']:
+    assert d.file_hash(row['path']) == row['sha256']
+controls = json.loads((ROOT / 'controls-attempt-1/results.json').read_bytes())
+assert d.file_hash(ROOT / 'controls-attempt-1/results.json') == '64b97d762805082b1e98ad0fd2636dae37738ee9dd865bace48b81ef1b357ef7'
+assert controls['driver']['sha256'] == d.file_hash(ROOT / 'integration-replay.py')
+assert controls['controls']['sha256'] == d.file_hash(ROOT / 'boundary-controls.py')
+assert controls['count'] == 65 and all(row['passed'] for row in controls['cases'])
+output, _ = d.check_output('/private/tmp/pathwaymech-denitrification-integrated-replay-positive-20261011', document['protected_roots'], [row['path'] for row in document['files']])
+rows, links, directories = [], [], []
+for directory, dirs, names in os.walk(ROOT, followlinks=False):
+    directories.append({'path': directory, 'entries': sorted(dirs + names)})
+    for name in dirs + names:
+        path = Path(directory) / name
+        if path.is_symlink():
+            links.append({'path': str(path), 'link_target': os.readlink(path), 'resolved_path': str(path.resolve(strict=False)), 'dangling': not path.exists(), 'disposition': 'fixture observation only; do not install links'})
+        elif path.is_file():
+            rows.append({'path': str(path), 'sha256': d.file_hash(path), 'bytes': path.stat().st_size})
+        else:
+            assert path.is_dir()
+report = {
+    'status': 'sealed_current_integration_preparation_requires_root_positive_execution', 'at': d.now(),
+    'binding_manifest': own, 'driver_sha256': d.file_hash(ROOT / 'integration-replay.py'),
+    'bound_inputs': len(document['files']), 'fresh_formal_rechecks': sum(row['role'] not in {'source', 'prior_proof'} for row in document['files']),
+    'source_paths_deferred': len(document['deferred_source_digest_paths']), 'source_scope': document['source_scope'],
+    'normalized_formatting_relation': formatting, 'prior_preparation_files_preserved': len(prior['files']),
+    'controls': {'count': controls['count'], 'sha256': d.file_hash(ROOT / 'controls-attempt-1/results.json')},
+    'proof_artifacts': rows, 'fixture_link_observations': links, 'directory_observations_before_seal': directories,
+    'positive_output': str(output), 'positive_output_absent_at_seal': True,
+    'maintained_writes': [], 'full_scientific_replay_run': False,
+    'limits': ['Root must review and execute the actual positive; controls/preparation are not a scientific approval.', 'No whole databases were streamed by preparation or seal; original and production digests remain deferred to actual positive.', 'Current runtime/corpus/schema/authority inputs are bound; mutable history, dossier README, generated pages, gates and future canonical review are excluded.', 'The preparer authored this wrapper and its controls; no independent wrapper review is claimed by this seal.'],
+}
+with (ROOT / 'completion.json').open('x') as stream:
+    json.dump(report, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': report['status'], 'completion': str(ROOT / 'completion.json'), 'sha256': d.file_hash(ROOT / 'completion.json'), 'proof_files': len(rows), 'bound_inputs': len(document['files']), 'fresh_formal_rechecks': report['fresh_formal_rechecks']}))

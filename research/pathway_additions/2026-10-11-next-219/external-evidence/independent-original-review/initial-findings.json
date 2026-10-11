@@ -1,0 +1,139 @@
+{
+  "status": "two_confirmed_minor_source_provenance_findings",
+  "created_at": "2026-10-11T18:15:01.728896+00:00",
+  "review_role": "Independent external whole-record assessment; no authorship of denitrification draft and no maintained or canonical approval.",
+  "target": {
+    "path": "/private/tmp/pathwaymech-denitrification-author-20261011/draft/nitrate-reduction-i-denitrification.yaml",
+    "sha256": "b904248ef7c83cf39f2400075ca57b18a49cda1b87376d16d8c6c6e1b9b6e759",
+    "bytes": 91478
+  },
+  "helper": {
+    "path": "/private/tmp/pathwaymech-denitrification-author-20261011/denitrification-replay.py",
+    "sha256": "4ceae4866d3bf58e2f8754aa35985a7d65a29f7bde82004980604c0fd9b0851c",
+    "bytes": 25184
+  },
+  "handoff": {
+    "path": "/private/tmp/pathwaymech-denitrification-author-20261011/handoff.json",
+    "sha256": "0ef89da5e817db1fa1fcca9d1af80d47fb509c61cad250ed5308ee5666c45187",
+    "bytes": 29204
+  },
+  "findings": [
+    {
+      "finding_id": "f-anr-motif-locator",
+      "issue_key": "denitrification-anr-motif-source-locator",
+      "severity": "minor",
+      "owner": "draft/nitrate-reduction-i-denitrification.yaml",
+      "location": "mechanistic_edges[62].evidence[1].source_locator",
+      "edge_id": "denitrification-edge-063",
+      "observed_evidence": {
+        "reference_id": "PMID:17400734",
+        "source_assertion": "Anr is essential for anaerobic narK1 promoter activity; promoter motif mutation and complementation support the expression effect.",
+        "source_locator": "XPath //article/section[2]/section/section[4]/p[1]"
+      },
+      "source": {
+        "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC1913380.html",
+        "sha256": "7150f45d2c45df096fc514697d412bea71e38993fc6b787eddcec48a2fd1425f",
+        "bytes": 183539
+      },
+      "evidence": {
+        "selected_p1_sha256": "d5d8330637506b75b6f57f85c9e4fa816be8bb8653b8f9e5a76b16af436c0acc",
+        "needed_p2_sha256": "fb063110de14669db2b58d8ea0588be2b11515125fdb548fea6eea785a3a926c",
+        "inspected_locator": "//article/section[2]/section/section[4]/p[2]",
+        "source_fact": "Paragraph 1 reports regulatory mutants and complementation and predicts binding motifs. Paragraph 2 describes the Anr consensus-box nucleotide substitutions and loss of detectable promoter activity."
+      },
+      "finding": "The assertion includes promoter motif mutation, but its sole locator ends at paragraph 1 and omits the paragraph containing that experiment. The biological assertion is supported by the complete original article.",
+      "requested_change": "Include paragraph 2 together with paragraph 1 in the exact source locator; update the matching projection and a source-specific regression. Preserve the expression-level scope and biology."
+    },
+    {
+      "finding_id": "f-nark1-localization-source-scope",
+      "issue_key": "denitrification-nark1-localization-source-scope",
+      "severity": "minor",
+      "owner": "draft/nitrate-reduction-i-denitrification.yaml",
+      "location": "mechanistic_edges[73].evidence[0]",
+      "edge_id": "denitrification-edge-074",
+      "observed_edge": {
+        "id": "denitrification-edge-074",
+        "subject": "UniProtKB:G3XD60",
+        "predicate": "located_in",
+        "object": "GO:0005886",
+        "description": "Current entry localization; inferred/rule-based scope remains as in the cited source. Membrane role does not itself demonstrate proton pumping.",
+        "evidence": [
+          {
+            "reference_id": "UniProtKB:G3XD60",
+            "source_assertion": "The subcellular-location annotation places the protein in the cell/inner membrane.",
+            "source_locator": "JSON pointer /comments/0"
+          }
+        ]
+      },
+      "source": {
+        "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/uniprot-G3XD60.json",
+        "sha256": "8893eea1324dacbac408cfe7f4851268f34cbe1e65817734923442ca66856eb7",
+        "bytes": 10869
+      },
+      "evidence": {
+        "exact_selected_comment": {
+          "commentType": "SUBCELLULAR LOCATION",
+          "subcellularLocations": [
+            {
+              "location": {
+                "evidences": [
+                  {
+                    "evidenceCode": "ECO:0000256",
+                    "source": "ARBA",
+                    "id": "ARBA00004141"
+                  }
+                ],
+                "value": "Membrane",
+                "id": "SL-0162"
+              },
+              "topology": {
+                "evidences": [
+                  {
+                    "evidenceCode": "ECO:0000256",
+                    "source": "ARBA",
+                    "id": "ARBA00004141"
+                  }
+                ],
+                "value": "Multi-pass membrane protein",
+                "id": "SL-9909"
+              }
+            }
+          ]
+        },
+        "GO_crossreferences": [
+          {
+            "database": "GO",
+            "id": "GO:0016020",
+            "properties": [
+              {
+                "key": "GoTerm",
+                "value": "C:membrane"
+              },
+              {
+                "key": "GoEvidenceType",
+                "value": "IEA:UniProtKB-SubCell"
+              }
+            ]
+          },
+          {
+            "database": "GO",
+            "id": "GO:0015112",
+            "properties": [
+              {
+                "key": "GoTerm",
+                "value": "F:nitrate transmembrane transporter activity"
+              },
+              {
+                "key": "GoEvidenceType",
+                "value": "IEA:InterPro"
+              }
+            ]
+          }
+        ]
+      },
+      "finding": "The sole cited UniProt comment says Membrane and Multi-pass membrane protein with ECO:0000256 ARBA inference. It does not state cell membrane or inner membrane. The source-local assertion and sole evidence for the more specific GO:0005886 object therefore exceed this selected annotation. This is not evidence that NarK1 lacks a plasma-membrane role.",
+      "requested_change": "Narrow the UniProt assertion to its actual generic membrane scope. Retain the specific plasma-membrane edge only with separately cited support or an explicitly supported inference under the record contract; otherwise use a source-supported location. Preserve the distinction between annotation, physiological inference and direct localization."
+    }
+  ],
+  "scope": "Chemistry, full native boundary and other source claims are being assessed separately; these findings concern exact source correspondence. No author bytes changed."
+}

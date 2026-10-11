@@ -1,0 +1,129 @@
+"""Prepare a separate, source-backed issue407 author successor; never edit predecessors."""
+import hashlib
+import json
+import shutil
+import sqlite3
+import subprocess
+from copy import deepcopy
+from datetime import UTC, datetime
+from pathlib import Path
+
+import yaml
+from lxml import etree, html
+
+R = Path(__file__).resolve().parent
+O = Path('/private/tmp/pathwaymech-denitrification-author-20261011')
+V = Path('/private/tmp/pathwaymech-denitrification-whole-record-review-20261011')
+D = R / 'draft'
+D.mkdir()
+
+def h(p):
+    with p.open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+def item(p):
+    return {'path': str(p), 'resolved_path': str(p.resolve(strict=True)), 'sha256': h(p)}
+
+def write(p, x):
+    with p.open('x') as f:
+        json.dump(x, f, indent=2); f.write('\n')
+
+assert h(V/'whole-record-review.json') == '7df8b70d9cbbd3fd84d3f04dddf3ec31aa4fd10ec19dbf822532921eb4567dc4'
+assert h(V/'completion.json') == 'ec98836a2505683b42162caed76ee3cdf855050b8c6184917604b3f8a890969b'
+files=[]
+for root in (O,V):
+    paths=subprocess.check_output(['rg','--files','-uu','--follow',str(root)],text=True).splitlines()
+    files.extend(item(Path(p)) for p in sorted(paths))
+write(R/'predecessor-preservation.json', {'created_at':datetime.now(UTC).isoformat(),'scope':'Complete existing original author and external review files, hidden/ignored included with symlink traversal; no mutations.','files':files})
+for p in sorted((O/'draft').iterdir()):
+    assert p.is_file()
+    shutil.copyfile(p,D/p.name)
+old=yaml.safe_load((O/'draft/nitrate-reduction-i-denitrification.yaml').read_text())
+x=deepcopy(old)
+edges={e['id']:e for e in x['mechanistic_edges']}
+e63=edges['denitrification-edge-063'];e74=edges['denitrification-edge-074']
+old63=deepcopy(e63);old74=deepcopy(e74)
+e63['evidence'][1]['source_locator']='XPath //article/section[2]/section/section[4]/p[position() >= 1 and position() <= 2]'
+e74['object']='GO:0016020'
+e74['description']='Generic membrane localization and multipass topology are inferred by ARBA (ECO:0000256). The current entry does not specify the inner/plasma membrane; no direct localization assay or proton-pumping role is inferred.'
+e74['evidence'][0]={
+    'reference_id':'UniProtKB:G3XD60',
+    'source_assertion':'The entry annotates Membrane and Multi-pass membrane protein with ECO:0000256 ARBA00004141. Its GO cross-reference is GO:0016020 membrane, with IEA:UniProtKB-SubCell; this does not specify the inner/plasma membrane.',
+    'source_locator':'JSON pointer /comments/0; /uniProtKBCrossReferences/18',
+}
+go=Path('/private/tmp/pathwaymech-curation-authorities/go.db')
+with sqlite3.connect(f'file:{go}?mode=ro',uri=True) as db:
+    rows=[{'predicate':p,'value':v,'object':o} for p,v,o in db.execute('select predicate,value,object from statements where subject=?',('GO:0016020',))]
+    version=db.execute("select value from statements where predicate='owl:versionInfo' and subject='obo:go/extensions/go-plus.ofn'").fetchone()[0]
+assert next(z['value'] for z in rows if z['predicate']=='rdfs:label')=='membrane'
+assert not any(z['predicate']=='owl:deprecated' and z['value']=='true' for z in rows)
+assert version=='2026-07-26'
+x['participants'].append({'id':'GO:0016020','label':'membrane','category':'cellular_component'})
+go_hash=json.loads((D/'denitrification-chemical-identities.json').read_text())['databases']['go.db']['sha256']
+x['references'].append({'id':'GO:0016020','title':'membrane','url':'http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn','source_version':'GO 2026-07-26; SHA256 covers original complete uncompressed Semantic SQL database','source_sha256':go_hash})
+e74['evidence'].append({'reference_id':'GO:0016020','source_assertion':'The issuing active GO cellular-component term is membrane, defined as a lipid bilayer with embedded or attached proteins and complexes. This generic term does not assert plasma-membrane specificity.','source_locator':'Semantic SQL statements: subject=GO:0016020; rdfs:label, IAO:0000115, oio:hasOBONamespace'})
+(D/'nitrate-reduction-i-denitrification.yaml').write_text(yaml.safe_dump(x,sort_keys=False,allow_unicode=True,width=100))
+new_hash=h(D/'nitrate-reduction-i-denitrification.yaml')
+# Only newly copied successor metadata is updated; all original files stay byte-identical.
+for p in sorted(D.glob('*.json')):
+    q=json.loads(p.read_text())
+    if isinstance(q,dict) and 'record_sha256' in q:q['record_sha256']=new_hash
+    p.write_text(json.dumps(q,indent=2)+'\n')
+projection=json.loads((D/'denitrification-source-projection.json').read_text())
+
+def span(e,path,kind,selectors):
+    payload=[]
+    for sel in selectors:
+        if kind=='html':
+            t=html.fromstring(path.read_bytes());xs=t.xpath(sel);assert xs
+            payload.append([etree.tostring(v,encoding='unicode') for v in xs])
+        elif kind=='json':
+            q=json.loads(path.read_text())
+            for part in sel.strip('/').split('/'):
+                q=q[int(part)] if isinstance(q,list) else q[part]
+            payload.append(q)
+        elif kind=='sql':payload.append(rows)
+    return {**e,'path':str(path),'sha256':go_hash if kind=='sql' else h(path),'kind':kind,'selectors':selectors,'payload_sha256':hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()}
+for old_e,new_e in [(old63['evidence'][1],e63['evidence'][1]),(old74['evidence'][0],e74['evidence'][0])]:
+    matches=[i for i,s in enumerate(projection['evidence_spans']) if all(s[k]==old_e[k] for k in ['reference_id','source_assertion','source_locator'])]
+    assert len(matches)==1
+    i=matches[0];prev=projection['evidence_spans'][i]
+    selectors=[new_e['source_locator'].removeprefix('XPath ')] if prev['kind']=='html' else ['/comments/0','/uniProtKBCrossReferences/18']
+    projection['evidence_spans'][i]=span(new_e,Path(prev['path']),prev['kind'],selectors)
+projection['evidence_spans'].append(span(e74['evidence'][1],go,'sql',['GO:0016020']))
+projection['references_to_original_paths']['GO:0016020']=str(go)
+projection['evidence_count']=sum(len(e['evidence']) for e in x['mechanistic_edges'])
+(D/'denitrification-source-projection.json').write_text(json.dumps(projection,indent=2)+'\n')
+facts=json.loads((D/'denitrification-chemical-identities.json').read_text());facts['terms']['GO:0016020']={'source':'go.db','statements':rows}
+(D/'denitrification-chemical-identities.json').write_text(json.dumps(facts,indent=2)+'\n')
+auth=json.loads((D/'denitrification-authority-proposal.json').read_text());auth['ontology_ids'].append('GO:0016020');auth['correction_context']='Issue407: generic membrane added from original GO issuing SQL and current NarK1 explicit GO annotation; no other named identifier changed.'
+(D/'denitrification-authority-proposal.json').write_text(json.dumps(auth,indent=2)+'\n')
+ids=json.loads((D/'denitrification-identifiers.json').read_text());ids['all_named_ids'].append('GO:0016020');ids['correction_source']={'id':'GO:0016020','source':facts['terms']['GO:0016020'],'database':facts['databases']['go.db']}
+(D/'denitrification-identifiers.json').write_text(json.dumps(ids,indent=2)+'\n')
+coverage=json.loads((D/'denitrification-coverage.json').read_text());coverage['source_assertion_count']=len(projection['evidence_spans']);coverage['issue407_scope']='Only edge063 locator and edge074 localization scope changed; 5 reactions, all chemical sides and all other edges preserved. Generic membrane node/reference added.'
+(D/'denitrification-coverage.json').write_text(json.dumps(coverage,indent=2)+'\n')
+manifest=json.loads((D/'denitrification-source-manifest.json').read_text());manifest['references']=x['references'];manifest['prior_proof_inputs'].append(item(R/'predecessor-preservation.json'));manifest['successor_of']={'original_record':item(O/'draft/nitrate-reduction-i-denitrification.yaml'),'external_review':item(V/'whole-record-review.json'),'issue':'https://github.com/CultureBotAI/PathwayMech/issues/407'}
+(D/'denitrification-source-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+curation=(D/'denitrification-curation.md').read_text();curation+='''\n## Issue407 external author successor\n\nThe original author package and complete external review remain unchanged. The Anr edge now selects Results paragraphs 1 and 2 with one executable XPath: paragraph 1 supports expression/complementation, and paragraph 2 reports the Anr motif substitutions. The biological expression-level assertion is unchanged.\n\nNarK1/G3XD60 now points to the issuing generic GO:0016020 membrane term. UniProt comment 0 supports only Membrane and Multi-pass membrane protein with ECO:0000256 ARBA00004141; the original entry also explicitly cross-references GO:0016020 with IEA:UniProtKB-SubCell. The PAO1 paper supports transport physiology and a predicted hydrophobic topology, without a directly demonstrated NarK1 inner-membrane localization at the inspected passages. No more specific location is inferred. Other proteins retain their independently supported plasma-membrane edges. This changes no reaction, carrier state, transport-mode qualification or chemical-side coefficient.\n\nThese are author corrections for external findings denitrification-anr-motif-source-locator and denitrification-nark1-localization-source-scope. They are not a canonical review disposition or independent approval; no fabricated previous_occurrences are assigned.\n'''
+(D/'denitrification-curation.md').write_text(curation)
+# Exact parsed delta is retained independently of formatting.
+def diff(a,b,path=''):
+    if type(a)!=type(b):return [{'path':path,'old':a,'new':b}]
+    if isinstance(a,dict):
+        out=[]
+        for k in sorted(a.keys()|b.keys()):
+            if k not in a or k not in b:out.append({'path':path+'/'+k,'old':a.get(k),'new':b.get(k)})
+            else:out.extend(diff(a[k],b[k],path+'/'+k))
+        return out
+    if isinstance(a,list):
+        out=[]
+        for i in range(max(len(a),len(b))):
+            if i>=len(a) or i>=len(b):out.append({'path':path+f'/{i}','old':a[i] if i<len(a) else None,'new':b[i] if i<len(b) else None})
+            else:out.extend(diff(a[i],b[i],path+f'/{i}'))
+        return out
+    return [] if a==b else [{'path':path,'old':a,'new':b}]
+changes=diff(old,x)
+assert old['reactions']==x['reactions']
+assert all(a==b for a,b in zip(old['mechanistic_edges'],x['mechanistic_edges'],strict=True) if a['id'] not in {'denitrification-edge-063','denitrification-edge-074'})
+write(R/'correction.json',{'created_at':datetime.now(UTC).isoformat(),'issue':'https://github.com/CultureBotAI/PathwayMech/issues/407','prior_review':item(V/'whole-record-review.json'),'original_record':item(O/'draft/nitrate-reduction-i-denitrification.yaml'),'successor_record':item(D/'nitrate-reduction-i-denitrification.yaml'),'finding_keys':['denitrification-anr-motif-source-locator','denitrification-nark1-localization-source-scope'],'canonical_previous_occurrences':'Not applicable: predecessor is an external assessment, not a saved canonical review.','changes':changes,'counts':{'reactions':5,'participants':len(x['participants']),'edges':len(x['mechanistic_edges']),'evidence':sum(len(e['evidence']) for e in x['mechanistic_edges']),'references':len(x['references'])}})
+print(json.dumps({'target_sha256':new_hash,'changes':[z['path'] for z in changes],'preserved_files':len(files)}))

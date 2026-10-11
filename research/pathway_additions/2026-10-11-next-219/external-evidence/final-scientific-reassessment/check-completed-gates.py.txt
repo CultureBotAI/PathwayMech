@@ -1,0 +1,31 @@
+from pathlib import Path
+import hashlib,json,re
+from datetime import datetime,UTC
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+O=Path('/private/tmp/pathwaymech-next-219-final-scientific-reassessment')
+gates=Path('/private/tmp/pathwaymech-next-219-final-gate-receipts.json')
+inputs=Path('/private/tmp/pathwaymech-next-219-final-gate-inputs.json')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+start=datetime.now(UTC).isoformat()
+gatehash=sha(gates);inputhash=sha(inputs)
+rows=json.loads(gates.read_text());bound=json.loads(inputs.read_text())
+assert len(rows)==6 and {x['name'] for x in rows}=={'render','validate','test','lint','kgx','diff-tracked'}
+for row in rows:
+ assert row['exit_code']==0 and row['finished_at']>row['started_at']
+ assert sha(Path(row['log']))==row['log_sha256']
+ assert row['environment']['PYTHONPATH']==str(R/'src')
+for path,expected in bound.items():
+ assert sha(R/path)==expected,path
+summary=re.findall(r'1256 passed, 3 skipped, 3 warnings in 495\.20s \(0:08:15\)',Path(next(x['log'] for x in rows if x['name']=='test')).read_text())
+assert len(summary)==1
+wrapper=Path('/private/tmp/pathwaymech-denitrification-wrapper-independent-review-20261011')
+handoff=wrapper/'handoff.json';assert sha(handoff)=='d9ffc6cd5b36b76fef342d9a951d8065921e239f5cdb731552cec64e9291f280'
+h=json.loads(handoff.read_text())
+for filename,key in [('review.json','review_json_sha256'),('review.md','review_markdown_sha256'),('checks.json','checks_sha256')]:
+ assert sha(wrapper/filename)==h[key]
+wr=json.loads((wrapper/'review.json').read_text())
+assert wr['actual_check']['exit_code']==0 and wr['findings']==[] and not h['positive_replay_executed']
+for p,expected in [(gates,gatehash),(inputs,inputhash)]:assert sha(p)==expected
+out={'status':'completed_pre_attribution_gates_and_bounded_wrapper_proof_verified','started_at':start,'finished_at':datetime.now(UTC).isoformat(),'gate_receipt':{'path':str(gates),'sha256':gatehash},'gate_input_receipt':{'path':str(inputs),'sha256':inputhash,'current_hashes_rechecked':len(bound)},'checks':rows,'actual_test_summary':summary[0],'root_terminal_observation':{'session_id':39065,'chunk':'6d02ef','exit_code':0,'source':'Root direct terminal observation, followed here by independent receipt/log/input verification.'},'wrapper':{'handoff':str(handoff),'sha256':sha(handoff),'review_sha256':h['review_json_sha256'],'findings':0,'scope':'Independent peer bounded pre-execution assessment, not a completed positive integrated run.'},'pending':['Attribution successor render/validate terminal and independent graph recheck.','Current integrated positive terminal receipt.','Frozen maintained proof archives and README.','Final canonical inspect/validate/save/check.']}
+with (O/'completed-gates-reassessment.json').open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps({'receipt':str(O/'completed-gates-reassessment.json'),'sha256':sha(O/'completed-gates-reassessment.json'),'bound_inputs':len(bound),'test':summary[0]}))

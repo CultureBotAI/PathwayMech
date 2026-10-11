@@ -1,0 +1,5 @@
+The active denitrification source-replay helper at `research/pathway_additions/2026-10-11-next-219/denitrification-replay.py` fails the repository Ruff policy with 12 findings: E741 (ambiguous original-author variable), six E402 delayed imports, I001, B007 and three E501 lines. `just lint` covers this file. The inspected helper SHA-256 is `4b5a755963216f9e04e9bfb6b3b1413f12f30db60d06532dfc2aabe1580bd971`.
+
+Preserve the original helper and its historical evidence/alias ownership. Rename the ambiguous and unused names, format imports and long strings, and document narrow E402 exceptions because input capture must precede source imports. Do not move imports ahead of binding checks or alter source assertions.
+
+Acceptance: inspect the complete diff; prove executable AST equivalence after only the two declared name normalizations; pass targeted and full repository lint; run the current integrated source replay and corpus gates with the successor helper; retain immutable original/successor proof receipts. The pathway record itself should retain its accepted SHA-256.

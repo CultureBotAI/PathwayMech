@@ -1,0 +1,92 @@
+"""Seal final external author handoff after observing the real replay terminal result."""
+import argparse
+import hashlib
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+
+p = argparse.ArgumentParser()
+p.add_argument('--session', required=True, type=int)
+p.add_argument('--chunk', required=True)
+a = p.parse_args()
+r = Path(__file__).resolve().parent
+
+def h(path):
+    with path.open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+def item(path):
+    return {'path': str(path), 'sha256': h(path), 'bytes': path.stat().st_size}
+
+v = r / 'replay-attempt3.json'
+x = json.loads(v.read_text())
+assert x['status'] == 'passed_author_source_replay_not_independent_approval'
+assert x['native_members'] == 5 and x['kgx']['edges'] == 75 and x['kgx']['evidence'] == 155
+assert x['kgx']['nodes'] == 45
+assert len(x['qualified_rhea_class_comparisons']) == 4
+for row in x['all_bound_inputs']:
+    path = Path(row['path'])
+    assert str(path.resolve(strict=True)) == row['resolved_path']
+    if path.stat().st_size < 100_000_000:
+        assert h(path) == row['sha256'], path
+record = r / 'draft/nitrate-reduction-i-denitrification.yaml'
+assert h(record) == x['record_sha256']
+manifest = json.loads((r / 'draft/denitrification-source-manifest.json').read_text())
+execution = {
+    'observed_at': datetime.now(UTC).isoformat(),
+    'session_id': a.session, 'terminal_chunk': a.chunk, 'exit_code': 0,
+    'helper': item(r / 'denitrification-replay.py'), 'result': item(v),
+    'log': item(r / 'replay-attempt3.log'),
+    'prior_failed_attempts': [item(r / 'replay-attempt1-receipt.json'), item(r / 'replay-attempt2-receipt.json')],
+    'record': item(record),
+    'scope': 'Actual complete author replay, not independent approval or corpus integration.',
+}
+with (r / 'execution.json').open('x') as f:
+    json.dump(execution, f, indent=2); f.write('\n')
+logs = [{'path': str(q), 'sha256': h(q), 'text': q.read_text()} for q in sorted(r.glob('*.log'))]
+with (r / 'console-transcripts.json').open('x') as f:
+    json.dump({'logs': logs}, f, indent=2); f.write('\n')
+files = [*sorted((r / 'draft').iterdir()), r / 'denitrification-replay.py', v,
+         r / 'execution.json', r / 'console-transcripts.json']
+support = [q for q in sorted(r.iterdir()) if q.is_file() and q not in files
+           and q.name not in {'seal-handoff.py', 'handoff.json'}]
+result = {
+    'status': 'complete_external_author_draft_ready_for_independent_review',
+    'sealed_at': datetime.now(UTC).isoformat(),
+    'identity': 'MetaCyc:DENITRIFICATION-PWY',
+    'label': 'nitrate reduction I (denitrification)',
+    'organism': 'NCBITaxon:208964 Pseudomonas aeruginosa PAO1',
+    'record': item(record), 'replay': execution,
+    'counts': {'reactions': 5, 'participants': 38, 'mechanistic_edges': 75,
+               'evidence': 155, 'references': 72, 'kgx_nodes': 45},
+    'author_inputs': [item(q) for q in files],
+    'historical_preparation_and_support': [item(q) for q in support],
+    'original_source_manifest': item(r / 'draft/denitrification-source-manifest.json'),
+    'retained_acquisition_bodies': len(manifest['bodies']),
+    'accepted_original_bodies': sum(bool(q['accepted_original']) for q in manifest['bodies']),
+    'rejected_access_response_bodies': sum(not q['accepted_original'] for q in manifest['bodies']),
+    'issuing_database_count': len(manifest['issuing_databases']),
+    'imod_original_bodies': 52,
+    'raw_roots': [str(r / 'raw'), str(r / 'imod/raw')],
+    'prior_proof_inputs': manifest['prior_proof_inputs'],
+    'argument_guard_checks': [item(q) for q in sorted((r / 'guard-controls').iterdir())],
+    'boundary': 'All five native objects, including native nitrate/nitrite exchange. No Nap/qNOR alternatives, assimilation, carrier regeneration or ATP synthesis added.',
+    'source_limitations': [
+        'Strict PAO1 antiport versus uniport remains unresolved in direct primary evidence. The native transport object is explicitly retained as a database convention without an assigned PAO1 catalyst.',
+        'Native c551 and generic cytochrome classes remain distinct; broad Rhea comparison does not establish exact class equivalence or unique physiological carriers.',
+        'PAO1 source sequences in 3O0R differ from current NorB/NorC entries; original mmCIF and entity sequences preserve both differences.',
+        'One primary 2010 full-main-text claim was inspected through a web rendering of the author-uploaded article; no local full-main-text body digest exists. Indexed abstract and original RCSB bodies are retained, and inaccessible publisher/SI responses are preserved.',
+        'Other named primary articles are explicitly abstract/scanned-page only where stated, never inferred full text.',
+        'Current inferred protein, assembly, cofactor and localization annotations retain their evidence tiers. Other-species native complexes and NorB proton-pump inference are excluded.',
+        'iModulon context is computational and includes preserved parser errors; it is not direct chemistry, causality, exact historical strain or biological absence evidence.',
+    ],
+    'authority_proposal': item(r / 'draft/denitrification-authority-proposal.json'),
+    'independence': 'Author source replay only; scientific peer review, independent helper review, source authority integration and canonical corpus gates are pending.',
+    'implementation_scope': 'External helper expects this immutable external package layout and explicit --record/--repo/--output. It does not claim a portable maintained installation.',
+    'no_maintained_or_github_writes': True,
+}
+with (r / 'handoff.json').open('x') as f:
+    json.dump(result, f, indent=2); f.write('\n')
+print(json.dumps({'handoff': item(r / 'handoff.json'), 'record': item(record),
+                  'helper': item(r / 'denitrification-replay.py'), 'validation': item(v),
+                  'execution': item(r / 'execution.json')}))

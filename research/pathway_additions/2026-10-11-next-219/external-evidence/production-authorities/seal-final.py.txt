@@ -1,0 +1,115 @@
+"""Seal bounded external authority results after their actual terminal exit."""
+import hashlib
+import json
+import os
+from pathlib import Path
+from datetime import datetime, timezone
+
+HERE = Path(__file__).absolute().parent
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def main():
+    terminal = json.loads((HERE/'actual-terminal.json').read_bytes())
+    require(terminal['session_id']==95811 and terminal['exit_code']==0 and terminal['terminal_chunk'], 'Actual execution terminal required')
+    execution_path=HERE/'execution-final/completion.json'
+    require(sha(execution_path)==terminal['execution_completion_sha256'], 'Execution completion differs')
+    execution=json.loads(execution_path.read_bytes())
+    require(execution['status']=='passed_external_authority_preparation_requires_independent_root_review','Execution status')
+    for row in execution['commands']:
+        require(row['exit_code']==0 and sha(row['log'])==row['log_sha256'],'Execution command/log differs')
+    for row in execution['pinned_inputs']:
+        require(sha(row['path'])==row['sha256'] and str(Path(row['path']).resolve(strict=True))==row['resolved_path'],'Pinned root or corrected proof differs')
+    selection_path=HERE/'selected-final/selection.json';selection=json.loads(selection_path.read_bytes())
+    require(sha(selection_path)==execution['selection_sha256'],'Selection seal differs')
+    for row in selection['captured_inputs']:
+        require(sha(row['path'])==row['sha256'] and str(Path(row['path']).resolve(strict=True))==row['resolved_path'],'Small formal input changed: '+row['path'])
+    report_path=HERE/'canonical-dry-run-final/report.json';report=json.loads(report_path.read_bytes())
+    require(sha(report_path)==execution['canonical_report']['sha256'],'Canonical report differs')
+    require(report['status']=='passed_external_canonical_dry_run' and report['all_baseline_terms_and_metadata_preserved'],'Canonical outcome incomplete')
+    require(report['one_record_identifier_errors']==[], 'Target identifier errors')
+    for row in report['checks']:
+        require(row['exit_code']==0 and sha(row['log'])==row['log_sha256'],'Canonical child/log differs')
+    manifest_path=HERE/'canonical-dry-run-final/identifier_sources.json'
+    manifest=json.loads(manifest_path.read_bytes());prior=json.loads((HERE/'baseline/conf/identifier_sources.json').read_bytes())
+    additions=[r['manifest_entry'] for r in selection['selected_new_inputs']]
+    require(manifest==prior+additions,'Manifest not exact prior entries plus selected additions')
+    owners=[{'owner':'conf/identifier_sources.json','path':str(manifest_path),'sha256':sha(manifest_path),'bytes':manifest_path.stat().st_size}]
+    preservation={}
+    for name in ['ontology','sources']:
+        path=HERE/'canonical-dry-run-final'/(name+'.json')
+        before=json.loads((HERE/'baseline/data/identifier_authorities'/(name+'.json')).read_bytes());after=json.loads(path.read_bytes())
+        require(before['version']==after['version'],'Snapshot format changed')
+        for field in ['terms','sources']:
+            require(all(after[field].get(k)==v for k,v in before[field].items()),'Prior authority term/metadata changed')
+        prospective=json.loads((HERE/'selected-final'/('prospective-'+name+'.json')).read_bytes())
+        require(after==prospective,'Canonical result differs from explicitly selected native terms')
+        preservation[name]={'prior_terms_preserved':len(before['terms']),'prior_source_metadata_entries_preserved':len(before['sources']),
+                            'terms_after':len(after['terms']),'source_metadata_entries_after':len(after['sources']),
+                            'new_terms':sorted(after['terms'].keys()-before['terms'].keys()),'removed_terms':[],'changed_prior_terms':[],'changed_prior_metadata':[]}
+        owners.append({'owner':'data/identifier_authorities/'+name+'.json','path':str(path),'sha256':sha(path),'bytes':path.stat().st_size})
+    require(len(report['source_body_recheck'])==len(manifest),'Complete source input final verification missing')
+    require(len(report['whole_database_final_recheck'])==4,'Four production SQL source verifications missing')
+    for row in report['whole_database_final_recheck']:
+        require(str(Path(row['path']).resolve(strict=True))==row['resolved_path'],'Current database resolved identity differs')
+    lock=selection['preparation_baseline']
+    for rel,expected in {**lock['baseline_files'],**lock['runtime_files'],**lock['corpus_files']}.items():
+        require(sha(ROOT/rel)==expected,'Maintained baseline changed: '+rel)
+    cache_plan=[]
+    for row in selection['selected_new_inputs']:
+        entry=row['manifest_entry'];target=Path(row['prospective_cache_path'])
+        require(not os.path.lexists(target),'Shared cache destination already exists')
+        require(sha(row['original_path'])==entry['sha256'],'Selected original changed')
+        cache_plan.append({'source':row['original_path'],'destination':str(target),'sha256':entry['sha256'],
+                           'bytes':Path(row['original_path']).stat().st_size,'mode':'exact_original_bytes',
+                           'manifest_key':entry['key'],'url':entry['url']})
+    artifacts=[];links=[]
+    for path in sorted(HERE.rglob('*')):
+        if path.is_symlink():
+            links.append({'path':str(path),'link_target':os.readlink(path),'resolved_path':str(path.resolve(strict=True))})
+        elif path.is_file():
+            require(path.stat().st_size<4_000_000,'Unexpected large packaging artifact')
+            artifacts.append({'path':str(path),'sha256':sha(path),'bytes':path.stat().st_size})
+    save(HERE/'final-artifacts.json',{'artifacts':artifacts,'symlink_observations':links,
+                                     'scope':'All current external preparation/result files, including retained earlier preparation and both driver versions. External source-cache links observed only; whole bodies remain external.'})
+    handoff={'status':'external_production_authority_selection_complete_requires_root_review',
+             'at':datetime.now(timezone.utc).isoformat(),'scientific_approval':False,'maintained_writes':[],'shared_cache_writes':[],
+             'actual_base':{'commit':lock['actual_merged_commit'],'tree':lock['actual_merged_tree'],'receipt':lock['actual_base_receipt']},
+             'target':selection['target'],'counts':selection['counts'],'authority_preservation':preservation,
+             'retained_manifest_entries_unchanged':len(prior),'selected_new_original_source_bodies':len(additions),
+             'canonical_source_inputs_finally_verified':len(report['source_body_recheck']),
+             'whole_production_SQL_sources_finally_verified':report['whole_database_final_recheck'],
+             'canonical_one_record_identifier_errors':report['one_record_identifier_errors'],
+             'proposed_maintained_owners':owners,'new_shared_cache_copy_plan_for_root':cache_plan,
+             'selection':{'path':str(selection_path),'sha256':sha(selection_path)},
+             'canonical_report':{'path':str(report_path),'sha256':sha(report_path)},
+             'execution':{'path':str(execution_path),'sha256':sha(execution_path)},
+             'actual_terminal':terminal,'artifacts':{'path':str(HERE/'final-artifacts.json'),'sha256':sha(HERE/'final-artifacts.json')},
+             'root_corrected_scientific_review_adoption':execution['root_scientific_correction_adoption'],
+             'limits':['Authority preparation and canonical extraction only; independent root acceptance, maintained adoption and full corpus gates remain separate.',
+                       'All 216 retained UniProt bodies were explicitly considered; none contained the thirteen proposed proteins. Existing batch provenance was not altered.',
+                       'Production preservation uses four SQL databases plus separately pinned Rhea RDF updates. Original scientific issuing chemistry used three SQL databases plus Rhea RDF; those scopes are distinct.',
+                       'Sealing freshly rechecks small formal inputs, outputs and source-path identities. Whole source and database byte checks are reused from the actual completed canonical dry run, not redundantly repeated here.',
+                       'No scientific replay, target/helper edit, source acquisition, browser interaction, GitHub write or source-cache mutation was performed by this authority preparation.']}
+    save(HERE/'handoff.json',handoff)
+    print(json.dumps({'status':handoff['status'],'handoff_sha256':sha(HERE/'handoff.json'),'owners':owners,'counts':selection['counts']}))
+
+
+if __name__=='__main__':
+    main()

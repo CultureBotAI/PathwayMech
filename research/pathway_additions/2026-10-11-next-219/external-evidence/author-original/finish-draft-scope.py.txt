@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,yaml,hashlib,datetime
+R=Path(__file__).parent;D=R/'draft';p=D/'nitrate-reduction-i-denitrification.yaml';old=p.read_bytes();r=yaml.safe_load(old);pr=json.loads((D/'denitrification-source-projection.json').read_text());last=r['mechanistic_edges'].pop();assert last['predicate']=='occurs_in' and last['object']=='NCBITaxon:208964'
+pr['taxon_scope_evidence']=last
+removed={(x['reference_id'],x['source_locator'],x['source_assertion']) for x in last['evidence']}
+pr['scope_only_spans']=[s for s in pr['evidence_spans'] if (s['reference_id'],s['source_locator'],s['source_assertion']) in removed]
+pr['evidence_spans']=[s for s in pr['evidence_spans'] if (s['reference_id'],s['source_locator'],s['source_assertion']) not in removed]
+p.write_text(yaml.safe_dump(r,sort_keys=False,width=100,allow_unicode=True));h=hashlib.sha256(p.read_bytes()).hexdigest();pr.update(record_sha256=h,edge_count=len(r['mechanistic_edges']),evidence_count=sum(len(e['evidence']) for e in r['mechanistic_edges']))
+for n in ['denitrification-source-projection.json','denitrification-source-manifest.json','denitrification-authority-proposal.json','denitrification-chemistry-and-scope.json','denitrification-coverage.json','denitrification-identifiers.json']:
+ v=pr if n=='denitrification-source-projection.json' else json.loads((D/n).read_text());v['record_sha256']=h
+ if n=='denitrification-coverage.json':v['edge_ids']=[e['id'] for e in r['mechanistic_edges']];v['source_assertion_count']=len(pr['evidence_spans']);v['taxon_scope_disposition']='Native schema keeps taxon as scope, not occurs_in cellular-component target. Source-supported taxon observations retained in projection; no invented taxon edge.'
+ (D/n).write_text(json.dumps(v,indent=2)+'\n')
+(R/'preflight-schema-attempt1.json').write_text(json.dumps({'time':datetime.datetime.now(datetime.UTC).isoformat(),'session':56548,'exit_code':1,'error':'occurs_in target must be cellular_component; provisional pathway-to-taxon edge removed and evidence retained as scope dossier. All five reactions and chemical edges unchanged.','old_target_sha256':hashlib.sha256(old).hexdigest(),'new_target_sha256':h,'old_target_archive':'preflight-schema-attempt1.yaml.txt'},indent=2)+'\n');(R/'preflight-schema-attempt1.yaml.txt').write_bytes(old)
+print(h,len(r['mechanistic_edges']),pr['evidence_count'])

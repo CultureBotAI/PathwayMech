@@ -1,0 +1,54 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import hashlib,json,os
+R=Path('/private/tmp/pathwaymech-next-219-20261011');O=Path('/private/tmp/pathwaymech-next-219-final-scientific-reassessment');P=Path('/private/tmp/pathwaymech-denitrification-integrated-replay-positive-20261011')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+ep=Path('/private/tmp/pathwaymech-next-219-integration-execution.json');ip=P/'integration-replay.json';cp=P/'source-replay.json'
+assert sha(ep)=='9245330dd0d6ce434b46fcd64bfdcbada088db26c1389db42986dde683d52d87'
+assert sha(ip)=='fac8b623f592ca22c4483bd3f8fb56a6d2e1c5976c4e1322fb64f59055325cb1'
+assert sha(cp)=='d998625ed84c7c6244dbd6e2b69dff8b62c5bd4d2d8d8c3eca8518f1eabca99e'
+e=json.loads(ep.read_text());i=json.loads(ip.read_text());c=json.loads(cp.read_text())
+assert e['exit_code']==0 and e['status']=='passed'
+for name in ['stdout','stderr']:assert sha(Path(e[name]['path']))==e[name]['sha256']
+assert i['status']=='passed_current_integrated_replay_not_independent_scientific_approval'
+assert i['repo']['resolved_path']==str(R)
+assert i['helper_sha256']==sha(R/'research/pathway_additions/2026-10-11-next-219/denitrification-replay.py')=='70387ce2410f5582ce1f5a9073ec37ed723caf0789eac75445df6c37f0422d5e'
+assert i['target_sha256']==c['record_sha256']==sha(R/'data/pathways/nitrate-reduction-i-denitrification.yaml')=='7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd'
+mp=Path(i['binding_manifest']['path']);mh=sha(mp);assert mh==i['binding_manifest']['sha256']=='169e23ec869e76b2ad8499dc4ab37e43b5cbfe155ea97b341a8ce187c355970c'
+m=json.loads(mp.read_text());assert m['files']==i['bound_inputs']
+rows={x['path']:x for x in i['bound_inputs']};assert len(rows)==len(i['bound_inputs'])==2652
+deferred=set(m['deferred_source_digest_paths']);assert len(deferred)==1088
+rehashes=0
+for p,row in rows.items():
+ path=Path(p);assert str(path.resolve(strict=True))==row['resolved_path'],p
+ if p not in deferred:
+  assert sha(path)==row['sha256'],p;rehashes+=1
+assert rehashes==1564
+for inv in m['inventories']:
+ paths=[]
+ for directory,dirs,files in os.walk(inv['root'],followlinks=False):
+  dirs[:]=[n for n in dirs if n!='__pycache__']
+  assert all(not (Path(directory)/n).is_symlink() for n in dirs)
+  paths += [str(Path(directory)/n) for n in files if not n.endswith(('.pyc','.pyo'))]
+ assert sorted(paths)==inv['paths'] and set(paths)<=rows.keys()
+for rel,digest in m['accepted_production_files'].items():assert sha(R/rel)==digest
+assert len(i['commands'])==4
+logs=[]
+for command in i['commands']:
+ assert command['exit_code']==0 and command['finished_at']>command['started_at']
+ for suffix in ['stdout','stderr']:
+  p=P/(command['name']+'.'+suffix);assert sha(p)==command[suffix+'_sha256'];logs.append({'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size})
+assert i['child_receipt_sha256']==sha(cp)
+assert len(c['all_bound_inputs'])==544
+for row in c['all_bound_inputs']:
+ parent=rows[row['path']]
+ assert all(parent[k]==row[k] for k in ['path','resolved_path','sha256']),row['path']
+assert c['native_members']==5 and c['native_sides']==29 and len(c['native_balances'])==5 and c['rhea_class_sides']==23
+assert all(all(v==0 for v in x['atom_residual'].values()) and x['charge_residual']==0 for x in c['native_balances'])
+assert c['graph_local_source_assertions']==155 and c['web_inspected_assertions']==1 and c['scope_only_source_assertions']==2
+assert c['predecessor_files_preserved']==484 and len(c['negative_controls'])==7 and len(c['issue407_source_semantic_negative_controls'])==5
+assert (c['kgx']['nodes'],c['kgx']['edges'],c['kgx']['evidence'])==(46,75,156)
+assert sha(mp)==mh
+report={'status':'passed_bounded_independent_final_integration_reassessment','at':datetime.now(UTC).isoformat(),'actual_root_execution':{'path':str(ep),'sha256':sha(ep),'session':86733,'terminal_chunk':'f2e29b','exit_code':0},'integration_receipt':{'path':str(ip),'sha256':sha(ip)},'child_source_receipt':{'path':str(cp),'sha256':sha(cp)},'binding_manifest':{'path':str(mp),'sha256':mh},'current_resolved_identities_verified':2652,'fresh_non_source_digests_verified':rehashes,'source_prior_proof_digests_not_repeated':len(deferred),'complete_ignore_independent_runtime_corpus_inventories_verified':len(m['inventories']),'child_binding_closure':544,'child_accepted_counts':{k:c[k] for k in ['native_members','native_sides','rhea_class_sides','graph_local_source_assertions','scope_only_source_assertions','web_inspected_assertions','predecessor_files_preserved','kgx']},'commands':i['commands'],'logs_verified':logs,'source_scope':i['source_scope'],'limits':['Original source and production authority versions remain distinct.','The actual positive whole-source streams are attributed to root execution; this reviewer did not repeat slow whole databases or the source helper.','Original independently inspected complete science and issue407 correction remain the scientific basis; deterministic replay is not source entailment.','Final maintained proof archives/README and final canonical capture remain pending root freeze.']}
+with (O/'integrated-positive-reassessment.json').open('x') as f:json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps({'sha256':sha(O/'integrated-positive-reassessment.json'),'identities':len(rows),'fresh_digests':rehashes,'child_closure':len(c['all_bound_inputs'])}))

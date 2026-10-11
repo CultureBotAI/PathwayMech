@@ -1,0 +1,50 @@
+from pathlib import Path
+import base64, datetime, hashlib, json, os, subprocess
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+D=R/'research/pathway_additions/2026-10-11-next-219/external-evidence/final-integration'
+OUT=Path('/private/tmp/pathwaymech-next-219-final-integration-adoption.json')
+assert not D.exists() and not OUT.exists()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+anchors={'/private/tmp/pathwaymech-denitrification-integrated-replay-positive-20261011/integration-replay.json':'fac8b623f592ca22c4483bd3f8fb56a6d2e1c5976c4e1322fb64f59055325cb1','/private/tmp/pathwaymech-next-219-integration-execution.json':'9245330dd0d6ce434b46fcd64bfdcbada088db26c1389db42986dde683d52d87','/private/tmp/pathwaymech-next-219-integrated-result-root-adoption.json':'225ba4d4dcfabdacac8e7b259f430676fe7b31039b7b76d75b98ce694b70c372','/private/tmp/pathwaymech-next-219-history-attribution-successor.json':'3fab651a9cb8831da095e6a717ad9f6b9857063bf745f74bd5dd7b47e6880cff','/private/tmp/pathwaymech-next-219-vendored-receipt.json':'a84b8f36d5303dca470c3ff6c8867f103fdf39843cbe96e31bbb1a2815c2aba5','/private/tmp/pathwaymech-next-219-post-history-graph-audit/graph-audit.json':'9b0f3a70cfaeebf016abdf4fb5f799f4df888c8b9fa63d830fd2f5656714601e'}
+for p,h in anchors.items():assert sha(p)==h,p
+sources=[];inventories=[]
+for stem,group in [('pathwaymech-denitrification-integrated-replay-positive-20261011','positive'),('pathwaymech-next-219-post-history-graph-audit','post-history-graph')]:
+ root=Path('/private/tmp')/stem;paths=sorted(root.rglob('*'));assert not any(p.is_symlink() for p in paths)
+ files=[p for p in paths if p.is_file()];inventories.append({'root':str(root),'files':[str(p) for p in files]})
+ sources.extend((p,Path(group)/p.relative_to(root)) for p in files)
+for suffix,group in [('integration-execution.json','root-execution'),('run-integration.py','root-execution'),('integration.stdout','root-execution'),('integration.stderr','root-execution'),('integrated-result-root-adoption.json','root-execution'),('adopt-integrated-result.py','root-execution'),('history-attribution-successor.json','history-attribution'),('history-attribution-successor.py','history-attribution'),('post-attribution-render.log','history-attribution'),('post-attribution-validate.log','history-attribution'),('vendored-receipt.json','vendored')]:
+ name='pathwaymech-next-219-'+suffix;sources.append((Path('/private/tmp')/name,Path(group)/name))
+assert len(sources)==29
+for p in [Path('/private/tmp/pathwaymech-next-219-archive-final-integration.py'),Path('/private/tmp/pathwaymech-next-219-final-integration-preparation-failure.json')]:sources.append((p,Path('packaging-preparation')/p.name))
+assert len(sources)==31
+rows=[];payloads=[]
+for p,rel in sources:
+ assert p.is_file() and not p.is_symlink();raw=p.read_bytes();originalsha=digest(raw);reasons=[]
+ try:text=raw.decode('utf-8');istext='\0' not in text
+ except UnicodeDecodeError:text=None;istext=False
+ if not istext:reasons.append('non-text bytes')
+ if p.suffix in {'.log','.stdout','.stderr','.yaml','.yml','.tsv'}:reasons.append('historical result or input kept inert')
+ if any(line.rstrip(b'\r\n').endswith((b' ',b'\t')) for line in raw.splitlines(keepends=True)) or raw.endswith(b'\n\n'):reasons.append('whitespace-sensitive bytes')
+ if rel.suffix=='.py':rel=rel.with_name(rel.name+'.txt')
+ mode='exact_bytes'
+ if reasons:
+  mode='lossless_json_wrapper';body={'format':'lossless-immutable-evidence-v1','original_sha256':originalsha,'original_bytes':len(raw),'encoding':'utf-8' if istext else 'base64','content':text if istext else base64.b64encode(raw).decode()};copy=(json.dumps(body,indent=2,ensure_ascii=False)+'\n').encode();rel=rel.with_name(rel.name+'.bytes.json')
+  decoded=body['content'].encode() if body['encoding']=='utf-8' else base64.b64decode(body['content'],validate=True);assert decoded==raw
+ else:copy=raw
+ dest=D/rel;assert not os.path.lexists(dest);assert dest.is_relative_to(D) and dest.suffix!='.py'
+ rows.append({'original':str(p),'resolved_path':str(p.resolve()),'original_sha256':originalsha,'bytes':len(raw),'destination':str(dest.relative_to(R)),'destination_sha256':digest(copy),'mode':mode,'reasons':reasons});payloads.append((dest,copy))
+assert len({r['destination'] for r in rows})==len(rows)
+q=subprocess.run(['git','check-ignore','--no-index','--stdin'],input='\n'.join(r['destination'] for r in rows)+'\n',cwd=R,capture_output=True,text=True);assert q.returncode==1 and not q.stdout and not q.stderr
+for dest,copy in payloads:
+ dest.parent.mkdir(parents=True,exist_ok=True)
+ with dest.open('xb') as f:f.write(copy)
+ dest.chmod(0o644)
+for row in rows:assert sha(row['original'])==row['original_sha256'];assert sha(R/row['destination'])==row['destination_sha256']
+for inv in inventories:assert sorted(str(p) for p in Path(inv['root']).rglob('*') if p.is_file())==inv['files']
+receipt={'status':'final_integration_and_history_checks_preserved','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'driver_sha256':sha(__file__),'known_anchors':anchors,'copy_entries':rows,'inventories':inventories,'actual_terminals':{'integrated_positive':{'session':86733,'chunk':'f2e29b','exit_code':0},'root_acceptance':{'session':94725,'chunk':'771308','exit_code':0},'history_attribution':{'session':56578,'chunk':'232987','exit_code':0},'post_history_graph':{'session':9645,'chunk':'1874a2','exit_code':0},'vendored':{'session':94744,'chunk':'e29ded','exit_code':0}},'preserved_preparation_failure':'packaging-preparation/pathwaymech-next-219-final-integration-preparation-failure.json','limitations':'Completed actual source integration, full history rerender/validation and post-history static graph checks are preserved with their scopes. Scientific reassessment and canonical review append separately. Nested runtime, source, database and prior proof paths remain external dependencies and are not recursively copied.'}
+with OUT.open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+for name,p in [('root-adoption.json',OUT),('root-adopter.py.txt',Path(__file__))]:
+ with (D/name).open('xb') as f:f.write(p.read_bytes())
+print(json.dumps({'status':receipt['status'],'copied':len(rows),'root_provenance':2,'receipt_sha256':sha(OUT)}))

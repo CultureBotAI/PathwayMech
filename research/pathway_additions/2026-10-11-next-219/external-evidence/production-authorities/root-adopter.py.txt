@@ -1,0 +1,153 @@
+"""Adopt reviewed denitrification target and canonical authority outputs."""
+import base64
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+PACKAGE = Path('/private/tmp/pathwaymech-denitrification-authority-selection-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-219')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+OUT = Path('/private/tmp/pathwaymech-next-219-core-root-adoption.json')
+ANCHORS = {
+    'handoff.json': '806080aa097b0a628e90c980ef06494af9a8308a05795be6b1c5ddd1b7757ede',
+    'completion.json': '68bc758030b1125df597400bd535af14e2ebd7b46430a9e5e36f5f9c54221c9a',
+    'final-artifacts.json': '382a0ac69ef9c558e056bd3b59d8e250d473d4586924341703e4f8b07edc0884',
+}
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def checked(row):
+    path = Path(row['path'])
+    raw = path.read_bytes()
+    assert sha(raw) == row['sha256'], path
+    if 'resolved_path' in row:
+        assert str(path.resolve(strict=True)) == row['resolved_path'], path
+    if 'bytes' in row:
+        assert len(raw) == row['bytes'], path
+    return raw
+
+def write_new(path, raw):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('xb') as stream:
+        stream.write(raw)
+    path.chmod(0o644)
+    assert path.read_bytes() == raw
+
+assert __debug__ and not os.path.lexists(OUT)
+anchors = {name: checked({'path': str(PACKAGE / name), 'sha256': digest}) for name, digest in ANCHORS.items()}
+handoff = json.loads(anchors['handoff.json'])
+artifacts = json.loads(anchors['final-artifacts.json'])
+assert handoff['status'] == 'external_production_authority_selection_complete_requires_root_review'
+assert handoff['actual_terminal']['exit_code'] == 0
+selection = json.loads(checked(handoff['selection']))
+canonical = json.loads(checked(handoff['canonical_report']))
+assert canonical['status'] == 'passed_external_canonical_dry_run'
+assert all(c['exit_code'] == 0 for c in canonical['checks']) and not canonical['one_record_identifier_errors']
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip() == handoff['actual_base']['commit'] == 'ae9279447c78b868289f24a847efe06efce2e167'
+lock = selection['preparation_baseline']
+for rel, digest in {**lock['baseline_files'], **lock['runtime_files'], **lock['corpus_files']}.items():
+    checked({'path': str(ROOT / rel), 'sha256': digest})
+for row in selection['captured_inputs']:
+    checked(row)
+for row in artifacts['artifacts']:
+    checked(row)
+for row in artifacts['symlink_observations']:
+    path = Path(row['path'])
+    assert path.is_symlink() and os.readlink(path) == row['link_target']
+    assert str(path.resolve(strict=True)) == row['resolved_path']
+for row in canonical['source_body_recheck']:
+    assert str(Path(row['path']).resolve(strict=True)) == row['resolved_path']
+target_raw = checked(handoff['target'])
+target = yaml.safe_load(target_raw)
+assert target['id'] == 'MetaCyc:DENITRIFICATION-PWY'
+assert [len(target[k]) for k in ['reactions','participants','mechanistic_edges','references']] == [5,39,75,73]
+assert sum(len(e['evidence']) for e in target['mechanistic_edges']) == 156
+target_rel = Path('data/pathways/nitrate-reduction-i-denitrification.yaml')
+assert not os.path.lexists(ROOT / target_rel)
+assert not any(yaml.safe_load(p.read_text())['id'] == target['id'] for p in (ROOT/'data/pathways').glob('*.yaml'))
+owners = {row['owner']: checked(row) for row in handoff['proposed_maintained_owners']}
+assert set(owners) == {'conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json'}
+prior_manifest = json.loads((ROOT/'conf/identifier_sources.json').read_text())
+after_manifest = json.loads(owners['conf/identifier_sources.json'])
+assert len(prior_manifest) == 572 and len(after_manifest) == 597 and after_manifest[:572] == prior_manifest
+for name in ['ontology','sources']:
+    before = json.loads((ROOT/f'data/identifier_authorities/{name}.json').read_text())
+    after = json.loads(owners[f'data/identifier_authorities/{name}.json'])
+    for field in ['terms','sources']:
+        assert all(after[field].get(k) == v for k,v in before[field].items())
+    expected = selection['selected_ontology_terms' if name == 'ontology' else 'selected_source_terms']
+    assert set(after['terms']) - set(before['terms']) == set(expected) - set(before['terms'])
+    assert all(after['terms'][k] == v for k,v in expected.items())
+sys.path.insert(0,str(ROOT))
+from scripts.build_source_identifier_snapshot import source_terms
+new_cache = {}
+for item in selection['selected_new_inputs']:
+    entry = item['manifest_entry']
+    original = Path(item['original_path'])
+    assert [list(t) for t in source_terms(entry['kind'],original,url=entry['url'])] == item['parsed_terms']
+for row in handoff['new_shared_cache_copy_plan_for_root']:
+    destination = Path(row['destination'])
+    assert destination.is_relative_to(CACHE/'denitrification') and not os.path.lexists(destination)
+    raw = Path(row['source']).read_bytes()
+    assert sha(raw) == row['sha256'] and len(raw) == row['bytes']
+    entries = [e for e in after_manifest[572:] if e['key'] == row['manifest_key']]
+    assert len(entries) == 1 and CACHE / entries[0]['path'] == destination and entries[0]['sha256'] == row['sha256']
+    new_cache[destination] = raw
+assert len(new_cache) == 25
+archive_payloads = {}
+all_artifacts = artifacts['artifacts'] + [{'path': str(PACKAGE/name), 'sha256': digest} for name,digest in ANCHORS.items()]
+for row in all_artifacts:
+    path = Path(row['path'])
+    rel = path.relative_to(PACKAGE)
+    assert '..' not in rel.parts
+    raw = checked(row)
+    destination = DOSSIER/'external-evidence/production-authorities'/rel
+    if destination.suffix == '.py':
+        destination = destination.with_name(destination.name+'.txt')
+    is_text = True
+    try:
+        value = raw.decode('utf-8')
+        is_text = '\0' not in value
+    except UnicodeDecodeError:
+        is_text = False
+    whitespace = any(line.rstrip(b'\r\n').endswith((b' ',b'\t')) for line in raw.splitlines(keepends=True)) or raw.endswith(b'\n\n')
+    if not is_text or whitespace or path.suffix in ['.yaml','.yml','.log']:
+        original = raw
+        wrapper = {'format':'lossless-immutable-evidence-v1','original_sha256':sha(original),'original_bytes':len(original),'encoding':'utf-8' if is_text else 'base64','content':value if is_text else base64.b64encode(original).decode('ascii')}
+        raw = (json.dumps(wrapper,ensure_ascii=False,indent=2)+'\n').encode()
+        destination = destination.with_name(destination.name+'.bytes.json')
+        assert (wrapper['content'].encode() if is_text else base64.b64decode(wrapper['content'],validate=True)) == original
+    assert destination not in archive_payloads and not os.path.lexists(ROOT/destination)
+    archive_payloads[destination] = raw
+assert len(archive_payloads) == 43
+ignore = subprocess.run(['git','check-ignore','--stdin'],cwd=ROOT,input='\n'.join(str(p) for p in [target_rel,*archive_payloads])+'\n',capture_output=True,text=True)
+assert ignore.returncode == 1 and not ignore.stdout and not ignore.stderr
+for destination,raw in new_cache.items():
+    write_new(destination,raw)
+for rel,raw in archive_payloads.items():
+    write_new(ROOT/rel,raw)
+for rel,raw in owners.items():
+    assert sha((ROOT/rel).read_bytes()) == lock['baseline_files'][rel]
+    (ROOT/rel).write_bytes(raw)
+write_new(ROOT/target_rel,target_raw)
+write_new(ROOT/DOSSIER/'README.md',Path('/private/tmp/pathwaymech-next-219-README-draft.md').read_bytes())
+for rel,raw in owners.items():
+    assert (ROOT/rel).read_bytes() == raw
+assert (ROOT/target_rel).read_bytes() == target_raw
+report = {'status':'reviewed_corrected_target_and_canonical_authorities_adopted','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'worktree':str(ROOT),'base':handoff['actual_base']['commit'],'target':str(target_rel),'target_sha256':sha(target_raw),'authority_handoff_sha256':ANCHORS['handoff.json'],'selection_sha256':handoff['selection']['sha256'],'canonical_report_sha256':handoff['canonical_report']['sha256'],'counts':handoff['counts'],'preserved_prior_manifest_entries':572,'preserved_prior_ontology_terms':1835,'preserved_prior_source_terms':2187,'preserved_prior_source_metadata_rows':424,'new_cache_files':[{ 'path':str(p),'sha256':sha(raw)} for p,raw in new_cache.items()],'maintained_owner_hashes':{rel:sha(raw) for rel,raw in owners.items()},'authority_archive_files':[{ 'path':str(rel),'sha256':sha(raw)} for rel,raw in archive_payloads.items()],'root_review':'Read complete selector and canonical-driver implementation; inspected all25 native parsed terms and entry/footer version evidence, exact actual merge, canonical builder commands and terminal receipts, all additions and preservation. Independently rechecked frozen baseline/runtime/corpus/selection inputs, all43 authority proof files,597 overlay identities,25 source bodies and canonical extraction, and all prior snapshot fields before adoption. Scientific acceptance is separately grounded in the full external review and verified issue407 successor.','limits':['Full current corpus gates, generated graph review and canonical maintained scientific review follow.','Whole4productionSQL hashes and full597source-byte checks are attributed to completed canonical dry-run; root did not repeat whole database streams for copying.','Original scientific replay uses3SQLplusRhea142RDF; production authority source coverage uses4SQL with retained Rhea updates.']}
+raw = (json.dumps(report,indent=2)+'\n').encode()
+write_new(OUT,raw)
+write_new(ROOT/DOSSIER/'external-evidence/production-authorities/root-adoption.json',raw)
+write_new(ROOT/DOSSIER/'external-evidence/production-authorities/root-adopter.py.txt',Path(__file__).read_bytes())
+state_path = Path('/private/tmp/pathwaymech-next-219-state.json'); state = json.loads(state_path.read_text())
+state.update({'phase':'core_and_evidence_adopted_history_and_full_gates_next','maintained_candidate_adopted':True,'core_adoption_sha256':sha(raw),'authority_handoff_sha256':ANCHORS['handoff.json'],'canonical_authority_report_sha256':handoff['canonical_report']['sha256']})
+state_path.write_text(json.dumps(state,indent=2)+'\n')
+print(json.dumps({'status':report['status'],'receipt':str(OUT),'sha256':sha(raw),'counts':report['counts']}))

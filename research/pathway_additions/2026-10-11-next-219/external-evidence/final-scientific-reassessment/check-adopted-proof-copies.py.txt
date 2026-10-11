@@ -1,0 +1,22 @@
+from pathlib import Path
+import json,hashlib,base64
+from datetime import datetime,UTC
+R=Path('/private/tmp/pathwaymech-next-219-20261011');O=Path('/private/tmp/pathwaymech-next-219-final-scientific-reassessment')
+p=Path('/private/tmp/pathwaymech-next-219-completed-checks-adoption.json')
+sha=lambda b:hashlib.sha256(b).hexdigest()
+assert sha(p.read_bytes())=='5a8bfa7bdf2cc19c44c229ec28c8fb0210b1e4cf9e8e0e01268578a1e76b47eb'
+a=json.loads(p.read_text());counts={}
+for row in a['copy_entries']:
+ b=Path(row['original']).read_bytes();d=(R/row['destination']).read_bytes()
+ assert sha(b)==row['original_sha256'] and sha(d)==row['destination_sha256']
+ if row['mode']=='lossless_json_wrapper':
+  j=json.loads(d);decoded=j['content'].encode('utf-8') if j['encoding']=='utf-8' else base64.b64decode(j['content'])
+  assert decoded==b and j['original_sha256']==sha(b)
+ else:assert d==b
+ counts[row['mode']]=counts.get(row['mode'],0)+1
+v=Path('/private/tmp/pathwaymech-next-219-vendored-receipt.json')
+assert sha(v.read_bytes())=='a84b8f36d5303dca470c3ff6c8867f103fdf39843cbe96e31bbb1a2815c2aba5'
+vd=json.loads(v.read_text());assert vd['exit_code']==0 and '22 governed artifacts' in vd['stdout']
+out={'status':'passed','at':datetime.now(UTC).isoformat(),'adoption_receipt':{'path':str(p),'sha256':sha(p.read_bytes())},'copy_count':len(a['copy_entries']),'copy_modes':counts,'root_vendored_result':vd,'limits':['Lossless preservation verified independently; no new whole-source positive replay asserted.','Historical preassessment and graph scope remain historical; final current review pending.']}
+with (O/'adopted-proof-copies.json').open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps({'count':len(a['copy_entries']),'modes':counts,'sha256':sha((O/'adopted-proof-copies.json').read_bytes())}))

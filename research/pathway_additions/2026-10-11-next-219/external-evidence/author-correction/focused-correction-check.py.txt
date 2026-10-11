@@ -1,0 +1,22 @@
+"""Execute the actual source-specific helper guards before the complete replay."""
+import hashlib
+import json
+from copy import deepcopy
+from pathlib import Path
+
+import yaml
+from lxml import etree, html
+
+R=Path(__file__).resolve().parent
+O=Path('/private/tmp/pathwaymech-denitrification-author-20261011')
+record=yaml.safe_load((R/'draft/nitrate-reduction-i-denitrification.yaml').read_text())
+projection=json.loads((R/'draft/denitrification-source-projection.json').read_text())
+paths=projection['references_to_original_paths']
+original=lambda p:Path(p).read_bytes()
+readj=lambda p:json.loads(original(p))
+digest=lambda b:hashlib.sha256(b).hexdigest()
+code=(R/'denitrification-replay.py').read_text()
+section=code.split('# Issue407 semantic source guards.',1)[1].split('# Actual closed-schema validation',1)[0]
+section='# Issue407 semantic source guards.'+section
+exec(compile(section,str(R/'denitrification-replay.py')+'::issue407','exec'))
+print(json.dumps({'status':'passed_source_specific_correction_guards','negative_controls':correction_negative,'helper_sha256':digest(code.encode()),'record_sha256':digest(original(R/'draft/nitrate-reduction-i-denitrification.yaml'))}))

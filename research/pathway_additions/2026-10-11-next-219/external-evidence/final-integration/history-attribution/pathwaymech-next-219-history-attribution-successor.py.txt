@@ -1,0 +1,35 @@
+from pathlib import Path
+import datetime, hashlib, json, os, subprocess
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+OUT=Path('/private/tmp/pathwaymech-next-219-history-attribution-successor.json')
+GATES=Path('/private/tmp/pathwaymech-next-219-final-gate-receipts.json')
+INPUTS=Path('/private/tmp/pathwaymech-next-219-final-gate-inputs.json')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+assert not OUT.exists()
+gates=json.loads(GATES.read_text()); assert len(gates)==6 and all(g['exit_code']==0 for g in gates)
+for g in gates:assert sha(g['log'])==g['log_sha256']
+bound=json.loads(INPUTS.read_text())
+for rel,h in bound.items():assert sha(R/rel)==h,rel
+oldpaths=['history/records/nitrate-reduction-i-denitrification/2026-10-11T184709Z-claude-code-b1b993.yaml','history/infrastructure/denitrification-authorities-and-review-evidence/2026-10-11T184711Z-claude-code-7226e8.yaml','history/infrastructure/denitrification-authorities-and-review-evidence/2026-10-11T184713Z-claude-code-7cc0a1.yaml']
+oldhashes={p:sha(R/p) for p in oldpaths}
+env=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',PYTHONDONTWRITEBYTECODE='1')
+details='Correct only the actor attribution in these three immutable history records: '+ '; '.join(oldpaths)+'. Their actor.name claude-code came from the scaffolder default because the structured invocation omitted --actor-name, despite correctly recording agent_tool codex. Codex performed all three changes. Preserve the original history bytes and their factual contents; this successor supplies the correct actor. Target7c5b3ca9, active helper70387ce2, original evidence and all scientific conclusions remain unchanged. Full initial render, validation, tests, lint and KGX gates completed successfully before this correction; rerender and full validation follow for the added history, with unchanged input hashes binding reuse of tests, lint and KGX.'
+cmd=[str(R/'.venv/bin/python'),'scripts/new_history_record.py','--kind','record','--slug','nitrate-reduction-i-denitrification','--target-root','data/pathways','--event','EDIT','--outcome','changed','--actor-name','codex','--agent-tool','codex','--summary','Correct actor attribution for denitrification curation history','--details',details]
+start=now();result=subprocess.run(cmd,cwd=R,env=env,capture_output=True,text=True)
+assert result.returncode==0,(result.stdout,result.stderr)
+newpath=result.stdout.strip().splitlines()[-1]; print(result.stdout,flush=True)
+checks=[]
+for name,command in [('render',['just','render-pages']),('validate',['just','validate'])]:
+ log=Path('/private/tmp/pathwaymech-next-219-post-attribution-'+name+'.log');started=now()
+ with log.open('x') as f:r=subprocess.run(command,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+ row={'name':name,'command':command,'started_at':started,'finished_at':now(),'exit_code':r.returncode,'log':str(log),'log_sha256':sha(log)}; checks.append(row);print(json.dumps(row),flush=True)
+ if r.returncode:break
+for rel,h in oldhashes.items():assert sha(R/rel)==h
+for rel,h in bound.items():assert sha(R/rel)==h,rel
+p=Path(newpath);p=p if p.is_absolute() else R/p
+receipt={'status':'passed' if all(c['exit_code']==0 for c in checks) and len(checks)==2 else 'failed','started_at':start,'finished_at':now(),'driver_sha256':sha(__file__),'scaffold':{'command':cmd,'exit_code':result.returncode,'stdout':result.stdout,'stderr':result.stderr},'successor':{'path':str(p.relative_to(R)),'sha256':sha(p)},'prior_history_preserved':oldhashes,'initial_gates':{'path':str(GATES),'sha256':sha(GATES)},'unchanged_gate_inputs':{'path':str(INPUTS),'sha256':sha(INPUTS),'count':len(bound)},'reused_checks':['test','lint','kgx'],'scope':'Append-only attribution correction; source, executable helper, schema, runtime, test and authority inputs remain exact. Prior successful test/lint/KGX results are reused under their input bindings. Render and full validation rerun for generated history.','checks':checks}
+with OUT.open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+print(json.dumps({'status':receipt['status'],'receipt':str(OUT),'sha256':sha(OUT)}),flush=True)
+raise SystemExit(0 if receipt['status']=='passed' else 1)
