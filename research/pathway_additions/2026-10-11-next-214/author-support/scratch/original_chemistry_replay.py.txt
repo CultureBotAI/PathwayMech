@@ -1,0 +1,50 @@
+from pathlib import Path
+from lxml import etree as E
+from datetime import datetime,timezone
+import json,gzip,re,collections,sqlite3,hashlib
+D=Path(__file__).resolve().parent;C=Path('/private/tmp/pathwaymech-curation-authorities');S=Path('/private/tmp/pathwaymech-siderophore-next-scout-20261011/originals')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+started=datetime.now(timezone.utc).isoformat()
+RDF='http://www.w3.org/1999/02/22-rdf-syntax-ns#';RH='http://rdf.rhea-db.org/'
+raw=gzip.decompress((C/'rhea.rdf.gz').read_bytes()).decode();blocks={}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)"[^>]*>(.*?)</rdf:Description>',raw,re.S):blocks.setdefault(m[1],[]).append(m[0])
+def prop(uri):
+ out=collections.defaultdict(list)
+ for b in blocks[uri]:
+  x=E.fromstring(('<x xmlns:rdf="'+RDF+'" xmlns:rh="'+RH+'" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">'+b+'</x>').encode())[0]
+  for c in x:
+   k=E.QName(c).localname;v=c.get('{'+RDF+'}resource') or c.text
+   if v not in out[k]:out[k].append(v)
+ return dict(out)
+con=sqlite3.connect('file:'+str(C/'chebi.db')+'?mode=ro',uri=True)
+def chem(cid):return dict(con.execute('select predicate,value from statements where subject=? and value is not null',(cid,)))
+def side(uri):
+ p=prop(uri);out=[]
+ for k,vs in p.items():
+  if re.fullmatch('contains[0-9]+',k):
+   for v in vs:
+    cu=prop(v)['compound'][0];cp=prop(cu);cid='CHEBI:'+re.search(r'CHEBI[_:](\d+)',cp['chebi'][0])[1];c=chem(cid)
+    out.append(dict(id=cid,coefficient=int(k[8:]),label=c['rdfs:label'],formula=c['chemrof:generalized_empirical_formula'],charge=int(c['chemrof:charge']),inchi=c['chemrof:inchi_string'],side_uri=uri,participant_uri=v,compound_uri=cu))
+ return out
+rows=[];net=collections.Counter()
+for master in [11584,59136,59140]:
+ r=prop(RH+str(master+1));s={role:side(r[role][0]) for role in ['substrates','products']};res=collections.Counter()
+ for role,sign in [('substrates',-1),('products',1)]:
+  for t in s[role]:
+   n=sign*t['coefficient'];net[t['id']]+=n
+   toks=re.findall(r'([A-Z][a-z]?)(\d*)',t['formula']);assert ''.join(a+b for a,b in toks)==t['formula']
+   for a,b in toks:res[a]+=n*int(b or 1)
+   res['charge']+=n*t['charge']
+ assert not {k:v for k,v in res.items() if v}
+ rows.append(dict(master=master,directional=master+1,direction='left_to_right',sides=s,balance_residual={},master_metadata=prop(RH+str(master))))
+bridges=[]
+for native,cid in [('L-ORNITHINE','CHEBI:46911'),('CPD-217','CHEBI:57668'),('CPD-21047','CHEBI:142972'),('CPD-12589','CHEBI:142973')]:
+ p=S/(native+'.xml');x=E.parse(str(p)).find('./Compound');c=chem(cid)
+ bridges.append(dict(native_id=native,chebi_id=cid,native_inchi=x.findtext('inchi'),current_inchi=c.get('chemrof:inchi_string'),exact_equal=x.findtext('inchi')==c.get('chemrof:inchi_string'),native_path=str(p),native_sha256=sha(p)))
+# Preserve exact structure search result and selected ontology assertions; no whole-ontology absence claim.
+terms={cid:chem(cid) for cid in ['CHEBI:142972','CHEBI:142973','CHEBI:84711']}
+go=sqlite3.connect('file:'+str(C/'go.db')+'?mode=ro',uri=True)
+gohits=list(go.execute("select subject,predicate,value from statements where lower(value) like '%staphyloferrin%'"))
+o=dict(started_at=started,finished_at=datetime.now(timezone.utc).isoformat(),status='passed',scope='Three complete native transformations and current reaction-class atom/charge accounting; not a curated record or exact protein catalytic proof',originals=[dict(path=str(p),sha256=sha(p)) for p in [C/'rhea.rdf.gz',C/'rhea-directions.tsv',C/'chebi.db',C/'go.db']],reactions=rows,route_net={k:v for k,v in net.items() if v},native_current_bridges=bridges,selected_chemical_authority=terms,go_label_synonym_definition_search=gohits)
+(D/'chemistry.json').write_text(json.dumps(o,indent=2)+'\n');print(json.dumps({'status':o['status'],'reaction_count':len(rows),'net':o['route_net'],'bridge_equal':[b['exact_equal'] for b in bridges],'go_matches':len(gohits)}))

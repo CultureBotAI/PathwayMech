@@ -1,0 +1,188 @@
+{
+  "status": "passed",
+  "checked_at": "2026-10-11T13:59:54.313194+00:00",
+  "helper_sha256": "0b6693338ee17724c32e2d023a671f9e51bc89b3eba91f9456545b2456e95d1e",
+  "cases": [
+    {
+      "name": "relocated_helper_help",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout": "usage: source-check.py [-h] --repo-root REPO_ROOT --record RECORD\n                       --source-manifest SOURCE_MANIFEST\n                       --source-projection SOURCE_PROJECTION --output OUTPUT\n                       [--authority-root AUTHORITY_ROOT]\n                       [--stereo-python STEREO_PYTHON]\n\nPortable one-record source replay; implementation work, not independent\napproval. All inputs are explicit. Original metadata and bytes are preserved;\nonly a new external receipt and its exclusively created companion directory\nmay be written. No network access, maintained output, or whole-corpus gate is\nperformed.\n\noptions:\n  -h, --help            show this help message and exit\n  --repo-root REPO_ROOT\n  --record RECORD\n  --source-manifest SOURCE_MANIFEST\n  --source-projection SOURCE_PROJECTION\n  --output OUTPUT\n  --authority-root AUTHORITY_ROOT\n                        Optional prepared authority root; policy must match\n                        repo-root exactly\n  --stereo-python STEREO_PYTHON\n                        Explicit Python interpreter with RDKit; defaults to\n                        current interpreter\n",
+      "stderr": ""
+    },
+    {
+      "name": "existing_output_rejected",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3",
+        "--output",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/existing.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 81, in main\n    assert not output.is_symlink() and not output.exists(), \"Output receipt must be new\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Output receipt must be new\n"
+    },
+    {
+      "name": "existing_companion_rejected",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3",
+        "--output",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/companion.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 84, in main\n    assert not B.exists() and not B.is_symlink(), \"Companion directory must be new\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Companion directory must be new\n"
+    },
+    {
+      "name": "maintained_output_rejected",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3",
+        "--output",
+        "/private/tmp/pathwaymech-next-214-20261011/forbidden-portable-output.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 85, in main\n    assert not output.is_relative_to(R) and not B.is_relative_to(R), \"External outputs only\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: External outputs only\n"
+    },
+    {
+      "name": "optimized_python_rejected",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "-O",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3",
+        "--output",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/optimized.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 75, in main\n    raise RuntimeError(\"Assertions must be enabled; python -O is unsupported\")\nRuntimeError: Assertions must be enabled; python -O is unsupported\n"
+    },
+    {
+      "name": "stale_projection_rejected",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/stale-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3",
+        "--output",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/stale.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 137, in main\n    assert p[\"target_sha256\"] == sha(T), \"Stale source projection target\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Stale source projection target\n"
+    },
+    {
+      "name": "changed_original_digest_rejected",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/bad-source-hash.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3",
+        "--output",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/bad-source.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 149, in main\n    assert sha(path) == expected, f\"Original-body digest mismatch: {path}\"\n           ^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Original-body digest mismatch: /private/tmp/pathwaymech-siderophore-next-scout-20261011/originals/M00876.txt\n"
+    },
+    {
+      "name": "missing_rdkit_fails_early",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-214-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft/staphyloferrin-a-source-projection.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/prepared-current-policy-authority-v2",
+        "--stereo-python",
+        "/usr/local/Caskroom/miniforge/base/bin/python3.13",
+        "--output",
+        "/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/missing-rdkit.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 704, in <module>\n    main(parse_args())\n    ~~~~^^^^^^^^^^^^^^\n  File \"/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011/cli-probes-final/relocated/source-check.py\", line 101, in main\n    assert stereo_probe.returncode == 0, stereo_probe.stderr\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from rdkit import Chem, rdBase; print(rdBase.rdkitVersion)\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'rdkit'\n\n"
+    }
+  ],
+  "scope": "Explicit CLI and fail-closed path/input checks; no independent scientific approval."
+}

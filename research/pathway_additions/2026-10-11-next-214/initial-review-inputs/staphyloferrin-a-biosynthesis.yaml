@@ -1,0 +1,670 @@
+id: MetaCyc:PWY-7990
+label: staphyloferrin A biosynthesis
+description: 'Complete three-transformation staphyloferrin A biosynthesis scoped to Staphylococcus aureus
+  Newman: L-ornithine racemization supplies D-ornithine, followed by the ordered SfaD and SfaB citrate
+  ligations. The selected racemization direction is pathway flux; native MetaCyc and KEGG describe the
+  reversible reaction. SfaC/NWMN_2079 activity remains inferred from locus function, sequence-family evidence
+  and the native assignment, not an isolated Newman enzyme assay. Its PLP relation is an automatic annotation
+  transferred through exact sequence equality, not a direct binding measurement. Newman SfaB and SfaD
+  coding regions were used in the inspected 2010 recombinant preparation; full engineered construct sequences
+  and native assembly states are unresolved. The 2009 Cotton evidence for ordered individual ligations
+  was inspected as an abstract only. Current NCTC 8325 annotations inform reaction identity: SfaB is sequence-identical
+  to the selected Newman protein, whereas SfaD differs at residue 532 and is not treated as the same protein.
+  The native ligase Mg2+ assertions are retained as qualified curated cofactor assignments rather than
+  a unique physiological metal or binding stoichiometry. Current Rhea/ChEBI chemistry specifies the N5-(S)-citryl
+  intermediate and N2-(R),N5-(S)-citryl product, whereas native CPD-21047 and CPD-12589 leave the citryl
+  centers unspecified. The inspected 2010 ferric receptor-bound structure supports final N2 R/N5 S stereochemistry;
+  it does not directly establish the free intermediate''s stereochemistry or the selected free ionic forms.
+  These forms remain explicit current chemical-authority conventions, without exact native-compound equivalence.
+  Iron/Fur-dependent transcription is reported as context; transport, ferric loading, uptake, citrate
+  production and the distinct staphyloferrin B route lie outside this complete biosynthetic boundary.'
+pathway_type: staphyloferrin-a-biosynthesis
+taxa:
+- id: NCBITaxon:426430
+  label: Staphylococcus aureus subsp. aureus str. Newman
+participants:
+- id: CHEBI:142972
+  label: N(5)-[(S)-citryl]-D-ornithine(2-)
+  category: small_molecule
+- id: CHEBI:142973
+  label: staphyloferrin A(5-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16947
+  label: citrate(3-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:46911
+  label: L-ornithinium(1+)
+  category: small_molecule
+- id: CHEBI:57668
+  label: D-ornithinium(1+)
+  category: small_molecule
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
+- id: NCBIProtein:BAF68351.1
+  label: NWMN_2079
+  category: protein
+- id: NCBIProtein:BAF68352.1
+  label: NWMN_2080
+  category: protein
+- id: NCBIProtein:BAF68354.1
+  label: NWMN_2082
+  category: protein
+reactions:
+- id: RHEA:11585
+  label: L-Ornithine racemization toward D-ornithine
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:59137
+  label: SfaD D-ornithine N5-citrylation
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:59141
+  label: SfaB terminal N2-citrylation
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: sfa-edge-001
+  subject: CHEBI:46911
+  predicate: consumes
+  object: RHEA:11585
+  evidence:
+  - reference_id: RHEA:11585
+    source_assertion: The selected Rhea direction assigns CHEBI:46911 to its substrates with coefficient
+      1.
+    source_locator: rh:11585/rh:substrates -> http://rdf.rhea-db.org/11584_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_11584_compound_1826;
+      rh:compound -> http://rdf.rhea-db.org/Compound_1826; rh:chebi
+- id: sfa-edge-002
+  subject: RHEA:11585
+  predicate: produces
+  object: CHEBI:57668
+  evidence:
+  - reference_id: RHEA:11585
+    source_assertion: The selected Rhea direction assigns CHEBI:57668 to its products with coefficient
+      1.
+    source_locator: rh:11585/rh:products -> http://rdf.rhea-db.org/11584_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_11584_compound_5090;
+      rh:compound -> http://rdf.rhea-db.org/Compound_5090; rh:chebi
+- id: sfa-edge-003
+  subject: CHEBI:57668
+  predicate: consumes
+  object: RHEA:59137
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:57668 to its substrates with coefficient
+      1.
+    source_locator: rh:59137/rh:substrates -> http://rdf.rhea-db.org/59136_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_5090;
+      rh:compound -> http://rdf.rhea-db.org/Compound_5090; rh:chebi
+- id: sfa-edge-004
+  subject: CHEBI:16947
+  predicate: consumes
+  object: RHEA:59137
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:16947 to its substrates with coefficient
+      1.
+    source_locator: rh:59137/rh:substrates -> http://rdf.rhea-db.org/59136_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_5244;
+      rh:compound -> http://rdf.rhea-db.org/Compound_5244; rh:chebi
+- id: sfa-edge-005
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:59137
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:30616 to its substrates with coefficient
+      1.
+    source_locator: rh:59137/rh:substrates -> http://rdf.rhea-db.org/59136_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_6372;
+      rh:compound -> http://rdf.rhea-db.org/Compound_6372; rh:chebi
+- id: sfa-edge-006
+  subject: RHEA:59137
+  predicate: produces
+  object: CHEBI:142972
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:142972 to its products with coefficient
+      1.
+    source_locator: rh:59137/rh:products -> http://rdf.rhea-db.org/59136_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_15298;
+      rh:compound -> http://rdf.rhea-db.org/Compound_15298; rh:chebi
+  - reference_id: CHEBI:142973
+    source_assertion: CHEBI:142972 defines N(5)-[(S)-citryl]-D-ornithine(2-) with its specified stereochemistry
+      and charge -2. This is the current free chemical identity, distinct from the broader native compound.
+    source_locator: statements[subject="CHEBI:142972",predicate=rdfs:label|chemrof:inchi_string|chemrof:charge]
+  description: This edge uses the current Rhea/ChEBI stereospecific free ionic form. The corresponding
+    native MetaCyc compound leaves citryl stereochemistry unspecified; no exact equivalence is asserted.
+- id: sfa-edge-007
+  subject: RHEA:59137
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:456215 to its products with coefficient
+      1.
+    source_locator: rh:59137/rh:products -> http://rdf.rhea-db.org/59136_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_2590;
+      rh:compound -> http://rdf.rhea-db.org/Compound_2590; rh:chebi
+- id: sfa-edge-008
+  subject: RHEA:59137
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:33019 to its products with coefficient
+      1.
+    source_locator: rh:59137/rh:products -> http://rdf.rhea-db.org/59136_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_2106;
+      rh:compound -> http://rdf.rhea-db.org/Compound_2106; rh:chebi
+- id: sfa-edge-009
+  subject: RHEA:59137
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:59137
+    source_assertion: The selected Rhea direction assigns CHEBI:15378 to its products with coefficient
+      1.
+    source_locator: rh:59137/rh:products -> http://rdf.rhea-db.org/59136_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59136_compound_3249;
+      rh:compound -> http://rdf.rhea-db.org/Compound_3249; rh:chebi
+- id: sfa-edge-010
+  subject: CHEBI:142972
+  predicate: consumes
+  object: RHEA:59141
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:142972 to its substrates with coefficient
+      1.
+    source_locator: rh:59141/rh:substrates -> http://rdf.rhea-db.org/59140_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_15298;
+      rh:compound -> http://rdf.rhea-db.org/Compound_15298; rh:chebi
+  - reference_id: CHEBI:142973
+    source_assertion: CHEBI:142972 defines N(5)-[(S)-citryl]-D-ornithine(2-) with its specified stereochemistry
+      and charge -2. This is the current free chemical identity, distinct from the broader native compound.
+    source_locator: statements[subject="CHEBI:142972",predicate=rdfs:label|chemrof:inchi_string|chemrof:charge]
+  description: This edge uses the current Rhea/ChEBI stereospecific free ionic form. The corresponding
+    native MetaCyc compound leaves citryl stereochemistry unspecified; no exact equivalence is asserted.
+- id: sfa-edge-011
+  subject: CHEBI:16947
+  predicate: consumes
+  object: RHEA:59141
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:16947 to its substrates with coefficient
+      1.
+    source_locator: rh:59141/rh:substrates -> http://rdf.rhea-db.org/59140_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_5244;
+      rh:compound -> http://rdf.rhea-db.org/Compound_5244; rh:chebi
+- id: sfa-edge-012
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:59141
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:30616 to its substrates with coefficient
+      1.
+    source_locator: rh:59141/rh:substrates -> http://rdf.rhea-db.org/59140_L; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_6372;
+      rh:compound -> http://rdf.rhea-db.org/Compound_6372; rh:chebi
+- id: sfa-edge-013
+  subject: RHEA:59141
+  predicate: produces
+  object: CHEBI:142973
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:142973 to its products with coefficient
+      1.
+    source_locator: rh:59141/rh:products -> http://rdf.rhea-db.org/59140_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_15299;
+      rh:compound -> http://rdf.rhea-db.org/Compound_15299; rh:chebi
+  - reference_id: CHEBI:142973
+    source_assertion: CHEBI:142973 defines staphyloferrin A(5-) with its specified stereochemistry and
+      charge -5. This is the current free chemical identity, distinct from the broader native compound.
+    source_locator: statements[subject="CHEBI:142973",predicate=rdfs:label|chemrof:inchi_string|chemrof:charge]
+  - reference_id: PMID:20147287
+    source_assertion: The ferric receptor-bound product model assigns ornithine R and citryl centers N2
+      R/N5 S; an S,S model fits less well. This supports final product stereochemistry, not a direct free-ion
+      measurement.
+    source_locator: PMC2856993 HTML Results, Structure of Staphyloferrin A (sec18), paragraph 2; Figure
+      2A-C
+  description: This edge uses the current Rhea/ChEBI stereospecific free ionic form. The corresponding
+    native MetaCyc compound leaves citryl stereochemistry unspecified; no exact equivalence is asserted.
+- id: sfa-edge-014
+  subject: RHEA:59141
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:456215 to its products with coefficient
+      1.
+    source_locator: rh:59141/rh:products -> http://rdf.rhea-db.org/59140_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_2590;
+      rh:compound -> http://rdf.rhea-db.org/Compound_2590; rh:chebi
+- id: sfa-edge-015
+  subject: RHEA:59141
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:33019 to its products with coefficient
+      1.
+    source_locator: rh:59141/rh:products -> http://rdf.rhea-db.org/59140_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_2106;
+      rh:compound -> http://rdf.rhea-db.org/Compound_2106; rh:chebi
+- id: sfa-edge-016
+  subject: RHEA:59141
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:59141
+    source_assertion: The selected Rhea direction assigns CHEBI:15378 to its products with coefficient
+      1.
+    source_locator: rh:59141/rh:products -> http://rdf.rhea-db.org/59140_R; rh:contains1 -> http://rdf.rhea-db.org/Participant_59140_compound_3249;
+      rh:compound -> http://rdf.rhea-db.org/Compound_3249; rh:chebi
+- id: sfa-edge-017
+  subject: RHEA:11585
+  predicate: part_of
+  object: MetaCyc:PWY-7990
+  evidence:
+  - reference_id: MetaCyc:PWY-7990
+    source_assertion: The complete native pathway explicitly includes ORNITHINE-RACEMASE-RXN; its pathway
+      layout selects the left-to-right biosynthetic direction.
+    source_locator: Pathway[@frameid="PWY-7990"]/reaction-list/Reaction[@frameid="ORNITHINE-RACEMASE-RXN"];
+      reaction-layout[Reaction/@frameid="ORNITHINE-RACEMASE-RXN"]/direction
+  - reference_id: MetaCyc:ORNITHINE-RACEMASE-RXN
+    source_assertion: The native ornithine racemase reaction is reversible and cross-references RHEA:11587.
+      The pathway selects L- to D-ornithine flux.
+    source_locator: Reaction/reaction-direction; dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:11585
+    source_assertion: Rhea master 11584 links bidirectional 11587 and left-to-right 11585, preserving
+      the explicit direction-family bridge.
+    source_locator: rh:11584/rh:bidirectionalReaction -> rh:11587; rh:directionalReaction -> rh:11585
+- id: sfa-edge-018
+  subject: RHEA:59137
+  predicate: part_of
+  object: MetaCyc:PWY-7990
+  evidence:
+  - reference_id: MetaCyc:PWY-7990
+    source_assertion: The complete native pathway explicitly includes RXN-19522; its pathway layout selects
+      the left-to-right biosynthetic direction.
+    source_locator: Pathway[@frameid="PWY-7990"]/reaction-list/Reaction[@frameid="RXN-19522"]; reaction-layout[Reaction/@frameid="RXN-19522"]/direction
+  - reference_id: MetaCyc:RXN-19522
+    source_assertion: The native equation specifies the ordered citrate ligation with ATP, AMP, diphosphate
+      and proton; its citryl compound identity is less stereospecific than the selected current reaction.
+    source_locator: Reaction/left; right; reaction-direction
+  - reference_id: RHEA:59137
+    source_assertion: Current master 59136 links the selected left-to-right direction 59137 and defines
+      the complete stereospecific equation independently of native MetaCyc.
+    source_locator: rh:59136/rh:directionalReaction -> rh:59137; rh:equation
+- id: sfa-edge-019
+  subject: RHEA:59141
+  predicate: part_of
+  object: MetaCyc:PWY-7990
+  evidence:
+  - reference_id: MetaCyc:PWY-7990
+    source_assertion: The complete native pathway explicitly includes RXN-19521; its pathway layout selects
+      the left-to-right biosynthetic direction.
+    source_locator: Pathway[@frameid="PWY-7990"]/reaction-list/Reaction[@frameid="RXN-19521"]; reaction-layout[Reaction/@frameid="RXN-19521"]/direction
+  - reference_id: MetaCyc:RXN-19521
+    source_assertion: The native equation specifies the ordered citrate ligation with ATP, AMP, diphosphate
+      and proton; its citryl compound identity is less stereospecific than the selected current reaction.
+    source_locator: Reaction/left; right; reaction-direction
+  - reference_id: RHEA:59141
+    source_assertion: Current master 59140 links the selected left-to-right direction 59141 and defines
+      the complete stereospecific equation independently of native MetaCyc.
+    source_locator: rh:59140/rh:directionalReaction -> rh:59141; rh:equation
+- id: sfa-edge-020
+  subject: NCBIProtein:BAF68351.1
+  predicate: enables
+  object: RHEA:11585
+  evidence:
+  - reference_id: MetaCyc:MONOMER-20490
+    source_assertion: The native comment explicitly assumes ornithine racemase activity from the functional
+      locus and states that the enzyme was not purified. The mapped UniProt accession is Q2FW73.
+    source_locator: Protein[@frameid="MONOMER-20490"]/comment; dblink[dblink-db="UNIPROT"]
+  - reference_id: NCBIProtein:BAF68351.1
+    source_assertion: The original Newman entry identifies NWMN_2079 and provides its complete 356-residue
+      sequence; this is genomic protein identity, not a functional assay.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68351.1"]/GBSeq_feature-table; GBSeq_sequence
+  - reference_id: UniProtKB:Q2FW73
+    source_assertion: The unreviewed NCTC 8325 entry supplies its 356-residue sequence. Comparison with
+      the independently retrieved Newman sequence gives exact equality; functional evidence remains inferred.
+    source_locator: /sequence/value; /organism/taxonId; /entryType
+  - reference_id: PMID:19400778
+    source_assertion: Table 2 identifies Newman NWMN_2079 as SfaC by amino-acid-racemase similarity. Locus-level
+      product evidence does not establish purified SfaC catalysis.
+    source_locator: Results, Table 2 (NWMN_2079); Figure 5; original publisher web text
+  description: Inferred SfaC gene-product role. Neither exact sequence equality nor whole-locus function
+    demonstrates isolated Newman racemase activity or oligomeric state.
+- id: sfa-edge-021
+  subject: NCBIProtein:BAF68354.1
+  predicate: enables
+  object: RHEA:59137
+  evidence:
+  - reference_id: NCBIProtein:BAF68354.1
+    source_assertion: The versioned entry identifies the Newman coding product, locus and complete protein
+      sequence. Comparison with NCTC 8325 is a separate curation calculation.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68354.1"]/GBSeq_feature-table; GBSeq_sequence
+  - reference_id: PMID:20147287
+    source_assertion: The study used Newman sfaB and sfaD coding regions for recombinant protein preparations
+      and jointly synthesized staphyloferrin A. This supports the Newman implementation but does not resolve
+      native assemblies.
+    source_locator: PMC2856993 HTML Experimental Procedures, Cloning and Protein Expression (sec5), paragraph
+      2; Staphyloferrin A Synthesis and Purification (sec7)
+  - reference_id: PMID:19138128
+    source_assertion: The inspected abstract assigns the first delta-amine citrate ligation to SfnaD and
+      the terminal alpha-amine ligation to SfnaB. Full methods and exact Cotton construct sequences were
+      not inspected.
+    source_locator: Europe PMC core resultList.result[0].abstractText
+  - reference_id: UniProtKB:Q2FW70
+    source_assertion: The reviewed NCTC 8325 entry assigns this reaction and left-to-right physiological
+      direction with ECO:0000269 citing Cotton. This source annotation is kept separate from Newman protein
+      identity.
+    source_locator: /comments/1/reaction; /comments/1/physiologicalReactions; /organism/taxonId
+  - reference_id: UniProtKB:Q2FW70
+    source_assertion: The current entry provides the complete NCTC 8325 protein sequence. This supplies
+      the independent comparison source, not an assertion that Newman and NCTC 8325 are the same strain.
+    source_locator: /sequence/value; /organism/taxonId
+  description: The Newman sequence differs from Q2FW70 at residue 532; exact identity is not claimed.
+    SfaD functional role supported by Newman recombinant biosynthesis plus independently ordered ligation
+    evidence. Exact engineered sequences and native oligomeric sufficiency remain unresolved.
+- id: sfa-edge-022
+  subject: NCBIProtein:BAF68352.1
+  predicate: enables
+  object: RHEA:59141
+  evidence:
+  - reference_id: NCBIProtein:BAF68352.1
+    source_assertion: The versioned entry identifies the Newman coding product, locus and complete protein
+      sequence. Comparison with NCTC 8325 is a separate curation calculation.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68352.1"]/GBSeq_feature-table; GBSeq_sequence
+  - reference_id: PMID:20147287
+    source_assertion: The study used Newman sfaB and sfaD coding regions for recombinant protein preparations
+      and jointly synthesized staphyloferrin A. This supports the Newman implementation but does not resolve
+      native assemblies.
+    source_locator: PMC2856993 HTML Experimental Procedures, Cloning and Protein Expression (sec5), paragraph
+      2; Staphyloferrin A Synthesis and Purification (sec7)
+  - reference_id: PMID:19138128
+    source_assertion: The inspected abstract assigns the first delta-amine citrate ligation to SfnaD and
+      the terminal alpha-amine ligation to SfnaB. Full methods and exact Cotton construct sequences were
+      not inspected.
+    source_locator: Europe PMC core resultList.result[0].abstractText
+  - reference_id: UniProtKB:Q2FW72
+    source_assertion: The reviewed NCTC 8325 entry assigns this reaction and left-to-right physiological
+      direction with ECO:0000269 citing Cotton. This source annotation is kept separate from Newman protein
+      identity.
+    source_locator: /comments/1/reaction; /comments/1/physiologicalReactions; /organism/taxonId
+  - reference_id: UniProtKB:Q2FW72
+    source_assertion: The current entry provides the complete NCTC 8325 protein sequence. This supplies
+      the independent comparison source, not an assertion that Newman and NCTC 8325 are the same strain.
+    source_locator: /sequence/value; /organism/taxonId
+  description: The Newman sequence is identical to Q2FW72; strain provenance still remains distinct. SfaB
+    functional role supported by Newman recombinant biosynthesis plus independently ordered ligation evidence.
+    Exact engineered sequences and native oligomeric sufficiency remain unresolved.
+- id: sfa-edge-023
+  subject: NCBIProtein:BAF68351.1
+  predicate: has_cofactor
+  object: CHEBI:597326
+  evidence:
+  - reference_id: UniProtKB:Q2FW73
+    source_assertion: The unreviewed NCTC 8325 entry assigns pyridoxal 5-prime-phosphate (CHEBI:597326)
+      through automatic ARBA evidence ECO:0000256; it is not a direct cofactor experiment.
+    source_locator: /comments/0/cofactors/0/cofactorCrossReference; /comments/0/cofactors/0/evidences/0;
+      /sequence/value
+  - reference_id: NCBIProtein:BAF68351.1
+    source_assertion: The selected entry provides the complete Newman protein sequence. Its identity and
+      genomic origin do not independently establish cofactor binding.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68351.1"]/GBSeq_sequence
+  description: Automatic cofactor inference transferred through exact sequence equality; no binding count
+    or direct Newman measurement is asserted.
+- id: sfa-edge-024
+  subject: NCBIProtein:BAF68352.1
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-26283
+    source_assertion: The native ligase enzymatic-reaction object explicitly lists MG+2 as cofactor and
+      cites Cotton. The cited full article was unavailable; this is a curated database assertion rather
+      than an independently inspected metal assay.
+    source_locator: Enzymatic-Reaction[@frameid="ENZRXN-26283"]/cofactor/Compound[@frameid="MG+2"]; cofactor/citation
+  - reference_id: PMID:20147287
+    source_assertion: The complete article identifies Newman SfaB and SfaD recombinant preparations used
+      in joint biosynthesis. It supports the selected implementation, not a unique physiological metal
+      or binding stoichiometry.
+    source_locator: PMC2856993 HTML sec5 paragraph 2; sec7
+  description: Qualified native ligase cofactor assignment applied to the Newman role; no independently
+    measured Newman metal specificity, binding stoichiometry or metal-exclusive requirement is claimed.
+- id: sfa-edge-025
+  subject: NCBIProtein:BAF68354.1
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-26284
+    source_assertion: The native ligase enzymatic-reaction object explicitly lists MG+2 as cofactor and
+      cites Cotton. The cited full article was unavailable; this is a curated database assertion rather
+      than an independently inspected metal assay.
+    source_locator: Enzymatic-Reaction[@frameid="ENZRXN-26284"]/cofactor/Compound[@frameid="MG+2"]; cofactor/citation
+  - reference_id: PMID:20147287
+    source_assertion: The complete article identifies Newman SfaB and SfaD recombinant preparations used
+      in joint biosynthesis. It supports the selected implementation, not a unique physiological metal
+      or binding stoichiometry.
+    source_locator: PMC2856993 HTML sec5 paragraph 2; sec7
+  description: Qualified native ligase cofactor assignment applied to the Newman role; no independently
+    measured Newman metal specificity, binding stoichiometry or metal-exclusive requirement is claimed.
+- id: sfa-edge-026
+  subject: NCBIProtein:BAF68351.1
+  predicate: part_of
+  object: NCBITaxon:426430
+  evidence:
+  - reference_id: NCBIProtein:BAF68351.1
+    source_assertion: The source feature explicitly identifies strain Newman and taxon 426430 for this
+      versioned protein.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68351.1"]/GBSeq_feature-table/GBFeature[GBFeature_key="source"]/GBFeature_quals
+- id: sfa-edge-027
+  subject: NCBIProtein:BAF68352.1
+  predicate: part_of
+  object: NCBITaxon:426430
+  evidence:
+  - reference_id: NCBIProtein:BAF68352.1
+    source_assertion: The source feature explicitly identifies strain Newman and taxon 426430 for this
+      versioned protein.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68352.1"]/GBSeq_feature-table/GBFeature[GBFeature_key="source"]/GBFeature_quals
+- id: sfa-edge-028
+  subject: NCBIProtein:BAF68354.1
+  predicate: part_of
+  object: NCBITaxon:426430
+  evidence:
+  - reference_id: NCBIProtein:BAF68354.1
+    source_assertion: The source feature explicitly identifies strain Newman and taxon 426430 for this
+      versioned protein.
+    source_locator: GBSeq[GBSeq_accession-version="BAF68354.1"]/GBSeq_feature-table/GBFeature[GBFeature_key="source"]/GBFeature_quals
+- id: sfa-edge-029
+  subject: MetaCyc:PWY-7990
+  predicate: part_of
+  object: NCBITaxon:426430
+  evidence:
+  - reference_id: PMID:19400778
+    source_assertion: The Newman locus and product analyses support staphyloferrin A biosynthesis; these
+      organism-level observations do not independently assay every encoded activity.
+    source_locator: Results, The NWMN_2082-2079 locus mediates staphyloferrin A biosynthesis; Figure 5;
+      original publisher web text
+- id: sfa-edge-030
+  subject: RHEA:11585
+  predicate: provides_input_for
+  object: RHEA:59137
+  evidence:
+  - reference_id: MetaCyc:PWY-7990
+    source_assertion: The native ordering puts ORNITHINE-RACEMASE-RXN before RXN-19522; native frames
+      define the shared intermediate without a ChEBI equivalence claim.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid="RXN-19522"]/predecessor-reactions
+  - reference_id: RHEA:11585
+    source_assertion: The selected upstream direction produces CHEBI:57668, the same chemical identity
+      independently consumed by the selected downstream direction.
+    source_locator: rh:11585/rh:products -> side/rh:contains1 -> participant/rh:compound/rh:chebi
+  - reference_id: RHEA:59137
+    source_assertion: The selected downstream direction consumes CHEBI:57668; the explicit common chemical
+      supports material continuity.
+    source_locator: rh:59137/rh:substrates -> side/rh:contains1 -> participant/rh:compound/rh:chebi
+- id: sfa-edge-031
+  subject: RHEA:59137
+  predicate: provides_input_for
+  object: RHEA:59141
+  evidence:
+  - reference_id: MetaCyc:PWY-7990
+    source_assertion: The native ordering puts RXN-19522 before RXN-19521; native frames define the shared
+      intermediate without a ChEBI equivalence claim.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid="RXN-19521"]/predecessor-reactions
+  - reference_id: RHEA:59137
+    source_assertion: The selected upstream direction produces CHEBI:142972, the same chemical identity
+      independently consumed by the selected downstream direction.
+    source_locator: rh:59137/rh:products -> side/rh:contains1 -> participant/rh:compound/rh:chebi
+  - reference_id: RHEA:59141
+    source_assertion: The selected downstream direction consumes CHEBI:142972; the explicit common chemical
+      supports material continuity.
+    source_locator: rh:59141/rh:substrates -> side/rh:contains1 -> participant/rh:compound/rh:chebi
+references:
+- id: MetaCyc:PWY-7990
+  title: MetaCyc PWY-7990 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-7990
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 27239c445be00148844a72bc3688743433eba5ab8fd3661119aa0f1481ba1fe5
+- id: MetaCyc:ORNITHINE-RACEMASE-RXN
+  title: MetaCyc ORNITHINE-RACEMASE-RXN native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:ORNITHINE-RACEMASE-RXN
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: b6b80a300c6f8e5ebf59cbfbe92b2b9afdce4a0496a2208a180157dbfb61c9a7
+- id: MetaCyc:RXN-19522
+  title: MetaCyc RXN-19522 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-19522
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: e8747f2a0cadba4d8790202bcff517b28f39db4e3937d6354543ec9e1f84bc26
+- id: MetaCyc:RXN-19521
+  title: MetaCyc RXN-19521 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-19521
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 549a1c80b1209857e073ebded5aec2080424e6aeae5f9cb81f385cd1d5ad93d0
+- id: MetaCyc:MONOMER-20490
+  title: MetaCyc MONOMER-20490 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:MONOMER-20490
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 958923bf665f3bc0374b9f092e822c05c019fed6ad929211540ba90d4624376c
+- id: MetaCyc:MONOMER-20491
+  title: MetaCyc MONOMER-20491 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:MONOMER-20491
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 0a7ab2ab168d0264a5adc1c560f1aa293d994e1d11610b32e9aaf5e3d256ffe8
+- id: MetaCyc:MONOMER-20492
+  title: MetaCyc MONOMER-20492 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:MONOMER-20492
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 4fa0ae74413c1d5dc1fdddfad6a692d6dcc7523104ae35aeed8dfe0b321f4d02
+- id: MetaCyc:ENZRXN-26282
+  title: MetaCyc ENZRXN-26282 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:ENZRXN-26282
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 2dfd8752e1d17a6a99ad2f77fd4474db6e4468f260fdd4f9a4a7310ea6dac477
+- id: MetaCyc:ENZRXN-26283
+  title: MetaCyc ENZRXN-26283 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:ENZRXN-26283
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: ce4d7f29a7a563118e9603c643b0c8782a8bf17367cce15682eb7fabc12c1730
+- id: MetaCyc:ENZRXN-26284
+  title: MetaCyc ENZRXN-26284 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:ENZRXN-26284
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 6525b654efb61af177de919ec96d0e877016bd6e1c22941aadce2c3de5d29e9b
+- id: MetaCyc:L-ORNITHINE
+  title: MetaCyc L-ORNITHINE native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:L-ORNITHINE
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 003adf7070b0cda13bc09a2d95de973e65f81a178132bd05c46aa0e4822e3e75
+- id: MetaCyc:CPD-217
+  title: MetaCyc CPD-217 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-217
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: edcc6e93f240de6ad7ab2e1627d65b6892646c9e2c1c787d03557f5c81323f0f
+- id: MetaCyc:CPD-21047
+  title: MetaCyc CPD-21047 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-21047
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 3b4f6838da901865687b3324cbee8b74d75a513314913eef8524be402da09ea7
+- id: MetaCyc:CPD-12589
+  title: MetaCyc CPD-12589 native XML object
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-12589
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; complete native XML response
+  source_sha256: 30cd0bf756dece5e6660a37941aedaaf390d632f737cfad200212aaf5c4d40fa
+- id: KEGG:M00876
+  title: 'KEGG M00876: Staphyloferrin A biosynthesis, L-ornithine => staphyloferrin A'
+  url: https://rest.kegg.jp/get/M00876
+  source_version: Original response retrieved 2026-10-11; hash covers complete response body
+  source_sha256: d02a6004df2bb35abc805696c719d4cab04127dc2fd9e8f7d9b61db81cc4ab76
+- id: NCBIProtein:BAF68351.1
+  title: NCBI GenPept BAF68351.1 Newman protein identity
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=BAF68351,BAF68352,BAF68354&rettype=gb&retmode=xml
+  source_version: GenPept original three-entry batch retrieved 2026-10-11; hash covers entire XML batch
+  source_sha256: 2fdc00fa0a7a74f5da04f405586e84f23d0ecb26fa67d858dfc27bd46a3d73b7
+- id: NCBIProtein:BAF68352.1
+  title: NCBI GenPept BAF68352.1 Newman protein identity
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=BAF68351,BAF68352,BAF68354&rettype=gb&retmode=xml
+  source_version: GenPept original three-entry batch retrieved 2026-10-11; hash covers entire XML batch
+  source_sha256: 2fdc00fa0a7a74f5da04f405586e84f23d0ecb26fa67d858dfc27bd46a3d73b7
+- id: NCBIProtein:BAF68354.1
+  title: NCBI GenPept BAF68354.1 Newman protein identity
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=BAF68351,BAF68352,BAF68354&rettype=gb&retmode=xml
+  source_version: GenPept original three-entry batch retrieved 2026-10-11; hash covers entire XML batch
+  source_sha256: 2fdc00fa0a7a74f5da04f405586e84f23d0ecb26fa67d858dfc27bd46a3d73b7
+- id: UniProtKB:Q2FW73
+  title: UniProtKB Q2FW73 original entry; NCTC 8325 scope
+  url: https://rest.uniprot.org/uniprotkb/Q2FW73.json
+  source_version: UniProt release 2026_03; original JSON retrieved 2026-10-11
+  source_sha256: 7fceaf99fc2b16e6887e72183a07fb01ae823e45081cdd79c9e73c7a1dd52f37
+- id: UniProtKB:Q2FW72
+  title: UniProtKB Q2FW72 original entry; NCTC 8325 scope
+  url: https://rest.uniprot.org/uniprotkb/Q2FW72.json
+  source_version: UniProt release 2026_03; original JSON retrieved 2026-10-11
+  source_sha256: dd93f4b989908117d6a8a118858c7542790be643817013ca65ea395a2d07d854
+- id: UniProtKB:Q2FW70
+  title: UniProtKB Q2FW70 original entry; NCTC 8325 scope
+  url: https://rest.uniprot.org/uniprotkb/Q2FW70.json
+  source_version: UniProt release 2026_03; original JSON retrieved 2026-10-11
+  source_sha256: 6cef6c15a0631af86ff9dfb54c4f495be0cbdfd9702ed0a92c8c6bafeb1ddf20
+- id: PMID:19138128
+  title: Identification and characterization of the Staphylococcus aureus gene cluster coding for staphyloferrin
+    A.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:19138128&resultType=core&format=json
+  source_version: Cotton et al. 2009; indexed abstract only; hash covers original Europe PMC core JSON,
+    not full article
+  source_sha256: e5b698d300fb2e11e542599924d67fdf37a1e9e3dced460a480128bbe39b38a3
+- id: PMID:20147287
+  title: The Staphylococcus aureus Siderophore Receptor HtsA Undergoes Localized Conformational Changes
+    to Enclose Staphyloferrin A in an Arginine-rich Binding Pocket
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2856993/
+  source_version: Grigg et al. 2010; complete original PMC HTML inspected; Figure 2A image separately
+    inspected
+  source_sha256: 277bab7964e89219a7ddadc88fa289c48583a69b1d57f189960691c8184b353e
+- id: PMID:19400778
+  title: Characterization of staphyloferrin A biosynthetic and transport mutants in Staphylococcus aureus.
+  url: https://onlinelibrary.wiley.com/doi/10.1111/j.1365-2958.2009.06698.x
+  source_version: Beasley et al. 2009; full original publisher text inspected through web access on 2026-10-11;
+    no local full-body hash; indexed abstract separately retained
+- id: RHEA:11585
+  title: Rhea 11585 exact directional reaction and side graph
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:59137
+  title: Rhea 59137 exact directional reaction and side graph
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:59141
+  title: Rhea 59141 exact directional reaction and side graph
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete original gzip RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: CHEBI:142973
+  title: ChEBI 255 chemical structures, charges and stereochemical names
+  url: https://www.ebi.ac.uk/chebi/
+  source_version: ChEBI 255 Semantic SQL; digest covers full uncompressed original database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f

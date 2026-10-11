@@ -1,0 +1,51 @@
+"""Bounded read-only/explicit-path guards; no source replay shortcuts."""
+from pathlib import Path
+from datetime import UTC, datetime
+import hashlib
+import json
+import shutil
+import subprocess
+
+O=Path('/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011')
+A=Path('/private/tmp/pathwaymech-staphyloferrin-a-author-20261011/draft')
+R=Path('/private/tmp/pathwaymech-next-214-20261011')
+P='/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+D=O/'cli-probes-final';D.mkdir(exist_ok=False)
+relocated=D/'relocated';relocated.mkdir()
+helper=relocated/'source-check.py';shutil.copyfile(O/'staphyloferrin-a-replay.py',helper)
+base=[P,str(helper),'--repo-root',str(R),'--record',str(A/'staphyloferrin-a-biosynthesis.yaml'),'--source-manifest',str(A/'staphyloferrin-a-source-manifest.json'),'--source-projection',str(A/'staphyloferrin-a-source-projection.json'),'--authority-root',str(O/'prepared-current-policy-authority-v2')]
+base += ['--stereo-python','/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3']
+cases=[]
+def run(name,cmd,expected,needle):
+ r=subprocess.run(cmd,cwd=D,capture_output=True,text=True)
+ assert r.returncode==expected if expected==0 else r.returncode!=0
+ assert needle in r.stdout+r.stderr,(name,r)
+ cases.append({'name':name,'command':cmd,'exit_code':r.returncode,'stdout':r.stdout,'stderr':r.stderr})
+run('relocated_helper_help',[P,str(helper),'--help'],0,'--source-projection')
+existing=D/'existing.json';existing.write_text('preserve this exact input\n');old=sha(existing)
+run('existing_output_rejected',base+['--output',str(existing)],1,'Output receipt must be new')
+assert sha(existing)==old
+comp=D/'companion.artifacts';comp.mkdir();sentinel=comp/'sentinel';sentinel.write_text('preserve\n')
+run('existing_companion_rejected',base+['--output',str(D/'companion.json')],1,'Companion directory must be new')
+assert not (D/'companion.json').exists() and sentinel.read_text()=='preserve\n'
+run('maintained_output_rejected',base+['--output',str(R/'forbidden-portable-output.json')],1,'External outputs only')
+assert not (R/'forbidden-portable-output.json').exists() and not (R/'forbidden-portable-output.artifacts').exists()
+run('optimized_python_rejected',[P,'-O',*base[1:],'--output',str(D/'optimized.json')],1,'Assertions must be enabled')
+assert not (D/'optimized.json').exists()
+proj=json.loads((A/'staphyloferrin-a-source-projection.json').read_text());proj['target_sha256']='0'*64
+bad=D/'stale-projection.json';bad.write_text(json.dumps(proj))
+cmd=base.copy();cmd[cmd.index('--source-projection')+1]=str(bad)
+run('stale_projection_rejected',cmd+['--output',str(D/'stale.json')],1,'Stale source projection target')
+assert not (D/'stale.artifacts').exists() and not (D/'stale.json').exists()
+manifest=json.loads((A/'staphyloferrin-a-source-manifest.json').read_text());manifest['sources'][0]['sha256']='0'*64
+bad_manifest=D/'bad-source-hash.json';bad_manifest.write_text(json.dumps(manifest))
+cmd=base.copy();cmd[cmd.index('--source-manifest')+1]=str(bad_manifest)
+run('changed_original_digest_rejected',cmd+['--output',str(D/'bad-source.json')],1,'Original-body digest mismatch')
+assert not (D/'bad-source.artifacts').exists() and not (D/'bad-source.json').exists()
+cmd=base.copy();cmd[cmd.index('--stereo-python')+1]='/usr/local/Caskroom/miniforge/base/bin/python3.13'
+run('missing_rdkit_fails_early',cmd+['--output',str(D/'missing-rdkit.json')],1,'ModuleNotFoundError')
+assert not (D/'missing-rdkit.artifacts').exists() and not (D/'missing-rdkit.json').exists()
+report={'status':'passed','checked_at':datetime.now(UTC).isoformat(),'helper_sha256':sha(helper),'cases':cases,'scope':'Explicit CLI and fail-closed path/input checks; no independent scientific approval.'}
+with (O/'cli-probe-receipt-final.json').open('x') as stream:stream.write(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'status':'passed','cases':len(cases),'receipt_sha256':sha(O/'cli-probe-receipt-final.json')}))
