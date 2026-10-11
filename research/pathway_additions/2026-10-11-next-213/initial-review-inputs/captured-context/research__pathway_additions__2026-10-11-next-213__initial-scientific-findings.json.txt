@@ -1,0 +1,37 @@
+{
+  "status": "external_preflight_needs_curation",
+  "findings": [
+    {
+      "id": "f-asbd-protein-description",
+      "issue_key": "petrobactin-asbd-protein-scope-description",
+      "severity": "minor",
+      "target_sha256": "5cd5138400ff9b92025a710d453762a711a44457d013b925f8d8b18e6e1fd5a2",
+      "owner": "/private/tmp/pathwaymech-petrobactin-author-20261011/draft/petrobactin-biosynthesis.yaml",
+      "field": "mechanistic_edges[id=petrobactin-edge-082].description",
+      "line": 1246,
+      "observed": "This is a whole generic aryl-carrier state, not free phosphopantetheine or an exact AsbD sequence. Chemical class coefficients do not specify enzyme assembly stoichiometry. This contextual participation does not assert an exact identity between AsbD and every member of the generic carrier classes.",
+      "reason": "The subject is an independently issued versioned protein, NCBIProtein:AAT54156.1, but the first two sentences describe a generic carrier chemical class and deny an exact AsbD sequence. This is copied class wording on a specific gene-product participation edge. Participant category, triple and attached identity evidence are otherwise consistent.",
+      "source_evidence": [
+        {
+          "reference": "NCBIProtein:AAT54156.1",
+          "path": "/private/tmp/pathwaymech-petrobactin-author-20261011/originals/Sterne-six-proteins.xml",
+          "sha256": "e67b0c1bae9128c5c1688e1d358003f1bac3ff5b2a0e03685d4ebe29ca72bc20",
+          "locator": "GBSeq[GBSeq_accession-version=\"AAT54156.1\"]/GBSeq_sequence; source feature strain/taxon",
+          "observation": "Versioned original Sterne protein record with an explicit sequence; verified against issuing genome annotation and current reviewed sequence."
+        },
+        {
+          "reference": "UniProtKB:Q81RQ6",
+          "path": "/private/tmp/pathwaymech-siderophore-next-scout-20261011/originals/Q81RQ6.json",
+          "sha256": "ea893c52b70f6ec5676acb2fda596b45f69c7aefa64699c6e8994e3b7360d09f",
+          "locator": "/primaryAccession; /sequence/value; /comments/0/texts; /comments/2/texts",
+          "observation": "Original function and PTM comments describe this protein; generic RHEA-COMP classes remain separate source objects."
+        }
+      ],
+      "recommended_action": "Remove or replace only the first two generic-class sentences with a description of this versioned protein participation. Preserve the final sentence excluding equivalence to every generic carrier-class member, every node/triple and all original evidence.",
+      "acceptance": "Compare exact before/after parsed fields; confirm edge082 still has its original protein subject and source evidence, description no longer calls that subject a generic class, all ten reactions and both branches remain unchanged.",
+      "not_claimed": "No false sequence in issuing source, biological chemistry defect or source-equivalence claim is inferred; this is scoped description clarity."
+    }
+  ],
+  "canonical_review_saved": false,
+  "github_mutation": false
+}

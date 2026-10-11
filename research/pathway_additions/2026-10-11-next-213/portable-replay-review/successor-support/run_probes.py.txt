@@ -1,0 +1,115 @@
+"""Independent external-only CLI and output-collision probes."""
+from pathlib import Path
+import copy
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import time
+from datetime import datetime, timezone
+import yaml
+
+B = Path(__file__).resolve().parent
+P = Path('/private/tmp/pathwaymech-petrobactin-portable-replay-20261011')
+R = Path('/private/tmp/pathwaymech-next-213-20261011')
+T = R / 'data/pathways/petrobactin-biosynthesis.yaml'
+A = Path('/private/tmp/pathwaymech-petrobactin-author-20261011/authority-sandbox')
+PY = R / '.venv/bin/python'
+def sha(p):
+    with Path(p).open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+def save(p, x):
+    with Path(p).open('x') as f:
+        json.dump(x, f, indent=2)
+        f.write('\n')
+archive = B / 'initial-inputs'
+archive.mkdir()
+inputs = [P / 'completion.json', Path('/private/tmp/pathwaymech-petrobactin-output-fix-20261011/petrobactin-replay.py'), P / 'petrobactin-source-manifest.json', P / 'petrobactin-source-projection.json', P / 'petrobactin-identity-assessment.json', T]
+captured = []
+for p in inputs:
+    q = archive / p.name
+    shutil.copyfile(p, q)
+    captured.append({'path':str(p),'archive':str(q),'sha256':sha(p)})
+save(archive / 'manifest.json', captured)
+env = dict(os.environ, PYTHONPATH=str(R / 'src'), PYTHONDONTWRITEBYTECODE='1', UV_NO_SYNC='1')
+cases = []
+def prepare(name):
+    d = B / name
+    d.mkdir()
+    for p in inputs[2:]:
+        shutil.copyfile(p, d / p.name)
+    return d
+def command(d, out):
+    return [str(PY), str(archive / 'petrobactin-replay.py'), '--repo-root',str(R), '--record',str(d / T.name), '--source-manifest',str(d / 'petrobactin-source-manifest.json'), '--source-projection',str(d / 'petrobactin-source-projection.json'), '--identity-assessment',str(d / 'petrobactin-identity-assessment.json'), '--authority-root',str(A), '--output',str(out)]
+def change(d,name,fn):
+    p=d/name; x=json.loads(p.read_text()); fn(x); p.write_text(json.dumps(x))
+for name in ['stale_manifest','stale_projection','stale_identity','graph_mismatch','source_conflicting_digest','unaccepted_source','existing_receipt','existing_artifacts','optimized_python','regressed_asbd']:
+    d=prepare(name); out=d/'receipt.json'; sentinel=None
+    if name.startswith('stale_'):
+        file={'stale_manifest':'petrobactin-source-manifest.json','stale_projection':'petrobactin-source-projection.json','stale_identity':'petrobactin-identity-assessment.json'}[name]
+        change(d,file,lambda x:x.update(target_sha256='0'*64))
+    elif name=='graph_mismatch':
+        change(d,'petrobactin-source-projection.json',lambda x:x['graph_to_source'].pop())
+    elif name=='source_conflicting_digest':
+        def conflict(x):
+            s=copy.deepcopy(x['sources'][0]); s['sha256']='0'*64; x['sources'].insert(1,s)
+        change(d,'petrobactin-source-manifest.json',conflict)
+    elif name=='unaccepted_source':
+        change(d,'petrobactin-source-manifest.json',lambda x:x['sources'][0].update(accepted=False))
+    elif name=='existing_receipt':
+        sentinel=b'independent-existing-receipt\n'; out.write_bytes(sentinel)
+    elif name=='existing_artifacts':
+        out.with_suffix('.artifacts').mkdir()
+        (out.with_suffix('.artifacts')/'sentinel').write_text('keep\n')
+    elif name=='regressed_asbd':
+        old=yaml.safe_load((P/'initial-inputs/petrobactin-biosynthesis.yaml').read_text())
+        current=yaml.safe_load((d/T.name).read_text())
+        current['mechanistic_edges'][81]['description']=old['mechanistic_edges'][81]['description']
+        (d/T.name).write_text(yaml.safe_dump(current,sort_keys=False))
+        for f in ['petrobactin-source-manifest.json','petrobactin-source-projection.json','petrobactin-identity-assessment.json']:
+            change(d,f,lambda x:x.update(target_sha256=sha(d/T.name)))
+        change(d,'petrobactin-source-projection.json',lambda x:x.update(graph_to_source=current['mechanistic_edges']))
+    cmd=command(d,out)
+    if name=='optimized_python': cmd.insert(1,'-O')
+    p=subprocess.run(cmd,cwd=B,env=env,capture_output=True,text=True)
+    (d/'console.log').write_text(p.stdout+p.stderr)
+    assert p.returncode!=0,(name,p.stdout,p.stderr)
+    if sentinel: assert out.read_bytes()==sentinel
+    elif name!='existing_artifacts': assert not out.exists()
+    cases.append({'name':name,'command':cmd,'exit_code':p.returncode,'log':str(d/'console.log'),'log_sha256':sha(d/'console.log'),'existing_bytes_preserved':True})
+save(B/'negative-controls.json',cases)
+print('Ten independent preflight negative controls rejected; beginning real concurrent-output replay.',flush=True)
+d=prepare('output_collision'); out=d/'receipt.json'; artifacts=out.with_suffix('.artifacts')
+cmd=command(d,out)
+with (d/'console.log').open('x') as log:
+    process=subprocess.Popen(cmd,cwd=B,env=env,stdout=log,stderr=subprocess.STDOUT)
+    started=datetime.now(timezone.utc).isoformat()
+    while not artifacts.exists():
+        if process.poll() is not None: raise RuntimeError('Replay ended before its artifact reservation; inspect log')
+        time.sleep(.1)
+    sentinel=b'INDEPENDENT EXISTING RECEIPT CREATED AFTER STARTUP CHECK\n'
+    with out.open('xb') as f:f.write(sentinel)
+    sentinel_sha=sha(out)
+    observed=datetime.now(timezone.utc).isoformat()
+    print('Reserved artifact directory observed. Sentinel created at requested output; waiting for terminal replay.',flush=True)
+    code=process.wait()
+result={'started_at':started,'sentinel_created_at':observed,'finished_at':datetime.now(timezone.utc).isoformat(),'command':cmd,'cwd':str(B),'exit_code':code,'helper_sha256':sha(archive/'petrobactin-replay.py'),'output':str(out),'sentinel_sha256':sentinel_sha,'final_sha256':sha(out),'sentinel_preserved':out.read_bytes()==sentinel,'log':str(d/'console.log'),'log_sha256':sha(d/'console.log'),'artifacts_reserved_before_sentinel':True,'owner_inputs_unchanged':all(sha(x['path'])==x['sha256'] for x in captured)}
+if code==0:result['replay_status']=json.loads(out.read_text())['status']
+save(B/'output-collision-reproduction.json',result)
+print(json.dumps(result,indent=2),flush=True)
+
+assert result['exit_code'] != 0 and result['sentinel_preserved']
+assert 'FileExistsError' in Path(result['log']).read_text()
+print('Collision correctly rejected with sentinel intact. Beginning fresh-output success control.',flush=True)
+d=prepare('fresh_output');out=d/'receipt.json';cmd=command(d,out)
+with (d/'console.log').open('x') as log:
+    p=subprocess.run(cmd,cwd=B,env=env,stdout=log,stderr=subprocess.STDOUT)
+assert p.returncode==0,(p.returncode,str(d/'console.log'))
+fresh=json.loads(out.read_text())
+assert fresh['status']=='passed_author_checks_not_independent_approval'
+assert fresh['target_sha256']=='7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a'
+assert fresh['helper_sha256']=='9e21130baba661d36b46d8f25692e111db67ceae4d1d78821649d0d55ae4507e'
+assert all(sha(x['path'])==x['sha256'] for x in captured)
+save(B/'fresh-output-reproduction.json',{'command':cmd,'exit_code':p.returncode,'receipt':str(out),'receipt_sha256':sha(out),'log':str(d/'console.log'),'log_sha256':sha(d/'console.log'),'owner_inputs_unchanged':True,'kgx':fresh['kgx']})
+print('Fresh-output success verified; all fixed-helper controls passed.',flush=True)

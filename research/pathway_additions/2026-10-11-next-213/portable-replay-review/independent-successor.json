@@ -1,0 +1,173 @@
+{
+  "status": "passed_external_technical_reassessment",
+  "finished_at": "2026-10-11T13:50:22.301049+00:00",
+  "helper_sha256": "9e21130baba661d36b46d8f25692e111db67ceae4d1d78821649d0d55ae4507e",
+  "target_sha256": "7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a",
+  "findings": [],
+  "dispositions": [
+    {
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/390",
+      "key": "petrobactin-replay-receipt-output-race",
+      "status": "resolved",
+      "previous_audit": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/audit.json",
+      "previous_audit_sha256": "13d00d8c4ea66d76fd6f3932581bbfba92a47f119da35f1b4d696ad36674f41c",
+      "before_helper_sha256": "8850666b01ffb31e04a34e17362ca9c9e3164a8a83775011e35f4dd940d9abe1",
+      "after_helper_sha256": "9e21130baba661d36b46d8f25692e111db67ceae4d1d78821649d0d55ae4507e",
+      "evidence": "Identical real concurrent-output trigger now raises FileExistsError at final exclusive open, with sentinel bytes unchanged. A subsequent independent fresh-output CLI replay completes successfully."
+    }
+  ],
+  "exact_change": "Only final receipt write_text replaced by exclusive output.open(\"x\", encoding=\"utf-8\") plus stream.write. Scientific logic, metadata, native boundary and companion-directory reservation unchanged.",
+  "actual_controls": {
+    "negative_preflight": 10,
+    "all_negative_preflight_rejected": true,
+    "concurrent_output_collision": {
+      "name": "collision-settled",
+      "started_at": "2026-10-11T13:49:07.916879+00:00",
+      "finished_at": "2026-10-11T13:49:36.106807+00:00",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-petrobactin-output-fix-20261011/petrobactin-replay.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-213-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-next-213-20261011/data/pathways/petrobactin-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-source-projection.json",
+        "--identity-assessment",
+        "/private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-identity-assessment.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-next-213-20261011",
+        "--output",
+        "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/collision-settled/receipt.json"
+      ],
+      "exit_code": 1,
+      "log": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/collision-settled/console.log",
+      "log_sha256": "b91c5799dd18841d29b22deb4026f491b581e021e7d524a2e86f80aaa4e2f4e5",
+      "receipt": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/collision-settled/receipt.json",
+      "receipt_sha256": "9ab872d7cd000768c310fb9335c5a58706186c2a2bd7c530d79dc3e9151b7fe6",
+      "helper_sha256": "9e21130baba661d36b46d8f25692e111db67ceae4d1d78821649d0d55ae4507e",
+      "sentinel_created_at": "2026-10-11T13:49:23.638211+00:00",
+      "sentinel_preserved": true,
+      "final_write_collision_error": true,
+      "captured_inputs_unchanged": true
+    },
+    "fresh_output": {
+      "name": "fresh-settled",
+      "started_at": "2026-10-11T13:49:36.115410+00:00",
+      "finished_at": "2026-10-11T13:50:04.636740+00:00",
+      "command": [
+        "/private/tmp/pathwaymech-next-213-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-petrobactin-output-fix-20261011/petrobactin-replay.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-213-20261011",
+        "--record",
+        "/private/tmp/pathwaymech-next-213-20261011/data/pathways/petrobactin-biosynthesis.yaml",
+        "--source-manifest",
+        "/private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-source-manifest.json",
+        "--source-projection",
+        "/private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-source-projection.json",
+        "--identity-assessment",
+        "/private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-identity-assessment.json",
+        "--authority-root",
+        "/private/tmp/pathwaymech-next-213-20261011",
+        "--output",
+        "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/fresh-settled/receipt.json"
+      ],
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/fresh-settled/console.log",
+      "log_sha256": "ed3fb5dfd3a1c6f25e976944b7358d0827c6244becf402323e65bdd7deac953c",
+      "receipt": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/fresh-settled/receipt.json",
+      "receipt_sha256": "515dfb2452af9704213cdc72a4fe57a1338b2eca4df3eb5382660e2bc7ad6c43",
+      "helper_sha256": "9e21130baba661d36b46d8f25692e111db67ceae4d1d78821649d0d55ae4507e",
+      "source_bodies": 52,
+      "native_members": 10,
+      "chemical_sides": 54,
+      "balances": 10,
+      "kgx": {
+        "nodes": 40,
+        "edges": 94,
+        "evidence": 149,
+        "nodes_sha256": "fde42dbeb09f8b1ca9da7cba03cf8c55d98d219fca45f5b178ce2ebf9394679c",
+        "edges_sha256": "d102dcd69b394f9c97e577a9da3fb12e2674b7f895d9bb6438f3d3b0d0c6cb00"
+      },
+      "captured_inputs_unchanged": true
+    }
+  },
+  "initial_retry_limit": {
+    "observed_at": "2026-10-11T13:48:08.357873+00:00",
+    "session": 5647,
+    "terminal_exit_code": 1,
+    "negative_controls_passed": 10,
+    "collision_test_status": "not_reached_final_write",
+    "reason": "Correctly rejected original authority sandbox because current next213 policy gained metanetx.chemical after its baseline transition. This is an input applicability guard, not a product correction failure.",
+    "old_policy_sha256": "c950ccdfff311b4d7218d9464e7d2ac1f7612c2a45192f776afd31e0f94d4d46",
+    "current_policy_sha256": "20e6c584796085fa8e9813e8398f68424b2da65732bfa51148f2559ddf016881",
+    "replay_log": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/output_collision/console.log",
+    "replay_log_sha256": "f26a4f1e45b39a6be150cd30aa56a570c55c55a69e9bc2d4056fad59de24ed32",
+    "review_driver_assertion": "Expected FileExistsError was absent; driver failed instead of falsely accepting sentinel preservation as proof.",
+    "retry": "New output paths and stable actual or exact-policy external authority inputs required."
+  },
+  "lineage_and_scope": {
+    "initial_technical_audit": {
+      "path": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/audit.json",
+      "sha256": "13d00d8c4ea66d76fd6f3932581bbfba92a47f119da35f1b4d696ad36674f41c"
+    },
+    "unchanged_scientific_scope_proof": {
+      "path": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/scope-delta-audit.json",
+      "sha256": "86dfd4f84d41895ed08d8170b3e507fbe6c19407cf7951afaf5253405fdfee7c"
+    },
+    "all_original_owner_files_unchanged": true,
+    "authority_context": "Actual settled next213 policy and snapshots, captured/rehashed before and after. Original external-authority sandbox rejected on obsolete policy, transparently retained.",
+    "authority_selection_independence": "I authored the prospective authority-selection helper. This report does not independently approve that implementation; root owns its adoption review."
+  },
+  "proofs": [
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/fix-scope-proof.json",
+      "sha256": "16b6b5f90d4e33046631906521b973d4ca068dbf53b1ffd1411d723e9a277b09"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/exact-fix.diff",
+      "sha256": "2df64fde9c1811dc3515339f54022a02cda603627f46cd1d0ae7d927cb87c215"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/negative-controls.json",
+      "sha256": "ee700d4c5fd8f17527bfeb0bdd228e2722ca92efc2016c9762582211ebdc4036"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/initial-attempt-disposition.json",
+      "sha256": "08c00a20c6c11da2da0ee166655a215bcd4468ff403ad2c6b4a9019e6a1e01d3"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/settled-inputs.json",
+      "sha256": "7b09fe58e6af2238bf54475d93d016e9989cf57fa83198220da230c37b8a250b"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/settled-controls.json",
+      "sha256": "03ebbc1bb0eecfd3fabe0711eba662c41ca55e83b603a08e3e125d9186ad26c4"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/collision-settled/test-result.json",
+      "sha256": "d5922197e3f5df09bb141ce563b65a16171413ce983031c688de5de51ef93ca6"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/fresh-settled/test-result.json",
+      "sha256": "0b5997476245bb2303844be08cbbe12b5976678e9d571073815eaa9b2f969c9f"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/run_probes.py",
+      "sha256": "8f1a8bbe5bf5f95587b87b13bd9cbec9acb5fb8cb8f5c3b9698983f7e55a0781"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-petrobactin-output-fix-independent-review-20261011/retry_controls.py",
+      "sha256": "fcc1bb2ea8d4be55855f08db2e287df784d888412569efb14d8a81c4ed052bfa"
+    }
+  ],
+  "limits": [
+    "External technical acceptance only; no maintained helper installation, canonical scientific approval or corpus gates claimed.",
+    "No record chemistry, source assertions or identifier meaning changed by the fix.",
+    "Full original-source replay is scoped to the selected record and its declared source bodies.",
+    "Existing historical reviewer and author artifacts remain unchanged."
+  ]
+}

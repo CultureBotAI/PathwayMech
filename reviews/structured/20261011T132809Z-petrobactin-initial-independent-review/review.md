@@ -1,0 +1,734 @@
+# Partial initial petrobactin scientific review: AsbD protein description
+
+- Review: 20261011T132809Z-petrobactin-initial-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T13:25:27.853029Z
+- Finished UTC: 2026-10-11T13:28:09.926537Z
+- Reviewer: Codex reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+The complete ten-transformation native route and both branches are supported with explicit source-conflict, carrier, strain and construct limits. One confirmed minor description defect calls the exact versioned AsbD protein subject a generic chemical carrier class. Scientific source review is complete for this frozen draft; maintained authority integration and full gates remain pending, so this is a partial initial observation rather than publication approval.
+
+## Scope And Provenance
+
+Complete frozen petrobactin scientific target and nearest original evidence, with exact retained chemical conflict and one scoped description finding. Integration coverage is partial.
+
+Selection: Exact maintained target SHA256 5cd5138400ff9b92025a710d453762a711a44457d013b925f8d8b18e6e1fd5a2, byte-identical to the independently assessed external draft.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 5cf4d2578da6b61a49f8c0f9886229b8c1369c91.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6289 | data/pathways/petrobactin-biosynthesis.yaml | maintained | petrobactin biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical current maintained-target inspection | passed | True | MetaCyc:PWY-6289 | Actual session 25644 exited 0 before current reassessment. Captured reviewed DFO preparation base 5cf4d257 and exact maintained target/context hashes. |
+| Independent original-source replay | passed | False | MetaCyc:PWY-6289 | 52body digests,59refs,10native members,54chemical edges,10conditional/exact balances,55native/UniProt locator checks,12continuity edges, two equal branch sums. This actual dated external preflight is linked to byte-identical scientific inputs; it is not a fresh full-corpus execution. |
+| Independent original connectivity assessment | passed | False | MetaCyc:PWY-6289 | Independent RDKit confirms terminal structural discrepancy and matching formula/charge. This actual dated external preflight is linked to byte-identical scientific inputs; it is not a fresh full-corpus execution. |
+| Independent actual KGX export | passed | False | MetaCyc:PWY-6289 | 40nodes94edges149evidence; every triple/evidence/description and relevant category preserved. This actual dated external preflight is linked to byte-identical scientific inputs; it is not a fresh full-corpus execution. |
+| Independent primary locator replay | passed | False | MetaCyc:PWY-6289 | 14primary evidence blocks checked This actual dated external preflight is linked to byte-identical scientific inputs; it is not a fresh full-corpus execution. |
+| Post-inspection source and finding recheck | passed | True | MetaCyc:PWY-6289 | Actual session 52586 exited 0: target equality, all local and prior-audit hashes, original protein identity/sequence, retained UniProt alias, unchanged open finding, iModulon inventory and fresh hidden/ignored-inclusive dedup checked. Initial incorrect primary-accession assumption was corrected against the explicit original secondary-accession field; failed attempt is retained. |
+| Full corpus just validate | unavailable | True | MetaCyc:PWY-6289 | Next-213 authority integration, history/pages and coordinated full gates are pending. No result from another cohort or the author sandbox is claimed as a maintained-corpus pass. |
+| Full corpus just test | unavailable | True | MetaCyc:PWY-6289 | Next-213 authority integration, history/pages and coordinated full gates are pending. No result from another cohort or the author sandbox is claimed as a maintained-corpus pass. |
+| Full corpus just lint | unavailable | True | MetaCyc:PWY-6289 | Next-213 authority integration, history/pages and coordinated full gates are pending. No result from another cohort or the author sandbox is claimed as a maintained-corpus pass. |
+| Publication-scope git diff --check | unavailable | True | MetaCyc:PWY-6289 | Next-213 authority integration, history/pages and coordinated full gates are pending. No result from another cohort or the author sandbox is claimed as a maintained-corpus pass. |
+
+## Scientific And Domain Assessments
+
+### Complete native pathway and convergent branches
+
+identity: supported. Targets: MetaCyc:PWY-6289.
+
+All ten native members and both material-flow branches remain present, including generic carrier maturation with physiological catalyst unassigned. No convenient shorter subset or uptake pathway is substituted.
+
+### Directions, terminal identity and carrier accounting
+
+grounding: supported. Targets: MetaCyc:PWY-6289.
+
+Independent original-source replay supports chemical sides, orientations and formal balances. The native/current constitutional conflict is explicitly preserved with authentic native product selected. Carrier output refinement has separately cited support without asserting parent/subclass identity or whole-polypeptide composition.
+
+### Versioned strain proteins and preparation limits
+
+scope: supported. Targets: MetaCyc:PWY-6289.
+
+The versioned Sterne identities are distinguished from current merged protein annotations and engineered preparations. Four sequence relations match and two N-terminal differences remain disclosed. There is no unsupported exact tagged-construct identity or inferred catalyst for carrier maturation.
+
+### Nearest primary support, assemblies and cofactors
+
+evidence: supported. Targets: MetaCyc:PWY-6289.
+
+The 2012 and 2008 original bodies support their scoped activity/assembly claims; 2007 claims remain abstract-only. AsbF native dimer is separately grounded; AsbB dimer evidence qualifies its functional role without inventing an external complex identity. Assay metal inclusion is not promoted into unverified obligatory binding.
+
+### Expression context and specificity
+
+scope: supported. Targets: MetaCyc:PWY-6289.
+
+No exact Sterne iModulon dataset is present in the retained inventory. Cross-species expression does not establish catalysis, regulation or pathway identity.
+
+### Specific AsbD protein versus generic carrier-state wording
+
+provenance: concern. Targets: MetaCyc:PWY-6289.
+
+Edge 082 has a versioned protein subject and correct participation evidence, but its first two description sentences call that subject a generic carrier state. The final non-equivalence qualification is valid and should be retained.
+
+### Pending maintained integration
+
+schema: unknown. Targets: MetaCyc:PWY-6289.
+
+The exact source-grounded target and open finding are captured. Shared authority, rendered-page consistency and full-corpus gates remain unassessed until root completes integration. External deterministic checks are not scientific proof or integrated release approval.
+
+## Findings
+
+### f-asbd-protein-description: AsbD participation description incorrectly calls the exact protein a generic carrier class
+
+minor / open / confirmed; issue key: petrobactin-asbd-protein-scope-description.
+
+The subject is an independently issued versioned protein, NCBIProtein:AAT54156.1, but the first two sentences describe a generic carrier chemical class and deny an exact AsbD sequence. This is copied class wording on a specific gene-product participation edge. Participant category, triple and attached identity evidence are otherwise consistent. The final sentence correctly excludes identity to every generic carrier-class member and should remain.
+
+## Recommended Actions And Acceptance Checks
+
+### correct-asbd-description
+
+After preserving this initial observation and inputs, remove or replace only the first two generic-class sentences on edge 082 with accurate versioned-protein participation wording; preserve the final non-equivalence sentence.
+
+- Retain initial review and every inspected input at exact hashes.
+- Only the intended edge082 description changes; keep all ten reactions, both branches, 94 triples, 149 evidence blocks and reference metadata unchanged.
+- Confirm the retained protein subject against original AAT54156.1 and the current UniProt body/secondary accession; do not equate generic chemical class with specific sequence.
+- Rerun meaningful exact-delta/source checks, complete actual maintained integration and full gates, then save an evidence-backed successor with the exact finding lineage.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/petrobactin-biosynthesis.yaml; Complete target: ten reactions, 28 participants, 94 edges, 149 evidence blocks and 59 references | supports | The maintained bytes equal the complete external draft previously read independently. Fresh canonical inspection precedes current finding reassessment. Both convergent branches and carrier maturation remain present. |
+| preflight | research/pathway_additions/2026-10-11-next-213/independent-scientific-preflight.json; Full external source assessment, actual execution receipts, original hashes and disclosed method attempts | supports | The dated external assessment is carried forward as original scientific work, not relabeled as a prior canonical review. All artifact hashes are freshly checked; no biological or source content changed during maintained preparation. |
+| native | research/pathway_additions/2026-10-11-next-213/independent-original-source-replay.json; Original PWY-6289 membership and reaction sides; source-to-graph and reverse projection | supports | Independent replay checked 52 original bodies, 59 reference digests, all ten native members, 54 chemical edges, ten formal exact/conditional balances, 55 native/UniProt locators, twelve continuity edges and equal sums of both routes. Generic-carrier bookkeeping does not assert whole-protein composition. |
+| primary-2012 | PMID:22408253 / PMC3346087; Original Figure 1A/C; Results sections 21-23, 25 and 28; source-specific paragraph selectors in independent-primary-locator-replay.json | supports | Complete retained article text and original Figure 1 were inspected. The evidence supports the bounded Sterne-derived preparation claims, both in vitro branches, AsbB assembly qualification and terminal native connectivity. Unique intracellular order and a nonaccumulating intermediate remain qualified. The unavailable supplement is not claimed as read. |
+| primary-2008 | PMID:18955706 / PMC2579390; Original Results/sec3/p[2] and sec5/p[2], plus full retained main text | supports | Direct AsbF activity, structure and solution evidence support its scoped native dimer and Mn statements. This is separate from activity annotations on other proteins or mere metal inclusion in an assay. |
+| primary-2007 | PMID:17346033; Original indexed resultList/result[id="17346033"]/abstractText | supports | Only the inspected indexed abstract supports the early AsbC/AsbD/AsbE claims. Full text was unavailable; no detailed uninspected experimental or construct claim is imported. |
+| connectivity | research/pathway_additions/2026-10-11-next-213/independent-connectivity.json; Original CPD-9985 InChI versus ChEBI:142778; role-aware arm connectivity and primary Figure 1A/C | supports | Equal formula and charge conceal a constitutional difference. Native aromatic arms have three carbons and citrate arms four; the ChEBI structure reverses these. The native product agrees with the inspected primary figure. The record selects native RXN-10679/CPD-9985 and does not claim an exact match to RHEA:63821 or the conflicting ChEBI product. |
+| asbd-original | NCBIProtein:AAT54156.1; GBSeq[GBSeq_accession-version="AAT54156.1"]/GBSeq_sequence; source strain and taxon qualifiers | refutes | The original versioned Sterne protein has an explicit 91-residue sequence. Fresh recheck confirms exact sequence equality with the current reviewed UniProt body requested under Q81RQ6. This refutes the description calling this particular subject a generic carrier chemical class. |
+| asbd-uniprot | UniProtKB:Q81RQ6 (retained secondary accession of A0A0J1I1I3); /primaryAccession; /secondaryAccessions; /sequence/value; /comments/0/texts; /comments/2/texts | supports | Original reviewed protein function/PTM comments support AsbD participation and activation. Q81RQ6 is explicitly a secondary accession in the returned body; its source identity is not inferred from the filename. Exact protein identity remains distinct from whole generic RHEA-COMP carrier classes. |
+| finding-ledger | research/pathway_additions/2026-10-11-next-213/initial-scientific-findings.json; Exact edge 082 description, protein subject, original-source hashes and proposed narrow correction | supports | Fresh maintained-target recheck confirms the original description defect remains. Node category, triple and attached identity evidence are otherwise consistent; this is a bounded wording correction. |
+| current-recheck | /private/tmp/pathwaymech-next-213-petrobactin-initial-review/maintained-recheck.json; Post-inspection unchanged-input, exact AsbD source/alias, current finding and rg -uu checks | supports | All inspected local input hashes and prior audit artifacts remain current. Fresh ignored-inclusive searches find no prior complete route outside this new target/dossier; the only original-checkout hits are retained Seed iron-uptake menu entries. |
+| context | research/pathway_additions/2026-10-11-next-213/petrobactin-imodulondb-context.json; Exact retained inventory body, 20 organisms and 28 datasets, applicability rationale | supports | The original inventory was rehashed. No exact B. anthracis/Sterne dataset is listed; B. subtilis data are not transferred. This bounded inventory observation makes no biological absence claim. |
+
+## Limits And Additional Notes
+
+- Full-corpus validate/test/lint/diff and authority/history/page integration are pending; this partial observation does not approve publication.
+- Base 5cf4d2578da6b61a49f8c0f9886229b8c1369c91 is the actual reviewed DFO preparation checkout; neither future bacillibactin incorporation nor a future merge is assumed.
+- The 2007 early-enzyme paper is abstract-only, and the later supplement was unavailable. Full source access or exact tagged-construct sequences are not claimed.
+- Both branches are supported in vitro; a unique intracellular sequence and accumulation of every intermediate are not established.
+- Selected citryl identities leave citrate-derived stereochemistry unspecified; this does not claim racemic physiology or acceptance of all stereoisomers.
+- Generic carrier matching-scaffold balance is conditional bookkeeping, not a full-polypeptide molecular formula; the physiological maturation catalyst remains unknown.
+- Prior code contributions are excluded from independent approval; no parser or owner changes were made during this review.
+- Canonical inspection 25644 preceded the maintained-target reassessment. The earlier complete external scientific review remains explicitly dated preflight, not invented canonical history.
+- Previous exploratory environment/tautomer/selector failures are retained in the preflight audit. This maintained recheck first assumed a requested UniProt accession was primary; the original body shows it is a retained secondary accession. The failed guard and corrected exact alias/sequence check are preserved, with no source or target mutation.
+- Root independently confirmed the finding and created issue 388. This reviewer performed no GitHub mutations or curation/history edits.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T132809Z-petrobactin-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Partial initial petrobactin scientific review: AsbD protein description'
+started_at: '2026-10-11T13:25:27.853029Z'
+finished_at: '2026-10-11T13:28:09.926537Z'
+reviewer:
+  identity: Codex reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  independence: independent
+  independence_basis: Did not author petrobactin target or author dossiers. Independently
+    read its complete scientific target, original source bodies and primary figure
+    during external preflight, then canonically inspected and reassessed the unchanged
+    maintained draft. Separate MetaNetX and MetaCyc parser contributions for another
+    cohort are disclosed and excluded from code approval; root and another agent independently
+    review them.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: The complete ten-transformation native route and both branches are supported
+  with explicit source-conflict, carrier, strain and construct limits. One confirmed
+  minor description defect calls the exact versioned AsbD protein subject a generic
+  chemical carrier class. Scientific source review is complete for this frozen draft;
+  maintained authority integration and full gates remain pending, so this is a partial
+  initial observation rather than publication approval.
+source:
+  git_revision: 5cf4d2578da6b61a49f8c0f9886229b8c1369c91
+  state: working_tree
+  inputs:
+  - path: data/pathways/petrobactin-biosynthesis.yaml
+    sha256: 5cd5138400ff9b92025a710d453762a711a44457d013b925f8d8b18e6e1fd5a2
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/author-copy-receipt.json
+    sha256: b479ce04911473b9eefb6a12d7730515431e2523b4bcb5719ace0f64f6f2d5dc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/author-handoff.json
+    sha256: 758e6bf5e297e9e69c1b24a871719c3d649197861d7223c5a73284b237fcfb46
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-connectivity.json
+    sha256: 1f699ea529f2a82b4af3f761e59f08253ac068ea74f1c0b1471c3b8da347c3d8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-initial-archive-manifest.json
+    sha256: c718a81a4a5aca0b514960fd12d8470cc4207e77a99774f88154e43230339121
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-kgx-replay.json
+    sha256: 165c2fd2f49302762b8ee1337d1ce7f817ce75c9462559563c4953c487d48338
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-original-source-replay.json
+    sha256: 647dccaab112ea400e932c73dde6396b8608e704ac1ef32308c35e34bf4da60e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-primary-locator-replay.json
+    sha256: 678502f36e964e90e3e6f21d19030e5ec76652d07a9f0ca5f2d7e44f221d900d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-prior-dedup.json
+    sha256: 21f668ab15c8bf1d92e48fe48da6f2535f95f4c7e5e48ab3cb4615cb2576abfa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/independent-scientific-preflight.json
+    sha256: d71ff5ac73794141672516be2a26fe0bd483706d2c493ffb1f193a1794ce59df
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/initial-scientific-findings.json
+    sha256: d370ad91ea1da6d08c17bf01912cddf320be0f69d467dc876724847d33dff0f9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-authority-proposal.json
+    sha256: 40979b12cf8329bdd38c345ee257c363700f062282841deabb8cf1a3288ef8cb
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-curation.md
+    sha256: 37ba3a43c8a7f9b1ac258e5d436b5f13970c83fabee387dae8b3d2db31e037b6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-dedup.json
+    sha256: ba2c59de043a00d1f5673bbc8ed07dbd48fa41c1860684924448ccf55e2ccc6c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-identifiers.json
+    sha256: 1fddb6c04acaca056d9f19a9b93c93f91ce803627bd4175bb778d081597984b0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-identity-assessment.json
+    sha256: b6a53d444393790343f44f6f7cb8abd827aa12ae6b87fc5f20c68e39b57774d6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-imodulondb-context.json
+    sha256: 451c06f47565ba78f3db9f1ef3972e03a89ef6b0dcf41a0bca1bcb765f781278
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-search-followup.json
+    sha256: 4e1404402cfde86c916b5d2fdbf081ea9510f05e20ca46a63812aefc633f37a2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-source-manifest.json
+    sha256: 67b30d39ab50d40bcab0060ccc3d84ebf7b85e467e6bdc3e1c00ba715dd1d2dd
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-source-projection.json
+    sha256: e35f8315cfe802e29fabe366956a20ab08b84091c0c9d0d82c9ba49a554ee1eb
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/petrobactin-validation.json
+    sha256: 5b8e3ece8ad9f778783e978b5a6ce1cd79687edf7c23ee058b558f4ae32aaa16
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-213/preintegration-dedup.json
+    sha256: 64b7a3c48127e627a59f4e484d2e830830a4db2ca8a1010e16f0f9d3e945944e
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: ffa1107da83c8ff173833662e78ba73c779bbab9f2da33cea993b614e99d6345
+    role: context
+scope:
+  description: Complete frozen petrobactin scientific target and nearest original
+    evidence, with exact retained chemical conflict and one scoped description finding.
+    Integration coverage is partial.
+  selection: Exact maintained target SHA256 5cd5138400ff9b92025a710d453762a711a44457d013b925f8d8b18e6e1fd5a2,
+    byte-identical to the independently assessed external draft.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6289
+  exclusions:
+  - target: Pending next-213 authorities, history/pages, corpus gates and eventual
+      merged baseline
+    reason: Not finalized; no integrated or publication pass is claimed.
+  - target: Separate source-parser implementation approval
+    reason: Reviewer contributed those code changes and does not independently approve
+      them here.
+  - target: Other pathway records, transport, ferric uptake and upstream central metabolism
+    reason: Outside the exact complete native PWY-6289 biosynthetic boundary.
+targets:
+- target_id: MetaCyc:PWY-6289
+  path: data/pathways/petrobactin-biosynthesis.yaml
+  label: petrobactin biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/petrobactin-biosynthesis.yaml
+    role: maintained_record
+checks:
+- check_id: inspect
+  name: Canonical current maintained-target inspection
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-213-petrobactin-initial-review/targets.yaml
+    with explicit context inputs retained in inspect-command.json
+  summary: Actual session 25644 exited 0 before current reassessment. Captured reviewed
+    DFO preparation base 5cf4d257 and exact maintained target/context hashes.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - target
+  - current-recheck
+- check_id: external-1
+  name: Independent original-source replay
+  status: passed
+  required: false
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-petrobactin-independent-review-20261011/replay.py
+  summary: 52body digests,59refs,10native members,54chemical edges,10conditional/exact
+    balances,55native/UniProt locator checks,12continuity edges, two equal branch
+    sums. This actual dated external preflight is linked to byte-identical scientific
+    inputs; it is not a fresh full-corpus execution.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - native
+- check_id: external-2
+  name: Independent original connectivity assessment
+  status: passed
+  required: false
+  exit_code: 0
+  command: /private/tmp/pathwaymech-curation-uv-cache/archive-v0/QCUOzFD682L5YUwuPRTvS/bin/python
+    /private/tmp/pathwaymech-petrobactin-independent-review-20261011/connectivity.py
+  summary: Independent RDKit confirms terminal structural discrepancy and matching
+    formula/charge. This actual dated external preflight is linked to byte-identical
+    scientific inputs; it is not a fresh full-corpus execution.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - connectivity
+- check_id: external-3
+  name: Independent actual KGX export
+  status: passed
+  required: false
+  exit_code: 0
+  command: Actual write_kgx([validate_record(record)], external_output)
+  summary: 40nodes94edges149evidence; every triple/evidence/description and relevant
+    category preserved. This actual dated external preflight is linked to byte-identical
+    scientific inputs; it is not a fresh full-corpus execution.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - preflight
+- check_id: external-4
+  name: Independent primary locator replay
+  status: passed
+  required: false
+  exit_code: 0
+  command: Independent primary locator/quote re-resolution
+  summary: 14primary evidence blocks checked This actual dated external preflight
+    is linked to byte-identical scientific inputs; it is not a fresh full-corpus execution.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - primary-2012
+  - primary-2008
+  - primary-2007
+- check_id: maintained-recheck
+  name: Post-inspection source and finding recheck
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-213-petrobactin-initial-review/recheck.py
+  summary: 'Actual session 52586 exited 0: target equality, all local and prior-audit
+    hashes, original protein identity/sequence, retained UniProt alias, unchanged
+    open finding, iModulon inventory and fresh hidden/ignored-inclusive dedup checked.
+    Initial incorrect primary-accession assumption was corrected against the explicit
+    original secondary-accession field; failed attempt is retained.'
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - current-recheck
+  - asbd-original
+  - asbd-uniprot
+- check_id: validate
+  name: Full corpus just validate
+  status: unavailable
+  required: true
+  summary: Next-213 authority integration, history/pages and coordinated full gates
+    are pending. No result from another cohort or the author sandbox is claimed as
+    a maintained-corpus pass.
+  target_ids:
+  - MetaCyc:PWY-6289
+- check_id: test
+  name: Full corpus just test
+  status: unavailable
+  required: true
+  summary: Next-213 authority integration, history/pages and coordinated full gates
+    are pending. No result from another cohort or the author sandbox is claimed as
+    a maintained-corpus pass.
+  target_ids:
+  - MetaCyc:PWY-6289
+- check_id: lint
+  name: Full corpus just lint
+  status: unavailable
+  required: true
+  summary: Next-213 authority integration, history/pages and coordinated full gates
+    are pending. No result from another cohort or the author sandbox is claimed as
+    a maintained-corpus pass.
+  target_ids:
+  - MetaCyc:PWY-6289
+- check_id: diff
+  name: Publication-scope git diff --check
+  status: unavailable
+  required: true
+  summary: Next-213 authority integration, history/pages and coordinated full gates
+    are pending. No result from another cohort or the author sandbox is claimed as
+    a maintained-corpus pass.
+  target_ids:
+  - MetaCyc:PWY-6289
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/petrobactin-biosynthesis.yaml
+  locator: 'Complete target: ten reactions, 28 participants, 94 edges, 149 evidence
+    blocks and 59 references'
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: The maintained bytes equal the complete external draft previously read
+    independently. Fresh canonical inspection precedes current finding reassessment.
+    Both convergent branches and carrier maturation remain present.
+  snapshot_sha256: 5cd5138400ff9b92025a710d453762a711a44457d013b925f8d8b18e6e1fd5a2
+- evidence_id: preflight
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-213/independent-scientific-preflight.json
+  locator: Full external source assessment, actual execution receipts, original hashes
+    and disclosed method attempts
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: The dated external assessment is carried forward as original scientific
+    work, not relabeled as a prior canonical review. All artifact hashes are freshly
+    checked; no biological or source content changed during maintained preparation.
+  snapshot_sha256: d71ff5ac73794141672516be2a26fe0bd483706d2c493ffb1f193a1794ce59df
+- evidence_id: native
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-213/independent-original-source-replay.json
+  locator: Original PWY-6289 membership and reaction sides; source-to-graph and reverse
+    projection
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Independent replay checked 52 original bodies, 59 reference digests, all
+    ten native members, 54 chemical edges, ten formal exact/conditional balances,
+    55 native/UniProt locators, twelve continuity edges and equal sums of both routes.
+    Generic-carrier bookkeeping does not assert whole-protein composition.
+  snapshot_sha256: 647dccaab112ea400e932c73dde6396b8608e704ac1ef32308c35e34bf4da60e
+- evidence_id: primary-2012
+  kind: primary_source
+  reference: PMID:22408253 / PMC3346087
+  locator: Original Figure 1A/C; Results sections 21-23, 25 and 28; source-specific
+    paragraph selectors in independent-primary-locator-replay.json
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Complete retained article text and original Figure 1 were inspected. The
+    evidence supports the bounded Sterne-derived preparation claims, both in vitro
+    branches, AsbB assembly qualification and terminal native connectivity. Unique
+    intracellular order and a nonaccumulating intermediate remain qualified. The unavailable
+    supplement is not claimed as read.
+  snapshot_sha256: 7ae61fa9d99e34932566cddd2541d93b9cab886eb3d8ce5d21e73e8eebdebfa8
+- evidence_id: primary-2008
+  kind: primary_source
+  reference: PMID:18955706 / PMC2579390
+  locator: Original Results/sec3/p[2] and sec5/p[2], plus full retained main text
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Direct AsbF activity, structure and solution evidence support its scoped
+    native dimer and Mn statements. This is separate from activity annotations on
+    other proteins or mere metal inclusion in an assay.
+  snapshot_sha256: 7c083d2a8097c0be99f1b2a219b02b7171b60defb8e67abd65ffe4c71e6a4b40
+- evidence_id: primary-2007
+  kind: primary_source
+  reference: PMID:17346033
+  locator: Original indexed resultList/result[id="17346033"]/abstractText
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Only the inspected indexed abstract supports the early AsbC/AsbD/AsbE claims.
+    Full text was unavailable; no detailed uninspected experimental or construct claim
+    is imported.
+  snapshot_sha256: 26b83f8176ad47257f0d82855e9dde65ac3c358b57f754a40358919808a5a245
+- evidence_id: connectivity
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-213/independent-connectivity.json
+  locator: Original CPD-9985 InChI versus ChEBI:142778; role-aware arm connectivity
+    and primary Figure 1A/C
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Equal formula and charge conceal a constitutional difference. Native aromatic
+    arms have three carbons and citrate arms four; the ChEBI structure reverses these.
+    The native product agrees with the inspected primary figure. The record selects
+    native RXN-10679/CPD-9985 and does not claim an exact match to RHEA:63821 or the
+    conflicting ChEBI product.
+  snapshot_sha256: 1f699ea529f2a82b4af3f761e59f08253ac068ea74f1c0b1471c3b8da347c3d8
+- evidence_id: asbd-original
+  kind: database
+  reference: NCBIProtein:AAT54156.1
+  locator: GBSeq[GBSeq_accession-version="AAT54156.1"]/GBSeq_sequence; source strain
+    and taxon qualifiers
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: refutes
+  summary: The original versioned Sterne protein has an explicit 91-residue sequence.
+    Fresh recheck confirms exact sequence equality with the current reviewed UniProt
+    body requested under Q81RQ6. This refutes the description calling this particular
+    subject a generic carrier chemical class.
+  snapshot_sha256: e67b0c1bae9128c5c1688e1d358003f1bac3ff5b2a0e03685d4ebe29ca72bc20
+- evidence_id: asbd-uniprot
+  kind: database
+  reference: UniProtKB:Q81RQ6 (retained secondary accession of A0A0J1I1I3)
+  locator: /primaryAccession; /secondaryAccessions; /sequence/value; /comments/0/texts;
+    /comments/2/texts
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Original reviewed protein function/PTM comments support AsbD participation
+    and activation. Q81RQ6 is explicitly a secondary accession in the returned body;
+    its source identity is not inferred from the filename. Exact protein identity
+    remains distinct from whole generic RHEA-COMP carrier classes.
+  snapshot_sha256: ea893c52b70f6ec5676acb2fda596b45f69c7aefa64699c6e8994e3b7360d09f
+- evidence_id: finding-ledger
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-213/initial-scientific-findings.json
+  locator: Exact edge 082 description, protein subject, original-source hashes and
+    proposed narrow correction
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: Fresh maintained-target recheck confirms the original description defect
+    remains. Node category, triple and attached identity evidence are otherwise consistent;
+    this is a bounded wording correction.
+  snapshot_sha256: d370ad91ea1da6d08c17bf01912cddf320be0f69d467dc876724847d33dff0f9
+- evidence_id: current-recheck
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-213-petrobactin-initial-review/maintained-recheck.json
+  locator: Post-inspection unchanged-input, exact AsbD source/alias, current finding
+    and rg -uu checks
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: All inspected local input hashes and prior audit artifacts remain current.
+    Fresh ignored-inclusive searches find no prior complete route outside this new
+    target/dossier; the only original-checkout hits are retained Seed iron-uptake
+    menu entries.
+  snapshot_sha256: c19e53519860f0d74337ac29c602786938f0fb7521ec4cd080c37aa85813a922
+  search_scope: Both current next-213 and original Documents roots searched with rg
+    -uu using pathway, terminal and branch reaction IDs, compound ID, protein and
+    primary PMIDs. Git/dependency caches excluded; the newly added target and its
+    own dossier are counted separately. All other two matching lines are the previously
+    inspected uptake menu, not an authored biosynthetic route.
+- evidence_id: context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-213/petrobactin-imodulondb-context.json
+  locator: Exact retained inventory body, 20 organisms and 28 datasets, applicability
+    rationale
+  accessed_at: '2026-10-11T13:28:09.926537Z'
+  support: supports
+  summary: The original inventory was rehashed. No exact B. anthracis/Sterne dataset
+    is listed; B. subtilis data are not transferred. This bounded inventory observation
+    makes no biological absence claim.
+  snapshot_sha256: 451c06f47565ba78f3db9f1ef3972e03a89ef6b0dcf41a0bca1bcb765f781278
+  search_scope: Only the retained current iModulonDB dataset inventory; not an exhaustive
+    biological or module-membership search.
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete native pathway and convergent branches
+  outcome: supported
+  summary: All ten native members and both material-flow branches remain present,
+    including generic carrier maturation with physiological catalyst unassigned. No
+    convenient shorter subset or uptake pathway is substituted.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - native
+  - target
+  - current-recheck
+- assessment_id: chemistry
+  area: grounding
+  topic: Directions, terminal identity and carrier accounting
+  outcome: supported
+  summary: Independent original-source replay supports chemical sides, orientations
+    and formal balances. The native/current constitutional conflict is explicitly
+    preserved with authentic native product selected. Carrier output refinement has
+    separately cited support without asserting parent/subclass identity or whole-polypeptide
+    composition.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - native
+  - connectivity
+  - primary-2012
+- assessment_id: proteins
+  area: scope
+  topic: Versioned strain proteins and preparation limits
+  outcome: supported
+  summary: The versioned Sterne identities are distinguished from current merged protein
+    annotations and engineered preparations. Four sequence relations match and two
+    N-terminal differences remain disclosed. There is no unsupported exact tagged-construct
+    identity or inferred catalyst for carrier maturation.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - preflight
+  - asbd-original
+  - asbd-uniprot
+  - primary-2012
+- assessment_id: evidence
+  area: evidence
+  topic: Nearest primary support, assemblies and cofactors
+  outcome: supported
+  summary: The 2012 and 2008 original bodies support their scoped activity/assembly
+    claims; 2007 claims remain abstract-only. AsbF native dimer is separately grounded;
+    AsbB dimer evidence qualifies its functional role without inventing an external
+    complex identity. Assay metal inclusion is not promoted into unverified obligatory
+    binding.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - primary-2012
+  - primary-2008
+  - primary-2007
+  - preflight
+- assessment_id: context
+  area: scope
+  topic: Expression context and specificity
+  outcome: supported
+  summary: No exact Sterne iModulon dataset is present in the retained inventory.
+    Cross-species expression does not establish catalysis, regulation or pathway identity.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - context
+- assessment_id: description
+  area: provenance
+  topic: Specific AsbD protein versus generic carrier-state wording
+  outcome: concern
+  summary: Edge 082 has a versioned protein subject and correct participation evidence,
+    but its first two description sentences call that subject a generic carrier state.
+    The final non-equivalence qualification is valid and should be retained.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - target
+  - asbd-original
+  - asbd-uniprot
+  - finding-ledger
+- assessment_id: integration
+  area: schema
+  topic: Pending maintained integration
+  outcome: unknown
+  summary: The exact source-grounded target and open finding are captured. Shared
+    authority, rendered-page consistency and full-corpus gates remain unassessed until
+    root completes integration. External deterministic checks are not scientific proof
+    or integrated release approval.
+  target_ids:
+  - MetaCyc:PWY-6289
+  evidence_ids:
+  - target
+  - preflight
+findings:
+- finding_id: f-asbd-protein-description
+  issue_key: petrobactin-asbd-protein-scope-description
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: AsbD participation description incorrectly calls the exact protein a generic
+    carrier class
+  description: The subject is an independently issued versioned protein, NCBIProtein:AAT54156.1,
+    but the first two sentences describe a generic carrier chemical class and deny
+    an exact AsbD sequence. This is copied class wording on a specific gene-product
+    participation edge. Participant category, triple and attached identity evidence
+    are otherwise consistent. The final sentence correctly excludes identity to every
+    generic carrier-class member and should remain.
+  target_ids:
+  - MetaCyc:PWY-6289
+  field_paths:
+  - mechanistic_edges[id=petrobactin-edge-082].description
+  evidence_ids:
+  - target
+  - asbd-original
+  - asbd-uniprot
+  - finding-ledger
+  - current-recheck
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/petrobactin-biosynthesis.yaml
+    role: maintained_record
+  rule_id: docs/CAUSAL_GRAPHS.md source-scoped participant identity and edge evidence
+  native_severity: minor
+  normalization_reason: Bounded copied description wording; the exact protein node,
+    participation triple, evidence and complete chemistry are otherwise supported.
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/388
+actions:
+- action_id: correct-asbd-description
+  description: After preserving this initial observation and inputs, remove or replace
+    only the first two generic-class sentences on edge 082 with accurate versioned-protein
+    participation wording; preserve the final non-equivalence sentence.
+  finding_ids:
+  - f-asbd-protein-description
+  target_ids:
+  - MetaCyc:PWY-6289
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/petrobactin-biosynthesis.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Retain initial review and every inspected input at exact hashes.
+  - Only the intended edge082 description changes; keep all ten reactions, both branches,
+    94 triples, 149 evidence blocks and reference metadata unchanged.
+  - Confirm the retained protein subject against original AAT54156.1 and the current
+    UniProt body/secondary accession; do not equate generic chemical class with specific
+    sequence.
+  - Rerun meaningful exact-delta/source checks, complete actual maintained integration
+    and full gates, then save an evidence-backed successor with the exact finding
+    lineage.
+limitations:
+- Full-corpus validate/test/lint/diff and authority/history/page integration are pending;
+  this partial observation does not approve publication.
+- Base 5cf4d2578da6b61a49f8c0f9886229b8c1369c91 is the actual reviewed DFO preparation
+  checkout; neither future bacillibactin incorporation nor a future merge is assumed.
+- The 2007 early-enzyme paper is abstract-only, and the later supplement was unavailable.
+  Full source access or exact tagged-construct sequences are not claimed.
+- Both branches are supported in vitro; a unique intracellular sequence and accumulation
+  of every intermediate are not established.
+- Selected citryl identities leave citrate-derived stereochemistry unspecified; this
+  does not claim racemic physiology or acceptance of all stereoisomers.
+- Generic carrier matching-scaffold balance is conditional bookkeeping, not a full-polypeptide
+  molecular formula; the physiological maturation catalyst remains unknown.
+- Prior code contributions are excluded from independent approval; no parser or owner
+  changes were made during this review.
+notes:
+- Canonical inspection 25644 preceded the maintained-target reassessment. The earlier
+  complete external scientific review remains explicitly dated preflight, not invented
+  canonical history.
+- Previous exploratory environment/tautomer/selector failures are retained in the
+  preflight audit. This maintained recheck first assumed a requested UniProt accession
+  was primary; the original body shows it is a retained secondary accession. The failed
+  guard and corrected exact alias/sequence check are preserved, with no source or
+  target mutation.
+- Root independently confirmed the finding and created issue 388. This reviewer performed
+  no GitHub mutations or curation/history edits.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/388
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC3346087/
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC2579390/
+```

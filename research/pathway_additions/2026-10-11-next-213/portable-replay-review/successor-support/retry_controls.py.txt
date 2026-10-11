@@ -1,0 +1,60 @@
+"""Repeat final-output probes with settled current authority inputs."""
+from datetime import datetime, timezone
+from pathlib import Path
+import hashlib
+import json
+import os
+import subprocess
+import time
+
+B = Path(__file__).resolve().parent
+R = Path('/private/tmp/pathwaymech-next-213-20261011')
+P = Path('/private/tmp/pathwaymech-petrobactin-portable-replay-20261011')
+H = Path('/private/tmp/pathwaymech-petrobactin-output-fix-20261011/petrobactin-replay.py')
+T = R / 'data/pathways/petrobactin-biosynthesis.yaml'
+def sha(p):
+    with Path(p).open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+def save(p,x):
+    with Path(p).open('x') as f:
+        json.dump(x,f,indent=2); f.write('\n')
+assert sha(H)=='9e21130baba661d36b46d8f25692e111db67ceae4d1d78821649d0d55ae4507e'
+assert sha(T)=='7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a'
+inputs=[H,T,P/'petrobactin-source-manifest.json',P/'petrobactin-source-projection.json',P/'petrobactin-identity-assessment.json',R/'conf/identifier_policy.yaml',R/'data/identifier_authorities/sources.json',R/'data/identifier_authorities/ontology.json']
+captured={str(x):sha(x) for x in inputs}
+save(B/'settled-inputs.json',captured)
+env=dict(os.environ,PYTHONPATH=str(R/'src'),PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1')
+results=[]
+for name in ['collision-settled','fresh-settled']:
+    d=B/name;d.mkdir();out=d/'receipt.json'
+    cmd=[str(R/'.venv/bin/python'),str(H),'--repo-root',str(R),'--record',str(T),'--source-manifest',str(P/'petrobactin-source-manifest.json'),'--source-projection',str(P/'petrobactin-source-projection.json'),'--identity-assessment',str(P/'petrobactin-identity-assessment.json'),'--authority-root',str(R),'--output',str(out)]
+    started=datetime.now(timezone.utc).isoformat()
+    with (d/'console.log').open('x') as log:
+        process=subprocess.Popen(cmd,cwd=B,env=env,stdout=log,stderr=subprocess.STDOUT)
+        sentinel=None
+        if name=='collision-settled':
+            while not out.with_suffix('.artifacts').exists():
+                if process.poll() is not None:raise RuntimeError('Replay exited before artifact reservation')
+                time.sleep(.1)
+            sentinel=b'INDEPENDENT EXISTING RECEIPT CREATED AFTER STARTUP CHECK\n'
+            with out.open('xb') as f:f.write(sentinel)
+            observed=datetime.now(timezone.utc).isoformat()
+            print('Actual settled-authority collision sentinel inserted.',flush=True)
+        code=process.wait()
+    result={'name':name,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'command':cmd,'exit_code':code,'log':str(d/'console.log'),'log_sha256':sha(d/'console.log'),'receipt':str(out),'receipt_sha256':sha(out),'helper_sha256':sha(H)}
+    if sentinel:
+        assert code!=0
+        assert 'FileExistsError' in (d/'console.log').read_text()
+        assert out.read_bytes()==sentinel
+        result.update(sentinel_created_at=observed,sentinel_preserved=True,final_write_collision_error=True)
+    else:
+        assert code==0,(code,str(d/'console.log'))
+        r=json.loads(out.read_text())
+        assert r['status']=='passed_author_checks_not_independent_approval'
+        assert r['target_sha256']==captured[str(T)] and r['helper_sha256']==captured[str(H)]
+        result.update(source_bodies=len(r['original_body_checks']),native_members=r['complete_native_members'],chemical_sides=r['selected_chemical_sides'],balances=r['formal_balances'],kgx=r['kgx'])
+    assert all(sha(p)==s for p,s in captured.items())
+    result['captured_inputs_unchanged']=True
+    save(d/'test-result.json',result);results.append(result)
+    print(json.dumps(result,indent=2),flush=True)
+save(B/'settled-controls.json',{'status':'passed','controls':results,'captured_inputs_unchanged':True})
