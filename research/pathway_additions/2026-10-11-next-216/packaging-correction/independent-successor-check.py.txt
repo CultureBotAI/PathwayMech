@@ -1,0 +1,62 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,subprocess,base64
+R=Path('/private/tmp/pathwaymech-next-216-20261011');D=R/'research/pathway_additions/2026-10-11-next-216';O=Path('/private/tmp/pathwaymech-next-216-remote-adversarial-review')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def obj(p):return json.loads(Path(p).read_text())
+mp=D/'packaging-correction/successor-map.json';assert sha(mp.read_bytes())=='81cb785e00c72c87e6376577d86d6c3c8e9b881cf93597813c75498895e972fd';m=obj(mp)
+initial=obj(O/'packaging-initial/assessment.json');assert sha((O/'packaging-initial/assessment.json').read_bytes())=='0098ea2acd9b46a5c4acaa2ed52b19b9f680b9d366bb10f8cf3aaa93b8f27b22'
+old={x['maintained_original_path']:x for x in initial['rows']};mapping={x['previous_maintained_path']:x for x in m['mapping']};assert set(mapping)==set(old) and len(mapping)==7
+files=set(subprocess.check_output(['rg','--files','-uu','--hidden','research/pathway_additions/2026-10-11-next-216'],cwd=R).decode().splitlines())
+assert not (set(mapping)&files)
+checks=[]
+for path,row in mapping.items():
+ b=Path(old[path]['raw_archive']).read_bytes();assert b.endswith(b'\n\n')
+ for original in [row['original_path'],row['external_archive'],old[path]['external_original']]:assert Path(original).read_bytes()==b
+ w=R/row['current_wrapper_path'];wb=w.read_bytes();assert sha(wb)==row['current_wrapper_sha256'];wrapped=obj(w)
+ assert wrapped['text'].encode('utf-8')==b
+ assert row['original_sha256']==wrapped['original_sha256']==sha(b) and row['original_bytes']==wrapped['original_bytes']==len(b)
+ assert wrapped['previous_maintained_path']==path and wrapped['original_path']==row['original_path']
+ assert wb.endswith(b'\n') and not wb.endswith(b'\n\n') and not any(line.endswith((b' ',b'\t')) for line in wb.splitlines())
+ assert len(row['aliases'])==len(old[path]['aliases'])
+ for a in row['aliases']:
+  assert Path(a['path']).read_bytes()==b and a['sha256']==sha(b) and a['bytes']==len(b)
+  assert a['destination']==path and a['current_recoverable_wrapper']==row['current_wrapper_path']
+ checks.append({'old_path':path,'wrapper_path':row['current_wrapper_path'],'wrapper_sha256':sha(wb),'payload_sha256':sha(b),'payload_bytes':len(b),'all_originals_and_aliases_exact':True,'intentional_eof_newlines_preserved':True})
+for proof in m['proofs']:
+ assert sha(Path(proof['original_path']).read_bytes())==proof['original_sha256']
+ assert sha((R/proof['maintained_path']).read_bytes())==proof['maintained_sha256']==proof['original_sha256']
+f=obj(D/'packaging-correction/failure.json');assert len(f['staged_files'])==375
+preserved=[]
+for row in f['staged_files']:
+ if row['path'] in mapping:continue
+ assert sha((R/row['path']).read_bytes())==row['sha256'],row['path'];preserved.append(row)
+assert len(preserved)==368
+assert sha((D/'pyochelin-copy-plan.json').read_bytes())==m['initial_copy_plan_sha256']
+assert sha((D/'root-copy-adoption.json').read_bytes())==m['initial_copy_adoption_sha256']
+assert sha((D/'integration-receipt.json').read_bytes())==m['initial_integration_receipt_sha256']
+assert sha((D/'final-scientific-review-adoption.json').read_bytes())==m['initial_scientific_review_adoption_sha256']
+plan=obj(D/'pyochelin-copy-plan.json');bydest={x['destination']:x for x in plan['copy_entries']}
+def recover(dest):
+ if dest in mapping:return obj(R/mapping[dest]['current_wrapper_path'])['text'].encode('utf-8')
+ row=bydest[dest];b=(R/dest).read_bytes();assert sha(b)==row['destination_sha256']
+ if row['mode']=='exact_bytes':return b
+ w=json.loads(b)
+ return w['content'].encode('utf-8') if w['encoding']=='utf-8' else base64.b64decode(w['content'])
+recovery=[]
+for row in plan['copy_entries']:
+ b=recover(row['destination']);assert sha(b)==row['sha256'] and len(b)==row['bytes'];assert Path(row['path']).read_bytes()==b
+ recovery.append({'kind':'copy','path':row['path'],'old_destination':row['destination'],'recovered_sha256':sha(b)})
+for row in plan['exact_byte_aliases']:
+ b=recover(row['destination']);assert sha(b)==row['sha256'] and len(b)==row['bytes'];assert Path(row['path']).read_bytes()==b
+ recovery.append({'kind':'alias','path':row['path'],'old_destination':row['destination'],'recovered_sha256':sha(b)})
+for row in plan['formal_input_resolution']:
+ b=recover(row['recoverable_destination']);assert sha(b)==row['sha256'];assert Path(row['original_path']).read_bytes()==b
+ recovery.append({'kind':'formal_input','path':row['original_path'],'old_destination':row['recoverable_destination'],'recovered_sha256':sha(b)})
+assert len(recovery)==282+251+83
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R).decode().strip()==m['base']
+assert not subprocess.check_output(['git','diff','--cached','--name-only'],cwd=R)
+report={'status':'accepted_bounded_byte_preserving_packaging_remedy_pending_final_staged_gate','at':datetime.now(timezone.utc).isoformat(),'reviewer':'/root/pyochelin_pr_adversarial','independence':'Confirmed defect and prepared external wrapper examples; did not author or apply maintained correction. Independently compared applied wrappers with separately preserved pre-remedy raw snapshots.','issue':m['issue'],'successor_map_sha256':sha(mp.read_bytes()),'wrapper_checks':checks,'preserved_initial_staged_files':preserved,'all_copy_plan_input_recoveries':recovery,'retired_raw_path_inventory':{'method':'rg --files -uu --hidden across full maintained 216 dossier','ignored_and_hidden_included':True,'raw_paths_absent':list(mapping)},'initial_check':'Reproduced actual prior staged diff --check exit2, seven real EOF blank-line findings.','current_gate':'Index is empty after scoped unstage; this does not prove final staged whitespace acceptance. Full staging check is explicitly pending.','scope':'Only representation of seven historical mutation fixtures changed. All368 other initially staged files are identical, including scientific record, authority snapshots, rendered exports, copy plans, prior integration and completed canonical review.','findings':[],'resolved_bounded_finding':401,'limits':['Final new infrastructure history/render/gates, integration successor and current canonical successor are separate pending lifecycle steps.','Final staged diff --check is required before commit.','No whole-corpus or source-replay rerun performed by this auditor for an unchanged scientific target.']}
+p=O/'packaging-successor-review.json'
+with p.open('x') as stream:json.dump(report,stream,indent=2);stream.write('\n')
+print(json.dumps({'status':report['status'],'sha256':sha(p.read_bytes()),'wrappers':7,'aliases':5,'unchanged':len(preserved),'copy_plan_recoveries':len(recovery),'findings':0}))

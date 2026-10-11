@@ -1,0 +1,121 @@
+{
+  "at": "2026-10-11T15:42:21.511876+00:00",
+  "status": "passed_independent_technical_successor_review",
+  "issue": 398,
+  "predecessor": {
+    "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/finding.json",
+    "sha256": "7566b7aae55bb374213038c104a28862341b4b8df08d773b73ba696e78876c0a",
+    "helper_sha256": "ced1468e0c51e2c3fe8cf51900c5b9e0cfedea82b29401ff014b957cd268dae6"
+  },
+  "successor_helper": {
+    "path": "/private/tmp/pathwaymech-pyochelin-successor-20261011/draft/pyochelin-replay.py",
+    "sha256": "19cf087abba2f7eda7f6c620ba0ac4dc9bb829a8b7ad1ac7c99da7bc5f8d024f"
+  },
+  "target": {
+    "path": "/private/tmp/pathwaymech-pyochelin-successor-20261011/draft/pyochelin-biosynthesis.yaml",
+    "sha256": "b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b"
+  },
+  "findings": [],
+  "resolution": "Confirmed initial late-input false attestation is resolved in exact tested successor. Formal inputs captured before repository imports; target/metadata parsed from captured bytes; original sources checked against captured manifest; file paths, hashes and inventories freshly verified before exclusive output.",
+  "tests": {
+    "full_positive": {
+      "session": 60460,
+      "terminal_chunk": "260fb5",
+      "exit_code": 0,
+      "result": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/positive/result.json",
+      "result_sha256": "7e1a4b5abacf5a99bbf4afdaf4dbb53bd32c166522db934e706a08a148fce958",
+      "log_sha256": "53b66a6755e9f57a7883b04c33b3b336af2eca96127e0b13a061e46db267ff16",
+      "helper_sha256": "19cf087abba2f7eda7f6c620ba0ac4dc9bb829a8b7ad1ac7c99da7bc5f8d024f",
+      "target_sha256": "b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b",
+      "actual_final_uncached_binding": {
+        "at": "2026-10-11T15:40:50.291246+00:00",
+        "status": "passed",
+        "uncached": true,
+        "files": 144,
+        "stage": "immediately_before_exclusive_receipt"
+      },
+      "formal_bindings_independently_rehashed_after_terminal": 49,
+      "original_source_bindings_in_observed_full_run": 95,
+      "kgx": {
+        "nodes": 43,
+        "edges": 91,
+        "evidence": 242,
+        "nodes_sha256": "8b2606822fbc8263eb028e4ca8534590279421f805fc6d16762ff3eec8e80651",
+        "edges_sha256": "9b69282b5ad38753a66450c2ce32b15b3174ceae3e28ea7dfcb7701ee80ae37f"
+      },
+      "negative_controls": [
+        {
+          "name": "missing_reaction",
+          "rejected": true
+        },
+        {
+          "name": "wrong_side",
+          "rejected": true
+        },
+        {
+          "name": "false_exact_I_only",
+          "rejected": true
+        },
+        {
+          "name": "batch_pointer",
+          "rejected": true
+        },
+        {
+          "name": "pchf_role_annotation_transfer",
+          "rejected": true
+        },
+        {
+          "name": "pchf_primary_projection_transfer",
+          "rejected": true
+        },
+        {
+          "name": "endpoint_source_transfer",
+          "rejected": true
+        }
+      ]
+    },
+    "same_full_late_mutation_regression": {
+      "session": 97266,
+      "exit_code": 1,
+      "terminal_chunk": "2abfba",
+      "expected_rejection": true,
+      "success_receipt_absent": true
+    },
+    "focused_guard_cases": 20,
+    "cli_guards": 5,
+    "in_run_scientific_negative_controls": 7,
+    "owned_inputs_modified": false
+  },
+  "proofs": [
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/capture.json",
+      "sha256": "f64e49f85a08e205ebf367c5a41b476afd172baf16395eac775577e575afc143"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/positive-execution.json",
+      "sha256": "ca7452b714d6d91aabc6bb5e1def16318a24b1e5a6ac1df7e8defb9c9fe52dae"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/late-metadata-receipt.json",
+      "sha256": "cf629415e49fdd6fae1e80dbc0b9b36ef313f28338be61c42f74c60aa67dd620"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/focused-guard-receipt.json",
+      "sha256": "ae6f4c8897f032919f625b39a3f68c35ec9f996bce7a5bac7873ce3a6f1561e4"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/cli-control-receipt.json",
+      "sha256": "25d082e70266aa1a46907a86f2d135aec5c57a5c453634ec35e05131d74d0494"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/successor-binding-review/reviewed-helper-diff.json",
+      "sha256": "1a92a652141a2b27106ed6ea8c8604075c10aad9b8f31690f12a3db7ad1657c0"
+    }
+  ],
+  "limits": [
+    "Focused guard fixtures use narrowed synthetic manifest only to isolate actual capture/check code; their scope is explicitly recorded. Full positive and full late-metadata runs used all95 original bodies.",
+    "Source/runtime rehash stability is a bounded replay guard, not a general guarantee against arbitrary adversarial transient process/filesystem mutation.",
+    "External current-policy authority sandbox; no maintained canonical integration/full suite or publication approval.",
+    "Final author handoff and whole-record successor observation are separate; scientific#397 assessment is preserved independently."
+  ]
+}

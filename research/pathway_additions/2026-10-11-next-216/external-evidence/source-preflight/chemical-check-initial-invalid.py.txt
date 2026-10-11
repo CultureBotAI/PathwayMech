@@ -1,0 +1,34 @@
+from pathlib import Path
+from xml.etree import ElementTree as E
+from collections import Counter
+from datetime import datetime,UTC
+import json,hashlib
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+B=Path(__file__).absolute().parent;S=B/'originals'
+rs=json.loads((B/'native-reaction-projection.json').read_text());net=Counter()
+for r in rs:
+ mult=2 if r['id']=='RXN-11115' else 1
+ for k,sign in [('left',-1),('right',1)]:
+  for ident,n in r['sides'][k]:net[ident]+=sign*int(n)*mult
+net={k:v for k,v in net.items() if v}
+res=Counter();charge=0;rows=[]
+for k,n in sorted(net.items()):
+ p=S/(k+'.xml');r=E.parse(p).find('Compound');assert r is not None,k
+ inchi=r.findtext('inchi');m=Chem.MolFromInchi(inchi);assert m,k
+ heavy=Chem.AddHs(m);counts=Counter(a.GetSymbol() for a in heavy.GetAtoms());q=Chem.GetFormalCharge(m)
+ for atom,v in counts.items():res[atom]+=n*v
+ charge+=n*q
+ rows.append(dict(id=k,coefficient=n,source_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),inchi=inchi,formula=rdMolDescriptors.CalcMolFormula(m),charge=q))
+res={k:v for k,v in res.items() if v}
+assert not res and charge==0,(res,charge)
+cp=E.parse(S/'CPD-9992.xml').find('Compound').findtext('inchi')
+chebi={i:json.loads((S/('chebi-'+i+'.json')).read_text()) for i in ['29669','67183','67185']}
+ci={k:v['default_structure']['standard_inchi'] for k,v in chebi.items()}
+assert cp.replace('/p-1','')==ci['67183']
+assert cp.replace('/p-1','')!=ci['29669'] and cp.replace('/p-1','')!=ci['67185']
+assert '/t9-,10+,13?' in ci['29669']
+x=E.parse(S/'CPD-12093.xml').find('Compound').findtext('inchi');assert x==cp.replace('/m1','/m0')
+result=dict(at=datetime.now(UTC).isoformat(),rdkit_version=rdBase.rdkitVersion,status='passed_bounded_native_net_and_product_identity_check',native_objects=len(rs),flux_multiplicity={'RXN-11115':2,'all_other_members':1},net=net,net_small_molecules=rows,residual_atoms=res,residual_charge=charge,stereochemical_disposition=dict(native='CPD-9992 encodes pyochelin I monoanion, not the less specific neutral CHEBI29669 class',exact_stereo_acid_base_pair='CPD-9992 versus CHEBI67183 differs only /p-1 in inspected original InChI',class='CHEBI29669 keeps two fixed centers and leaves thioaminal unspecified, covering pyochelin I/II rather than their enantiomers',enantio='CPD12093 flips /m1 to /m0; do not substitute Pseudomonas fluorescens product'),limits=['Native carrier intermediates cancel in the net; individual whole-carrier formula balance has not been established','Three ATP is derived bookkeeping, not a measured ATP/product ratio','No exact Rhea or source-wide chemical equivalence assertion follows from net atom balance'])
+with (B/'chemical-check.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':result['status'],'net':net,'atom_residual':res,'charge_residual':charge},indent=2))

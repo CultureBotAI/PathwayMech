@@ -1,0 +1,21 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import json,hashlib,os,subprocess,yaml
+R=Path('/private/tmp/pathwaymech-next-216-20261011');O=Path('/private/tmp/pathwaymech-next-216-canonical-review')
+now=lambda:datetime.now(UTC).isoformat().replace('+00:00','Z')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+draft=O/'review-draft.yaml';x=yaml.safe_load(draft.read_text());env=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',PYTHONDONTWRITEBYTECODE='1');rows=[]
+def rehash():
+ for v in x['source']['inputs']:assert sha(R/v['path'])==v['sha256'],v
+ return {'at':now(),'inputs':len(x['source']['inputs']),'status':'all_current'}
+before=rehash()
+for name,args in [('validate',['validate',str(draft)]),('save',['save','--content',str(draft)])]:
+ cmd=[str(R/'.venv/bin/python'),'scripts/record_review.py']+args;start=now();p=subprocess.run(cmd,cwd=R,env=env,capture_output=True,text=True)
+ (O/(name+'.stdout')).write_text(p.stdout);(O/(name+'.stderr')).write_text(p.stderr)
+ rows.append({'name':name,'command':cmd,'started_at':start,'finished_at':now(),'exit_code':p.returncode,'stdout_sha256':sha(O/(name+'.stdout')),'stderr_sha256':sha(O/(name+'.stderr'))})
+ (O/'save-execution.json').write_text(json.dumps({'review_id':x['review_id'],'before':before,'steps':rows},indent=2)+'\n')
+ print(json.dumps(rows[-1]),flush=True)
+ assert p.returncode==0,p.stderr+'\n'+p.stdout
+saved=R/'reviews/structured'/x['review_id'];assert (saved/'review.yaml').exists() and (saved/'review.md').exists()
+after=rehash();proof={'status':'saved','review_id':x['review_id'],'before':before,'after':after,'steps':rows,'files':[{'path':str((saved/n).relative_to(R)),'sha256':sha(saved/n)} for n in ['review.yaml','review.md']]}
+(O/'save-execution.json').write_text(json.dumps(proof,indent=2)+'\n');print(json.dumps(proof),flush=True)

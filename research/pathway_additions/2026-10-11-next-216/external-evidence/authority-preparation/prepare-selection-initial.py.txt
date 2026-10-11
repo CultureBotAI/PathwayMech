@@ -1,0 +1,340 @@
+"""Prepare source-issued Pyochelin authority additions externally; never apply them."""
+
+import argparse
+import copy
+import hashlib
+import json
+import os
+import sqlite3
+import sys
+import unicodedata
+from datetime import UTC, datetime
+from pathlib import Path
+
+
+def sha(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def save(path, value):
+    with path.open("x") as stream:
+        json.dump(value, stream, indent=2)
+        stream.write("\n")
+
+
+def main():
+    if not __debug__:
+        raise RuntimeError("Assertions must be enabled")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--lock", required=True, type=Path)
+    parser.add_argument("--output-dir", required=True, type=Path)
+    args = parser.parse_args()
+    captured = {}
+
+    def capture(path, expected=None):
+        path = Path(path).absolute()
+        data = path.read_bytes()
+        digest = hashlib.sha256(data).hexdigest()
+        if expected is not None and digest != expected:
+            raise ValueError("input digest mismatch: " + str(path))
+        if str(path) in captured and captured[str(path)][1] != digest:
+            raise ValueError("input changed during capture: " + str(path))
+        captured[str(path)] = (str(path.resolve(strict=True)), digest, data)
+        return data
+
+    def recheck():
+        for name, (resolved, digest, _) in captured.items():
+            if str(Path(name).resolve(strict=True)) != resolved or sha(name) != digest:
+                raise ValueError("input changed after capture: " + name)
+
+    started = datetime.now(UTC).isoformat()
+    lock = json.loads(capture(args.lock))
+    capture(__file__)
+    root = Path(lock["repo_root"])
+    cache = Path("/private/tmp/pathwaymech-curation-authorities")
+    out = args.output_dir.absolute()
+    if os.path.lexists(out):
+        raise FileExistsError(out)
+    for protected in [root, cache, Path(lock["target"]["path"]).parent.parent]:
+        if out.resolve().is_relative_to(protected.resolve()):
+            raise ValueError("output must be outside protected input trees")
+    for rel, digest in {**lock["baseline_files"], **lock["runtime_files"]}.items():
+        capture(root / rel, digest)
+    for key in ["target", "proposal", "identifiers", "source_manifest"]:
+        capture(lock[key]["path"], lock[key]["sha256"])
+    capture(root / lock["current_B_target"]["path"], lock["current_B_target"]["sha256"])
+    # Repository parsers are imported only after their source and inputs are bound.
+    sys.path.insert(0, str(root))
+    import yaml
+
+    from scripts import build_ontology_identifier_snapshot as ontology
+    from scripts import build_source_identifier_snapshot as source
+
+    recheck()
+
+    def read(path):
+        return json.loads(captured[str(Path(path).absolute())][2])
+
+    proposal = read(lock["proposal"]["path"])
+    target = yaml.safe_load(captured[lock["target"]["path"]][2])
+    identifier_ledger = read(lock["identifiers"]["path"])
+    manifest = read(root / "conf/identifier_sources.json")
+    policy = yaml.safe_load(captured[str(root / "conf/identifier_policy.yaml")][2])
+    before = {
+        name: read(root / f"data/identifier_authorities/{name}.json")
+        for name in ["ontology", "sources"]
+    }
+    declared = {target["id"]: target["label"]}
+    sections = {target["id"]: "record"}
+    for group in ["taxa", "participants", "reactions", "gene_clusters"]:
+        for node in target.get(group, []):
+            if node["id"] in declared:
+                raise ValueError("duplicate named identifier")
+            declared[node["id"]] = node["label"]
+            sections[node["id"]] = group
+    assert declared == {r["id"]: r["label"] for r in identifier_ledger["named"]}
+    assert proposal["target_sha256"] == lock["target"]["sha256"]
+    assert len(declared) == 43
+    labels = []
+
+    def check_label(ident, term):
+        if ident not in declared:
+            return
+        prefix = ident.partition(":")[0]
+        rules = [
+            r
+            for r in policy["contextual_labels"]
+            if r["namespace"] == prefix
+            and sections[ident] in r["sections"]
+            and target["id"].partition(":")[0] in r["record_prefixes"]
+        ]
+        norm = lambda s: " ".join(unicodedata.normalize("NFKC", s).split()).casefold()
+        allowed = [term["label"]]
+        if policy["namespaces"][prefix]["policy"] == "canonical_or_synonym":
+            allowed += term["synonyms"]
+        if not rules and norm(declared[ident]) not in {norm(s) for s in allowed}:
+            raise ValueError("canonical label mismatch: " + ident)
+        labels.append(
+            dict(
+                id=ident,
+                record_label=declared[ident],
+                authority=term,
+                contextual_policy=rules,
+                policy_change=False,
+            )
+        )
+
+    acquisitions = []
+    for folder in [
+        "pathwaymech-pyochelin-author-20261011",
+        "pathwaymech-pyochelin-preflight-20261011",
+    ]:
+        for path in sorted((Path("/private/tmp") / folder).glob("acquisition*.json")):
+            data = json.loads(capture(path))
+
+            def walk(value):
+                if isinstance(value, dict):
+                    if all(k in value for k in ["path", "sha256", "url"]):
+                        acquisitions.append((path, value))
+                    for item in value.values():
+                        walk(item)
+                elif isinstance(value, list):
+                    for item in value:
+                        walk(item)
+
+            walk(data)
+    keys = {e["key"] for e in manifest}
+    paths = {e["path"] for e in manifest}
+    assert len(keys) == len(manifest) and len(paths) == len(manifest)
+    new, reused, selected, parsed_checks = [], [], {}, []
+    for entry in proposal["source_manifest_additions"]:
+        original = Path(entry["raw_path"])
+        data = capture(original, entry["sha256"])
+        parsed = list(source.source_terms(entry["kind"], original, url=entry["url"]))
+        assert set(entry["native_terms"]) <= {r[0] for r in parsed}
+        chosen = [r for r in parsed if r[0] in declared]
+        assert chosen
+        proof = []
+        for path, observation in acquisitions:
+            if (
+                observation["path"] == str(original)
+                and observation["sha256"] == entry["sha256"]
+                and observation["url"] == entry["url"]
+                and observation.get("accepted") is True
+                and observation.get("status") == 200
+            ):
+                assert observation["bytes"] == len(data)
+                proof.append(
+                    dict(
+                        path=str(path),
+                        sha256=sha(path),
+                        retrieved_at=observation["retrieved_at"],
+                        status=200,
+                        content_type=observation["content_type"],
+                    )
+                )
+        assert proof, (entry["key"], "missing authentic acquisition proof")
+        if entry["kind"] == "metacyc-html":
+            assert b"MetaCyc version 22.5." in data
+        protein_scope = []
+        if entry["kind"] == "uniprot":
+            batch = json.loads(data)["results"]
+            for index, protein in enumerate(batch):
+                assert protein["organism"]["taxonId"] == 208964
+                protein_scope.append(
+                    dict(
+                        index=index,
+                        accession=protein["primaryAccession"],
+                        entry_type=protein["entryType"],
+                        selected="UniProtKB:" + protein["primaryAccession"] in declared,
+                    )
+                )
+        exact = [
+            e for e in manifest if e["sha256"] == entry["sha256"] and e["kind"] == entry["kind"]
+        ]
+        same_url = [e for e in manifest if e["url"] == entry["url"]]
+        if exact:
+            assert len(exact) == 1 and same_url == exact
+            owner = exact[0]["key"]
+        else:
+            assert not same_url, "same URL with differing original bytes requires review"
+            assert entry["key"] not in keys and entry["path"] not in paths
+            owner = entry["key"]
+            keys.add(owner)
+            paths.add(entry["path"])
+        for ident, label, synonyms in chosen:
+            term = dict(label=label, synonyms=sorted(set(synonyms) - {label}), source=owner)
+            if ident in selected:
+                assert selected[ident] == term, "conflicting proposed source term"
+            if ident in before["sources"]["terms"]:
+                assert before["sources"]["terms"][ident] == term, "existing term drift"
+            selected[ident] = term
+            check_label(ident, term)
+        common = dict(
+            proposal_key=entry["key"],
+            original_path=str(original),
+            sha256=entry["sha256"],
+            bytes=len(data),
+            kind=entry["kind"],
+            url=entry["url"],
+            acquisition_proof=proof,
+            protein_scope=protein_scope,
+            parsed_terms=[dict(id=i, label=l, synonyms=s) for i, l, s in parsed],
+            selected_ids=[r[0] for r in chosen],
+            unselected_ids=[r[0] for r in parsed if r[0] not in declared],
+        )
+        parsed_checks.append(common)
+        if exact:
+            capture(cache / "sources" / exact[0]["path"], entry["sha256"])
+            reused.append({**common, "existing_entry_preserved": exact[0]})
+            continue
+        rel = Path(entry["path"])
+        assert not rel.is_absolute() and ".." not in rel.parts
+        destination = cache / "sources" / rel
+        state = "absent_no_copy"
+        if os.path.lexists(destination):
+            capture(destination, entry["sha256"])
+            state = "existing_exact_original_not_modified"
+        new.append(
+            {
+                **common,
+                "manifest_entry": {
+                    k: entry[k]
+                    for k in ["key", "kind", "path", "url", "version", "license", "sha256"]
+                },
+                "prospective_cache_path": str(destination),
+                "current_cache_state": state,
+            }
+        )
+    ont_selected = ontology.walk_identifiers(target, {"GO", "CHEBI", "NCBITaxon", "RHEA"})
+    ont_terms, ont_checks = {}, []
+    for prefix, filename in [("GO", "go"), ("CHEBI", "chebi"), ("NCBITaxon", "ncbitaxon")]:
+        ids = sorted(i for i in ont_selected if i.startswith(prefix + ":"))
+        path = cache / (filename + ".db")
+        with sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True) as conn:
+            metadata = ontology.read_source(conn, path)
+            owner = prefix.lower() + "-" + metadata["version"]
+            assert metadata == proposal["ontology_inputs"][owner]
+            assert metadata == before["ontology"]["sources"][owner]
+            terms, missing = ontology.extract_terms(conn, ids, owner)
+        assert not missing
+        for ident, term in terms.items():
+            if ident in before["ontology"]["terms"]:
+                assert before["ontology"]["terms"][ident] == term
+            check_label(ident, term)
+        ont_terms.update(terms)
+        ont_checks.append(
+            dict(
+                path=str(path),
+                metadata=metadata,
+                selected_ids=ids,
+                whole_database_hash_verified=True,
+            )
+        )
+    assert set(ont_terms) == ont_selected
+    assert set(declared) <= set(selected) | set(ont_terms)
+    assert set(selected) == {i for i in declared if i.split(":")[0] in source.SOURCE_NAMESPACES}
+    recheck()
+    merged = copy.deepcopy(before)
+    merged["ontology"]["terms"].update(ont_terms)
+    merged["sources"]["terms"].update(selected)
+    for item in new:
+        e = item["manifest_entry"]
+        merged["sources"]["sources"][e["key"]] = {
+            k: e[k] for k in ["url", "version", "license", "sha256"]
+        }
+    for name in before:
+        for field in ["terms", "sources"]:
+            assert all(merged[name][field][k] == v for k, v in before[name][field].items())
+    selection = dict(
+        status="external_preparation_for_independent_root_review",
+        started_at=started,
+        finished_at=datetime.now(UTC).isoformat(),
+        preparation_baseline=lock,
+        baseline_inputs_unchanged=lock["baseline_files"],
+        target=lock["target"],
+        selected_new_inputs=new,
+        reused_inputs=reused,
+        original_source_checks=parsed_checks,
+        selected_source_terms=selected,
+        selected_ontology_terms=ont_terms,
+        ontology_checks=ont_checks,
+        label_policy_checks=labels,
+        reference_only_ontology_ids=sorted(ont_selected - set(declared)),
+        counts=dict(
+            named_ids=len(declared),
+            recursive_ontology_ids=len(ont_selected),
+            new_manifest_inputs=len(new),
+            manifest_before=len(manifest),
+            manifest_after=len(manifest) + len(new),
+            ontology_before=len(before["ontology"]["terms"]),
+            ontology_after=len(merged["ontology"]["terms"]),
+            source_before=len(before["sources"]["terms"]),
+            source_after=len(merged["sources"]["terms"]),
+        ),
+        captured_inputs=[
+            dict(path=p, resolved_path=v[0], sha256=v[1]) for p, v in captured.items()
+        ],
+        limits=[
+            "Current final B working-tree snapshots, not a claim of its future merge SHA.",
+            "No policy or namespace change; source identity is not catalytic evidence.",
+            "Whole UniProt batch retained; only four declared PAO1 proteins selected.",
+            "No maintained or shared cache write; no new source acquisition.",
+        ],
+    )
+    out.mkdir(parents=False, exist_ok=False)
+    save(out / "selection.json", selection)
+    save(out / "proposed-manifest-additions.json", [e["manifest_entry"] for e in new])
+    save(out / "prospective-identifier-sources.json", manifest + [e["manifest_entry"] for e in new])
+    for name in merged:
+        save(out / ("prospective-" + name + ".json"), merged[name])
+    print(
+        json.dumps(
+            dict(selection_sha256=sha(out / "selection.json"), counts=selection["counts"]), indent=2
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

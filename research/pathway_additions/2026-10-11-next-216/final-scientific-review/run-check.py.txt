@@ -1,0 +1,12 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import json,hashlib,os,subprocess
+R=Path('/private/tmp/pathwaymech-next-216-20261011');O=Path('/private/tmp/pathwaymech-next-216-canonical-review')
+now=lambda:datetime.now(UTC).isoformat().replace('+00:00','Z')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+cmd=[str(R/'.venv/bin/python'),'scripts/record_review.py','check','--base','3fb840bf48d871bc37576cc669d23441c0206e66','--require-reviews']
+e=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',PYTHONDONTWRITEBYTECODE='1')
+started=now()
+with (O/'check.stdout').open('w') as out,(O/'check.stderr').open('w') as err:p=subprocess.run(cmd,cwd=R,env=e,stdout=out,stderr=err)
+x={'started_at':started,'finished_at':now(),'command':cmd,'exit_code':p.returncode,'stdout_sha256':sha(O/'check.stdout'),'stderr_sha256':sha(O/'check.stderr')};(O/'check-execution.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x),flush=True)
+raise SystemExit(p.returncode)

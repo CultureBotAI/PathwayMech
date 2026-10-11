@@ -1,0 +1,185 @@
+"""Build an isolated issue-398 successor from the preserved candidate helper."""
+from pathlib import Path
+
+S = Path('/private/tmp/pathwaymech-pyochelin-successor-20261011')
+P = S / 'draft/pyochelin-replay.py'
+s = P.read_text()
+imports = '''import yaml
+from lxml import etree as E
+
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.kgx import LOCAL_PREDICATE_CURIES, write_kgx
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+'''
+assert imports in s
+s = s.replace(imports, '')
+start = s.index('inputs = [T, M, P, a.reactive_helper.absolute()]')
+end = s.index('refs = {r["id"]: r for r in raw["references"]}')
+replacement = '''
+started_at = datetime.now(UTC).isoformat()
+work = OUT.with_suffix(".artifacts")
+if OUT.exists() or work.exists():
+    raise FileExistsError(OUT if OUT.exists() else work)
+
+# Capture formal inputs before importing repository validators or invoking probes.
+# A receipt must attest the bytes actually parsed, never replacement file bytes.
+input_bindings = {}
+captured_bytes = {}
+
+
+def absolute(path):
+    return Path(path).absolute()
+
+
+def uncached_sha(path):
+    with Path(path).open("rb") as handle:
+        return hashlib.file_digest(handle, "sha256").hexdigest()
+
+
+def capture(path, scope, *, keep_bytes=False, expected=None):
+    path = absolute(path)
+    key = str(path)
+    if key in input_bindings:
+        binding = input_bindings[key]
+        if expected is not None and binding["sha256"] != expected:
+            raise ValueError("conflicting expected input digest: " + key)
+        return binding
+    if not path.is_file():
+        raise ValueError("required input is not a file: " + key)
+    resolved = str(path.resolve(strict=True))
+    if keep_bytes:
+        data = path.read_bytes()
+        digest = hashlib.sha256(data).hexdigest()
+        captured_bytes[key] = data
+    else:
+        digest = uncached_sha(path)
+    if str(path.resolve(strict=True)) != resolved:
+        raise ValueError("input symlink changed during capture: " + key)
+    if expected is not None and digest != expected:
+        raise ValueError("source digest mismatch: " + key)
+    binding = dict(path=key, resolved_path=resolved, sha256=digest, scope=scope)
+    input_bindings[key] = binding
+    return binding
+
+
+def captured(path):
+    return captured_bytes[str(absolute(path))]
+
+
+def sha(path):
+    key = str(absolute(path))
+    if key in input_bindings:
+        return input_bindings[key]["sha256"]
+    return uncached_sha(path)
+
+
+def read(path):
+    key = str(absolute(path))
+    if key in captured_bytes:
+        return json.loads(captured_bytes[key])
+    return json.loads(Path(path).read_text())
+
+
+formal = [
+    T, M, P, absolute(__file__), a.reactive_helper.absolute(),
+    R / "conf/identifier_policy.yaml", A / "conf/identifier_policy.yaml",
+    A / "data/pathways" / T.name,
+]
+authority_files = sorted((A / "data/identifier_authorities").rglob("*.json"))
+if not authority_files:
+    raise ValueError("authority snapshot directory has no JSON inputs")
+runtime_files = sorted((R / "src/pathwaymech").rglob("*.py"))
+runtime_files += sorted((R / "src/pathwaymech/schema").rglob("*.yaml"))
+formal += authority_files + runtime_files
+for path in formal:
+    capture(path, "formal_or_runtime", keep_bytes=True)
+if OUT.resolve() in {Path(b["resolved_path"]) for b in input_bindings.values()}:
+    raise ValueError("output collides with an input")
+manifest = json.loads(captured(M))
+proj = json.loads(captured(P))
+assert sha(T) == manifest["target_sha256"] == proj["target_sha256"]
+
+# Original bodies are bound to the captured manifest's pre-existing digests.
+# They are streamed rather than held in memory; every body is rehashed at completion.
+for row in manifest["sources"]:
+    capture(row["path"], "original_source", expected=row["sha256"])
+for path in manifest["reference_paths"].values():
+    if str(absolute(path)) not in input_bindings:
+        raise ValueError("reference body is absent from source manifest: " + str(path))
+
+
+def verify_bindings(stage, *, formal_only=False):
+    for binding in input_bindings.values():
+        if formal_only and binding["scope"] == "original_source":
+            continue
+        path = Path(binding["path"])
+        if (str(path.resolve(strict=True)) != binding["resolved_path"]
+                or uncached_sha(path) != binding["sha256"]):
+            raise ValueError("input changed after capture (" + stage + "): " + str(path))
+    current_authorities = sorted((A / "data/identifier_authorities").rglob("*.json"))
+    current_runtime = sorted((R / "src/pathwaymech").rglob("*.py"))
+    current_runtime += sorted((R / "src/pathwaymech/schema").rglob("*.yaml"))
+    if current_authorities != authority_files or current_runtime != runtime_files:
+        raise ValueError("input file inventory changed after capture: " + stage)
+
+
+work.mkdir(parents=True, exist_ok=False)
+
+import yaml  # noqa: E402
+from lxml import etree as E  # noqa: E402
+
+from pathwaymech.identifiers import identifier_errors  # noqa: E402
+from pathwaymech.kgx import LOCAL_PREDICATE_CURIES, write_kgx  # noqa: E402
+from pathwaymech.schema import validate_record  # noqa: E402
+from pathwaymech.strict import strict_errors  # noqa: E402
+
+verify_bindings("after_repository_import", formal_only=True)
+raw = yaml.safe_load(captured(T))
+for policy in [R / "conf/identifier_policy.yaml", A / "conf/identifier_policy.yaml"]:
+    policy_data = yaml.safe_load(captured(policy))
+    for row in policy_data["namespaces"].values():
+        path = A / row["snapshot"]
+        if str(absolute(path)) not in input_bindings:
+            raise ValueError("policy names an uncaptured authority snapshot: " + str(path))
+'''
+s = s[:start] + replacement + s[end:]
+s = s.replace('with OUT.open("x") as f:', '''# Uncached checks include original sources, parsed metadata, policies, snapshots,
+# scientific record, helper code and repository validation/runtime inputs.
+verify_bindings("before_receipt")
+result["input_bindings"] = list(input_bindings.values())
+result["input_binding_recheck"] = dict(
+    at=datetime.now(UTC).isoformat(), status="passed", uncached=True,
+    files=len(input_bindings), stage="immediately_before_exclusive_receipt",
+)
+with OUT.open("x") as f:''')
+guard = '''    for edge_id in ["pch-edge-062", "pch-edge-063"]:
+        role = next(e for e in ed if e["id"] == edge_id)
+        identity = role["evidence"][0]
+        assert identity["reference_id"] == "UniProtKB:Q9HWG4"
+        assert "identity evidence does not independently assign" in identity["source_assertion"]
+        assert "/results/2/comments/0" not in identity["source_locator"]
+        assert "/results/2/genes/0/geneName/value" in identity["source_locator"]
+        if edge_id == "pch-edge-063":
+            primary = role["evidence"][1]
+            assert primary["reference_id"] == "PMID:30525512"
+            assert "native I structure" not in primary["source_assertion"]
+            assert "formal projection" not in primary["source_assertion"]
+'''
+s = s.replace('    for f, ss in source_sides.items():', guard + '    for f, ss in source_sides.items():')
+s = s.replace('    (\n        "endpoint_source_transfer",', '''    (
+        "pchf_role_annotation_transfer",
+        lambda d: next(e for e in d["mechanistic_edges"] if e["id"] == "pch-edge-062")[
+            "evidence"
+        ][0].update(source_assertion="Current PAO1 functional annotation supports methylation."),
+    ),
+    (
+        "pchf_primary_projection_transfer",
+        lambda d: next(e for e in d["mechanistic_edges"] if e["id"] == "pch-edge-063")[
+            "evidence"
+        ][1].update(source_assertion="The native I structure is a formal projection."),
+    ),
+    (
+        "endpoint_source_transfer",''')
+P.write_text(s)
+print(P)

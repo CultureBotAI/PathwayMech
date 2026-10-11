@@ -1,0 +1,25 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import json,hashlib,yaml
+B=Path('/private/tmp/pathwaymech-pyochelin-author-20261011');D=B/'draft';P=Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011');L=Path('/private/tmp/pathwaymech-next-216-source-leads-20261011')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+old=json.loads((P/'source-manifest.json').read_text());sources={};failed=[]
+for x in old['sources']:
+ if x.get('semantic_accepted') and x.get('path'):
+  p=Path(x['path']);assert sha(p)==x['sha256'];sources[str(p)]={k:x[k] for k in ['path','sha256','url','retrieved_at','content_type','bytes','acquisition_receipt','acquisition_receipt_sha256'] if k in x}
+ else:failed.append({k:x[k] for k in ['name','url','status','error','sha256','path','semantic_disposition','accepted','semantic_accepted'] if k in x})
+for folder,name in [(B,'acquisition1.json'),(L,'acquisition.json')]:
+ a=json.loads((folder/name).read_text());rows=a.get('sources',a.get('results',[])) if isinstance(a,dict) else a
+ for x in rows:
+  if x.get('accepted') and x.get('path') and (folder==B or Path(x['path']).name in ['PWY-6408.xml','PWY-6408.html']):
+   p=Path(x['path']);assert sha(p)==x['sha256'];sources[str(p)]={k:x[k] for k in ['path','sha256','url','retrieved_at','content_type','bytes'] if k in x}
+# Ontology builder has freshly rehashed complete original database bytes.
+a=json.loads((B/'authority-sandbox/new-ontology.json').read_text())
+for key,x in a['sources'].items():
+ prefix=key.split('-')[0];p=Path('/private/tmp/pathwaymech-curation-authorities')/(dict(ncbitaxon='ncbitaxon',go='go',chebi='chebi')[prefix]+'.db');sources[str(p)]=dict(path=str(p),sha256=x['sha256'],url=x['url'],version=x['version'],license=x['license'],hash_scope=x['sha256_scope'],bytes=p.stat().st_size)
+rp=json.loads((D/'pyochelin-reference-paths.json').read_text());assert set(rp.values())<=set(sources),(set(rp.values())-set(sources))
+T=D/'pyochelin-biosynthesis.yaml';r=yaml.safe_load(T.read_text())
+for ref in r['references']:assert sources[rp[ref['id']]]['sha256']==ref['source_sha256'],ref['id']
+out=dict(at=datetime.now(UTC).isoformat(),target_sha256=sha(T),scope='Original externally retained bytes, selected facts only in draft; source-native terms and publication-specific licenses are not blanket redistribution clearance',roles=dict(native_originals=str(P/'originals'),native_pathway=str(L/'originals/PWY-6408.xml'),chebi='/private/tmp/pathwaymech-curation-authorities/chebi.db',pao1_uniprot=str(P/'originals/uniprot-pao1-pch.json')),sources=list(sources.values()),reference_paths=rp,rejected_or_failed_acquisitions=failed,preflight_manifest=dict(path=str(P/'source-manifest.json'),sha256=sha(P/'source-manifest.json')))
+(D/'pyochelin-source-manifest.json').write_text(json.dumps(out,indent=2)+'\n');print(len(sources),'original artifacts; all reference hashes bound')

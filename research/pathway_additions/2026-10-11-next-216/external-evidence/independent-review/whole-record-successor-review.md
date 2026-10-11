@@ -1,0 +1,9 @@
+# Pyochelin external independent successor review
+
+The exact successor b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b passes this external whole-record preflight with limitations. Both independently demonstrated findings are resolved in the reviewed successor: issue397 has exactly five source-local evidence corrections; issue398 has pre-import input capture and an uncached final stability check. The initial draft, failed binding behavior, original findings and before/after bytes remain immutable.
+
+All eleven native reaction objects and54 chemical-side edges remain present, with a derived three-ATP net. Independent original-source checks support the carrier-site chemistry, six historical CDS translations/current sequence differences, PAO1 PchE core/assembly scope, and original primary mechanistic roles. Native I monoanion remains a formal projection of one observed physiological I/II product; no exclusive-I release, exact neutral equivalence, invented epimerization or DEFG assembly is asserted.
+
+The independent full replay60460 exited0:95 original bodies,11 balances,43 KGX nodes,91 edges and242 evidence blocks; its final uncached check covered144 bound inputs. The same real late-metadata mutation that fooled the initial helper now exits1 before receipt creation.20 focused input-capture/guard cases and five command-line guards passed; their fixture scope is explicit. All39 final author-handoff files were rehashed, and all23 originally captured files remain unchanged.
+
+The reviewer previously contributed a bounded endpoint source-locality recommendation, distinct from whole-record authorship and from independent inspection of its implementation. This receipt is external preflight, not a canonical maintained review, shared-corpus gate, or publication approval. Future maintained preparation still needs its actual baseline, refreshed dedup, canonical authority integration and final scientific review.

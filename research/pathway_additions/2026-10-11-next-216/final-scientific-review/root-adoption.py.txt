@@ -1,0 +1,124 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+external = Path('/private/tmp/pathwaymech-next-216-canonical-review')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+base = '3fb840bf48d871bc37576cc669d23441c0206e66'
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+read = lambda p: json.loads(Path(p).read_text())
+completion_path = external / 'completion.json'
+assert sha(completion_path) == 'ed6b5750e6b7527e5f0d415a6c893906fdfc0edca828423cb9adcdc100a5125a'
+completion = read(completion_path)
+assert completion['status'] == 'completed_canonical_independent_scientific_review'
+assert completion['scientific_review'] is True and completion['verdict'] == 'pass_with_limitations'
+assert completion['base'] == base and completion['findings'] == []
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == base
+for row in completion['saved_files']:
+    assert sha(root / row['path']) == row['sha256']
+review = yaml.safe_load((root / completion['saved_files'][0]['path']).read_text())
+assert review['completion'] == 'completed' and review['scientific_review'] is True
+assert review['verdict'] == 'pass_with_limitations' and review['findings'] == []
+assert review['source'] == read(external / 'inspect.json')['source']
+assert review['source']['git_revision'] == base
+assert len(review['source']['inputs']) == 82
+assert len(review['evidence']) == 39 and len(review['assessments']) == 11
+for row in review['source']['inputs']:
+    assert sha(root / row['path']) == row['sha256'], row['path']
+for row in review['evidence']:
+    path = Path(row['reference'])
+    if not path.is_absolute():
+        path = root / path
+    assert sha(path) == row['snapshot_sha256'], row['evidence_id']
+integration = read(dossier / 'integration-receipt.json')
+for row in integration['owners'] + integration['sealed_dossier_inputs']:
+    assert sha(root / row['path']) == row['sha256'], row['path']
+save_execution = read(external / 'save-execution.json')
+assert save_execution['status'] == 'saved' and save_execution['before']['inputs'] == save_execution['after']['inputs'] == 82
+assert save_execution['files'] == completion['saved_files']
+assert [row['name'] for row in save_execution['steps']] == ['validate', 'save']
+for row in save_execution['steps']:
+    assert row['exit_code'] == 0
+    for stream in ['stdout', 'stderr']:
+        assert sha(external / (row['name'] + '.' + stream)) == row[stream + '_sha256']
+check = read(external / 'check-execution.json')
+assert check['exit_code'] == 0 and check['command'][-3:] == ['--base', base, '--require-reviews']
+for stream in ['stdout', 'stderr']:
+    assert sha(external / ('check.' + stream)) == check[stream + '_sha256']
+assert read(external / 'check.stdout')['valid_reviews'] == 88
+assert completion['actual_execution']['base_aware_check_exit_code'] == 0
+assert completion['actual_execution']['base_aware_check_terminal_chunk'] == '2408fd'
+proofs = list(completion['artifacts']) + [{'path': str(completion_path), 'sha256': sha(completion_path)}]
+for row in proofs:
+    assert sha(row['path']) == row['sha256']
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+output = dossier / 'final-scientific-review'
+archive = Path('/private/tmp/pathwaymech-next-216-final-review-input-archive')
+assert not output.exists() and not archive.exists()
+output.mkdir()
+archive.mkdir()
+manifest = []
+for row in review['source']['inputs']:
+    src = root / row['path']
+    dest = archive / row['path']
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with dest.open('xb') as stream:
+        stream.write(src.read_bytes())
+    assert sha(dest) == row['sha256']
+    manifest.append({**row, 'external_archive': str(dest)})
+save(output / 'final-input-manifest.json', {'scope': 'Root post-check snapshot of all still-current canonical inputs; not represented as a separate earlier inspect-time archive.', 'inputs': manifest})
+copies = []
+for row in proofs:
+    src = Path(row['path'])
+    relative = src.relative_to(external)
+    dest = output / relative
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if src.suffix in {'.py', '.yaml'}:
+        dest = dest.with_name(dest.name + '.txt')
+    if src.suffix in {'.stdout', '.stderr', '.log'}:
+        dest = dest.with_name(dest.name + '.json')
+        save(dest, {'encoding': 'Lossless UTF-8; recover original bytes by encoding text as UTF-8.', 'original_path': str(src), 'original_sha256': row['sha256'], 'text': src.read_text()})
+        assert hashlib.sha256(read(dest)['text'].encode()).hexdigest() == row['sha256']
+    else:
+        with dest.open('xb') as stream:
+            stream.write(src.read_bytes())
+        assert sha(dest) == row['sha256']
+    copies.append({**row, 'maintained_path': str(dest.relative_to(root)), 'maintained_sha256': sha(dest)})
+helper = output / 'root-adoption.py.txt'
+with helper.open('xb') as stream:
+    stream.write(Path(__file__).read_bytes())
+for row in manifest:
+    assert sha(root / row['path']) == sha(row['external_archive']) == row['sha256']
+receipt = {
+    'status': 'accepted_completed_independent_scientific_review',
+    'accepted_at': datetime.now(timezone.utc).isoformat(),
+    'base': base,
+    'target_sha256': completion['target_sha256'],
+    'review_yaml_sha256': completion['saved_files'][0]['sha256'],
+    'review_markdown_sha256': completion['saved_files'][1]['sha256'],
+    'completion_sha256': sha(completion_path),
+    'post_save_check_exit_code': check['exit_code'],
+    'post_save_check_observed_terminal_chunk': '2408fd',
+    'valid_reviews': 88,
+    'current_and_archived_formal_inputs_rehashed': 82,
+    'all_review_evidence_files_rehashed': 39,
+    'sealed_integration_inputs_rehashed': 337,
+    'input_manifest_sha256': sha(output / 'final-input-manifest.json'),
+    'copied_artifacts': copies,
+    'helper_sha256': sha(helper),
+    'acceptance_basis': 'Root read the saved review scope/independence, all eleven assessments, thirty-nine evidence items, bounded command claims, limitations and external397/398 lineage. Fresh hashes verify the saved pair, all82 formal current/archive inputs, all39 review evidence files, all337 integration inputs, every supporting artifact and canonical validate/save/check output. Root accepted the actual completed check with88validreviews; no root biological self-approval substitutes for the independent assessment.',
+    'archive_policy': 'Initial verifier and YAML-alias formatting attempts remain exact. Python and YAML drafts are inert .txt artifacts; console streams are lossless JSON wrappers. Original source bodies remain outside the repository. All82 current formal inputs have an explicitly post-check external snapshot.',
+    'limitations': review['limitations'],
+    'pending': ['Remote PR adversarial review', 'CI', 'Actual merge and deployed-byte verification', 'Branch cleanup'],
+}
+save(dossier / 'final-scientific-review-adoption.json', receipt)
+print(json.dumps({'status': receipt['status'], 'formal_inputs': 82, 'evidence_files': 39, 'proof_copies': len(copies), 'adoption_sha256': sha(dossier / 'final-scientific-review-adoption.json')}))

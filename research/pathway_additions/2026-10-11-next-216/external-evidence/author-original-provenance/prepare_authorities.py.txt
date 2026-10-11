@@ -1,0 +1,37 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import json,hashlib,shutil,subprocess,sys
+import yaml
+B=Path('/private/tmp/pathwaymech-pyochelin-author-20261011');D=B/'draft';P=Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011');R=Path('/private/tmp/pathwaymech-next-215-20261011');A=B/'authority-sandbox'
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+T=D/'pyochelin-biosynthesis.yaml';raw=yaml.safe_load(T.read_text());wanted={x['id'] for x in raw['participants']+raw['reactions']}
+for p in ['cache','conf','data/pathways','data/identifier_authorities']: (A/p).mkdir(parents=True,exist_ok=True)
+shutil.copyfile(T,A/'data/pathways'/T.name);shutil.copyfile(R/'conf/identifier_policy.yaml',A/'conf/identifier_policy.yaml')
+rows=json.loads((B/'acquisition1.json').read_text())['sources'];entries=[]
+for row in rows:
+ cid='MetaCyc:'+row['native_id']
+ if cid not in wanted:continue
+ name='pyochelin-'+row['name'];entry=dict(key='pyochelin-'+row['native_id'],kind='metacyc-html',path=name,url=row['url'],version='MetaCyc22.5 original response retrieved2026-10-11',license='Source-native database terms; public access is not redistribution clearance',sha256=row['sha256'])
+ assert sha(row['path'])==row['sha256'];dst=A/'cache'/name
+ if not dst.exists():dst.symlink_to(row['path'])
+ entries.append({**entry,'raw_path':row['path'],'native_terms':[cid]})
+ms=json.loads((P/'source-manifest.json').read_text())['sources'];up=next(x for x in ms if x.get('path','').endswith('/uniprot-pao1-pch.json') and x.get('semantic_accepted'))
+name='pyochelin-PAO1-proteins.json';entry=dict(key='pyochelin-PAO1-proteins',kind='uniprot',path=name,url=up['url'],version='UniProt2026_03 complete original query response retrieved2026-10-11',license='https://creativecommons.org/licenses/by/4.0/',sha256=up['sha256'])
+if not (A/'cache'/name).exists():(A/'cache'/name).symlink_to(up['path'])
+entries.append({**entry,'raw_path':up['path'],'native_terms':sorted(x for x in wanted if x.startswith('UniProtKB:'))})
+manifest=A/'source-inputs.json';manifest.write_text(json.dumps([{k:v for k,v in e.items() if k not in ['raw_path','native_terms']} for e in entries],indent=2)+'\n')
+cmd=[sys.executable,str(R/'scripts/build_source_identifier_snapshot.py'),'--manifest',str(manifest),'--cache-dir',str(A/'cache'),'--records',str(A/'data/pathways'),'--output',str(A/'new-sources.json')]
+p=subprocess.run(cmd,cwd=R,capture_output=True,text=True);(B/'support/source-builder.log').write_text(p.stdout+p.stderr);assert p.returncode==0,p.stderr
+cmd2=[sys.executable,str(R/'scripts/build_ontology_identifier_snapshot.py'),'--source','GO=/private/tmp/pathwaymech-curation-authorities/go.db','--source','CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db','--source','NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db','--corpus',str(A/'data/pathways'),'--output',str(A/'new-ontology.json')]
+p2=subprocess.run(cmd2,cwd=R,capture_output=True,text=True);(B/'support/ontology-builder.log').write_text(p2.stdout+p2.stderr);assert p2.returncode==0,p2.stderr
+for prefix in ['sources','ontology']:
+ base=json.loads((R/f'data/identifier_authorities/{prefix}.json').read_text());new=json.loads((A/f'new-{prefix}.json').read_text())
+ for section in ['sources','terms']:
+  for k,v in new[section].items():
+   if k in base[section] and base[section][k]!=v:
+    assert section=='terms' and base[section][k]['label']==v['label'],(section,k)
+   else:base[section][k]=v
+ (A/f'data/identifier_authorities/{prefix}.json').write_text(json.dumps(base,indent=2)+'\n')
+report=dict(at=datetime.now(UTC).isoformat(),scope='Prepared external single-record authority sandbox; canonical extraction from original bytes plus unchanged baseline namespace coverage; not maintained corpus integration',target_sha256=sha(T),source_manifest_additions=entries,ontology_inputs=json.loads((A/'new-ontology.json').read_text())['sources'],commands=[dict(command=cmd,exit_code=p.returncode,log=str(B/'support/source-builder.log')),dict(command=cmd2,exit_code=p2.returncode,log=str(B/'support/ontology-builder.log'))],sandbox=str(A))
+(D/'pyochelin-authority-proposal.json').write_text(json.dumps(report,indent=2)+'\n');print('PASS',len(entries),'source inputs')

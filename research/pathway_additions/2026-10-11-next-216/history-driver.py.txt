@@ -1,0 +1,35 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+receipt = Path('/private/tmp/pathwaymech-next-216-history-execution.json')
+assert not receipt.exists()
+assert hashlib.sha256((root / 'data/pathways/pyochelin-biosynthesis.yaml').read_bytes()).hexdigest() == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+common = [str(root / '.venv/bin/python'), 'scripts/new_history_record.py', '--actor-name', 'codex', '--actor-type', 'ai_agent', '--agent-tool', 'codex', '--outcome', 'changed']
+tasks = [
+    ['--kind', 'record', '--slug', 'pyochelin-biosynthesis', '--target-root', 'data/pathways', '--event', 'CREATE', '--summary', 'Add the complete native pyochelin assembly pathway with source-specific evidence', '--issue', 'https://github.com/CultureBotAI/PathwayMech/issues/397', '--details', 'Add GO:0042864 covering all eleven native PWY-6408 transformations from supplied salicylate to released pyochelin, with30participants,91edges and242evidence blocks. Preserve reactive-domain accounting, native I monoanion versus observed I/II limits, source-strain and construct distinctions, and analogy/inference qualifiers. Current b3dfb5d record includes exactly five independently verified source-local corrections from external issue397; original c72de0b target, initial observations and exact successors remain in the cohort216 research dossier. External independent review and fresh root95-original-body verification passed; canonical maintained review and full corpus gates follow separately.'],
+    ['--kind', 'infrastructure', '--slug', 'pyochelin-authority-integration', '--path', 'conf/identifier_sources.json', '--event', 'EDIT', '--summary', 'Adopt verified pyochelin issuing-authority additions', '--details', 'Append23 verified original source inputs (524to547),6 ontology terms (1821to1827) and26 source terms (2134to2160), preserving every prior term and source metadata entry. Root independently parsed original MetaCyc/UniProt names and queried original ontology labels/exact synonyms. Adopt exact outputs from the observed unchanged canonical builder dry run after destination/runtime/body guards; no second builder execution is claimed. The23 original bodies remain in the external shared source cache. Root acceptance f17e36a7 and actual adoption c14b52e8 are retained in research/pathway_additions/2026-10-11-next-216/external-evidence/root-authority-integration.'],
+    ['--kind', 'infrastructure', '--slug', 'pyochelin-portable-replay', '--path', 'research/pathway_additions/2026-10-11-next-216/pyochelin-replay.py', '--event', 'CREATE', '--summary', 'Add independently tested pyochelin source replay with input binding', '--issue', 'https://github.com/CultureBotAI/PathwayMech/issues/398', '--details', 'Adopt accepted19cf087a replay helper and unchanged d8a000d6 reactive-check companion. Capture formal inputs before imports, bind original source hashes, and recheck uncached before exclusive output. Independent full original-source replay and the authentic late-metadata mutation show the old false-PASS defect now rejects without a success receipt;20 focused controls and5 CLI guards remain explicitly scoped. Preserve original ced1468e helper, actual unsafe PASS, corrections and both positive/negative successor proofs. Maintained integrated replay and shared corpus gates follow separately.'],
+]
+executions = []
+for args in tasks:
+    start = datetime.now(timezone.utc).isoformat()
+    process = subprocess.run(common + args, cwd=root, env={**os.environ, 'PYTHONPATH': 'src', 'UV_NO_SYNC': '1', 'UV_CACHE_DIR': '/private/tmp/pathwaymech-curation-uv-cache'}, text=True, capture_output=True)
+    execution = {'command': common + args, 'started_at': start, 'finished_at': datetime.now(timezone.utc).isoformat(), 'exit_code': process.returncode, 'stdout': process.stdout, 'stderr': process.stderr}
+    executions.append(execution)
+    receipt.write_text(json.dumps(executions, indent=2) + '\n')
+    assert process.returncode == 0, execution
+    relative = process.stdout.strip().splitlines()[-1]
+    path = root / relative
+    assert path.is_file()
+    execution['path'] = relative
+    execution['sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
+receipt.write_text(json.dumps(executions, indent=2) + '\n')
+with (dossier / 'history-execution.json').open('x') as stream:
+    stream.write(receipt.read_text())
+print(json.dumps({'status': 'three_append_only_history_entries_created', 'paths': [r['path'] for r in executions], 'receipt_sha256': hashlib.sha256(receipt.read_bytes()).hexdigest()}), flush=True)

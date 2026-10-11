@@ -1,0 +1,73 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+prep = Path('/private/tmp/pathwaymech-pyochelin-authority-selection-20261011')
+cache = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+out = Path('/private/tmp/pathwaymech-next-216-authority-adoption-20261011')
+review_path = Path('/private/tmp/pathwaymech-next-216-authority-root-review.json')
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+assert not out.exists()
+assert sha(review_path) == 'f17e36a79f590398b31aaa162f834f82588cf34eb3e97b7d1367b7617f7e8ce3'
+review = json.loads(review_path.read_text())
+assert review['status'] == 'accepted_exact_canonical_authority_artifacts_for_guarded_adoption'
+selection_path = prep / 'selected-final/selection.json'
+assert sha(selection_path) == review['selection_sha256']
+s = json.loads(selection_path.read_text())
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == 'e61e31e38169a827096d5afd2fdcf741ef8e415e'
+for rel, digest in {**review['destination_baseline']['baseline_files'], **review['destination_baseline']['runtime_files']}.items():
+    assert sha(root / rel) == digest, rel
+copies = []
+for row in s['selected_new_inputs']:
+    src = Path(row['original_path'])
+    relative = Path(row['manifest_entry']['path'])
+    assert not relative.is_absolute() and '..' not in relative.parts
+    dst = cache / relative
+    assert dst.resolve().is_relative_to(cache.resolve())
+    assert sha(src) == row['sha256']
+    exists = os.path.lexists(dst)
+    if exists:
+        assert dst.is_file() and not dst.is_symlink() and sha(dst) == row['sha256'], dst
+    copies.append({'original': str(src), 'cache': str(dst), 'sha256': row['sha256'], 'already_present_identical': exists})
+artifacts = [
+    ('identifier_sources.json', 'conf/identifier_sources.json', review['manifest']['canonical_sha256']),
+    ('ontology.json', 'data/identifier_authorities/ontology.json', review['preservation']['ontology']['canonical_sha256']),
+    ('sources.json', 'data/identifier_authorities/sources.json', review['preservation']['sources']['canonical_sha256']),
+]
+for filename, relative, digest in artifacts:
+    assert sha(prep / 'canonical-dry-run' / filename) == digest
+    assert not (root / (relative + '.next-216-pending')).exists()
+out.mkdir()
+started = datetime.now(timezone.utc).isoformat()
+for row in copies:
+    if not row['already_present_identical']:
+        dst = Path(row['cache'])
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with Path(row['original']).open('rb') as source, dst.open('xb') as target:
+            shutil.copyfileobj(source, target)
+    assert sha(row['cache']) == row['sha256']
+adopted = []
+for filename, relative, digest in artifacts:
+    source = prep / 'canonical-dry-run' / filename
+    target = root / relative
+    pending = root / (relative + '.next-216-pending')
+    before = sha(target)
+    with pending.open('xb') as stream:
+        stream.write(source.read_bytes())
+    assert sha(pending) == digest
+    os.replace(pending, target)
+    assert sha(target) == digest
+    adopted.append({'original_canonical_artifact': str(source), 'maintained_path': relative, 'before_sha256': before, 'sha256': digest})
+result = {'status': 'accepted_canonical_dry_run_outputs_adopted', 'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat(), 'root_review': {'path': str(review_path), 'sha256': sha(review_path)}, 'selection_sha256': sha(selection_path), 'helper_sha256': sha(__file__), 'actual_builder_execution': {'path': str(prep / 'canonical-dry-run/execution.json'), 'sha256': sha(prep / 'canonical-dry-run/execution.json')}, 'cache_copies': copies, 'maintained_artifacts': adopted, 'counts': s['counts'], 'execution_scope': 'Adopts the exact independently reviewed canonical outputs from actual external unchanged builders. No second builder run is claimed; every destination baseline and all23 new original bodies were freshly checked before writes.', 'pending': ['Maintained target and provenance copy', 'History and rendering', 'Integrated replay and full corpus gates', 'Actual B merged baseline bridge', 'Canonical independent review']}
+with (out / 'receipt.json').open('x') as stream:
+    json.dump(result, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': result['status'], 'cache_bodies_added': sum(not r['already_present_identical'] for r in copies), 'maintained_files': len(adopted), 'receipt_sha256': sha(out / 'receipt.json')}), flush=True)

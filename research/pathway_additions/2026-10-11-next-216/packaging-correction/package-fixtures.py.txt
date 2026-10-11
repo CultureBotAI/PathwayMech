@@ -1,0 +1,78 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+external = Path('/private/tmp/pathwaymech-next-216-packaging-correction-20261011')
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+read = lambda p: json.loads(Path(p).read_text())
+assert sha(external / 'failure.json') == 'd832f5a0095b745bcc1834a15b3115e0d4db241d1f7d96c88bc65baa50750b2d'
+failure = read(external / 'failure.json')
+assert read(external / 'issue.json')['url'] == 'https://github.com/CultureBotAI/PathwayMech/issues/401'
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == failure['base']
+assert not subprocess.check_output(['git', 'diff', '--cached', '--name-only'], cwd=root).strip()
+plan = read(dossier / 'pyochelin-copy-plan.json')
+entries = {row['destination']: row for row in plan['copy_entries']}
+paths = {row['path'] for row in failure['affected_files']}
+assert len(paths) == 7
+initial_review = Path('/private/tmp/pathwaymech-next-216-remote-adversarial-review/packaging-initial/assessment.json')
+assert sha(initial_review) == '0098ea2acd9b46a5c4acaa2ed52b19b9f680b9d366bb10f8cf3aaa93b8f27b22'
+assert read(initial_review)['status'] == 'confirmed_packaging_defect_byte_preserving_wrapper_remedy_supported'
+for row in failure['staged_files']:
+    assert sha(root / row['path']) == row['sha256']
+for row in failure['affected_files']:
+    source = root / row['path']
+    assert entries[row['path']]['mode'] == 'exact_bytes'
+    assert source.read_bytes() == Path(row['archived_original']).read_bytes() == Path(entries[row['path']]['path']).read_bytes()
+    assert sha(source) == row['sha256'] == entries[row['path']]['sha256']
+    assert not source.with_name(source.name + '.bytes.json').exists()
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+mapping = []
+for row in failure['affected_files']:
+    source = root / row['path']
+    original = entries[row['path']]
+    target = source.with_name(source.name + '.bytes.json')
+    aliases = [item for item in plan['exact_byte_aliases'] if item['destination'] == row['path']]
+    payload = source.read_bytes()
+    for item in aliases:
+        assert Path(item['path']).read_bytes() == payload
+    save(target, {'encoding': 'Lossless UTF-8; recover the exact original bytes by UTF-8 encoding text, including intentional final blank lines.', 'scope': 'Archived negative-control fixture; not executable current code or a maintained pathway record.', 'original_path': original['path'], 'original_sha256': row['sha256'], 'original_bytes': len(payload), 'previous_maintained_path': row['path'], 'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/401', 'text': payload.decode('utf-8')})
+    recovered = read(target)['text'].encode('utf-8')
+    assert recovered == payload and hashlib.sha256(recovered).hexdigest() == row['sha256']
+    mapping.append({'previous_maintained_path': row['path'], 'original_path': original['path'], 'original_sha256': row['sha256'], 'original_bytes': len(payload), 'external_archive': row['archived_original'], 'current_wrapper_path': str(target.relative_to(root)), 'current_wrapper_sha256': sha(target), 'aliases': [{**item, 'current_recoverable_wrapper': str(target.relative_to(root))} for item in aliases]})
+# Every new representation is fully verified before retiring any raw maintained copy.
+for row in mapping:
+    assert sha(root / row['previous_maintained_path']) == row['original_sha256']
+    (root / row['previous_maintained_path']).unlink()
+unchanged = 0
+for row in failure['staged_files']:
+    if row['path'] not in paths:
+        assert sha(root / row['path']) == row['sha256'], row['path']
+        unchanged += 1
+assert unchanged == 368
+assert sum(len(row['aliases']) for row in mapping) == 5
+maintained = dossier / 'packaging-correction'
+assert not maintained.exists()
+maintained.mkdir()
+proofs = []
+for source in [external / 'failure.json', external / 'issue.json', external / 'issue-body.md', external / 'unstage.json', initial_review]:
+    target = maintained / ('independent-initial-assessment.json' if source == initial_review else source.name)
+    with target.open('xb') as stream:
+        stream.write(source.read_bytes())
+    proofs.append({'original_path': str(source), 'original_sha256': sha(source), 'maintained_path': str(target.relative_to(root)), 'maintained_sha256': sha(target)})
+log = external / 'staged-whitespace-failure.txt'
+save(maintained / 'staged-whitespace-failure.json', {'original_path': str(log), 'original_sha256': sha(log), 'encoding': 'Lossless UTF-8 text', 'text': log.read_text()})
+helper = maintained / 'package-fixtures.py.txt'
+helper.write_bytes(Path(__file__).read_bytes())
+receipt = {'status': 'seven_negative_fixture_payloads_preserved_in_lossless_wrappers', 'at': datetime.now(timezone.utc).isoformat(), 'base': failure['base'], 'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/401', 'mapping': mapping, 'seven_payloads_and_five_aliases_reconstruct_exactly': True, 'previous_staged_files_unchanged_except_seven_representations': unchanged, 'initial_copy_plan_sha256': sha(dossier / 'pyochelin-copy-plan.json'), 'initial_copy_adoption_sha256': sha(dossier / 'root-copy-adoption.json'), 'initial_integration_receipt_sha256': sha(dossier / 'integration-receipt.json'), 'initial_scientific_review_adoption_sha256': sha(dossier / 'final-scientific-review-adoption.json'), 'proofs': proofs, 'helper_sha256': sha(helper), 'history_policy': 'All preceding plans, receipts, source bodies and saved canonical review remain immutable observations of their original snapshot. This successor changes only how seven archived mutation payloads are packaged; use this mapping to resolve their previous maintained locations and five aliases.', 'pending': ['Independent packaging acceptance', 'Infrastructure history before final rerender and relevant checks', 'Current integration successor and canonical scientific successor', 'Final staged whitespace check and publication workflow']}
+save(maintained / 'successor-map.json', receipt)
+save(external / 'applied.json', {'status': receipt['status'], 'maintained_receipt': str(maintained / 'successor-map.json'), 'maintained_receipt_sha256': sha(maintained / 'successor-map.json')})
+print(json.dumps({'status': receipt['status'], 'wrappers': len(mapping), 'aliases': 5, 'unchanged_prior_files': unchanged, 'receipt_sha256': sha(maintained / 'successor-map.json')}))

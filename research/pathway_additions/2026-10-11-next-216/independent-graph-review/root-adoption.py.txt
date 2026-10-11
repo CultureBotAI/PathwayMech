@@ -1,0 +1,90 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+external = Path('/private/tmp/pathwaymech-next-216-independent-graph-review')
+base = '3fb840bf48d871bc37576cc669d23441c0206e66'
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+read = lambda p: json.loads(Path(p).read_text())
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == base
+audit_path = external / 'graph-audit.json'
+execution_path = external / 'execution.json'
+assert sha(audit_path) == 'd896567a7d94c48ecbfdf448e887123159fbbc99168800d327554e6e7537b2dd'
+assert sha(execution_path) == '17066108ada2af4fb071e10c76adeea660e46b14090be8b863015ab5d061e1c0'
+audit, execution = read(audit_path), read(execution_path)
+assert audit['status'] == execution['status'] == 'passed'
+assert execution['actual_session'] == 99962 and execution['observed_terminal_exit_code'] == 0
+assert execution['terminal_chunk'] == 'e31af5'
+for item in execution['artifacts']:
+    assert sha(item['path']) == item['sha256']
+gate_path = Path(audit['execution']['gate_receipt'])
+assert sha(gate_path) == audit['execution']['gate_receipt_sha256'] == 'acd61facf2bc7d2bca5634104eff43a917a3b759a43d630d5a3cce4940c52c90'
+gate = read(gate_path)
+for item in gate['artifacts']:
+    assert sha(item['path']) == item['sha256']
+for name in ['render', 'kgx']:
+    assert gate[name]['exit_code'] == 0
+    assert sha(gate[name]['log']['path']) == gate[name]['log']['sha256']
+target = audit['records'][0]
+assert len(audit['records']) == 1 and target['record_id'] == 'GO:0042864'
+assert sha(root / target['record']) == target['record_sha256']
+assert sha(root / target['page']) == target['svg_audit']['sha256']
+assert audit['totals'] == {'record_local_named_nodes': 43, 'distinct_target_KGX_nodes': 43, 'SVG_nodes_across_pages': 42, 'target_edges': 91, 'target_evidence_blocks': 242}
+preserved = audit['baseline_preservation']
+assert preserved['base'] == base and preserved['baseline_records'] == 216
+assert preserved['immutable_record_history_review_page_files'] == len(preserved['paths']) == 956
+assert (preserved['unchanged_exported_edges'], preserved['unchanged_record_scoped_node_contexts']) == (10247, 6802)
+# The independent audit compares every baseline body. This root acceptance freshly
+# verifies Git blob identities in one batch without re-running the complete audit.
+tree = subprocess.check_output(['git', 'ls-tree', '-r', '-z', base], cwd=root)
+old = {entry.split(b'\t', 1)[1].decode(): entry.split(b'\t', 1)[0].split()[2].decode() for entry in tree.split(b'\0') if entry}
+for path in preserved['paths']:
+    data = (root / path).read_bytes()
+    assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == old[path], path
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+output = dossier / 'independent-graph-review'
+assert not output.exists()
+output.mkdir()
+copies = []
+files = sorted(p for p in external.iterdir() if p.is_file()) + [gate_path]
+assert len(files) == 7
+for path in files:
+    target = output / path.name
+    if path.suffix == '.py':
+        target = target.with_name(target.name + '.txt')
+    if path.suffix == '.log':
+        target = target.with_name(target.name + '.json')
+        save(target, {'encoding': 'Lossless UTF-8; recover original bytes by UTF-8 encoding text.', 'original_path': str(path), 'original_sha256': sha(path), 'text': path.read_text()})
+        assert hashlib.sha256(read(target)['text'].encode()).hexdigest() == sha(path)
+    else:
+        with target.open('xb') as stream:
+            stream.write(path.read_bytes())
+        assert sha(target) == sha(path)
+    copies.append({'original_path': str(path), 'original_sha256': sha(path), 'maintained_path': str(target.relative_to(root)), 'maintained_sha256': sha(target)})
+helper = output / 'root-adoption.py.txt'
+helper.write_bytes(Path(__file__).read_bytes())
+receipt = {
+    'status': 'accepted_independent_programmatic_graph_and_baseline_audit',
+    'at': datetime.now(timezone.utc).isoformat(),
+    'base': base,
+    'audit_sha256': sha(audit_path),
+    'execution_sha256': sha(execution_path),
+    'acceptance_basis': 'Root read the full bounded audit claims and limits, inspected SVG/evidence/reference/geometry checks, complete KGX context/evidence comparison, baseline checks and end-of-audit input rehash logic. Root freshly rehashed all execution artifacts, six current rendered/export inputs, target and both component logs; independently recomputed all 956 preserved baseline Git blob identities.',
+    'totals': audit['totals'],
+    'baseline_counts': {k: v for k, v in preserved.items() if k != 'paths'},
+    'reviewer_role': audit['reviewer_role'],
+    'copied': copies,
+    'helper_sha256': sha(helper),
+    'limits': audit['limits'],
+}
+save(dossier / 'independent-graph-root-adoption.json', receipt)
+print(json.dumps({'status': receipt['status'], 'baseline_files_freshly_verified': 956, 'adoption_sha256': sha(dossier / 'independent-graph-root-adoption.json')}))

@@ -1,0 +1,21 @@
+from pathlib import Path
+from itertools import product
+from datetime import datetime,UTC
+import re,json,hashlib
+b=Path(__file__).absolute().parent;o=b/'originals';p=o/'AF074705.embl';t=p.read_text();assert '/strain="PAO1"' in t
+seq=''.join(re.findall('[acgt]+',t.split('\nSQ   ')[1].split('\n',1)[1])).upper()
+code={''.join(c):aa for c,aa in zip(product('TCAG',repeat=3),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG',strict=True)}
+pao={x['primaryAccession']:x for x in json.loads((o/'uniprot-pao1-pch.json').read_text())['results']};rows=[]
+for block in t.split('FT   CDS             ')[1:]:
+ m=re.match(r'(\d+)\.\.(\d+)',block);assert m;start,end=map(int,m.groups());g=re.search('/gene="(.*?)"',block).group(1)
+ if g not in ['pchE','pchF','pchG']:continue
+ dna=seq[start-1:end];tr=''.join(code[dna[i:i+3]] for i in range(0,len(dna),3));assert tr[-1]=='*';tr=tr[:-1]
+ # Bacterial initiator translation can be methionine despite GTG/TTG codon.
+ if dna[:3] in ['GTG','TTG']:tr='M'+tr[1:]
+ given=''.join(re.search('/translation="(.*?)"',block,re.S).group(1).replace('\nFT','\n').split());assert tr==given
+ acc={'pchE':'G3XCV2','pchF':'Q9HWG4','pchG':'Q9HWG5'}[g];current=pao[acc]['sequence']['value']
+ rows.append(dict(gene=g,cds=[start,end],protein_id=re.search('/protein_id="(.*?)"',block).group(1),accession=acc,length=len(tr),current_length=len(current),exact_current_sequence=tr==current,same_length_substitutions=sum(a!=c for a,c in zip(tr,current,strict=False)) if len(tr)==len(current) else None,sequence_sha256=hashlib.sha256(tr.encode()).hexdigest()))
+assert len(rows)==3
+result=dict(at=datetime.now(UTC).isoformat(),source_path=str(p),source_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),strain='PAO1',article_links=['PMID:9846750','PMID:11208777'],rows=rows,limits='Native submitted sequences, not full engineered construct or tag equality; any mismatches remain explicit.')
+with (b/'pao1-submission-check.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps(result,indent=2))

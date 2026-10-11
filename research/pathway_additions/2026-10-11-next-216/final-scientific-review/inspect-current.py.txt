@@ -1,0 +1,32 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib, json, os, subprocess, yaml
+R=Path('/private/tmp/pathwaymech-next-216-20261011');O=Path('/private/tmp/pathwaymech-next-216-canonical-review');D=R/'research/pathway_additions/2026-10-11-next-216'
+now=lambda:datetime.now(UTC).isoformat().replace('+00:00','Z')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+target='data/pathways/pyochelin-biosynthesis.yaml'
+t={'targets':[{'target_id':'GO:0042864','path':target,'label':'pyochelin biosynthesis','kind':'maintained','owner_paths':[{'repository':'CultureBotAI/PathwayMech','path':target,'role':'maintained_record'}]}]}
+(O/'targets.yaml').write_text(yaml.safe_dump(t,sort_keys=False))
+paths=['CLAUDE.md','justfile','.claude/skills/review-yaml-record/SKILL.md','.claude/skills/add-pathway/SKILL.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','docs/record-review-profile.md','docs/record-reviews.md','schema/record_review.yaml','src/pathwaymech/schema.py','conf/identifier_policy.yaml','conf/identifier_sources.json','conf/record_review.yaml','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json',target,'pages/records/GO_0042864.html']
+for p in sorted(D.iterdir()):
+ if p.is_file() and p.suffix in ('.json','.md','.py') and not p.name.startswith('pyochelin-copy-plan'):
+  paths.append(str(p.relative_to(R)))
+for folder in ['external-evidence/independent-review','external-evidence/independent-successor-controls','external-evidence/root-authority-integration','external-evidence/authority-independent-review','independent-graph-review']:
+ for p in sorted((D/folder).iterdir()):
+  if p.is_file() and p.suffix in ('.json','.md'):
+   paths.append(str(p.relative_to(R)))
+for p in ['external-evidence/imodulondb-411/context.json','integrated-replay/execution.json','integrated-replay/pyochelin-validation-integrated.json']:
+ paths.append(str((D/p).relative_to(R)))
+paths=list(dict.fromkeys(paths));assert all((R/p).is_file() for p in paths)
+cmd=[str(R/'.venv/bin/python'),'scripts/record_review.py','inspect','--targets',str(O/'targets.yaml')]
+for p in paths:cmd+=['--input',p]
+e=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',PYTHONDONTWRITEBYTECODE='1')
+started=now();p=subprocess.run(cmd,cwd=R,env=e,capture_output=True,text=True)
+(O/'inspect.stdout').write_text(p.stdout);(O/'inspect.stderr').write_text(p.stderr)
+receipt={'started_at':started,'finished_at':now(),'command':cmd,'exit_code':p.returncode,'input_count':len(paths),'stdout_sha256':sha(O/'inspect.stdout'),'stderr_sha256':sha(O/'inspect.stderr')}
+(O/'inspect-execution.json').write_text(json.dumps(receipt,indent=2)+'\n')
+assert p.returncode==0,p.stderr
+I=json.loads(p.stdout);(O/'inspect.json').write_text(json.dumps(I,indent=2)+'\n')
+assert I['source']['git_revision']=='3fb840bf48d871bc37576cc669d23441c0206e66'
+for x in I['source']['inputs']:assert sha(R/x['path'])==x['sha256'],x
+print(json.dumps({'status':'captured','started_at':started,'finished_at':receipt['finished_at'],'input_count':len(I['source']['inputs']),'inspect_sha256':sha(O/'inspect.json')}))

@@ -1,0 +1,11 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import subprocess,os,json,hashlib
+B=Path('/private/tmp/pathwaymech-pyochelin-successor-20261011');D=B/'draft';R=Path('/private/tmp/pathwaymech-next-215-20261011');PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+cmd=[PY,str(D/'pyochelin-replay.py'),'--repo-root',str(R),'--record',str(D/'pyochelin-biosynthesis.yaml'),'--source-manifest',str(D/'pyochelin-source-manifest.json'),'--source-projection',str(D/'pyochelin-source-projection.json'),'--authority-root',str(B/'authority-sandbox'),'--reactive-helper',str(D/'pyochelin-reactive-check.py'),'--rdkit-python','/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python','--output',str(D/'pyochelin-validation-successor.json')]
+env={**os.environ,'PYTHONPATH':str(R/'src'),'UV_NO_SYNC':'1','UV_CACHE_DIR':'/private/tmp/pathwaymech-curation-uv-cache','PYTHONDONTWRITEBYTECODE':'1'}
+start=datetime.now(UTC).isoformat();log=B/'support/replay-successor.log'
+with log.open('x') as f:p=subprocess.run(cmd,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+r=dict(started_at=start,finished_at=datetime.now(UTC).isoformat(),command=cmd,cwd=str(R),exit_code=p.returncode,log=str(log),log_sha256=hashlib.sha256(log.read_bytes()).hexdigest(),scope='Actual external author source/schema/authority/KGX replay, no shared tests or approval')
+with (B/'support/replay-execution.json').open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+print(json.dumps(r,indent=2));raise SystemExit(p.returncode)

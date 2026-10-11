@@ -1,0 +1,118 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import html
+import json
+import re
+import sqlite3
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+prep = Path('/private/tmp/pathwaymech-pyochelin-authority-selection-20261011')
+out = Path('/private/tmp/pathwaymech-next-216-authority-root-review.json')
+assert not out.exists()
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+handoff_path = prep / 'handoff.json'
+assert sha(handoff_path) == 'b1845f2f51f92e408409c20c6996cd035e4e1fbea449fceb08a93f49465b6af6'
+h = json.loads(handoff_path.read_text())
+for row in h['files']:
+    assert sha(row['path']) == row['sha256'], row['path']
+s = json.loads(Path(h['selection']['path']).read_text())
+assert sha(h['selection']['path']) == h['selection']['sha256'] == '7701ca38397bd0d9a54fe6051923cf46c96ca5e655afbcb266a8a0ae13fb64ce'
+lock = s['preparation_baseline']
+for name, digest in {**lock['baseline_files'], **lock['runtime_files']}.items():
+    assert sha(root / name) == digest, name
+assert sha(s['target']['path']) == s['target']['sha256'] == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+r = yaml.safe_load(Path(s['target']['path']).read_text())
+named = {r['id']} | {x['id'] for key in ['taxa', 'participants', 'reactions'] for x in r[key]}
+assert len(named) == 43
+assert set(s['selected_source_terms']) | set(s['selected_ontology_terms']) == named | {'CHEBI:67183'}
+facts = {}
+for row in s['selected_new_inputs']:
+    path = Path(row['original_path'])
+    assert sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+    for proof in row['acquisition_proof']:
+        assert sha(proof['path']) == proof['sha256']
+    parsed = {}
+    if row['kind'] == 'metacyc-html':
+        text = path.read_bytes().decode('utf-8', errors='surrogateescape')
+        match = re.search(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'", text)
+        title = re.search(r'<TITLE>MetaCyc (.*?)</TITLE>', text, re.I | re.S)
+        assert match and title
+        label = ' '.join(html.unescape(re.sub('<[^>]+>', '', title[1])).split())
+        parsed['MetaCyc:' + match[1]] = {'label': label, 'synonyms': []}
+    elif row['kind'] == 'uniprot':
+        for item in json.loads(path.read_text())['results']:
+            ident = 'UniProtKB:' + item['primaryAccession']
+            desc = item['proteinDescription']
+            names = []
+            for name in [desc.get('recommendedName', {}), *desc.get('submissionNames', []), *desc.get('alternativeNames', [])]:
+                if name.get('fullName', {}).get('value'):
+                    names.append(name['fullName']['value'])
+                names.extend(x['value'] for x in name.get('shortNames', []))
+            parsed[ident] = {'label': names[0], 'synonyms': sorted(set(names[1:]) - {names[0]})}
+            if ident in row['selected_ids']:
+                assert item['organism']['taxonId'] == 208964
+    else:
+        raise AssertionError(row['kind'])
+    for ident in row['selected_ids']:
+        fact = {**parsed[ident], 'source': row['proposal_key']}
+        assert fact == s['selected_source_terms'][ident], ident
+        facts[ident] = fact
+assert len(facts) == 26 and len(s['selected_new_inputs']) == 23
+source_review = Path('/private/tmp/pathwaymech-pyochelin-root-successor-acceptance-20261011.json')
+assert sha(source_review) == '9c762fb5085f20099399918a5df334602f67d01a729731d620c41406b71308f8'
+verified_originals = {x['path']: x for x in json.loads(source_review.read_text())['original_source_checks']}
+old_ontology = json.loads((root / 'data/identifier_authorities/ontology.json').read_text())
+ontology = {}
+database_checks = []
+for check in s['ontology_checks']:
+    path = Path(check['path'])
+    prior_check = verified_originals[str(path)]
+    assert prior_check['sha256'] == check['metadata']['sha256'] and path.stat().st_size == prior_check['bytes']
+    stat = path.stat()
+    with sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True) as connection:
+        for ident in check['selected_ids']:
+            rows = list(connection.execute('SELECT predicate,value FROM statements WHERE subject=? AND predicate IN (?,?)', (ident, 'rdfs:label', 'oio:hasExactSynonym')))
+            labels = {value for predicate, value in rows if predicate == 'rdfs:label' and value}
+            assert len(labels) == 1
+            label = labels.pop()
+            owner = s['selected_ontology_terms'][ident]['source']
+            assert old_ontology['sources'][owner] == check['metadata']
+            fact = {'label': label, 'synonyms': sorted({v for k, v in rows if k == 'oio:hasExactSynonym' and v and v != label}), 'source': owner}
+            assert fact == s['selected_ontology_terms'][ident], ident
+            ontology[ident] = fact
+    after_stat = path.stat()
+    assert (stat.st_ino, stat.st_size, stat.st_mtime_ns) == (after_stat.st_ino, after_stat.st_size, after_stat.st_mtime_ns)
+    database_checks.append({'path': str(path), 'sha256': prior_check['sha256'], 'fresh_full_hash_receipt': str(source_review), 'direct_read_only_selected_terms': len(check['selected_ids']), 'size_and_mtime_unchanged_during_queries': True})
+assert len(ontology) == 18
+preservation = {}
+for name, selected in [('ontology', ontology), ('sources', facts)]:
+    before = json.loads((root / f'data/identifier_authorities/{name}.json').read_text())
+    actual = json.loads((prep / f'canonical-dry-run/{name}.json').read_text())
+    proposed = json.loads((prep / f'selected-final/prospective-{name}.json').read_text())
+    assert actual == proposed
+    for field in before:
+        if field in ['terms', 'sources']:
+            for key, value in before[field].items():
+                assert actual[field][key] == value, (name, field, key)
+        else:
+            assert actual[field] == before[field]
+    for key, value in selected.items():
+        assert actual['terms'][key] == value
+    added = sorted(actual['terms'].keys() - before['terms'].keys())
+    assert set(added) == selected.keys() - before['terms'].keys()
+    assert len(added) == (6 if name == 'ontology' else 26)
+    preservation[name] = {'prior_terms': len(before['terms']), 'added_terms': added, 'canonical_sha256': sha(prep / f'canonical-dry-run/{name}.json'), 'all_prior_terms_and_metadata_unchanged': True}
+before = json.loads((root / 'conf/identifier_sources.json').read_text())
+after = json.loads((prep / 'canonical-dry-run/identifier_sources.json').read_text())
+assert after[:len(before)] == before and after[len(before):] == [x['manifest_entry'] for x in s['selected_new_inputs']]
+assert len(before) == 524 and len(after) == 547
+report = {'status': 'accepted_exact_canonical_authority_artifacts_for_guarded_adoption', 'at': datetime.now(timezone.utc).isoformat(), 'selection_sha256': h['selection']['sha256'], 'handoff_sha256': sha(handoff_path), 'destination_baseline': lock, 'source_terms_independently_parsed': facts, 'ontology_terms_independently_queried': ontology, 'database_checks': database_checks, 'preservation': preservation, 'manifest': {'before': 524, 'after': 547, 'added': 23, 'canonical_sha256': sha(prep / 'canonical-dry-run/identifier_sources.json')}, 'basis': 'Root independently parsed23 original bodies and acquisition receipts, queried18 official ontology labels/exact synonyms with independently streamed original hashes, verified every unchanged baseline entry, and read actual unchanged canonical builder execution and helper. Canonical generated output bytes may be adopted only after destination baseline guards; this is not a second builder execution.', 'limits': ['Authority identity labels do not prove activity, physiological endpoint exclusivity or assembly.', 'Actual B merged-base equivalence remains pending.', 'No maintained mutation or corpus pass claimed in this review.']}
+with out.open('x') as stream:
+    json.dump(report, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': report['status'], 'source_terms': len(facts), 'ontology_terms': len(ontology), 'receipt_sha256': sha(out)}), flush=True)

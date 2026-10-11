@@ -1,0 +1,58 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import argparse
+import hashlib
+import json
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--adoption-terminal', required=True)
+args = parser.parse_args()
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-216'
+P = D / 'packaging-correction'
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def describe(path):
+    data = path.read_bytes()
+    return {'path': str(path.relative_to(R)), 'sha256': sha(data), 'bytes': len(data)}
+
+def obj(path):
+    return json.loads(path.read_bytes())
+
+base = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=R, text=True).strip()
+assert base == '3fb840bf48d871bc37576cc669d23441c0206e66'
+branch = subprocess.check_output(['git', 'branch', '--show-current'], cwd=R, text=True).strip()
+assert branch == 'feat/pathway-next-216-20261011'
+assert not subprocess.check_output(['git', 'diff', '--cached', '--name-only'], cwd=R)
+old = obj(D / 'integration-receipt.json')
+checks = obj(P / 'rechecks-root-adoption.json')
+assert checks['status'] == 'current_render_validate_and_comprehensive_whitespace_passed'
+owners = []
+for row in old['owners']:
+    assert sha((R / row['path']).read_bytes()) == row['sha256']
+    owners.append(describe(R / row['path']))
+owners.append(describe(R / 'history/infrastructure/pyochelin-evidence-packaging/2026-10-11T162855Z-codex-0c3408.yaml'))
+review_dir = R / 'reviews/structured/20261011T162143Z-pyochelin-independent-review'
+owners.extend(describe(review_dir / name) for name in ['review.yaml', 'review.md'])
+archive = P / 'seal-successor.py.txt'
+assert not archive.exists()
+archive.write_bytes(Path(__file__).read_bytes())
+files = []
+for path in sorted(D.rglob('*')):
+    if path.is_file() and '__pycache__' not in path.parts:
+        assert not path.is_symlink()
+        result = subprocess.run(['git', 'diff', '--no-index', '--check', '/dev/null', str(path)], cwd=R, capture_output=True)
+        assert result.returncode == 1 and not result.stdout and not result.stderr, (str(path), result.returncode, result.stdout.decode(), result.stderr.decode())
+        files.append(describe(path))
+out = D / 'integration-successor-receipt.json'
+assert not out.exists()
+receipt = {'status': 'packaging_successor_integration_sealed_for_independent_scientific_review', 'at': datetime.now(timezone.utc).isoformat(), 'base': base, 'branch': branch, 'catalog_records': 217, 'published_catalog_records_at_seal': 216, 'target': old['target'], 'counts': old['counts'], 'authority_additions': old['authority_additions'], 'previous_integration': describe(D / 'integration-receipt.json'), 'previous_canonical_review': describe(review_dir / 'review.yaml'), 'previous_scientific_adoption': describe(D / 'final-scientific-review-adoption.json'), 'packaging_issue': 'https://github.com/CultureBotAI/PathwayMech/issues/401', 'packaging_remedy': describe(P / 'successor-map.json'), 'independent_packaging_acceptance': describe(P / 'independent-successor-review.json'), 'root_packaging_acceptance': describe(P / 'root-adoption.json'), 'current_rechecks': describe(P / 'rechecks-root-adoption.json'), 'actual_rechecks': {'render_validate_session': 75225, 'render_validate_exit_code': 0, 'render_validate_terminal': '166766', 'root_adoption_session': 6549, 'root_adoption_exit_code': 0, 'root_adoption_terminal': args.adoption_terminal}, 'history_written_before_successor_render': True, 'reused_gate_scope': checks['reused_gates'], 'old_integration_recovery': {'owners': 14, 'dossier_inputs': 323, 'mapping': 'Seven original fixtures recover through lossless wrappers; original README recovers from packaging-correction/pre-packaging-readme.md; all other originally sealed inputs remain exact. See current rechecks for each path/hash.'}, 'owners': owners, 'sealed_dossier_inputs': files, 'whitespace_scope': {'method': 'git diff --no-index --check /dev/null each current dossier file', 'files': len(files), 'ignored_and_hidden_included': True, 'generated_python_cache_excluded': True, 'all_clean': True, 'final_staged_gate_pending': True}, 'independence': 'Root applied packaging correction. PR reviewer independently confirmed all exact-byte recoveries. Separate scientific successor reviewer did not author target, packaging change or this integration.', 'remaining': ['Current independent canonical scientific successor and root adoption', 'Commit/push/remote PR adversarial review and issue lifecycle', 'Merge queue, deployed byte verification and branch cleanup'], 'source_exhaustion': False}
+with out.open('x') as f:
+    json.dump(receipt, f, indent=2)
+    f.write('\n')
+r = subprocess.run(['git', 'diff', '--no-index', '--check', '/dev/null', str(out)], cwd=R, capture_output=True)
+assert r.returncode == 1 and not r.stdout and not r.stderr
+print(json.dumps({'path': str(out), 'sha256': sha(out.read_bytes()), 'status': receipt['status'], 'dossier_inputs': len(files), 'owners': len(owners)}))

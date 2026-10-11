@@ -1,0 +1,45 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import re
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+source = Path('/private/tmp/pathwaymech-next-216-final-gate-receipts.json')
+sha = lambda path: hashlib.sha256(Path(path).read_bytes()).hexdigest()
+checks = json.loads(source.read_text())
+assert len(checks) == 7
+assert {row['name'] for row in checks} == {'render', 'validate', 'test', 'lint', 'identifiers', 'kgx', 'diff'}
+assert all(row['exit_code'] == 0 for row in checks)
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == '3fb840bf48d871bc37576cc669d23441c0206e66'
+assert sha(root / 'data/pathways/pyochelin-biosynthesis.yaml') == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+vendored_path = Path('/private/tmp/pathwaymech-next-216-vendored-gate-receipt.json')
+vendored = json.loads(vendored_path.read_text())
+assert vendored['exit_code'] == 0
+assert not (dossier / 'vendored-gate-receipt.json').exists()
+logs = []
+for row in checks + [vendored]:
+    path = Path(row['log'])
+    assert sha(path) == row['log_sha256']
+    logs.append({'name': row['name'], 'original_path': str(path), 'original_sha256': sha(path), 'text': path.read_bytes().decode('utf-8')})
+test_log = next(row['text'] for row in logs if row['name'] == 'test')
+summaries = re.findall(r'(\d+ passed, \d+ skipped, \d+ warnings in [^\n=]+)', test_log)
+assert len(summaries) == 1, summaries
+assert 'OK: 22 governed artifacts match the pinned claw revision' in logs[-1]['text']
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+with (dossier / 'vendored-gate-receipt.json').open('xb') as stream:
+    stream.write(vendored_path.read_bytes())
+with (dossier / 'full-gate-receipts.json').open('xb') as stream:
+    stream.write(source.read_bytes())
+save(dossier / 'console-transcripts.json', {'encoding': 'Lossless UTF-8 log text; original bytes recover by UTF-8 encoding text.', 'logs': logs})
+for row in json.loads((dossier / 'console-transcripts.json').read_text())['logs']:
+    assert hashlib.sha256(row['text'].encode('utf-8')).hexdigest() == row['original_sha256']
+save(dossier / 'full-gates-root-adoption.json', {'at': datetime.now(timezone.utc).isoformat(), 'status': 'all_seven_canonical_gates_and_vendored_check_passed', 'actual_root_session': 84346, 'observed_terminal_exit': 0, 'terminal_chunk': '8a1a22', 'base': '3fb840bf48d871bc37576cc669d23441c0206e66', 'gate_receipt_sha256': sha(source), 'vendored_receipt_sha256': sha(vendored_path), 'console_transcripts_sha256': sha(dossier / 'console-transcripts.json'), 'test_summary': summaries[0].strip(), 'all_eight_logs_freshly_rehashed': True, 'limits': ['Independent graph review is separately accepted; final scientific review and publication remain separate gates.']})
+print(json.dumps({'status': 'passed', 'test_summary': summaries[0].strip(), 'adoption_sha256': sha(dossier / 'full-gates-root-adoption.json'), 'gate_receipt_sha256': sha(source)}))

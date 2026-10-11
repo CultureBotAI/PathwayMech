@@ -1,0 +1,106 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+external = Path('/private/tmp/pathwaymech-next-216-integrated-replay')
+base = '3fb840bf48d871bc37576cc669d23441c0206e66'
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+read = lambda p: json.loads(Path(p).read_text())
+
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == base
+result_path = external / 'pyochelin-validation-integrated.json'
+result = read(result_path)
+execution = read(external / 'execution.json')
+prior_path = dossier / 'root-source-acceptance.json'
+assert sha(prior_path) == '9c762fb5085f20099399918a5df334602f67d01a729731d620c41406b71308f8'
+prior = read(prior_path)
+assert result['status'] == 'passed' and execution['exit_code'] == 0
+assert sha(execution['log']) == execution['log_sha256']
+assert execution['cwd'] == str(root)
+command = execution['command']
+for flag, expected in {
+    '--repo-root': root, '--authority-root': root,
+    '--record': root / 'data/pathways/pyochelin-biosynthesis.yaml',
+    '--source-manifest': dossier / 'pyochelin-source-manifest.json',
+    '--source-projection': dossier / 'pyochelin-source-projection.json',
+    '--reactive-helper': dossier / 'pyochelin-reactive-check.py',
+    '--output': result_path,
+}.items():
+    assert command[command.index(flag) + 1] == str(expected), flag
+assert result['record_sha256'] == sha(root / 'data/pathways/pyochelin-biosynthesis.yaml') == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+assert result['helper_sha256'] == sha(dossier / 'pyochelin-replay.py') == '19cf087abba2f7eda7f6c620ba0ac4dc9bb829a8b7ad1ac7c99da7bc5f8d024f'
+assert result['reactive_helper_sha256'] == sha(dossier / 'pyochelin-reactive-check.py') == 'd8a000d6a970ce698f3db394056dcbf765c43066a0495b98f55faf76ce1c22f9'
+formal = [v for v in result['input_bindings'] if v['scope'] == 'formal_or_runtime']
+originals = [v for v in result['input_bindings'] if v['scope'] == 'original_source']
+assert len(formal) == 47 and len(originals) == 95 and len(result['input_bindings']) == 142
+for row in formal:
+    assert str(Path(row['path']).resolve()) == row['resolved_path']
+    assert sha(row['path']) == row['sha256'], row['path']
+manifest = read(dossier / 'pyochelin-source-manifest.json')
+mapping = lambda rows: {str(Path(row['path']).resolve()): row['sha256'] for row in rows}
+assert mapping(originals) == mapping(manifest['sources']) == mapping(prior['original_source_checks'])
+for row in manifest['sources']:
+    assert Path(row['path']).stat().st_size == row['bytes'], row['path']
+recheck = result['input_binding_recheck']
+assert recheck['status'] == 'passed' and recheck['uncached'] is True and recheck['files'] == 142
+assert recheck['stage'] == 'immediately_before_exclusive_receipt'
+assert (result['native_objects'], result['native_sides'], result['balances']) == (11, 54, 11)
+assert len(result['negative_controls']) == 7 and all(x['rejected'] for x in result['negative_controls'])
+assert (result['kgx']['nodes'], result['kgx']['edges'], result['kgx']['evidence']) == (43, 91, 242)
+for name in ['nodes', 'edges']:
+    assert sha(external / 'pyochelin-validation-integrated.artifacts/kgx' / (name + '.tsv')) == result['kgx'][name + '_sha256']
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+output = dossier / 'integrated-replay'
+assert not output.exists()
+output.mkdir()
+copied = []
+files = sorted(p for p in external.rglob('*') if p.is_file())
+assert len(files) == 7
+for path in files:
+    relative = path.relative_to(external)
+    target = output / relative
+    payload = path.read_bytes()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if path.suffix in {'.log', '.tsv'}:
+        target = target.with_name(target.name + '.json')
+        save(target, {'encoding': 'Lossless UTF-8; original bytes recover by UTF-8 encoding text.', 'original_path': str(path), 'original_sha256': sha(path), 'text': payload.decode('utf-8')})
+        assert hashlib.sha256(read(target)['text'].encode('utf-8')).hexdigest() == sha(path)
+    else:
+        with target.open('xb') as stream:
+            stream.write(payload)
+        assert sha(target) == sha(path)
+    copied.append({'original_path': str(path), 'original_sha256': sha(path), 'maintained_path': str(target.relative_to(root)), 'maintained_sha256': sha(target)})
+helper_copy = output / 'root-adoption.py.txt'
+helper_copy.write_bytes(Path(__file__).read_bytes())
+receipt = {
+    'status': 'accepted_maintained_source_replay_with_explicit_scope',
+    'accepted_at': datetime.now(timezone.utc).isoformat(),
+    'base': base,
+    'actual_execution': {'session': 53673, 'terminal_chunk': 'acc8e3', 'observed_exit_code': 0},
+    'result_sha256': sha(result_path),
+    'execution_sha256': sha(external / 'execution.json'),
+    'record_sha256': result['record_sha256'],
+    'root_fresh_formal_runtime_rehash_count': len(formal),
+    'original_source_binding_count': len(originals),
+    'original_source_verification': 'Root previously rehashed all 95 original bodies in the bound acceptance. This integrated helper independently rehashed all 95 at startup and uncached final recheck. This adoption compares all 95 resolved source paths/digests across that receipt, the current manifest and the actual replay, and verifies current sizes; it does not claim a third new root hash pass.',
+    'prior_root_source_acceptance': {'path': str(prior_path.relative_to(root)), 'sha256': sha(prior_path)},
+    'source_result_scope_preserved': result['scope'],
+    'actual_integration_scope': 'The immutable helper retains generic external-author wording. The actual executed arguments and all 47 freshly rehashed formal/runtime inputs bind the maintained target and integrated 216 authority root at the actual merged baseline. The replay is accepted in that observed scope; whole-corpus gates and independent scientific review remain separate.',
+    'final_recheck': recheck,
+    'counts': {'original_sources': 95, 'native_objects': 11, 'native_sides': 54, 'balances': 11, 'KGX_nodes': 43, 'edges': 91, 'evidence_blocks': 242, 'negative_controls_rejected': 7},
+    'checks': result['checks'],
+    'limits': result['limits'],
+    'copied': copied,
+    'helper_sha256': sha(helper_copy),
+}
+save(dossier / 'integrated-replay-root-adoption.json', receipt)
+print(json.dumps({'status': receipt['status'], 'formal_bindings_rehashed': len(formal), 'original_bindings_compared': len(originals), 'adoption_sha256': sha(dossier / 'integrated-replay-root-adoption.json')}))

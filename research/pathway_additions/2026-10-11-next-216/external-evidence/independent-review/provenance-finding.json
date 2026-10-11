@@ -1,0 +1,133 @@
+{
+  "observed_at": "2026-10-11T15:33:01.484413+00:00",
+  "status": "confirmed_minor_provenance_finding",
+  "issue_key": "pyochelin-pchf-edge-local-source-attribution",
+  "scope": "External independent whole-record source review; no canonical final approval or owner edits",
+  "target": {
+    "path": "/private/tmp/pathwaymech-pyochelin-author-20261011/draft/pyochelin-biosynthesis.yaml",
+    "sha256": "c72de0b065cf86ae43931868097237dd95ae2e3f5d2e326f3061c6d8b6d1ca0b"
+  },
+  "helper": {
+    "path": "/private/tmp/pathwaymech-pyochelin-author-20261011/draft/pyochelin-replay.py",
+    "sha256": "ced1468e0c51e2c3fe8cf51900c5b9e0cfedea82b29401ff014b957cd268dae6"
+  },
+  "input_capture": {
+    "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/initial-handoff-inputs/manifest.json",
+    "sha256": "c1543137b694e8e7098f4c4a2321a39f2de03c2005e7662109eb8dd31d9d8ae6"
+  },
+  "findings": [
+    {
+      "edge_id": "pch-edge-062",
+      "evidence_index": 0,
+      "evidence_before": {
+        "reference_id": "UniProtKB:Q9HWG4",
+        "source_assertion": "Current PAO1 identity and functional annotation support this gene-product role. Detailed PchD and PchE/F steps include ECO:0000250 or ECO:0000305 inference; this is not a claim of purified monomer sufficiency.",
+        "source_locator": "/results/2/primaryAccession; /results/2/organism/taxonId; /results/2/comments/0; /results/2/sequence/value"
+      },
+      "finding": "The cited current FUNCTION comment covers cysteine activation/loading, condensation, cyclization and HPTT release, but does not assign N-methylation. Claiming that annotation supports this edge role overstates the specific source.",
+      "bounded_fix": "Restrict this block to exact PAO1 sequence identity/general biosynthetic annotation; retain separately cited primary methylation evidence."
+    },
+    {
+      "edge_id": "pch-edge-063",
+      "evidence_index": 0,
+      "evidence_before": {
+        "reference_id": "UniProtKB:Q9HWG4",
+        "source_assertion": "Current PAO1 identity and functional annotation support this gene-product role. Detailed PchD and PchE/F steps include ECO:0000250 or ECO:0000305 inference; this is not a claim of purified monomer sufficiency.",
+        "source_locator": "/results/2/primaryAccession; /results/2/organism/taxonId; /results/2/comments/0; /results/2/sequence/value"
+      },
+      "finding": "The cited current FUNCTION comment describes release of HPTT-COOH, rather than mature pyochelin after reduction and methylation. It cannot by itself ground the mature-product release role asserted here.",
+      "bounded_fix": "Restrict to current identity/general biosynthesis and retain separately cited primary mature-release evidence; do not present HPTT release as the terminal reaction."
+    },
+    {
+      "edge_id": "pch-edge-063",
+      "evidence_index": 1,
+      "evidence_before": {
+        "reference_id": "PMID:30525512",
+        "source_assertion": "PchF releases pyochelin by thioester hydrolysis; the native I structure is a formal projection of the observed I/II products. The study names O85740 and uses PAO1 constructs; detailed methylation tests use analogues, not complete thiotemplate steady-state turnover.",
+        "source_locator": "collection/document/passage[offset=\"9139\" or offset=\"9446\" or offset=\"41012\" or offset=\"53276\" or offset=\"65484\"]/text"
+      },
+      "finding": "The selected PMID30525512 passages support PchF hydrolysis and construct/analogue limitations, but do not establish a native MetaCyc I structure as a projection of physiological I/II products. That source-mapping statement is curator synthesis already supported separately at edge037.",
+      "bounded_fix": "Remove the redundant endpoint-mapping clause from this primary-source block, or separate it into correctly attributed original-structure/mixture evidence. No reaction or node changes."
+    }
+  ],
+  "original_evidence": [
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/uniprot-pao1-pch.json",
+      "sha256": "feb27451b2bc1ea3463bb31a50b6513870e495bcb6203fdde3a95f28b92daba3",
+      "primary_accession": "Q9HWG4",
+      "selected_locator": "/results/2/comments/0",
+      "original_object": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000250",
+                "source": "UniProtKB",
+                "id": "A0A0H2ZGJ4"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "11208777"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "9846750"
+              }
+            ],
+            "value": "Involved in the biosynthesis of the siderophore pyochelin (PubMed:11208777, PubMed:9846750). Adenylates L-cysteine and loads it onto its peptidyl carrier domain via a thioester linkage to the phosphopanthetheine moiety (By similarity). Then forms a peptide bond between the salicyl-thiazolinyl intermediate bound to the second carrier domain of PchE and the cysteine bound to its own peptidyl carrier domain to form the salicyl-thiazolinyl-cysteinyl-S-PCP2 intermediate. It subsequently cyclizes the C-terminal cysteine to form the second thiazoline heterocycle in the salicyl-thiazolinyl-thiazolinyl-S-PCP2 intermediate (By similarity). When this intermediate is released by the action of a thioesterase, it produces the tricyclic acid hydroxyphenyl-thiazolyl-thiazolinyl-carboxylic acid (HPTT-COOH), an advanced intermediate containing the aryl-4,2-bis-heterocyclic skeleton of the bithiazoline class of siderophores (By similarity)"
+          }
+        ],
+        "commentType": "FUNCTION"
+      },
+      "alternative_domain_comment": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000250",
+                "source": "UniProtKB",
+                "id": "A0A0H2ZGJ4"
+              }
+            ],
+            "value": "Modular protein that contains a condensation/cyclization domain involved in the cyclization of the cysteine, an adenylation domain which activates the cysteine residue into an aminoacyl-AMP ester, a peptidyl carrier protein (PCP2) domain which bears a phosphopantetheinyl arm to attach the activated cysteine and a thioesterase domain (TE) that may release the newly synthesized peptide from the enzyme"
+          }
+        ],
+        "commentType": "DOMAIN"
+      }
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC6372355-bioc.xml",
+      "sha256": "44c81e2ba45ae788a520e9a0fdde1006980cb904222a3c3315079b3ead46d795",
+      "selected_original_passages": [
+        {
+          "offset": "9139",
+          "text": "The pchF (Uni-Prot ID O85740) overexpression construct was a gift from the laboratory of Christopher Walsh. The construct received was the kanamycin resistant, pET28b plasmid (Novagen)."
+        },
+        {
+          "offset": "9446",
+          "text": "The variant plasmid was produced by site directed mutagenesis using Herculase polymerase supplemented with 0-10% DMSO and the genomic DNA from Pseudomonas aeruginosa PAO1, which was purified using the DNeasy® Blood & Tissue Kit (Qiagen) as per the manufacturer’s instructions. The forward primer (5’-ATT AGA CAT ATG GTC GAG GCG CCG CCG CAG G-3’) including an NdeI site (underlined) and reverse primer (5’-TA ATA CTC GAG TCA GGT TCC GGC GCG CTG CGC AG-3’) including an XhoI site (underlined) were used to amplify the gene of interest. The amplified sequence was ligated into the kanamycin resistant pET28b plasmid (Novagen) digested with the same restriction enzymes. Upon sequencing, it was determined that there were an extra 2 nucleotides inserted before the stop codon. Therefore, using QuikChange XL (Agilent), a forward primer (5’-GCA GCG CGC CGG AAT GAC TCG AGC AC-3’) and reverse primer (5’-GTC CTC GAG TCA TTC CGG CGC GCT GC-3’) were designed to remove the 2-nucleotide insertion before the stop codon (underlined). The isolated plasmid sequence encodes the entire adenylation domain, methyltransferase domain, and thiolation domain, residues 502 to 1483 of PchF-FL."
+        },
+        {
+          "offset": "41012",
+          "text": "Using the synthesized substrate analogs, the steady-state capabilities of the stuffed methyltransferase domain of PchF-FL, PchF-AMT, and G667I-PchF-AMT were analyzed by a discontinuous assay measuring formation of the methylated product in the presence of excess AdoMet. Neither HPT-Cys-Me, HPToxT-CO2Et, nor HPToxTred-CO2− demonstrated methyl transfer after 1-hour incubation. Methylation of HPToxTred-CO2Et by both PchF-FL and PchF-AMT was observed, generating HPToxTred-M-CO2Et, and the substrate and product were separated by HPLC (Figure 3). Product formation was confirmed by secondary ion mass spectrometry. G667I-PchF-AMT did not catalyze methyltransferase activity, even after extending the assay to 10 hours. Kinetic parameters from the methylated product formation assay can be found in Table 2 and Michaelis-Menten plots can be seen in Figure S4. It is important to note that PchF-FL and PchF-AMT provided comparable kinetic parameters using HPToxTred-CO2Et as a substrate analog, indicating that the three-domain fragment is a viable substitute for the full-length protein. The kcat was 1.5-fold greater and the KM was 2.1-fold greater for PchF-AMT than that of PchF-FL. This resulted in PchF-AMT having a 1.4-fold lower catalytic efficiency compared to PchF-FL. An orthogonal methyltransferase activity assay was developed to determine if the enzymes are capable of methylating l-Cys-OEt. The assay is a three-hour endpoint assay measuring the formation of the coproduct, AdoHCys, separating the reaction components by UPLC and measuring absorbance at 260 nm (Figure S6). HPToxTred-CO2Et was used as a positive control. PchF-FL generated 25 ± 6 μM AdoHCys and PchF-AMT generated 33 ± 3 μM AdoHCys, within error of equimolar turnover (30 μM HPToxTred-CO2Et) at the three-hour incubation. Importantly, the quantitation of AdoHCys was within error of negative controls with l-Cys-OEt as a substrate at 3 mM, two orders of magnitude greater than the HPToxTred-CO2Et concentration, indicating that l-Cys-OEt is not a substrate analog of PchF methylation (Figure 4)."
+        },
+        {
+          "offset": "53276",
+          "text": "Steady-state kinetic parameters were measured for PchF-FL, PchF-AMT, and G667I-PchF-AMT, for both the adenylation and methyltransferase activity. The adenylation activity assay showed that all three constructs, PchF-FL, PchF-AMT, and G667I-PchF-AMT, had similar adenylation parameters, indicating that the methyltransferase variant did not negatively impact the larger didomain (Table 1). While the catalytic efficiency was an order of magnitude less than that previously reported, the assays are significantly different, as documented in the Results section, and similar differences are well documented. A newly defined, discontinuous HPLC methyltransferase assay measuring formation of the methylated product gave reliable kinetic parameters, with the G667I-PchF-AMT variant showing complete loss of methyltransferase activity. While steady state kinetics could be measured for both adenylation and methyltransferase activities, a steady state is not possible in the full thiotemplate production of pyochelin, which is essentially a series of single turnover reactions in a biosynthetic assembly line. Nevertheless, these parameters are useful for testing mechanistic hypotheses."
+        },
+        {
+          "offset": "65484",
+          "text": "A) Biosynthetic pathway for pyochelin production. PchA, an isochorismate synthase, and PchB, an isochorismate pyruvate lyase, convert chorismate to salicylate. PchD-G consists of 12 different domains constituting three NRPS modules with three tailoring domains. Together, they assemble pyochelin from salicylate and two l-cysteines, with co-substrates AdoMet, ATP, and NADPH. AdoMet = S-adenosylmethionine, AdoHcys = S-adenosylhomocysteine. PchD is a stand-alone adenylation domain (A; blue). PchE has N- and C-terminal thiolation domains (T; yellow), a cyclization domain (Cy; grey), an adenylation domain (A; blue) and a stuffed epimerase domain (E; purple). PchG is a stand-alone NADPH-dependent reductase. PchF is a full-NRPS module consisting of 5 different domains: a cyclization domain (Cy; grey), adenylation domain (A; blue), stuffed methyltransferase tailoring domain (M; red), thiolation domain (T; yellow), and thioesterase domain (TE; green). B) PchF-FL refers to the “full-length” protein, whereas PchF-AMT only includes the stuffed adenylation methyltransferase didomain and the thiolation domain. G667I-PchF-AMT has a mutation to the proposed AdoMet binding domain of the variant PchF-AMT. C) The proposed order of chemistries performed by PchF. PchF incorporates l-cysteine to the growing peptide chain. The Cy-domain of PchF continues chain elongation by generating a peptide bond between l-cysteine and the upstream hydroxyphenyl-d-thiazoline moiety of PchE (an intermediate attached to the Ppant of the T-domain of PchE). The Cy-domain then cyclizes the cysteine to form a hydroxyphenyl-(d)-thiazoline-(l)-thiazoline intermediate. PchG (green) reduces the terminal thiazoline of the hydroxyphenyl-bis-heterocycle to thiazolidine using NADPH. The stuffed methyltransferase domain of PchF catalyzes the AdoMet-dependent methyl transfer (highlighted in red) onto the nitrogen of the newly reduced thiazolidine ring before transferring the complete heterocyclic siderophore to the TE-domain releasing the fully mature pyochelin by hydrolysis in the TE-domain. The alternate synthetic schemes where methyl transfer occurs at a different position in the sequence of biosynthesis are shown in Figure S1. D) During reconstitution assays, premature hydrolysis releases peptidyl intermediates during biosynthesis. Intermediates previously recovered by Walsh and colleagues are noted with an asterisk. Intermediate analogs used as potential substrates in this study are surrounded by a square. Nomenclature of intermediates is as follows: HP, hydroxyphenyl; Tox, thiazole; T, thiazoline; Tred, thiazolidine; CO2- carboxyl; Et, ethyl; Me/M, methyl."
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "All catalytic roles remain supported by separately attached primary evidence.",
+    "No node, reaction side, coefficient, pathway boundary or physiological endpoint correction is proposed.",
+    "Reviewer previously proposed separate bounded endpoint refinement; these edge062/063 blocks were unchanged by it.",
+    "Independent helper binding probe is a separate technical finding."
+  ]
+}

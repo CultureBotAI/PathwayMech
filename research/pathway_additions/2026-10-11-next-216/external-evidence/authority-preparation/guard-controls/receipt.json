@@ -1,0 +1,199 @@
+{
+  "status": "passed",
+  "at": "2026-10-11T15:52:29.653661+00:00",
+  "helper_sha256": "321d923bf31c8661a6f15fa386724b7083d0e6acb7851b86aa8a5f90d1e3eab0",
+  "selection_fixture_scope": "Exact successful preliminary selection against identical B snapshot bytes, historical baseline state retained. Guards exit before canonical builders and do not claim a positive run.",
+  "cases": [
+    {
+      "name": "optimized",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-O",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/selected/selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-optimized"
+      ],
+      "started_at": "2026-10-11T15:52:27.106004+00:00",
+      "finished_at": "2026-10-11T15:52:27.481416+00:00",
+      "exit_code": 1,
+      "expected_rejection": "Assertions must be enabled",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/optimized.log",
+      "log_sha256": "1f9dae8bd163a0f110e24ea7556383b3b8c91b06c1bf00a12fde0fd5e8b71948",
+      "no_success_receipt": true
+    },
+    {
+      "name": "unknown_apply",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/selected/selection.json",
+        "--apply",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-unknown_apply"
+      ],
+      "started_at": "2026-10-11T15:52:27.481824+00:00",
+      "finished_at": "2026-10-11T15:52:27.715485+00:00",
+      "exit_code": 2,
+      "expected_rejection": "unrecognized arguments",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/unknown_apply.log",
+      "log_sha256": "a51e19552d5dce847dad8fe82813b87d56dc02f287d0e1b8868ce02dc2f89993",
+      "no_success_receipt": true
+    },
+    {
+      "name": "existing_output",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/selected/selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/existing"
+      ],
+      "started_at": "2026-10-11T15:52:27.716692+00:00",
+      "finished_at": "2026-10-11T15:52:27.985778+00:00",
+      "exit_code": 1,
+      "expected_rejection": "FileExistsError",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/existing_output.log",
+      "log_sha256": "558de86e631a3b0a8dfeb8b362635e89dc2b6d2e9560e680b9a69089f3895fab",
+      "no_success_receipt": true
+    },
+    {
+      "name": "dangling_output",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/selected/selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-dangling_output"
+      ],
+      "started_at": "2026-10-11T15:52:27.986285+00:00",
+      "finished_at": "2026-10-11T15:52:28.231971+00:00",
+      "exit_code": 1,
+      "expected_rejection": "FileExistsError",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/dangling_output.log",
+      "log_sha256": "ebcbe18bddcd1f60144eb8e7f08b7d451b573f1e3b77a53d908241d78cddca6b",
+      "no_success_receipt": true
+    },
+    {
+      "name": "protected_output",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/selected/selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-next-215-20261011/authority-test-must-not-exist"
+      ],
+      "started_at": "2026-10-11T15:52:28.232531+00:00",
+      "finished_at": "2026-10-11T15:52:28.518998+00:00",
+      "exit_code": 1,
+      "expected_rejection": "outside protected input trees",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/protected_output.log",
+      "log_sha256": "9345f78b9c2bb00383c0c703ea731f23a1591e7b3857ca2c974c414afe882a8f",
+      "no_success_receipt": true
+    },
+    {
+      "name": "stale_target",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/stale_target-selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-stale_target"
+      ],
+      "started_at": "2026-10-11T15:52:28.526260+00:00",
+      "finished_at": "2026-10-11T15:52:28.790439+00:00",
+      "exit_code": 1,
+      "expected_rejection": "input digest mismatch",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/stale_target.log",
+      "log_sha256": "4ecc74a60083bceddd9720a0c17b3d6e52c29bed73eea63f2f1a4de395bf894c",
+      "no_success_receipt": true
+    },
+    {
+      "name": "stale_policy",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/stale_policy-selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-stale_policy"
+      ],
+      "started_at": "2026-10-11T15:52:28.798416+00:00",
+      "finished_at": "2026-10-11T15:52:29.049246+00:00",
+      "exit_code": 1,
+      "expected_rejection": "input digest mismatch",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/stale_policy.log",
+      "log_sha256": "667285153e9e5e328b5863eea4b1f662f49752fee1395a1b5e2ef36e1cd4908e",
+      "no_success_receipt": true
+    },
+    {
+      "name": "manifest_key_collision",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/manifest_key_collision-selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-manifest_key_collision"
+      ],
+      "started_at": "2026-10-11T15:52:29.060103+00:00",
+      "finished_at": "2026-10-11T15:52:29.357488+00:00",
+      "exit_code": 1,
+      "expected_rejection": "manifest collision",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/manifest_key_collision.log",
+      "log_sha256": "5f958dea45e785507eea5ad91e1f064ce5917552388f7f9cd08d124aec57b437",
+      "no_success_receipt": true
+    },
+    {
+      "name": "manifest_path_collision",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/dry-run-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/manifest_path_collision-selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/never-manifest_path_collision"
+      ],
+      "started_at": "2026-10-11T15:52:29.368151+00:00",
+      "finished_at": "2026-10-11T15:52:29.653428+00:00",
+      "exit_code": 1,
+      "expected_rejection": "manifest collision",
+      "log": "/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/guard-controls/manifest_path_collision.log",
+      "log_sha256": "762b6744c2b4874fb38712f838d143e932bfdb89359a434ee35f80323ce0d1d6",
+      "no_success_receipt": true
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+from pathlib import Path
+from collections import Counter
+from lxml import etree as E
+import yaml,json,sqlite3,hashlib,datetime,importlib.util
+R=Path('/private/tmp/pathwaymech-next-215-20261011');D=Path('/private/tmp/pathwaymech-pyochelin-author-20261011/draft');W=Path(__file__).parent
+raw=yaml.safe_load((W/'initial-target.yaml').read_text());m=json.loads((D/'pyochelin-source-manifest.json').read_text());O=Path(m['roles']['native_originals'])
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def native(f):
+ root=E.parse(str(O/(f+'.xml'))).getroot();xs=[n for n in root if n.get('frameid')==f];assert len(xs)==1;return xs[0]
+pw=E.parse(m['roles']['native_pathway']).xpath('/ptools-xml/Pathway[@frameid="PWY-6408"]')[0]
+members={n.get('frameid') for n in pw.findall('reaction-list/Reaction')};assert len(members)==11
+assert {x['id'] for x in raw['reactions']}=={'MetaCyc:'+f for f in members}
+con=sqlite3.connect('file:'+m['roles']['chebi']+'?mode=ro',uri=True)
+chemical=[];net=Counter();mapping={};locators=[]
+for e in raw['mechanistic_edges']:
+ for i,v in enumerate(e['evidence']):
+  loc=v['source_locator'];match=__import__('re').match(r'ptools-xml/(Reaction|Protein|Compound)\[@frameid="([^"]+)"\]/(left|right)\[\*/@frameid="([^"]+)"\]',loc)
+  if match:
+   typ,f,side,item=match.groups();n=native(f);terms=[x for x in n.findall(side) if any(c.get('frameid')==item for c in x)];assert len(terms)==1,(e['id'],i,loc)
+   assert 'coefficient 1' not in v['source_assertion'] or (terms[0].findtext('coefficient') or '1')=='1'
+   if e['predicate'] in ['consumes','produces']:
+    cid=e['subject'] if e['predicate']=='consumes' else e['object'];mapping[item]=cid
+    if cid.startswith('CHEBI:'):
+     facts=dict(con.execute('select predicate,value from statements where subject=? and value is not null',(cid,)))
+     assert facts['chemrof:inchi_string']==native(item).findtext('inchi'),(item,cid)
+    chemical.append({'edge':e['id'],'frame':f,'side':side,'native':item,'selected':cid})
+   locators.append({'edge':e['id'],'evidence':i,'native_locator_exists':True})
+  match=__import__('re').match(r'ptools-xml/(Protein|Compound)\[@frameid="([^"]+)"\]/(inchi|common-name)',loc)
+  if match:
+   typ,f,field=match.groups();n=native(f);assert n.tag==typ and n.find(field) is not None,(e['id'],i,loc)
+   if 'Protein class' in v['source_assertion']: assert n.get('class')=='true'
+rows=[]
+for f in sorted(members):
+ n=native(f);sides={s:[(next(c for c in x if c.get('frameid')).get('frameid'),int(x.findtext('coefficient')or'1')) for x in n.findall(s)] for s in ['left','right']}
+ assert n.findtext('reaction-direction') in ['LEFT-TO-RIGHT','PHYSIOL-LEFT-TO-RIGHT']
+ for side,pred in [('left','consumes'),('right','produces')]:
+  actual=Counter((e['subject'] if side=='left' else e['object']) for e in raw['mechanistic_edges'] if e['predicate']==pred and (e['object'] if side=='left' else e['subject'])=='MetaCyc:'+f)
+  want=Counter({mapping[i]:c for i,c in sides[side]});assert actual==want,(f,actual,want)
+  for i,c in sides[side]:net[i]+=(-1 if side=='left' else 1)*c*(2 if f=='RXN-11115' else 1)
+ rows.append({'id':f,'direction':n.findtext('reaction-direction'),'sides':sides})
+net={k:v for k,v in net.items() if v};assert net=={'CPD-110':-1,'ATP':-3,'PROTON':3,'PPI':3,'CYS':-2,'AMP':3,'WATER':1,'NADPH':-1,'NADP':1,'S-ADENOSYLMETHIONINE':-1,'ADENOSYL-HOMO-CYS':1,'CPD-9992':1},net
+spec=importlib.util.spec_from_file_location('builder',R/'scripts/build_source_identifier_snapshot.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+proposal=json.loads((D/'pyochelin-authority-proposal.json').read_text());authorities=[]
+for row in proposal['source_manifest_additions']:
+ p=Path(row['raw_path']);assert sha(p)==row['sha256']
+ terms=list(mod.metacyc_terms(p.read_bytes().decode('utf-8',errors='surrogateescape'))) if row['kind']=='metacyc-html' else list(mod.uniprot_terms(json.loads(p.read_text())))
+ authorities.extend({'id':i,'label':lab,'aliases':aliases} for i,lab,aliases in terms)
+byid={r['id']:r for r in authorities}
+for n in raw['participants']+raw['reactions']:
+ if n['id'] in byid: assert n['label'] in [byid[n['id']]['label'],*byid[n['id']]['aliases']],(n,byid[n['id']])
+# Entire original comment/sequence batch is inspected separately; this check verifies every actual pointer.
+u=json.loads(Path(m['roles']['pao1_uniprot']).read_text());pointer_count=0
+for e in raw['mechanistic_edges']:
+ for v in e['evidence']:
+  if v['reference_id'].startswith('UniProtKB:'):
+   for ptr in __import__('re').findall(r'/results/\d+(?:/[A-Za-z_]+|/\d+)+',v['source_locator']):
+    obj=u
+    for k in ptr[1:].split('/'):obj=obj[int(k)] if isinstance(obj,list) else obj[k]
+    pointer_count+=1
+out={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed_bounded_original_native_authority_and_side_checks','target_sha256':sha(W/'initial-target.yaml'),'source_members':rows,'chemical_edges':len(chemical),'material_bridges':11,'derived_formal_net':net,'native_locator_count':len(locators),'uniprot_pointer_count':pointer_count,'canonical_original_authority_terms':authorities,'limits':['Carrier formulas are qualified reactive-site derivations, not full polypeptide compositions.','Net ATP use is algebraic, not a measured turnover yield.','This script does not replace independent human primary/evidence review.']}
+(W/'native-check.json').write_text(json.dumps(out,indent=2)+'\n');print('PASS',len(members),len(chemical),'net and',pointer_count,'pointers')

@@ -1,0 +1,21 @@
+from pathlib import Path
+from itertools import product
+from datetime import datetime, UTC
+import json, re, hashlib
+b=Path(__file__).absolute().parent;o=b/'originals'
+pao={x['primaryAccession']:x for x in json.loads((o/'uniprot-pao1-pch.json').read_text())['results']};rows=[]
+bases='TCAG';aas='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';codons={''.join(c):aa for c,aa in zip(product(bases,repeat=3),aas,strict=True)}
+for af,old,new in [('AF184620','Q9RFM9','Q9HWG3'),('AF184621','Q9RFM8','G3XCV2'),('AF184622','Q9RFM7','Q9HWG4')]:
+ t=(o/(af+'.embl')).read_text();strain=re.search('/strain="([^"]+)"',t).group(1);pid=re.search('/protein_id="([^"]+)"',t).group(1)
+ dna=''.join(re.findall('[acgt]+',t.split('\nSQ   ')[1].split('\n',1)[1])).upper();assert dna.startswith('ATG') and len(dna)%3==0
+ tr=''.join(codons[dna[i:i+3]] for i in range(0,len(dna),3));assert tr[-1]=='*' and '*' not in tr[:-1];tr=tr[:-1]
+ ft='\n'.join(line[5:] for line in t.splitlines() if line.startswith('FT   '))
+ given=''.join(re.search('/translation="(.*?)"',ft,re.S).group(1).split())
+ oldseq=json.loads((o/('uniprot-'+old+'.json')).read_text())['sequence']['value'];newseq=pao[new]['sequence']['value'];assert tr==given==oldseq
+ rows.append(dict(accession=af,source_strain=strain,protein_id=pid,old_uniprot=old,sequence_length=len(tr),sequence_sha256=hashlib.sha256(tr.encode()).hexdigest(),original_translation_matches_current_old_uniprot=True,pao1_accession=new,pao1_identical=tr==newseq,pao1_length=len(newseq),same_length_substitutions=sum(a!=c for a,c in zip(tr,newseq,strict=False)) if len(tr)==len(newseq) else None))
+x=json.loads((o/'RCSB-7EMY.json').read_text());s=x['entity_poly']['pdbx_seq_one_letter_code_can'];target=pao['G3XCV2']['sequence']['value']
+pdb=dict(entity='7EMY/1',length=len(s),pao1_length=len(target),equals_pao1=s==target,contains_pao1=target in s,source_organisms=x.get('rcsb_entity_source_organism'),reference_ids=x['rcsb_polymer_entity_container_identifiers'].get('reference_sequence_identifiers'))
+assert target in s
+r=dict(at=datetime.now(UTC).isoformat(),status='passed_exact_ENA_translation_and_PchE_structural_sequence_checks',rows=rows,pche_deposit=pdb,limits=['No exact engineered construct identity for the old 1999/2001 papers is established here','PA14 and PAO1 homologues remain distinguished','PDB-deposited PchE sequence supports the PAO1 core; tag and mutation scope is retained from original Methods'])
+with (b/'sequence-check.json').open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+print(json.dumps(r,indent=2))

@@ -1,0 +1,1201 @@
+# Pyochelin biosynthesis: scientific currentness after exact-byte fixture packaging
+
+- Review: 20261011T164128Z-pyochelin-packaging-scientific-successor
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T16:33:21.318190Z
+- Finished UTC: 2026-10-11T16:41:28.190949Z
+- Reviewer: Codex reviewer (/root/pyochelin_packaging_successor) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The byte-identical complete Pyochelin target retains its supported scientific assessment with the original biochemical and source-access limitations. Issue 401 is an already-applied evidence-packaging correction: seven wrappers preserve every original mutation byte and all historical mappings. Current render/strict validation and comprehensive file whitespace pass; earlier full tests, source replay and graph results are reused only on verified unchanged inputs. No unresolved corrective finding remains within this current scientific and packaging scope. Final staged admission and publication remain separate work.
+
+## Scope And Provenance
+
+One complete unchanged maintained Pyochelin record, with scientific currentness reassessed against the preserved prior full review, fresh complete native reaction/side checks and selected primary-source spot checks; full packaging and historical-recovery assessment.
+
+Selection: Exact GO:0042864 record SHA256 b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b and packaging issue 401 successor seal c7cd06b50526f91c84ae3ef7349650aa060f57bcabaeea40152898a9e8256b41.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 3fb840bf48d871bc37576cc669d23441c0206e66.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| GO:0042864 | data/pathways/pyochelin-biosynthesis.yaml | maintained | pyochelin biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Prior canonical review history check | passed | True | GO:0042864 | Actual 63027 terminal 0: 88 valid review bundles. |
+| Canonical current input inspection | passed | True | GO:0042864 | Actual 84436 terminal 0; current base and formal hashes captured before final assessment. |
+| Independent original-byte and native-source recovery | passed | True | GO:0042864 | Actual dec8ad exit 0; seven round trips, five aliases, 616 historical recoveries, all 11 native objects and 54 sides, 92 smaller sources and 47 runtime inputs. |
+| Current sealed snapshot and whitespace reassessment | passed | True | GO:0042864 | The actual final reassessment validates 121 formal inputs, 384 sealed dossier files, 17 owners and all historical recoveries. Per-file no-index whitespace checks cover the current sealed files and seal itself; tracked git diff --check also passes. |
+| Preserved pre-remedy staged whitespace failure | failed | False | GO:0042864 | Historical staged command exited 2 on seven deliberate EOF mutations before any commit. Current lossless wrappers address the cause; this historical failure is not mislabeled a successful gate. |
+| Current coordinated render | passed | True | GO:0042864 | Actual root session 75225 exited 0. Command ran 2026-10-11T16:34:09.245220+00:00 to 2026-10-11T16:34:37.572290+00:00; exact preserved raw and wrapped logs independently compared. |
+| Current coordinated validate | passed | True | GO:0042864 | Actual root session 75225 exited 0. Command ran 2026-10-11T16:34:37.573013+00:00 to 2026-10-11T16:36:11.633810+00:00; exact preserved raw and wrapped logs independently compared. |
+| Unchanged-input reuse of original test | passed | True | GO:0042864 | Original actual root 84346 exit 0, run 2026-10-11T16:04:46.198049+00:00 to 2026-10-11T16:13:44.761485+00:00. Original logs freshly verified; biological record, authority and runtime/test scope are unchanged. No new run claimed. |
+| Unchanged-input reuse of original lint | passed | True | GO:0042864 | Original actual root 84346 exit 0, run 2026-10-11T16:04:46.202249+00:00 to 2026-10-11T16:04:46.488119+00:00. Original logs freshly verified; biological record, authority and runtime/test scope are unchanged. No new run claimed. |
+| Unchanged-input reuse of original identifiers | passed | True | GO:0042864 | Original actual root 84346 exit 0, run 2026-10-11T16:04:46.488699+00:00 to 2026-10-11T16:05:09.622869+00:00. Original logs freshly verified; biological record, authority and runtime/test scope are unchanged. No new run claimed. |
+| Unchanged-input reuse of original kgx | passed | True | GO:0042864 | Original actual root 84346 exit 0, run 2026-10-11T16:05:09.623395+00:00 to 2026-10-11T16:05:34.799553+00:00. Original logs freshly verified; biological record, authority and runtime/test scope are unchanged. No new run claimed. |
+| Unchanged-input reuse of complete source replay | passed | True | GO:0042864 | Original actual 53673 exit 0; 95 original bodies and 47 formal/runtime bindings. Current 47 bindings equal; 92 smaller originals freshly hashed in preparation. No third large-database replay claimed. |
+| Unchanged-artifact reuse of independent graph audit | passed | True | GO:0042864 | Original independent 99962 exit 0. Current page and complete downloads equal the original audited artifact hashes after the new render. |
+
+## Scientific And Domain Assessments
+
+### Unchanged whole-route scientific target
+
+identity: supported. Targets: GO:0042864.
+
+The entire maintained target remains the previously independently assessed complete eleven-object PWY-6408 implementation of GO:0042864. Fresh native membership and side parsing confirm the source-to-record route. PchAB supply, PchC editing, transport, iron loading and regulation remain outside the selected boundary.
+
+### Reaction and participant scope retained after packaging
+
+evidence: supported. Targets: GO:0042864.
+
+All 91 mechanistic edges and 242 evidence blocks remain byte-identical to the full independently assessed record. Fresh source spot checks reaffirm the PAO1 identity/engineered-construct distinction, PchE carrier sites and preparation-specific dimer/Mg, PchF reduction-before-methylation/release sequence and PchG analogue limits. Exact historical sequence translation and all chemical grounding remain explicitly supported by the unchanged prior full review and replay.
+
+### Source-defined product projection remains qualified
+
+grounding: supported. Targets: GO:0042864.
+
+The native I monoanion is retained as one source-defined member of the observed interconverting I/II products. Neutral ChEBI I is a protonation-normalized comparison, not exact charge equivalence. No exclusive I synthesis, selective I release, complete carrier formula, fixed DEFG assembly or measured three-ATP yield is introduced by this packaging correction.
+
+### Already-applied issue 401 correction is independently recoverable
+
+provenance: supported. Targets: GO:0042864.
+
+The staged failure was real: raw maintained negative fixtures carried intentional terminal blank lines. Seven new lossless wrappers preserve the exact mutation bytes, five aliases and all 616 historical mappings. The original plans, initial failure, original scientific review and adoption stay immutable. No canonical finding identity exists for external issue 401; this already-applied correction is recorded as a bounded evidence-linked assessment instead of fabricated resolved lineage.
+
+### Prior science and external issues 397/398 remain intact
+
+provenance: supported. Targets: GO:0042864.
+
+The prior canonical review and every one of its 82 formal input archives remain exact. All 323 original sealed dossier inputs recover through current exact bytes, seven wrappers or the historical README copy. The five-scalar PchF attribution correction and late-input replay-binding fix for external issues 397/398 retain their original observations and accepted successor evidence; no initial failed test or unsafe PASS is erased.
+
+### Current render and validation with explicit unchanged-input reuse
+
+schema: supported. Targets: GO:0042864.
+
+Packaging history preceded the new render; current strict validation passes all 217 pathway records and 352 history records. The unchanged biological, authority and runtime inputs justify reuse of the already observed 1,256-test pass and full source replay. Current per-file whitespace acceptance includes the new evidence packaging; final staged admission is a separate still-required lifecycle gate.
+
+### Rendered network and export identity preserved
+
+graph: supported. Targets: GO:0042864.
+
+The current rendered record page and all downloads remain byte-identical to the independent programmatic graph audit after rerendering. That preserves 42 SVG nodes, 43 KGX nodes, 91 edges and 242 evidence blocks, plus the prior catalog preservation established by the original audit. This review does not assert browser interaction or deployed-byte verification.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/pyochelin-biosynthesis.yaml; Entire record, all 11 reactions, 30 participants, one taxon, 91 edges, 242 evidence blocks and 67 references | supports | Entire unchanged maintained record read. Current exact bytes equal the prior independent scientific target; biochemical and source qualifications remain explicit. |
+| prior-review | reviews/structured/20261011T162143Z-pyochelin-independent-review/review.yaml; Complete canonical YAML and paired rendered Markdown; all 11 assessments, 39 evidence entries, checks, limitations and empty findings | supports | The first canonical independent scientific assessment remains immutable and valid. This successor explicitly relies on that full source review for unchanged scientific claims rather than representing its original experiments and checks as newly repeated work. |
+| preparation | /private/tmp/pathwaymech-next-216-packaging-scientific-review/preparation-check.json; Seven wrapper round trips, 616 historical recoveries, 82 prior formal archives, 11 native objects/54 sides, 92 smaller original hashes and 47 runtime bindings | supports | Fresh independent preparation passed. All archived mutation payloads and aliases recover exact original bytes, native membership/sides are freshly parsed, and the unchanged biological and source evidence is verified against the prior review. |
+| preparation-attempt | /private/tmp/pathwaymech-next-216-packaging-scientific-review/preparation-execution.json; Actual dec8ad exit 0; initial verifier-only 51e920 exit 1 retained under initial-recovery-attempt | supports | The first external verifier assumed historical wrappers used the new text key. Existing wrappers use content. Correcting only this external decoding assumption passed; no maintained product defect or content mutation occurred. |
+| initial-check | /private/tmp/pathwaymech-next-216-packaging-scientific-review/initial-check-execution.json; Actual canonical base-aware check command, start, finish, exit 0 and logs | supports | Check session 63027 exited 0 with 88 valid pre-existing review bundles, including the original Pyochelin review. |
+| inspect | /private/tmp/pathwaymech-next-216-packaging-scientific-review/inspect-execution.json; Final canonical inspect actual command, exit 0 and captured current input set | supports | Canonical inspection session 84436 exited 0 before the final assessment and captured 121 current formal input hashes at actual base 3fb840bf48d871bc37576cc669d23441c0206e66. |
+| current-check | /private/tmp/pathwaymech-next-216-packaging-scientific-review/final-reassessment.json; Current input, successor seal, historical recovery, log reuse and comprehensive whitespace checks | supports | Final independent reassessment freshly verifies all current formal inputs, 384 sealed dossier files and 17 owners, all 323 historical integration inputs and 14 original owners. Current render/validation and original reused gates retain exact command logs and scope. |
+| mapping | research/pathway_additions/2026-10-11-next-216/packaging-correction/successor-map.json; All seven previous maintained paths, wrapper paths, digests, original sizes and five alias mappings | supports | Issue 401 changes only storage representation of seven intentional negative-test mutations. Decoding the new UTF-8 JSON text restores exact original bytes including every terminal blank line. |
+| packaging-failure | research/pathway_additions/2026-10-11-next-216/packaging-correction/failure.json; Actual original session 61610 exit 1, staged git diff exit 2, original 375 staged inputs and seven affected payloads | supports | The original unstaged whitespace check missed untracked fixtures. The staged check caught the real packaging defect before any commit. The failure and pre-remedy bytes remain immutable evidence. |
+| independent-packaging | research/pathway_additions/2026-10-11-next-216/packaging-correction/independent-successor-review.json; Wrapper checks, 368 unchanged initial staged files, 616 recoveries and explicit final-stage limit | supports | The separate PR reviewer independently compared applied wrappers with pre-remedy captures and accepted the bounded remedy. This successor also independently reconstructed all payloads and historical mappings; the actual final staged gate remains a separate admission step. |
+| root-packaging | research/pathway_additions/2026-10-11-next-216/packaging-correction/root-adoption.json; Original independent receipt hash, root round trips, aliases and historical recoveries | supports | Root separately adopted the independent remedy after its own byte comparisons; original plans, prior scientific review and adoption were preserved. |
+| current-rechecks | research/pathway_additions/2026-10-11-next-216/packaging-correction/rechecks-root-adoption.json; Current render and strict validation execution, 14 unchanged owners, 47 unchanged runtime bindings and precise reused-gate scope | supports | Root actual session 75225 exited 0 for the post-history render and strict corpus validation. All 217 records, 352 history records and 13,776 evidence blocks passed. Original tests, replay and graph checks are reused only on unchanged inputs, with no repeat falsely claimed. |
+| successor-seal | research/pathway_additions/2026-10-11-next-216/integration-successor-receipt.json; Current owners, 384 sealed dossier inputs, original-snapshot recovery and remaining lifecycle gates | supports | Current integration is sealed after the packaging history and successful rerender/validation. The prior snapshot remains independently reconstructable through seven wrapper mappings and the archived original README. |
+| history | research/pathway_additions/2026-10-11-next-216/packaging-correction/history-execution.json; Actual infrastructure-history command and receipt before successor render | supports | The packaging history was appended before the 16:34 UTC render. No scientific record status was promoted and this reviewer wrote no history. |
+| gates | research/pathway_additions/2026-10-11-next-216/full-gate-receipts.json; Original render, validate, test, lint, identifiers, KGX and tracked-diff command results and exact logs | supports | Original full tests passed with 1,256 passed, three skipped and three warnings. The original tracked-only whitespace success is bounded and superseded for added-file coverage by the packaging checks; it never proved the untracked fixtures clean. |
+| integrated-replay | research/pathway_additions/2026-10-11-next-216/integrated-replay-root-adoption.json; Original actual maintained replay and exact 47 formal/runtime plus 95 original body bindings | supports | The original complete source replay remains valid for unchanged science/runtime. This reviewer freshly hashes 47 runtime/formal inputs and 92 smaller original bodies; the three large authority database hashes rely on the already observed full replay. |
+| graph | research/pathway_additions/2026-10-11-next-216/independent-graph-review/graph-audit.json; Original programmatic SVG/KGX parity and complete baseline preservation | supports | The post-packaging page and download bytes remain equal to the independently audited artifacts: 42 SVG nodes, 43 KGX nodes, 91 edges and all 242 evidence blocks. Browser interaction is outside this scope. |
+| native-pathway | /private/tmp/pathwaymech-next-216-source-leads-20261011/originals/PWY-6408.xml; Pathway PWY-6408 complete native reaction-list and reaction-ordering; all 11 original reaction bodies | supports | Fresh parsing confirms the whole selected source route begins at supplied salicylate and retains every native listed reaction, without adding the aggregate composite as a twelfth transformation. |
+| pche-primary | /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC8807600.xml; Sections Sec1, Sec4, Sec5 and Sec9: domain organization, dimer, cysteinyl-AMP/Mg and PAO1 expression constructs | supports | Fresh selected source inspection supports PchE carrier-domain distinction, preparation-specific homodimer and bound magnesium, and PAO1 gene origin with C-terminal engineered tags. The source does not establish a fixed PchDEFG heterotetramer. |
+| pchf-primary | /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC6372355-bioc.xml; BioC passage offsets 9139, 9446, 41012, 53276 and 65484 | supports | Fresh selected passages separate O85740/PAO1 construct context, analogue methylation kinetics and proposed ordering through thioesterase hydrolysis. Analogue steady-state measurements do not establish full thiotemplate steady-state turnover. |
+| pchg-primary | /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC5046821-bioc.xml; BioC passage offsets 4948, 18051, 32621 and 34049 | supports | Fresh source spot checks preserve PAO1-derived PchG and NADPH assays while retaining the authors limitations on free analogues, rate and physiological stereochemistry. Irp3 structure is not transferred to PchG. |
+| older-primary | /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/pubmed-primary.xml; Indexed abstracts for PMID 11467965, 15375116 and 17938167 | supports | Fresh abstract inspection supports complete reconstitution, PchF release, PchC editing rather than replacement release, and interconverting I/II products. Abstract-only access and historical construct scope remain explicit. |
+| endpoint-native | /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/CPD-9992.xml; Compound/inchi and native protonation/stereochemical layers | supports | The exact native product is a pyochelin I monoanion projection. It does not establish exclusive physiological I production or stereoselective I release. |
+| endpoint-chebi | /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/chebi-67183.json; name, chemical_data/charge, default_structure/standard_inchi | supports | The neutral ChEBI I structure is an explicitly protonation-normalized comparison to the native monoanion, with no charge-equivalence claim. |
+
+## Limits And Additional Notes
+
+- The issued I monoanion is one observed-product projection within interconverting I/II physiology; no exclusive I product or I-selective release is established.
+- Native carrier states describe reactive domain classes, not independent whole-protein stoichiometry or a fixed DEFG complex. Reactive-group balances do not supply full protein formulas or unspecified absolute stereochemistry.
+- Historical PA14 and PAO1 constructs differ from current PAO1 proteins. Current inferred annotations and unreviewed PchG identity are not upgraded to direct current-construct experimental proof.
+- Older studies retain abstract-only availability unless a separately inspected full source is explicitly identified. Web-only full text has no invented local response-body digest.
+- The three-ATP net is derived from native equations with cysteine adenylation counted twice, not a measured cellular energy yield.
+- Expression-module membership is computational context only. Null-regulator parsing failures and scoped nonhits remain explicit; G3XCL0 is not equated with Q9HWG5.
+- The historical external source replay used a prepared authority environment; the separately observed maintained replay binds the actual216authorities. Its generic external-author scope string is preserved and qualified by root, not rewritten.
+- Helper finished_at marks scientific computation before the final uncached binding pass; actual binding and wrapper completion times are retained separately. Stability checks do not promise protection against arbitrary transient adversarial machine-state changes.
+- This successor freshly reads the whole unchanged record, parses every native reaction/side and checks selected original primary passages. It explicitly reuses the prior complete independent scientific review for unchanged claims rather than claiming a repeated full literature or historical-sequence review.
+- The 92 smaller original bodies and 47 formal/runtime inputs were freshly hashed in this review; three large authority databases rely on the observed original complete replay, whose exact manifest and receipt remain unchanged.
+- Original full tests, lint, identifier, KGX, governed-artifact and source-replay checks retain their actual times and bounded unchanged-input reuse. Current render, strict validation and comprehensive file whitespace are separate observed checks.
+- Final staged whitespace admission, actual PR head review, remote CI, merge and deployed-byte verification remain pending lifecycle work, not conclusions of this scientific successor. Programmatic graph evidence makes no browser interaction claim.
+- The exact prior canonical review is linked as a related observation. It contained no canonical finding for issue 401; no previous_occurrences or resolved finding is fabricated for external issue history.
+- All current formal inputs are rehashed before and after canonical save and archived externally with an exact manifest. The separate canonical validate/save and base-aware check receipts attest actual terminal outcomes.
+- The historical staged whitespace failure and both reviewer-only decoding/whitespace-semantics attempts remain preserved. They are not rewritten as successful earlier commands.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T164128Z-pyochelin-packaging-scientific-successor
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Pyochelin biosynthesis: scientific currentness after exact-byte fixture packaging'
+started_at: '2026-10-11T16:33:21.318190Z'
+finished_at: '2026-10-11T16:41:28.190949Z'
+reviewer:
+  identity: Codex reviewer (/root/pyochelin_packaging_successor)
+  kind: agent
+  independence: independent
+  independence_basis: Did not author the biological record, authority snapshots, current
+    replay software, original review, packaging remedy or root integration. Independently
+    read the whole unchanged target and prior review, reconstructed all seven mutation
+    payloads and historical mappings, parsed all original native reactions/sides,
+    checked selected original primary passages and verified final current hashes/logs.
+    Earlier independent full scientific assessment is explicitly attributed rather
+    than presented as this reviewer own fresh experimental/sequence review. No maintained
+    content changed except this new canonical review bundle.
+skill: review-yaml-record; pathwaymech-resolve-reviews
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: 'The byte-identical complete Pyochelin target retains its supported scientific
+  assessment with the original biochemical and source-access limitations. Issue 401
+  is an already-applied evidence-packaging correction: seven wrappers preserve every
+  original mutation byte and all historical mappings. Current render/strict validation
+  and comprehensive file whitespace pass; earlier full tests, source replay and graph
+  results are reused only on verified unchanged inputs. No unresolved corrective finding
+  remains within this current scientific and packaging scope. Final staged admission
+  and publication remain separate work.'
+source:
+  git_revision: 3fb840bf48d871bc37576cc669d23441c0206e66
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 20e6c584796085fa8e9813e8398f68424b2da65732bfa51148f2559ddf016881
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 8869d8f51f1d96d647059d8e52955bfede2e0eeb0c6f69c908d1762eee793d8b
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 2bec3a6deb974853ab05ec2183f2f143fbf5c483b316907b47f6ca85f5809a64
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: ec42ce71dbce2872fca9162f8a8005fb6088182231b0a171be5253a96eb146b6
+    role: context
+  - path: data/pathways/pyochelin-biosynthesis.yaml
+    sha256: b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/infrastructure/pyochelin-evidence-packaging/2026-10-11T162855Z-codex-0c3408.yaml
+    sha256: 1b8f153843a58cd46c7fc91865798cee199464a53d6b0175991da2263bb69c9d
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/GO_0042864.html
+    sha256: 04d73555523d4e05476ba4ef18b28f3c098d2d1e81fece5f87a1783c77bd1e7a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/README.md
+    sha256: 063123fe0f2411d8da7a6954814fb0f3f92e4078bdc24691c03a91eece9dc3c0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/console-transcripts.json
+    sha256: 7e889e3e0db814c238919018d94ebf16001289446d5b6004e6b716fe42105aac
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/authority-independent-review/audit.json
+    sha256: 602f8eb213a71d03f0c9fb9a6ffc04cec88a61715cd46cf638a6181620c0e967
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/authority-independent-review/coverage-followup.json
+    sha256: 9b3852e7fc90f162dc07e2461b37d7818e07c90ffdcf79ffde95d9bf2c1d4b54
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/imodulondb-411/context.json
+    sha256: 10721e5ee599aab770d42ac4f72f8f70367a7f89e3343a8b1f9a44d90b266cd5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/completion.json
+    sha256: def7dba452a99b0fdc27db0c7aa40a6c8944d7ff8bbc001c8e52582bf635dcdf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/imod-native-check.json
+    sha256: c665ec19c80d0cdb04660db9adb5a0ec6456fd90413e7b290c0c49c463591aff
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/initial-target-capture.json
+    sha256: 3976a37979f21a55c6a7a4a26e181e8f45cebf1ba883083edc75d37a92abfd98
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/initial-whole-review.json
+    sha256: 2742aaf0fde9137d668fbf89fdb618e2139d7c37df715817b16b04397881a50d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/initial-whole-review.md
+    sha256: 6ff500a796001b0e31dad5ff1dffbc45caef98d0ab8c6be455c5efaa68bacb71
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/native-check.json
+    sha256: f81278285cfc4f540348b42546773e15adb598614c502dc8c69e9d6c6766033b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/provenance-finding.json
+    sha256: 0fc604acca93f0f7ca791c69694e286917eae23825a6eed356dff027761c4233
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/provenance-issue-body.md
+    sha256: 7e02da4bf0cfca4c9a4c15c73b8e9996f7adcdb91e4826a8d59251e9025147df
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/provenance-successor-assessment.json
+    sha256: 78ede56acdacdb4bcf2d3f4263c32c7774264c3eefcde2f87807d4f5db51bd2d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/sequence-attempts.json
+    sha256: 7039c3e770a2d6761cd690a039db0fb65e43ae822f4d0f31c448eae727e62c47
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/sequence-check.json
+    sha256: 6ead72f049be427e8908d307a6154c4950c0e6b93e21eddadaf50d607f999630
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/technical-successor-review.json
+    sha256: 3187a482b51fa7a28d3b25c112f741dd03f83d69c758d78f0a37ed5f7473a86b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/whole-record-successor-review.json
+    sha256: 27e3b5faec2535d035b4da7d990783b2f7efd19c48a82d6b56522d1a1141061d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-review/whole-record-successor-review.md
+    sha256: 76d1bec5eeaa9050948a5aedc6d868f1c0e23bf52cd0ce1fe3b4d19a5d34f771
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/capture.json
+    sha256: f64e49f85a08e205ebf367c5a41b476afd172baf16395eac775577e575afc143
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/cli-control-receipt.json
+    sha256: 25d082e70266aa1a46907a86f2d135aec5c57a5c453634ec35e05131d74d0494
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/cli-controls/stale_target/pyochelin-biosynthesis.yaml.bytes.json
+    sha256: c715a6e03e7d352657980c3fcb364e4876228e9a12a2d37dcba91a6716a8335c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guard-receipt.json
+    sha256: ae6f4c8897f032919f625b39a3f68c35ec9f996bce7a5bac7873ce3a6f1561e4
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guards/early-helper/pyochelin-replay.py.txt.bytes.json
+    sha256: 10dda03d14daa78f99b028ea47f7f3cd473b092c4879015d2855ed4526cb587e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guards/early-manifest/pyochelin-source-manifest.json.bytes.json
+    sha256: e6f8c0c29a379c1b9c970d390cf78fff87ddd3a034f24613b318fee24794f266
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guards/early-projection/pyochelin-source-projection.json.bytes.json
+    sha256: f2b8563bb42dd0778cfc92cffc68c2803cf2d8a11c023db91261971a1f6b281b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guards/early-reactive/pyochelin-reactive-check.py.txt.bytes.json
+    sha256: aea4e149bcadae751f1f725ebdf158256b779512b12f4ad87caf7ff5d9bfa6dd
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guards/late_guard-manifest/pyochelin-source-manifest.json.bytes.json
+    sha256: 4feb14dba52e5224b1f18a3024a978865d0668257402d51f69535ea5dca5a048
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/focused-guards/late_guard-source/original-source.xml.bytes.json
+    sha256: d5dd62fbd446e589bebbdfd1f29a292a1bb4794ff1fd3533c2d421dbced43123
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/guard-probes.log.json
+    sha256: dc074d2594bb13bf808baba646114ddc2beb11fcb10086daa639415f8d99cb1d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/late-metadata-receipt.json
+    sha256: cf629415e49fdd6fae1e80dbc0b9b36ef313f28338be61c42f74c60aa67dd620
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/positive-execution.json
+    sha256: ca7452b714d6d91aabc6bb5e1def16318a24b1e5a6ac1df7e8defb9c9fe52dae
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/independent-successor-controls/reviewed-helper-diff.json
+    sha256: 1a92a652141a2b27106ed6ea8c8604075c10aad9b8f31690f12a3db7ad1657c0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/root-authority-integration/adoption-receipt.json
+    sha256: c14b52e89df969fa931346a92837e48d22ad5f5dadb567a09a0405a564fbdbab
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/external-evidence/root-authority-integration/pathwaymech-next-216-authority-root-review.json
+    sha256: f17e36a79f590398b31aaa162f834f82588cf34eb3e97b7d1367b7617f7e8ce3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/final-scientific-review-adoption.json
+    sha256: 404509dccf4308d9a99c04049c89f28b95a444ed09237c4cc1ee855a1423d6e3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/final-scientific-review/final-input-manifest.json
+    sha256: 00e0b7a35a544d21e3b7690089e61aef4b6ebcd5ff076dd510dc20d1fdf78cc1
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/full-gate-receipts.json
+    sha256: a2adc80276cc7568ebe96f22612920134d78f28f80941d2a570c039fb85c5c6b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/full-gates-root-adoption.json
+    sha256: 16e7cf5ca960026eb83f065470fcbf3d74c5576110ad80d79d2e464fe549d927
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/history-execution.json
+    sha256: 39ef22cd8c736f92b6761b4236b822506397183ca104b9320de49c4f77df068f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/independent-graph-review/execution.json
+    sha256: 17066108ada2af4fb071e10c76adeea660e46b14090be8b863015ab5d061e1c0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/independent-graph-review/graph-audit.json
+    sha256: d896567a7d94c48ecbfdf448e887123159fbbc99168800d327554e6e7537b2dd
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/independent-graph-review/graph-audit.log.json
+    sha256: a632400ffdfd34b1adb5c4c9bfba6121070cc94e3cea71a880e9fd967c852f4b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/independent-graph-review/pathwaymech-next-216-render-kgx-terminal.json
+    sha256: acd61facf2bc7d2bca5634104eff43a917a3b759a43d630d5a3cce4940c52c90
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/independent-graph-review/preparation.json
+    sha256: a2ecbf4d42fc212204abd17f50dfaf4858e0679a26147082c35e22d558c858aa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/independent-graph-root-adoption.json
+    sha256: c18608c78f7eebe935a1f63a2a33ab43646215f28ee102cf235708b75980eafe
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/integrated-replay-root-adoption.json
+    sha256: 9f445a331d1d33370e40592ee5b3269f8f253af08ec5bbd0aec8b911b86f5763
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/integrated-replay/execution.json
+    sha256: 976eb83dad904c0c148b83e757b470b4d59e4254cf7a937565aa48552926782a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/integrated-replay/pyochelin-validation-integrated.json
+    sha256: c059825ccbbbae633a18b7abd606ad12ac14537e08af921567dbaba8fb2fc006
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/integration-receipt.json
+    sha256: b74214f9d1c6a17b5edd7e460f7c12cb7816011a16d5175ffef7cf884c749155
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/integration-successor-receipt.json
+    sha256: c7cd06b50526f91c84ae3ef7349650aa060f57bcabaeea40152898a9e8256b41
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/merged-baseline-transition.json
+    sha256: 1ebf073acd31fea3ac9a24d5cf1e78eb1e1c99d8f9e861fd52c35832c46e2265
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/adopt-rechecks-v2.py.txt
+    sha256: d9392aadf43b2f1cd299e1c0e41785a4ec28439c7ce4f72dbc0bc304b2e61649
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/adopt-rechecks.py.txt
+    sha256: c3c4ff6901d1bb2e5a3e76993710a44b1bba77bd350c89fdf263f85c3fd55a2e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/comprehensive-whitespace.json
+    sha256: 1f0cefc1c52885722e2bee5cfa5aa73355da2907fa7623937e6dd36e62ce57f7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/failure.json
+    sha256: d832f5a0095b745bcc1834a15b3115e0d4db241d1f7d96c88bc65baa50750b2d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/history-execution.json
+    sha256: 4bf98f6330609787ca9f41c2faa5b36509fef4fa97825dd0cf07319db0694dc5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/independent-initial-assessment.json
+    sha256: 0098ea2acd9b46a5c4acaa2ed52b19b9f680b9d366bb10f8cf3aaa93b8f27b22
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/independent-successor-check.py.txt
+    sha256: 83c33c60a70972637be24f0c5c8f4bc72d76948ac1868fd8d435ffd7690e3403
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/independent-successor-review.json
+    sha256: 44906636bfd23c2d8d1cf2ec60b53beee4b7a5166ff5cf37ae8a584959e378d4
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/initial-stage-and-commit.py.txt
+    sha256: c0e0b64823da145b64cdcc879463417978d11d670fb1ade0e500b870bc337b92
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/issue-body.md
+    sha256: 64353e489d4ea7568ae88c12afb7d9db94662ae47cda5faed6996d243a6b3363
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/issue.json
+    sha256: 5e4fbfd098cfbdbe26335c4b6e5b1107cb5945f1e1fc3896ecffec1afb0f0013
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/package-fixtures.py.txt
+    sha256: 35dab620657d043197ee35af5a1f39543b0a24917d99f3294c3caefc3150db3c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/pre-packaging-readme.md
+    sha256: a34865a57ffa5baabd8e385859531f007cb88cf6a991862d6a95ae57e78315a3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/recheck-driver.py.txt
+    sha256: 5bc9d9e5c91a348cc20849383ddd61a242ba39fd52a762656c2121d13fc605ec
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/recheck-execution.json
+    sha256: 505c3fa1286da215539ca271635fece70a1a2dc74d620e96f7062418c7b6f92d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/rechecks-root-adoption.json
+    sha256: dda6718b149b589ce3662aaae87a2caa62273a5628ae9f5480caec2ced809451
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/render.log.json
+    sha256: e96bcac7374ee4c449196b911fddbeae5f7d5c6d514552d5edf2a0ca0c49da38
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/root-adopt.py.txt
+    sha256: 405388bf1c9c41ff9c55b41937546b9ae97b66ffea462acaeb89b1765c048bb7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/root-adoption.json
+    sha256: 23e44e046546593574f641e6cdc2ebcff786fffee09635991ca1804ec989cd74
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/seal-successor.py.txt
+    sha256: 089ac9d7e6d7c26ba33791bfceed1386923f0198c13c2622f21907c51207ab92
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/staged-whitespace-failure.json
+    sha256: f656d74dd47343082be63df16e5aa139db1454c2a101dd577be5149136f104c0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/successor-map.json
+    sha256: 81cb785e00c72c87e6376577d86d6c3c8e9b881cf93597813c75498895e972fd
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/unstage.json
+    sha256: 13cdd7847005e15f19f0b75638205a2113050639fc60e3b99eefbbaf857415b8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/validate.log.json
+    sha256: 759c10ba637ac3bb57d338b97b3e319c88982e0adccba67dce6b35b5ec170691
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/packaging-correction/whitespace-command-semantics.json
+    sha256: e49d7e91dcbe15b3ac89974c6970091037c1fce74b33e9384125a06f9002e50e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-authority-proposal.json
+    sha256: 1f67d76178109ca1febc3e64fb561d238f607d61ff660f2350260981eae91c35
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-chemical-bridges.json
+    sha256: c560be5a9ee352a3410718e99fc2fb3f730746c7e5f1f62c37830f63968a2cb6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-copy-handoff.json
+    sha256: e558f4ae9e1950141d42a59152a32d1a46f41b6015dbd281f54b951c2b34e7bf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-curation.md
+    sha256: 4957717554388f13d7381fc9ed556ced648410bdbdf3da76dda26b06237abc52
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-dedup.json
+    sha256: 33150e5c8021a56dce6aee628553122c8256cafc82022cc8f3d6708123690b07
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-endpoint-assessment-context.json
+    sha256: fb4fbf8e8c509b29e95ef689241d347fff5174881cfb8293d892124b7a1f0f46
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-identifiers.json
+    sha256: 531ff29e04d30429cf6d430a96dc0973a67772df2a2eeced6166185cbecbf75a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-identity-conflicts.json
+    sha256: 0c1d16005db432076f34e29203a90c71e5c07b731505da986d6fcf73e4d25c6f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-imod-context.json
+    sha256: d6a4ee9fdf53c26fe58bbf53efbbc63a213dc503be7f2a0d7483f7b9bf500266
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-protein-projection.json
+    sha256: 83f4710e60a959d9dbe4a727ce39a7fd86f11b929db7c36ba10605ee45d33481
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-provenance-fix.json
+    sha256: ecca1792a546d171c26c2398ae40139b9acb997231215111f4d6c854fa8f2daf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-reactive-check.py
+    sha256: d8a000d6a970ce698f3db394056dcbf765c43066a0495b98f55faf76ce1c22f9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-reference-paths.json
+    sha256: 71b60f74e02e48e234685ef5c2f5c85660ec3d66a208ba2f2cbcb33c3d51fed3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-replay.py
+    sha256: 19cf087abba2f7eda7f6c620ba0ac4dc9bb829a8b7ad1ac7c99da7bc5f8d024f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-source-manifest.json
+    sha256: 7f29cd35fed11200936ad4ab4a41b0c9d7f47842c6bfcd589a4a4e854801439e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-source-projection.json
+    sha256: e9db7854b1ec33ac724d252a075cda3729a98f0b447b363f6b588d1170893dd1
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/pyochelin-validation-successor.json
+    sha256: f19cdfae1a5000afb306f8afa491f3f7aa4ac2a8d30d11e70ea410ae0796ed69
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/root-copy-adoption.json
+    sha256: 9cac4119815994cdc68bf630049787422b2092f36c05970ae09dba668e483f77
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/root-endpoint-adoption.json
+    sha256: 3199d89020755375c595d0d931cf9d7d4b6a80c521bd304bc791819b10c8b1fa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/root-initial-findings-verification.json
+    sha256: d97873e467410a0627238410259ceb88380d067dd030dbf437c402622b97e7e3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/root-source-acceptance.json
+    sha256: 9c762fb5085f20099399918a5df334602f67d01a729731d620c41406b71308f8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-216/vendored-gate-receipt.json
+    sha256: 656d3f0063c026ce67c536fe9e734007bfa8e384569e9e8362d8b8eae864e138
+    role: context
+  - path: reviews/structured/20261011T162143Z-pyochelin-independent-review/review.md
+    sha256: db057e92c20e982b4d06549976e1fc03ae8517bd928776b48f3074d73ab816b0
+    role: context
+  - path: reviews/structured/20261011T162143Z-pyochelin-independent-review/review.yaml
+    sha256: 7ae312c8f385239849b4b8dac805d50297734e0225520297b604d028c57ccecd
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: e81f95da70943090d470b1837d248fec2a592c5f4b53fc6587bc4214adbf35f3
+    role: context
+scope:
+  description: One complete unchanged maintained Pyochelin record, with scientific
+    currentness reassessed against the preserved prior full review, fresh complete
+    native reaction/side checks and selected primary-source spot checks; full packaging
+    and historical-recovery assessment.
+  selection: Exact GO:0042864 record SHA256 b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b
+    and packaging issue 401 successor seal c7cd06b50526f91c84ae3ef7349650aa060f57bcabaeea40152898a9e8256b41.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - GO:0042864
+  exclusions:
+  - target: Independent repetition of every original literature/sequence/whole-database
+      check
+    reason: The target and source/runtime inputs are unchanged. Prior complete independent
+      scientific assessment and full replay are preserved and expressly reused, with
+      fresh bounded source and currentness checks stated separately.
+  - target: PR, merge, browser interaction and deployed-byte acceptance
+    reason: Separate lifecycle gates remain pending; this record review cannot pre-claim
+      their outcome.
+  - target: PchAB supply, PchC editing, transport, iron loading and regulation
+    reason: Outside the selected complete native supplied-salicylate assembly route.
+targets:
+- target_id: GO:0042864
+  path: data/pathways/pyochelin-biosynthesis.yaml
+  label: pyochelin biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyochelin-biosynthesis.yaml
+    role: maintained_record
+checks:
+- check_id: prior-review-check
+  name: Prior canonical review history check
+  status: passed
+  required: true
+  command: .venv/bin/python scripts/record_review.py check --base 3fb840bf48d871bc37576cc669d23441c0206e66
+  summary: 'Actual 63027 terminal 0: 88 valid review bundles.'
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - initial-check
+- check_id: inspect
+  name: Canonical current input inspection
+  status: passed
+  required: true
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-216-packaging-scientific-review/targets.yaml
+    with the 121 inputs retained in inspect-execution.json
+  summary: Actual 84436 terminal 0; current base and formal hashes captured before
+    final assessment.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - inspect
+- check_id: preparation
+  name: Independent original-byte and native-source recovery
+  status: passed
+  required: true
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-216-packaging-scientific-review/preparation-check.py
+  summary: Actual dec8ad exit 0; seven round trips, five aliases, 616 historical recoveries,
+    all 11 native objects and 54 sides, 92 smaller sources and 47 runtime inputs.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - preparation
+  - preparation-attempt
+- check_id: current-reassessment
+  name: Current sealed snapshot and whitespace reassessment
+  status: passed
+  required: true
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-216-packaging-scientific-review/final-check.py
+  summary: The actual final reassessment validates 121 formal inputs, 384 sealed dossier
+    files, 17 owners and all historical recoveries. Per-file no-index whitespace checks
+    cover the current sealed files and seal itself; tracked git diff --check also
+    passes.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - current-check
+- check_id: historical-staged-failure
+  name: Preserved pre-remedy staged whitespace failure
+  status: failed
+  required: false
+  command: git diff --cached --check
+  summary: Historical staged command exited 2 on seven deliberate EOF mutations before
+    any commit. Current lossless wrappers address the cause; this historical failure
+    is not mislabeled a successful gate.
+  exit_code: 2
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - packaging-failure
+  - mapping
+  - current-check
+- check_id: current-render
+  name: Current coordinated render
+  status: passed
+  required: true
+  command: just render-pages
+  summary: Actual root session 75225 exited 0. Command ran 2026-10-11T16:34:09.245220+00:00
+    to 2026-10-11T16:34:37.572290+00:00; exact preserved raw and wrapped logs independently
+    compared.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - current-rechecks
+  - current-check
+- check_id: current-validate
+  name: Current coordinated validate
+  status: passed
+  required: true
+  command: just validate
+  summary: Actual root session 75225 exited 0. Command ran 2026-10-11T16:34:37.573013+00:00
+    to 2026-10-11T16:36:11.633810+00:00; exact preserved raw and wrapped logs independently
+    compared.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - current-rechecks
+  - current-check
+- check_id: reused-test
+  name: Unchanged-input reuse of original test
+  status: passed
+  required: true
+  command: just test
+  summary: Original actual root 84346 exit 0, run 2026-10-11T16:04:46.198049+00:00
+    to 2026-10-11T16:13:44.761485+00:00. Original logs freshly verified; biological
+    record, authority and runtime/test scope are unchanged. No new run claimed.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - gates
+  - current-check
+  - current-rechecks
+- check_id: reused-lint
+  name: Unchanged-input reuse of original lint
+  status: passed
+  required: true
+  command: just lint
+  summary: Original actual root 84346 exit 0, run 2026-10-11T16:04:46.202249+00:00
+    to 2026-10-11T16:04:46.488119+00:00. Original logs freshly verified; biological
+    record, authority and runtime/test scope are unchanged. No new run claimed.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - gates
+  - current-check
+  - current-rechecks
+- check_id: reused-identifiers
+  name: Unchanged-input reuse of original identifiers
+  status: passed
+  required: true
+  command: just check-identifiers
+  summary: Original actual root 84346 exit 0, run 2026-10-11T16:04:46.488699+00:00
+    to 2026-10-11T16:05:09.622869+00:00. Original logs freshly verified; biological
+    record, authority and runtime/test scope are unchanged. No new run claimed.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - gates
+  - current-check
+  - current-rechecks
+- check_id: reused-kgx
+  name: Unchanged-input reuse of original kgx
+  status: passed
+  required: true
+  command: just kgx-export --output-dir /private/tmp/pathwaymech-next-216-final-kgx
+  summary: Original actual root 84346 exit 0, run 2026-10-11T16:05:09.623395+00:00
+    to 2026-10-11T16:05:34.799553+00:00. Original logs freshly verified; biological
+    record, authority and runtime/test scope are unchanged. No new run claimed.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - gates
+  - current-check
+  - current-rechecks
+- check_id: reused-source
+  name: Unchanged-input reuse of complete source replay
+  status: passed
+  required: true
+  command: Exact maintained pyochelin-replay.py command retained in integrated-replay/execution.json
+  summary: Original actual 53673 exit 0; 95 original bodies and 47 formal/runtime
+    bindings. Current 47 bindings equal; 92 smaller originals freshly hashed in preparation.
+    No third large-database replay claimed.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - integrated-replay
+  - preparation
+  - current-check
+- check_id: reused-graph
+  name: Unchanged-artifact reuse of independent graph audit
+  status: passed
+  required: true
+  command: Exact graph-audit.py command retained in independent-graph-review/execution.json
+  summary: Original independent 99962 exit 0. Current page and complete downloads
+    equal the original audited artifact hashes after the new render.
+  exit_code: 0
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - graph
+  - current-check
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/pyochelin-biosynthesis.yaml
+  locator: Entire record, all 11 reactions, 30 participants, one taxon, 91 edges,
+    242 evidence blocks and 67 references
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Entire unchanged maintained record read. Current exact bytes equal the
+    prior independent scientific target; biochemical and source qualifications remain
+    explicit.
+  snapshot_sha256: b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b
+- evidence_id: prior-review
+  kind: prior_review
+  reference: reviews/structured/20261011T162143Z-pyochelin-independent-review/review.yaml
+  locator: Complete canonical YAML and paired rendered Markdown; all 11 assessments,
+    39 evidence entries, checks, limitations and empty findings
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The first canonical independent scientific assessment remains immutable
+    and valid. This successor explicitly relies on that full source review for unchanged
+    scientific claims rather than representing its original experiments and checks
+    as newly repeated work.
+  snapshot_sha256: 7ae312c8f385239849b4b8dac805d50297734e0225520297b604d028c57ccecd
+- evidence_id: preparation
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-216-packaging-scientific-review/preparation-check.json
+  locator: Seven wrapper round trips, 616 historical recoveries, 82 prior formal archives,
+    11 native objects/54 sides, 92 smaller original hashes and 47 runtime bindings
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Fresh independent preparation passed. All archived mutation payloads and
+    aliases recover exact original bytes, native membership/sides are freshly parsed,
+    and the unchanged biological and source evidence is verified against the prior
+    review.
+  snapshot_sha256: 3b5d5e3e39aa25c39c4decd01a360658901bcbe39fc16313b048543470efc584
+- evidence_id: preparation-attempt
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-216-packaging-scientific-review/preparation-execution.json
+  locator: Actual dec8ad exit 0; initial verifier-only 51e920 exit 1 retained under
+    initial-recovery-attempt
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The first external verifier assumed historical wrappers used the new text
+    key. Existing wrappers use content. Correcting only this external decoding assumption
+    passed; no maintained product defect or content mutation occurred.
+  snapshot_sha256: 6cb038942cd80f71edc11888ce3861d48263ef1c8274039e4bbe4ae647546428
+- evidence_id: initial-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-216-packaging-scientific-review/initial-check-execution.json
+  locator: Actual canonical base-aware check command, start, finish, exit 0 and logs
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Check session 63027 exited 0 with 88 valid pre-existing review bundles,
+    including the original Pyochelin review.
+  snapshot_sha256: 1b62a3afab2aa355f7ca621d6976e2213da46fd6edb94a8d3d3c4be614707e16
+- evidence_id: inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-216-packaging-scientific-review/inspect-execution.json
+  locator: Final canonical inspect actual command, exit 0 and captured current input
+    set
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Canonical inspection session 84436 exited 0 before the final assessment
+    and captured 121 current formal input hashes at actual base 3fb840bf48d871bc37576cc669d23441c0206e66.
+  snapshot_sha256: 950b458e8fda63b97fd03f9b8ffdc51190e6b986153a6546234d740fb11ffdb5
+- evidence_id: current-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-216-packaging-scientific-review/final-reassessment.json
+  locator: Current input, successor seal, historical recovery, log reuse and comprehensive
+    whitespace checks
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Final independent reassessment freshly verifies all current formal inputs,
+    384 sealed dossier files and 17 owners, all 323 historical integration inputs
+    and 14 original owners. Current render/validation and original reused gates retain
+    exact command logs and scope.
+  snapshot_sha256: 7567c4a70430762bce765e24f12c6fc6c7c327432008d7a6be6291f81f409be3
+- evidence_id: mapping
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-216/packaging-correction/successor-map.json
+  locator: All seven previous maintained paths, wrapper paths, digests, original sizes
+    and five alias mappings
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Issue 401 changes only storage representation of seven intentional negative-test
+    mutations. Decoding the new UTF-8 JSON text restores exact original bytes including
+    every terminal blank line.
+  snapshot_sha256: 81cb785e00c72c87e6376577d86d6c3c8e9b881cf93597813c75498895e972fd
+- evidence_id: packaging-failure
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/packaging-correction/failure.json
+  locator: Actual original session 61610 exit 1, staged git diff exit 2, original
+    375 staged inputs and seven affected payloads
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The original unstaged whitespace check missed untracked fixtures. The staged
+    check caught the real packaging defect before any commit. The failure and pre-remedy
+    bytes remain immutable evidence.
+  snapshot_sha256: d832f5a0095b745bcc1834a15b3115e0d4db241d1f7d96c88bc65baa50750b2d
+- evidence_id: independent-packaging
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-216/packaging-correction/independent-successor-review.json
+  locator: Wrapper checks, 368 unchanged initial staged files, 616 recoveries and
+    explicit final-stage limit
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The separate PR reviewer independently compared applied wrappers with pre-remedy
+    captures and accepted the bounded remedy. This successor also independently reconstructed
+    all payloads and historical mappings; the actual final staged gate remains a separate
+    admission step.
+  snapshot_sha256: 44906636bfd23c2d8d1cf2ec60b53beee4b7a5166ff5cf37ae8a584959e378d4
+- evidence_id: root-packaging
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/packaging-correction/root-adoption.json
+  locator: Original independent receipt hash, root round trips, aliases and historical
+    recoveries
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Root separately adopted the independent remedy after its own byte comparisons;
+    original plans, prior scientific review and adoption were preserved.
+  snapshot_sha256: 23e44e046546593574f641e6cdc2ebcff786fffee09635991ca1804ec989cd74
+- evidence_id: current-rechecks
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/packaging-correction/rechecks-root-adoption.json
+  locator: Current render and strict validation execution, 14 unchanged owners, 47
+    unchanged runtime bindings and precise reused-gate scope
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Root actual session 75225 exited 0 for the post-history render and strict
+    corpus validation. All 217 records, 352 history records and 13,776 evidence blocks
+    passed. Original tests, replay and graph checks are reused only on unchanged inputs,
+    with no repeat falsely claimed.
+  snapshot_sha256: dda6718b149b589ce3662aaae87a2caa62273a5628ae9f5480caec2ced809451
+- evidence_id: successor-seal
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/integration-successor-receipt.json
+  locator: Current owners, 384 sealed dossier inputs, original-snapshot recovery and
+    remaining lifecycle gates
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Current integration is sealed after the packaging history and successful
+    rerender/validation. The prior snapshot remains independently reconstructable
+    through seven wrapper mappings and the archived original README.
+  snapshot_sha256: c7cd06b50526f91c84ae3ef7349650aa060f57bcabaeea40152898a9e8256b41
+- evidence_id: history
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/packaging-correction/history-execution.json
+  locator: Actual infrastructure-history command and receipt before successor render
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The packaging history was appended before the 16:34 UTC render. No scientific
+    record status was promoted and this reviewer wrote no history.
+  snapshot_sha256: 4bf98f6330609787ca9f41c2faa5b36509fef4fa97825dd0cf07319db0694dc5
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/full-gate-receipts.json
+  locator: Original render, validate, test, lint, identifiers, KGX and tracked-diff
+    command results and exact logs
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Original full tests passed with 1,256 passed, three skipped and three warnings.
+    The original tracked-only whitespace success is bounded and superseded for added-file
+    coverage by the packaging checks; it never proved the untracked fixtures clean.
+  snapshot_sha256: a2adc80276cc7568ebe96f22612920134d78f28f80941d2a570c039fb85c5c6b
+- evidence_id: integrated-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/integrated-replay-root-adoption.json
+  locator: Original actual maintained replay and exact 47 formal/runtime plus 95 original
+    body bindings
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The original complete source replay remains valid for unchanged science/runtime.
+    This reviewer freshly hashes 47 runtime/formal inputs and 92 smaller original
+    bodies; the three large authority database hashes rely on the already observed
+    full replay.
+  snapshot_sha256: 9f445a331d1d33370e40592ee5b3269f8f253af08ec5bbd0aec8b911b86f5763
+- evidence_id: graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-216/independent-graph-review/graph-audit.json
+  locator: Original programmatic SVG/KGX parity and complete baseline preservation
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: 'The post-packaging page and download bytes remain equal to the independently
+    audited artifacts: 42 SVG nodes, 43 KGX nodes, 91 edges and all 242 evidence blocks.
+    Browser interaction is outside this scope.'
+  snapshot_sha256: d896567a7d94c48ecbfdf448e887123159fbbc99168800d327554e6e7537b2dd
+- evidence_id: native-pathway
+  kind: database
+  reference: /private/tmp/pathwaymech-next-216-source-leads-20261011/originals/PWY-6408.xml
+  locator: Pathway PWY-6408 complete native reaction-list and reaction-ordering; all
+    11 original reaction bodies
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Fresh parsing confirms the whole selected source route begins at supplied
+    salicylate and retains every native listed reaction, without adding the aggregate
+    composite as a twelfth transformation.
+  snapshot_sha256: 5c827d5f1d58d0fadf8c90b1c3be5d0b82ad857fa891fe9599e4863b783fee94
+- evidence_id: pche-primary
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC8807600.xml
+  locator: 'Sections Sec1, Sec4, Sec5 and Sec9: domain organization, dimer, cysteinyl-AMP/Mg
+    and PAO1 expression constructs'
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Fresh selected source inspection supports PchE carrier-domain distinction,
+    preparation-specific homodimer and bound magnesium, and PAO1 gene origin with
+    C-terminal engineered tags. The source does not establish a fixed PchDEFG heterotetramer.
+  snapshot_sha256: 2ca176a96fc7b3b021c1d558d721e90289236528cf77f92ed1b94237ebc50153
+- evidence_id: pchf-primary
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC6372355-bioc.xml
+  locator: BioC passage offsets 9139, 9446, 41012, 53276 and 65484
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Fresh selected passages separate O85740/PAO1 construct context, analogue
+    methylation kinetics and proposed ordering through thioesterase hydrolysis. Analogue
+    steady-state measurements do not establish full thiotemplate steady-state turnover.
+  snapshot_sha256: 44c81e2ba45ae788a520e9a0fdde1006980cb904222a3c3315079b3ead46d795
+- evidence_id: pchg-primary
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC5046821-bioc.xml
+  locator: BioC passage offsets 4948, 18051, 32621 and 34049
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Fresh source spot checks preserve PAO1-derived PchG and NADPH assays while
+    retaining the authors limitations on free analogues, rate and physiological stereochemistry.
+    Irp3 structure is not transferred to PchG.
+  snapshot_sha256: d1f5df4d7746c75b109f5e527da216271a3f782cbafd9ed33fc5efdcb3082e4b
+- evidence_id: older-primary
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/pubmed-primary.xml
+  locator: Indexed abstracts for PMID 11467965, 15375116 and 17938167
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: Fresh abstract inspection supports complete reconstitution, PchF release,
+    PchC editing rather than replacement release, and interconverting I/II products.
+    Abstract-only access and historical construct scope remain explicit.
+  snapshot_sha256: 123a9717f1fd31430a6d384dad35a9ce02cd6cec3f9cd576690ee747539ec2b7
+- evidence_id: endpoint-native
+  kind: database
+  reference: /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/CPD-9992.xml
+  locator: Compound/inchi and native protonation/stereochemical layers
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The exact native product is a pyochelin I monoanion projection. It does
+    not establish exclusive physiological I production or stereoselective I release.
+  snapshot_sha256: 77704bfe876d0c42129d3f4cdb7ac3b4b6fae7621ccc7b56a901d8926a634339
+- evidence_id: endpoint-chebi
+  kind: authority
+  reference: /private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/chebi-67183.json
+  locator: name, chemical_data/charge, default_structure/standard_inchi
+  accessed_at: '2026-10-11T16:41:28.190949Z'
+  support: supports
+  summary: The neutral ChEBI I structure is an explicitly protonation-normalized comparison
+    to the native monoanion, with no charge-equivalence claim.
+  snapshot_sha256: fc153c75efbd093e81ba7f29dc5a770c7c91fd8632d6116890a3a53ae605d70a
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Unchanged whole-route scientific target
+  outcome: supported
+  summary: The entire maintained target remains the previously independently assessed
+    complete eleven-object PWY-6408 implementation of GO:0042864. Fresh native membership
+    and side parsing confirm the source-to-record route. PchAB supply, PchC editing,
+    transport, iron loading and regulation remain outside the selected boundary.
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - target
+  - prior-review
+  - native-pathway
+  - preparation
+  - older-primary
+- assessment_id: biochemistry
+  area: evidence
+  topic: Reaction and participant scope retained after packaging
+  outcome: supported
+  summary: All 91 mechanistic edges and 242 evidence blocks remain byte-identical
+    to the full independently assessed record. Fresh source spot checks reaffirm the
+    PAO1 identity/engineered-construct distinction, PchE carrier sites and preparation-specific
+    dimer/Mg, PchF reduction-before-methylation/release sequence and PchG analogue
+    limits. Exact historical sequence translation and all chemical grounding remain
+    explicitly supported by the unchanged prior full review and replay.
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - target
+  - prior-review
+  - pche-primary
+  - pchf-primary
+  - pchg-primary
+  - preparation
+  - integrated-replay
+- assessment_id: endpoint
+  area: grounding
+  topic: Source-defined product projection remains qualified
+  outcome: supported
+  summary: The native I monoanion is retained as one source-defined member of the
+    observed interconverting I/II products. Neutral ChEBI I is a protonation-normalized
+    comparison, not exact charge equivalence. No exclusive I synthesis, selective
+    I release, complete carrier formula, fixed DEFG assembly or measured three-ATP
+    yield is introduced by this packaging correction.
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - target
+  - prior-review
+  - endpoint-native
+  - endpoint-chebi
+  - older-primary
+- assessment_id: packaging401
+  area: provenance
+  topic: Already-applied issue 401 correction is independently recoverable
+  outcome: supported
+  summary: 'The staged failure was real: raw maintained negative fixtures carried
+    intentional terminal blank lines. Seven new lossless wrappers preserve the exact
+    mutation bytes, five aliases and all 616 historical mappings. The original plans,
+    initial failure, original scientific review and adoption stay immutable. No canonical
+    finding identity exists for external issue 401; this already-applied correction
+    is recorded as a bounded evidence-linked assessment instead of fabricated resolved
+    lineage.'
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - mapping
+  - packaging-failure
+  - independent-packaging
+  - root-packaging
+  - preparation
+  - current-check
+- assessment_id: lineage
+  area: provenance
+  topic: Prior science and external issues 397/398 remain intact
+  outcome: supported
+  summary: The prior canonical review and every one of its 82 formal input archives
+    remain exact. All 323 original sealed dossier inputs recover through current exact
+    bytes, seven wrappers or the historical README copy. The five-scalar PchF attribution
+    correction and late-input replay-binding fix for external issues 397/398 retain
+    their original observations and accepted successor evidence; no initial failed
+    test or unsafe PASS is erased.
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - prior-review
+  - preparation
+  - current-check
+  - integrated-replay
+  - mapping
+- assessment_id: gates
+  area: schema
+  topic: Current render and validation with explicit unchanged-input reuse
+  outcome: supported
+  summary: Packaging history preceded the new render; current strict validation passes
+    all 217 pathway records and 352 history records. The unchanged biological, authority
+    and runtime inputs justify reuse of the already observed 1,256-test pass and full
+    source replay. Current per-file whitespace acceptance includes the new evidence
+    packaging; final staged admission is a separate still-required lifecycle gate.
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - history
+  - current-rechecks
+  - current-check
+  - gates
+  - successor-seal
+- assessment_id: graph
+  area: graph
+  topic: Rendered network and export identity preserved
+  outcome: supported
+  summary: The current rendered record page and all downloads remain byte-identical
+    to the independent programmatic graph audit after rerendering. That preserves
+    42 SVG nodes, 43 KGX nodes, 91 edges and 242 evidence blocks, plus the prior catalog
+    preservation established by the original audit. This review does not assert browser
+    interaction or deployed-byte verification.
+  target_ids:
+  - GO:0042864
+  evidence_ids:
+  - graph
+  - current-check
+  - successor-seal
+findings: []
+actions: []
+limitations:
+- The issued I monoanion is one observed-product projection within interconverting
+  I/II physiology; no exclusive I product or I-selective release is established.
+- Native carrier states describe reactive domain classes, not independent whole-protein
+  stoichiometry or a fixed DEFG complex. Reactive-group balances do not supply full
+  protein formulas or unspecified absolute stereochemistry.
+- Historical PA14 and PAO1 constructs differ from current PAO1 proteins. Current inferred
+  annotations and unreviewed PchG identity are not upgraded to direct current-construct
+  experimental proof.
+- Older studies retain abstract-only availability unless a separately inspected full
+  source is explicitly identified. Web-only full text has no invented local response-body
+  digest.
+- The three-ATP net is derived from native equations with cysteine adenylation counted
+  twice, not a measured cellular energy yield.
+- Expression-module membership is computational context only. Null-regulator parsing
+  failures and scoped nonhits remain explicit; G3XCL0 is not equated with Q9HWG5.
+- The historical external source replay used a prepared authority environment; the
+  separately observed maintained replay binds the actual216authorities. Its generic
+  external-author scope string is preserved and qualified by root, not rewritten.
+- Helper finished_at marks scientific computation before the final uncached binding
+  pass; actual binding and wrapper completion times are retained separately. Stability
+  checks do not promise protection against arbitrary transient adversarial machine-state
+  changes.
+- This successor freshly reads the whole unchanged record, parses every native reaction/side
+  and checks selected original primary passages. It explicitly reuses the prior complete
+  independent scientific review for unchanged claims rather than claiming a repeated
+  full literature or historical-sequence review.
+- The 92 smaller original bodies and 47 formal/runtime inputs were freshly hashed
+  in this review; three large authority databases rely on the observed original complete
+  replay, whose exact manifest and receipt remain unchanged.
+- Original full tests, lint, identifier, KGX, governed-artifact and source-replay
+  checks retain their actual times and bounded unchanged-input reuse. Current render,
+  strict validation and comprehensive file whitespace are separate observed checks.
+- Final staged whitespace admission, actual PR head review, remote CI, merge and deployed-byte
+  verification remain pending lifecycle work, not conclusions of this scientific successor.
+  Programmatic graph evidence makes no browser interaction claim.
+notes:
+- The exact prior canonical review is linked as a related observation. It contained
+  no canonical finding for issue 401; no previous_occurrences or resolved finding
+  is fabricated for external issue history.
+- All current formal inputs are rehashed before and after canonical save and archived
+  externally with an exact manifest. The separate canonical validate/save and base-aware
+  check receipts attest actual terminal outcomes.
+- The historical staged whitespace failure and both reviewer-only decoding/whitespace-semantics
+  attempts remain preserved. They are not rewritten as successful earlier commands.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261011T162143Z-pyochelin-independent-review
+  relationship: Scientific-currentness successor after lossless archival fixture packaging;
+    prior immutable scientific observation retained.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/397
+- https://github.com/CultureBotAI/PathwayMech/issues/398
+- https://github.com/CultureBotAI/PathwayMech/issues/401
+```

@@ -1,0 +1,37 @@
+from pathlib import Path
+import datetime,hashlib,json,re,xml.etree.ElementTree as E
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+ROOT=Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals')
+OUT=Path('/private/tmp/pathwaymech-pyochelin-endpoint-independent-20261011/structure-replay.json')
+rows={}
+for name in ['CPD-9992','CPD-12093']:
+ p=ROOT/(name+'.xml');d=E.fromstring(p.read_bytes());node=d.find('Compound');i=node.findtext('inchi');m=Chem.MolFromInchi(i)
+ assert m is not None
+ rows['MetaCyc:'+name]={'source':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'label':node.findtext('common-name'),'inchi':i,'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'chiral_atoms':Chem.FindMolChiralCenters(m,includeUnassigned=True,useLegacyImplementation=False)}
+for name in ['29669','67183','67185']:
+ p=ROOT/('chebi-'+name+'.json');d=json.loads(p.read_text());i=d['default_structure']['standard_inchi'];m=Chem.MolFromInchi(i);assert m is not None
+ rows['CHEBI:'+name]={'source':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'label':d['name'],'inchi':i,'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'chiral_atoms':Chem.FindMolChiralCenters(m,includeUnassigned=True,useLegacyImplementation=False),'definition':d['definition'],'ontology_relations':d['ontology_relations']}
+native=rows['MetaCyc:CPD-9992']['inchi']; acid=rows['CHEBI:67183']['inchi']
+assert native.replace('/p-1','')==acid and native!=acid
+n=Chem.MolFromInchi(native)
+assert Chem.GetFormalCharge(n)==-1
+changed=[]
+for atom in n.GetAtoms():
+ if atom.GetAtomicNum()==8 and atom.GetFormalCharge()==-1:
+  changed.append(atom.GetIdx());atom.SetFormalCharge(0);atom.SetNumExplicitHs(atom.GetNumExplicitHs()+1)
+assert len(changed)==1;Chem.SanitizeMol(n)
+assert Chem.MolToInchi(n)==acid
+mols={k:Chem.MolFromInchi(v['inchi']) for k,v in rows.items()}
+cls=mols['CHEBI:29669'];a=mols['CHEBI:67183'];b=mols['CHEBI:67185']
+assert a.HasSubstructMatch(cls,useChirality=True) and b.HasSubstructMatch(cls,useChirality=True)
+assert not a.HasSubstructMatch(b,useChirality=True) and not b.HasSubstructMatch(a,useChirality=True)
+en=mols['MetaCyc:CPD-12093']
+for atom in en.GetAtoms():
+ if atom.GetAtomicNum()==8 and atom.GetFormalCharge()==-1:
+  atom.SetFormalCharge(0);atom.SetNumExplicitHs(atom.GetNumExplicitHs()+1)
+Chem.SanitizeMol(en)
+assert not en.HasSubstructMatch(cls,useChirality=True)
+out={'status':'passed_bounded_structure_identity_replay','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'rdkit_version':rdBase.rdkitVersion,'structures':rows,'checks':{'native_CPD9992_is_charge_minus_one':True,'CHEBI67183_is_neutral_same_connectivity_and_stereo':True,'only_explicit_carboxylate_protonation_change_needed':True,'CHEBI29669_stereo_class_contains_I_and_II':True,'I_and_II_not_exact_stereochemical_matches':True,'native_CPD12093_not_in_I_II_class_after_same_acid_base_normalization':True},'limits':['Comparison uses original issuing-source InChI and an explicitly recorded acid-base transformation, not an exactMatch assertion.','RDKit absolute stereochemistry is computed from molecular structure; arbitrary InChI sign strings were not treated as direct CIP labels.','A broader chemical class does not itself encode mixture abundance or a separate epimerization reaction.']}
+with OUT.open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps({'receipt':str(OUT),'sha256':hashlib.sha256(OUT.read_bytes()).hexdigest(),'checks':out['checks']}))

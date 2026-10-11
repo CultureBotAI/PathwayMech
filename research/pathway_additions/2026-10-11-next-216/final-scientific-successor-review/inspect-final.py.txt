@@ -1,0 +1,40 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib
+import json
+import os
+import subprocess
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-216'
+O = Path('/private/tmp/pathwaymech-next-216-packaging-scientific-review')
+now = lambda: datetime.now(UTC).isoformat().replace('+00:00', 'Z')
+sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+prior_path = R / 'reviews/structured/20261011T162143Z-pyochelin-independent-review/review.yaml'
+prior = yaml.safe_load(prior_path.read_text())
+paths = {x['path'] for x in prior['source']['inputs']}
+paths.update(str(p.relative_to(R)) for p in (D / 'packaging-correction').rglob('*') if p.is_file())
+paths.update(str(p.relative_to(R)) for p in [prior_path, prior_path.with_suffix('.md'), D / 'integration-successor-receipt.json', D / 'final-scientific-review-adoption.json', D / 'final-scientific-review/final-input-manifest.json'])
+paths.add('.claude/skills/pathwaymech-resolve-reviews/SKILL.md')
+paths.update(str(p.relative_to(R)) for p in (R / 'history/infrastructure/pyochelin-evidence-packaging').glob('*.yaml'))
+mapping = json.loads((D / 'packaging-correction/successor-map.json').read_text())
+paths.update(x['current_wrapper_path'] for x in mapping['mapping'])
+assert all((R / p).is_file() for p in paths)
+(O / 'targets.yaml').write_text(yaml.safe_dump({'targets': prior['targets']}, sort_keys=False))
+cmd = [str(R / '.venv/bin/python'), 'scripts/record_review.py', 'inspect', '--targets', str(O / 'targets.yaml')]
+for path in sorted(paths):
+    cmd.extend(['--input', path])
+started = now()
+p = subprocess.run(cmd, cwd=R, env=dict(os.environ, PYTHONPATH=str(R / 'src'), UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache'), capture_output=True)
+(O / 'inspect.stdout').write_bytes(p.stdout)
+(O / 'inspect.stderr').write_bytes(p.stderr)
+receipt = {'started_at': started, 'finished_at': now(), 'command': cmd, 'exit_code': p.returncode, 'stdout_sha256': sha(O / 'inspect.stdout'), 'stderr_sha256': sha(O / 'inspect.stderr')}
+(O / 'inspect-execution.json').write_text(json.dumps(receipt, indent=2) + '\n')
+assert p.returncode == 0, p.stderr
+inspection = json.loads(p.stdout)
+assert inspection['source']['git_revision'] == '3fb840bf48d871bc37576cc669d23441c0206e66'
+for item in inspection['source']['inputs']:
+    assert sha(R / item['path']) == item['sha256'], item['path']
+(O / 'inspect.json').write_text(json.dumps(inspection, indent=2) + '\n')
+print(json.dumps({'status': 'captured', 'inputs': len(inspection['source']['inputs']), 'inspect_sha256': sha(O / 'inspect.json')}))

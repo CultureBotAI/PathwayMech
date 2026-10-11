@@ -1,0 +1,126 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib
+import json
+import subprocess
+import xml.etree.ElementTree as ET
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-216'
+O = Path('/private/tmp/pathwaymech-next-216-packaging-scientific-review')
+now = lambda: datetime.now(UTC).isoformat().replace('+00:00', 'Z')
+digest = lambda b: hashlib.sha256(b).hexdigest()
+sha = lambda p: digest(p.read_bytes())
+load = lambda p: json.loads(p.read_text())
+started = now()
+prior_path = R / 'reviews/structured/20261011T162143Z-pyochelin-independent-review/review.yaml'
+assert sha(prior_path) == '7ae312c8f385239849b4b8dac805d50297734e0225520297b604d028c57ccecd'
+assert sha(prior_path.with_suffix('.md')) == 'db057e92c20e982b4d06549976e1fc03ae8517bd928776b48f3074d73ab816b0'
+prior = yaml.safe_load(prior_path.read_text())
+rec_path = R / 'data/pathways/pyochelin-biosynthesis.yaml'
+assert sha(rec_path) == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+rec = yaml.safe_load(rec_path.read_text())
+counts = {key: len(rec[key]) for key in ['reactions', 'participants', 'taxa', 'mechanistic_edges', 'references']}
+counts['evidence'] = sum(len(x['evidence']) for x in rec['mechanistic_edges'])
+assert list(counts.values()) == [11, 30, 1, 91, 67, 242]
+mapping = load(D / 'packaging-correction/successor-map.json')
+assert sha(D / 'packaging-correction/successor-map.json') == '81cb785e00c72c87e6376577d86d6c3c8e9b881cf93597813c75498895e972fd'
+remapped = {x['previous_maintained_path']: x for x in mapping['mapping']}
+wrapper_checks = []
+for old_path, item in remapped.items():
+    wrapper_path = R / item['current_wrapper_path']
+    wrapper = load(wrapper_path)
+    raw = wrapper['text'].encode('utf-8')
+    assert sha(wrapper_path) == item['current_wrapper_sha256']
+    assert digest(raw) == item['original_sha256'] == wrapper['original_sha256']
+    assert len(raw) == item['original_bytes'] == wrapper['original_bytes']
+    assert raw == Path(item['original_path']).read_bytes() == Path(item['external_archive']).read_bytes()
+    assert raw.endswith(b'\n\n')
+    for alias in item['aliases']:
+        assert raw == Path(alias['path']).read_bytes()
+    wrapper_checks.append({'previous_path': old_path, 'wrapper_path': item['current_wrapper_path'], 'wrapper_sha256': sha(wrapper_path), 'decoded_sha256': digest(raw), 'decoded_bytes': len(raw), 'exact_original_and_capture': True, 'intentional_terminal_blank_line_retained': True, 'aliases': len(item['aliases'])})
+
+plan = load(D / 'pyochelin-copy-plan.json')
+copy_by_destination = {x['destination']: x for x in plan['copy_entries']}
+def recover(destination):
+    if destination in remapped:
+        return load(R / remapped[destination]['current_wrapper_path'])['text'].encode('utf-8')
+    item = copy_by_destination[destination]
+    raw = (R / destination).read_bytes()
+    assert digest(raw) == item['destination_sha256']
+    if item['mode'] == 'lossless_json_wrapper':
+        raw = json.loads(raw)['content'].encode('utf-8')
+    else:
+        assert item['mode'] == 'exact_bytes'
+    return raw
+recovery = []
+for group, destination_key in [('copy_entries', 'destination'), ('exact_byte_aliases', 'destination'), ('formal_input_resolution', 'recoverable_destination')]:
+    for item in plan[group]:
+        raw = recover(item[destination_key])
+        assert digest(raw) == item['sha256'], (group, item)
+        recovery.append({'group': group, 'destination': item[destination_key], 'sha256': digest(raw)})
+assert len(recovery) == 616
+inventory = subprocess.run(['rg', '--files', '-uu', '--hidden', str(D)], capture_output=True, text=True, check=True)
+assert all(str(R / old) not in inventory.stdout.splitlines() for old in remapped)
+
+# Every initial formal review input remains independently recoverable. Current
+# README changes are expected and are assessed separately after the final seal.
+archive = load(D / 'final-scientific-review/final-input-manifest.json')['inputs']
+assert len(archive) == len(prior['source']['inputs']) == 82
+for item, previous in zip(archive, prior['source']['inputs']):
+    assert item['path'] == previous['path'] and item['sha256'] == previous['sha256']
+    assert sha(Path(item['external_archive'])) == item['sha256']
+
+# Independently read and compare original native objects, rather than treating
+# a projection digest as proof of native reaction membership.
+manifest = load(D / 'pyochelin-source-manifest.json')
+projection = load(D / 'pyochelin-source-projection.json')
+assert projection['target_sha256'] == sha(rec_path)
+assert projection['graph_to_source'] == rec['mechanistic_edges']
+native_dir = Path(manifest['roles']['native_originals'])
+pathway = ET.parse(manifest['roles']['native_pathway']).getroot().find('Pathway')
+members = [x.attrib['frameid'] for x in pathway.findall('reaction-list/Reaction')]
+assert len(members) == 11 and set(members) == {x['id'].split(':', 1)[1] for x in rec['reactions']}
+native_checks = []
+for obj in projection['source_to_graph']:
+    native = ET.parse(native_dir / (obj['id'] + '.xml')).getroot().find('Reaction')
+    direction = native.findtext('reaction-direction')
+    assert direction == obj['direction']
+    side_values = {}
+    for side in ['left', 'right']:
+        rows = []
+        for element in native.findall(side):
+            entities = [x for x in element if x.get('frameid')]
+            assert len(entities) == 1
+            rows.append([entities[0].attrib['frameid'], element.findtext('coefficient') or '1'])
+        assert sorted(rows) == sorted(obj['sides'][side]), (obj['id'], side, rows)
+        side_values[side] = rows
+    native_checks.append({'id': obj['id'], 'direction': direction, 'sides': side_values})
+assert sum(len(rows) for item in native_checks for rows in item['sides'].values()) == 54
+refs = {x['id']: x for x in rec['references']}
+nodes = {rec['id']} | {x['id'] for field in ['reactions','participants','taxa'] for x in rec[field]}
+for edge in rec['mechanistic_edges']:
+    assert edge['subject'] in nodes and edge['object'] in nodes
+    for evidence in edge['evidence']:
+        assert evidence['reference_id'] in refs
+for ref_id, ref in refs.items():
+    path = manifest['reference_paths'][ref_id]
+    assert any(x['path'] == path and x['sha256'] == ref['source_sha256'] for x in manifest['sources'])
+small, large = [], []
+for source in manifest['sources']:
+    path = Path(source['path'])
+    if path.stat().st_size < 1_000_000_000:
+        assert sha(path) == source['sha256']
+        small.append({'path': str(path), 'sha256': source['sha256']})
+    else:
+        large.append({'path': str(path), 'sha256_from_prior_full_original_replay': source['sha256'], 'bytes_now': path.stat().st_size, 'fresh_hash': False})
+assert len(small) == 92 and len(large) == 3
+replay = load(D / 'integrated-replay/pyochelin-validation-integrated.json')
+formal = [x for x in replay['input_bindings'] if x['scope'] == 'formal_or_runtime']
+assert len(formal) == 47
+for item in formal:
+    assert sha(Path(item['path'])) == item['sha256']
+out = {'status': 'passed_bounded_successor_preparation', 'started_at': started, 'finished_at': now(), 'record_sha256': sha(rec_path), 'prior_review_sha256': sha(prior_path), 'prior_markdown_sha256': sha(prior_path.with_suffix('.md')), 'counts': counts, 'wrappers': wrapper_checks, 'recoveries': recovery, 'historical_formal_archives_verified': len(archive), 'native_reactions': native_checks, 'source_bodies_freshly_hashed': small, 'large_authority_scope': large, 'unchanged_current_runtime_bindings': formal, 'retired_raw_inventory': {'method': 'rg --files -uu --hidden on the entire maintained cohort dossier', 'ignored_and_hidden_included': True, 'raw_paths_absent': list(remapped)}, 'pending': ['Final current integration seal, rerender and validation evidence', 'Canonical inspect/validate/save/check'], 'limitations': ['This is a bounded reassessment of unchanged science and packaging, not a repeated whole-source positive replay, whole-suite test run, or independent translation of all historical CDSs.', 'Complete original native membership and sides are freshly parsed; primary-source narrative checks are selected source spot checks, with the earlier complete independent scientific assessment explicitly retained as evidence.'], 'findings': []}
+(O / 'preparation-check.json').write_text(json.dumps(out, indent=2) + '\n')
+print(json.dumps({'status': out['status'], 'sha256': sha(O / 'preparation-check.json'), 'wrappers': len(wrapper_checks), 'historical_recoveries': len(recovery), 'native_objects': len(native_checks), 'small_source_hashes': len(small)}))

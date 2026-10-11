@@ -1,0 +1,159 @@
+"""External author generator; original source bytes remain immutable."""
+from pathlib import Path
+from datetime import datetime,UTC
+from xml.etree import ElementTree as E
+import json,hashlib,sqlite3
+import yaml
+from functools import cache
+B=Path('/private/tmp/pathwaymech-pyochelin-author-20261011'); D=B/'draft'
+P=Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011'); O=P/'originals'
+L=Path('/private/tmp/pathwaymech-next-216-source-leads-20261011')
+DB=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+@cache
+def sha(p):
+ if str(p)=='/private/tmp/pathwaymech-curation-authorities/chebi.db' and (B/'support/chebi-build-hash.json').exists():return json.loads((B/'support/chebi-build-hash.json').read_text())['sha256']
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def dump(name,obj): (D/name).write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+def norm(s):return ' '.join(s.split())
+def native(frame):return next(n for n in E.parse(O/(frame+'.xml')).getroot() if n.get('frameid')==frame)
+acqs=[]
+for folder in [P,B,L]:
+ for f in sorted(folder.glob('acquisition*.json')):
+  a=json.loads(f.read_text()); rows=a.get('sources',a.get('results',[])) if isinstance(a,dict) else a
+  for row in rows:
+   if isinstance(row,dict) and row.get('path') and Path(row['path']).is_file():acqs.append({**row,'receipt':str(f),'receipt_sha256':sha(f)})
+def acquisition(p):
+ p=Path(p); rows=[r for r in acqs if Path(r['path'])==p and r.get('sha256')==sha(p)]
+ assert rows,p
+ return rows[-1]
+refs={};paths={}
+def ref(ident,p,title,url=None,version=None):
+ p=Path(p); a=acquisition(p)
+ r=dict(id=ident,title=norm(title),url=url or a['url'],source_version=version or 'Original MetaCyc 22.5 native XML; retrieved 2026-10-11; digest covers complete original response',source_sha256=sha(p))
+ if ident in refs:assert refs[ident]==r,ident
+ refs[ident]=r;paths[ident]=str(p)
+def nref(frame):
+ ref('MetaCyc:'+frame,O/(frame+'.xml'),'MetaCyc '+frame+' original native frame')
+def ev(refid,s,loc):
+ assert len(s)<=400,(len(s),s)
+ return dict(reference_id=refid,source_assertion=s,source_locator=loc)
+parsed=json.loads((B/'support/native-authority-parsing.json').read_text());labels={r['term'][0]:r['term'][1] for r in parsed}
+small={'AMP':'CHEBI:456215','ATP':'CHEBI:30616','CPD-110':'CHEBI:30762','CPD-12084':'CHEBI:86458','CPD-12085':'CHEBI:144924','CYS':'CHEBI:35235','NADP':'CHEBI:58349','NADPH':'CHEBI:57783','PPI':'CHEBI:33019','PROTON':'CHEBI:15378','WATER':'CHEBI:15377','S-ADENOSYLMETHIONINE':'CHEBI:59789','ADENOSYL-HOMO-CYS':'CHEBI:57856'}
+rrows=json.loads((P/'native-reaction-projection.json').read_text())
+frames=sorted({f for r in rrows for ss in r['sides'].values() for f,n in ss})
+mapid={f:small.get(f,'MetaCyc:'+f) for f in frames}
+conn=sqlite3.connect('file:'+str(DB)+'?mode=ro',uri=True)
+chebi={}
+for cid in sorted(set(small.values())|{'CHEBI:18420','CHEBI:47942'}):
+ facts=dict(conn.execute('select predicate,value from statements where subject=? and value is not null',(cid,)))
+ chebi[cid]={k:facts[k] for k in ['rdfs:label','chemrof:inchi_string','chemrof:charge','chemrof:generalized_empirical_formula'] if k in facts}
+ assert chebi[cid].get('rdfs:label'),cid
+ labels[cid]=chebi[cid]['rdfs:label']
+for f in frames:nref(f)
+for r in rrows:nref(r['id'])
+ref('MetaCyc:PWY-6408',L/'originals/PWY-6408.xml','MetaCyc PWY-6408 pyochelin biosynthesis original pathway')
+ref('GO:0042864',O/'quickgo-GO0042864.json','Gene Ontology GO:0042864 pyochelin biosynthetic process',version='Original QuickGO term response retrieved 2026-10-11; active exact process identity')
+# Each ChEBI reference identifies the original database, not an author-generated projection.
+for cid in chebi:
+ refs[cid]=dict(id=cid,title='ChEBI 255 '+cid+' original chemical structure and preferred name',url='https://www.ebi.ac.uk/chebi/',source_version='ChEBI 255 Semantic SQL; digest covers the complete uncompressed original authority database',source_sha256=sha(DB));paths[cid]=str(DB)
+up=json.loads((O/'uniprot-pao1-pch.json').read_text());upidx={x['primaryAccession']:i for i,x in enumerate(up['results'])}
+prot=['Q9HWG3','G3XCV2','Q9HWG4','Q9HWG5']
+for acc in prot:
+ x=up['results'][upidx[acc]];desc=x['proteinDescription'];labels['UniProtKB:'+acc]=(desc.get('recommendedName') or desc['submissionNames'][0])['fullName']['value']
+ ref('UniProtKB:'+acc,O/'uniprot-pao1-pch.json','UniProtKB '+acc+' current complete PAO1 entry',version='UniProt 2026_03; complete original seven-entry response retrieved 2026-10-11; entry '+str(upidx[acc])+'; digest covers whole batch')
+# Articles: title extraction is restricted to the original article, never reference-list titles.
+for fn in ['pubmed-primary.xml','pubmed-pao1-early.xml']:
+ t=E.parse(O/fn)
+ for n in t.findall('.//result'):
+  pm=n.findtext('id')
+  if pm in ['10555976','11467965','11208777','12950179','17938167','15375116','9846750']:
+   ref('PMID:'+pm,O/fn,n.findtext('title'),version='Original Europe PMC indexed primary metadata and abstract; full article not locally obtained; digest covers complete response')
+for pm,fn in [('35105906','PMC8807600.xml'),('30525512','PMC6372355-bioc.xml'),('27601130','PMC5046821-bioc.xml')]:
+ t=E.parse(O/fn)
+ if fn.endswith('-bioc.xml'):
+  title=next(n.findtext('text') for n in t.findall('.//passage') if any(i.get('key')=='section_type' and i.text=='TITLE' for i in n.findall('infon')))
+ else:title=''.join(t.find('./front/article-meta/title-group/article-title').itertext())
+ ref('PMID:'+pm,O/fn,title,version='Complete original '+('NCBI BioC author-manuscript XML export' if 'bioc' in fn else 'Europe PMC JATS article XML')+' retrieved 2026-10-11; digest covers whole response')
+ref('DOI:10.1038/s41467-022-28284-x',O/'PchE-2022-supplement.pdf','Supplementary Information for Catalytic trajectory of a dimeric nonribosomal peptide synthetase subunit with an inserted epimerase domain',version='Original 27-page publisher supplement; Figure1c and Figure2 inspected; digest covers exact PDF bytes, not the main article')
+# Original sequence accession is used as a provenance reference, not as a new graph node.
+ref('NCBIProtein:AAC83656.1',O/'AF074705.embl','Original PAO1 AF074705.2 submission containing PchE, PchF and PchG CDS translations',version='Original ENA EMBL record; digest covers AF074705.2 complete response, not only one protein')
+record=dict(id='GO:0042864',label='pyochelin biosynthetic process',description=(
+'The complete eleven-object MetaCyc PWY-6408 thiotemplate pathway is represented from supplied salicylate and two L-cysteines through pyochelin release. The PAO1 implementation uses PchD, PchE, PchF and PchG; it does not include upstream PchA/PchB salicylate synthesis. The shared cysteine-adenylation reaction turns twice per formal product. Carrier-class coefficients count reactive sites, not whole polypeptides: PchE has distinct aryl and peptidyl carrier domains on one chain. The three-ATP total is a stoichiometric derivation, not a measured yield. Native CPD-9992 specifies the pyochelin I monoanion, one member of the experimentally observed interconverting I/II products. Its use preserves a source-defined I projection; it does not assert exclusive I production, identity with the neutral I/II class, or a separate experimentally resolved release stereoselectivity. Native carrier names do not specify every stereocenter. PchE epimerization occurs after amide formation; its coupled cyclization step retains that scope without adding an unsupported separate reaction. Direct 2022 PAO1 structural work observes a PchE homodimer and bound magnesium; functional enables edges do not assert monomer sufficiency or a stable PchDEFG heterotetramer. The 1999 deposited PchD/E/F sequences are from PA14 and differ from current PAO1; the older PAO1 PchF submission also differs at six residues. Later PAO1 source and construct evidence is distinguished from exact engineered-sequence identity. Current PchD and some PchE/F mechanistic annotations retain similarity or curator inference. PchG is an unreviewed current entry, supported separately by PAO1 genetics and biochemical work; free-analogue measurements are not full carrier-substrate kinetics. PchC editing, transport, iron loading and regulation are outside this native assembly boundary.'),pathway_type='pyochelin-biosynthesis',taxa=[dict(id='NCBITaxon:208964',label='Pseudomonas aeruginosa PAO1')],participants=[],reactions=[],mechanistic_edges=[],references=[])
+for f in frames:
+ cid=mapid[f];record['participants'].append(dict(id=cid,label=labels[cid],category='chemical_entity' if 'Pch' in f else 'small_molecule'))
+for acc in prot:record['participants'].append(dict(id='UniProtKB:'+acc,label=labels['UniProtKB:'+acc],category='protein'))
+for cid in ['CHEBI:18420','CHEBI:47942']:record['participants'].append(dict(id=cid,label=labels[cid],category='cofactor'))
+for r in rrows:record['reactions'].append(dict(id='MetaCyc:'+r['id'],label=labels['MetaCyc:'+r['id']],category='molecular_activity',direction='left_to_right'))
+edges=record['mechanistic_edges'];sideledger=[]
+def edge(s,p,o,es,desc=None):
+ e=dict(id=f'pch-edge-{len(edges)+1:03d}',subject=s,predicate=p,object=o,evidence=es)
+ if desc:e['description']=desc
+ edges.append(e);return e['id']
+for r in rrows:
+ rid='MetaCyc:'+r['id']
+ for side,pred in [('left','consumes'),('right','produces')]:
+  for f,n in r['sides'][side]:
+   cid=mapid[f];es=[ev(rid,f'The native {side} side explicitly contains {f} with coefficient {n}; direction is {r["direction"]}.',f'ptools-xml/Reaction[@frameid="{r["id"]}"]/{side}[*/@frameid="{f}"]; reaction-direction')]
+   desc=None
+   if f in small:
+    es += [ev('MetaCyc:'+f,f'The original {f} structure defines the chemical form selected for this side; its InChI and charged atoms were compared with {cid}.',f'ptools-xml/Compound[@frameid="{f}"]/inchi; cml/molecule/atomArray/atom/@formalCharge'),ev(cid,f'{cid} supplies the matching structure, formula and charge. Zwitterionic forms preserve the native amino/carboxyl charges where present.',f'Semantic SQL statements subject={cid}; chemrof:inchi_string, chemrof:charge, chemrof:generalized_empirical_formula')]
+   elif 'Pch' in f:
+    es += [ev('MetaCyc:'+f,'The original frame explicitly declares a Protein class and names its carrier acyl state; it supplies no full protein sequence or atom-complete carrier structure.',f'ptools-xml/Protein[@frameid="{f}"]/common-name; @class'),ev('DOI:10.1038/s41467-022-28284-x','The original assembly diagram distinguishes the PchE ArCP and PCP sites and the PchF carrier site with covalent phosphopantetheine-tethered intermediates. Reactive-site accounting must not be read as whole-polypeptide coefficients.','Original supplement PDF page2, Supplementary Figure1c; page3, Supplementary Figure2')]
+    desc='Native reactive-domain class; PchE aryl and peptidyl sites are separate reaction sites on the same polypeptide.' if 'PchE' in f else 'Native PchF reactive-domain state; coefficient is not an enzyme assembly count.'
+   if f=='CPD-9992':
+    es += [ev('MetaCyc:CPD-9992','The original InChI specifies pyochelin I monoanion. This source-defined product projects one member of the physiological I/II mixture, not exclusive I biosynthesis.','ptools-xml/Compound[@frameid="CPD-9992"]/inchi; /p-1 and /t9-,10+,13-/m1/s1'),ev('PMID:17938167','P. aeruginosa produces pyochelin I and II, differing at the interconverting thioaminal center; this does not establish I-selective release.','responseWrapper/resultList/result[id="17938167"]/abstractText')]
+    desc='Formal native pyochelin I monoanion endpoint; no exclusive-I physiological product or I-selective release claim.'
+   eid=edge(cid if side=='left' else rid,pred,rid if side=='left' else cid,es,desc)
+   sideledger.append(dict(edge_id=eid,reaction=rid,native_frame=f,selected_id=cid,side=side,coefficient=int(n)))
+# Functional roles: same source-issued adenylation reaction enabled by both modules.
+roles={'RXN-11113':['Q9HWG3'],'RXN-11115':['G3XCV2','Q9HWG4'],'RXN-11125':['G3XCV2'],'RXN-19466':['Q9HWG3'],'RXN-19469':['G3XCV2'],'RXN-11118':['G3XCV2'],'RXN-11117':['Q9HWG4'],'RXN-11120':['Q9HWG4'],'RXN-11121':['Q9HWG5'],'RXN-11122':['Q9HWG4'],'RXN-11123':['Q9HWG4']}
+roletext={'RXN-11113':'PchD adenylates salicylate before transfer to the PchE aryl carrier site.','RXN-19466':'PchD transfers activated salicylate to the PchE aryl carrier site.','RXN-11115':'The PchE and PchF adenylation domains each activate a cysteine; one native reaction object is reused twice.','RXN-11125':'PchE loads cysteine onto its peptidyl carrier site.','RXN-19469':'PchE condenses its aryl-site salicyl group with its peptidyl-site cysteinyl group.','RXN-11118':'PchE performs first-ring cyclization with epimerization after amide formation.','RXN-11117':'PchF loads its activated cysteine onto its carrier site.','RXN-11120':'PchF accepts the PchE-bound intermediate, condenses the second cysteine and forms the second thiazoline.','RXN-11121':'PchG reduces the PchF-tethered terminal thiazoline using NADPH.','RXN-11122':'PchF methylates the reduced terminal nitrogen with SAM.','RXN-11123':'PchF releases pyochelin by thioester hydrolysis; the native I structure is a formal projection of the observed I/II products.'}
+for r in rrows:
+ rid=r['id']
+ for acc in roles[rid]:
+  idx=upidx[acc];es=[]
+  if acc!='Q9HWG5':
+   es.append(ev('UniProtKB:'+acc,'Current PAO1 identity and functional annotation support this gene-product role. Detailed PchD and PchE/F steps include ECO:0000250 or ECO:0000305 inference; this is not a claim of purified monomer sufficiency.',f'/results/{idx}/primaryAccession; /results/{idx}/organism/taxonId; /results/{idx}/comments/0; /results/{idx}/sequence/value'))
+  else:
+   es.append(ev('UniProtKB:'+acc,'The current unreviewed PAO1 entry identifies PchG; the biochemical assignment is supported separately by original PAO1 evidence.',f'/results/{idx}/primaryAccession; /results/{idx}/organism/taxonId; /results/{idx}/proteinDescription; /results/{idx}/sequence/value'))
+  if acc in ['Q9HWG3','G3XCV2']:
+   es.append(ev('PMID:35105906',roletext[rid]+' The inspected work uses PAO1 genes and observes dimeric PchE; the functional relation does not assert a stable four-protein complex.','article/body//sec[@id="Sec1"]; sec[@id="Sec4"] and sec[@id="Sec5"]; Methods article/body//sec[@id="Sec9"]'))
+  if acc=='G3XCV2' and rid=='RXN-11118':
+   es.append(ev('PMID:12950179','Epimerization was detected after amide formation rather than on simple cysteinyl-S-PchE; the native ring-forming object compresses these coupled events.','responseWrapper/resultList/result[id="12950179"]/abstractText'))
+  if acc=='Q9HWG4':
+   es.append(ev('PMID:30525512',roletext[rid]+' The study names O85740 and uses PAO1 constructs; detailed methylation tests use analogues, not complete thiotemplate steady-state turnover.','collection/document/passage[offset="9139" or offset="9446" or offset="41012" or offset="53276" or offset="65484"]/text'))
+   es.append(ev('PMID:11467965','Four-protein reconstitution assigns terminal reduction to PchG and methylation/release to PchF. Only the original indexed abstract was retained; no fixed DEFG heterotetramer follows.','responseWrapper/resultList/result[id="11467965"]/abstractText'))
+  if acc=='Q9HWG5':
+   es += [ev('PMID:11467965','Purified PchG reduces the hydroxyphenylbisthiazoline-S-PchF acyl enzyme with NADPH during complete reconstitution. Only the original indexed abstract was retained; historical construct scope is distinct from exact current PAO1 sequence identity.','responseWrapper/resultList/result[id="11467965"]/abstractText'),ev('PMID:11208777','P. aeruginosa genetics and biochemical reconstitution establish the PchG requirement for pyochelin synthesis, separately from the current unreviewed sequence annotation.','responseWrapper/resultList/result[id="11208777"]/abstractText'),ev('PMID:27601130','PAO1-derived PchG reduces an oxidized free analogue with NADPH; the authors caution that this is a poor model for full physiological carrier-substrate kinetics and stereochemistry.','collection/document/passage[offset="4948" or offset="34049"]/text; Results, Enzymatic Activity')]
+  desc=roletext[rid]+' Functional gene-product relation; no monomer sufficiency or stable PchDEFG assembly is asserted.'
+  edge('UniProtKB:'+acc,'enables','MetaCyc:'+rid,es,desc)
+# Cofactor attachment and Mg binding are separate from chemical side species.
+for acc in ['G3XCV2','Q9HWG4']:
+ idx=upidx[acc]
+ edge('UniProtKB:'+acc,'has_cofactor','CHEBI:47942',[ev('UniProtKB:'+acc,"The entry assigns pantetheine 4'-phosphate as a cofactor with ECO:0000305. In this pathway its covalently attached arm carries intermediates; it is not a free stoichiometric substrate.",f'/results/{idx}/comments/2/cofactors/0; cofactorCrossReference/id=CHEBI:47942')],'Covalently attached carrier-arm moiety; no free-cofactor consumption or inferred whole-protein count.')
+edge('UniProtKB:G3XCV2','has_cofactor','CHEBI:18420',[ev('PMID:35105906','Cryo-EM structures directly place Mg2+ with cysteinyl-AMP in the PchE A-domain pocket. This supports bound magnesium in the inspected PAO1 construct, without a universal metal-dependence or stoichiometric claim.','article/body//sec[@id="Sec5"]/p describing cysteinyl-AMP and Mg2+; Figure 3b')],'Direct bound-metal observation in the PAO1 PchE construct; no transfer of an MgATP assay condition to other proteins.')
+# Full source membership and shared-intermediate topology.
+for r in rrows:
+ edge('MetaCyc:'+r['id'],'part_of',record['id'],[ev('MetaCyc:PWY-6408',f'The complete native reaction-list contains {r["id"]}; the selected scope begins at salicylate and retains all eleven listed reaction objects.','ptools-xml/Pathway[@frameid="PWY-6408"]/reaction-list/Reaction[@frameid="'+r['id']+'"]'),ev('GO:0042864','The active GO process denotes chemical reactions and pathways forming pyochelin; this record describes the complete native salicylate-dependent implementation.','/results/0/id; /results/0/isObsolete; /results/0/definition/text')])
+links=[('11113','19466','CPD-12084'),('11115','11125','CPD-12085'),('11115','11117','CPD-12085'),('19466','19469','Salicyl-PchE'),('11125','19469','L-cysteinyl-PchE'),('19469','11118','Salicyl-L-cysteinyl-PchE'),('11118','11120','hydroxyphenyl-thiazolinyl-PchE'),('11117','11120','L-cysteinyl-PchF'),('11120','11121','Hydroxyphenyl-bis-thiazolinyl-PchF'),('11121','11122','N-desmethyl-pyochelin-PchF'),('11122','11123','Pyochelinyl-PchF')]
+for a,b,f in links:
+ edge('MetaCyc:RXN-'+a,'provides_input_for','MetaCyc:RXN-'+b,[ev('MetaCyc:RXN-'+a,f'The original product side contains {f}; the subsequent reaction consumes that same source-native intermediate.',f'ptools-xml/Reaction[@frameid="RXN-{a}"]/right[*/@frameid="{f}"]'),ev('MetaCyc:RXN-'+b,f'The original substrate side contains {f}; this supplies the second half of the intermediate bridge.',f'ptools-xml/Reaction[@frameid="RXN-{b}"]/left[*/@frameid="{f}"]')])
+# Taxon scope is recorded in the taxa field and source ledger, not an unsupported occurs_in-to-taxon edge.
+used={v['reference_id'] for e in edges for v in e['evidence']}
+# Contextual primary references are retained for disclosed limits even when not independently mechanistic.
+used.update(['PMID:10555976','PMID:15375116','PMID:9846750','NCBIProtein:AAC83656.1'])
+record['references']=[r for k,r in refs.items() if k in used]
+T=D/'pyochelin-biosynthesis.yaml';T.write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+h=sha(T)
+dump('pyochelin-reference-paths.json',{k:v for k,v in paths.items() if k in used})
+bridges={}
+for f,cid in small.items():
+ n=native(f);inchi=n.findtext('inchi');assert inchi==chebi[cid]['chemrof:inchi_string'],f
+ charges=[{'element':a.get('elementType'),'charge':int(a.get('formalCharge'))} for a in n.findall('.//atom') if a.get('formalCharge') not in [None,'0']]
+ bridges[f]=dict(selected_id=cid,native_inchi=inchi,chebi=chebi[cid],native_formal_charged_atoms=charges)
+dump('pyochelin-chemical-bridges.json',dict(target_sha256=h,small_molecules=bridges,carrier_accounting=json.loads((B/'support/reactive-chemistry.json').read_text()),endpoint=json.loads((P/'chemical-check.json').read_text())))
+coverage=json.loads((P/'coverage-assessment.json').read_text())
+dump('pyochelin-source-projection.json',dict(target_sha256=h,scope='All 11 native objects; domain-state equations and one source-defined observed product projection',source_to_graph=[{**r,'reaction_id':'MetaCyc:'+r['id'],'edge_ids':[e['id'] for e in edges if 'MetaCyc:'+r['id'] in [e['subject'],e['object']]]} for r in coverage['native_members']],chemical_sides=sideledger,graph_to_source=edges,formal_net=json.loads((B/'support/reactive-chemistry.json').read_text())['net']))
+dump('pyochelin-identifiers.json',dict(target_sha256=h,named=[{k:n[k] for k in ['id','label']} for n in [record,*record['taxa'],*record['participants'],*record['reactions']]],reference_ids=[r['id'] for r in record['references']]))
+dump('pyochelin-protein-projection.json',dict(target_sha256=h,current=[dict(accession=a,batch_index=upidx[a],entry_audit=up['results'][upidx[a]]['entryAudit'],taxon=up['results'][upidx[a]]['organism']['taxonId'],sequence_sha256=hashlib.sha256(up['results'][upidx[a]]['sequence']['value'].encode()).hexdigest(),comments=up['results'][upidx[a]].get('comments',[])) for a in prot],historical_pa14=json.loads((P/'sequence-check.json').read_text()),historical_pao1=json.loads((P/'pao1-submission-check.json').read_text())))
+print(h,len(record['participants']),len(record['reactions']),len(edges),sum(len(e['evidence']) for e in edges),len(record['references']))

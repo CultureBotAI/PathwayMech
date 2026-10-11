@@ -1,0 +1,25 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+prep = Path('/private/tmp/pathwaymech-pyochelin-maintained-copy-plan-20261011/handoff.json')
+handoff = json.loads(prep.read_text())
+assert hashlib.sha256(prep.read_bytes()).hexdigest() == 'e558f4ae9e1950141d42a59152a32d1a46f41b6015dbd281f54b951c2b34e7bf'
+out = Path('/private/tmp/pathwaymech-next-216-integrated-replay')
+assert not out.exists()
+out.mkdir()
+command = handoff['prospective_integrated_replay_command']
+log = out / 'execution.log'
+start = datetime.now(timezone.utc).isoformat()
+with log.open('x') as stream:
+    result = subprocess.run(command, cwd=root, env={**os.environ, **handoff['prospective_environment']}, stdout=stream, stderr=subprocess.STDOUT)
+receipt = {'started_at': start, 'finished_at': datetime.now(timezone.utc).isoformat(), 'command': command, 'cwd': str(root), 'environment': handoff['prospective_environment'], 'exit_code': result.returncode, 'log': str(log), 'log_sha256': hashlib.sha256(log.read_bytes()).hexdigest(), 'scope': 'Original-source replay against actual maintained target, unchanged runtime and current integrated authority root. Full corpus gates remain separate.'}
+with (out / 'execution.json').open('x') as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write('\n')
+print(json.dumps(receipt), flush=True)
+raise SystemExit(result.returncode)
