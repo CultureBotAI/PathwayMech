@@ -1,0 +1,528 @@
+id: MetaCyc:GALACTCAT-PWY
+label: D-galactonate degradation
+description: 'The complete three-step MetaCyc D-galactonate pathway dehydrates D-galactonate, phosphorylates
+  the resulting 2-dehydro-3-deoxy-D-galactonate with ATP, and cleaves the phosphorylated intermediate
+  to D-glyceraldehyde 3-phosphate and pyruvate. The scope is E. coli K-12: native protein annotations
+  refer to MG1655, while modern growth and transcription experiments used BW25113 derivatives. Current
+  reviewed DgoD and DgoA sequences correct an older predicted gene fusion. DgoD and DgoK catalytic assignments
+  are retained as reviewed annotations supported by native pathway curation and genetic physiology; DgoA
+  also has purified-enzyme and crystal evidence. Functional enzyme edges do not imply isolated-monomer
+  sufficiency: DgoA is homotrimeric. DgoD magnesium binding is annotated by similarity. DgoR represses
+  the dgo operon, and D-galactonate relieves its DNA binding under the tested conditions. Later recombinant-protein
+  work supports a divalent-metal requirement for effector binding without identifying a unique physiological
+  metal. The selected aldolase direction is catabolic despite its reversible native reaction. Uptake,
+  upstream D-galactose oxidation, galactitol utilization and downstream glyceraldehyde-phosphate metabolism
+  lie outside this exact pathway boundary.'
+pathway_type: d-galactonate-degradation
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:12931
+  label: D-galactonate
+  category: small_molecule
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:57989
+  label: 2-dehydro-3-deoxy-D-galactonate
+  category: small_molecule
+- id: CHEBI:58298
+  label: 6-phosphonato-2-dehydro-3-deoxy-D-galactate(3-)
+  category: small_molecule
+- id: CHEBI:59776
+  label: D-glyceraldehyde 3-phosphate(2-)
+  category: small_molecule
+- id: UniProtKB:Q6BF17
+  label: D-galactonate dehydratase
+  category: protein
+- id: UniProtKB:P31459
+  label: 2-dehydro-3-deoxygalactonokinase
+  category: protein
+- id: UniProtKB:Q6BF16
+  label: 2-dehydro-3-deoxy-6-phosphogalactonate aldolase
+  category: protein
+- id: UniProtKB:P31460
+  label: Galactonate operon transcriptional repressor
+  category: protein
+reactions:
+- id: RHEA:18650
+  label: D-galactonate => 2-dehydro-3-deoxy-D-galactonate + H2O
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16526
+  label: 2-dehydro-3-deoxy-D-galactonate + ATP => 2-dehydro-3-deoxy-6-phospho-D-galactonate + ADP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:24465
+  label: 2-dehydro-3-deoxy-6-phospho-D-galactonate => D-glyceraldehyde 3-phosphate + pyruvate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: galactonate-edge-001
+  subject: CHEBI:12931
+  predicate: consumes
+  object: RHEA:18650
+  evidence:
+  - reference_id: RHEA:18650
+    source_assertion: RHEA:18650 assigns CHEBI:12931 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/18650 rh:substrates http://rdf.rhea-db.org/18649_L; http://rdf.rhea-db.org/18649_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_18649_compound_4453; http://rdf.rhea-db.org/Participant_18649_compound_4453
+      rh:compound http://rdf.rhea-db.org/Compound_4453; http://rdf.rhea-db.org/Compound_4453 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_12931
+- id: galactonate-edge-002
+  subject: RHEA:18650
+  predicate: produces
+  object: CHEBI:57989
+  evidence:
+  - reference_id: RHEA:18650
+    source_assertion: RHEA:18650 assigns CHEBI:57989 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/18650 rh:products http://rdf.rhea-db.org/18649_R; http://rdf.rhea-db.org/18649_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_18649_compound_2839; http://rdf.rhea-db.org/Participant_18649_compound_2839
+      rh:compound http://rdf.rhea-db.org/Compound_2839; http://rdf.rhea-db.org/Compound_2839 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_57989
+- id: galactonate-edge-003
+  subject: RHEA:18650
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:18650
+    source_assertion: RHEA:18650 assigns CHEBI:15377 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/18650 rh:products http://rdf.rhea-db.org/18649_R; http://rdf.rhea-db.org/18649_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_18649_compound_1283; http://rdf.rhea-db.org/Participant_18649_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_15377
+- id: galactonate-edge-004
+  subject: CHEBI:57989
+  predicate: consumes
+  object: RHEA:16526
+  evidence:
+  - reference_id: RHEA:16526
+    source_assertion: RHEA:16526 assigns CHEBI:57989 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/16526 rh:substrates http://rdf.rhea-db.org/16525_L; http://rdf.rhea-db.org/16525_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_16525_compound_2839; http://rdf.rhea-db.org/Participant_16525_compound_2839
+      rh:compound http://rdf.rhea-db.org/Compound_2839; http://rdf.rhea-db.org/Compound_2839 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_57989
+- id: galactonate-edge-005
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:16526
+  evidence:
+  - reference_id: RHEA:16526
+    source_assertion: RHEA:16526 assigns CHEBI:30616 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/16526 rh:substrates http://rdf.rhea-db.org/16525_L; http://rdf.rhea-db.org/16525_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_16525_compound_6372; http://rdf.rhea-db.org/Participant_16525_compound_6372
+      rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/Compound_6372 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_30616
+- id: galactonate-edge-006
+  subject: RHEA:16526
+  predicate: produces
+  object: CHEBI:58298
+  evidence:
+  - reference_id: RHEA:16526
+    source_assertion: RHEA:16526 assigns CHEBI:58298 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/16526 rh:products http://rdf.rhea-db.org/16525_R; http://rdf.rhea-db.org/16525_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_16525_compound_3333; http://rdf.rhea-db.org/Participant_16525_compound_3333
+      rh:compound http://rdf.rhea-db.org/Compound_3333; http://rdf.rhea-db.org/Compound_3333 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_58298
+- id: galactonate-edge-007
+  subject: RHEA:16526
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:16526
+    source_assertion: RHEA:16526 assigns CHEBI:456216 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/16526 rh:products http://rdf.rhea-db.org/16525_R; http://rdf.rhea-db.org/16525_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_16525_compound_2710; http://rdf.rhea-db.org/Participant_16525_compound_2710
+      rh:compound http://rdf.rhea-db.org/Compound_2710; http://rdf.rhea-db.org/Compound_2710 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_456216
+- id: galactonate-edge-008
+  subject: RHEA:16526
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:16526
+    source_assertion: RHEA:16526 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/16526 rh:products http://rdf.rhea-db.org/16525_R; http://rdf.rhea-db.org/16525_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_16525_compound_3249; http://rdf.rhea-db.org/Participant_16525_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_15378
+- id: galactonate-edge-009
+  subject: CHEBI:58298
+  predicate: consumes
+  object: RHEA:24465
+  evidence:
+  - reference_id: RHEA:24465
+    source_assertion: RHEA:24465 assigns CHEBI:58298 to its substrates with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24465 rh:substrates http://rdf.rhea-db.org/24464_L; http://rdf.rhea-db.org/24464_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_24464_compound_3333; http://rdf.rhea-db.org/Participant_24464_compound_3333
+      rh:compound http://rdf.rhea-db.org/Compound_3333; http://rdf.rhea-db.org/Compound_3333 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_58298
+- id: galactonate-edge-010
+  subject: RHEA:24465
+  predicate: produces
+  object: CHEBI:59776
+  evidence:
+  - reference_id: RHEA:24465
+    source_assertion: RHEA:24465 assigns CHEBI:59776 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24465 rh:products http://rdf.rhea-db.org/24464_R; http://rdf.rhea-db.org/24464_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_24464_compound_6062; http://rdf.rhea-db.org/Participant_24464_compound_6062
+      rh:compound http://rdf.rhea-db.org/Compound_6062; http://rdf.rhea-db.org/Compound_6062 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_59776
+- id: galactonate-edge-011
+  subject: RHEA:24465
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:24465
+    source_assertion: RHEA:24465 assigns CHEBI:15361 to its products with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24465 rh:products http://rdf.rhea-db.org/24464_R; http://rdf.rhea-db.org/24464_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_24464_compound_3719; http://rdf.rhea-db.org/Participant_24464_compound_3719
+      rh:compound http://rdf.rhea-db.org/Compound_3719; http://rdf.rhea-db.org/Compound_3719 rh:chebi
+      http://purl.obolibrary.org/obo/CHEBI_15361
+- id: galactonate-edge-012
+  subject: UniProtKB:Q6BF17
+  predicate: enables
+  object: RHEA:18650
+  evidence:
+  - reference_id: UniProtKB:Q6BF17
+    source_assertion: The reviewed Q6BF17 catalytic-activity annotation assigns RHEA:18649; this specifies
+      the gene product function, not isolated-monomer sufficiency.
+    source_locator: comments[1].reaction.name/reactionCrossReferences; organism.taxonId; genes
+  - reference_id: MetaCyc:GALACTONATE-DEHYDRATASE-MONOMER
+    source_assertion: The native MG1655 protein frame identifies UniProt Q6BF17 and links its enzymatic
+      reaction to GALACTONDEHYDRAT-RXN.
+    source_locator: Protein[@frameid="GALACTONATE-DEHYDRATASE-MONOMER"]/dblink[dblink-db="UNIPROT"]; species/Organism[@frameid="TAX-511145"];
+      catalyzes/Enzymatic-Reaction/reaction/Reaction
+  description: Functional enzyme assignment; no physical assembly stoichiometry is asserted.
+- id: galactonate-edge-013
+  subject: UniProtKB:P31459
+  predicate: enables
+  object: RHEA:16526
+  evidence:
+  - reference_id: UniProtKB:P31459
+    source_assertion: The reviewed P31459 catalytic-activity annotation assigns RHEA:16525; this specifies
+      the gene product function, not isolated-monomer sufficiency.
+    source_locator: comments[0].reaction.name/reactionCrossReferences; organism.taxonId; genes
+  - reference_id: MetaCyc:DEHYDDEOXGALACTKIN-MONOMER
+    source_assertion: The native MG1655 protein frame identifies UniProt P31459 and links its enzymatic
+      reaction to DEHYDDEOXGALACTKIN-RXN.
+    source_locator: Protein[@frameid="DEHYDDEOXGALACTKIN-MONOMER"]/dblink[dblink-db="UNIPROT"]; species/Organism[@frameid="TAX-511145"];
+      catalyzes/Enzymatic-Reaction/reaction/Reaction
+  description: Functional enzyme assignment; no physical assembly stoichiometry is asserted.
+- id: galactonate-edge-014
+  subject: UniProtKB:Q6BF16
+  predicate: enables
+  object: RHEA:24465
+  evidence:
+  - reference_id: UniProtKB:Q6BF16
+    source_assertion: The reviewed Q6BF16 catalytic-activity annotation assigns RHEA:24464; this specifies
+      the gene product function, not isolated-monomer sufficiency.
+    source_locator: comments[1].reaction.name/reactionCrossReferences; organism.taxonId; genes
+  - reference_id: MetaCyc:DEHYDDEOXPHOSGALACT-ALDOL-MONOMER
+    source_assertion: The native MG1655 protein frame identifies UniProt Q6BF16 and links its enzymatic
+      reaction to DEHYDDEOXPHOSGALACT-ALDOL-RXN.
+    source_locator: Protein[@frameid="DEHYDDEOXPHOSGALACT-ALDOL-MONOMER"]/dblink[dblink-db="UNIPROT"];
+      species/Organism[@frameid="TAX-511145"]; catalyzes/Enzymatic-Reaction/reaction/Reaction
+  - reference_id: PMID:17981470
+    source_assertion: Purified recombinant E. coli KDPGal aldolase cleaved KDPGal; the structure and solution
+      description support a homotrimer. Expression in an eda-deficient host reduced KDPG-aldolase contamination.
+    source_locator: 'PMC3326530 Results #P5, #P6 and #P10; Introduction #P4; Methods #P22-#P25 and #P33'
+  description: Functional enzyme assignment; the active protein is described as a homotrimer, without
+    a separately identified physical-complex node.
+- id: galactonate-edge-015
+  subject: RHEA:18650
+  predicate: part_of
+  object: MetaCyc:GALACTCAT-PWY
+  evidence:
+  - reference_id: MetaCyc:GALACTCAT-PWY
+    source_assertion: The complete native pathway includes GALACTONDEHYDRAT-RXN in its reaction list and
+      selects L2R in its pathway layout.
+    source_locator: Pathway[@frameid="GALACTCAT-PWY"]/reaction-list/Reaction[@frameid="GALACTONDEHYDRAT-RXN"];
+      reaction-layout[Reaction/@frameid="GALACTONDEHYDRAT-RXN"]/direction
+  - reference_id: MetaCyc:GALACTONDEHYDRAT-RXN
+    source_assertion: The native reaction cross-references RHEA:18650; its reaction-direction is LEFT-TO-RIGHT.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]; reaction-direction; left/Compound; right/Compound
+  - reference_id: RHEA:18650
+    source_assertion: Rhea master 18649 explicitly contains directed member 18650; the selected substrates
+      and products implement catabolic left-to-right chemistry.
+    source_locator: http://rdf.rhea-db.org/18649 rh:directionalReaction http://rdf.rhea-db.org/18650;
+      http://rdf.rhea-db.org/18650 rh:substrates http://rdf.rhea-db.org/18649_L; rh:products http://rdf.rhea-db.org/18649_R;
+      rh:equation
+- id: galactonate-edge-016
+  subject: RHEA:16526
+  predicate: part_of
+  object: MetaCyc:GALACTCAT-PWY
+  evidence:
+  - reference_id: MetaCyc:GALACTCAT-PWY
+    source_assertion: The complete native pathway includes DEHYDDEOXGALACTKIN-RXN in its reaction list
+      and selects L2R in its pathway layout.
+    source_locator: Pathway[@frameid="GALACTCAT-PWY"]/reaction-list/Reaction[@frameid="DEHYDDEOXGALACTKIN-RXN"];
+      reaction-layout[Reaction/@frameid="DEHYDDEOXGALACTKIN-RXN"]/direction
+  - reference_id: MetaCyc:DEHYDDEOXGALACTKIN-RXN
+    source_assertion: The native reaction cross-references RHEA:16526; its reaction-direction is LEFT-TO-RIGHT.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]; reaction-direction; left/Compound; right/Compound
+  - reference_id: RHEA:16526
+    source_assertion: Rhea master 16525 explicitly contains directed member 16526; the selected substrates
+      and products implement catabolic left-to-right chemistry.
+    source_locator: http://rdf.rhea-db.org/16525 rh:directionalReaction http://rdf.rhea-db.org/16526;
+      http://rdf.rhea-db.org/16526 rh:substrates http://rdf.rhea-db.org/16525_L; rh:products http://rdf.rhea-db.org/16525_R;
+      rh:equation
+- id: galactonate-edge-017
+  subject: RHEA:24465
+  predicate: part_of
+  object: MetaCyc:GALACTCAT-PWY
+  evidence:
+  - reference_id: MetaCyc:GALACTCAT-PWY
+    source_assertion: The complete native pathway includes DEHYDDEOXPHOSGALACT-ALDOL-RXN in its reaction
+      list and selects L2R in its pathway layout.
+    source_locator: Pathway[@frameid="GALACTCAT-PWY"]/reaction-list/Reaction[@frameid="DEHYDDEOXPHOSGALACT-ALDOL-RXN"];
+      reaction-layout[Reaction/@frameid="DEHYDDEOXPHOSGALACT-ALDOL-RXN"]/direction
+  - reference_id: MetaCyc:DEHYDDEOXPHOSGALACT-ALDOL-RXN
+    source_assertion: The native reaction cross-references RHEA:24467; its reaction-direction is REVERSIBLE.
+    source_locator: Reaction/dblink[dblink-db="RHEA"]; reaction-direction; left/Compound; right/Compound
+  - reference_id: RHEA:24465
+    source_assertion: Rhea master 24464 explicitly contains directed member 24465; the selected substrates
+      and products implement catabolic left-to-right chemistry.
+    source_locator: http://rdf.rhea-db.org/24464 rh:directionalReaction http://rdf.rhea-db.org/24465;
+      http://rdf.rhea-db.org/24465 rh:substrates http://rdf.rhea-db.org/24464_L; rh:products http://rdf.rhea-db.org/24464_R;
+      rh:equation
+- id: galactonate-edge-018
+  subject: UniProtKB:Q6BF17
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: UniProtKB:Q6BF17
+    source_assertion: The reviewed Q6BF17 entry assigns the protein to Escherichia coli strain K12, taxon
+      83333.
+    source_locator: organism.scientificName; organism.taxonId; genes
+- id: galactonate-edge-019
+  subject: UniProtKB:P31459
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: UniProtKB:P31459
+    source_assertion: The reviewed P31459 entry assigns the protein to Escherichia coli strain K12, taxon
+      83333.
+    source_locator: organism.scientificName; organism.taxonId; genes
+- id: galactonate-edge-020
+  subject: UniProtKB:Q6BF16
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: UniProtKB:Q6BF16
+    source_assertion: The reviewed Q6BF16 entry assigns the protein to Escherichia coli strain K12, taxon
+      83333.
+    source_locator: organism.scientificName; organism.taxonId; genes
+- id: galactonate-edge-021
+  subject: UniProtKB:P31460
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: UniProtKB:P31460
+    source_assertion: The reviewed P31460 entry assigns the protein to Escherichia coli strain K12, taxon
+      83333.
+    source_locator: organism.scientificName; organism.taxonId; genes
+- id: galactonate-edge-022
+  subject: UniProtKB:Q6BF17
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:Q6BF17
+    source_assertion: DgoD is annotated to bind one Mg(2+) per subunit by similarity (ECO:0000250); this
+      is not a direct K-12 metal-binding measurement.
+    source_locator: comments[2].cofactors[0].cofactorCrossReference/evidences; comments[2].note.texts[0]
+  description: Magnesium assignment by similarity; no physical oligomer stoichiometry inferred.
+- id: galactonate-edge-023
+  subject: RHEA:18650
+  predicate: precedes
+  object: RHEA:16526
+  evidence:
+  - reference_id: MetaCyc:GALACTCAT-PWY
+    source_assertion: Native pathway ordering places GALACTONDEHYDRAT-RXN before DEHYDDEOXGALACTKIN-RXN.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid="DEHYDDEOXGALACTKIN-RXN"]/predecessor-reactions/Reaction[@frameid="GALACTONDEHYDRAT-RXN"]
+  - reference_id: RHEA:18650
+    source_assertion: In the selected Rhea chemistry the preceding reaction produces the retained shared
+      intermediate CHEBI:57989.
+    source_locator: http://rdf.rhea-db.org/18650 rh:products http://rdf.rhea-db.org/18649_R; side rh:contains1
+      / participant rh:compound / compound rh:chebi
+  - reference_id: RHEA:16526
+    source_assertion: The subsequent selected Rhea reaction consumes CHEBI:57989, connecting the native
+      steps without adding a transport reaction.
+    source_locator: http://rdf.rhea-db.org/16526 rh:substrates http://rdf.rhea-db.org/16525_L; side rh:contains1
+      / participant rh:compound / compound rh:chebi
+- id: galactonate-edge-024
+  subject: RHEA:16526
+  predicate: precedes
+  object: RHEA:24465
+  evidence:
+  - reference_id: MetaCyc:GALACTCAT-PWY
+    source_assertion: Native pathway ordering places DEHYDDEOXGALACTKIN-RXN before DEHYDDEOXPHOSGALACT-ALDOL-RXN.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid="DEHYDDEOXPHOSGALACT-ALDOL-RXN"]/predecessor-reactions/Reaction[@frameid="DEHYDDEOXGALACTKIN-RXN"]
+  - reference_id: RHEA:16526
+    source_assertion: In the selected Rhea chemistry the preceding reaction produces the retained shared
+      intermediate CHEBI:58298.
+    source_locator: http://rdf.rhea-db.org/16526 rh:products http://rdf.rhea-db.org/16525_R; side rh:contains1
+      / participant rh:compound / compound rh:chebi
+  - reference_id: RHEA:24465
+    source_assertion: The subsequent selected Rhea reaction consumes CHEBI:58298, connecting the native
+      steps without adding a transport reaction.
+    source_locator: http://rdf.rhea-db.org/24465 rh:substrates http://rdf.rhea-db.org/24464_L; side rh:contains1
+      / participant rh:compound / compound rh:chebi
+- id: galactonate-edge-025
+  subject: MetaCyc:GALACTCAT-PWY
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: PMID:30455279
+    source_assertion: BW25113-derived dgoD, dgoK and dgoA deletions failed to grow on D-galactonate while
+      growing on glucose. These genetic results support K-12 pathway physiology, not purified-enzyme assignments.
+    source_locator: 'PMC6351737 Results #s2.1, Fig. 1C; Materials and Methods #s4.3, Table 1'
+  - reference_id: PMID:211976
+    source_assertion: The publisher abstract reports K-12 mutants lacking individual D-galactonate pathway
+      activities or all three, with linked structural genes and inducible enzyme activities.
+    source_locator: Publisher Abstract, numbered statements 1, 2 and 6; abstract-only access
+- id: galactonate-edge-026
+  subject: UniProtKB:P31460
+  predicate: regulates
+  object: MetaCyc:GALACTCAT-PWY
+  evidence:
+  - reference_id: UniProtKB:P31460
+    source_assertion: Reviewed DgoR annotation describes repression of the dgoRKADT operon through binding
+      two inverted repeats in its cis-acting element.
+    source_locator: comments[0] FUNCTION
+  - reference_id: PMID:30455279
+    source_assertion: DgoR loss increased dgo transcription; purified DgoR bound the upstream cis-acting
+      element, with IR1 and IR2 needed for binding and repression.
+    source_locator: 'PMC6351737 Results #s2.1 and #s2.4; Fig. 1F and Fig. 4; Methods #s4.3 and #s4.9'
+  description: Negative transcriptional regulation of the operon encoding the pathway, not direct inhibition
+    of catalytic proteins.
+- id: galactonate-edge-027
+  subject: CHEBI:12931
+  predicate: inhibits
+  object: UniProtKB:P31460
+  evidence:
+  - reference_id: PMID:30455279
+    source_assertion: D-galactonate reduced DgoR binding to its target DNA in vitro and changed its proteolysis
+      pattern; the EMSA buffer contained MgCl2.
+    source_locator: 'PMC6351737 Results #s2.7, Fig. 8A-C; Materials and Methods #s4.9 and #s4.12'
+  - reference_id: PMID:33224125
+    source_assertion: After EDTA treatment, D-galactonate with Zn2+, Ca2+ or Mg2+ reduced DgoR-DNA complex
+      stability. Metal depletion did not directly abolish DNA binding.
+    source_locator: 'PMC7674646 Results #S3.SS3, Fig. 6; Discussion #S4'
+  description: Inhibition of repressor DNA binding under the tested conditions; divalent-metal-dependent
+    effector response, without assigning a unique physiological metal or catalytic consumption of the
+    effector.
+references:
+- id: MetaCyc:GALACTCAT-PWY
+  title: 'D-galactonate degradation: complete native pathway'
+  url: https://pathway.yeastgenome.org/getxml?META:GALACTCAT-PWY
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: fd37229b22a120444fec0df7b4cc41b13b2b7517cae07b628a0538789c6ad20f
+- id: MetaCyc:GALACTONDEHYDRAT-RXN
+  title: Native GALACTONDEHYDRAT-RXN definition
+  url: https://pathway.yeastgenome.org/getxml?META:GALACTONDEHYDRAT-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 7a9f7ce85da89aadffa5a41fdfc00c25fe954cecf307bfb81642939abbc5e375
+- id: MetaCyc:GALACTONATE-DEHYDRATASE-MONOMER
+  title: Native GALACTONATE-DEHYDRATASE-MONOMER definition
+  url: https://pathway.yeastgenome.org/getxml?META:GALACTONATE-DEHYDRATASE-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 863e1d8098a4749df32fd829f7135a847a109083d8d8b38463747ad38c548efe
+- id: RHEA:18650
+  title: D-galactonate => 2-dehydro-3-deoxy-D-galactonate + H2O
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:DEHYDDEOXGALACTKIN-RXN
+  title: Native DEHYDDEOXGALACTKIN-RXN definition
+  url: https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXGALACTKIN-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 0b306ee63e5498a9ace9423d4eb89c23a8906e5b51741529cb6caab0b468e57a
+- id: MetaCyc:DEHYDDEOXGALACTKIN-MONOMER
+  title: Native DEHYDDEOXGALACTKIN-MONOMER definition
+  url: https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXGALACTKIN-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 6327b7ece79efa26915821049ca9c52aa6afb6729c1ac44635d61032525803b1
+- id: RHEA:16526
+  title: 2-dehydro-3-deoxy-D-galactonate + ATP => 2-dehydro-3-deoxy-6-phospho-D-galactonate + ADP + H(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:DEHYDDEOXPHOSGALACT-ALDOL-RXN
+  title: Native DEHYDDEOXPHOSGALACT-ALDOL-RXN definition
+  url: https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXPHOSGALACT-ALDOL-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: c66e4fbab0476b5db784885e71babe25624df7739d2f0fcd7ee901db27b40cc8
+- id: MetaCyc:DEHYDDEOXPHOSGALACT-ALDOL-MONOMER
+  title: Native DEHYDDEOXPHOSGALACT-ALDOL-MONOMER definition
+  url: https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXPHOSGALACT-ALDOL-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 364880432fd4868c17c91bba9a60af4729aeceffd220f3b56282202403812781
+- id: RHEA:24465
+  title: 2-dehydro-3-deoxy-6-phospho-D-galactonate => D-glyceraldehyde 3-phosphate + pyruvate
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:Q6BF17
+  title: Reviewed E. coli K-12 D-galactonate dehydratase
+  url: https://rest.uniprot.org/uniprotkb/Q6BF17.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC; release confirmed by response
+    header
+  source_sha256: 77084e43c46dcd45816a3bd2c425e885c8b4687f9048d8517721be4359ddf60f
+- id: UniProtKB:P31459
+  title: Reviewed E. coli K-12 2-dehydro-3-deoxygalactonokinase
+  url: https://rest.uniprot.org/uniprotkb/P31459.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC; release confirmed by response
+    header
+  source_sha256: b770b4613dcf98e6aa24952569ec4c7acb0c922f4aa1ccba28c163edf80aeaac
+- id: UniProtKB:Q6BF16
+  title: Reviewed E. coli K-12 2-dehydro-3-deoxy-6-phosphogalactonate aldolase
+  url: https://rest.uniprot.org/uniprotkb/Q6BF16.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC; release confirmed by response
+    header
+  source_sha256: 9f0d514e7167c0d7fe0e393b7fdcc45b013cf53a2ea8dd1cad5e60168ab17cc6
+- id: UniProtKB:P31460
+  title: Reviewed E. coli K-12 Galactonate operon transcriptional repressor
+  url: https://rest.uniprot.org/uniprotkb/P31460.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC; release confirmed by response
+    header
+  source_sha256: ea07011665016cfabcd538e0faa80b7adeddcbac8659ae3c45ada60f502c38a8
+- id: PMID:30455279
+  title: Molecular and Functional Insights into the Regulation of D-Galactonate Metabolism by the Transcriptional
+    Regulator DgoR in Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6351737/
+  source_version: Complete primary HTML; inspected Results and Methods; retrieved 2026-10-11 UTC
+  source_sha256: 1bab347e98dafa6dfb04253e6b080cad78cff4b2c6139a1b77e6ff29509fec07
+- id: PMID:17981470
+  title: Characterization and crystal structure of Escherichia coli KDPGal aldolase.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3326530/
+  source_version: Complete primary HTML; inspected Results and Methods; retrieved 2026-10-11 UTC
+  source_sha256: 58a7e34b46e22091c33481f273f62c2606844ccd703cb5122fb11c72f7d783e1
+- id: PMID:33224125
+  title: Structural and Functional Analyses of the Transcription Repressor DgoR From Escherichia coli
+    Reveal a Divalent Metal-Containing D-Galactonate Binding Pocket.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7674646/
+  source_version: Complete primary HTML; inspected Results and Methods; retrieved 2026-10-11 UTC
+  source_sha256: 2a6d1a7b8712676db20544de7dc6f85fc1e45159730ae429d811664489f0ade5
+- id: PMID:211976
+  title: The utilisation of D-galactonate and D-2-oxo-3-deoxygalactonate by Escherichia coli K-12.
+  url: https://link.springer.com/article/10.1007/BF00415730
+  source_version: Publisher abstract only; numbered statements 1-6 inspected; full article unavailable;
+    retrieved 2026-10-11 UTC
+  source_sha256: 64570c405c388eba927e697a30f097bfcc2d8892e0deb96bf50d613008cbde6a
