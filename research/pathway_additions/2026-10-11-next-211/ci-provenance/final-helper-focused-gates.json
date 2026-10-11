@@ -1,0 +1,68 @@
+{
+  "owner_hashes": {
+    "scripts/fetch_review_revisions.py": "db9635c46327fdc54d742405ba5beda1354568b02873d2088118da1b76c15fb5",
+    "tests/test_fetch_review_revisions.py": "4afc0cf7f51cd278803e98cb2742759391b0f8384fe9e5b59fbb276d253f8559",
+    "tests/test_review_retention_refs.py": "112a63ffb855dd6312e671a26cf720141c3babd6118a6d865827433728619e8e",
+    ".github/workflows/main.yaml": "09bdf8c9135e5696658e14fea56ddf0961f15f9e7ba31c6780ffb9952ac22f20",
+    "tests/test_record_review_ci.py": "47b294bcfa50b23da1ccbfdaced689cf47b95d974321606150662e2a3efd32d1",
+    "docs/record-review-profile.md": "f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819"
+  },
+  "checks": [
+    {
+      "name": "focused",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_fetch_review_revisions.py",
+        "tests/test_review_retention_refs.py",
+        "tests/test_record_review_ci.py"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-11T13:07:07.787802+00:00",
+      "finished_at": "2026-10-11T13:07:51.336340+00:00",
+      "log": "/private/tmp/pathwaymech-pr383-symbolic-final-gates/focused.log",
+      "log_sha256": "bcd227ce264c7484e5af99567e3ef01160b4a413b35ba95039cd5b6e9ff7b5f0"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "just",
+        "lint"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-11T13:07:07.788281+00:00",
+      "finished_at": "2026-10-11T13:07:08.027435+00:00",
+      "log": "/private/tmp/pathwaymech-pr383-symbolic-final-gates/lint.log",
+      "log_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41"
+    },
+    {
+      "name": "history",
+      "command": [
+        "just",
+        "validate-history"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-11T13:07:07.788448+00:00",
+      "finished_at": "2026-10-11T13:07:16.090685+00:00",
+      "log": "/private/tmp/pathwaymech-pr383-symbolic-final-gates/history.log",
+      "log_sha256": "fc04e3ce44bcafdb0a2eba37e69936235557a545c9d91aa0109442f9ab2fcc67"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-11T13:07:08.027843+00:00",
+      "finished_at": "2026-10-11T13:07:08.116095+00:00",
+      "log": "/private/tmp/pathwaymech-pr383-symbolic-final-gates/diff.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "all_passed": true,
+  "scope": "Final symbolic-ref correction and workflow/fetch regression tests; previous complete corpus suite separately recorded on initial helper."
+}

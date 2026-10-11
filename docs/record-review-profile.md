@@ -41,6 +41,25 @@ base in `RECORD_REVIEW_BASE`. Existing `reports/yaml_record_review/` and
 `reports/yaml_category_review/` prose stays historical and is not migrated.
 No scientific record, native curation status or history event changes on save.
 
+Fresh clones may lack feature commits referenced by saved reviews after a squash
+merge and branch deletion. Before running the review gate in such a clone, run:
+
+```bash
+uv run python scripts/fetch_review_revisions.py
+just review-check
+```
+
+CI runs this preparation before tests. It validates every saved YAML/Markdown
+pair, including ignored bundles, and requires PathwayMech repository claims and
+full lowercase SHA-1 revisions. Missing commits are fetched by exact ID from
+the official PathwayMech repository and retained under local
+`refs/record-reviews/<commit>` refs. Retrieval failures, non-commit objects and
+conflicting retention refs fail the command. GitHub must still retain the
+historical object (for example through a pull-request ref); this cannot recover
+an unavailable object. Saved reviews and their declared hashes stay unchanged.
+The governed provenance and append-only checks remain required; retrieval is
+preparation for those checks, not a replacement or a new scientific review.
+
 The `.claude/skills/pathwaymech-resolve-reviews/SKILL.md` route interprets saved
 reviews and applies supported corrections. A bounded reconciliation may use
 legacy reports as `source` targets with current maintained YAML and audit ledgers

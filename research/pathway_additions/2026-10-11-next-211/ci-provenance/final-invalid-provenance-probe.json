@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-11T13:08:52.615299Z",
+  "helper_sha256": "db9635c46327fdc54d742405ba5beda1354568b02873d2088118da1b76c15fb5",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-pr383-technical-review/probe-final-provenance.py",
+  "scope": "Real local bare Git fixture; test-only in-process FETCH_URL override. Official remote transport is independently verified by another agent.",
+  "cases": [
+    {
+      "exit_code": 0,
+      "stdout": "{\n  \"reviews\": 1,\n  \"revisions\": [\n    \"8737dd381d924af291e980d64ee1cb5225dfaa99\"\n  ],\n  \"fetched\": [\n    \"8737dd381d924af291e980d64ee1cb5225dfaa99\"\n  ],\n  \"retained_ref_prefix\": \"refs/record-reviews/\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Review revision preparation failed: source provenance invalid: claimed committed input hash disagrees: record.yaml\n"
+    }
+  ],
+  "result": "A successful object fetch does not bypass exact historical source hash validation.",
+  "exit_code": 0
+}

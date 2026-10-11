@@ -18,6 +18,14 @@ def test_review_workflow_requires_a_trusted_event_base():
         step for step in job["steps"] if step.get("uses", "").startswith("actions/checkout@")
     )
     assert checkout["with"]["fetch-depth"] == 0
+    steps = job["steps"]
+    preparation = next(
+        i for i, step in enumerate(steps)
+        if step.get("run") == "uv run --locked python scripts/fetch_review_revisions.py"
+    )
+    dependencies = next(i for i, step in enumerate(steps) if step["name"] == "Install dependencies")
+    tests = next(i for i, step in enumerate(steps) if step["name"] == "Test")
+    assert dependencies < preparation < tests
 
 
 def test_missing_review_base_fails_even_with_no_reports():

@@ -1,0 +1,29 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/fetch_review_revisions.py
+  slug: review-commit-retrieval
+session:
+  id: 2026-10-11T125621Z-claude-code-f113bc
+  timestamp: '2026-10-11T12:56:21Z'
+  actors:
+  - type: ai_agent
+    name: claude-code
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/386
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/383
+events:
+- type: EDIT
+  outcome: changed
+  summary: Restore exact historical review commits before fresh-clone validation
+  details: Added explicit official-origin SHA-1 commit retrieval and local retention refs
+    before CI tests. Validate complete review pairs and repository claims before fetching;
+    reject invalid revisions, non-commit objects and conflicting refs. Preserve governed provenance/append-only
+    validators, immutable review bytes and all pathway science. Independent isolated-clone
+    diagnosis reproduced the original missing-commit failure and successful exact-object recovery;
+    regression coverage exercises missing commits, fetch failure, malformed inputs, wrong
+    repositories and retention conflicts. Final validation and successor review are recorded
+    separately in the PR dossier.
