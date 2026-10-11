@@ -1,0 +1,656 @@
+id: GO:0019305
+label: dTDP-rhamnose biosynthetic process
+description: The complete four-step dTDP-L-rhamnose pathway converts alpha-D-glucose 1-phosphate and dTTP
+  to dTDP-beta-L-rhamnose through thymidylyl transfer, dehydration, C3/C5 epimerization and NADPH-dependent
+  reduction. It follows MetaCyc DTDPRHAMSYN-PWY, with the final reductase selected in the biosynthetic
+  reverse direction of its written Rhea master equation. The protein scope is E. coli K-12. RmlA has direct
+  biochemical and tetramer evidence; RmlB catalysis, dimerization and bound NAD are annotated by similarity
+  to the RffG paralog. K-12 mutant extracts support RmlC function and a free 4-keto-rhamnose intermediate,
+  while purified-enzyme stereochemical work in that study used M. tuberculosis. RmlD remains a probable
+  K-12 pathway assignment with catalytic, magnesium and homodimer annotations by similarity to Salmonella
+  RmlD. Functional RmlC/RmlD edges do not establish isolated-monomer sufficiency or an obligatory joint
+  complex. RmlD NADH use is also annotated by similarity; the native NADPH route is represented here.
+  Many K-12 lines are O-antigen deficient because of rfb-region mutations, so this pathway assignment
+  does not imply O-antigen production in every K-12 derivative. The boundary ends at the nucleotide sugar;
+  RffG/RffH compensation, enterobacterial common-antigen synthesis and downstream rhamnosyl transfer are
+  separate.
+pathway_type: dtdp-l-rhamnose-biosynthesis
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:37568
+  label: dTTP(4-)
+  category: small_molecule
+- id: CHEBI:58601
+  label: alpha-D-glucose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57477
+  label: dTDP-alpha-D-glucose(2-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:57649
+  label: dTDP-4-dehydro-6-deoxy-alpha-D-glucose(2-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:62830
+  label: dTDP-4-dehydro-beta-L-rhamnose(2-)
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:57510
+  label: dTDP-6-deoxy-beta-L-mannose(2-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: cofactor
+- id: UniProtKB:P37744
+  label: Glucose-1-phosphate thymidylyltransferase 1
+  category: protein
+- id: UniProtKB:P37759
+  label: dTDP-glucose 4,6-dehydratase 1
+  category: protein
+- id: UniProtKB:P37745
+  label: dTDP-4-dehydrorhamnose 3,5-epimerase
+  category: protein
+- id: UniProtKB:P37760
+  label: dTDP-4-dehydrorhamnose reductase
+  category: protein
+- id: MetaCyc:CPLX0-8034
+  label: dTDP-glucose pyrophosphorylase
+  category: complex
+- id: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+  label: dTDP-glucose 4,6-dehydratase 1
+  category: complex
+reactions:
+- id: RHEA:15226
+  label: dTTP + alpha-D-glucose 1-phosphate + H(+) => dTDP-alpha-D-glucose + diphosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:17222
+  label: dTDP-alpha-D-glucose => dTDP-4-dehydro-6-deoxy-alpha-D-glucose + H2O
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16970
+  label: dTDP-4-dehydro-6-deoxy-alpha-D-glucose => dTDP-4-dehydro-beta-L-rhamnose
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:21798
+  label: dTDP-4-dehydro-beta-L-rhamnose + NADPH + H(+) => dTDP-beta-L-rhamnose + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: rhamnose-edge-001
+  subject: CHEBI:37568
+  predicate: consumes
+  object: RHEA:15226
+  evidence:
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15226 assigns CHEBI:37568 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/15226 rh:substrates; http://rdf.rhea-db.org/15225_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15225_compound_6436; http://rdf.rhea-db.org/Participant_15225_compound_6436
+      rh:compound http://rdf.rhea-db.org/Compound_6436; rh:chebi
+- id: rhamnose-edge-002
+  subject: CHEBI:58601
+  predicate: consumes
+  object: RHEA:15226
+  evidence:
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15226 assigns CHEBI:58601 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/15226 rh:substrates; http://rdf.rhea-db.org/15225_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15225_compound_3943; http://rdf.rhea-db.org/Participant_15225_compound_3943
+      rh:compound http://rdf.rhea-db.org/Compound_3943; rh:chebi
+- id: rhamnose-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:15226
+  evidence:
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15226 assigns CHEBI:15378 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/15226 rh:substrates; http://rdf.rhea-db.org/15225_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15225_compound_3249; http://rdf.rhea-db.org/Participant_15225_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; rh:chebi
+- id: rhamnose-edge-004
+  subject: RHEA:15226
+  predicate: produces
+  object: CHEBI:57477
+  evidence:
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15226 assigns CHEBI:57477 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/15226 rh:products; http://rdf.rhea-db.org/15225_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15225_compound_3802; http://rdf.rhea-db.org/Participant_15225_compound_3802
+      rh:compound http://rdf.rhea-db.org/Compound_3802; rh:chebi
+- id: rhamnose-edge-005
+  subject: RHEA:15226
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15226 assigns CHEBI:33019 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/15226 rh:products; http://rdf.rhea-db.org/15225_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15225_compound_2106; http://rdf.rhea-db.org/Participant_15225_compound_2106
+      rh:compound http://rdf.rhea-db.org/Compound_2106; rh:chebi
+- id: rhamnose-edge-006
+  subject: CHEBI:57477
+  predicate: consumes
+  object: RHEA:17222
+  evidence:
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17222 assigns CHEBI:57477 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/17222 rh:substrates; http://rdf.rhea-db.org/17221_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17221_compound_3802; http://rdf.rhea-db.org/Participant_17221_compound_3802
+      rh:compound http://rdf.rhea-db.org/Compound_3802; rh:chebi
+- id: rhamnose-edge-007
+  subject: RHEA:17222
+  predicate: produces
+  object: CHEBI:57649
+  evidence:
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17222 assigns CHEBI:57649 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/17222 rh:products; http://rdf.rhea-db.org/17221_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17221_compound_4008; http://rdf.rhea-db.org/Participant_17221_compound_4008
+      rh:compound http://rdf.rhea-db.org/Compound_4008; rh:chebi
+- id: rhamnose-edge-008
+  subject: RHEA:17222
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17222 assigns CHEBI:15377 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/17222 rh:products; http://rdf.rhea-db.org/17221_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17221_compound_1283; http://rdf.rhea-db.org/Participant_17221_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; rh:chebi
+- id: rhamnose-edge-009
+  subject: CHEBI:57649
+  predicate: consumes
+  object: RHEA:16970
+  evidence:
+  - reference_id: RHEA:16970
+    source_assertion: RHEA:16970 assigns CHEBI:57649 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/16970 rh:substrates; http://rdf.rhea-db.org/16969_L rh:contains1
+      http://rdf.rhea-db.org/Participant_16969_compound_4008; http://rdf.rhea-db.org/Participant_16969_compound_4008
+      rh:compound http://rdf.rhea-db.org/Compound_4008; rh:chebi
+- id: rhamnose-edge-010
+  subject: RHEA:16970
+  predicate: produces
+  object: CHEBI:62830
+  evidence:
+  - reference_id: RHEA:16970
+    source_assertion: RHEA:16970 assigns CHEBI:62830 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/16970 rh:products; http://rdf.rhea-db.org/16969_R rh:contains1
+      http://rdf.rhea-db.org/Participant_16969_compound_7498; http://rdf.rhea-db.org/Participant_16969_compound_7498
+      rh:compound http://rdf.rhea-db.org/Compound_7498; rh:chebi
+- id: rhamnose-edge-011
+  subject: CHEBI:62830
+  predicate: consumes
+  object: RHEA:21798
+  evidence:
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21798 assigns CHEBI:62830 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/21798 rh:substrates; http://rdf.rhea-db.org/21796_R rh:contains1
+      http://rdf.rhea-db.org/Participant_21796_compound_7498; http://rdf.rhea-db.org/Participant_21796_compound_7498
+      rh:compound http://rdf.rhea-db.org/Compound_7498; rh:chebi
+- id: rhamnose-edge-012
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:21798
+  evidence:
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21798 assigns CHEBI:57783 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/21798 rh:substrates; http://rdf.rhea-db.org/21796_R rh:contains1
+      http://rdf.rhea-db.org/Participant_21796_compound_3438; http://rdf.rhea-db.org/Participant_21796_compound_3438
+      rh:compound http://rdf.rhea-db.org/Compound_3438; rh:chebi
+- id: rhamnose-edge-013
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:21798
+  evidence:
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21798 assigns CHEBI:15378 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/21798 rh:substrates; http://rdf.rhea-db.org/21796_R rh:contains1
+      http://rdf.rhea-db.org/Participant_21796_compound_3249; http://rdf.rhea-db.org/Participant_21796_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; rh:chebi
+- id: rhamnose-edge-014
+  subject: RHEA:21798
+  predicate: produces
+  object: CHEBI:57510
+  evidence:
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21798 assigns CHEBI:57510 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/21798 rh:products; http://rdf.rhea-db.org/21796_L rh:contains1
+      http://rdf.rhea-db.org/Participant_21796_compound_1098; http://rdf.rhea-db.org/Participant_21796_compound_1098
+      rh:compound http://rdf.rhea-db.org/Compound_1098; rh:chebi
+- id: rhamnose-edge-015
+  subject: RHEA:21798
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21798 assigns CHEBI:58349 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/21798 rh:products; http://rdf.rhea-db.org/21796_L rh:contains1
+      http://rdf.rhea-db.org/Participant_21796_compound_5188; http://rdf.rhea-db.org/Participant_21796_compound_5188
+      rh:compound http://rdf.rhea-db.org/Compound_5188; rh:chebi
+- id: rhamnose-edge-016
+  subject: MetaCyc:CPLX0-8034
+  predicate: catalyzes
+  object: RHEA:15226
+  description: The native tetramer is the catalytic entity; the biosynthetic direction is selected without
+    denying experimentally measured reverse pyrophosphorolysis.
+  evidence:
+  - reference_id: UniProtKB:P37744
+    source_assertion: P37744 explicitly links catalytic RHEA:15225 and formation of dTDP-glucose from
+      dTTP and glucose 1-phosphate, with ECO:0000269 PMID:11697907.
+    source_locator: /comments/0; /comments/1/reaction
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15225 explicitly links directionalReaction RHEA:15226; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/15225 rh:directionalReaction http://rdf.rhea-db.org/15226
+  - reference_id: MetaCyc:CPLX0-8034
+    source_assertion: CPLX0-8034 catalyzes DTDPGLUCOSEPP-RXN through DTDPGLUCOSEPP-ENZRXN.
+    source_locator: Protein[@frameid="CPLX0-8034"]/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: PMID:11697907
+    source_assertion: The indexed primary abstract reports kinetic analysis of E. coli glucose-1-phosphate
+      thymidylyltransferase in both biosynthesis and pyrophosphorolysis directions.
+    source_locator: /resultList/result[id="11697907"]/abstractText
+- id: rhamnose-edge-017
+  subject: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+  predicate: catalyzes
+  object: RHEA:17222
+  description: Reviewed functional inference is retained at its stated tier. Direct RffG experiments and
+    the older E. coli B mass measurement are not relabeled as K-12 RmlB measurements.
+  evidence:
+  - reference_id: UniProtKB:P37759
+    source_assertion: P37759 links RHEA:17221 and oxidation/dehydration/rereduction of dTDP-glucose with
+      ECO:0000250 UniProtKB:P27830; this is an inference from RffG, not a purified K-12 RmlB assay.
+    source_locator: /comments/0; /comments/1/reaction
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17221 explicitly links directionalReaction RHEA:17222; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/17221 rh:directionalReaction http://rdf.rhea-db.org/17222
+  - reference_id: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+    source_assertion: The native dimer catalyzes DTDPGLUCDEHYDRAT-RXN through DTDPGLUCDEHYDRAT-ENZRXN.
+    source_locator: Protein[@frameid="DTDPGLUCDEHYDRAT-CPLX"]/catalyzes/Enzymatic-Reaction/reaction
+- id: rhamnose-edge-018
+  subject: UniProtKB:P37745
+  predicate: enables
+  object: RHEA:16970
+  description: The gene-product role combines K-12 mutant/extract evidence and reviewed exact-reaction
+    inference. It does not establish an independently sufficient K-12 monomer or an obligatory RmlC-RmlD
+    complex.
+  evidence:
+  - reference_id: UniProtKB:P37745
+    source_assertion: P37745 links RHEA:16969 and C3/C5 epimerization with ECO:0000250 UniProtKB:P26394
+      (Salmonella); its homodimer annotation has the same inference source.
+    source_locator: /comments/0; /comments/1/reaction; /comments/4
+  - reference_id: RHEA:16970
+    source_assertion: RHEA:16969 explicitly links directionalReaction RHEA:16970; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/16969 rh:directionalReaction http://rdf.rhea-db.org/16970
+  - reference_id: PMID:10217500
+    source_assertion: All E. coli strains derive from K-12. BW24599 extracts form free 4-keto-rhamnose,
+      unlike the rmlC deletion mutant BW24970. Purified epimerase experiments in the paper use M. tuberculosis
+      RmlC.
+    source_locator: PDF pp.664-668, Table 1, Results, Fig.3 caption and Fig.5
+- id: rhamnose-edge-019
+  subject: UniProtKB:P37760
+  predicate: enables
+  object: RHEA:21798
+  description: This is the probable K-12 RmlD functional assignment, with exact catalysis inferred from
+    Salmonella. The selected NADPH reduction is not evidence that NADH cannot support activity, nor that
+    an isolated monomer is sufficient.
+  evidence:
+  - reference_id: UniProtKB:P37760
+    source_assertion: P37760 links RHEA:21796 with ECO:0000250 UniProtKB:P26392. Its pathway role is Probable
+      (ECO:0000305 PMID:7517391); NADH/NADPH use and homodimerization are by similarity.
+    source_locator: /comments/0; /comments/1/reaction; /comments/5
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21796 explicitly links directionalReaction RHEA:21798; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/21796 rh:directionalReaction http://rdf.rhea-db.org/21798
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: The native final DTDPDEHYRHAMREDUCT-RXN layout selects R2L from the 4-keto-rhamnose
+      primary compound to dTDP-rhamnose.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-layout[Reaction/@frameid="DTDPDEHYRHAMREDUCT-RXN"]
+- id: rhamnose-edge-020
+  subject: UniProtKB:P37744
+  predicate: part_of
+  object: MetaCyc:CPLX0-8034
+  description: The subunit node is not assigned independent catalytic sufficiency.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8034
+    source_assertion: CPLX0-8034 has 4 copies of DTDPGLUCOSEPP-MONOMER; native species is MG1655, within
+      the selected K-12 scope.
+    source_locator: Protein[@frameid="CPLX0-8034"]/component/Protein; component/coefficient; species/Organism
+  - reference_id: MetaCyc:DTDPGLUCOSEPP-MONOMER
+    source_assertion: DTDPGLUCOSEPP-MONOMER has an explicit UNIPROT P37744 unification cross-reference.
+    source_locator: Protein[@frameid="DTDPGLUCOSEPP-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid;
+      dblink-relationship
+  - reference_id: UniProtKB:P37744
+    source_assertion: SUBUNIT specifies a homotetramer with ECO:0000269 PMID:11697907.
+    source_locator: /comments/6
+  - reference_id: PMID:11697907
+    source_assertion: The indexed primary abstract explicitly describes the E. coli enzyme as homotetrameric.
+    source_locator: /resultList/result[id="11697907"]/abstractText
+- id: rhamnose-edge-021
+  subject: UniProtKB:P37759
+  predicate: part_of
+  object: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+  description: The native dimer is corroborated by reviewed similarity annotation; the native 88-kDa experimental
+    citation concerns E. coli B, not a direct K-12 measurement.
+  evidence:
+  - reference_id: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+    source_assertion: DTDPGLUCDEHYDRAT-CPLX has 2 copies of DTDPGLUCDEHYDRAT-MONOMER; native species is
+      MG1655, within the selected K-12 scope.
+    source_locator: Protein[@frameid="DTDPGLUCDEHYDRAT-CPLX"]/component/Protein; component/coefficient;
+      species/Organism
+  - reference_id: MetaCyc:DTDPGLUCDEHYDRAT-MONOMER
+    source_assertion: DTDPGLUCDEHYDRAT-MONOMER has an explicit UNIPROT P37759 unification cross-reference.
+    source_locator: Protein[@frameid="DTDPGLUCDEHYDRAT-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid;
+      dblink-relationship
+  - reference_id: UniProtKB:P37759
+    source_assertion: SUBUNIT specifies a homodimer with ECO:0000250 UniProtKB:P27830.
+    source_locator: /comments/5
+- id: rhamnose-edge-022
+  subject: MetaCyc:CPLX0-8034
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Magnesium binding is an explicit experimentally supported annotation, not inferred from
+    an Mg-containing assay mixture.
+  evidence:
+  - reference_id: UniProtKB:P37744
+    source_assertion: COFACTOR specifies CHEBI:18420 and one Mg(2+) per subunit with ECO:0000269 PMID:11697907.
+      The inspected primary abstract does not itself specify this cofactor.
+    source_locator: /comments/2/cofactors; /comments/2/note
+- id: rhamnose-edge-023
+  subject: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+  predicate: has_cofactor
+  object: CHEBI:57540
+  description: Bound NAD cycles internally during oxidation and rereduction, so it is not a net consumed
+    reactant. Binding and stoichiometry are inferred from the RffG paralog.
+  evidence:
+  - reference_id: UniProtKB:P37759
+    source_assertion: COFACTOR specifies CHEBI:57540 and one NAD(+) per subunit, ECO:0000250 UniProtKB:P27830.
+      FUNCTION describes oxidation, dehydration and reduction.
+    source_locator: /comments/2/cofactors; /comments/2/note; /comments/0
+- id: rhamnose-edge-024
+  subject: UniProtKB:P37760
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: The magnesium-binding annotation is inferred from Salmonella RmlD, as is homodimerization;
+    no direct K-12 metal assay or monomeric sufficiency is claimed.
+  evidence:
+  - reference_id: UniProtKB:P37760
+    source_assertion: COFACTOR specifies CHEBI:18420 and one Mg(2+) per monomer with ECO:0000250 UniProtKB:P26392.
+    source_locator: /comments/2/cofactors; /comments/2/note
+- id: rhamnose-edge-025
+  subject: RHEA:15226
+  predicate: part_of
+  object: GO:0019305
+  evidence:
+  - reference_id: GO:0019305
+    source_assertion: GO:0019305 is the non-obsolete biological process for dTDP-rhamnose formation; exact
+      synonyms include dTDP-rhamnose biosynthesis.
+    source_locator: /results/0/id; /results/0/name; /results/0/isObsolete; /results/0/definition; /results/0/synonyms
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: The complete native dTDP-L-rhamnose route lists DTDPGLUCOSEPP-RXN and selects L2R
+      for this step.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="DTDPGLUCOSEPP-RXN"]/direction
+  - reference_id: MetaCyc:DTDPGLUCOSEPP-RXN
+    source_assertion: DTDPGLUCOSEPP-RXN has explicit RHEA 15228 unification cross-reference.
+    source_locator: Reaction[@frameid="DTDPGLUCOSEPP-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15225 explicitly links bidirectionalReaction RHEA:15228 and directionalReaction
+      RHEA:15226.
+    source_locator: http://rdf.rhea-db.org/15225 rh:bidirectionalReaction http://rdf.rhea-db.org/15228;
+      rh:directionalReaction http://rdf.rhea-db.org/15226
+  - reference_id: UniProtKB:P37744
+    source_assertion: The reviewed P37744 entry is E. coli K-12 taxon 83333. Its caution states that many
+      K-12 lines fail to express O-antigen because of dTDP-rhamnose biosynthetic or wbbL mutations.
+    source_locator: /organism/taxonId; /comments/9
+  - reference_id: PMID:7517391
+    source_assertion: The primary K-12 study identifies four rhamnose pathway genes by homology and distinguishes
+      defective laboratory lineages from an engineered strain with intact rfb genes and O16 antigen.
+    source_locator: PDF pp.4144,4150; abstract; Results and Discussion, TDP-Rha biosynthetic pathway genes
+  - reference_id: PMID:10217500
+    source_assertion: Table 1 identifies all studied E. coli strains as K-12 derivatives. Extracts from
+      repaired-rfb BW24599 synthesize dTDP-rhamnose; rmlC-deletion extracts do not.
+    source_locator: PDF pp.664,668; Table 1; Results, dTDP-rha from dTDP-glc
+- id: rhamnose-edge-026
+  subject: RHEA:17222
+  predicate: part_of
+  object: GO:0019305
+  evidence:
+  - reference_id: GO:0019305
+    source_assertion: GO:0019305 is the non-obsolete biological process for dTDP-rhamnose formation; exact
+      synonyms include dTDP-rhamnose biosynthesis.
+    source_locator: /results/0/id; /results/0/name; /results/0/isObsolete; /results/0/definition; /results/0/synonyms
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: The complete native dTDP-L-rhamnose route lists DTDPGLUCDEHYDRAT-RXN and selects
+      L2R for this step.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="DTDPGLUCDEHYDRAT-RXN"]/direction
+  - reference_id: MetaCyc:DTDPGLUCDEHYDRAT-RXN
+    source_assertion: DTDPGLUCDEHYDRAT-RXN has explicit RHEA 17221 unification cross-reference.
+    source_locator: Reaction[@frameid="DTDPGLUCDEHYDRAT-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17221 explicitly links directionalReaction RHEA:17222; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/17221 rh:directionalReaction http://rdf.rhea-db.org/17222
+- id: rhamnose-edge-027
+  subject: RHEA:16970
+  predicate: part_of
+  object: GO:0019305
+  evidence:
+  - reference_id: GO:0019305
+    source_assertion: GO:0019305 is the non-obsolete biological process for dTDP-rhamnose formation; exact
+      synonyms include dTDP-rhamnose biosynthesis.
+    source_locator: /results/0/id; /results/0/name; /results/0/isObsolete; /results/0/definition; /results/0/synonyms
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: The complete native dTDP-L-rhamnose route lists DTDPDEHYDRHAMEPIM-RXN and selects
+      L2R for this step.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="DTDPDEHYDRHAMEPIM-RXN"]/direction
+  - reference_id: MetaCyc:DTDPDEHYDRHAMEPIM-RXN
+    source_assertion: DTDPDEHYDRHAMEPIM-RXN has explicit RHEA 16969 unification cross-reference.
+    source_locator: Reaction[@frameid="DTDPDEHYDRHAMEPIM-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:16970
+    source_assertion: RHEA:16969 explicitly links directionalReaction RHEA:16970; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/16969 rh:directionalReaction http://rdf.rhea-db.org/16970
+- id: rhamnose-edge-028
+  subject: RHEA:21798
+  predicate: part_of
+  object: GO:0019305
+  evidence:
+  - reference_id: GO:0019305
+    source_assertion: GO:0019305 is the non-obsolete biological process for dTDP-rhamnose formation; exact
+      synonyms include dTDP-rhamnose biosynthesis.
+    source_locator: /results/0/id; /results/0/name; /results/0/isObsolete; /results/0/definition; /results/0/synonyms
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: The complete native dTDP-L-rhamnose route lists DTDPDEHYRHAMREDUCT-RXN and selects
+      R2L for this step.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="DTDPDEHYRHAMREDUCT-RXN"]/direction
+  - reference_id: MetaCyc:DTDPDEHYRHAMREDUCT-RXN
+    source_assertion: DTDPDEHYRHAMREDUCT-RXN has explicit RHEA 21796 unification cross-reference.
+    source_locator: Reaction[@frameid="DTDPDEHYRHAMREDUCT-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21796 explicitly links directionalReaction RHEA:21798; this is the selected
+      biosynthetic member.
+    source_locator: http://rdf.rhea-db.org/21796 rh:directionalReaction http://rdf.rhea-db.org/21798
+- id: rhamnose-edge-029
+  subject: RHEA:15226
+  predicate: provides_input_for
+  object: RHEA:17222
+  description: The shared intermediate connects the complete native pathway in the selected biosynthetic
+    direction.
+  evidence:
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: DTDPGLUCDEHYDRAT-RXN explicitly follows DTDPGLUCOSEPP-RXN in the native route.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-ordering[Reaction/@frameid="DTDPGLUCDEHYDRAT-RXN"]
+  - reference_id: RHEA:15226
+    source_assertion: RHEA:15226 produces CHEBI:57477, the intermediate consumed by the next selected
+      reaction.
+    source_locator: http://rdf.rhea-db.org/15226 rh:products; http://rdf.rhea-db.org/15225_R rh:contains1
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17222 consumes the chemically identical CHEBI:57477.
+    source_locator: http://rdf.rhea-db.org/17222 rh:substrates; http://rdf.rhea-db.org/17221_L rh:contains1
+- id: rhamnose-edge-030
+  subject: RHEA:17222
+  predicate: provides_input_for
+  object: RHEA:16970
+  description: The shared intermediate connects the complete native pathway in the selected biosynthetic
+    direction.
+  evidence:
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: DTDPDEHYDRHAMEPIM-RXN explicitly follows DTDPGLUCDEHYDRAT-RXN in the native route.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-ordering[Reaction/@frameid="DTDPDEHYDRHAMEPIM-RXN"]
+  - reference_id: RHEA:17222
+    source_assertion: RHEA:17222 produces CHEBI:57649, the intermediate consumed by the next selected
+      reaction.
+    source_locator: http://rdf.rhea-db.org/17222 rh:products; http://rdf.rhea-db.org/17221_R rh:contains1
+  - reference_id: RHEA:16970
+    source_assertion: RHEA:16970 consumes the chemically identical CHEBI:57649.
+    source_locator: http://rdf.rhea-db.org/16970 rh:substrates; http://rdf.rhea-db.org/16969_L rh:contains1
+- id: rhamnose-edge-031
+  subject: RHEA:16970
+  predicate: provides_input_for
+  object: RHEA:21798
+  description: The intermediate is free rather than obligatorily channeled through a joint RmlC-RmlD complex.
+    The native monomer prose asserting unreleased intermediate is not adopted; the cited primary paper
+    demonstrates release.
+  evidence:
+  - reference_id: MetaCyc:DTDPRHAMSYN-PWY
+    source_assertion: DTDPDEHYRHAMREDUCT-RXN explicitly follows DTDPDEHYDRHAMEPIM-RXN in the native route.
+    source_locator: Pathway[@frameid="DTDPRHAMSYN-PWY"]/reaction-ordering[Reaction/@frameid="DTDPDEHYRHAMREDUCT-RXN"]
+  - reference_id: RHEA:16970
+    source_assertion: RHEA:16970 produces CHEBI:62830, the intermediate consumed by the next selected
+      reaction.
+    source_locator: http://rdf.rhea-db.org/16970 rh:products; http://rdf.rhea-db.org/16969_R rh:contains1
+  - reference_id: RHEA:21798
+    source_assertion: RHEA:21798 consumes the chemically identical CHEBI:62830.
+    source_locator: http://rdf.rhea-db.org/21798 rh:substrates; http://rdf.rhea-db.org/21796_R rh:contains1
+  - reference_id: PMID:10217500
+    source_assertion: K-12 extract experiments show free 4-keto-rhamnose; the Discussion concludes epimerase
+      can function independently of reductase, while not excluding possible in vivo interaction.
+    source_locator: PDF pp.664,667-669; Fig.3 caption; Discussion final paragraphs
+references:
+- id: GO:0019305
+  title: Gene Ontology dTDP-rhamnose biosynthetic process
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0019305
+  source_version: QuickGO term response retrieved 2026-10-11 UTC
+  source_sha256: a68a207e9cdf3656ff12299acd94650c879172d7115d4ad9ef1a61684dc70b39
+- id: MetaCyc:DTDPRHAMSYN-PWY
+  title: 'dTDP-L-rhamnose biosynthesis: complete native four-step boundary'
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPRHAMSYN-PWY
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: be7f6580697c429251fba8d6a863fa6ee147ae8aa06aac9c18b331e6f39df0b8
+- id: MetaCyc:DTDPGLUCOSEPP-RXN
+  title: Native DTDPGLUCOSEPP-RXN reaction and cross-references
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPGLUCOSEPP-RXN
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: 1d79af35de77e537970fa9055d0eaed663cb6ee0c410f2ed479e090fde02e922
+- id: RHEA:15226
+  title: dTTP + alpha-D-glucose 1-phosphate + H(+) => dTDP-alpha-D-glucose + diphosphate
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF source
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P37744
+  title: Reviewed E. coli K-12 Glucose-1-phosphate thymidylyltransferase 1
+  url: https://rest.uniprot.org/uniprotkb/P37744.json
+  source_version: UniProt 2026_03; complete JSON entry retrieved 2026-10-11 UTC
+  source_sha256: 7939e76649a90f2f0382c8bff0c3093647372e7077980e78cc4a720f68e372b3
+- id: MetaCyc:DTDPGLUCDEHYDRAT-RXN
+  title: Native DTDPGLUCDEHYDRAT-RXN reaction and cross-references
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPGLUCDEHYDRAT-RXN
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: fbd2c7dd309a6c940c6601ae10a346fc5287937c25158af2d689aa34f9bbc057
+- id: RHEA:17222
+  title: dTDP-alpha-D-glucose => dTDP-4-dehydro-6-deoxy-alpha-D-glucose + H2O
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF source
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P37759
+  title: Reviewed E. coli K-12 dTDP-glucose 4,6-dehydratase 1
+  url: https://rest.uniprot.org/uniprotkb/P37759.json
+  source_version: UniProt 2026_03; complete JSON entry retrieved 2026-10-11 UTC
+  source_sha256: c1c53b12b07571ace6a3edfb5dc8e24acf93d48f84a4db272f9c99b1e3726f78
+- id: MetaCyc:DTDPDEHYDRHAMEPIM-RXN
+  title: Native DTDPDEHYDRHAMEPIM-RXN reaction and cross-references
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPDEHYDRHAMEPIM-RXN
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: 3296e34e93407575e60eb9ae51abf6d065571b685789684937a11de1dc45cb6a
+- id: RHEA:16970
+  title: dTDP-4-dehydro-6-deoxy-alpha-D-glucose => dTDP-4-dehydro-beta-L-rhamnose
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF source
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P37745
+  title: Reviewed E. coli K-12 dTDP-4-dehydrorhamnose 3,5-epimerase
+  url: https://rest.uniprot.org/uniprotkb/P37745.json
+  source_version: UniProt 2026_03; complete JSON entry retrieved 2026-10-11 UTC
+  source_sha256: 0cbfd8f3fe413b20fa7378ab44363dbc4ecb5461f76fe63c51d9a2ea95e22ebc
+- id: MetaCyc:DTDPDEHYRHAMREDUCT-RXN
+  title: Native DTDPDEHYRHAMREDUCT-RXN reaction and cross-references
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPDEHYRHAMREDUCT-RXN
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: a30532a48a8ec43bc7a43962069211d501de4a6a3e50a0e597552276ce271042
+- id: RHEA:21798
+  title: dTDP-4-dehydro-beta-L-rhamnose + NADPH + H(+) => dTDP-beta-L-rhamnose + NADP(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, released 2026-09-02; digest covers the complete compressed RDF source
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P37760
+  title: Reviewed E. coli K-12 dTDP-4-dehydrorhamnose reductase
+  url: https://rest.uniprot.org/uniprotkb/P37760.json
+  source_version: UniProt 2026_03; complete JSON entry retrieved 2026-10-11 UTC
+  source_sha256: 2c3a96b3865c4e7dae800b0cf9290f9cae6157dbf502942d21d99b979c08e9e7
+- id: MetaCyc:CPLX0-8034
+  title: 'Native RmlA/RmlB protein identity and assembly: CPLX0-8034'
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-8034
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: c311938fc3d5335a49fab68c5a8fc1922aafc13f7d7ed961c3bad82d5df5c44d
+- id: MetaCyc:DTDPGLUCOSEPP-MONOMER
+  title: 'Native RmlA/RmlB protein identity and assembly: DTDPGLUCOSEPP-MONOMER'
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPGLUCOSEPP-MONOMER
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: 5f140744dc36f1b412fcc6973142c4b86e789a9798eb1a69d3878099e02b2cc4
+- id: MetaCyc:DTDPGLUCDEHYDRAT-CPLX
+  title: 'Native RmlA/RmlB protein identity and assembly: DTDPGLUCDEHYDRAT-CPLX'
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPGLUCDEHYDRAT-CPLX
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: be5fda0653ef37dd9136f81956fb376a7577bbbb60338d9d1c2da276709f1563
+- id: MetaCyc:DTDPGLUCDEHYDRAT-MONOMER
+  title: 'Native RmlA/RmlB protein identity and assembly: DTDPGLUCDEHYDRAT-MONOMER'
+  url: https://pathway.yeastgenome.org/getxml?META:DTDPGLUCDEHYDRAT-MONOMER
+  source_version: MetaCyc 22.5; full native XML body retrieved 2026-10-11 UTC
+  source_sha256: 7207b23b41f83da621510d8988b201ce1e226f511faacece285daf6ce20df29a
+- id: PMID:11697907
+  title: Kinetic and crystallographic analyses support a sequential-ordered bi bi catalytic mechanism
+    for Escherichia coli glucose-1-phosphate thymidylyltransferase.
+  url: https://pubmed.ncbi.nlm.nih.gov/11697907/
+  source_version: Indexed abstract in Europe PMC core JSON; full publisher article was not accessible;
+    retrieved 2026-10-11 UTC
+  source_sha256: 2f625e84e3c5ce0478cb6638e8e9951a3d0d8da89ca722f9a3baf9346ed75608
+- id: PMID:7517391
+  title: Structure of the O antigen of Escherichia coli K-12 and the sequence of its rfb gene cluster.
+  url: https://pubmed.ncbi.nlm.nih.gov/7517391/
+  source_version: Complete primary PDF; pages 4144-4156; retrieved 2026-10-11 UTC
+  source_sha256: 8b2f97df926c235493ba4f5204a782af235b3825f966cb472f98ecd1fc9b86b3
+- id: PMID:10217500
+  title: Conversion of dTDP-4-keto-6-deoxyglucose to free dTDP-4-keto-rhamnose by the rmIC gene products
+    of Escherichia coli and Mycobacterium tuberculosis.
+  url: https://pubmed.ncbi.nlm.nih.gov/10217500/
+  source_version: Complete primary publisher PDF; pages 663-671; retrieved 2026-10-11 UTC
+  source_sha256: 29b2710e332b38917153a118a7799865f765aa3bd097f7389d49fbd961351eef
