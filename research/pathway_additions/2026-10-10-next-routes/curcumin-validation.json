@@ -1,0 +1,92 @@
+{
+  "created_at": "2026-10-11T00:42:15.563095+00:00",
+  "target": "data/pathways/curcumin-degradation.yaml",
+  "target_sha256": "814e063d50371068e9a7f3d6238b0f6ad76e172f6072c59b570cafdba0cb407b",
+  "command": ".venv/bin/python /private/tmp/pathwaymech-next-routes-evidence/curcumin/validate-record.py",
+  "checks": [
+    {
+      "check": "Native and closed LinkML schemas",
+      "outcome": "passed",
+      "details": "One target only; endpoint roles, evidence and categories pass."
+    },
+    {
+      "check": "Fresh raw Rhea142 replay",
+      "outcome": "passed",
+      "details": "Both directed reductions, all 10 chemical-side assertions and their coefficient-1 locators agree with merged raw RDF. Net 34817 is independently parsed but excluded."
+    },
+    {
+      "check": "Atom/charge balance and net exclusion",
+      "outcome": "passed",
+      "details": "Both complete steps balance; their sum cancels DHC and matches the independently parsed net equation. No net double count."
+    },
+    {
+      "check": "Full native boundary, catalyst and assembly",
+      "outcome": "passed",
+      "details": "Both native source pathways retain their two members; exact control chains, 2-subunit CurA complex, P76113 identity, Rhea correspondence and computational cytosol grade checked from raw XML."
+    },
+    {
+      "check": "Named identities and labels",
+      "outcome": "passed",
+      "details": "All 13 named nodes resolve against independent ontology SQL, full current UniProt and native MetaCyc. Canonical labels retained; no contextual waiver required."
+    },
+    {
+      "check": "Primary text and evidence locators",
+      "outcome": "passed",
+      "details": "Full main article inspected; literal 7-word homodimer quote matches. DH10B/recombinant host, two-step product sequence and NADPH-rescue context explicit. Supplementary PDF unavailable and not claimed inspected."
+    },
+    {
+      "check": "Source-body hash scopes",
+      "outcome": "passed",
+      "details": "All 16 retained successful response/archive bodies and all 10 reference hashes agree with exact external source bytes. HTML error/challenge responses are classified as unusable."
+    },
+    {
+      "check": "Actual target KGX",
+      "outcome": "passed",
+      "details": "13 nodes, 17 edges and all 28 evidence blocks plus descriptions/reference metadata preserved; complex and cellular-component categories correct."
+    }
+  ],
+  "balance": [
+    {
+      "directed": "RHEA:34821",
+      "atom_residual": {
+        "C": 0,
+        "H": 0,
+        "O": 0,
+        "N": 0,
+        "P": 0
+      },
+      "charge_residual": 0
+    },
+    {
+      "directed": "RHEA:34813",
+      "atom_residual": {
+        "C": 0,
+        "H": 0,
+        "O": 0,
+        "N": 0,
+        "P": 0
+      },
+      "charge_residual": 0
+    },
+    {
+      "directed": "RHEA:34817",
+      "atom_residual": {
+        "C": 0,
+        "H": 0,
+        "O": 0,
+        "N": 0,
+        "P": 0
+      },
+      "charge_residual": 0
+    }
+  ],
+  "all_source_bodies_rehashed": 16,
+  "kgx": {
+    "nodes": 13,
+    "edges": 17,
+    "evidence": 28,
+    "nodes_sha256": "28737ad526b331136c3f2b0a1070c40b45ae0745db663fceab2934dbdb487f95",
+    "edges_sha256": "e7c1513d06177e943bc00cc090b921bb30c07ef2b7dfdad9256fe7d363128cb6"
+  },
+  "delegated_gates": "Root will run full render, validate, test, lint, vendored and publication audits after final integration; not claimed by this narrow author receipt."
+}

@@ -1,0 +1,318 @@
+id: GO:0036040
+label: curcumin catabolic process
+description: The complete two-step reductive curcumin pathway converts curcumin through dihydrocurcumin
+  to tetrahydrocurcumin using the NADPH-dependent CurA homodimer. The graph follows MetaCyc PWY0-1527
+  and the two native reactions in PathBank SMP0001910. The primary study first found activity in a fecal
+  Escherichia coli isolate, then used K-12 DH10B for purification and gene identification and a recombinant
+  BL21 host for detailed enzyme characterization. Reviewed K-12 CurA and the native MG1655 annotation
+  support the selected K-12 scope; this is not a direct MG1655 flux measurement. Both C=C reductions and
+  their shared intermediate are retained. The redundant net Rhea reaction is excluded. Tetrahydrocurcumin
+  is the demonstrated CurA endpoint, without an assertion of complete mineralization, downstream fate,
+  or a curcumin transporter. NADPH is a diffusible cosubstrate; the reported enzyme is metal-independent.
+  Cytosol localization is retained only as an explicitly computational native annotation.
+pathway_type: curcumin-degradation
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:3962
+  label: curcumin
+  category: small_molecule
+- id: CHEBI:67262
+  label: dihydrocurcumin
+  category: small_molecule
+- id: CHEBI:67263
+  label: tetrahydrocurcumin
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: cofactor
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: UniProtKB:P76113
+  label: NADPH-dependent curcumin reductase
+  category: protein
+- id: MetaCyc:CPLX0-7927
+  label: NADPH-dependent curcumin/dihydrocurcumin reductase
+  category: complex
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+reactions:
+- id: RHEA:34821
+  label: curcumin + NADPH + H(+) => dihydrocurcumin + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:34813
+  label: dihydrocurcumin + NADPH + H(+) => tetrahydrocurcumin + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: curcumin-edge-001
+  subject: CHEBI:3962
+  predicate: consumes
+  object: RHEA:34821
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:3962 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_7627'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-002
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:34821
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:57783 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_3438'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:34821
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_3249'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-004
+  subject: RHEA:34821
+  predicate: produces
+  object: CHEBI:67262
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:67262 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_7626'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-005
+  subject: RHEA:34821
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:58349 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_5188'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-006
+  subject: CHEBI:67262
+  predicate: consumes
+  object: RHEA:34813
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:67262 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_7626'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-007
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:34813
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:57783 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_3438'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:34813
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_3249'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-009
+  subject: RHEA:34813
+  predicate: produces
+  object: CHEBI:67263
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:67263 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_7625'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-010
+  subject: RHEA:34813
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:58349 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_5188'];
+      rh:compound/rh:chebi
+- id: curcumin-edge-011
+  subject: MetaCyc:CPLX0-7927
+  predicate: catalyzes
+  object: RHEA:34821
+  description: The same supported homodimer catalyzes both reductions. These are experimentally supported
+    enzyme reactions, not a claim that curcumin is the only possible CurA substrate.
+  evidence:
+  - reference_id: MetaCyc:RXN0-6676
+    source_assertion: RXN0-6676 assigns CPLX0-7927 as the enzyme through ENZRXN0-7454, with the native
+      reduction in its left-to-right orientation.
+    source_locator: Reaction[@frameid="RXN0-6676"]/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-7454"]/enzyme;
+      left; right; reaction-direction
+  - reference_id: UniProtKB:P76113
+    source_assertion: Reviewed K-12 CurA assigns curcumin to dihydrocurcumin to physiological RHEA:34821,
+      citing ECO:0000269 PMID:21467222. Its homodimer annotation cites the same experiment.
+    source_locator: /comments/3/reaction; /comments/3/physiologicalReactions; /comments/6
+  - reference_id: PMID:21467222
+    source_assertion: Purified CurA produces DHC and THC; the time course places DHC between curcumin
+      and THC. The inspected experiments identify both products by mass spectrometry and UV-visible spectra.
+    source_locator: 'PMC3080977: Results, Identification of the Reaction Products; Discussion; Figures
+      2, 3 and 4'
+  - reference_id: PMID:21467222
+    source_assertion: The study detected activity in K-12 DH10B and used it for purification and gene
+      identification; later enzyme analyses used recombinant CurA in a BL21 expression host.
+    source_locator: 'PMC3080977: Results, Discovery of Curcumin-Converting Microorganisms; Cloning of
+      the Gene Encoding the Curcumin-Converting Enzyme; Overexpression and Purification'
+  - reference_id: UniProtKB:P76113
+    source_assertion: Reviewed CurA is assigned to taxon 83333, Escherichia coli K-12, with experimental
+      functional and homodimer evidence from PMID:21467222.
+    source_locator: /organism/taxonId; /comments/0; /comments/6
+- id: curcumin-edge-012
+  subject: MetaCyc:CPLX0-7927
+  predicate: catalyzes
+  object: RHEA:34813
+  description: The same supported homodimer catalyzes both reductions. These are experimentally supported
+    enzyme reactions, not a claim that curcumin is the only possible CurA substrate.
+  evidence:
+  - reference_id: MetaCyc:RXN0-6677
+    source_assertion: RXN0-6677 assigns CPLX0-7927 as the enzyme through ENZRXN0-7455, with the native
+      reduction in its left-to-right orientation.
+    source_locator: Reaction[@frameid="RXN0-6677"]/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-7455"]/enzyme;
+      left; right; reaction-direction
+  - reference_id: UniProtKB:P76113
+    source_assertion: Reviewed K-12 CurA assigns dihydrocurcumin to tetrahydrocurcumin to physiological
+      RHEA:34813, citing ECO:0000269 PMID:21467222. Its homodimer annotation cites the same experiment.
+    source_locator: /comments/2/reaction; /comments/2/physiologicalReactions; /comments/6
+  - reference_id: PMID:21467222
+    source_assertion: Purified CurA produces DHC and THC; the time course places DHC between curcumin
+      and THC. The inspected experiments identify both products by mass spectrometry and UV-visible spectra.
+    source_locator: 'PMC3080977: Results, Identification of the Reaction Products; Discussion; Figures
+      2, 3 and 4'
+- id: curcumin-edge-013
+  subject: UniProtKB:P76113
+  predicate: part_of
+  object: MetaCyc:CPLX0-7927
+  description: Native complex membership agrees with the gel-filtration/SDS-PAGE homodimer assignment;
+    the protein node is not asserted to be a sufficient monomeric catalyst.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7927
+    source_assertion: CPLX0-7927 contains two G6760-MONOMER subunits; its experimental mass is 82 kDa.
+    source_locator: Protein[@frameid="CPLX0-7927"]/component/Protein; component/coefficient; molecular-weight-exp
+  - reference_id: MetaCyc:G6760-MONOMER
+    source_assertion: G6760-MONOMER has an explicit UNIPROT P76113 unification cross-reference.
+    source_locator: Protein[@frameid="G6760-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid; dblink-relationship
+  - reference_id: PMID:21467222
+    quote: the enzyme consists of two identical subunits.
+    source_locator: 'PMC3080977: Results, Molecular mass, UV-Absorption of the Curcumin-Converting Enzyme'
+- id: curcumin-edge-014
+  subject: RHEA:34821
+  predicate: part_of
+  object: GO:0036040
+  evidence:
+  - reference_id: GO:0036040
+    source_assertion: GO:0036040 denotes curcumin catabolic process, includes the exact synonym curcumin
+      degradation, and cites PMID:21467222 for its definition.
+    source_locator: /results/0/name; /results/0/definition; /results/0/synonyms
+  - reference_id: MetaCyc:PWY0-1527
+    source_assertion: PWY0-1527 contains RXN0-6676; its ordered route is RXN0-6676 followed by RXN0-6677,
+      from curcumin through dihydrocurcumin to tetrahydrocurcumin.
+    source_locator: Pathway[@frameid="PWY0-1527"]/reaction-list; reaction-ordering; reaction-layout
+  - reference_id: RHEA:34821
+    source_assertion: RHEA:34821 explicitly cross-references MetaCyc RXN0-6676; master RHEA:34819 links
+      this directed variant. The selected substrates and products follow the native reduction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rdfs:seeAlso; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rh:products
+- id: curcumin-edge-015
+  subject: RHEA:34813
+  predicate: part_of
+  object: GO:0036040
+  evidence:
+  - reference_id: MetaCyc:PWY0-1527
+    source_assertion: PWY0-1527 contains RXN0-6677; its ordered route is RXN0-6676 followed by RXN0-6677,
+      from curcumin through dihydrocurcumin to tetrahydrocurcumin.
+    source_locator: Pathway[@frameid="PWY0-1527"]/reaction-list; reaction-ordering; reaction-layout
+  - reference_id: RHEA:34813
+    source_assertion: RHEA:34813 explicitly cross-references MetaCyc RXN0-6677; master RHEA:34811 links
+      this directed variant. The selected substrates and products follow the native reduction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rdfs:seeAlso; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rh:products
+- id: curcumin-edge-016
+  subject: MetaCyc:CPLX0-7927
+  predicate: has_cofactor
+  object: CHEBI:57783
+  description: NADPH is the freely supplied redox cosubstrate consumed by both reactions. This edge does
+    not imply a permanently bound prosthetic group or a metal requirement.
+  evidence:
+  - reference_id: PMID:21467222
+    source_assertion: CurA activity lost on dialysis recovered after NADPH addition; NADH did not restore
+      it. The paper identifies NADPH-dependent conversion in both steps.
+    source_locator: 'PMC3080977: Results, Addition of Various Cofactors to the Curcumin-Converting Enzyme;
+      Discussion'
+- id: curcumin-edge-017
+  subject: UniProtKB:P76113
+  predicate: located_in
+  object: GO:0005829
+  description: This is a native computational localization annotation, not a direct localization experiment
+    inspected here; it is not extended to an assertion about transporter identity.
+  evidence:
+  - reference_id: MetaCyc:G6760-MONOMER
+    source_assertion: G6760-MONOMER is annotated to GO:0005829 with EV-COMP-AINF (computational inference
+      without human oversight) and PMID:19054114; its native location is CCO-CYTOSOL.
+    source_locator: Protein[@frameid="G6760-MONOMER"]/has-go-term[GO-Term/@frameid="GO:0005829"]/evidence;
+      location
+references:
+- id: GO:0036040
+  title: Gene Ontology curcumin catabolic process
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0036040
+  source_version: QuickGO response retrieved 2026-10-11
+  source_sha256: 83e343c17b49b6800e3e32aa07fc27bf98a74c00e921a195d76a72708f64d386
+- id: UniProtKB:P76113
+  title: UniProtKB P76113, NADPH-dependent curcumin/dihydrocurcumin reductase
+  url: https://rest.uniprot.org/uniprotkb/P76113.json
+  source_version: '2026_03'
+  source_sha256: bd0d8f2a0e9532eb832736ca6bfbada22c279d412b0ac00c7f0384ee65e41a38
+- id: PMID:21467222
+  title: Discovery of the curcumin metabolic pathway involving a unique enzyme in an intestinal microorganism.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3080977/?report=xml
+  source_version: 2011; full PMC article HTML retrieved 2026-10-11
+  source_sha256: 0087006dfbb589812da82459f7e09000d4d48eab7c537a13cce676d62fec2e65
+- id: MetaCyc:PWY0-1527
+  title: MetaCyc PWY0-1527, native curcumin pathway object
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-1527
+  source_version: MetaCyc 22.5 public mirror XML; retrieved 2026-10-11
+  source_sha256: 5f55b220915a56d6b0ea4b941487d024b852a14db9e8a1efc6d7c298c0ec86ed
+- id: MetaCyc:CPLX0-7927
+  title: MetaCyc CPLX0-7927, native curcumin pathway object
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-7927
+  source_version: MetaCyc 22.5 public mirror XML; retrieved 2026-10-11
+  source_sha256: f672f616d46ee50d7351f5c5b5bfa942a0e20c7a9a29e3286ad9933ac7b80886
+- id: MetaCyc:G6760-MONOMER
+  title: MetaCyc G6760-MONOMER, native curcumin pathway object
+  url: https://pathway.yeastgenome.org/getxml?META:G6760-MONOMER
+  source_version: MetaCyc 22.5 public mirror XML; retrieved 2026-10-11
+  source_sha256: f7fa7990d25d304aa0e45e244e644a40343352075746e329e35e15045a2e3d99
+- id: MetaCyc:RXN0-6676
+  title: MetaCyc RXN0-6676, native curcumin pathway object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-6676
+  source_version: MetaCyc 22.5 public mirror XML; retrieved 2026-10-11
+  source_sha256: ce8dcb7c10f8cb0155921c0e61a8152889b8849159a508a91510ce38a4a0d867
+- id: MetaCyc:RXN0-6677
+  title: MetaCyc RXN0-6677, native curcumin pathway object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-6677
+  source_version: MetaCyc 22.5 public mirror XML; retrieved 2026-10-11
+  source_sha256: b1950fc1e039487cab36defde216e4a0649f9ff68e9d718b89a2c2c4537b0205
+- id: RHEA:34821
+  title: Rhea 34821, directed curcumin pathway reduction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 of exact gzip response body
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34813
+  title: Rhea 34813, directed curcumin pathway reduction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 of exact gzip response body
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
