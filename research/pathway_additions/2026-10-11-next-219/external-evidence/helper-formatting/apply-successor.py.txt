@@ -1,0 +1,70 @@
+"""Preserve the original helper and apply a bounded lint-only successor."""
+import ast
+import datetime
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+OUT = Path(__file__).parent
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-219')
+HELPER = ROOT / DOSSIER / 'denitrification-replay.py'
+ARCHIVE = ROOT / DOSSIER / 'external-evidence/helper-formatting'
+original = HELPER.read_bytes()
+sha = lambda raw: hashlib.sha256(raw).hexdigest()
+assert sha(original) == '4b5a755963216f9e04e9bfb6b3b1413f12f30db60d06532dfc2aabe1580bd971'
+assert not ARCHIVE.exists()
+text = original.decode()
+before = ast.parse(text)
+assert not any(isinstance(node, ast.Name) and node.id in {'ORIGINAL_AUTHOR', '_unused_accession'} for node in ast.walk(before))
+text = text.replace('O = Path("/private/tmp/pathwaymech-denitrification-author-20261011")', 'ORIGINAL_AUTHOR = Path("/private/tmp/pathwaymech-denitrification-author-20261011")')
+text = text.replace('O /', 'ORIGINAL_AUTHOR /')
+text = text.replace('for entity, acc in [(3, "Q59647"), (4, "Q59646")]:', 'for entity, _unused_accession in [(3, "Q59647"), (4, "Q59646")]:')
+imports = ['import yaml', 'from lxml import etree, html', 'from pathwaymech.kgx import kgx_edges, kgx_nodes, write_kgx', 'from pathwaymech.schema import validate_record', 'from pathwaymech.strict import strict_errors', 'from kg_microbe_sources.imodulondb import ImodulonDBClient, ImodulonDBError']
+for line in imports:
+    assert text.count('\n'+line+'\n') == 1
+    text = text.replace('\n'+line+'\n', '\n'+line+'  # noqa: E402\n')
+text = text.replace('sys.path.insert(0, str(a.repo / "src"))\nimport yaml', '# Imports deliberately follow complete input capture and path selection.\nsys.path.insert(0, str(a.repo / "src"))\nimport yaml')
+text = text.replace('from lxml import etree, html  # noqa: E402\nfrom pathwaymech', 'from lxml import etree, html  # noqa: E402\n\nfrom pathwaymech')
+text = text.replace('# Offline identical iMod parsing, including actual source/parser failures; no inference from nonhits.', '# Offline identical iMod parsing retains actual source/parser failures.\n# Nonhits imply no biological absence; import follows bound adapter selection.')
+text = text.replace('        "Primary 2010 full article web inspection cannot be byte-replayed; original indexed abstract and RCSB bodies are retained.",', '        (\n            "Primary 2010 full article web inspection cannot be byte-replayed; "\n            "original indexed abstract and RCSB bodies are retained."\n        ),')
+text = text.replace('        "External author replay, no whole-corpus authority integration or formal independent review.",', '        (\n            "External author replay, no whole-corpus authority integration "\n            "or formal independent review."\n        ),')
+successor = text.encode()
+
+class Normalize(ast.NodeTransformer):
+    def visit_Name(self, node):
+        node.id = {'ORIGINAL_AUTHOR': 'O', '_unused_accession': 'acc'}.get(node.id, node.id)
+        return node
+
+after = ast.parse(text)
+assert sum(isinstance(n, ast.Name) and n.id == '_unused_accession' for n in ast.walk(after)) == 1
+assert ast.dump(before, include_attributes=False) == ast.dump(Normalize().visit(after), include_attributes=False)
+ARCHIVE.mkdir(parents=True)
+original_archive = ARCHIVE / 'denitrification-replay-original.py.txt'
+with original_archive.open('xb') as stream:
+    stream.write(original)
+HELPER.write_bytes(successor)
+ruff = subprocess.run([str(ROOT/'.venv/bin/python'), '-m', 'ruff', 'check', str(HELPER)], cwd=ROOT, text=True, capture_output=True)
+ruff_receipt = {'command': ruff.args, 'exit_code': ruff.returncode, 'stdout': ruff.stdout, 'stderr': ruff.stderr}
+with (OUT/'successor-ruff.json').open('x') as stream:
+    json.dump(ruff_receipt, stream, indent=2); stream.write('\n')
+assert ruff.returncode == 0, ruff.stdout
+target = ROOT/'data/pathways/nitrate-reduction-i-denitrification.yaml'
+assert sha(target.read_bytes()) == '7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd'
+plan = json.loads((ROOT/DOSSIER/'external-evidence/packaging/copy-plan.json').read_text())
+historical = []
+for section in ['copy_entries', 'exact_byte_aliases', 'formal_input_resolution']:
+    for index,row in enumerate(plan[section]):
+        if row.get('destination') == str(DOSSIER/'denitrification-replay.py'):
+            historical.append({'section':section,'index':index,'original_row':row,'unchanged_byte_owner':str(original_archive.relative_to(ROOT)),'sha256':sha(original)})
+assert all(row['original_row']['sha256'] == sha(original) for row in historical)
+report = {'status':'lint_successor_passed_normalized_ast_equivalence','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'helper':str(HELPER.relative_to(ROOT)),'original_sha256':sha(original),'successor_sha256':sha(successor),'original_archive':str(original_archive.relative_to(ROOT)),'target_sha256':sha(target.read_bytes()),'changes':['Rename original-author path O to ORIGINAL_AUTHOR consistently.','Rename exactly one unused loop binding acc to _unused_accession; no other acc reference changes.','Retain six intentionally delayed imports with narrow E402 annotations and an explanatory capture-before-import comment.','Insert the required third-party/first-party separator and wrap comments and constant strings.'],'equivalence':'Complete executable ASTs match after only the two declared name normalizations; import order, assertions, function bodies, source paths, strings and output logic are otherwise identical. The unused renamed binding has one AST occurrence and no reads.','historical_resolution_successor':historical,'ruff':ruff_receipt,'limits':['Original helper and all external proofs remain unchanged. Historical archive mappings are explicitly succeeded, not rewritten.','Current full integration replay and corpus gates must use the new helper hash; this narrow check does not claim their success.']}
+raw = (json.dumps(report,indent=2)+'\n').encode()
+with (OUT/'successor.json').open('xb') as stream:
+    stream.write(raw)
+for name in ['initial-ruff.json','successor-ruff.json','successor.json','apply-successor.py','issue-body.md']:
+    destination = ARCHIVE/(name+'.txt' if name.endswith('.py') else name)
+    with destination.open('xb') as stream:
+        stream.write((OUT/name).read_bytes())
+print(json.dumps({'status':report['status'],'helper_sha256':sha(successor),'receipt_sha256':sha(raw),'historical_rows_resolved':len(historical)}))

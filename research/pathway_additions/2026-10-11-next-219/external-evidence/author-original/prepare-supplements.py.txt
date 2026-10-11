@@ -1,0 +1,64 @@
+import json,hashlib,pathlib,difflib
+from collections import Counter
+from datetime import UTC,datetime
+from lxml import etree,html
+R=pathlib.Path(__file__).parent;D=R/'draft';RAW=R/'raw';H=lambda b:hashlib.sha256(b).hexdigest()
+def j(p):return json.loads(p.read_text())
+def save(n,v):
+ with (D/n).open('w') as f:json.dump(v,f,indent=2);f.write('\n')
+facts=j(D/'denitrification-chemical-identities.json');pr=j(D/'denitrification-source-projection.json');prots=j(D/'denitrification-protein-projection.json')
+# Original exact complex objects are not transferable across taxa.
+complexes=[]
+for p in sorted(RAW.glob('metacyc-CPLX-*.xml')):
+ t=etree.parse(str(p));e=t.find('Protein')
+ complexes.append(dict(path=str(p),sha256=H(p.read_bytes()),id=e.get('frameid'),name=e.findtext('common-name'),species=[dict(x.attrib) for x in e.xpath('species/*')],components=[etree.tostring(x,encoding='unicode') for x in e.findall('component')],disposition='Reference-only source object; not a PAO1 assembly identifier. All actual member enzymes retained through separate PAO1 gene-product and native reaction evidence.'))
+# Sequence differences stay explicit despite exact source taxon/SIFTS identifiers.
+structure=[]
+for n,acc in [(3,'Q59647'),(4,'Q59646')]:
+ p=RAW/f'rcsb-3O0R-polymer-{n}.json';u=j(p);s=u['entity_poly']['pdbx_seq_one_letter_code_can'];v=prots[acc]['sequence']['value']
+ delta=[dict(operation=op,current_start0=i,current_end0=k,current=v[i:k],pdb_start0=a,pdb_end0=b,pdb=s[a:b]) for op,i,k,a,b in difflib.SequenceMatcher(None,v,s,autojunk=False).get_opcodes() if op!='equal']
+ structure.append(dict(path=str(p),sha256=H(p.read_bytes()),current_accession=acc,current_length=len(v),structure_length=len(s),current_sequence_sha256=H(v.encode()),structure_sequence_sha256=H(s.encode()),source=u['entity_src_nat'],issuing_mapping=u['rcsb_polymer_entity_container_identifiers']['reference_sequence_identifiers'],differences=delta,disposition='Source-PAO1 natural preparation and issuing accession link, not sequence-exact current-protein equivalence.'))
+# Native chemical and symbolic carrier balance with compartment-resolved net.
+def formula(f):return Counter({e:int(n or 1) for e,n in __import__('re').findall(r'([A-Z][a-z]*)(\d*)',f)})
+models={k:dict(atoms=dict(formula(v['formula'])),charge=v['charge']) for k,v in facts['native_small_molecule_bridges'].items()}
+# Symbols designate an unchanged whole molecular framework; q is not an asserted absolute protein charge.
+models.update({'ETR-Quinones':dict(atoms={'Q':1},charge=0),'ETR-Quinols':dict(atoms={'Q':1,'H':2},charge=0),'Reduced-cytochromes-c551':dict(atoms={'C551':1},charge=0),'Oxidized-cytochromes-c551':dict(atoms={'C551':1},charge=1),'Cytochromes-C-Reduced':dict(atoms={'Ctype':1},charge=0),'Cytochromes-C-Oxidized':dict(atoms={'Ctype':1},charge=1)})
+bal=[];net=Counter();mult=[2,2,2,1,1]
+for (rid,sides),m in zip(pr['native_sides'].items(),mult,strict=True):
+ atoms=Counter();charge=0
+ for x in sides:
+  sign=-1 if x['side']=='left' else 1;n=sign*x['coefficient'];mole=models[x['native']]
+  for k,v in mole['atoms'].items():atoms[k]+=n*v
+  charge+=n*mole['charge'];net[(x['native'],x['compartment'])]+=m*n
+ assert not any(atoms.values()) and charge==0,(rid,atoms,charge)
+ bal.append(dict(reaction=rid,coefficient_to_one_N2=m,atom_residual=dict(atoms),charge_residual=charge))
+net=[dict(native=n,compartment=c,coefficient=v) for (n,c),v in net.items() if v]
+# The source assertion means a one-electron center conversion, not that all hemes of every c-type protein are simultaneously oxidized.
+classes={'models':models,'scope':'Symbolic unchanged whole-carrier frameworks. Reduced c551/c-type center q -> q+1 represents the single-electron oxidation in these native equations; it does not assign a whole protein absolute formula/charge or oxidize every heme in arbitrary multiheme cytochromes. QH2/Q represents the two-electron quinol convention without selecting a physiological quinone species.','balances':bal,'net_per_N2':net,'flux_scope':'Equation sum for native carrier/transport convention only; not measured transport ratio, respiration flux or ATP yield.'}
+# Exact current Rhea classes are chemically compatible but differ in compartments and c551 specificity.
+g=facts['rhea_native_projection'];rh='http://rdf.rhea-db.org/';rhea=[]
+for fam,rid,native in [('56144','56145','RXN-11236'),('15233','15235','RXN-15838'),('30211','30213','NITRIC-OXIDE-REDUCTASE-RXN'),('43108','43110','RXN-12130')]:
+ z=g[fam];r=z[rh+rid];out=[]
+ for side in ['substrates','products']:
+  for k,values in z[r[side][0]].items():
+   if __import__('re').fullmatch(r'contains\d+',k):
+    for p in values:
+     c=z[z[p]['compound'][0]];out.append(dict(side=side,coefficient=int(k[8:]),compound_uri=z[p]['compound'][0],compound=c))
+ rhea.append(dict(native='MetaCyc:'+native,rhea='RHEA:'+rid,master=fam,approved=r['status'],equation=r['equation'],sides=out,disposition=('Class comparison after cancellation of two translocated protons; native compartmental term not discarded from graph.' if fam=='56144' else 'Generic cytochrome-c class comparison; native c551 remains narrower.' if fam=='15233' else 'Whole c-type cytochrome redox class comparison; no exact physiological sequence/donor assertion.')))
+chemistry=dict(record_sha256=pr['record_sha256'],native_whole_carrier_accounting=classes,rhea_class_comparisons=rhea,native_nor_old_xref=dict(id='RHEA:10991',scope='Bidirectional bare-electron equation, not exact whole-cytochrome equation; excluded as an exact graph reaction identity.'),complex_dispositions=complexes,rcsb_sequence_dispositions=structure)
+save('denitrification-chemistry-and-scope.json',chemistry)
+dedup=j(R/'dedup-raw.json')
+for root in dedup['roots']:
+ for h in root['hits']:
+  p=h['path']
+  h['disposition']='Prior discovery/context only; not a maintained complete pathway record.'
+  if 'module_step_form' in p or 'ingested-native.tsv' in p:h['disposition']='Ignored DRAM M00529 definition contains alternative Nar/Nap and reductase options; broader module lead, not the exact five-object cNOR native record. All matching rows read.'
+  elif '2026-10-10/README' in p:h['disposition']='Prior scout explicitly required one organism and one nitrate/nitrite route. Current PAO1 Nar/c551/cNOR choice follows that boundary; unresolved antiport qualification retained.'
+  elif 'uniprot_annotations' in p:h['disposition']='Prior Paracoccus Q51705 NosZ annotation, taxon266, terminal step only; not PAO1 or a complete maintained graph.'
+  elif 'subsystem_select' in p or 'dedup-root0' in p:h['disposition']='Broad SEED subsystem menu / captured menu includes denitrification name; discovery lead only with no five-object curated record.'
+dedup['conclusion']='No maintained full duplicate found in the declared exact identifier/label/reaction/accession/PMID searches, including ignored and hidden files in both roots. This is a scoped duplicate result, not source-exhaustion proof.'
+save('denitrification-dedup.json',dedup)
+# Full top-level source objects and all evidence are dispositioned without claiming broader pathway equivalence.
+save('denitrification-coverage.json',dict(record_sha256=pr['record_sha256'],full_native_members=pr['full_members'],native_member_count=5,primary_scope='Four respiratory reductions plus native exchange object. PAO1 strict antiport mode unresolved; transport chemistry retained as curated convention, no exact catalyst edge.',chemical_side_count=sum(map(len,pr['native_sides'].values())),complex_objects=complexes,edge_ids=[f'denitrification-edge-{i:03d}' for i in range(1,pr['edge_count']+1)],source_assertion_count=len(pr['evidence_spans']),excluded=['PWY-6748 quinol NO reductase variant','generic GO0019333 exact equivalence','Nap alternative compensation route','native background nitrite-to-ammonium typo','NOR proton-pump annotation','PDB-current exact sequence equivalence','IHF CHA-A2 as isogenic PAO1','NirS hydroxylamine side activity','carrier regeneration and ATP synthesis','NosZ inferred cofactor/assembly as direct PAO1 purification evidence']))
+save('denitrification-identifiers.json',dict(record_sha256=pr['record_sha256'],pathway_decision={'selected':'MetaCyc:DENITRIFICATION-PWY','label':'nitrate reduction I (denitrification)','go':'GO:0019333','go_disposition':'GO denitrification pathway has narrowMatch links to several native variants; not exact to the selected cNOR route with transport.','go_source':facts['terms']['GO:0019333']},chemical_bridges=facts['native_small_molecule_bridges'],authority_proposal='denitrification-authority-proposal.json',all_named_ids=[x['id'] for k in ['taxa','participants','reactions'] for x in __import__('yaml').safe_load((D/'nitrate-reduction-i-denitrification.yaml').read_text())[k]],no_local_ids=True))
+print(json.dumps({'native_balances':len(bal),'native_sides':sum(map(len,pr['native_sides'].values())),'rhea_sides':sum(len(x['sides']) for x in rhea),'net':net,'sequence_differences':structure}))

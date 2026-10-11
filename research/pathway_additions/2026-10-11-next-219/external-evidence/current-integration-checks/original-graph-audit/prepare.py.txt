@@ -1,0 +1,35 @@
+from pathlib import Path
+src=Path('/private/tmp/pathwaymech-next-218-graph-audit/graph-audit-successor.py')
+s=src.read_text()
+for a,b in [('entner-doudoroff-pathway.yaml','nitrate-reduction-i-denitrification.yaml'),('548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af','7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd'),('pathwaymech-next-218-20261011','pathwaymech-next-219-20261011'),('default=218','default=219'),('== 218','== 219'),('KEGG:M00008','MetaCyc:DENITRIFICATION-PWY'),('KEGG_M00008','MetaCyc_DENITRIFICATION-PWY'),('== 37','== 75'),('== 19','== 39'),('== 26','== 46'),('== 25','== 45'),('== 51','== 73'),('== 92','== 156'),('NCBITaxon:83333','NCBITaxon:208964'),('721755c9b4af76d32d2b1f232571bbfeab232441','ae9279447c78b868289f24a847efe06efce2e167')]:
+ s=s.replace(a,b)
+s=s.replace('    assert {c["id"] for c in shared_display_name_changes} == {"CHEBI:57955", "CHEBI:58759", "RHEA:12557"}\n','')
+a=s.index('    assert "CHEBI:58247" in declared_ids')
+b=s.index('    record_results = []',a)
+s=s[:a]+'''    native_route = ["MetaCyc:RXN-11236", "MetaCyc:TRANS-RXN0-239", "MetaCyc:RXN-15838", "MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN", "MetaCyc:RXN-12130"]
+    assert [r["id"] for r in target["reactions"]] == native_route
+    assert all(r["direction"] == "left_to_right" for r in target["reactions"])
+    assert {(e["subject"], e["object"]) for e in target["mechanistic_edges"] if e["predicate"] == "precedes"} == set(zip(native_route, native_route[1:]))
+    assert {e["object"] for e in target["mechanistic_edges"] if e["predicate"] == "has_part" and e["subject"] == target["id"]} == set(native_route)
+    assert not any(e["object"] == "MetaCyc:TRANS-RXN0-239" and e["predicate"] in {"enables", "catalyzes"} for e in target["mechanistic_edges"])
+    localization = [e for e in target["mechanistic_edges"] if e["subject"] == "UniProtKB:G3XD60" and e["predicate"] == "located_in"]
+    assert len(localization) == 1 and localization[0]["object"] == "GO:0016020"
+    assert "antiport versus uniport remains unresolved" in target["description"]
+    assert "Current NorB proton-pump annotation conflicts" in target["description"]
+''' + s[b:]
+a=s.index('    receipt["representation_checks"] = {')
+b=s.index('    receipt["text_normalization"]',a)
+s=s[:a]+'''    receipt["representation_checks"] = {
+        "full_native_route": native_route,
+        "physiological_order": "All five native members, has_part and four precedes edges remain exact.",
+        "native_reaction_directions": {r["id"]: r["direction"] for r in target["reactions"]},
+        "transport": "Native nitrate/nitrite antiport representation retained without an exact PAO1 catalyst edge; text retains unresolved antiport versus uniport.",
+        "localization_correction": "NarK1 generic membrane GO0016020 and its separate source evidence retained.",
+        "source_limits": "Native c551 versus generic carrier distinctions, compartments, subunit functional roles, construct differences and NorB pumping conflict remain in exact descriptions/evidence.",
+    }
+''' + s[b:]
+s=s.replace('"Exactly the added complete Entner-Doudoroff module implementation "','"Exactly the added complete denitrification implementation "')
+s=s.replace('"initial_audit": "graph-audit.py exited 1 on an over-strict global name equality assumption. Exactly three display labels are now checked against the unchanged first-record selection rule; original descriptions, all prior scoped labels and all other fields must remain preserved. Initial script/log retained.",','"audit_origin": "Adapted prior ED structural audit; no prior ED result is reused as a denitrification result. Shared display labels follow the existing first-record rule and preserve all exact prior source_contexts.",')
+s=s.replace('"Actual merged PR405 baseline ae927944','"Actual merged ED baseline ae927944')
+s=s.replace('"Auditor previously contributed ED preflight adjudication, authority selection and "\n            "dossier copy planning. Root independently accepted/adopted the preparations, and "\n            "a separate reviewer assessed the external scientific record. This new rendering "\n            "comparison does not self-approve those preparations or constitute independent "\n            "scientific/source-identity approval."','"Auditor independently reviewed denitrification originals and correction407, but "\n            "did not author its target, correction, production authorities or integration wrapper. "\n            "This is a separate static structural comparison, not browser interaction or a new "\n            "scientific approval based on deterministic output parity."')
+Path('/private/tmp/pathwaymech-next-219-graph-audit/graph-audit.py').write_text(s)

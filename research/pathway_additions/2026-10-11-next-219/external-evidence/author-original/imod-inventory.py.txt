@@ -1,0 +1,18 @@
+from pathlib import Path
+from dataclasses import asdict
+from datetime import datetime, UTC
+import hashlib,json,sys,urllib.request
+R=Path(__file__).parent/'imod';R.mkdir(exist_ok=False);(R/'raw').mkdir()
+p=Path('/private/tmp/claw-published-duf-offline-20261007/src/kg_microbe_sources/imodulondb.py'); h=hashlib.sha256(p.read_bytes()).hexdigest(); assert h=='1901c6ab519795051d0b70b57412c4ad463949b3dd02a49d05936464e6fd4aa2'
+sys.path.insert(0,str(p.parent.parent));from kg_microbe_sources.imodulondb import ImodulonDBClient
+m=[]; bodies={}
+def fetch(url):
+ at=datetime.now(UTC).isoformat()
+ with urllib.request.urlopen(url,timeout=45) as x:b=x.read();status=x.status
+ q=R/'raw'/(hashlib.sha256(url.encode()).hexdigest()+'.json');q.write_bytes(b)
+ m.append(dict(url=url,path=str(q),sha256=hashlib.sha256(b).hexdigest(),status=status,started_at=at,finished_at=datetime.now(UTC).isoformat()));bodies[url]=json.loads(b);return bodies[url]
+a=[asdict(x) for x in ImodulonDBClient(transport=fetch).organism_datasets()]
+assert a==[asdict(x) for x in ImodulonDBClient(transport=lambda u:bodies[u]).organism_datasets()]
+for name,obj in [('inventory.json',a),('inventory-manifest.json',m),('adapter.json',dict(path=str(p),sha256=h))]:
+ with (R/name).open('x') as f:json.dump(obj,f,indent=2);f.write('\n')
+print(json.dumps(a))

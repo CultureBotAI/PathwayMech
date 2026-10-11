@@ -1,0 +1,83 @@
+{
+  "status": "passed",
+  "started_at": "2026-10-11T18:56:48.445888+00:00",
+  "finished_at": "2026-10-11T19:00:40.403967+00:00",
+  "driver_sha256": "736a76b326b577de1ec3106a95aa4622693adbb5f931f8d62c8a3c10f27c23ab",
+  "scaffold": {
+    "command": [
+      "/private/tmp/pathwaymech-next-219-20261011/.venv/bin/python",
+      "scripts/new_history_record.py",
+      "--kind",
+      "record",
+      "--slug",
+      "nitrate-reduction-i-denitrification",
+      "--target-root",
+      "data/pathways",
+      "--event",
+      "EDIT",
+      "--outcome",
+      "changed",
+      "--actor-name",
+      "codex",
+      "--agent-tool",
+      "codex",
+      "--summary",
+      "Correct actor attribution for denitrification curation history",
+      "--details",
+      "Correct only the actor attribution in these three immutable history records: history/records/nitrate-reduction-i-denitrification/2026-10-11T184709Z-claude-code-b1b993.yaml; history/infrastructure/denitrification-authorities-and-review-evidence/2026-10-11T184711Z-claude-code-7226e8.yaml; history/infrastructure/denitrification-authorities-and-review-evidence/2026-10-11T184713Z-claude-code-7cc0a1.yaml. Their actor.name claude-code came from the scaffolder default because the structured invocation omitted --actor-name, despite correctly recording agent_tool codex. Codex performed all three changes. Preserve the original history bytes and their factual contents; this successor supplies the correct actor. Target7c5b3ca9, active helper70387ce2, original evidence and all scientific conclusions remain unchanged. Full initial render, validation, tests, lint and KGX gates completed successfully before this correction; rerender and full validation follow for the added history, with unchanged input hashes binding reuse of tests, lint and KGX."
+    ],
+    "exit_code": 0,
+    "stdout": "history/records/nitrate-reduction-i-denitrification/2026-10-11T185650Z-codex-7fcb48.yaml\n",
+    "stderr": ""
+  },
+  "successor": {
+    "path": "history/records/nitrate-reduction-i-denitrification/2026-10-11T185650Z-codex-7fcb48.yaml",
+    "sha256": "5e8272679a9b0adc68bb753ee11456cd2b131a99b518a2548e989e1f236b18a5"
+  },
+  "prior_history_preserved": {
+    "history/records/nitrate-reduction-i-denitrification/2026-10-11T184709Z-claude-code-b1b993.yaml": "b9e4a246d927186c8a6456b7daff2936abcf60d336c90f91ab82ac48b0fd8aba",
+    "history/infrastructure/denitrification-authorities-and-review-evidence/2026-10-11T184711Z-claude-code-7226e8.yaml": "4bb850def3c0b486da7d527439ca21b804ff3727760dd1f3d354031cc74ad15d",
+    "history/infrastructure/denitrification-authorities-and-review-evidence/2026-10-11T184713Z-claude-code-7cc0a1.yaml": "5f3dd25a9057182a122e89fd18e8dfcb2497708b82975142479bc935e7804763"
+  },
+  "initial_gates": {
+    "path": "/private/tmp/pathwaymech-next-219-final-gate-receipts.json",
+    "sha256": "b30645f3ff261ec4ec28d6967fd50b1d031c66622f0d07de21fb3f74fb004586"
+  },
+  "unchanged_gate_inputs": {
+    "path": "/private/tmp/pathwaymech-next-219-final-gate-inputs.json",
+    "sha256": "d6f9138a4aaa8d6d830a7ecdb67246a87defaf8054968993890d101661b9aa5e",
+    "count": 424
+  },
+  "reused_checks": [
+    "test",
+    "lint",
+    "kgx"
+  ],
+  "scope": "Append-only attribution correction; source, executable helper, schema, runtime, test and authority inputs remain exact. Prior successful test/lint/KGX results are reused under their input bindings. Render and full validation rerun for generated history.",
+  "checks": [
+    {
+      "name": "render",
+      "command": [
+        "just",
+        "render-pages"
+      ],
+      "started_at": "2026-10-11T18:56:50.983709+00:00",
+      "finished_at": "2026-10-11T18:57:36.269447+00:00",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-next-219-post-attribution-render.log",
+      "log_sha256": "6a1fedd9565009582dbb14e41e2b434bb23417f082abca7ebf82962ee7f96ab1"
+    },
+    {
+      "name": "validate",
+      "command": [
+        "just",
+        "validate"
+      ],
+      "started_at": "2026-10-11T18:57:36.270002+00:00",
+      "finished_at": "2026-10-11T19:00:40.190200+00:00",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-next-219-post-attribution-validate.log",
+      "log_sha256": "bfe945b27cd709189cdd9cc71a38a0366ac5711ef71755c59506832c0cc7a1a7"
+    }
+  ]
+}

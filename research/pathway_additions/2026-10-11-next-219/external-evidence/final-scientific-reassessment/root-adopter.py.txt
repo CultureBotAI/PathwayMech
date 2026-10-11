@@ -1,0 +1,45 @@
+from pathlib import Path
+import base64, datetime, hashlib, json, os, subprocess
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+D=R/'research/pathway_additions/2026-10-11-next-219/external-evidence/final-scientific-reassessment'
+OUT=Path('/private/tmp/pathwaymech-next-219-final-reassessment-adoption.json')
+assert not D.exists() and not OUT.exists()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+anchors={'/private/tmp/pathwaymech-next-219-final-scientific-reassessment/completion.json':'2b1a094bc356c5fa274f299a8f8e6f6003446b424dafcc5a0e5fb92cfb397439','/private/tmp/pathwaymech-next-219-final-scientific-reassessment/integrated-positive-reassessment.json':'88137ba4abb5c60079a2b420df06861f62d952053131d1dfc068b6f2ea798b06'}
+for p,h in anchors.items():assert sha(p)==h,p
+root=Path('/private/tmp/pathwaymech-next-219-final-scientific-reassessment');completion=json.loads((root/'completion.json').read_text())
+assert completion['findings']==[] and not completion['canonical_saved']
+for row in completion['artifacts']:assert sha(row['path'])==row['sha256'] and Path(row['path']).stat().st_size==row['bytes']
+files=sorted(p for p in root.rglob('*') if p.is_file());assert len(files)==9 and not any(p.is_symlink() for p in files)
+sources=[(p,p.relative_to(root)) for p in files];inventories=[{'root':str(root),'files':[str(p) for p in files]}]
+rows=[];payloads=[]
+for p,rel in sources:
+ assert p.is_file() and not p.is_symlink();raw=p.read_bytes();originalsha=digest(raw);reasons=[]
+ try:text=raw.decode('utf-8');istext='\0' not in text
+ except UnicodeDecodeError:text=None;istext=False
+ if not istext:reasons.append('non-text bytes')
+ if p.suffix in {'.log','.stdout','.stderr','.yaml','.yml','.tsv'}:reasons.append('historical result or input kept inert')
+ if any(line.rstrip(b'\r\n').endswith((b' ',b'\t')) for line in raw.splitlines(keepends=True)) or raw.endswith(b'\n\n'):reasons.append('whitespace-sensitive bytes')
+ if rel.suffix=='.py':rel=rel.with_name(rel.name+'.txt')
+ mode='exact_bytes'
+ if reasons:
+  mode='lossless_json_wrapper';body={'format':'lossless-immutable-evidence-v1','original_sha256':originalsha,'original_bytes':len(raw),'encoding':'utf-8' if istext else 'base64','content':text if istext else base64.b64encode(raw).decode()};copy=(json.dumps(body,indent=2,ensure_ascii=False)+'\n').encode();rel=rel.with_name(rel.name+'.bytes.json')
+  decoded=body['content'].encode() if body['encoding']=='utf-8' else base64.b64decode(body['content'],validate=True);assert decoded==raw
+ else:copy=raw
+ dest=D/rel;assert not os.path.lexists(dest);assert dest.is_relative_to(D) and dest.suffix!='.py'
+ rows.append({'original':str(p),'resolved_path':str(p.resolve()),'original_sha256':originalsha,'bytes':len(raw),'destination':str(dest.relative_to(R)),'destination_sha256':digest(copy),'mode':mode,'reasons':reasons});payloads.append((dest,copy))
+assert len({r['destination'] for r in rows})==len(rows)
+q=subprocess.run(['git','check-ignore','--no-index','--stdin'],input='\n'.join(r['destination'] for r in rows)+'\n',cwd=R,capture_output=True,text=True);assert q.returncode==1 and not q.stdout and not q.stderr
+for dest,copy in payloads:
+ dest.parent.mkdir(parents=True,exist_ok=True)
+ with dest.open('xb') as f:f.write(copy)
+ dest.chmod(0o644)
+for row in rows:assert sha(row['original'])==row['original_sha256'];assert sha(R/row['destination'])==row['destination_sha256']
+for inv in inventories:assert sorted(str(p) for p in Path(inv['root']).rglob('*') if p.is_file())==inv['files']
+receipt={'status':'root_adopted_sealed_independent_final_reassessment','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'driver_sha256':sha(__file__),'known_anchors':anchors,'copy_entries':rows,'inventories':inventories,'actual_review_terminals':completion['checks'],'scientific_target_sha256':completion['scientific_target_sha256'],'limits':'Root read complete reassessment scope, actual commands, counts and limitations and preserved exact originals. Whole-source hashes belong to the actual integrated execution; this adoption is not a new full scientific replay. Canonical review save remains separate.'}
+with OUT.open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+for name,p in [('root-adoption.json',OUT),('root-adopter.py.txt',Path(__file__))]:
+ with (D/name).open('xb') as f:f.write(p.read_bytes())
+print(json.dumps({'status':receipt['status'],'copied':len(rows),'root_provenance':2,'receipt_sha256':sha(OUT)}))

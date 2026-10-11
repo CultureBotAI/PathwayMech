@@ -1,0 +1,64 @@
+import ast
+import copy
+import hashlib
+import json
+import subprocess
+from datetime import UTC, datetime
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+OUT = Path('/private/tmp/pathwaymech-next-219-independent-scientific-review')
+D = ROOT / 'research/pathway_additions/2026-10-11-next-219'
+receipt_path = Path('/private/tmp/pathwaymech-next-219-helper-lint-fix/successor.json')
+old_path = D / 'external-evidence/helper-formatting/denitrification-replay-original.py.txt'
+new_path = D / 'denitrification-replay.py'
+external_old = Path('/private/tmp/pathwaymech-denitrification-correction-20261011/denitrification-replay.py')
+plan_path = D / 'external-evidence/packaging/copy-plan.json'
+paths = [receipt_path, old_path, new_path, external_old, plan_path, D / 'draft/nitrate-reduction-i-denitrification.yaml', ROOT / 'data/pathways/nitrate-reduction-i-denitrification.yaml']
+contents = {p: p.read_bytes() for p in paths}
+sha = lambda b: hashlib.sha256(b).hexdigest()
+assert sha(contents[receipt_path]) == '60e28ef23a294b3b4443ccb4ae697a9241d05f5b2d48abfcb244801086029b54'
+r = json.loads(contents[receipt_path])
+assert sha(contents[new_path]) == r['successor_sha256']
+assert sha(contents[old_path]) == sha(contents[external_old]) == r['original_sha256']
+assert contents[paths[-1]] == contents[paths[-2]]
+assert sha(contents[paths[-1]]) == r['target_sha256']
+old_ast = ast.parse(contents[old_path])
+new_ast = ast.parse(contents[new_path])
+old_loop = [n for n in ast.walk(old_ast) if isinstance(n, ast.For) and isinstance(n.target, ast.Tuple) and ast.unparse(n.target) == '(entity, acc)']
+new_loop = [n for n in ast.walk(new_ast) if isinstance(n, ast.For) and isinstance(n.target, ast.Tuple) and ast.unparse(n.target) == '(entity, _unused_accession)']
+assert len(old_loop) == len(new_loop) == 1
+assert not any(isinstance(n, ast.Name) and n.id == 'acc' for s in old_loop[0].body for n in ast.walk(s))
+assert len([n for n in ast.walk(new_ast) if isinstance(n, ast.Name) and n.id == '_unused_accession']) == 1
+# Normalize exactly one unused loop binding and the one global path-constant rename.
+old_loop[0].target.elts[1].id = '_unused_accession'
+old_names = [n for n in ast.walk(old_ast) if isinstance(n, ast.Name) and n.id == 'O']
+new_names = [n for n in ast.walk(new_ast) if isinstance(n, ast.Name) and n.id == 'ORIGINAL_AUTHOR']
+assert len(old_names) == len(new_names) == 10
+assert len([n for n in old_names if isinstance(n.ctx, ast.Store)]) == 1
+for node in old_names:
+    node.id = 'ORIGINAL_AUTHOR'
+assert ast.dump(old_ast, include_attributes=False) == ast.dump(new_ast, include_attributes=False)
+plan = json.loads(contents[plan_path])
+checked = []
+for row in r['historical_resolution_successor']:
+    assert plan[row['section']][row['index']] == row['original_row']
+    archive = ROOT / row['unchanged_byte_owner']
+    assert archive == old_path and sha(archive.read_bytes()) == row['sha256'] == r['original_sha256']
+    checked.append({'section': row['section'], 'index': row['index'], 'old_sha256': row['sha256'], 'resolved_archive': str(archive)})
+# Complete JSON walk, independent of ignore rules: all destinations pointing to the old active owner.
+observed = []
+for section in ('copy_entries', 'formal_input_resolution'):
+    for index, row in enumerate(plan[section]):
+        if row.get('destination') == str(new_path.relative_to(ROOT)):
+            observed.append((section, index))
+assert set(observed) == {(x['section'], x['index']) for x in checked}
+assert sha(contents[plan_path]) == '14fa939c6ddd6d6529aab4a7acb7ed40f059bb5eeca29f2813ebe5df05d366f9'
+run = subprocess.run(['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', '-m', 'ruff', 'check', str(new_path)], cwd=ROOT, capture_output=True, text=True)
+assert run.returncode == 0
+for p, body in contents.items():
+    assert p.read_bytes() == body, str(p)
+report = {'status': 'passed_bounded_helper_successor_reassessment', 'finished_at': datetime.now(UTC).isoformat(), 'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/409', 'source_target_unchanged': r['target_sha256'], 'active_helper_changed': {'before': r['original_sha256'], 'after': r['successor_sha256']}, 'normalized_ast': {'equal': True, 'global_path_name_occurrences': len(old_names), 'single_unused_loop_binding': 'verified no body reads; exactly one successor occurrence'}, 'historical_resolution': checked, 'copy_plan_unchanged': sha(contents[plan_path]), 'ruff': {'args': run.args, 'exit_code': run.returncode, 'stdout': run.stdout, 'stderr': run.stderr}, 'inputs': [{'path': str(p), 'sha256': sha(b), 'bytes': len(b)} for p,b in contents.items()], 'limitations': ['New helper is not byte-identical source code. Old external and canonical inspected observations remain historical.', 'This verifies executable AST equivalence after two explicit renames, not an independent full helper rerun.', 'Final integrated source replay and current repository gates must bind successor70387; no final scientific or canonical approval is asserted.']}
+with (OUT / 'helper-successor-supplement.json').open('x') as f:
+    json.dump(report, f, indent=2); f.write('\n')
+print(json.dumps({'status': report['status'], 'report': str(OUT / 'helper-successor-supplement.json'), 'sha256': sha((OUT / 'helper-successor-supplement.json').read_bytes()), 'old_name_occurrences': len(old_names)}))

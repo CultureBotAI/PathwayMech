@@ -1,0 +1,21 @@
+from pathlib import Path
+import json,yaml,hashlib,datetime,difflib
+O=Path('/private/tmp/pathwaymech-denitrification-author-20261011');C=Path('/private/tmp/pathwaymech-denitrification-correction-20261011');R=Path('/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011')
+def meta(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+def delta(x,y,path=''):
+ if type(x)!=type(y):return [{'path':path,'old':x,'new':y}]
+ if isinstance(x,dict):
+  return sum((delta(x[k],y[k],path+'/'+k) if k in x and k in y else [{'path':path+'/'+k,'old':x.get(k),'new':y.get(k)}] for k in sorted(set(x)|set(y))),[])
+ if isinstance(x,list):return sum((delta(x[i],y[i],path+'/'+str(i)) if i<len(x) and i<len(y) else [{'path':path+'/'+str(i),'old':x[i] if i<len(x) else None,'new':y[i] if i<len(y) else None}] for i in range(max(len(x),len(y)))),[])
+ return [] if x==y else [{'path':path,'old':x,'new':y}]
+started=datetime.datetime.now(datetime.timezone.utc).isoformat();h=json.loads((C/'handoff.json').read_text());assert meta(C/'handoff.json')['sha256']=='165488e9856288c962586a2127b1efe9cad848a1e49833fe1f76e2218ca8e860'
+old=yaml.safe_load((O/'draft/nitrate-reduction-i-denitrification.yaml').read_text());new=yaml.safe_load((C/'draft/nitrate-reduction-i-denitrification.yaml').read_text());d=delta(old,new);assert d==h['bounded_delta'];assert len(d)==8
+allmeta=[meta(C/'handoff.json')]+[meta(Path(r['path'])) for r in h['author_inputs']+h['support_files']]
+for row in h['author_inputs']+h['support_files']:assert meta(Path(row['path']))['sha256']==row['sha256']
+report={'started_at':started,'role':'Independent external successor reassessment; earlier reviewer, not author of correction.','initial_target':meta(O/'draft/nitrate-reduction-i-denitrification.yaml'),'current_target':meta(C/'draft/nitrate-reduction-i-denitrification.yaml'),'target_delta':d,'current_inputs':allmeta,'dossier_deltas':{}}
+for p in sorted((C/'draft').glob('*.json')):
+ q=O/'draft'/p.name; changes=delta(json.loads(q.read_text()),json.loads(p.read_text()));report['dossier_deltas'][p.name]=changes
+(R/'initial-inputs-and-delta.json').write_text(json.dumps(report,indent=2)+'\n')
+(R/'helper.diff').write_text(''.join(difflib.unified_diff((O/'denitrification-replay.py').read_text().splitlines(True),(C/'denitrification-replay.py').read_text().splitlines(True),fromfile=str(O/'denitrification-replay.py'),tofile=str(C/'denitrification-replay.py'))))
+print(json.dumps({'record_fields':len(d),'dossier_delta_counts':{k:len(v) for k,v in report['dossier_deltas'].items()},'current_inputs':len(allmeta)},indent=2))

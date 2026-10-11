@@ -1,0 +1,189 @@
+"""Prepare immutable expected inputs after root core adoption; never run science."""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-219-20261011')
+HELPER = REPO / 'research/pathway_additions/2026-10-11-next-219/denitrification-replay.py'
+OUTPUT = ROOT / 'expected-bindings.json'
+AUTHORITY = Path('/private/tmp/pathwaymech-denitrification-authority-selection-20261011')
+CORE = Path('/private/tmp/pathwaymech-next-219-core-root-adoption.json')
+PINNED = {
+    CORE: '1f4892db8046fef96b9c4246f28cc82b300ca665c80ba69fbf56f3cf8236964a',
+    AUTHORITY / 'handoff.json': '806080aa097b0a628e90c980ef06494af9a8308a05795be6b1c5ddd1b7757ede',
+    AUTHORITY / 'canonical-dry-run-final/report.json': '95c3143c2bdf564f7d40619815a928a3b87f8d2af725fe5fd22511902e426ffb',
+    AUTHORITY / 'selected-final/selection.json': '7005de7d6b1108a7f98abdc5c22dd4e8aae1c9e7915ce15300af043987ef4e6a',
+    Path('/private/tmp/pathwaymech-denitrification-correction-20261011/handoff.json'): '165488e9856288c962586a2127b1efe9cad848a1e49833fe1f76e2218ca8e860',
+    Path('/private/tmp/pathwaymech-denitrification-correction-independent-review-20261011/completion.json'): '2b612a79e87163ef9be611aae557cdbb4dd9bfd691fe09f50d7367ceaa660c36',
+    Path('/private/tmp/pathwaymech-denitrification-root-correction-adoption-20261011.json'): '66b383c783076074db64db9ec7aa0f7d68defd34b40b31c91646a7019cb89385',
+    Path('/private/tmp/pathwaymech-next-219-merged-baseline-bridge.json'): '91cc3bc656065ce1d813bd432c75f8c20920880aedc2218a8b5a7db7028c4b82',
+}
+spec = importlib.util.spec_from_file_location('integration_driver', ROOT / 'integration-replay.py')
+driver = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(driver)
+driver.require(not os.path.lexists(OUTPUT), 'Preserve prior manifest; new preparation needs a successor')
+PINNED[driver.FORMATTING_RECEIPT] = driver.FORMATTING_RECEIPT_SHA
+PINNED[Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011/preformatting-preparation.json')] = '39504076a4bfd87fab5ad258ac30f7288389224c62c02dfd14427d4cbafe60b1'
+PINNED[Path('/private/tmp/pathwaymech-denitrification-integrated-replay-20261011/controls-attempt-1/results.json')] = 'a00adc4547ba8cfe8e498618268b0c236b75bcb270d6083de38955c8cc0f90fc'
+files = {}
+deferred_sources = []
+
+
+def add(path, role, expected=None, defer=False, resolved=None):
+    path = driver.absolute(path)
+    driver.require(path.is_file(), 'Missing binding input: ' + str(path))
+    actual_resolved = str(path.resolve(strict=True))
+    driver.require(resolved is None or actual_resolved == resolved, 'Original resolved identity changed: ' + str(path))
+    if defer:
+        driver.require(expected is not None, 'Deferred source requires accepted digest')
+        actual = expected
+        deferred_sources.append(str(path))
+    else:
+        actual = driver.file_hash(path)
+        driver.require(expected is None or actual == expected, 'Accepted input changed: ' + str(path))
+    driver.require(str(path.resolve(strict=True)) == actual_resolved, 'Input retargeted during preparation')
+    row = {'path': str(path), 'resolved_path': actual_resolved, 'sha256': actual, 'role': role}
+    if str(path) in files:
+        driver.require(all(files[str(path)][key] == row[key] for key in ['path', 'resolved_path', 'sha256']), 'Conflicting binding')
+    else:
+        files[str(path)] = row
+
+
+def accepted(path):
+    raw = path.read_bytes()
+    driver.require(driver.digest(raw) == PINNED[path], 'Accepted proof changed: ' + str(path))
+    return driver.read_json(raw)
+
+
+core = accepted(CORE)
+driver.require(core['status'] == 'reviewed_corrected_target_and_canonical_authorities_adopted', 'Core adoption not complete')
+driver.require(core['target'] == driver.TARGET and core['target_sha256'] == driver.TARGET_SHA, 'Core target differs')
+driver.require(core['authority_handoff_sha256'] == PINNED[AUTHORITY / 'handoff.json'], 'Core authority proof differs')
+handoff = accepted(AUTHORITY / 'handoff.json')
+canonical = accepted(AUTHORITY / 'canonical-dry-run-final/report.json')
+inventories = []
+for root, role in [(REPO / 'src', 'runtime'), (REPO / 'scripts', 'runtime'), (REPO / 'data/pathways', 'record'), (driver.ADAPTER_ROOT, 'runtime')]:
+    paths = driver.inventory(root)
+    inventories.append({'root': str(root), 'paths': paths})
+    for path in paths:
+        add(path, role)
+for relative in sorted(driver.REQUIRED):
+    role = 'authority' if relative.startswith('data/identifier_authorities/') else 'policy' if relative == 'conf/identifier_policy.yaml' else 'formal'
+    add(REPO / relative, role)
+for relative, expected in core['maintained_owner_hashes'].items():
+    driver.require(files[str(REPO / relative)]['sha256'] == expected, 'Current owner differs from root adoption')
+add(REPO / driver.TARGET, 'record', driver.TARGET_SHA)
+add(HELPER, 'formal', driver.HELPER_SHA)
+add(driver.CORRECTED_HELPER, 'formal', driver.ORIGINAL_HELPER_SHA)
+add(REPO / driver.ORIGINAL_ARCHIVE, 'formal', driver.ORIGINAL_HELPER_SHA)
+for relative, expected in driver.ADJACENT.items():
+    add(HELPER.parent / relative, 'formal', expected)
+for name in ['integration-replay.py', 'prepare-bindings.py', 'boundary-controls.py', 'prepare-successor.py', 'successor-provenance.json']:
+    add(ROOT / name, 'runtime' if name == 'integration-replay.py' else 'formal')
+
+# Original predecessor/source paths remain absolute. Retain exact old resolution
+# identities where the corrected replay declared them; do not substitute archives.
+corrected = Path('/private/tmp/pathwaymech-denitrification-correction-20261011')
+child_proof = corrected / 'replay-successor.json'
+add(child_proof, 'prior_proof', 'f94a25d9173c934e8713bef1aeb8923d362ff09c722c4bc7c92cb9dec0bb43d0')
+old_rows = {row['path']: row for row in driver.read_json(child_proof.read_bytes())['all_bound_inputs']}
+for path, expected in driver.source_dependencies(HELPER).items():
+    original = old_rows.get(path)
+    if original:
+        driver.require(original['sha256'] == expected, 'Historical corrected-source proof digest differs')
+    add(path, 'source', expected, defer=True, resolved=original.get('resolved_path') if original else None)
+add(driver.ADAPTER_ROOT / 'imodulondb.py', 'runtime', driver.ADAPTER_SHA)
+
+# Production authority provenance is independently adopted by root. It is not
+# substituted for original scientific Rhea142 RDF or original protein versions.
+production = {}
+for row in canonical['source_body_recheck']:
+    production[row['path']] = {'path': row['path'], 'sha256': row['sha256']}
+    add(row['path'], 'source', row['sha256'], defer=True, resolved=row['resolved_path'])
+whole = []
+for row in handoff['whole_production_SQL_sources_finally_verified']:
+    item = {'path': row['path'], 'sha256': row['expected_sha256']}
+    production[row['path']] = item
+    whole.append(item)
+    add(row['path'], 'source', row['expected_sha256'], defer=True, resolved=row['resolved_path'])
+copy_map = {row['destination']: row for row in handoff['new_shared_cache_copy_plan_for_root']}
+for row in core['new_cache_files']:
+    original = copy_map[row['path']]
+    driver.require(original['sha256'] == row['sha256'], 'Root cache digest differs from exact-byte plan')
+    driver.require(production[original['source']]['sha256'] == row['sha256'], 'Original canonical source digest differs')
+    production[row['path']] = dict(row)
+    add(row['path'], 'source', row['sha256'], defer=True)
+current_manifest = driver.read_json((REPO / 'conf/identifier_sources.json').read_bytes())
+for row in current_manifest:
+    path = str(Path('/private/tmp/pathwaymech-curation-authorities/sources') / row['path'])
+    driver.require(path in production and production[path]['sha256'] == row['sha256'], 'Current production source not bound: ' + path)
+proofs = []
+for path, expected in PINNED.items():
+    add(path, 'integration_proof', expected)
+    proofs.append(str(path))
+for row in core['authority_archive_files']:
+    add(REPO / row['path'], 'integration_proof', row['sha256'])
+    proofs.append(str(REPO / row['path']))
+
+probe = '''import importlib.metadata as m,json,sys
+from pathlib import Path
+distributions=[];metadata=[]
+for d in m.distributions():
+    distributions.append({"name":d.metadata.get("Name"),"version":d.version})
+    for f in d.files or []:
+        p=Path(d.locate_file(f))
+        if any(x.endswith((".dist-info",".egg-info")) for x in p.parts) and p.is_file():
+            metadata.append(str(p.absolute()))
+for site in sys.path:
+    p=Path(site)
+    if p.is_dir() and p.name in ("site-packages","dist-packages"):
+        metadata.extend(str(x.absolute()) for x in p.glob("*.pth") if x.is_file())
+v=Path(sys.prefix)/"pyvenv.cfg"
+if v.is_file():metadata.append(str(v.absolute()))
+print(json.dumps({"executable":sys.executable,"version":sys.version,"prefix":sys.prefix,"base_prefix":sys.base_prefix,"sys_path":sys.path,"distributions":sorted(distributions,key=lambda x:(x["name"] or "",x["version"])),"metadata_files":sorted(set(metadata))}))
+'''
+env = dict(os.environ, PYTHONPATH=str(REPO / 'src'), PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1')
+env.pop('PYTHONOPTIMIZE', None)
+env.pop('PYTHONHOME', None)
+process = subprocess.run([sys.executable, '-B', '-P', '-c', probe], env=env, cwd=REPO, capture_output=True, check=True)
+provenance = driver.read_json(process.stdout)
+driver.require(provenance['executable'] == sys.executable, 'Environment probe changed executable')
+add(sys.executable, 'environment')
+for path in provenance['metadata_files']:
+    add(path, 'environment')
+document = {
+    'format': 'denitrification-integration-bindings-v1', 'prepared_at': driver.now(),
+    'manifest_identity': {'path': str(OUTPUT), 'resolved_path': str(OUTPUT.resolve())},
+    'repo': {'path': str(REPO), 'resolved_path': str(REPO.resolve())}, 'helper': str(HELPER),
+    'files': [files[key] for key in sorted(files)], 'inventories': inventories,
+    'integration_proofs': sorted(proofs), 'accepted_production_files': core['maintained_owner_hashes'],
+    'production_authority_sources': [production[key] for key in sorted(production)],
+    'production_whole_sources': whole,
+    'source_scope': {
+        'original_whole_sources': 'three SQL databases plus Rhea142 RDF gzip',
+        'production_whole_sources': 'four SQL databases including Rhea139 SQL',
+        'original_source_responses': 85, 'original_imod_responses': 52,
+        'retained_predecessor_paths': 484, 'production_source_bodies': len(canonical['source_body_recheck']),
+        'limits': 'Original replay includes one earlier web-inspected article assertion that cannot be byte-replayed; cached iMod expression context remains noncausal. Production authority selection and full source original chemistry have distinct versions and scope.',
+    },
+    'protected_roots': [str(REPO), str(HELPER.parent), str(ROOT), str(corrected), str(driver.ORIGINAL_AUTHOR), str(AUTHORITY), str(driver.ADAPTER_ROOT)],
+    'python': provenance,
+    'preparation_scope': 'Current formal/runtime/authority/proof inputs freshly hashed. Original/production source expected digests taken from accepted immutable proofs with path identity checks; full source hashing belongs to the actual positive replay. No scientific helper or corpus gate executed here.',
+    'deferred_source_digest_paths': sorted(set(deferred_sources)),
+}
+driver.check_contract(document, REPO, HELPER)
+driver.check_source_coverage(document, HELPER)
+driver.check_formatting_lineage(document, REPO, HELPER)
+driver.check_inventories(inventories, document['files'])
+# Fresh small inputs last; do not treat cached preparation values as final bytes.
+for row in document['files']:
+    if row['role'] != 'source':
+        driver.check_entry(row)
+with OUTPUT.open('x') as stream:
+    json.dump(document, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': 'prepared_expected_bindings_for_root_review_only', 'path': str(OUTPUT), 'sha256': driver.file_hash(OUTPUT), 'bindings': len(files), 'source_hashes_deferred': len(set(deferred_sources)), 'maintained_writes': []}))

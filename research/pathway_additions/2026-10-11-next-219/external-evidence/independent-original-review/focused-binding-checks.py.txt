@@ -1,0 +1,19 @@
+from pathlib import Path
+import ast,hashlib,json,datetime,tempfile,types
+R=Path('/private/tmp/pathwaymech-denitrification-whole-record-review-20261011');helper=Path('/private/tmp/pathwaymech-denitrification-author-20261011/denitrification-replay.py'); b=helper.read_bytes();t=ast.parse(b);names={'digest','filehash','bind','original','readj','fresh'};selected=[n for n in t.body if isinstance(n,ast.FunctionDef) and n.name in names];assert len(selected)==6
+ns={'Path':Path,'hashlib':hashlib,'json':json,'bindings':{},'captured':{}};exec(compile(ast.Module(body=selected,type_ignores=[]),str(helper),'exec'),ns);cases=[]
+def rejected(fn):
+ try:fn()
+ except (AssertionError,FileExistsError) as e:return repr(e)
+ raise AssertionError('mutation accepted')
+with tempfile.TemporaryDirectory(prefix='denitrification-independent-guards-') as d:
+ p=Path(d);f=p/'input';f.write_bytes(b'original');ns['bind'](f);assert ns['original'](f)==b'original';ns['fresh']();cases.append({'case':'unchanged captured input','status':'pass'})
+ for role in ['formal_metadata','original_source','prior_proof','runtime']:
+  ns['bindings'].clear();ns['captured'].clear();f.write_bytes(b'original');ns['bind'](f,hashlib.sha256(b'original').hexdigest());f.write_bytes(b'changed');assert ns['original'](f)==b'original';cases.append({'case':role+' changed after capture','status':'rejected','exception':rejected(ns['fresh'])})
+ ns['bindings'].clear();ns['captured'].clear();f.write_bytes(b'original');other=p/'other';other.write_bytes(b'original');link=p/'alias';link.symlink_to(f);ns['bind'](link);link.unlink();link.symlink_to(other);cases.append({'case':'same bytes different resolved input','status':'rejected','exception':rejected(ns['fresh'])})
+ ns['bindings'].clear();ns['captured'].clear();cases.append({'case':'stale expected prior-proof digest','status':'rejected','exception':rejected(lambda:ns['bind'](f,'f'*64))})
+ final=[x for x in t.body if isinstance(x,ast.With) and any(isinstance(i.context_expr,ast.Call) and isinstance(i.context_expr.func,ast.Attribute) and i.context_expr.func.attr=='open' and i.context_expr.args and isinstance(i.context_expr.args[0],ast.Constant) and i.context_expr.args[0].value=='x' for i in x.items)];assert len(final)==1
+ out=p/'output';out.write_bytes(b'competing sentinel\n');code=compile(ast.Module(body=final,type_ignores=[]),str(helper),'exec');e=rejected(lambda:exec(code,{'a':types.SimpleNamespace(output=out),'result':{'status':'should not overwrite'},'json':json}));assert out.read_bytes()==b'competing sentinel\n';cases.append({'case':'exact final exclusive-write statement preserves competing output','status':'rejected','exception':e})
+receipt={'status':'passed','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'helper_sha256':hashlib.sha256(b).hexdigest(),'scope':'Focused execution of the six original binding functions and exact final output statement, extracted unchanged by AST. These are isolated guard checks, not additional full scientific replays. Authentic full late mutation is separately recorded.','cases':cases}
+with (R/'focused-binding-checks.json').open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+print(json.dumps({'status':'pass','cases':len(cases)}))

@@ -1,0 +1,444 @@
+"""Small fixtures exercise the actual driver guards; no scientific replay occurs."""
+
+import importlib.util
+from copy import deepcopy
+import json
+import os
+import py_compile
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / sys.argv[1]
+OUT.mkdir(exist_ok=False)
+spec = importlib.util.spec_from_file_location("integration_driver", ROOT / "integration-replay.py")
+d = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(d)
+results = []
+
+
+def write(path, value):
+    with path.open("x") as stream:
+        json.dump(value, stream, indent=2)
+        stream.write("\n")
+
+
+def entry(path, role="runtime"):
+    return {
+        "path": str(path),
+        "resolved_path": str(path.resolve()),
+        "sha256": d.file_hash(path),
+        "role": role,
+    }
+
+
+def reject(name, function, message):
+    try:
+        function()
+    except d.IntegrityError as error:
+        d.require(message in str(error), "Unexpected rejection for " + name + ": " + str(error))
+        results.append(
+            {
+                "name": name,
+                "passed": True,
+                "actual_exception": type(error).__name__,
+                "message": str(error),
+            }
+        )
+    else:
+        raise RuntimeError("Guard failed to reject: " + name)
+
+
+def fixture(name, role="runtime"):
+    root = OUT / name
+    root.mkdir()
+    runtime = root / "runtime"
+    runtime.mkdir()
+    path = runtime / "input.txt"
+    path.write_text("accepted bytes\n")
+    document = {
+        "manifest_identity": {
+            "path": str(root / "manifest.json"),
+            "resolved_path": str(root / "manifest.json"),
+        },
+        "files": [entry(path, role)],
+        "inventories": [{"root": str(runtime), "paths": d.inventory(runtime)}],
+    }
+    write(root / "manifest.json", document)
+    own = entry(root / "manifest.json", "manifest")
+    d.capture_bindings(document["files"])
+    d.final_recheck(document, own)
+    return root, path, document, own
+
+
+try:
+    # Positive narrow fixture demonstrates the same final guard accepts intact inputs.
+    fixture("positive-narrow")
+    results.append({"name": "positive-narrow-capture-and-final-recheck", "passed": True})
+    for role in [
+        "formal",
+        "record",
+        "integration_proof",
+        "authority",
+        "policy",
+        "runtime",
+        "manifest",
+        "environment",
+        "source",
+        "prior_proof",
+    ]:
+        for phase in ["preflight", "final"]:
+            root, path, document, own = fixture(phase + "-" + role, role)
+            path.write_text("changed " + role + "\n")
+            operation = (
+                (lambda document=document: d.capture_bindings(document["files"]))
+                if phase == "preflight"
+                else (lambda document=document, own=own: d.final_recheck(document, own))
+            )
+            reject(phase + "-" + role + "-digest-change", operation, "Input digest changed")
+    root, path, document, own = fixture("late-pre-import-formal-change", "authority")
+    path.write_text("changed after initial capture\n")
+    reject(
+        "late-pre-import-formal-recheck",
+        lambda: d.recheck_formal_inputs(document, own),
+        "Input digest changed",
+    )
+    for phase in ["preflight", "final"]:
+        root, path, document, own = fixture(phase + "-own-manifest", "runtime")
+        manifest = Path(own["path"])
+        manifest.write_bytes(manifest.read_bytes() + b" ")
+        operation = (
+            (lambda: d.capture_manifest(manifest, own["sha256"]))
+            if phase == "preflight"
+            else (lambda: d.final_recheck(document, own))
+        )
+        reject(
+            phase + "-binding-manifest-change",
+            operation,
+            "manifest digest changed" if phase == "preflight" else "Input digest changed",
+        )
+    for phase in ["preflight", "final"]:
+        root, path, document, own = fixture(phase + "-symlink")
+        destination = root / "same-byte-destination.txt"
+        destination.write_bytes(path.read_bytes())
+        link = root / "input-alias.txt"
+        link.symlink_to(path)
+        alias_entry = entry(link)
+        document["files"].append(alias_entry)
+        d.capture_bindings(document["files"])
+        link.unlink()
+        link.symlink_to(destination)
+        d.require(d.file_hash(link) == alias_entry["sha256"], "Same-byte fixture has unequal bytes")
+        operation = (
+            (lambda: d.capture_bindings(document["files"]))
+            if phase == "preflight"
+            else (lambda: d.final_recheck(document, own))
+        )
+        reject(phase + "-same-byte-symlink-retarget", operation, "Resolved input identity changed")
+    for phase in ["preflight", "final"]:
+        root, path, document, own = fixture(phase + "-manifest-symlink")
+        original = root / "manifest.json"
+        identical = root / "same-manifest.json"
+        identical.write_bytes(original.read_bytes())
+        original.rename(root / "original-manifest.json")
+        original.symlink_to(identical)
+        operation = (
+            (lambda: d.capture_manifest(original, own["sha256"]))
+            if phase == "preflight"
+            else (lambda: d.final_recheck(document, own))
+        )
+        reject(
+            phase + "-same-byte-manifest-symlink-retarget",
+            operation,
+            "identity changed" if phase == "preflight" else "Resolved input identity changed",
+        )
+    for phase in ["preflight", "final"]:
+        for mutation in ["add", "remove"]:
+            root, path, document, own = fixture(phase + "-inventory-" + mutation)
+            if mutation == "add":
+                (path.parent / ".ignored-new-runtime.py").write_text("changed=True\n")
+            else:
+                path.unlink()
+            operation = (
+                (lambda: d.check_inventories(document["inventories"], document["files"]))
+                if phase == "preflight"
+                else (lambda: d.final_recheck(document, own))
+            )
+            reject(phase + "-inventory-" + mutation, operation, "Input inventory changed")
+    root = OUT / "output-fixtures"
+    root.mkdir()
+    for kind in ["file", "directory", "dangling-symlink"]:
+        path = root / kind
+        if kind == "file":
+            path.write_text("existing\n")
+        elif kind == "directory":
+            path.mkdir()
+        else:
+            path.symlink_to(root / "absent")
+        reject(
+            "existing-output-" + kind, lambda: d.check_output(path, [], []), "Output already exists"
+        )
+    protected = root / "protected"
+    protected.mkdir()
+    reject(
+        "protected-output-tree",
+        lambda: d.check_output(protected / "new", [str(protected)], []),
+        "protected input tree",
+    )
+    root, path, document, own = fixture("duplicate-bindings")
+    reject(
+        "duplicate-binding-path",
+        lambda: d.capture_bindings(document["files"] * 2),
+        "Duplicate binding path",
+    )
+    reject("duplicate-json-key", lambda: d.read_json('{"input":1,"input":2}'), "Duplicate JSON key")
+    # Contract argument identity guards run before any binding/file imports.
+    argument_repo = OUT / "argument-repo"
+    argument_repo.mkdir()
+    argument_helper = argument_repo / "helper.py"
+    argument_helper.write_text("not executed\n")
+    contract = {
+        "format": "denitrification-integration-bindings-v1",
+        "repo": {"path": str(argument_repo), "resolved_path": str(argument_repo.resolve())},
+        "helper": str(argument_helper),
+        "files": [],
+    }
+    reject(
+        "wrong-repository-argument",
+        lambda: d.check_contract(contract, argument_repo / "different", argument_helper),
+        "Repository identity changed",
+    )
+    reject(
+        "wrong-helper-argument",
+        lambda: d.check_contract(contract, argument_repo, argument_repo / "different.py"),
+        "Helper path differs",
+    )
+    reject(
+        "missing-required-bindings",
+        lambda: d.check_contract(contract, argument_repo, argument_helper),
+        "Missing required formal/runtime/authority bindings",
+    )
+    # Real environment function removes inherited path/optimization overrides.
+    previous = {
+        key: os.environ.get(key)
+        for key in [
+            "PYTHONOPTIMIZE",
+            "PYTHONHOME",
+            "PYTHONPATH",
+            "PYTHONPYCACHEPREFIX",
+            "PYTHONSAFEPATH",
+        ]
+    }
+    try:
+        os.environ.update(
+            PYTHONOPTIMIZE="2",
+            PYTHONHOME="/bad/home",
+            PYTHONPATH="/bad/imports",
+            PYTHONPYCACHEPREFIX="/bad/cache",
+            PYTHONSAFEPATH="",
+        )
+        guarded_env = d.child_environment(argument_repo, OUT / "fresh-output")
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+    d.require(
+        "PYTHONHOME" not in guarded_env and "PYTHONOPTIMIZE" not in guarded_env,
+        "Inherited interpreter override survived",
+    )
+    d.require(guarded_env["PYTHONPATH"] == str(argument_repo / "src"), "Wrong project import path")
+    d.require(
+        guarded_env["PYTHONPYCACHEPREFIX"] == str(OUT / "fresh-output/.python-cache"),
+        "Wrong fresh cache prefix",
+    )
+    d.require(
+        guarded_env["PYTHONDONTWRITEBYTECODE"] == guarded_env["PYTHONNOUSERSITE"] == "1",
+        "Missing environment restrictions",
+    )
+    d.require(guarded_env["PYTHONSAFEPATH"] == "1", "Nested child safe path missing")
+    results.append({"name": "actual-child-environment-override-guards", "passed": True})
+    # A valid timestamp/size stale pyc really is consumed without the new prefix;
+    # the actual production environment then imports the bound source instead.
+    cache_repo = OUT / "pycache-fixture"
+    cache_source = cache_repo / "src"
+    cache_source.mkdir(parents=True)
+    module = cache_source / "guarded_module.py"
+    module.write_text("VALUE = 'GOOD'\n")
+    bad = cache_repo / "bad-source.txt"
+    bad.write_text("VALUE = 'EVIL'\n")
+    for path in [module, bad]:
+        os.utime(path, (1700000000, 1700000000))
+    cache_path = Path(importlib.util.cache_from_source(str(module)))
+    cache_path.parent.mkdir()
+    py_compile.compile(str(bad), cfile=str(cache_path), doraise=True)
+    cache_output = OUT / "pycache-output"
+    d.check_output(cache_output, [str(cache_repo)], [])
+    cache_output.mkdir()
+    positive_env = d.child_environment(cache_repo, cache_output)
+    baseline_env = dict(positive_env)
+    baseline_env.pop("PYTHONPYCACHEPREFIX")
+    command = [
+        sys.executable,
+        "-B",
+        "-P",
+        "-c",
+        "import guarded_module;print(guarded_module.VALUE)",
+    ]
+    for name, environment, expected in [
+        ("baseline-stale-pyc-consumed", baseline_env, "EVIL"),
+        ("fresh-cache-prefix-uses-bound-source", positive_env, "GOOD"),
+    ]:
+        process = subprocess.run(command, cwd=cache_repo, env=environment, capture_output=True)
+        (OUT / (name + ".stdout")).write_bytes(process.stdout)
+        (OUT / (name + ".stderr")).write_bytes(process.stderr)
+        d.require(
+            process.returncode == 0 and process.stdout.decode().strip() == expected,
+            "Pyc boundary control failed: " + name,
+        )
+        results.append(
+            {
+                "name": name,
+                "passed": True,
+                "command": command,
+                "exit_code": process.returncode,
+                "actual_output": process.stdout.decode().strip(),
+                "stdout_sha256": d.digest(process.stdout),
+                "stderr_sha256": d.digest(process.stderr),
+                "fixture_only": True,
+            }
+        )
+    d.require(
+        not (cache_output / ".python-cache").exists(), "Bytecode-disabled child wrote a cache"
+    )
+    # Actual denitrification child receipt guard, with small synthetic receipt fixtures.
+    root, path, document, own = fixture("child-receipt-closure")
+    child = {
+        "status": "passed_author_source_replay_not_independent_approval",
+        "record_sha256": d.TARGET_SHA,
+        "native_members": 5,
+        "predecessor_files_preserved": 484,
+        "kgx": {"edges": 75, "evidence": 156},
+        "all_bound_inputs": [{k: v for k, v in document["files"][0].items() if k != "role"}],
+    }
+    d.check_child_receipt(child, document)
+    results.append({"name": "child-receipt-matching-binding-positive", "passed": True})
+    for name, mutate, expected in [
+        ("child-status-scope", lambda value: value.update(status="passed_scientific_approval"), "Unexpected child scope/status"),
+        ("child-target-change", lambda value: value.update(record_sha256="0" * 64), "Child target differs"),
+        ("child-missing-native-reaction", lambda value: value.update(native_members=4), "Child native member count differs"),
+        ("child-predecessor-coverage-loss", lambda value: value.update(predecessor_files_preserved=483), "Child predecessor closure differs"),
+        ("child-corrected-evidence-loss", lambda value: value["kgx"].update(evidence=155), "Child corrected graph coverage differs"),
+        ("child-unbound-runtime", lambda value: value["all_bound_inputs"][0].update(path=str(root / "unapproved.py")), "Child input missing"),
+        ("child-input-digest-mismatch", lambda value: value["all_bound_inputs"][0].update(sha256="0" * 64), "Child binding differs"),
+        ("child-input-identity-mismatch", lambda value: value["all_bound_inputs"][0].update(resolved_path=str(root / "different")), "Child binding differs"),
+        ("child-duplicate-binding", lambda value: value["all_bound_inputs"].append(dict(value["all_bound_inputs"][0])), "Duplicate child binding"),
+    ]:
+        changed = deepcopy(child)
+        mutate(changed)
+        reject(name, lambda value=changed: d.check_child_receipt(value, document), expected)
+    for suffix in ["receipt", "stdout", "stderr"]:
+        artifact_root = OUT / ("late-child-artifact-" + suffix)
+        artifact_root.mkdir()
+        receipt = artifact_root / "source-replay.json"
+        write(receipt, child)
+        for extension in ["stdout", "stderr"]:
+            (artifact_root / ("source-replay." + extension)).write_text("accepted log\n")
+        commands = [{"name": "source-replay", **{extension + "_sha256": d.file_hash(artifact_root / ("source-replay." + extension)) for extension in ["stdout", "stderr"]}}]
+        receipt_sha = d.file_hash(receipt)
+        d.check_child_artifacts(artifact_root, commands, receipt_sha)
+        mutation = receipt if suffix == "receipt" else artifact_root / ("source-replay." + suffix)
+        mutation.write_bytes(mutation.read_bytes() + b"changed\n")
+        reject("late-child-artifact-" + suffix, lambda: d.check_child_artifacts(artifact_root, commands, receipt_sha), "Child receipt changed" if suffix == "receipt" else "Child log changed")
+    # Verify the two declared name normalizations against complete original bytes.
+    original = d.CORRECTED_HELPER.read_bytes()
+    successor_path = Path('/private/tmp/pathwaymech-next-219-20261011/research/pathway_additions/2026-10-11-next-219/denitrification-replay.py')
+    successor = successor_path.read_bytes()
+    d.require(d.digest(original) == d.ORIGINAL_HELPER_SHA and d.digest(successor) == d.HELPER_SHA, 'Formatting controls require exact approved helper bytes')
+    evidence = d.formatting_relation(original, successor)
+    results.append({'name': 'complete-helper-normalized-ast-positive', 'passed': True, 'evidence': evidence})
+    for name, changed, expected in [
+        ('formatting-source-path-change', successor.replace(b'pathwaymech-denitrification-author-20261011', b'pathwaymech-denitrification-author-20261012', 1), 'Executable AST differs'),
+        ('formatting-assertion-loss', successor.replace(b'assert a.record.is_file() and a.repo.is_dir()', b'assert a.record.is_file()', 1), 'Executable AST differs'),
+        ('formatting-output-scope-change', successor.replace(b'passed_author_source_replay_not_independent_approval', b'passed_scientific_approval', 1), 'Executable AST differs'),
+        ('formatting-partial-author-rename', successor.replace(b'bind(ORIGINAL_AUTHOR /', b'bind(O /', 1), 'Original-author rename coverage differs'),
+        ('formatting-unused-binding-read', successor.replace(b'for entity, _unused_accession in [(3, "Q59647"), (4, "Q59646")]:', b'for entity, _unused_accession in [(3, "Q59647"), (4, "Q59646")]:\n    print(_unused_accession)', 1), 'Unused rename is not a single write-only binding'),
+    ]:
+        d.require(changed != successor, 'Formatting negative did not change bytes: ' + name)
+        reject(name, lambda value=changed: d.formatting_relation(original, value), expected)
+    # Real CLI runs stop before main project/helper imports and before output creation.
+    cli_out = OUT / "must-not-exist"
+    cases = [
+        (
+            "optimized-cli",
+            [sys.executable, "-B", "-O", str(ROOT / "integration-replay.py")],
+            "Optimized Python is forbidden",
+        ),
+        (
+            "bad-manifest-digest-cli",
+            [
+                sys.executable,
+                "-B",
+                str(ROOT / "integration-replay.py"),
+                "--repo",
+                str(ROOT),
+                "--helper",
+                str(ROOT / "integration-replay.py"),
+                "--binding-manifest",
+                own["path"],
+                "--binding-sha256",
+                "0" * 64,
+                "--output-dir",
+                str(cli_out),
+            ],
+            "Binding-manifest digest changed",
+        ),
+    ]
+    for name, command, message in cases:
+        process = subprocess.run(command, capture_output=True)
+        (OUT / (name + ".stdout")).write_bytes(process.stdout)
+        (OUT / (name + ".stderr")).write_bytes(process.stderr)
+        d.require(
+            process.returncode != 0 and message in process.stderr.decode(),
+            "CLI rejection failed: " + name,
+        )
+        d.require(not cli_out.exists(), "Rejected CLI created output")
+        results.append(
+            {
+                "name": name,
+                "passed": True,
+                "command": command,
+                "exit_code": process.returncode,
+                "stdout_sha256": d.digest(process.stdout),
+                "stderr_sha256": d.digest(process.stderr),
+                "output_created": False,
+            }
+        )
+    report = {
+        "status": "passed_narrow_boundary_controls_only",
+        "at": d.now(),
+        "driver": entry(ROOT / "integration-replay.py"),
+        "controls": entry(Path(__file__).resolve()),
+        "cases": results,
+        "count": len(results),
+        "scope": "Actual driver guard/environment functions, two early-reject real CLI invocations, isolated stale-pyc/source children, and explicit denitrification child-receipt coverage controls. Small external fixtures only; no scientific helper, canonical project checks, whole original-source rereads, or full positive integration replay. Test mutation is confined to fixtures and inherited environment inputs; no production bypass or monkeypatch is used.",
+    }
+    write(OUT / "results.json", report)
+    print(
+        json.dumps(
+            {
+                "status": report["status"],
+                "cases": len(results),
+                "receipt": str(OUT / "results.json"),
+                "sha256": d.file_hash(OUT / "results.json"),
+            }
+        )
+    )
+except Exception as error:
+    write(
+        OUT / "failure.json",
+        {"status": "failed_control_attempt", "error": repr(error), "completed_cases": results},
+    )
+    raise

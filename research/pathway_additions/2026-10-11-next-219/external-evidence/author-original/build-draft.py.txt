@@ -1,0 +1,185 @@
+"""Author complete native five-object denitrification route; not a review."""
+import hashlib, importlib.util, json, pathlib, re, sqlite3, sys
+from functools import lru_cache
+from collections import Counter
+from datetime import UTC, datetime
+import yaml
+from lxml import etree, html
+R=pathlib.Path(__file__).parent; D=R/'draft'; RAW=R/'raw'
+REPO=pathlib.Path('/private/tmp/pathwaymech-next-217-20261011'); CACHE=pathlib.Path('/private/tmp/pathwaymech-curation-authorities')
+H=lambda b:hashlib.sha256(b).hexdigest()
+@lru_cache(maxsize=None)
+def sha(p):
+ with pathlib.Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def save(n,v):
+ with (D/n).open('w') as f:json.dump(v,f,indent=2);f.write('\n')
+def clean(t):return ' '.join(html.fromstring('<div>'+t+'</div>').text_content().split())
+acq=[x for p in sorted(R.glob('acquisition-*.json')) for x in json.loads(p.read_text())]
+byfile={x['file']:x for x in acq}; refs={}; paths={}; spans=[]; edges=[]
+spec=importlib.util.spec_from_file_location('sb',REPO/'scripts/build_source_identifier_snapshot.py');sb=importlib.util.module_from_spec(spec);spec.loader.exec_module(sb)
+DBS={n:{'path':str(CACHE/n),'resolved_path':str((CACHE/n).resolve()),'sha256':sha(CACHE/n)} for n in ['chebi.db','go.db','ncbitaxon.db','rhea.rdf.gz']}
+save('database-hashes-preparation.json',DBS)
+terms={}
+for fn,ids in [('chebi.db',['17632','16301','16480','17045','17997','15377','15378','60539','49883','21137','61717','60549','60344','24875','47357','33730','29108']),('go.db',['0005737','0042597','0005886','0019333']),('ncbitaxon.db',['208964'])]:
+ with sqlite3.connect(f'file:{CACHE/fn}?mode=ro',uri=True) as db:
+  for i in ids:
+   cid=('CHEBI:' if fn=='chebi.db' else 'GO:' if fn=='go.db' else 'NCBITaxon:')+i
+   rows=[dict(predicate=p,value=v,object=o) for p,v,o in db.execute('select predicate,value,object from statements where subject=?',(cid,))]
+   assert rows and not any(x['predicate']=='owl:deprecated' and x['value']=='true' for x in rows)
+   terms[cid]={'source':fn,'statements':rows}
+def val(cid,p):return next(x['value'] or x['object'] for x in terms[cid]['statements'] if x['predicate']==p)
+def addref(cid,file,title,version):
+ row=byfile[file];assert row.get('status')==200,(file,row)
+ refs[cid]=dict(id=cid,title=str(title),url=row['url'],source_version=version,source_sha256=row['sha256']);paths[cid]=str(RAW/file)
+def metaref(frame):
+ cid='MetaCyc:'+frame;file=f'metacyc-{frame}.xml'
+ if cid not in refs:
+  e=etree.parse(str(RAW/file)).getroot()[1]
+  addref(cid,file,clean(e.findtext('common-name') or frame),'Original MetaCyc 27.0 XML; Pathway Tools 27.0; retrieved 2026-10-11; direct object scope')
+ return cid
+PN='DENITRIFICATION-PWY';PID=metaref(PN)
+rxns=['RXN-11236','TRANS-RXN0-239','RXN-15838','NITRIC-OXIDE-REDUCTASE-RXN','RXN-12130']
+carriers=['ETR-Quinols','ETR-Quinones','Reduced-cytochromes-c551','Oxidized-cytochromes-c551','Cytochromes-C-Reduced','Cytochromes-C-Oxidized']
+sm={'NITRATE':'CHEBI:17632','NITRITE':'CHEBI:16301','NITRIC-OXIDE':'CHEBI:16480','NITROUS-OXIDE':'CHEBI:17045','NITROGEN-MOLECULE':'CHEBI:17997','WATER':'CHEBI:15377','PROTON':'CHEBI:15378'}
+for f in rxns+carriers+list(sm):metaref(f)
+for cid in terms:
+ if cid.startswith('CHEBI:'):
+  refs[cid]=dict(id=cid,title=val(cid,'rdfs:label'),url='http://purl.obolibrary.org/obo/chebi/255/chebi.owl',source_version='ChEBI 255; SHA256 covers original complete uncompressed Semantic SQL database',source_sha256=DBS['chebi.db']['sha256'])
+  paths[cid]=DBS['chebi.db']['path']
+prots={}
+accs=['G3XCX1','G3XD87','G3XD18','P24474','Q59647','Q59646','Q9HYL2','Q9HXD4','G3XD60','P00099','P23926','G3XCW6','Q9HXD3']
+for a in accs:
+ u=json.loads((RAW/f'uniprot-{a}.json').read_text()); assert u['primaryAccession']==a and u['organism']['taxonId']==208964
+ label=list(sb.source_terms('uniprot',RAW/f'uniprot-{a}.json'))[0][1]
+ addref('UniProtKB:'+a,f'uniprot-{a}.json',label,'Original UniProt JSON retrieved 2026-10-11; '+u['entryType']+'; entryAudit '+json.dumps(u['entryAudit'],sort_keys=True))
+ prots[a]=dict(label=label,sequence=u['sequence'],genes=u['genes'],entryType=u['entryType'],organism=u['organism'],entryAudit=u['entryAudit'],comments=u.get('comments',[]),features=u.get('features',[]),path=str(RAW/f'uniprot-{a}.json'),sha256=sha(RAW/f'uniprot-{a}.json'))
+for pmc in ['PMC1352271','PMC1913380','PMC2831470','PMC177071','PMC238743']:
+ file=pmc+'.html';t=html.parse(str(RAW/file));pmid=t.xpath('//meta[@name="citation_pmid"]/@content')[0];title=t.xpath('//meta[@name="citation_title"]/@content')[0]
+ addref('PMID:'+pmid,file,title,'Original PMC primary HTML; '+('abstract/scanned article page, no full scanned text extraction' if pmc in ['PMC177071','PMC238743'] else 'full article inspected')+'; retrieved 2026-10-11')
+for pmc in ['PMC6085377','PMC4208399']:
+ file=pmc+'.xml';t=etree.parse(str(RAW/file));pmid=t.findtext('.//article-meta/article-id[@pub-id-type="pmid"]');title=''.join(t.find('.//article-meta/title-group/article-title').itertext())
+ addref('PMID:'+pmid,file,title,'Original full primary JATS from Europe PMC; retrieved 2026-10-11')
+for pmid in ['9331415','21109633','7711073','15504726','9308169']:
+ for file in ['pubmed-nor-primary.xml','pubmed-primary-initial.xml','pubmed-primary-second.xml']:
+  t=etree.parse(str(RAW/file));xs=t.xpath(f'//result[id="{pmid}"]')
+  if xs:
+   addref('PMID:'+pmid,file,xs[0].findtext('title'),'Original Europe PMC indexed primary abstract/metadata; not full article');break
+webid='DOI:10.1126/science.1195591'
+refs[webid]=dict(id=webid,title='Structural Basis of Biological N2O Generation by Bacterial Nitric Oxide Reductase',url='https://www.researchgate.net/publication/49637682_Structural_Basis_of_Biological_N_2_O_Generation_by_Bacterial_Nitric_Oxide_Reductase',source_version='Original author-uploaded main article inspected through web on 2026-10-11; publisher PDF/SI returned 403 and author download failed; no local full-text digest claimed')
+# Reference-only native complexes retain explicit non-PAO1 dispositions.
+for f in ['CPLX-7502','CPLX-1701','CPLX-1741','CPLX-1742','CPLX-8362','CPLX-8528','CPLX-8529','CPLX-9429','CPLX-1964']:metaref(f)
+addref('DOI:10.2210/pdb3o0r/pdb','3O0R.cif','Crystal structure of nitric oxide reductase from Pseudomonas aeruginosa in complex with antibody fragment','Original complete PDB mmCIF; revision 2.0, 2026-08-12; source natural PAO1, sequence differences retained')
+# Evidence registration: store original exact selector payload separately from faithful asserted meaning.
+def ev(cid,selector,text,kind=None):
+ assert 0<len(text)<=400,(len(text),text)
+ p=pathlib.Path(paths[cid]) if cid in paths else None
+ if kind is None:kind='json' if p.suffix=='.json' else 'html' if p.suffix=='.html' else 'xml'
+ sels=selector if isinstance(selector,list) else [selector];payload=[]
+ for s in sels:
+  if kind=='json':
+   q=json.loads(p.read_text())
+   for k in s.strip('/').split('/') if s!='/' else []:q=q[int(k)] if isinstance(q,list) else q[k]
+   payload.append(q)
+  elif kind in ['xml','html']:
+   t=html.parse(str(p)) if kind=='html' else etree.parse(str(p));xs=t.xpath(s);assert xs,(cid,s)
+   payload.append([etree.tostring(x,encoding='unicode') if isinstance(x,etree._Element) else str(x) for x in xs])
+  elif kind=='sql':payload.append(terms[cid]['statements'])
+  elif kind=='cif':
+   chunks=p.read_text().split('\n#');xs=[x for x in chunks if '\n'+s in x];assert len(xs)==1,(s,len(xs));payload.append(xs[0])
+  else:raise ValueError(kind)
+ block=dict(reference_id=cid,source_assertion=text,source_locator=('JSON pointer ' if kind=='json' else 'XPath ' if kind in ['xml','html'] else 'CIF category ' if kind=='cif' else 'Semantic SQL statements: ')+ '; '.join(sels))
+ spans.append(dict(reference_id=cid,path=str(p),sha256=sha(p),kind=kind,selectors=sels,payload_sha256=H(json.dumps(payload,sort_keys=True).encode()),source_assertion=text,source_locator=block['source_locator']))
+ return block
+def E(sub,pred,obj,desc,es):
+ e=dict(id=f'denitrification-edge-{len(edges)+1:03d}',subject=sub,predicate=pred,object=obj,description=desc,evidence=es);edges.append(e);return e
+# Canonical native issuing labels, sourced from HTML rather than reconstructed from graph.
+authority=[];labels={}
+for frame in [PN]+rxns+carriers:
+ fn=f'metacyc-{frame}.html' if frame==PN else f'metacyc-{frame}-authority.html'
+ rows=list(sb.source_terms('metacyc-html',RAW/fn));row=next(x for x in rows if x[0]=='MetaCyc:'+frame);labels[row[0]]=row[1]
+ authority.append(dict(key='denitrification-metacyc-'+frame.lower(),kind='metacyc-html',path=str(RAW/fn),url=byfile[fn]['url'],version='Pathway Tools 27.0 original HTML; exact visible source label; database release only where explicit',license='MetaCyc source terms apply',sha256=sha(RAW/fn),selected_ids=[row[0]],extracted_terms=rows))
+for a in accs:
+ fn=f'uniprot-{a}.json';authority.append(dict(key='denitrification-uniprot-'+a.lower(),kind='uniprot',path=str(RAW/fn),url=byfile[fn]['url'],version='UniProt entryAudit '+json.dumps(prots[a]['entryAudit'],sort_keys=True),license='CC BY 4.0',sha256=sha(RAW/fn),selected_ids=['UniProtKB:'+a],extracted_terms=list(sb.source_terms('uniprot',RAW/fn))))
+# Full source-native membership with irreducible compartmental and substrate-class distinctions.
+for f in rxns:
+ desc='Complete native route member; source reaction direction is retained separately from the pathway L2R traversal.'
+ es=[ev(PID,[f'/ptools-xml/Pathway/reaction-list/Reaction[@frameid="{f}"]',f'/ptools-xml/Pathway/reaction-layout[Reaction/@frameid="{f}"]/direction'],f'The pathway explicitly lists {f} and assigns L2R traversal.')]
+ if f=='TRANS-RXN0-239':
+  desc='Native nitrate/nitrite antiport convention is retained as a complete source-defined step. PAO1 transport function is experimentally supported, but strict antiport versus uniport and its exact catalyst assignment remain unresolved.'
+  es.append(ev('PMID:16391109','//article/section[2]/section/section[4]/p[5]','The authors explicitly state that antiport versus uniport remains to be conclusively experimentally proven.'))
+ E(PID,'has_part','MetaCyc:'+f,desc,es)
+chem={}; sides={}
+for frame,cid in sm.items():
+ t=etree.parse(str(RAW/f'metacyc-{frame}.xml'));e=t.find('Compound');inch=e.findtext('inchi');assert inch==val(cid,'chemrof:inchi_string'),frame
+ chem[frame]=dict(selected_id=cid,native_inchi=inch,formula=val(cid,'chemrof:generalized_empirical_formula'),charge=int(val(cid,'chemrof:charge')),native_cml_charge=int(e.find('cml/molecule').get('formalCharge')))
+ assert chem[frame]['charge']==chem[frame]['native_cml_charge']
+for f in rxns:
+ cid='MetaCyc:'+f;t=etree.parse(str(RAW/f'metacyc-{f}.xml'));sides[cid]=[]
+ for side in ['left','right']:
+  for i,x in enumerate(t.findall('Reaction/'+side),1):
+   native=x[0].get('frameid');node=sm.get(native,'MetaCyc:'+native);n=int(x.findtext('coefficient') or 1);loc=x.find('compartment/cco');comp=loc.get('frameid') if loc is not None else None
+   item=dict(side=side,native=native,node=node,coefficient=n,compartment=comp,selector=f'/ptools-xml/Reaction/{side}[{i}]');sides[cid].append(item)
+   text=f'The {side} side contains coefficient {n} of {native}'+(f' in {comp}.' if comp else '; no side compartment is specified.')
+   es=[ev(cid,item['selector'],text)]
+   if native in sm:
+    es += [ev('MetaCyc:'+native,'/ptools-xml/Compound/inchi',f'The native {native} object has InChI {chem[native]["native_inchi"]}.'),ev(node,'subject='+node+'; chemrof:inchi_string, chemrof:generalized_empirical_formula, chemrof:charge',f'The selected ChEBI structure has the same InChI; formula {chem[native]["formula"]}, charge {chem[native]["charge"]}.','sql')]
+   else:
+    tag='Compound' if native.startswith('ETR-') else 'Protein'
+    es.append(ev('MetaCyc:'+native,f'/ptools-xml/{tag}/common-name',f'The issuing native object identifies this whole class as {labels[node]}; no unique molecular formula or sequence is asserted.'))
+   desc=f'Coefficient {n}; '+('cytoplasmic side' if comp=='CCO-IN' else 'periplasmic side' if comp=='CCO-OUT' else 'membrane electron-transfer class; side not specified')+'. '
+   desc+='Native compartmental equation and class identity retained. '
+   if f=='TRANS-RXN0-239':desc+='Formal antiport convention; exact PAO1 mode/catalyst is unassigned, not experimentally established stoichiometry.'
+   if f=='TRANS-RXN0-239':E(cid,'has_input' if side=='left' else 'has_output',node,desc,es)
+   else:E(node,'consumes',cid,desc,es) if side=='left' else E(cid,'produces',node,desc,es)
+# Ordering is source topology; not exclusive timing or flux.
+for a,b in zip(rxns[:-1],rxns[1:]):
+ E('MetaCyc:'+a,'precedes','MetaCyc:'+b,'Source-defined reaction ordering; transport is coupled to nitrate reduction and no exclusive temporal separation or in vivo flux is inferred.',[ev(PID,f'/ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="{b}"]',f'The reaction-ordering object identifies {a} as a predecessor of {b}.')])
+# Exact current gene identity plus appropriately scoped functional annotation.
+def upe(a,sel,txt):return ev('UniProtKB:'+a,sel,txt,'json')
+def identity(a):
+ u=prots[a];gene=u['genes'][0];names=[gene.get('geneName',{}).get('value','')]+[x['value'] for x in gene.get('orderedLocusNames',[])];return upe(a,['/primaryAccession','/organism/taxonId','/genes','/sequence'],f'This current {u["entryType"]} entry assigns {a} to taxon 208964, {" / ".join(names)}, with a {u["sequence"]["length"]}-residue sequence. It does not establish sequence identity to every historical preparation.')
+for a in ['G3XCX1','G3XD87','G3XD18']:
+ E('UniProtKB:'+a,'enables','MetaCyc:RXN-11236','Gene-product component of the Nar respiratory ensemble, not isolated-subunit catalysis. Current activity is ARBA inference; the source vectorial proton convention is not derived from that chemical-class annotation.',[identity(a),upe(a,'/comments/0','The unreviewed catalytic annotation cites Rhea 56144 with ECO:0000256 ARBA evidence; it supports the nitrate/quinol reaction class.'),ev('PMID:16391109','//article/section[2]/section/section[4]/p[3]','PAO1 narG mutant showed no nitrate uptake, connecting intracellular nitrite generation with uptake; this is physiological coupling, not a purified subunit assay.')])
+E('UniProtKB:P24474','enables','MetaCyc:RXN-15838','Current NirS nitrite-reductase activity with source c551 donor convention; the protein is reported as a homodimer, but no other-species MetaCyc complex ID is transferred.',[identity('P24474'),upe('P24474',['/comments/0','/comments/4'],'The reviewed entry records nitrite-reductase catalytic activity (Rhea 15233) and homodimeric subunit organization. The Rhea class uses generic cytochrome c, broader than native c551.'),ev('PMID:25386171','/article/body/sec[2]/sec[1]/p[1]','The study distinguishes PAO0001 reporter PAO1 from Holloway PAO1 wild-type and its nirS-N and nosZ deletion mutants; these are physiological strain preparations, not sequence-exact recombinant NirS assays.')])
+for a in ['Q59647','Q59646']:
+ es=[identity(a),upe(a,'/comments/3' if a=='Q59647' else '/comments/1','The reviewed entry describes a heterodimer consisting of a large cytochrome b subunit and a small cytochrome c subunit.')]
+ if a=='Q59647':es.append(upe(a,'/comments/1','The catalytic annotation is Rhea 30211, a cytochrome-c NO/N2O reaction class; reduction proceeds in its reverse direction.'))
+ es.append(ev('PMID:21109633','//result[id="21109633"]/abstractText','The primary abstract reports a P. aeruginosa NOR structure, an FeB center with three His and one Glu ligands, and no D- or K-proton pathway; extracellular proton delivery is proposed.'))
+ es.append(ev('DOI:10.2210/pdb3o0r/pdb',['_entity_poly.','_entity_src_nat.'],('The mmCIF assigns entity 3, NorB, a 465-residue sequence and natural PAO1 source.' if a=='Q59647' else 'The mmCIF assigns entity 4, NorC, a 146-residue sequence including K100 and natural PAO1 source.'),'cif'))
+ E('UniProtKB:'+a,'enables','MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN','Subunit function in the NorBC ensemble, not isolated-subunit catalysis. Current NorB proton-pump prose is excluded. RCSB 3O0R PAO1 preparations differ from current sequences (NorB lacks current R301; NorC K100 versus N100), so no exact construct equivalence is asserted.',es)
+E('UniProtKB:Q9HYL2','enables','MetaCyc:RXN-12130','NosZ activity is annotated by HAMAP; PAO1 deletion physiology independently supports terminal N2O reduction. Generic c-type electron donor is a source reaction convention, not a uniquely identified physiological partner.',[identity('Q9HYL2'),upe('Q9HYL2','/comments/1','The entry assigns nitrous-oxide reductase activity (Rhea 43108) using ECO:0000255 HAMAP-Rule MF_00716.'),ev('PMID:30093706','/article/body/sec[2]/sec[1]/p[2]','The PAO1 nosZ deletion strain accumulates N2O during denitrification; NosZ loss is the engineered physiological block.'),ev('PMID:25386171','/article/body/sec[3]/sec[4]/p','The nosZ mutant accumulates N2O under anoxia, whereas wild-type PAO1 produces less than 10 micromolar N2O under the experimental nitrate concentrations.')])
+for a in ['Q9HXD4','G3XD60']:
+ E('UniProtKB:'+a,'enables',PID,'Nitrate/nitrite transport contribution to the complete pathway; this edge does not assign strict 1:1 antiport or isolated exact transport stoichiometry. NarK2 has the dominant phenotype and NarK1 a smaller contribution in the tested PAO1 conditions.',[identity(a),ev('PMID:16391109','//article/section[2]/section/section[4]/p[2]','PAO1 narK1 deletion only slightly affected anaerobic growth, while narK2 and double deletion were severely compromised; all mutants retained nitrate-reductase activity.'),ev('PMID:16391109','//article/section[2]/section/section[4]/p[5]','The authors explicitly leave antiport versus uniport experimentally unresolved.')])
+E('UniProtKB:P00099','enables','MetaCyc:RXN-15838','NirM electron-donor contribution to nitrite reduction, not catalytic nitrite-reductase assignment. The whole c551 redox classes remain distinct from the sequence entry.',[identity('P00099'),upe('P00099','/comments/0','The reviewed entry identifies cytochrome c-551 as an electron donor for cytochrome cd1 in nitrite and nitrate respiration.')])
+# Bound cofactor annotations, all inference tiers visible. Heme IDs are the issuing annotation states, not permanently fixed oxidation states.
+cof=[('G3XCX1','60539','/comments/1','Mo-bisMGD','ECO:0000256 ARBA'),('G3XCX1','49883','/comments/2','[4Fe-4S]','ECO:0000256 ARBA'),('G3XD87','21137','/comments/1','[3Fe-4S]','ECO:0000256 ARBA'),('G3XD87','49883','/comments/2','[4Fe-4S]','ECO:0000256 ARBA'),('G3XD18','60344','/features/6','heme b','ECO:0000256 PIRSR'),('P24474','61717','/comments/2','heme c','ECO:0000269 PMID9331415'),('P24474','60549','/features/11','heme d1','ECO:0000269 PMID9331415 and PDB mapping'),('Q59647','60344','/features/13','heme b','ECO:0000305 curator inference'),('Q59647','24875','/features/14','non-heme Fe cation','ECO:0000305 curator inference'),('Q59646','61717','/features/3','heme c','ECO:0000255 PROSITE'),('Q9HYL2','47357','/comments/2','CuA binuclear copper center','ECO:0000255 HAMAP'),('Q9HYL2','33730','/comments/3','CuZ [4Cu-S] cluster','ECO:0000255 HAMAP'),('Q9HYL2','29108','/comments/4','Ca2+','ECO:0000255 HAMAP')]
+for a,c,ptr,name,tier in cof:
+ E('UniProtKB:'+a,'has_cofactor','CHEBI:'+c,f'Current entry annotation of {name}; {tier}. Issuing cofactor-state identifier is retained without asserting a fixed redox state throughout catalysis or direct measurement in every PAO1 preparation.',[upe(a,ptr,f'The exact annotation records {name} with {tier}; the selected ChEBI cofactor identifier is the entry-assigned ligand identity.')])
+E('UniProtKB:P00099','has_cofactor','CHEBI:61717','Covalently attached heme c; the whole redox carrier is retained separately. Current heme annotation does not assert a permanently reduced in vivo state.',[upe('P00099','/comments/3','The entry states that one heme c group is covalently bound per subunit.'),upe('P00099','/features/2','The current cytochrome c-551 heme-binding feature assigns CHEBI:61717.')])
+# Exact direct promoter experiments support pathway-level regulation, not direct catalytic activation.
+for a,idx,txt in [('P23926',1,'Anr is essential for anaerobic narK1 promoter activity; promoter motif mutation and complementation support the expression effect.'),('G3XCW6',1,'Dnr deletion decreases anaerobic narK1 promoter activity and complementation supports an enhancing expression role.'),('Q9HXD3',2,'NarL deletion lowers narK1 promoter activity, complementation nearly restores it, and selected promoter-site mutations abolish reporter activity.')]:
+ E('UniProtKB:'+a,'regulates',PID,'Expression-level regulatory support under tested PAO1 nitrate/anaerobic conditions; no direct catalytic activation/inhibition or IHF CHA-A2 strain transfer is inferred.',[identity(a),ev('PMID:17400734',f'//article/section[2]/section/section[4]/p[{idx}]',txt)])
+# Source-annotated locations, not inferred localization of every individual chemical pool.
+for a,idx,go in [('P24474',5,'0042597'),('Q59647',4,'0005886'),('Q59646',2,'0005886'),('Q9HYL2',7,'0042597'),('G3XCX1',3,'0005886'),('G3XD87',4,'0005886'),('G3XD18',3,'0005886'),('Q9HXD4',0,'0005886'),('G3XD60',0,'0005886'),('P00099',2,'0042597')]:
+ E('UniProtKB:'+a,'located_in','GO:'+go,'Current entry localization; inferred/rule-based scope remains as in the cited source. Membrane role does not itself demonstrate proton pumping.',[upe(a,f'/comments/{idx}','The subcellular-location annotation places the protein in '+('the periplasm.' if go=='0042597' else 'the cell/inner membrane.'))])
+E(PID,'occurs_in','NCBITaxon:208964','Experimentally studied PAO1 denitrification; complete native topology is retained, with unresolved PAO1 antiport mode and generic carrier conventions explicit. This is not a claim of sequence identity across every PAO1 laboratory preparation.',[ev('PMID:25386171',['/article/body/sec[2]/sec[1]/p[1]','/article/body/sec[3]/sec[4]/p'],'The study identifies PAO1 and Holloway PAO1 preparations and detects nitrate-dependent N2O accumulation in the nosZ deletion mutant, supporting the complete denitrification sequence.'),ev('PMID:30093706','/article/body/sec[4]/sec[2]/p[3]','The nosZ deletion construct was introduced into PAO1 and the desired mutant was confirmed by PCR and sequencing.')])
+participants=[dict(id=c,label=val(c,'rdfs:label'),category='small_molecule' if c in sm.values() else 'cofactor') for c in terms if c.startswith('CHEBI:')]
+participants += [dict(id='MetaCyc:'+f,label=labels['MetaCyc:'+f],category='chemical_entity' if f.startswith('ETR-') else 'protein') for f in carriers]
+participants += [dict(id='UniProtKB:'+a,label=prots[a]['label'],category='protein') for a in accs]
+participants += [dict(id='GO:'+g,label=val('GO:'+g,'rdfs:label'),category='cellular_component') for g in ['0042597','0005886']]
+record=dict(id=PID,label=labels[PID],description='Complete native nitrate-to-dinitrogen route with five listed objects: vectorial Nar nitrate reduction, nitrate/nitrite exchange, c551-dependent nitrite reduction, cytochrome-c-dependent NO reduction and N2O reduction. PAO1 experiments support the respiratory system; strict NarK2 antiport versus uniport remains unresolved, so native antiport is explicitly a database convention and has no assigned PAO1 catalyst. Whole carrier classes and side-specific proton coefficients are retained without choosing a quinone species or a unique NosZ donor. Functional gene-product edges do not imply isolated subunit catalysis. Other-species native complex IDs are not transferred; NirS/NosZ dimer and Nar/Nor assembly annotations retain source-specific evidence tiers. Current NorB proton-pump annotation conflicts with cNOR structural evidence and is excluded; RCSB 3O0R has source-PAO1 protein sequences differing from current entries. Inferred cofactors retain their evidence tiers; ligand-state IDs do not fix catalytic redox state. Native background nitrite-to-ammonium prose, Nap compensation, qNOR variants, assimilatory reduction, electron-carrier regeneration and ATP synthesis are outside this selected route.',pathway_type='anaerobic-respiration',taxa=[dict(id='NCBITaxon:208964',label=val('NCBITaxon:208964','rdfs:label'))],participants=participants,reactions=[dict(id='MetaCyc:'+f,label=labels['MetaCyc:'+f],direction='left_to_right') for f in rxns],mechanistic_edges=edges,references=list(refs.values()))
+# All remaining reference-only items are deliberate source dispositions, not active exact mappings.
+record=json.loads(json.dumps(record))
+text=yaml.safe_dump(record,sort_keys=False,width=100,allow_unicode=True);(D/'nitrate-reduction-i-denitrification.yaml').write_text(text)
+recordsha=H(text.encode())
+projection=dict(record_sha256=recordsha,native_pathway=PID,full_members=['MetaCyc:'+f for f in rxns],native_sides=sides,evidence_spans=spans,references_to_original_paths=paths,edge_count=len(edges),evidence_count=sum(len(e['evidence']) for e in edges),carrier_scope='Native c551 classes narrower than generic Rhea cytochrome c; no exactMatch or bare-ion replacement',transport_scope='Complete native antiport retained as convention; no exact PAO1 antiport catalyst assignment',nor_scope='Current UP pump sentence excluded; structural preparation not sequence-identical to current NorB/NorC')
+save('denitrification-source-projection.json',projection)
+save('denitrification-chemical-identities.json',dict(databases=DBS,terms=terms,native_small_molecule_bridges=chem,rhea_native_projection=json.loads((R/'rhea-native-projection.json').read_text())))
+save('denitrification-protein-projection.json',prots)
+save('denitrification-authority-proposal.json',dict(record_sha256=recordsha,context='External proposal only, no authority files modified; actual original source metadata rather than reused release labels',sources=authority,ontology_ids=[n['id'] for n in [*record['taxa'],*participants] if n['id'].startswith(('GO:','CHEBI:','NCBITaxon:'))]))
+manifest=dict(record_sha256=recordsha,created_at=datetime.now(UTC).isoformat(),bodies=[dict(path=x['path'],resolved_path=str(pathlib.Path(x['path']).resolve()),url=x['url'],sha256=x['sha256'],bytes=x['bytes'],status=x.get('status'),error=x.get('error'),accepted_original=x.get('status')==200,scope='Discovery or evidence original; citation-specific use is in reference projection') for x in acq],issuing_databases=list(DBS.values()),references=list(refs.values()),prior_proof_inputs=[])
+for p in [R/'dedup-raw.json',R/'imod/context.json',R/'imod/context-manifest.json',R/'imod/inventory.json',R/'imod/inventory-manifest.json']:
+ if p.exists():manifest['prior_proof_inputs'].append(dict(path=str(p),resolved_path=str(p.resolve()),sha256=sha(p)))
+for p in sorted(R.glob('acquisition-*.json')):manifest['prior_proof_inputs'].append(dict(path=str(p),resolved_path=str(p.resolve()),sha256=sha(p)))
+save('denitrification-source-manifest.json',manifest)
+print(json.dumps(dict(target_sha256=recordsha,reactions=len(rxns),participants=len(participants),edges=len(edges),evidence=sum(len(e['evidence']) for e in edges),references=len(refs),spans=len(spans))))

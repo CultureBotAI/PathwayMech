@@ -1,0 +1,20 @@
+import datetime, hashlib, json, pathlib, subprocess
+R=pathlib.Path(__file__).parent
+terms=['DENITRIFICATION-PWY','GO:0019333','M00529','nitrate reduction I','denitrification','TRANS-RXN0-239','RXN-11236','RXN-15838','NITRIC-OXIDE-REDUCTASE-RXN','RXN-12130','RHEA:56145','RHEA:15235','RHEA:30213','RHEA:43110','P24474','Q59647','Q59646','Q9HYL2','G3XCX1','G3XD87','G3XD18','Q9HXD4','G3XD60','P00099','P23926','G3XCW6','Q9HXD3','16391109','17400734','19935885','25386171','30093706','21109633','9331415','nirS','nosZ','narGHI','norBC']
+roots=['/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech','/private/tmp/pathwaymech-next-217-20261011']
+rows=[]
+for root in roots:
+ cmd=['rg','-uu','--follow','-i','-l','--glob','!**/.git/**','--glob','!**/.venv/**']
+ for t in terms:cmd+=['-e',t]
+ cmd+=['.']; r=subprocess.run(cmd,cwd=root,capture_output=True,text=True);assert r.returncode in [0,1],r.stderr
+ hits=[]
+ for f in r.stdout.splitlines():
+  p=pathlib.Path(root)/f;b=p.read_bytes();txt=b.decode(errors='replace'); matched=[t for t in terms if t.lower() in txt.lower()]
+  excerpts=[]
+  for i,line in enumerate(txt.splitlines(),1):
+   if any(t.lower() in line.lower() for t in terms):excerpts.append({'line':i,'text':line[:1000]})
+  hits.append({'path':f,'sha256':hashlib.sha256(b).hexdigest(),'terms':matched,'excerpts':excerpts[:30]})
+ rows.append({'root':root,'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'command':cmd,'returncode':r.returncode,'hits':hits})
+out={'created_at':datetime.datetime.now(datetime.UTC).isoformat(),'terms':terms,'scope':'Whole repository including ignored, hidden, and followed symlinks; excluded only .git internals and .venv dependency trees. Matches are candidates for manual disposition, not duplicate conclusions.','roots':rows}
+with (R/'dedup-raw.json').open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print([(x['root'],len(x['hits'])) for x in rows])

@@ -1,0 +1,315 @@
+{
+  "status": "completed_external_whole_record_needs_curation",
+  "started_at": "2026-10-11T18:08:13.489247+00:00",
+  "finished_at": "2026-10-11T18:18:33.407438+00:00",
+  "scientific_review": true,
+  "canonical_maintained_approval": false,
+  "reviewer_role": "Not this candidate author; earlier cohort and source tooling contributions do not constitute source approval. Current review independently reads originals.",
+  "target": {
+    "path": "/private/tmp/pathwaymech-denitrification-author-20261011/draft/nitrate-reduction-i-denitrification.yaml",
+    "sha256": "b904248ef7c83cf39f2400075ca57b18a49cda1b87376d16d8c6c6e1b9b6e759",
+    "bytes": 91478
+  },
+  "helper": {
+    "path": "/private/tmp/pathwaymech-denitrification-author-20261011/denitrification-replay.py",
+    "sha256": "4ceae4866d3bf58e2f8754aa35985a7d65a29f7bde82004980604c0fd9b0851c",
+    "bytes": 25184
+  },
+  "handoff": {
+    "path": "/private/tmp/pathwaymech-denitrification-author-20261011/handoff.json",
+    "sha256": "0ef89da5e817db1fa1fcca9d1af80d47fb509c61cad250ed5308ee5666c45187",
+    "bytes": 29204
+  },
+  "counts": {
+    "reactions": 5,
+    "participants": 38,
+    "mechanistic_edges": 75,
+    "evidence": 155,
+    "references": 72,
+    "kgx_nodes": 45
+  },
+  "decision": "Complete native route and chemistry are supportable with the stated source conventions and limits. Correct the two minor source-provenance defects before integration. No further confirmed scientific or replay-helper defect was found in this bounded review.",
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/407",
+  "findings": [
+    {
+      "finding_id": "f-anr-motif-locator",
+      "issue_key": "denitrification-anr-motif-source-locator",
+      "severity": "minor",
+      "owner": "draft/nitrate-reduction-i-denitrification.yaml",
+      "location": "mechanistic_edges[62].evidence[1].source_locator",
+      "edge_id": "denitrification-edge-063",
+      "observed_evidence": {
+        "reference_id": "PMID:17400734",
+        "source_assertion": "Anr is essential for anaerobic narK1 promoter activity; promoter motif mutation and complementation support the expression effect.",
+        "source_locator": "XPath //article/section[2]/section/section[4]/p[1]"
+      },
+      "source": {
+        "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC1913380.html",
+        "sha256": "7150f45d2c45df096fc514697d412bea71e38993fc6b787eddcec48a2fd1425f",
+        "bytes": 183539
+      },
+      "evidence": {
+        "selected_p1_sha256": "d5d8330637506b75b6f57f85c9e4fa816be8bb8653b8f9e5a76b16af436c0acc",
+        "needed_p2_sha256": "fb063110de14669db2b58d8ea0588be2b11515125fdb548fea6eea785a3a926c",
+        "inspected_locator": "//article/section[2]/section/section[4]/p[2]",
+        "source_fact": "Paragraph 1 reports regulatory mutants and complementation and predicts binding motifs. Paragraph 2 describes the Anr consensus-box nucleotide substitutions and loss of detectable promoter activity."
+      },
+      "finding": "The assertion includes promoter motif mutation, but its sole locator ends at paragraph 1 and omits the paragraph containing that experiment. The biological assertion is supported by the complete original article.",
+      "requested_change": "Include paragraph 2 together with paragraph 1 in the exact source locator; update the matching projection and a source-specific regression. Preserve the expression-level scope and biology."
+    },
+    {
+      "finding_id": "f-nark1-localization-source-scope",
+      "issue_key": "denitrification-nark1-localization-source-scope",
+      "severity": "minor",
+      "owner": "draft/nitrate-reduction-i-denitrification.yaml",
+      "location": "mechanistic_edges[73].evidence[0]",
+      "edge_id": "denitrification-edge-074",
+      "observed_edge": {
+        "id": "denitrification-edge-074",
+        "subject": "UniProtKB:G3XD60",
+        "predicate": "located_in",
+        "object": "GO:0005886",
+        "description": "Current entry localization; inferred/rule-based scope remains as in the cited source. Membrane role does not itself demonstrate proton pumping.",
+        "evidence": [
+          {
+            "reference_id": "UniProtKB:G3XD60",
+            "source_assertion": "The subcellular-location annotation places the protein in the cell/inner membrane.",
+            "source_locator": "JSON pointer /comments/0"
+          }
+        ]
+      },
+      "source": {
+        "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/uniprot-G3XD60.json",
+        "sha256": "8893eea1324dacbac408cfe7f4851268f34cbe1e65817734923442ca66856eb7",
+        "bytes": 10869
+      },
+      "evidence": {
+        "exact_selected_comment": {
+          "commentType": "SUBCELLULAR LOCATION",
+          "subcellularLocations": [
+            {
+              "location": {
+                "evidences": [
+                  {
+                    "evidenceCode": "ECO:0000256",
+                    "source": "ARBA",
+                    "id": "ARBA00004141"
+                  }
+                ],
+                "value": "Membrane",
+                "id": "SL-0162"
+              },
+              "topology": {
+                "evidences": [
+                  {
+                    "evidenceCode": "ECO:0000256",
+                    "source": "ARBA",
+                    "id": "ARBA00004141"
+                  }
+                ],
+                "value": "Multi-pass membrane protein",
+                "id": "SL-9909"
+              }
+            }
+          ]
+        },
+        "GO_crossreferences": [
+          {
+            "database": "GO",
+            "id": "GO:0016020",
+            "properties": [
+              {
+                "key": "GoTerm",
+                "value": "C:membrane"
+              },
+              {
+                "key": "GoEvidenceType",
+                "value": "IEA:UniProtKB-SubCell"
+              }
+            ]
+          },
+          {
+            "database": "GO",
+            "id": "GO:0015112",
+            "properties": [
+              {
+                "key": "GoTerm",
+                "value": "F:nitrate transmembrane transporter activity"
+              },
+              {
+                "key": "GoEvidenceType",
+                "value": "IEA:InterPro"
+              }
+            ]
+          }
+        ]
+      },
+      "finding": "The sole cited UniProt comment says Membrane and Multi-pass membrane protein with ECO:0000256 ARBA inference. It does not state cell membrane or inner membrane. The source-local assertion and sole evidence for the more specific GO:0005886 object therefore exceed this selected annotation. This is not evidence that NarK1 lacks a plasma-membrane role.",
+      "requested_change": "Narrow the UniProt assertion to its actual generic membrane scope. Retain the specific plasma-membrane edge only with separately cited support or an explicitly supported inference under the record contract; otherwise use a source-supported location. Preserve the distinction between annotation, physiological inference and direct localization."
+    }
+  ],
+  "assessments": [
+    {
+      "area": "identity_boundary",
+      "disposition": "supported with source limits",
+      "assessment": "Native DENITRIFICATION-PWY contains exactly five listed reactions, including TRANS-RXN0-239. All are represented; the nitrate, nitrite, NO, N2O and N2 chemical sequence is complete. GO/KEGG broader alternatives are not silently substituted. Transport is retained as a formal source-defined antiport object, explicitly not proven as the strict PAO1 mechanism."
+    },
+    {
+      "area": "dedup",
+      "disposition": "supported in searched scope",
+      "assessment": "Fresh rg -uu --follow scans in original checkout and current 218 included ignored/hidden files, excluding only .git and .venv. Two retained research mentions and ignored DRAM module alternatives were read and distinguished; no maintained exact pathway was found. This is the declared identity/reaction/PMID search, not source exhaustion."
+    },
+    {
+      "area": "native_source_to_graph",
+      "disposition": "supported",
+      "assessment": "All five native objects, 29 stoichiometric sides and selected left-to-right pathway traversal were independently checked from original XML. RXN-11236 and RXN-15838 reaction records are reversible; native pathway layout selects the represented traversal. Other-species controllers are explicitly excluded rather than transferred."
+    },
+    {
+      "area": "chemical_identity_balance",
+      "disposition": "supported within formal carrier-class scope",
+      "assessment": "Seven selected native small compounds match ChEBI InChI/formula/charge in the retained original SQL. Five original-source atom/charge balances and the compartment-aware net pass independently. c551 and generic c-type carriers remain distinct unchanged formal classes; no full protein molecular formula or energetic pumping proof is inferred from balance. Rhea class comparisons retain their broader scope and compartment limits."
+    },
+    {
+      "area": "organism_protein_construct",
+      "disposition": "supported with disclosed differences",
+      "assessment": "All 13 selected current UniProt entries map to PAO1 taxon 208964. Gene deletion/physiology and structural preparations are not upgraded to exact purified current sequences. Original RCSB polymer records identify natural PAO1 but NorB lacks current residue R301 and NorC has K100 versus current N100; both differences remain explicit. E. coli complementation and non-isogenic IHF mutant evidence are bounded."
+    },
+    {
+      "area": "functional_roles_assemblies",
+      "disposition": "supported",
+      "assessment": "NarG/H/I and NorB/C are qualified functional ensemble roles, not claims that individual subunits alone catalyze complete reactions. Inspected native complexes belong to other taxa and are not reused as PAO1 assemblies. No unsupported exact transporter-to-antiport enables relation or heterologous complex identity is asserted."
+    },
+    {
+      "area": "cofactors_transport_energy",
+      "disposition": "supported with explicit evidence tiers",
+      "assessment": "Fe-S, Mo-bisMGD, hemes, copper and calcium assertions preserve current entry evidence codes and structural preparation scope. The 2010 primary Fig. 4 discussion supports exclusion of NorB proton pumping despite a conflicting current similarity annotation. c551 is not promoted to the unique physiological donor for all terminal reductases; azurin is not required by the inspected 1997 abstract. Strict antiport versus uniport remains unresolved."
+    },
+    {
+      "area": "regulatory_localization",
+      "disposition": "two minor source corrections needed",
+      "assessment": "Expression-level Anr, Dnr and NarL effects are separated from catalysis and iMod context. The Anr source assertion needs Results paragraph 2 for its motif experiment; the NarK1 source-local annotation is generic membrane and does not alone establish the stated cell/inner-membrane specificity. These are the two issue407 findings, not refutations of the pathway."
+    },
+    {
+      "area": "edge_evidence_reference_coverage",
+      "disposition": "complete read; two bounded findings",
+      "assessment": "The complete target, all 75 edges and 155 evidence blocks were read. All local selectors resolve against original bytes, and the sole web-only primary block was independently reopened. The edge-level assessment records each selector and selected payload hash. Resolution is not treated as semantic proof: two resolving selectors nevertheless require source-local corrections. All 72 references and their source versions/access tiers were inspected."
+    },
+    {
+      "area": "primary_access",
+      "disposition": "honestly bounded",
+      "assessment": "Original full PMC HTML/JATS for 2006 transport, 2007 regulatory, 2009 Nap compensation and 2014/2018 PAO1 physiology was inspected at the cited passages and relevant methods/context. Scanned 1985/1995 items and selected historical structure/biochemistry papers remain abstract-only where stated. The 2010 main paper was independently read through its author-uploaded web text around Fig. 4; there is no local full-main digest or claim that abstract/mmCIF reproduce that discussion."
+    },
+    {
+      "area": "imod_context",
+      "disposition": "computational context only",
+      "assessment": "The unchanged canonical adapter replayed 52 original bodies, including 30 search queries, 16 gene pages and five selected component tables, with three precise411 regulator-null parser errors preserved. Membership does not establish direct regulation, catalysis or exact historical-strain identity, and nonhits/errors are not absence evidence."
+    },
+    {
+      "area": "replay_and_input_binding",
+      "disposition": "passed in declared external scope",
+      "assessment": "An actual unchanged full helper run passed 5 native objects, 29 sides, 5 balances, 23 Rhea class sides and KGX 45 nodes/75 edges/155 evidence, plus seven chemistry controls. A full authentic late metadata mutation was rejected with no success output. Eight isolated original-code binding/exclusive-output controls passed. The first probe fixture failure is preserved and not credited as a pass. Production authority integration and whole-corpus gates are outside this external helper claim."
+    },
+    {
+      "area": "preservation_and_preparation_lineage",
+      "disposition": "passed",
+      "assessment": "All declared initial inputs, accepted and rejected acquisition responses, iMod bodies and small handoff artifacts were freshly rehashed unchanged. Original author tuple/list, whitespace-normalization and self-log preparation failures remain preserved. They are not recast as biological defects. No maintained files, source caches or GitHub state were modified by this review."
+    }
+  ],
+  "original_source_inspections": [
+    {
+      "source": "PMC1352271.html",
+      "focus": "Results transport phenotypes and Discussion paragraphs 2, 3 and 5; PAO1 versus E. coli complementation and explicit mechanism uncertainty",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC1352271.html",
+      "sha256": "1faa67e8157884747e253b3aef423e8d6f9038e7e4921e3793e3afc2e25ed132",
+      "bytes": 183997
+    },
+    {
+      "source": "PMC1913380.html",
+      "focus": "Results section 4 paragraphs 1 and 2, Table 1/Figure 1 context, regulatory strains and non-isogenic IHF distinction",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC1913380.html",
+      "sha256": "7150f45d2c45df096fc514697d412bea71e38993fc6b787eddcec48a2fd1425f",
+      "bytes": 183539
+    },
+    {
+      "source": "PMC2831470.html",
+      "focus": "PAO1 nar mutant/Nap compensation source assertions and methods context; alternative branch is context rather than native route replacement",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC2831470.html",
+      "sha256": "fbc0c42740f83651833a339fd76c2c97014461819a0491bc521885310dd31281",
+      "bytes": 231108
+    },
+    {
+      "source": "PMC4208399.xml",
+      "focus": "PAO0001/PAO1 methods and denitrification/growth results; combined nirS-N disruption not isolated purified NirS assay",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC4208399.xml",
+      "sha256": "47813db7b761f3b16b41e6a538829e62b40a2dcbbee167c4b35b2b4aa1677d0e",
+      "bytes": 136827
+    },
+    {
+      "source": "PMC6085377.xml",
+      "focus": "PAO1 nosZ deletion physiology; excluded erroneous secondary enzyme/regulator prose",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/PMC6085377.xml",
+      "sha256": "999c5fb6ab0f282291411c42857b331fb484200e879c02a45d2873bfcab39b61",
+      "bytes": 96396
+    },
+    {
+      "source": "pubmed-nor-primary.xml",
+      "focus": "Original indexed abstracts and citation metadata for 1995/1997/2004/2010 papers; not full-text substitutes",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/pubmed-nor-primary.xml",
+      "sha256": "98130f6f6588aacc8ad3dfd4627ae45b0dab5bc051f8fb4b7046fb1c1266d4ed",
+      "bytes": 37279
+    },
+    {
+      "source": "pubmed-primary-second.xml",
+      "focus": "Historical azurin and growth abstract scope",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/pubmed-primary-second.xml",
+      "sha256": "7218d3837cf18ddbefce104fb363f90e0f7175b92cdc438a42c9d29c4175222c",
+      "bytes": 35399
+    },
+    {
+      "source": "3O0R.cif",
+      "focus": "Native provenance, heterodimer/cofactor structure; independently compared polymer sequences using original RCSB JSON",
+      "path": "/private/tmp/pathwaymech-denitrification-author-20261011/raw/3O0R.cif",
+      "sha256": "e7aebd9b2278186159b4af8120f302df9a0c9c38269ae96862b916217cae2c05",
+      "bytes": 1636441
+    },
+    {
+      "url": "https://www.researchgate.net/publication/49637682_Structural_Basis_of_Biological_N_2_O_Generation_by_Bacterial_Nitric_Oxide_Reductase",
+      "reference_id": "DOI:10.1126/science.1195591",
+      "focus": "Original main article Fig. 4 and surrounding proton-channel discussion, especially text corresponding to lines 1499\u20131516 in fresh web rendering. Later citing-paper snippets were not used.",
+      "access": "Independently opened via web in this review; no original local body hash claimed."
+    }
+  ],
+  "edge_matrix": {
+    "path": "/private/tmp/pathwaymech-denitrification-whole-record-review-20261011/edge-evidence-assessment.json",
+    "sha256": "1ab84ccdb9768805273c0e42c5a15b462f76ba7f9076c7ab1a682be0f7d691fa",
+    "bytes": 88098
+  },
+  "checks": {
+    "path": "/private/tmp/pathwaymech-denitrification-whole-record-review-20261011/execution-receipts.json",
+    "sha256": "a8aa3b5c907a8c6ad86095077208c55d7ac4cf40083a41ad21980ae63ac6580a",
+    "bytes": 6081
+  },
+  "independent_original_checks": {
+    "path": "/private/tmp/pathwaymech-denitrification-whole-record-review-20261011/independent-source-checks.json",
+    "sha256": "db42b0a185517fde2ff562c23f289991eda44649d1cd6155604d3e9d6fb26239",
+    "bytes": 18343
+  },
+  "imod_assessment": {
+    "path": "/private/tmp/pathwaymech-denitrification-whole-record-review-20261011/imod-context-assessment.json",
+    "sha256": "9293ff7833b483d70e1c15454b9f52f3a45fa402df5cf105cc5de6e280803678",
+    "bytes": 3101
+  },
+  "preservation": {
+    "path": "/private/tmp/pathwaymech-denitrification-whole-record-review-20261011/original-preservation.json",
+    "sha256": "5561eb1299e9cbf46b3c6b6d449dea8a030e546c33b9f2f19ce14906966834be",
+    "bytes": 53757
+  },
+  "limitations": [
+    "No canonical maintained review save: repository helper rejected the external absolute target as designed.",
+    "No maintained authority snapshot selection, corpus gate, generated website or browser interaction approval.",
+    "Source-defined antiport is a qualified database representation; strict PAO1 antiport/uniport and exact catalyst remain unresolved.",
+    "Historical structural/physiological evidence does not prove equality of every current protein sequence.",
+    "Web-only 2010 primary passage cannot be byte-replayed from retained abstract/mmCIF.",
+    "Atom balance establishes formal chemical consistency, not electron-donor exclusivity or pumping stoichiometry."
+  ]
+}

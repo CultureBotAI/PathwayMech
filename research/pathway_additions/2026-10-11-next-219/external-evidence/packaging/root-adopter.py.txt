@@ -1,0 +1,117 @@
+"""Verify and exclusively adopt the sealed denitrification evidence dossier."""
+import base64
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+PACKAGE = Path('/private/tmp/pathwaymech-denitrification-copy-plan-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-219')
+OUT = Path('/private/tmp/pathwaymech-next-219-dossier-root-adoption.json')
+HANDOFF_SHA = '20bcfeabb391e1fe24165a92adb7437c3bd219830b47e792d41b06c8e69e4ca4'
+PLAN_SHA = '14fa939c6ddd6d6529aab4a7acb7ed40f059bb5eeca29f2813ebe5df05d366f9'
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def capture(row):
+    path = Path(row['path'])
+    raw = path.read_bytes()
+    assert sha(raw) == row['sha256'], path
+    if 'resolved_path' in row:
+        assert str(path.resolve(strict=True)) == row['resolved_path'], path
+    if 'bytes' in row:
+        assert len(raw) == row['bytes'], path
+    return raw
+
+def decode(raw, mode):
+    if mode == 'exact_bytes':
+        return raw
+    assert mode == 'lossless_json_wrapper'
+    wrapped = json.loads(raw)
+    assert wrapped['format'] == 'lossless-immutable-evidence-v1'
+    assert wrapped['encoding'] in ['utf-8', 'base64']
+    original = wrapped['content'].encode('utf-8') if wrapped['encoding'] == 'utf-8' else base64.b64decode(wrapped['content'], validate=True)
+    assert sha(original) == wrapped['original_sha256']
+    assert len(original) == wrapped['original_bytes']
+    return original
+
+assert __debug__ and not os.path.lexists(OUT)
+handoff_path = PACKAGE / 'handoff.json'
+handoff_raw = handoff_path.read_bytes()
+assert sha(handoff_raw) == HANDOFF_SHA
+handoff = json.loads(handoff_raw)
+plan_raw = capture(handoff['copy_plan'])
+assert sha(plan_raw) == PLAN_SHA
+plan = json.loads(plan_raw)
+assert plan['destination_repo'] == str(ROOT) and plan['destination_dossier'] == str(DOSSIER)
+assert json.loads(capture(handoff['final_seal']))['status'] == 'passed_final_external_packaging_seal'
+assert json.loads(capture(handoff['validation']))['status'] == 'passed_external_packaging_checks'
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip() == 'ae9279447c78b868289f24a847efe06efce2e167'
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip() == '66033d3ab5ea79232e7e635b39568ef81939e29c'
+assert not os.path.lexists(ROOT / DOSSIER)
+for row in plan['anchors'] + plan['input_bindings']:
+    capture(row)
+for row in plan['directory_observations']:
+    assert sorted(os.listdir(row['path'])) == row['entries'], row['path']
+for row in plan['symlink_observations']:
+    path = Path(row['path'])
+    assert path.is_symlink() and os.readlink(path) == row['link_target']
+    assert str(path.resolve(strict=False)) == row['resolved_path']
+    assert (not path.exists()) == row['dangling']
+whole = {row['path']: row for row in plan['issuing_databases_retained_external']}
+for row in whole.values():
+    path = Path(row['path'])
+    assert str(path.resolve(strict=True)) == row['resolved_path'] and path.stat().st_size == row['bytes']
+entries = plan['copy_entries'] + handoff['packaging_support_entries']
+entries.append({'path': str(handoff_path), 'sha256': HANDOFF_SHA, 'copy_source': str(handoff_path), 'destination': handoff['handoff_recommended_destination'], 'destination_sha256': HANDOFF_SHA, 'mode': 'exact_bytes'})
+payloads, recovered = {}, {}
+for row in entries:
+    original = capture(row)
+    rel = Path(row['destination'])
+    assert not rel.is_absolute() and '..' not in rel.parts and rel.is_relative_to(DOSSIER)
+    assert str(rel) not in payloads and not os.path.lexists(ROOT / rel)
+    raw = Path(row['copy_source']).read_bytes()
+    assert sha(raw) == row['destination_sha256']
+    assert decode(raw, row['mode']) == original
+    payloads[str(rel)] = raw
+    recovered[str(rel)] = original
+assert len(payloads) == 237
+for row in plan['exact_byte_aliases']:
+    assert recovered[row['destination']] == capture(row)
+for row in plan['formal_input_resolution']:
+    assert row['owner_sha256'] == row['sha256']
+    if row['owner_path'] in whole:
+        assert whole[row['owner_path']]['sha256'] == row['sha256']
+    elif row['external']:
+        assert sha(Path(row['owner_path']).read_bytes()) == row['sha256']
+    else:
+        assert sha(recovered[row['destination']]) == row['sha256']
+ignore = subprocess.run(['git', 'check-ignore', '--stdin'], cwd=ROOT, input='\n'.join(payloads)+'\n', capture_output=True, text=True)
+assert ignore.returncode == 1 and not ignore.stdout and not ignore.stderr
+for rel, raw in payloads.items():
+    destination = ROOT / rel
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not any(parent.is_symlink() for parent in destination.parents if parent.is_relative_to(ROOT))
+    with destination.open('xb') as stream:
+        stream.write(raw)
+    destination.chmod(0o644)
+for rel, raw in payloads.items():
+    assert (ROOT / rel).read_bytes() == raw
+for row in plan['input_bindings']:
+    capture(row)
+report = {'status': 'verified_dossier_exclusively_adopted', 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'worktree': str(ROOT), 'dossier': str(DOSSIER), 'handoff_sha256': HANDOFF_SHA, 'plan_sha256': PLAN_SHA, 'copies': len(payloads), 'exact_byte_aliases_verified': len(plan['exact_byte_aliases']), 'formal_resolutions_verified': len(plan['formal_input_resolution']), 'small_bindings_rehashed': len(plan['input_bindings']), 'directory_censuses_verified': len(plan['directory_observations']), 'symlinks_verified_not_installed': len(plan['symlink_observations']), 'root_review': 'Read full plan builder and application/replay contracts, final handoff/seal and preservation scopes; independently verified every declared binding, copy payload, lossless decode, alias and formal source resolution before exclusive copying.', 'limits': ['Evidence adoption only; target and production authority adoption remain separate.', 'Whole issuing source identities and lengths checked; no duplicate whole-source stream solely for packaging.', 'No scientific, maintained replay or corpus-gate approval implied.'], 'files': [{'path': rel, 'sha256': sha(raw)} for rel, raw in payloads.items()]}
+raw = (json.dumps(report, indent=2)+'\n').encode()
+with OUT.open('xb') as stream:
+    stream.write(raw)
+for name, body in [('root-adoption.json', raw), ('root-adopter.py.txt', Path(__file__).read_bytes())]:
+    with (ROOT / DOSSIER / 'external-evidence/packaging' / name).open('xb') as stream:
+        stream.write(body)
+state_path = Path('/private/tmp/pathwaymech-next-219-state.json')
+state = json.loads(state_path.read_text())
+state.update({'dossier_adoption_sha256': sha(raw), 'phase': 'evidence_dossier_adopted_authority_builder_running'})
+state_path.write_text(json.dumps(state, indent=2)+'\n')
+print(json.dumps({'status': report['status'], 'copies': len(payloads), 'root_receipt': str(OUT), 'sha256': sha(raw)}))

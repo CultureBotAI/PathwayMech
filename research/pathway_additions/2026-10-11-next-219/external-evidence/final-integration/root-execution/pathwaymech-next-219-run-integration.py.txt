@@ -1,0 +1,24 @@
+import datetime, hashlib, json, os, subprocess
+from pathlib import Path
+P=Path('/private/tmp/pathwaymech-denitrification-integrated-replay-formatting-successor-20261011')
+OUT=Path('/private/tmp/pathwaymech-denitrification-integrated-replay-positive-20261011')
+RECEIPT=Path('/private/tmp/pathwaymech-next-219-integration-execution.json')
+STDOUT=Path('/private/tmp/pathwaymech-next-219-integration.stdout')
+STDERR=Path('/private/tmp/pathwaymech-next-219-integration.stderr')
+def sha(p):
+ with Path(p).open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
+def now(): return datetime.datetime.now(datetime.timezone.utc).isoformat()
+assert sha(P/'handoff.json')=='cb296a2051fdcd0140f3671027966f5a304f767a15b6e3f518458d1eebde71ec'
+accept=Path('/private/tmp/pathwaymech-next-219-integration-root-acceptance.json')
+assert sha(accept)=='5dc9998bd4868cc08a4fad83226e1659ae484859e96b3f410d4c50f825febfcf'
+h=json.loads((P/'handoff.json').read_text())
+assert not os.path.lexists(OUT)
+env=dict(os.environ,**h['suggested_environment'],PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache')
+env.pop('PYTHONOPTIMIZE',None); env.pop('PYTHONHOME',None)
+start=now(); print(json.dumps({'status':'starting_actual_positive','at':start,'argv':h['suggested_positive_argv']}),flush=True)
+with STDOUT.open('xb') as stdout, STDERR.open('xb') as stderr:
+ result=subprocess.run(h['suggested_positive_argv'],cwd=h['workdir'],env=env,stdout=stdout,stderr=stderr)
+receipt={'status':'passed' if result.returncode==0 else 'failed','started_at':start,'finished_at':now(),'command':h['suggested_positive_argv'],'environment':h['suggested_environment'],'working_directory':h['workdir'],'exit_code':result.returncode,'root_acceptance_sha256':sha(accept),'handoff_sha256':sha(P/'handoff.json'),'runner_sha256':sha(__file__),'stdout':{'path':str(STDOUT),'sha256':sha(STDOUT)},'stderr':{'path':str(STDERR),'sha256':sha(STDERR)}}
+with RECEIPT.open('x') as f: json.dump(receipt,f,indent=2); f.write('\n')
+print(json.dumps({'status':receipt['status'],'exit_code':result.returncode,'receipt':str(RECEIPT),'sha256':sha(RECEIPT)}),flush=True)
+raise SystemExit(result.returncode)

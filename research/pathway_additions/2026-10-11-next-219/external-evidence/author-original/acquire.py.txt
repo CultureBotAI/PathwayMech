@@ -1,0 +1,16 @@
+import argparse, concurrent.futures, datetime, hashlib, json, pathlib, urllib.request
+ROOT=pathlib.Path(__file__).parent
+p=argparse.ArgumentParser(); p.add_argument('requests'); p.add_argument('receipt'); a=p.parse_args()
+reqs=json.loads(pathlib.Path(a.requests).read_text())
+def fetch(row):
+    row=dict(row); row['started_at']=datetime.datetime.now(datetime.UTC).isoformat(); out=ROOT/'raw'/row['file']; assert not out.exists(),out
+    try:
+        req=urllib.request.Request(row['url'],headers={'User-Agent':'PathwayMech evidence research; original source retention','Accept':'*/*'})
+        with urllib.request.urlopen(req,timeout=100) as r: b=r.read(); row.update(status=r.status,final_url=r.url,headers=dict(r.headers))
+    except Exception as e:
+        row['error']=repr(e); b=e.read() if hasattr(e,'read') else b''
+    with out.open('xb') as f:f.write(b)
+    row.update(path=str(out),bytes=len(b),sha256=hashlib.sha256(b).hexdigest(),finished_at=datetime.datetime.now(datetime.UTC).isoformat()); return row
+rows=list(concurrent.futures.ThreadPoolExecutor(max_workers=5).map(fetch,reqs))
+with pathlib.Path(a.receipt).open('x') as f:json.dump(rows,f,indent=2);f.write('\n')
+for r in rows:print(r['file'],r.get('status'),r['bytes'],r.get('error',''))

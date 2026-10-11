@@ -1,0 +1,30 @@
+from pathlib import Path
+import sys, shutil, json, runpy, hashlib, traceback, datetime
+A=Path('/private/tmp/pathwaymech-denitrification-author-20261011'); R=Path('/private/tmp/pathwaymech-denitrification-whole-record-review-20261011'); F=R/'late-fixture-v2';F.mkdir();(F/'draft').mkdir();(F/'imod').mkdir()
+for p in (A/'draft').iterdir():
+ if p.is_file():shutil.copyfile(p,F/'draft'/p.name)
+for p in (A/'imod').glob('*.json'):shutil.copyfile(p,F/'imod'/p.name)
+(F/'raw').symlink_to(A/'raw'); shutil.copyfile(A/'denitrification-replay.py',F/'denitrification-replay.py')
+manifest_path=F/'draft/denitrification-source-manifest.json'
+man=json.loads(manifest_path.read_text()); aliases=[]
+for name in ['rcsb-3O0R-polymer-3.json','rcsb-3O0R-polymer-4.json']:
+ row=next(x for x in man['bodies'] if Path(x['path']).name==name)
+ alias=dict(row);alias['path']=str(F/'raw'/name);man['bodies'].append(alias);aliases.append(alias)
+manifest_path.write_text(json.dumps(man,indent=2)+'\n')
+(R/'late-fixture-v2-adaptation.json').write_text(json.dumps({'scope':'Two explicit copied-layout raw path aliases only; original helper unchanged and original source rows retained; not an original-source manifest claim.','aliases':aliases},indent=2)+'\n')
+repo=Path('/private/tmp/pathwaymech-next-218-20261011');sys.path.insert(0,str(repo/'src'))
+import pathwaymech.kgx as kgx
+real=kgx.write_kgx; mutation={}; out=R/'late-mutation-v2-unexpected-success.json'
+def hook(*args,**kwargs):
+ v=real(*args,**kwargs)
+ for n,k,val in [('denitrification-source-manifest.json','record_sha256','f'*64),('denitrification-source-projection.json','full_members',[])]:
+  p=F/'draft'/n;b=p.read_bytes();d=json.loads(b);d[k]=val;p.write_text(json.dumps(d,indent=2)+'\n');mutation[n]={'before_sha256':hashlib.sha256(b).hexdigest(),'after_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'changed_field':k}
+ print('INJECTED_REAL_WRITE_KGX_MUTATION',flush=True);return v
+kgx.write_kgx=hook
+sys.argv=[str(F/'denitrification-replay.py'),'--record',str(F/'draft/nitrate-reduction-i-denitrification.yaml'),'--repo',str(repo),'--output',str(out)]
+start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+try:runpy.run_path(sys.argv[0],run_name='__main__');status='unexpected_success';err=None
+except BaseException as e: status='rejected';err=repr(e);traceback.print_exc()
+receipt={'started_at':start,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':status,'exception':err,'mutation':mutation,'success_output_exists':out.exists(),'helper_sha256':hashlib.sha256((F/'denitrification-replay.py').read_bytes()).hexdigest(),'scope':'Actual unchanged source helper, full original source replay, mutation at real write_kgx return; copies only.'}
+(R/'late-mutation-v2-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt))
+if not (status=='rejected' and mutation and 'input bytes changed' in err and not out.exists()):sys.exit(1)

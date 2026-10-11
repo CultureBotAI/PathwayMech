@@ -1,0 +1,57 @@
+from pathlib import Path
+from lxml import etree,html
+from collections import Counter
+import json,yaml,hashlib,sqlite3,re,difflib,datetime
+A=Path('/private/tmp/pathwaymech-denitrification-author-20261011');R=Path('/private/tmp/pathwaymech-denitrification-whole-record-review-20261011')
+h=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+d=yaml.safe_load((A/'draft/nitrate-reduction-i-denitrification.yaml').read_bytes()); p=json.loads((A/'draft/denitrification-source-projection.json').read_bytes());m=json.loads((A/'draft/denitrification-source-manifest.json').read_bytes())
+refs={x['id']:x for x in d['references']}; paths=p['references_to_original_paths']; checks={}; ledger=[]
+for row in m['bodies']:
+ assert h(row['path'])==row['sha256']
+checks['source_bodies']={'all':len(m['bodies']),'accepted':sum(x['accepted_original'] for x in m['bodies']),'rejected':sum(not x['accepted_original'] for x in m['bodies'])}
+# Independently reconstruct source selectors for every edge, using each YAML locator.
+for e in d['mechanistic_edges']:
+ for ix,v in enumerate(e['evidence']):
+  rid=v['reference_id'];loc=v['source_locator'];out=[]
+  if loc.startswith('JSON pointer '):
+   u=json.loads(Path(paths[rid]).read_bytes())
+   for ptr in loc.removeprefix('JSON pointer ').split('; '):
+    z=u
+    for key in ptr.strip('/').split('/'):z=z[int(key)] if isinstance(z,list) else z[key]
+    out.append(z)
+  elif loc.startswith('XPath '):
+   f=Path(paths[rid]); t=etree.ElementTree(html.fromstring(f.read_bytes())) if f.suffix=='.html' else etree.parse(str(f))
+   for xp in loc.removeprefix('XPath ').split('; '):
+    zz=t.xpath(xp);assert zz,(rid,xp)
+    out.append([etree.tostring(z,encoding='unicode') if isinstance(z,etree._Element) else str(z) for z in zz])
+  elif loc.startswith('Semantic SQL '):
+   with sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True) as db:out=[list(x) for x in db.execute('select predicate,value,object from statements where subject=?',(rid,))]
+   assert out
+  elif loc.startswith('CIF category '):out=[{'body_sha256':h(paths[rid]),'categories':loc}]
+  else:assert rid=='DOI:10.1126/science.1195591';out=[{'web_only':True,'fresh_independent_observation':'2026-10-11, author-uploaded article final structural discussion / Figure 4; no local body digest.'}]
+  ledger.append({'edge_id':e['id'],'evidence_index':ix,'reference_id':rid,'source_locator':loc,'original_path':paths.get(rid),'original_sha256':h(paths[rid]) if rid in paths and not rid.startswith('CHEBI') else refs[rid].get('source_sha256'),'selected_payload_sha256':hashlib.sha256(json.dumps(out,sort_keys=True).encode()).hexdigest(),'assessment':'source-locality correction required' if (e['id'].endswith('063') and ix==1) or e['id'].endswith('074') else 'inspected support within described source tier and scope'})
+checks['all_evidence_selectors']={'count':len(ledger),'edges':len(d['mechanistic_edges'])}
+small={'NITRATE':'CHEBI:17632','NITRITE':'CHEBI:16301','NITRIC-OXIDE':'CHEBI:16480','NITROUS-OXIDE':'CHEBI:17045','NITROGEN-MOLECULE':'CHEBI:17997','WATER':'CHEBI:15377','PROTON':'CHEBI:15378'};models={};bridges=[]
+with sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True) as db:
+ for frame,cid in small.items():
+  t=etree.parse(str(A/'raw'/f'metacyc-{frame}.xml')).find('Compound'); rows=list(db.execute('select predicate,value,object from statements where subject=?',(cid,)));prop={pr:v for pr,v,o in rows if v is not None};inchi=t.findtext('inchi');charge=int(t.find('cml/molecule').get('formalCharge'));assert inchi==prop['chemrof:inchi_string'];assert charge==int(prop['chemrof:charge']);formula=prop['chemrof:generalized_empirical_formula']; atoms={el:int(n or 1) for el,n in re.findall(r'([A-Z][a-z]*)(\d*)',formula)};models[frame]=(atoms,charge);bridges.append({'native':frame,'chebi':cid,'inchi':inchi,'formula':formula,'charge':charge})
+# Formal unchanged carrier frameworks only; +1 charge difference per heme redox center.
+models.update({'ETR-Quinols':({'Q':1,'H':2},0),'ETR-Quinones':({'Q':1},0),'Reduced-cytochromes-c551':({'C551':1},0),'Oxidized-cytochromes-c551':({'C551':1},1),'Cytochromes-C-Reduced':({'CYTC':1},0),'Cytochromes-C-Oxidized':({'CYTC':1},1)})
+route=etree.parse(str(A/'raw/metacyc-DENITRIFICATION-PWY.xml'));members=route.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid');assert {'MetaCyc:'+x for x in members}=={x['id'] for x in d['reactions']};net=Counter();sides=[];rx=[];scale={'RXN-11236':2,'TRANS-RXN0-239':2,'RXN-15838':2,'NITRIC-OXIDE-REDUCTASE-RXN':1,'RXN-12130':1}
+for frame in members:
+ t=etree.parse(str(A/'raw'/f'metacyc-{frame}.xml'));res=Counter();ch=0
+ for side in ['left','right']:
+  for i,x in enumerate(t.findall('Reaction/'+side),1):
+   f=x[0].get('frameid');n=int(x.findtext('coefficient') or '1');sign=-1 if side=='left' else 1;c=x.find('compartment/cco');c=c.get('frameid') if c is not None else None;node=small.get(f,'MetaCyc:'+f);rid='MetaCyc:'+frame;transport=frame=='TRANS-RXN0-239';triple=(rid,'has_input' if side=='left' else 'has_output',node) if transport else (node,'consumes',rid) if side=='left' else (rid,'produces',node);matches=[e for e in d['mechanistic_edges'] if (e['subject'],e['predicate'],e['object'])==triple];assert len(matches)==1;assert matches[0]['description'].startswith(f'Coefficient {n};');assert any(v['reference_id']==rid and v['source_locator']==f'XPath /ptools-xml/Reaction/{side}[{i}]' for v in matches[0]['evidence']);
+   for k,v in models[f][0].items():res[k]+=sign*n*v
+   ch+=sign*n*models[f][1];net[(f,c)]+=sign*n*scale[frame];sides.append({'reaction':frame,'side':side,'native':f,'coefficient':n,'compartment':c,'edge_id':matches[0]['id']})
+ assert not any(res.values()) and ch==0
+ rx.append({'native':frame,'native_direction':t.findtext('Reaction/reaction-direction'),'record_direction':next(x['direction'] for x in d['reactions'] if x['id']=='MetaCyc:'+frame),'atom_residual':dict(res),'charge_residual':ch})
+checks['chemistry']={'exact_small_molecule_bridges':bridges,'native_members':members,'sides':sides,'balances':rx,'net_per_N2':[{'native':f,'compartment':c,'coefficient':n} for (f,c),n in net.items() if n],'scope':'Symbolic unchanged whole carriers; transport mode and energetic coupling not independently established by balance.'}
+seqs=[]
+for entity,acc in [(3,'Q59647'),(4,'Q59646')]:
+ q=json.loads((A/'raw'/f'rcsb-3O0R-polymer-{entity}.json').read_bytes());u=json.loads((A/'raw'/f'uniprot-{acc}.json').read_bytes());s=q['entity_poly']['pdbx_seq_one_letter_code_can'];v=u['sequence']['value'];assert q['entity_src_nat'][0]['strain']=='PAO1';ops=[{'tag':tag,'current_indices_0based':[i,j],'crystal_indices_0based':[k,l],'current_residues':v[i:j],'crystal_residues':s[k:l]} for tag,i,j,k,l in difflib.SequenceMatcher(None,v,s,autojunk=False).get_opcodes() if tag!='equal'];assert ops;seqs.append({'accession':acc,'entity':entity,'current_length':len(v),'crystal_length':len(s),'differences':ops,'natural_source':q['entity_src_nat'],'issuing_crossreferences':q['rcsb_polymer_entity_container_identifiers']['reference_sequence_identifiers']})
+checks['rcsb_sequence_scope']=seqs
+checks['native_complex_exclusion']=[{'file':f.name,'source_organisms':etree.parse(str(f)).xpath('/ptools-xml/Protein/species/Organism/@frameid')} for f in sorted((A/'raw').glob('metacyc-CPLX*.xml'))];assert all(x['source_organisms']!=['TAX-208964'] for x in checks['native_complex_exclusion'])
+checks['original_version_metadata']=[{'file':f.name,'pgdb_version':etree.parse(str(f)).xpath('/ptools-xml/metadata/PGDB[@orgid="META"]/@version')} for f in sorted((A/'raw').glob('metacyc-*.xml'))];assert all(x['pgdb_version']==['27.0'] for x in checks['original_version_metadata'])
+(R/'independent-source-checks.json').write_text(json.dumps({'status':'passed_structural_source_checks_not_final_scientific_verdict','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target_sha256':h(A/'draft/nitrate-reduction-i-denitrification.yaml'),'checks':checks},indent=2)+'\n');(R/'edge-evidence-assessment.json').write_text(json.dumps(ledger,indent=2)+'\n');print(json.dumps({'status':'pass','sources':checks['source_bodies'],'evidence':len(ledger),'chemical_sides':len(sides),'balances':len(rx),'rcsb':seqs}))

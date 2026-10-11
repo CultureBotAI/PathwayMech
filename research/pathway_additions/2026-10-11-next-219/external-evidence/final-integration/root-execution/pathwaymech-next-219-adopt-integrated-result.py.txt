@@ -1,0 +1,32 @@
+from pathlib import Path
+import datetime,hashlib,json
+R=Path('/private/tmp/pathwaymech-next-219-20261011');P=Path('/private/tmp/pathwaymech-denitrification-integrated-replay-positive-20261011');M=Path('/private/tmp/pathwaymech-denitrification-integrated-replay-formatting-successor-20261011/expected-bindings.json');E=Path('/private/tmp/pathwaymech-next-219-integration-execution.json');OUT=Path('/private/tmp/pathwaymech-next-219-integrated-result-root-adoption.json')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+assert sha(E)=='9245330dd0d6ce434b46fcd64bfdcbada088db26c1389db42986dde683d52d87';e=json.loads(E.read_text());assert e['status']=='passed' and e['exit_code']==0
+assert sha(P/'integration-replay.json')=='fac8b623f592ca22c4483bd3f8fb56a6d2e1c5976c4e1322fb64f59055325cb1';d=json.loads((P/'integration-replay.json').read_text())
+assert d['status']=='passed_current_integrated_replay_not_independent_scientific_approval';assert sha(M)==d['binding_manifest']['sha256']=='169e23ec869e76b2ad8499dc4ab37e43b5cbfe155ea97b341a8ce187c355970c'
+m=json.loads(M.read_text());assert d['bound_inputs']==m['files'];assert len(d['bound_inputs'])==2652
+assert d['helper_sha256']==sha(R/'research/pathway_additions/2026-10-11-next-219/denitrification-replay.py')=='70387ce2410f5582ce1f5a9073ec37ed723caf0789eac75445df6c37f0422d5e'
+assert d['target_sha256']==sha(R/'data/pathways/nitrate-reduction-i-denitrification.yaml')=='7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd'
+assert [x['name'] for x in d['commands']]==['source-replay','identifiers','native-schema','strict-schema']
+for c in d['commands']:
+ assert c['exit_code']==0
+ for suffix in ['stdout','stderr']:assert sha(P/(c['name']+'.'+suffix))==c[suffix+'_sha256']
+for key in ['stdout','stderr']:assert sha(e[key]['path'])==e[key]['sha256']
+assert sha(P/'source-replay.json')==d['child_receipt_sha256']=='d998625ed84c7c6244dbd6e2b69dff8b62c5bd4d2d8d8c3eca8518f1eabca99e'
+s=json.loads((P/'source-replay.json').read_text());assert s['status']=='passed_author_source_replay_not_independent_approval';assert s['record_sha256']==d['target_sha256'];assert s['native_members']==5 and s['native_sides']==29 and s['rhea_class_sides']==23;assert s['predecessor_files_preserved']==484;assert s['kgx']['nodes']==46 and s['kgx']['edges']==75 and s['kgx']['evidence']==156
+rows={r['path']:r for r in m['files']}
+for c in s['all_bound_inputs']:
+ assert c['path'] in rows
+ for key in ['sha256','resolved_path']:assert c[key]==rows[c['path']][key]
+for b in s['native_balances']:assert all(x==0 for x in b['atom_residual'].values()) and b['charge_residual']==0
+assert len(s['negative_controls'])==7 and len(s['issue407_source_semantic_negative_controls'])==5
+formal=0
+for row in m['files']:
+ p=Path(row['path']);assert str(p.resolve(strict=True))==row['resolved_path']
+ if row['path'] not in set(m['deferred_source_digest_paths']):assert sha(p)==row['sha256'];formal+=1
+assert formal==1564
+report={'status':'accepted_actual_integrated_replay_with_separate_scientific_review_pending','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'actual_terminal':{'session':86733,'chunk':'f2e29b','exit_code':0},'execution_receipt':{'path':str(E),'sha256':sha(E)},'integrated_receipt':{'path':str(P/'integration-replay.json'),'sha256':sha(P/'integration-replay.json')},'source_receipt_sha256':sha(P/'source-replay.json'),'driver_sha256':sha(__file__),'checks':{'commands':4,'exit_codes':[c['exit_code'] for c in d['commands']],'bound_inputs':len(m['files']),'child_inputs':len(s['all_bound_inputs']),'current_formal_rehashes':formal,'native_members':5,'native_sides':29,'native_balances':5,'rhea_class_sides':23,'original_predecessors_preserved':484,'kgx':s['kgx'],'controls':12},'source_scope':d['source_scope'],'root_review':'Read completed commands/scopes/chemistry and guard outputs; independently verified wrapper and execution receipt identities, manifest equality, child input closure/logs, exact current target/helper and fresh formal binding hashes. Whole-source streams are credited to the observed real wrapper execution and are not rerun or relabelled as independent scientific review.','limits':d['limits']+s['limitations']}
+with OUT.open('x') as f:json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps({'status':report['status'],'receipt':str(OUT),'sha256':sha(OUT)}))

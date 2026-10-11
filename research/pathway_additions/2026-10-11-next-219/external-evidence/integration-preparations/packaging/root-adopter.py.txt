@@ -1,0 +1,37 @@
+from pathlib import Path
+import base64, datetime, hashlib, json, os, subprocess
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+P=Path('/private/tmp/pathwaymech-denitrification-integration-proof-copy-plan-20261011')
+OUT=Path('/private/tmp/pathwaymech-next-219-integration-preparations-adoption.json')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+assert sha(P/'handoff.json')=='e6bc0f3a0459c95ba7a24c9987334dd5fab733080c0c0cb8c7003179487a73d7'
+h=json.loads((P/'handoff.json').read_text()); assert sha(P/'copy-plan.json')==h['copy_plan']['sha256'];assert sha(P/'validation.json')==h['validation']['sha256']
+d=json.loads((P/'copy-plan.json').read_text());assert d['destination_repo']==str(R)
+rows=d['copy_entries']+h['packaging_support_entries']+[{'path':str(P/'handoff.json'),'copy_source':str(P/'handoff.json'),'sha256':sha(P/'handoff.json'),'destination_sha256':sha(P/'handoff.json'),'destination':h['handoff_recommended_destination'],'mode':'exact_bytes'}]
+assert len(rows)==217 and len({x['destination'] for x in rows})==217
+for row in rows:
+ original=Path(row['path']); assert original.is_file() and not original.is_symlink();assert sha(original)==row['sha256']
+ if 'resolved_path' in row:assert str(original.resolve(strict=True))==row['resolved_path']
+ source=Path(row['copy_source']);assert sha(source)==row['destination_sha256']
+ if row['mode']=='lossless_json_wrapper':
+  payload=json.loads(source.read_text());raw=payload['content'].encode('utf-8') if payload['encoding']=='utf-8' else base64.b64decode(payload['content'],validate=True)
+  assert raw==original.read_bytes();assert len(raw)==payload['original_bytes']==row['bytes'];assert hashlib.sha256(raw).hexdigest()==payload['original_sha256']
+ else: assert source.read_bytes()==original.read_bytes()
+ rel=Path(row['destination']);assert not rel.is_absolute() and '..' not in rel.parts and rel.is_relative_to(d['destination_prefix']);assert rel.suffix!='.py';assert not os.path.lexists(R/rel)
+for row in d['directory_observations']:assert sorted(os.listdir(row['path']))==row['entries']
+for row in d['symlink_observations']:
+ p=Path(row['path']);assert p.is_symlink() and os.readlink(p)==row['link_target'];assert str(p.resolve())==row['resolved_path'];assert (not p.exists())==row['dangling']
+ignore=subprocess.run(['git','check-ignore','--no-index','--stdin'],input='\n'.join(row['destination'] for row in rows)+'\n',cwd=R,capture_output=True,text=True);assert ignore.returncode==1 and not ignore.stdout and not ignore.stderr
+installed=[]
+for row in rows:
+ p=R/row['destination'];p.parent.mkdir(parents=True,exist_ok=True)
+ with p.open('xb') as f:f.write(Path(row['copy_source']).read_bytes())
+ p.chmod(0o644);assert sha(p)==row['destination_sha256'];installed.append({'path':row['destination'],'sha256':sha(p)})
+for row in rows:assert sha(row['path'])==row['sha256']
+receipt={'status':'root_reviewed_and_adopted_immutable_integration_preparations','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'handoff_sha256':sha(P/'handoff.json'),'plan_sha256':sha(P/'copy-plan.json'),'driver_sha256':sha(__file__),'review':'Root read entire packaging script and handoff; independently verified all original bytes/path identities, wrapper roundtrips, directory and link observations, destination scope/absence/ignore rules, and installed hashes. No fixture symlinks installed.','installed_files':installed,'counts':h['counts'],'limits':d['closure']}
+with OUT.open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+archive=R/d['destination_prefix']/'packaging'
+for name,source in [('root-adoption.json',OUT),('root-adopter.py.txt',Path(__file__))]:
+ with (archive/name).open('xb') as f:f.write(source.read_bytes())
+print(json.dumps({'status':receipt['status'],'receipt_sha256':sha(OUT),'copied':len(rows),'root_provenance_files':2}))

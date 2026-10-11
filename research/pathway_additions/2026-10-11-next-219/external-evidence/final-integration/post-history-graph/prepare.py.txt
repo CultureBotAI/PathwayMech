@@ -1,0 +1,31 @@
+from pathlib import Path
+import json,hashlib
+from datetime import datetime,UTC
+import shutil
+R=Path('/private/tmp/pathwaymech-next-219-20261011')
+O=Path('/private/tmp/pathwaymech-next-219-post-history-graph-audit')
+p=Path('/private/tmp/pathwaymech-next-219-history-attribution-successor.json')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+h=json.loads(p.read_text());assert h['status']=='passed'
+for c in h['checks']:
+ assert c['exit_code']==0 and sha(Path(c['log']))==c['log_sha256']
+for rel,d in h['prior_history_preserved'].items():assert sha(R/rel)==d
+assert sha(R/h['successor']['path'])==h['successor']['sha256']
+for k in ['initial_gates','unchanged_gate_inputs']:
+ assert sha(Path(h[k]['path']))==h[k]['sha256']
+inputs=json.loads(Path(h['unchanged_gate_inputs']['path']).read_text())
+assert len(inputs)==424
+for rel,d in inputs.items():assert sha(R/rel)==d
+old=Path('/private/tmp/pathwaymech-next-219-graph-audit/graph-audit.json')
+assert sha(old)=='38c26e18afbfef7cfcb49600f3959e4fb320f3802ed94f2048ce9d11a17bf770'
+initial=json.loads(old.read_text())
+initial_gates=json.loads(Path(h['initial_gates']['path']).read_text())
+kgx=next(x for x in initial_gates if x['name']=='kgx')
+render=next(x for x in h['checks'] if x['name']=='render')
+assert sha(Path(kgx['log']))==kgx['log_sha256']
+with (O/'terminal-render-kgx.json').open('x') as f:json.dump({'checks':[render,kgx],'scope':'Post-attribution current render plus earlier actual KGX reused under all424 unchanged formal inputs.'},f,indent=2);f.write('\n')
+script=Path('/private/tmp/pathwaymech-next-219-graph-audit/graph-audit.py')
+with (O/'graph-audit.py').open('xb') as f:f.write(script.read_bytes())
+obs={'at':datetime.now(UTC).isoformat(),'history_successor_receipt':{'path':str(p),'sha256':sha(p)},'prior_history_exact':h['prior_history_preserved'],'corrective_history':h['successor'],'all424_gate_inputs_unchanged':True,'previous_graph_audit':{'path':str(old),'sha256':sha(old)},'prior_target_page_sha256':initial['records'][0]['svg_audit']['sha256'],'current_target_page_sha256':sha(R/initial['records'][0]['page']),'prior_graph_script_sha256':sha(script),'current_graph_script_sha256':sha(O/'graph-audit.py'),'scope':'Fresh output audit follows; this preparation does not assert its result.'}
+with (O/'preparation.json').open('x') as f:json.dump(obs,f,indent=2);f.write('\n')
+print(json.dumps(obs,indent=2))

@@ -1,0 +1,140 @@
+"""Prepare a denitrification-specific wrapper from the reviewed ED pattern."""
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent
+PATTERN = Path('/private/tmp/pathwaymech-ed-integrated-replay-formatting-successor-20261011/integration-replay.py')
+C = Path('/private/tmp/pathwaymech-denitrification-correction-20261011')
+text = PATTERN.read_text()
+text = text.replace('Bind the AST-equivalent ED formatting successor to current maintained inputs.', 'Bind the unchanged corrected denitrification helper to current maintained inputs.')
+text = text.replace('import ast\n', '')
+start = text.index('HELPER_SHA = ')
+end = text.index('REQUIRED = ', start)
+adjacent = {}
+for p in [C / 'correction.json', C / 'predecessor-preservation.json', *sorted((C / 'draft').iterdir())]:
+    if p.suffix == '.yaml':
+        continue
+    adjacent[str(p.relative_to(C))] = hashlib.sha256(p.read_bytes()).hexdigest()
+constants = '''HELPER_SHA = "4b5a755963216f9e04e9bfb6b3b1413f12f30db60d06532dfc2aabe1580bd971"
+CORRECTED_HELPER = Path("/private/tmp/pathwaymech-denitrification-correction-20261011/denitrification-replay.py")
+ORIGINAL_AUTHOR = Path("/private/tmp/pathwaymech-denitrification-author-20261011")
+TARGET_SHA = "7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd"
+TARGET = "data/pathways/nitrate-reduction-i-denitrification.yaml"
+ADJACENT = ''' + json.dumps(adjacent, indent=4) + '''
+ADAPTER_ROOT = Path("/private/tmp/claw-published-duf-offline-20261007/src/kg_microbe_sources")
+ADAPTER_SHA = "1901c6ab519795051d0b70b57412c4ad463949b3dd02a49d05936464e6fd4aa2"
+IMOD_METADATA = ["context.json", "context-manifest.json", "inventory.json", "inventory-manifest.json", "adapter.json"]
+'''
+text = text[:start] + constants + text[end:]
+text = text.replace('ed-integration-bindings-v1', 'denitrification-integration-bindings-v1')
+start = text.index('    lineage = document["formatting_successor"]')
+end = text.index('\ndef recheck_formal_inputs', start)
+replacement = '''    require(
+        str(CORRECTED_HELPER) in bound and bound[str(CORRECTED_HELPER)]["sha256"] == HELPER_SHA,
+        "Original corrected helper is not bound",
+    )
+    for name in IMOD_METADATA:
+        require(str(ORIGINAL_AUTHOR / "imod" / name) in bound, "Original absolute iMod metadata unbound")
+    accepted = document["accepted_production_files"]
+    require(set(accepted) == {"conf/identifier_sources.json", "data/identifier_authorities/ontology.json", "data/identifier_authorities/sources.json"}, "Incomplete accepted production snapshot set")
+    for relative, expected in accepted.items():
+        require(bound[str(repo / relative)]["sha256"] == expected, "Accepted production snapshot differs: " + relative)
+    require(document["source_scope"]["original_whole_sources"] == "three SQL databases plus Rhea142 RDF gzip", "Original source scope changed")
+    require(document["source_scope"]["production_whole_sources"] == "four SQL databases including Rhea139 SQL", "Production source scope changed")
+
+
+def source_dependencies(helper):
+    """Enumerate exact original source and predecessor paths without rewriting them."""
+    dependencies = {}
+
+    def add(path, expected):
+        name = str(absolute(path))
+        require(re.fullmatch(r"[0-9a-f]{64}", expected) is not None, "Invalid dependency digest")
+        require(name not in dependencies or dependencies[name] == expected, "Conflicting dependency digest: " + name)
+        dependencies[name] = expected
+
+    def adjacent(relative):
+        raw = (helper.resolve().parent / relative).read_bytes()
+        require(digest(raw) == ADJACENT[relative], "Adjacent input changed before parsing: " + relative)
+        return read_json(raw)
+
+    source = adjacent("draft/denitrification-source-manifest.json")
+    require(source["record_sha256"] == TARGET_SHA, "Source-manifest target mismatch")
+    for item in source["bodies"] + source["issuing_databases"] + source["prior_proof_inputs"]:
+        add(item["path"], item["sha256"])
+    for item in adjacent("predecessor-preservation.json")["files"]:
+        add(item["path"], item["sha256"])
+    for item in adjacent("draft/denitrification-authority-proposal.json")["sources"]:
+        add(item["path"], item["sha256"])
+    for item in adjacent("draft/denitrification-chemical-identities.json")["databases"].values():
+        add(item["path"], item["sha256"])
+    for name in IMOD_METADATA:
+        path = ORIGINAL_AUTHOR / "imod" / name
+        require(str(path) in dependencies, "Original iMod metadata absent from predecessor closure: " + name)
+        raw = path.read_bytes()
+        require(digest(raw) == dependencies[str(path)], "Original iMod metadata changed: " + name)
+        if name in {"context-manifest.json", "inventory-manifest.json"}:
+            for item in read_json(raw):
+                add(item["path"], item["sha256"])
+    add(ADAPTER_ROOT / "imodulondb.py", ADAPTER_SHA)
+    return dependencies
+
+
+def check_source_coverage(document, helper):
+    bound = {x["path"]: x for x in document["files"]}
+    dependencies = source_dependencies(helper)
+    require(document["production_authority_sources"], "Missing production source bindings")
+    for item in document["production_authority_sources"]:
+        name = str(absolute(item["path"]))
+        require(name not in dependencies or dependencies[name] == item["sha256"], "Conflicting production source digest")
+        dependencies[name] = item["sha256"]
+    for name, expected in dependencies.items():
+        require(name in bound and bound[name]["sha256"] == expected, "Unbound source/prior-proof input: " + name)
+    for name in ["__init__.py", "catalogue.py", "fetch.py"]:
+        require(str(ADAPTER_ROOT / name) in bound, "Unbound Claw adapter import dependency: " + name)
+    require(len(document["production_whole_sources"]) == 4, "Expected four production SQL databases")
+    for item in document["production_whole_sources"]:
+        require(item in document["production_authority_sources"], "Production SQL binding not in source closure")
+        require(item["path"].endswith(".db"), "Production source is not SQL")
+
+
+def check_child_receipt(source_result, document):
+    require(source_result["status"] == "passed_author_source_replay_not_independent_approval", "Unexpected child scope/status")
+    require(source_result["record_sha256"] == TARGET_SHA, "Child target differs")
+    require(source_result["native_members"] == 5, "Child native member count differs")
+    require(source_result["predecessor_files_preserved"] == 484, "Child predecessor closure differs")
+    require(source_result["kgx"]["edges"] == 75 and source_result["kgx"]["evidence"] == 156, "Child corrected graph coverage differs")
+    bound = {x["path"]: x for x in document["files"]}
+    rows = source_result["all_bound_inputs"]
+    require(len(rows) == len({x["path"] for x in rows}), "Duplicate child binding")
+    for row in rows:
+        require(row["path"] in bound, "Child input missing from approved wrapper bindings: " + row["path"])
+        expected = {key: value for key, value in bound[row["path"]].items() if key != "role"}
+        require(row == expected, "Child binding differs from approved wrapper: " + row["path"])
+
+'''
+text = text[:start] + replacement + text[end:]
+text = text.replace('    formatting_evidence = check_formatting_lineage(document, helper)\n', '')
+text = text.replace('        source_result = read_json(child_output.read_bytes())\n', '        child_raw = child_output.read_bytes()\n        source_result = read_json(child_raw)\n')
+start = text.index('        require(\n            source_result["status"]')
+end = text.index('        report = {', start)
+text = text[:start] + '        check_child_receipt(source_result, document)\n        child_receipt_sha = digest(child_raw)\n' + text[end:]
+text = text.replace('            "original_helper_sha256": ORIGINAL_HELPER_SHA,\n            "formatting_successor": document["formatting_successor"],\n            "formatting_evidence": formatting_evidence,\n', '            "unchanged_corrected_helper_original": str(CORRECTED_HELPER),\n            "source_scope": document["source_scope"],\n')
+text = text.replace('"child_receipt_sha256": file_hash(child_output)', '"child_receipt_sha256": child_receipt_sha')
+text = text.replace('            "rdkit_python": document["rdkit_python"],\n', '')
+text = text.replace('AST-equivalent formatting successor checks the original ED source/proposal and cached expression-context responses;', 'Unchanged corrected denitrification helper checks the original source/proposal, predecessor closure, issue407 guards and cached expression-context responses;')
+text = text.replace('Myx PR405 merge/tree status is separate lifecycle evidence; this replay makes no actual-merged-baseline claim.', 'ED PR408 actual merged-base status is separately bound lifecycle evidence; this replay does not publish or merge anything.')
+text = text.replace('        final_recheck(document, own_manifest)\n', '''        final_recheck(document, own_manifest)
+        require(file_hash(child_output) == child_receipt_sha, "Child receipt changed before final emission")
+        for command in commands:
+            for suffix in ["stdout", "stderr"]:
+                require(file_hash(output / (command["name"] + "." + suffix)) == command[suffix + "_sha256"], "Child log changed before final emission")
+''')
+text = text.replace('    # __pycache__ files. Nested RDKit inherits the same environment.', '    # __pycache__ files. No RDKit child is used by this corrected helper.')
+with (ROOT / 'integration-replay.py').open('x') as stream:
+    stream.write(text)
+with (ROOT / 'pattern-provenance.json').open('x') as stream:
+    json.dump({'pattern_path': str(PATTERN), 'pattern_sha256': hashlib.sha256(PATTERN.read_bytes()).hexdigest(), 'scope': 'Adapted reviewed driver pattern; new denitrification driver and guards require current verification. No historical source or pattern file modified.', 'initial_inventory_missing_output': {'chunk': 'd46e40', 'exit_code': 2, 'scope': 'Output directory did not exist before preparation; ignored-independent rg inventory reported it.'}, 'prior_control_filename_read_failure': {'chunk': '46a20f', 'exit_code': 1, 'scope': 'Guessed controls-v2.py path absent; find inventory identified boundary-controls.py. No mutation.'}}, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'driver': str(ROOT / 'integration-replay.py'), 'sha256': hashlib.sha256(text.encode()).hexdigest(), 'adjacent_inputs': len(adjacent)}))

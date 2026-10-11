@@ -1,0 +1,102 @@
+"""Run only the authorized external selection and canonical authority builders."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+HERE = Path(__file__).absolute().parent
+ROOT = Path('/private/tmp/pathwaymech-next-219-20261011')
+CANDIDATE = Path('/private/tmp/pathwaymech-denitrification-correction-20261011')
+MERGE = Path('/private/tmp/pathwaymech-next-218-publication-watch/actual-merge.json')
+ACCEPTANCE = Path('/private/tmp/pathwaymech-denitrification-root-correction-adoption-20261011.json')
+OUT = HERE / 'execution-final'
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def save(path, value):
+    with path.open('x') as f:
+        json.dump(value, f, indent=2)
+        f.write('\n')
+
+
+def main():
+    if not __debug__:
+        raise RuntimeError('Optimized Python unsupported')
+    pinned = {
+        MERGE: '454464400cb372fd1abc65b028234931e45766daf1ae0ec44f048ee04a3cb61e',
+        ACCEPTANCE: '66b383c783076074db64db9ec7aa0f7d68defd34b40b31c91646a7019cb89385',
+        HERE / 'prepare-selection.py': 'aa8aa663e679ddc9d477327e8deedd4c32b72e63d93bfc32c78de2b3ac18f18f',
+        HERE / 'dry-run-authorities-final.py': '2723a3fb1d7ed616a0876a0c2a6173388a7c0ed17cc7765a406d71254127f250',
+        CANDIDATE / 'handoff.json': '165488e9856288c962586a2127b1efe9cad848a1e49833fe1f76e2218ca8e860',
+    }
+    identities = {str(p): str(p.resolve(strict=True)) for p in pinned}
+    def recheck():
+        for p, expected in pinned.items():
+            if sha(p) != expected or str(p.resolve(strict=True)) != identities[str(p)]:
+                raise RuntimeError('Pinned input changed: ' + str(p))
+    recheck()
+    merge = json.loads(MERGE.read_bytes())
+    adoption = json.loads(ACCEPTANCE.read_bytes())
+    if merge['status'] != 'actual_merge_and_tree_equality_verified' or merge['merge'] != 'ae9279447c78b868289f24a847efe06efce2e167' or merge['merged_tree'] != '66033d3ab5ea79232e7e635b39568ef81939e29c':
+        raise RuntimeError('Actual ED merge receipt mismatch')
+    if adoption['status'] != 'accepted_independent_correction_review_for_integration' or adoption['remaining_findings'] or adoption['target']['sha256'] != '7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd':
+        raise RuntimeError('Root corrected-review adoption mismatch')
+    for key in ['review', 'target', 'helper', 'handoff']:
+        row = adoption[key]
+        p = Path(row['path'])
+        if sha(p) != row['sha256']:
+            raise RuntimeError('Adopted correction proof changed: ' + str(p))
+        pinned[p] = row['sha256']; identities[str(p)] = str(p.resolve(strict=True))
+    OUT.mkdir(exist_ok=False)
+    cache = OUT / 'python-bytecode-cache'
+    cache.mkdir()
+    environment = {k:v for k,v in os.environ.items() if k not in {'PYTHONOPTIMIZE','PYTHONHOME'}}
+    environment.update(PYTHONPATH=str(ROOT/'src'), PYTHONDONTWRITEBYTECODE='1', PYTHONSAFEPATH='1', PYTHONNOUSERSITE='1', PYTHONPYCACHEPREFIX=str(cache), UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache')
+    interpreter = str(ROOT/'.venv/bin/python')
+    commands = []
+    def run(name, argv):
+        start = datetime.now(timezone.utc).isoformat()
+        print(json.dumps({'started': name, 'at': start}), flush=True)
+        log = OUT / (name + '.log')
+        with log.open('xb') as f:
+            process = subprocess.run(argv, cwd=ROOT, env=environment, stdout=f, stderr=subprocess.STDOUT)
+        row = {'name':name,'command':argv,'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),
+               'exit_code':process.returncode,'log':str(log),'log_sha256':sha(log)}
+        commands.append(row)
+        save(OUT/(name+'.execution.json'),row)
+        print(json.dumps({'finished':name,'exit_code':process.returncode,'log_sha256':row['log_sha256']}),flush=True)
+        if process.returncode:
+            raise RuntimeError('External stage failed; preserved output: '+name)
+    select = HERE/'selected-final'
+    run('selection', [interpreter,'-B','-P',str(HERE/'prepare-selection.py'),
+                     '--repo-root',str(ROOT),'--candidate-handoff',str(CANDIDATE/'handoff.json'),
+                     '--candidate-handoff-sha256',pinned[CANDIDATE/'handoff.json'],
+                     '--record',str(CANDIDATE/'draft/nitrate-reduction-i-denitrification.yaml'),
+                     '--record-sha256','7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd',
+                     '--proposal',str(CANDIDATE/'draft/denitrification-authority-proposal.json'),
+                     '--proposal-sha256','fbbd55cf8e0b388c711f6f8590e66f2fe8c142f48249ee238af4f36f6713110c',
+                     '--actual-base-receipt',str(MERGE),'--actual-base-receipt-sha256',pinned[MERGE],
+                     '--merged-commit',merge['merge'],'--output-dir',str(select)])
+    selection_sha = sha(select/'selection.json')
+    run('canonical-builders', [interpreter,'-B','-P',str(HERE/'dry-run-authorities-final.py'),
+                             '--repo-root',str(ROOT),'--selection',str(select/'selection.json'),
+                             '--selection-sha256',selection_sha,'--output-dir',str(HERE/'canonical-dry-run-final')])
+    recheck()
+    report = HERE/'canonical-dry-run-final/report.json'
+    receipt = {'status':'passed_external_authority_preparation_requires_independent_root_review',
+               'commands':commands,'selection_sha256':selection_sha,'canonical_report':{'path':str(report),'sha256':sha(report)},
+               'root_merge':{'path':str(MERGE),'sha256':pinned[MERGE]},'root_scientific_correction_adoption':{'path':str(ACCEPTANCE),'sha256':pinned[ACCEPTANCE]},
+               'pinned_inputs':[{'path':str(p),'resolved_path':identities[str(p)],'sha256':h} for p,h in pinned.items()],
+               'maintained_writes':[],'shared_cache_writes':[],'scientific_approval':False}
+    save(OUT/'completion.json',receipt)
+    print(json.dumps({'status':receipt['status'],'completion_sha256':sha(OUT/'completion.json')}),flush=True)
+
+
+if __name__ == '__main__':
+    main()
