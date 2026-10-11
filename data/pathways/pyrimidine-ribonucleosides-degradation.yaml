@@ -1,0 +1,1021 @@
+id: PathBank:SMP0002038
+label: Pyrimidine Ribonucleosides Degradation
+description: The full seven-step PathBank route for Escherichia coli comprises five biochemical reactions
+  and two NupG proton-coupled imports. Periplasmic CpdB hydrolyzes uridine 2′,3′-cyclic phosphate through
+  3′-UMP to uridine; imported uridine and cytidine feed cytosolic uridine phosphorolysis, with cytidine
+  first deaminated by the zinc-containing Cdd homodimer. The Udp hexamer releases uracil and alpha-D-ribose
+  1-phosphate, and DeoB converts the sugar phosphate to D-ribose 5-phosphate. The curated K-12 scope follows
+  reviewed proteins and native annotations; historical mutant assays and recombinant studies do not measure
+  wild-type flux through the entire route. Exact native compartment states are retained for uptake, and
+  inferred dependencies link them to reaction-class chemistry. CpdB metal specificity remains a similarity
+  annotation, while Mn2+ and Co2+ are alternative assay activators of DeoB. The narrower two-reaction
+  MetaCyc:PWY0-1295 core is not asserted to be equivalent to this complete PathBank pathway.
+pathway_type: pyrimidine-ribonucleoside-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: UniProtKB:P08331
+  label: 2',3'-cyclic-nucleotide 2'-phosphodiesterase/3'-nucleotidase
+  category: protein
+- id: UniProtKB:P0ABF6
+  label: Cytidine deaminase
+  category: protein
+- id: UniProtKB:P12758
+  label: Uridine phosphorylase
+  category: protein
+- id: UniProtKB:P0A6K6
+  label: Phosphopentomutase
+  category: protein
+- id: UniProtKB:P0AFF4
+  label: Nucleoside permease NupG
+  category: protein
+- id: MetaCyc:CYTIDEAM-CPLX
+  label: cytidine/deoxycytidine deaminase
+  category: complex
+- id: MetaCyc:URPHOS-CPLX
+  label: uridine phosphorylase
+  category: complex
+- id: GO:0042597
+  label: periplasmic space
+  category: cellular_component
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0005886
+  label: plasma membrane
+  category: cellular_component
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:60240
+  label: divalent metal cation
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: PathBank:SMP0002038/Compound/PW_C000202_Periplasmic_Space
+  label: uridine [periplasmic space]
+  category: small_molecule
+- id: PathBank:SMP0002038/Compound/PW_C000202_Cytosol
+  label: uridine [cytosol]
+  category: small_molecule
+- id: PathBank:SMP0002038/Compound/PW_C000061_Periplasmic_Space
+  label: cytidine [periplasmic space]
+  category: small_molecule
+- id: PathBank:SMP0002038/Compound/PW_C000061_Cytosol
+  label: cytidine [cytosol]
+  category: small_molecule
+- id: PathBank:SMP0002038/Compound/PW_C040034_Periplasmic_Space
+  label: hydron [periplasmic space]
+  category: small_molecule
+- id: PathBank:SMP0002038/Compound/PW_C040034_Cytosol
+  label: hydron [cytosol]
+  category: small_molecule
+- id: CHEBI:60873
+  label: 2',3'-cyclic UMP(1-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:60784
+  label: 3'-UMP(2-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16704
+  label: uridine
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:17562
+  label: cytidine
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:57720
+  label: alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:17568
+  label: uracil
+  category: small_molecule
+- id: CHEBI:78346
+  label: D-ribofuranose 5-phosphate(2-)
+  category: small_molecule
+reactions:
+- id: RHEA:27879
+  label: 2',3'-cyclophospho-UMP + H2O => 3'-UMP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27891
+  label: 3'-UMP + H2O => uridine + phosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16070
+  label: cytidine + H2O + H(+) => uridine + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:24389
+  label: uridine + phosphate => alpha-D-ribose 1-phosphate + uracil
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:18794
+  label: alpha-D-ribose 1-phosphate => D-ribose 5-phosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:29953
+  label: uridine(out) + H(+)(out) => uridine(in) + H(+)(in)
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:29985
+  label: cytidine(out) + H(+)(out) => cytidine(in) + H(+)(in)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: pyribo-edge-001
+  subject: CHEBI:60873
+  predicate: consumes
+  object: RHEA:27879
+  evidence:
+  - reference_id: RHEA:27879
+    source_assertion: Rhea 27879 assigns CHEBI:60873 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27879']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27878_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27878_compound_6281'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:27879
+  evidence:
+  - reference_id: RHEA:27879
+    source_assertion: Rhea 27879 assigns CHEBI:15377 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27879']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27878_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27878_compound_1283'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-003
+  subject: RHEA:27879
+  predicate: produces
+  object: CHEBI:60784
+  evidence:
+  - reference_id: RHEA:27879
+    source_assertion: Rhea 27879 assigns CHEBI:60784 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27879']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27878_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27878_compound_6282'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-004
+  subject: RHEA:27879
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:27879
+    source_assertion: Rhea 27879 assigns CHEBI:15378 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27879']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27878_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27878_compound_3249'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-005
+  subject: CHEBI:60784
+  predicate: consumes
+  object: RHEA:27891
+  evidence:
+  - reference_id: RHEA:27891
+    source_assertion: Rhea 27891 assigns CHEBI:60784 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27891']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27890_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27890_compound_6282'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-006
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:27891
+  evidence:
+  - reference_id: RHEA:27891
+    source_assertion: Rhea 27891 assigns CHEBI:15377 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27891']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27890_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27890_compound_1283'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-007
+  subject: RHEA:27891
+  predicate: produces
+  object: CHEBI:16704
+  evidence:
+  - reference_id: RHEA:27891
+    source_assertion: Rhea 27891 assigns CHEBI:16704 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27891']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27890_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27890_compound_4178'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-008
+  subject: RHEA:27891
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:27891
+    source_assertion: Rhea 27891 assigns CHEBI:43474 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27891']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27890_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27890_compound_5518'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-009
+  subject: CHEBI:17562
+  predicate: consumes
+  object: RHEA:16070
+  evidence:
+  - reference_id: RHEA:16070
+    source_assertion: Rhea 16070 assigns CHEBI:17562 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16070']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16069_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16069_compound_3062'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-010
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:16070
+  evidence:
+  - reference_id: RHEA:16070
+    source_assertion: Rhea 16070 assigns CHEBI:15377 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16070']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16069_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16069_compound_1283'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-011
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:16070
+  evidence:
+  - reference_id: RHEA:16070
+    source_assertion: Rhea 16070 assigns CHEBI:15378 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16070']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16069_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16069_compound_3249'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-012
+  subject: RHEA:16070
+  predicate: produces
+  object: CHEBI:16704
+  evidence:
+  - reference_id: RHEA:16070
+    source_assertion: Rhea 16070 assigns CHEBI:16704 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16070']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16069_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16069_compound_4178'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-013
+  subject: RHEA:16070
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:16070
+    source_assertion: Rhea 16070 assigns CHEBI:28938 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16070']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16069_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16069_compound_1012'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-014
+  subject: CHEBI:16704
+  predicate: consumes
+  object: RHEA:24389
+  evidence:
+  - reference_id: RHEA:24389
+    source_assertion: Rhea 24389 assigns CHEBI:16704 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24389']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/24388_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_24388_compound_4178'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-015
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:24389
+  evidence:
+  - reference_id: RHEA:24389
+    source_assertion: Rhea 24389 assigns CHEBI:43474 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24389']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/24388_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_24388_compound_5518'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-016
+  subject: RHEA:24389
+  predicate: produces
+  object: CHEBI:57720
+  evidence:
+  - reference_id: RHEA:24389
+    source_assertion: Rhea 24389 assigns CHEBI:57720 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24389']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/24388_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_24388_compound_2276'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-017
+  subject: RHEA:24389
+  predicate: produces
+  object: CHEBI:17568
+  evidence:
+  - reference_id: RHEA:24389
+    source_assertion: Rhea 24389 assigns CHEBI:17568 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24389']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/24388_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_24388_compound_4063'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-018
+  subject: CHEBI:57720
+  predicate: consumes
+  object: RHEA:18794
+  evidence:
+  - reference_id: RHEA:18794
+    source_assertion: Rhea 18794 assigns CHEBI:57720 to substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18794']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18793_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18793_compound_2276'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-019
+  subject: RHEA:18794
+  predicate: produces
+  object: CHEBI:78346
+  evidence:
+  - reference_id: RHEA:18794
+    source_assertion: Rhea 18794 assigns CHEBI:78346 to products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18794']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/18793_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_18793_compound_9495'];
+      rh:compound/rh:chebi
+- id: pyribo-edge-020
+  subject: PathBank:SMP0002038/Compound/PW_C000202_Periplasmic_Space
+  predicate: consumes
+  object: RHEA:29953
+  evidence:
+  - reference_id: RHEA:29953
+    source_assertion: Rhea 29953 assigns CHEBI:16704 to substrates with coefficient 1; the participant
+      is explicitly Out.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29953']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29951_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29951_compound_4178_out'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 488 assigns this exact Periplasmic_Space physical object to its
+      left side; the entity reference and compartment distinguish it from the corresponding state across
+      the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/488']/bp:left; bp:SmallMolecule[@rdf:ID='Compound/PW_C000202_Periplasmic_Space']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-021
+  subject: PathBank:SMP0002038/Compound/PW_C040034_Periplasmic_Space
+  predicate: consumes
+  object: RHEA:29953
+  evidence:
+  - reference_id: RHEA:29953
+    source_assertion: Rhea 29953 assigns CHEBI:15378 to substrates with coefficient 1; the participant
+      is explicitly Out.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29953']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29951_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29951_compound_3249_out'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 488 assigns this exact Periplasmic_Space physical object to its
+      left side; the entity reference and compartment distinguish it from the corresponding state across
+      the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/488']/bp:left; bp:SmallMolecule[@rdf:ID='Compound/PW_C040034_Periplasmic_Space']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-022
+  subject: RHEA:29953
+  predicate: produces
+  object: PathBank:SMP0002038/Compound/PW_C000202_Cytosol
+  evidence:
+  - reference_id: RHEA:29953
+    source_assertion: Rhea 29953 assigns CHEBI:16704 to products with coefficient 1; the participant is
+      explicitly In.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29953']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29951_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29951_compound_4178_in'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 488 assigns this exact Cytosol physical object to its right side;
+      the entity reference and compartment distinguish it from the corresponding state across the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/488']/bp:right; bp:SmallMolecule[@rdf:ID='Compound/PW_C000202_Cytosol']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-023
+  subject: RHEA:29953
+  predicate: produces
+  object: PathBank:SMP0002038/Compound/PW_C040034_Cytosol
+  evidence:
+  - reference_id: RHEA:29953
+    source_assertion: Rhea 29953 assigns CHEBI:15378 to products with coefficient 1; the participant is
+      explicitly In.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29953']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29951_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29951_compound_3249_in'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 488 assigns this exact Cytosol physical object to its right side;
+      the entity reference and compartment distinguish it from the corresponding state across the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/488']/bp:right; bp:SmallMolecule[@rdf:ID='Compound/PW_C040034_Cytosol']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-024
+  subject: PathBank:SMP0002038/Compound/PW_C000061_Periplasmic_Space
+  predicate: consumes
+  object: RHEA:29985
+  evidence:
+  - reference_id: RHEA:29985
+    source_assertion: Rhea 29985 assigns CHEBI:17562 to substrates with coefficient 1; the participant
+      is explicitly Out.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29985']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29983_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29983_compound_3062_out'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 489 assigns this exact Periplasmic_Space physical object to its
+      left side; the entity reference and compartment distinguish it from the corresponding state across
+      the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/489']/bp:left; bp:SmallMolecule[@rdf:ID='Compound/PW_C000061_Periplasmic_Space']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-025
+  subject: PathBank:SMP0002038/Compound/PW_C040034_Periplasmic_Space
+  predicate: consumes
+  object: RHEA:29985
+  evidence:
+  - reference_id: RHEA:29985
+    source_assertion: Rhea 29985 assigns CHEBI:15378 to substrates with coefficient 1; the participant
+      is explicitly Out.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29985']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29983_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29983_compound_3249_out'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 489 assigns this exact Periplasmic_Space physical object to its
+      left side; the entity reference and compartment distinguish it from the corresponding state across
+      the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/489']/bp:left; bp:SmallMolecule[@rdf:ID='Compound/PW_C040034_Periplasmic_Space']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-026
+  subject: RHEA:29985
+  predicate: produces
+  object: PathBank:SMP0002038/Compound/PW_C000061_Cytosol
+  evidence:
+  - reference_id: RHEA:29985
+    source_assertion: Rhea 29985 assigns CHEBI:17562 to products with coefficient 1; the participant is
+      explicitly In.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29985']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29983_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29983_compound_3062_in'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 489 assigns this exact Cytosol physical object to its right side;
+      the entity reference and compartment distinguish it from the corresponding state across the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/489']/bp:right; bp:SmallMolecule[@rdf:ID='Compound/PW_C000061_Cytosol']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-027
+  subject: RHEA:29985
+  predicate: produces
+  object: PathBank:SMP0002038/Compound/PW_C040034_Cytosol
+  evidence:
+  - reference_id: RHEA:29985
+    source_assertion: Rhea 29985 assigns CHEBI:15378 to products with coefficient 1; the participant is
+      explicitly In.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29985']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/29983_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_29983_compound_3249_in'];
+      rh:compound/rh:chebi; rh:location
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native transport 489 assigns this exact Cytosol physical object to its right side;
+      the entity reference and compartment distinguish it from the corresponding state across the membrane.
+    source_locator: bp:Transport[@rdf:ID='Transports/489']/bp:right; bp:SmallMolecule[@rdf:ID='Compound/PW_C040034_Cytosol']/bp:entityReference;
+      bp:cellularLocation
+- id: pyribo-edge-028
+  subject: UniProtKB:P08331
+  predicate: enables
+  object: RHEA:27879
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native ReactionCatalysis/5858 assigns its protein controller to Reactions/5895;
+      the component or protein reference identifies UniProtKB:P08331.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5858']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/5948']/bp:xref
+  - reference_id: RHEA:27879
+    source_assertion: The explicit Rhea family maps master 27878 to directional member 27879; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27878']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/27879'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/27879']/rh:substrates, rh:products, rh:equation
+  - reference_id: MetaCyc:CPDB-MONOMER
+    source_assertion: Native CpdB annotation links this exact uridine reaction RXN-14091 to CPDB-MONOMER;
+      its UNIPROT unification is P08331.
+    source_locator: Protein[@frameid='CPDB-MONOMER']/catalyzes/Enzymatic-Reaction/reaction/Reaction[@frameid='RXN-14091'];
+      dblink[dblink-db='UNIPROT']
+  - reference_id: PMID:6251162
+    source_assertion: K-12 cpdB mutants lose most cyclic-UMP and 3′-UMP hydrolysis; the paper explicitly
+      describes the two-step route to uridine. Residual 3′-nucleotidase activity and pyrE-dependent growth
+      selection prevent an exclusivity or wild-type-flux claim.
+    source_locator: Printed pp31–32, Methods; Tables1–2; Results and Discussion, first two paragraphs
+  - reference_id: PMID:27294396
+    source_assertion: Recombinant BL21 CpdB hydrolyzed cyclic UMP in a coupled phosphate assay. Table1
+      does not independently establish the uridine-product regiochemistry or K-12 whole-pathway flux.
+    source_locator: Methods, Bacterial strains and Enzyme activity assays; Table1 cyclic-UMP row; Results,
+      Enzymatic characterization
+- id: pyribo-edge-029
+  subject: UniProtKB:P08331
+  predicate: enables
+  object: RHEA:27891
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native ReactionCatalysis/5859 assigns its protein controller to Reactions/5896;
+      the component or protein reference identifies UniProtKB:P08331.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5859']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/5948']/bp:xref
+  - reference_id: RHEA:27891
+    source_assertion: The explicit Rhea family maps master 27890 to directional member 27891; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27890']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/27891'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/27891']/rh:substrates, rh:products, rh:equation
+  - reference_id: MetaCyc:CPDB-MONOMER
+    source_assertion: Native CpdB annotation links this exact uridine reaction RXN-14115 to CPDB-MONOMER;
+      its UNIPROT unification is P08331.
+    source_locator: Protein[@frameid='CPDB-MONOMER']/catalyzes/Enzymatic-Reaction/reaction/Reaction[@frameid='RXN-14115'];
+      dblink[dblink-db='UNIPROT']
+  - reference_id: PMID:6251162
+    source_assertion: K-12 cpdB mutants lose most cyclic-UMP and 3′-UMP hydrolysis; the paper explicitly
+      describes the two-step route to uridine. Residual 3′-nucleotidase activity and pyrE-dependent growth
+      selection prevent an exclusivity or wild-type-flux claim.
+    source_locator: Printed pp31–32, Methods; Tables1–2; Results and Discussion, first two paragraphs
+- id: pyribo-edge-030
+  subject: MetaCyc:CYTIDEAM-CPLX
+  predicate: catalyzes
+  object: RHEA:16070
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native ReactionCatalysis/5860 assigns its protein complex controller to Reactions/5897;
+      the component or protein reference identifies UniProtKB:P0ABF6.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5860']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/6175']/bp:xref
+  - reference_id: RHEA:16070
+    source_assertion: The explicit Rhea family maps master 16069 to directional member 16070; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16069']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/16070'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/16070']/rh:substrates, rh:products, rh:equation
+  - reference_id: UniProtKB:P0ABF6
+    source_assertion: The reviewed K-12 entry assigns cytidine deamination and a homodimeric assembly;
+      the exact cytidine reaction, not the deoxy substrate activity, is selected.
+    source_locator: comments[1].reaction; SUBUNIT comment; organism.taxonId
+  - reference_id: PMID:4202859
+    source_assertion: Purified E. coli cytidine deaminase uses cytidine as substrate; the assay distinguishes
+      cytidine from deoxycytidine. The enzyme came from mutant Y70-272, not a wild-type MG1655 flux experiment.
+    source_locator: Printed pp798–799, purification and bacterial strain; TableVI cytidine row
+- id: pyribo-edge-031
+  subject: MetaCyc:URPHOS-CPLX
+  predicate: catalyzes
+  object: RHEA:24389
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native ReactionCatalysis/5861 assigns its protein complex controller to Reactions/5898;
+      the component or protein reference identifies UniProtKB:P12758.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5861']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/10357']/bp:xref
+  - reference_id: RHEA:24389
+    source_assertion: The explicit Rhea family maps master 24388 to directional member 24389; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24388']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/24389'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/24389']/rh:substrates, rh:products, rh:equation
+  - reference_id: UniProtKB:P12758
+    source_assertion: The reviewed K-12 Udp entry assigns uridine phosphorolysis through RHEA:24388 and
+      a homohexamer; weaker deoxynucleoside activities are outside this selected route.
+    source_locator: CATALYTIC ACTIVITY and SUBUNIT comments; organism.taxonId
+  - reference_id: PMID:16751
+    source_assertion: Purified E. coli uridine phosphorylase showed uridine activity and no cytidine activity.
+      Its historical eight-subunit estimate is not adopted; current hexamer evidence is recorded separately.
+    source_locator: Primary abstract, specific activity, substrate specificity and molecular weight sentences
+- id: pyribo-edge-032
+  subject: UniProtKB:P0A6K6
+  predicate: enables
+  object: RHEA:18794
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native ReactionCatalysis/5862 assigns its protein controller to Reactions/5899;
+      the component or protein reference identifies UniProtKB:P0A6K6.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5862']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/6000']/bp:xref
+  - reference_id: RHEA:18794
+    source_assertion: The explicit Rhea family maps master 18793 to directional member 18794; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18793']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/18794'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/18794']/rh:substrates, rh:products, rh:equation
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: The reviewed K-12 DeoB entry directly annotates alpha-D-ribose1-phosphate to D-ribose5-phosphate,
+      RHEA:18793, with experimental citations1089430 and4992818.
+    source_locator: comments[2].reaction and evidences; organism.taxonId
+  - reference_id: PMID:1089430
+    source_assertion: The primary abstract reports purified E. coli enzyme as four modified forms of a
+      single45-kDa chain. This supports an enzyme-function assignment without introducing a new complex.
+    source_locator: Primary abstract, molecular weight and single polypeptide chain sentences
+- id: pyribo-edge-033
+  subject: UniProtKB:P0AFF4
+  predicate: enables
+  object: RHEA:29953
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native TransportCatalysis/420 assigns its protein controller to Transports/488;
+      the component or protein reference identifies UniProtKB:P0AFF4.
+    source_locator: bp:Catalysis[@rdf:ID='TransportCatalysis/420']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/7058']/bp:xref
+  - reference_id: RHEA:29953
+    source_assertion: The explicit Rhea family maps master 29951 to directional member 29953; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29951']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/29953'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/29953']/rh:substrates, rh:products, rh:equation
+  - reference_id: UniProtKB:P0AFF4
+    source_assertion: The reviewed K-12 NupG entry assigns this nucleoside/H+ transport family with direct
+      literature support. The native pathway selects import; the master equation is oriented in-to-out.
+    source_locator: CATALYTIC ACTIVITY reactionCrossReferences RHEA:29951; FUNCTION comment; organism.taxonId
+  - reference_id: PMID:15513740
+    source_assertion: Recombinant NupG transported uridine; competition, oocyte uptake and reconstitution
+      supported broad nucleoside transport energized by proton motive force. This does not quantify native
+      pathway flux or prove an exclusive transporter.
+    source_locator: Primary abstract, transport, specificity and reconstitution sentences
+  - reference_id: PMID:33640454
+    source_assertion: K12-derived NupG expressed in C43(DE3) bound uridine and cytidine in vitro. These
+      binding and apo-structure measurements support recognition, not direct flux or proton:nucleoside
+      stoichiometry.
+    source_locator: Results, Characterization of recombinant NupG, Figure1D/F; Experimental procedures,
+      Protein purification
+- id: pyribo-edge-034
+  subject: UniProtKB:P0AFF4
+  predicate: enables
+  object: RHEA:29985
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native TransportCatalysis/421 assigns its protein controller to Transports/489;
+      the component or protein reference identifies UniProtKB:P0AFF4.
+    source_locator: bp:Catalysis[@rdf:ID='TransportCatalysis/421']/bp:controller and bp:controlled; bp:ProteinReference[@rdf:ID='ProteinReference/7058']/bp:xref
+  - reference_id: RHEA:29985
+    source_assertion: The explicit Rhea family maps master 29983 to directional member 29985; inspected
+      sides and equation match the selected native chemistry.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/29983']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/29985'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/29985']/rh:substrates, rh:products, rh:equation
+  - reference_id: UniProtKB:P0AFF4
+    source_assertion: The reviewed K-12 NupG entry assigns this nucleoside/H+ transport family with direct
+      literature support. The native pathway selects import; the master equation is oriented in-to-out.
+    source_locator: CATALYTIC ACTIVITY reactionCrossReferences RHEA:29983; FUNCTION comment; organism.taxonId
+  - reference_id: PMID:15513740
+    source_assertion: Recombinant NupG transported uridine; competition, oocyte uptake and reconstitution
+      supported broad nucleoside transport energized by proton motive force. This does not quantify native
+      pathway flux or prove an exclusive transporter.
+    source_locator: Primary abstract, transport, specificity and reconstitution sentences
+  - reference_id: PMID:33640454
+    source_assertion: K12-derived NupG expressed in C43(DE3) bound uridine and cytidine in vitro. These
+      binding and apo-structure measurements support recognition, not direct flux or proton:nucleoside
+      stoichiometry.
+    source_locator: Results, Characterization of recombinant NupG, Figure1D/F; Experimental procedures,
+      Protein purification
+- id: pyribo-edge-035
+  subject: MetaCyc:CYTIDEAM-CPLX
+  predicate: has_part
+  object: UniProtKB:P0ABF6
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native complex 3973 contains 2 copies of protein 6175, whose protein reference unifies
+      with UniProtKB:P0ABF6.
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3973']/bp:component and bp:componentStoichiometry;
+      bp:Stoichiometry[@rdf:ID='Protein/6175/Stoichiometry/2.0']; bp:ProteinReference[@rdf:ID='ProteinReference/6175']/bp:xref
+  - reference_id: UniProtKB:P0ABF6
+    source_assertion: The current reviewed SUBUNIT annotation independently supports this homo-oligomeric
+      assembly.
+    source_locator: SUBUNIT comment
+  description: Native homo-oligomer with 2 copies; membership is distinct from monomer activity.
+- id: pyribo-edge-036
+  subject: MetaCyc:URPHOS-CPLX
+  predicate: has_part
+  object: UniProtKB:P12758
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: Native complex 3974 contains 6 copies of protein 10357, whose protein reference
+      unifies with UniProtKB:P12758.
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3974']/bp:component and bp:componentStoichiometry;
+      bp:Stoichiometry[@rdf:ID='Protein/10357/Stoichiometry/6.0']; bp:ProteinReference[@rdf:ID='ProteinReference/10357']/bp:xref
+  - reference_id: UniProtKB:P12758
+    source_assertion: The current reviewed SUBUNIT annotation independently supports this homo-oligomeric
+      assembly.
+    source_locator: SUBUNIT comment
+  - reference_id: MetaCyc:URPHOS-CPLX
+    source_assertion: Native URPHOS-CPLX contains six URPHOS-MONOMER components.
+    source_locator: Protein[@frameid="URPHOS-CPLX"]/component
+  - reference_id: PMID:12499542
+    source_assertion: The structural study identifies native uridine phosphorylase as a hexamer assembled
+      by threefold symmetry; this supports the current assignment over the older eight-subunit estimate.
+    source_locator: Primary abstract, native hexameric UP assembly sentence
+  description: Native homo-oligomer with 6 copies; membership is distinct from monomer activity.
+- id: pyribo-edge-037
+  subject: UniProtKB:P08331
+  predicate: has_cofactor
+  object: CHEBI:60240
+  evidence:
+  - reference_id: UniProtKB:P08331
+    source_assertion: The reviewed CpdB entry annotates a divalent-metal cofactor by similarity; no particular
+      physiological metal or binding stoichiometry is asserted.
+    source_locator: comments[3] COFACTOR; ECO:0000250
+- id: pyribo-edge-038
+  subject: UniProtKB:P0A6K6
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: Mn2+ activates purified E. coli DeoB; Co2+ is an alternative activator. The two-ion
+      stoichiometry is by similarity and is not asserted by this edge.
+    source_locator: comments[3] COFACTOR; PMID4992818 evidence and note
+- id: pyribo-edge-039
+  subject: UniProtKB:P0A6K6
+  predicate: has_cofactor
+  object: CHEBI:48828
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: Co2+ and Mn2+ are alternative equally good activators in the cited purified-enzyme
+      assay; they are not asserted to bind simultaneously.
+    source_locator: comments[3] COFACTOR; PMID4992818 evidence and note
+- id: pyribo-edge-040
+  subject: UniProtKB:P0ABF6
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P0ABF6
+    source_assertion: The reviewed Cdd entry assigns zinc as the bound cofactor with experimental structural
+      citations; this does not imply activation by excess free zinc.
+    source_locator: COFACTOR comment
+- id: pyribo-edge-041
+  subject: RHEA:27879
+  predicate: occurs_in
+  object: GO:0042597
+  evidence:
+  - reference_id: UniProtKB:P08331
+    source_assertion: CpdB is periplasmic; this localizes its two annotated uridine hydrolyses without
+      assigning a cellular compartment to all copies of the chemical classes.
+    source_locator: SUBCELLULAR LOCATION comment; PMID3005231
+- id: pyribo-edge-042
+  subject: RHEA:27891
+  predicate: occurs_in
+  object: GO:0042597
+  evidence:
+  - reference_id: UniProtKB:P08331
+    source_assertion: CpdB is periplasmic; this localizes its two annotated uridine hydrolyses without
+      assigning a cellular compartment to all copies of the chemical classes.
+    source_locator: SUBCELLULAR LOCATION comment; PMID3005231
+- id: pyribo-edge-043
+  subject: UniProtKB:P0AFF4
+  predicate: located_in
+  object: GO:0005886
+  evidence:
+  - reference_id: UniProtKB:P0AFF4
+    source_assertion: NupG is a multipass cell-inner-membrane transporter with direct experimental evidence.
+      The plasma membrane class describes the bacterial inner membrane.
+    source_locator: SUBCELLULAR LOCATION comment
+- id: pyribo-edge-044
+  subject: PathBank:SMP0002038/Compound/PW_C000202_Periplasmic_Space
+  predicate: located_in
+  object: GO:0042597
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: The native physical object has an explicit cellularLocation pointing to this compartment.
+    source_locator: bp:SmallMolecule[@rdf:ID="Compound/PW_C000202_Periplasmic_Space"]/bp:cellularLocation;
+      bp:CellularLocationVocabulary/bp:xref
+  - reference_id: GO:0042597
+    source_assertion: The native obsolete GO:0005620 cross-reference has explicit IAO:0100001 replacement
+      GO:0042597, also listed as an alternative ID of the current term.
+    source_locator: GO:0005620 IAO:0100001; GO:0042597 oio:hasAlternativeId and rdfs:label
+- id: pyribo-edge-045
+  subject: PathBank:SMP0002038/Compound/PW_C000202_Cytosol
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: The native physical object has an explicit cellularLocation pointing to this compartment.
+    source_locator: bp:SmallMolecule[@rdf:ID="Compound/PW_C000202_Cytosol"]/bp:cellularLocation; bp:CellularLocationVocabulary/bp:xref
+- id: pyribo-edge-046
+  subject: PathBank:SMP0002038/Compound/PW_C000061_Periplasmic_Space
+  predicate: located_in
+  object: GO:0042597
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: The native physical object has an explicit cellularLocation pointing to this compartment.
+    source_locator: bp:SmallMolecule[@rdf:ID="Compound/PW_C000061_Periplasmic_Space"]/bp:cellularLocation;
+      bp:CellularLocationVocabulary/bp:xref
+  - reference_id: GO:0042597
+    source_assertion: The native obsolete GO:0005620 cross-reference has explicit IAO:0100001 replacement
+      GO:0042597, also listed as an alternative ID of the current term.
+    source_locator: GO:0005620 IAO:0100001; GO:0042597 oio:hasAlternativeId and rdfs:label
+- id: pyribo-edge-047
+  subject: PathBank:SMP0002038/Compound/PW_C000061_Cytosol
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: The native physical object has an explicit cellularLocation pointing to this compartment.
+    source_locator: bp:SmallMolecule[@rdf:ID="Compound/PW_C000061_Cytosol"]/bp:cellularLocation; bp:CellularLocationVocabulary/bp:xref
+- id: pyribo-edge-048
+  subject: PathBank:SMP0002038/Compound/PW_C040034_Periplasmic_Space
+  predicate: located_in
+  object: GO:0042597
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: The native physical object has an explicit cellularLocation pointing to this compartment.
+    source_locator: bp:SmallMolecule[@rdf:ID="Compound/PW_C040034_Periplasmic_Space"]/bp:cellularLocation;
+      bp:CellularLocationVocabulary/bp:xref
+  - reference_id: GO:0042597
+    source_assertion: The native obsolete GO:0005620 cross-reference has explicit IAO:0100001 replacement
+      GO:0042597, also listed as an alternative ID of the current term.
+    source_locator: GO:0005620 IAO:0100001; GO:0042597 oio:hasAlternativeId and rdfs:label
+- id: pyribo-edge-049
+  subject: PathBank:SMP0002038/Compound/PW_C040034_Cytosol
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: The native physical object has an explicit cellularLocation pointing to this compartment.
+    source_locator: bp:SmallMolecule[@rdf:ID="Compound/PW_C040034_Cytosol"]/bp:cellularLocation; bp:CellularLocationVocabulary/bp:xref
+- id: pyribo-edge-050
+  subject: RHEA:27879
+  predicate: provides_input_for
+  object: RHEA:27891
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: 'Curator inference: 3′-UMP product/substrate connect these native steps. BioPAX
+      pathway membership is explicit; flux, exclusivity and obligatory use of NupG are not measured by
+      the diagram.'
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002038"]/bp:pathwayComponent;
+      referenced reaction/transport sides and compound entityReference
+  description: Inferred chemical dependency within the complete source route; alternative uptake and metabolic
+    fates remain possible.
+- id: pyribo-edge-051
+  subject: RHEA:27891
+  predicate: provides_input_for
+  object: RHEA:29953
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: 'Curator inference: uridine formed in the periplasm and uridine import connect these
+      native steps. BioPAX pathway membership is explicit; flux, exclusivity and obligatory use of NupG
+      are not measured by the diagram.'
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002038"]/bp:pathwayComponent;
+      referenced reaction/transport sides and compound entityReference
+  description: Inferred chemical dependency within the complete source route; alternative uptake and metabolic
+    fates remain possible.
+- id: pyribo-edge-052
+  subject: RHEA:29953
+  predicate: provides_input_for
+  object: RHEA:24389
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: 'Curator inference: cytosolic uridine after import and uridine phosphorolysis connect
+      these native steps. BioPAX pathway membership is explicit; flux, exclusivity and obligatory use
+      of NupG are not measured by the diagram.'
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002038"]/bp:pathwayComponent;
+      referenced reaction/transport sides and compound entityReference
+  description: Inferred chemical dependency within the complete source route; alternative uptake and metabolic
+    fates remain possible.
+- id: pyribo-edge-053
+  subject: RHEA:29985
+  predicate: provides_input_for
+  object: RHEA:16070
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: 'Curator inference: cytosolic cytidine after import and cytidine deamination connect
+      these native steps. BioPAX pathway membership is explicit; flux, exclusivity and obligatory use
+      of NupG are not measured by the diagram.'
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002038"]/bp:pathwayComponent;
+      referenced reaction/transport sides and compound entityReference
+  description: Inferred chemical dependency within the complete source route; alternative uptake and metabolic
+    fates remain possible.
+- id: pyribo-edge-054
+  subject: RHEA:16070
+  predicate: provides_input_for
+  object: RHEA:24389
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: 'Curator inference: uridine product/substrate connect these native steps. BioPAX
+      pathway membership is explicit; flux, exclusivity and obligatory use of NupG are not measured by
+      the diagram.'
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002038"]/bp:pathwayComponent;
+      referenced reaction/transport sides and compound entityReference
+  description: Inferred chemical dependency within the complete source route; alternative uptake and metabolic
+    fates remain possible.
+- id: pyribo-edge-055
+  subject: RHEA:24389
+  predicate: provides_input_for
+  object: RHEA:18794
+  evidence:
+  - reference_id: PathBank:SMP0002038
+    source_assertion: 'Curator inference: alpha-D-ribose1-phosphate product/substrate connect these native
+      steps. BioPAX pathway membership is explicit; flux, exclusivity and obligatory use of NupG are not
+      measured by the diagram.'
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002038"]/bp:pathwayComponent;
+      referenced reaction/transport sides and compound entityReference
+  description: Inferred chemical dependency within the complete source route; alternative uptake and metabolic
+    fates remain possible.
+references:
+- id: PathBank:SMP0002038
+  title: PathBank Pyrimidine Ribonucleosides Degradation, native PW002024 BioPAX
+  url: https://pathbank.org/view/SMP0002038
+  source_version: Primary BioPAX archive; exact PW002024.owl member retrieved 2026-10-10
+  source_sha256: 031e4e3cc4e762ff7c8dc9c39193dd1669585efe2d93cfb9cb9d84f1e25b4045
+- id: MetaCyc:CPDB-MONOMER
+  title: MetaCyc CPDB-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:CPDB-MONOMER
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: 577c2bb6713b61a4af3c8ae949237f6ec018d8ac0049b3846e02bc16b29ea010
+- id: MetaCyc:RXN-14091
+  title: MetaCyc RXN-14091
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-14091
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: 6c329f5f1f39c7f7c7d3b098a839f4a7a36f54d1d31fd111521c744e4fecb7c1
+- id: MetaCyc:RXN-14115
+  title: MetaCyc RXN-14115
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-14115
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: d0dfb0be4313cd5d0d5110ac345722e539cb2e6739151307709560b5936fb7e0
+- id: MetaCyc:URPHOS-CPLX
+  title: MetaCyc URPHOS-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:URPHOS-CPLX
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: ed9bdb933e3a1b81989462ca331879af71ecd9fe4213074cc94df22f7da037b2
+- id: MetaCyc:URPHOS-MONOMER
+  title: MetaCyc URPHOS-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:URPHOS-MONOMER
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: 7fcb05b5fc932c876d78dff48deb558a034b45330b6ed97b433997dca028c9a5
+- id: MetaCyc:URPHOS-RXN
+  title: MetaCyc URPHOS-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:URPHOS-RXN
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: 5b0aff13192ffd745f00aeb0762c82baeed030a4e07117963e361b542684bd2c
+- id: MetaCyc:CYTIDEAM2-RXN
+  title: MetaCyc CYTIDEAM2-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM2-RXN
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: ae7fc97af076849c9d7ee7cfdd4e8d8a496dccc7e82c58c636671407d28d5296
+- id: MetaCyc:PPENTOMUT-MONOMER
+  title: MetaCyc PPENTOMUT-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:PPENTOMUT-MONOMER
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: 84c86e1b8614d1f6258f966e941c49d761907e4ce4d25f8e812e6cb0e8cfc6d6
+- id: MetaCyc:NUPG-MONOMER
+  title: MetaCyc NUPG-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:NUPG-MONOMER
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: 0a0c909d3949d4a26511057d50d4ffaf3bbb6222fa72e8602fe226b9543d61ca
+- id: MetaCyc:PWY0-1295
+  title: MetaCyc PWY0-1295
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-1295
+  source_version: 22.5; native mirror retrieved 2026-10-11
+  source_sha256: e45e992c366c10b564c208f69963211d1025631fafdd7e6aa8daebad1e89c906
+- id: UniProtKB:P08331
+  title: Reviewed UniProtKB P08331
+  url: https://rest.uniprot.org/uniprotkb/P08331.json
+  source_version: 2026_03; actual X-UniProt-Release header; retrieved 2026-10-11
+  source_sha256: 0d8885316f9e124d953362c0b2050ee647cdcdfd946b468ce939b522cd461e55
+- id: UniProtKB:P0ABF6
+  title: Reviewed UniProtKB P0ABF6
+  url: https://rest.uniprot.org/uniprotkb/P0ABF6.json
+  source_version: 2026_03; actual X-UniProt-Release header; retrieved 2026-10-11
+  source_sha256: ecffd6fea9810f3756dfa4dd7c17be85954ab1f19b73ad98660394b2c20a0637
+- id: UniProtKB:P12758
+  title: Reviewed UniProtKB P12758
+  url: https://rest.uniprot.org/uniprotkb/P12758.json
+  source_version: 2026_03; actual X-UniProt-Release header; retrieved 2026-10-11
+  source_sha256: d9b0e2f3d5f330eed893f300120e66179abed88c2e5f870fe4fd75a30b11a153
+- id: UniProtKB:P0A6K6
+  title: Reviewed UniProtKB P0A6K6
+  url: https://rest.uniprot.org/uniprotkb/P0A6K6.json
+  source_version: 2026_03; actual X-UniProt-Release header; retrieved 2026-10-11
+  source_sha256: 832643bbf42bfcb2ef2e5598e24ff7f18f224bde94291d56a8d5a61bed4b3d66
+- id: UniProtKB:P0AFF4
+  title: Reviewed UniProtKB P0AFF4
+  url: https://rest.uniprot.org/uniprotkb/P0AFF4.json
+  source_version: 2026_03; actual X-UniProt-Release header; retrieved 2026-10-11
+  source_sha256: 9243c3ca2a5ecd5f1c1cb0bc6d5affc2561425a0ae9ee62f323f17925d3b2b27
+- id: RHEA:27879
+  title: Rhea 27879 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27891
+  title: Rhea 27891 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:16070
+  title: Rhea 16070 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:24389
+  title: Rhea 24389 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:18794
+  title: Rhea 18794 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:29953
+  title: Rhea 29953 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:29985
+  title: Rhea 29985 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: GO:0042597
+  title: GO periplasmic space replacement authority
+  url: https://purl.obolibrary.org/obo/GO_0042597
+  source_version: Independent cached GO sqlite authority; inspected2026-10-11; SHA covers sqlite body
+  source_sha256: 018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd
+- id: PMID:6251162
+  title: Isolation of Escherichia coli mutants (cpdB) deficient in periplasmic cyclic phosphodiesterase.
+  url: https://doi.org/10.1099/00221287-119-1-31
+  source_version: 1980 primary full paper; author-repository scan inspected pp31–34, Table2 visually checked;
+    retrieved2026-10-11
+  source_sha256: 80865ad2c966129308417a751f10957e19568bd736ac26f5974e1623f1abf6e3
+- id: PMID:12499542
+  title: Structure of Escherichia coli uridine phosphorylase at2.0A.
+  url: https://pubmed.ncbi.nlm.nih.gov/12499542/
+  source_version: 2003 primary abstract only; Europe PMC core response retrieved2026-10-11
+  source_sha256: 5dd56da5e1131e179af3c83fda4c7cb3ea9cc8400407ce4fa14158876324ef64
+- id: PMID:27294396
+  title: Biochemical characterization of recombinant E. coli CpdB.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4905662/fullTextXML
+  source_version: Primary full text; retrieved2026-10-11
+  source_sha256: cb040e308ae5e49c7bef13e69069c28a2cb7850f93c038f696e104a41da92a2d
+- id: PMID:33640454
+  title: Molecular basis for substrate recognition by bacterial NupG.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8042404/fullTextXML
+  source_version: Primary full text; retrieved2026-10-11
+  source_sha256: 1231b772f3c063f906b2398cc82e9a0d69a9294a4681b10a6455f58c2d0d31f5
+- id: PMID:1089430
+  title: Multiple forms of phosphodeoxyribomutase from Escherichia coli. Physical and chemical characterization.
+  url: https://pubmed.ncbi.nlm.nih.gov/1089430/
+  source_version: Primary abstract only; Europe PMC core response retrieved2026-10-11
+  source_sha256: 4cefa8da9e7218bc732c7817e70f5fab8667528ac85c75006573228df25c0be3
+- id: PMID:16751
+  title: Uridine phosphorylase from Escherichia coli. Physical and chemical characterization.
+  url: https://pubmed.ncbi.nlm.nih.gov/16751/
+  source_version: Primary abstract only; Europe PMC core response retrieved2026-10-11
+  source_sha256: dde5126e227a8e93cf8edbe176da3568c67c877f076610a85549cb584b8ddcc5
+- id: PMID:15513740
+  title: Purification and properties of the Escherichia coli nucleoside transporter NupG, a paradigm for
+    a major facilitator transporter sub-family.
+  url: https://pubmed.ncbi.nlm.nih.gov/15513740/
+  source_version: Primary abstract only; Europe PMC core response retrieved2026-10-11
+  source_sha256: c929466426545c0e5623ac87c11b5d96cf8da4a9150992d7a0e346ee6f5f7f03
+- id: PMID:374403
+  title: Nucleoside transport in cells and membrane vesicles from Escherichia coli K12.
+  url: https://pubmed.ncbi.nlm.nih.gov/374403/
+  source_version: Primary abstract only; Europe PMC core response retrieved2026-10-11
+  source_sha256: b1ededb1679a0117efeacd14fe51c6e2cc4e42a0fe7466c280877bdb81899018
+- id: PMID:4202859
+  title: The purification and properties of cytidine deaminase from Escherichia coli.
+  url: https://www.jstage.jst.go.jp/article/biochemistry1922/74/4/74_4_797/_pdf
+  source_version: 1973 primary full text, pp.797-803
+  source_sha256: d094077fc2c51687a68d397866a9bc3f54aff1c42ea120a602b9b1dcb0f7aed4

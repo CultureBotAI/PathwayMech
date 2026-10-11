@@ -1,0 +1,1024 @@
+# Independent scientific review of methylglyoxal degradation I
+
+- Review: 20261011T012437Z-methylglyoxal-i-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T01:16:06Z
+- Finished UTC: 2026-10-11T01:24:37Z
+- Reviewer: Codex /root/pathway_authority_cache (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete three-reaction E. coli K-12 methylglyoxal degradation I record is supported. All 25 edges and 52 evidence blocks were reviewed against primary and exact native/current sources; no confirmed findings remain. Conditional physiology, source chemical conflicts, metal occupancy differences and primary-access limitations are preserved. All required final repository gates passed, including 1,048 tests.
+
+## Scope And Provenance
+
+One maintained pathway: complete 25-edge/52-evidence scientific review with native, current reviewed and primary source checks.
+
+Selection: Explicit parent assignment after the separate author froze SHA d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 117e2e8b99989a846bd04901268a7a49cc0bd500.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5386 | data/pathways/methylglyoxal-degradation-i.yaml | maintained | methylglyoxal degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Initial review setup in system Python | failed | False | MetaCyc:PWY-5386 | Failed before inspection because system Python lacked PyYAML; rerun in the repository environment. No target assessment or mutation occurred. |
+| Initial canonical inspection input path | failed | False | MetaCyc:PWY-5386 | Failed on nonexistent optional schema path; corrected to src/pathwaymech/schema/pathwaymech.yaml and reran before scientific assessment. |
+| Canonical input capture | passed | True | MetaCyc:PWY-5386 | Successful governed inspect captured exact target and current local source inputs before assessment. |
+| Independent raw source replay | passed | True | MetaCyc:PWY-5386 | Independent complete-RDF, native XML, exact source hash, literal quote and identifier replay passed. |
+| Independent structured source adapter replay | passed | False | MetaCyc:PWY-5386 | Unchanged canonical adapter replay reproduced datasets,30 searches and 7 components against38 retained rehashed response bodies; no new network retrieval. |
+| Final governed inspect and input-currentness check | passed | True | MetaCyc:PWY-5386 | All previously inspected input hashes remain unchanged. Newly inspected integration/graph/independent receipts and generated page are captured; all final gate log/report hashes match their frozen manifest. |
+| just render-pages | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-render-final.log and independently verified its SHA256 2f096941b33551c29f68670cc461233f028366c9ee2e71c41cf11a32ff22f0ea. |
+| just lint | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-lint-final.log and independently verified its SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41. |
+| just check-identifiers | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-identifiers-final.log and independently verified its SHA256 fb398fd0cc9752a631e7843c43729f35a4c0ee7f33f201c3cb22283c25c3d2fe. |
+| git diff --check | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-diff-final.log and independently verified its SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. |
+| just kgx-export --output-dir /private/tmp/pathwaymech-next-cohort-kgx | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-kgx-audit-cli.log and independently verified its SHA256 53a80838a5091234b2d8b9662af51756593bf438f337ea0ff4ea7afa019a59aa. |
+| just validate | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-validate-final.log and independently verified its SHA256 da46e4455adf7e85717032fcf2cbbfe74c3165fba90aa795cb2250e2dee45f48. |
+| just test | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-test-final.log and independently verified its SHA256 6a0df6d560f8bc97c2de0dd29c3880a9d726315bc92c476a19a0766469b37ccd. |
+| UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just vendored-check | passed | True | MetaCyc:PWY-5386 | Delegated root execution completed with terminal exit 0; reviewer inspected /private/tmp/pathwaymech-next-cohort-vendored.log and independently verified its SHA256 b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6. |
+| Generated SVG and actual CLI KGX audit | passed | True | MetaCyc:PWY-5386 | Delegated structural artifact audit passes for exact final record; reviewer also read the generated page with the standard-library HTML parser and confirmed the conditional scope and edge 25 anchor. |
+
+## Scientific And Domain Assessments
+
+### Exact native route and novelty
+
+identity: supported. Targets: MetaCyc:PWY-5386.
+
+The active MetaCyc definition is the full three-reaction methylglyoxal-to-pyruvate route; neither adjacent existing record is an exact duplicate. Native obsolete GO identity is not reused.
+
+### Direction, charge, stereochemistry and complete chemical sides
+
+grounding: supported. Targets: MetaCyc:PWY-5386.
+
+All 12 Rhea side assertions are supported with exact coefficient1, including right-to-left19071. R-specific lactate and thioester chemistry are preserved; generic quinone/quinol classes are explicit.
+
+Reviewed mg1-edge-001 through012,021 through025. The19072 native bidirectional bridge was corrected during author checks before this review; the final assertion is verified directly, without inventing a previous structured finding. The three reaction balances include cancelling R groups and do not establish a chain-length-specific quinone pair.
+
+### Physical assembly and enzyme roles
+
+graph: supported. Targets: MetaCyc:PWY-5386.
+
+The two-copy GloA complex owns catalysis; GloB monomer annotation and Dld enzyme role are independently supported. Net GloA chemistry includes the documented spontaneous equilibrium without assigning its formation to GloA.
+
+Reviewed mg1-edge-013 through016. GloC is acknowledged as an accessory enzyme rather than silently excluded from biology; the exact native GloB branch remains complete. The net reaction is selected consistently without a duplicate hemithioacetal decomposition reaction.
+
+### Metal and FAD evidence without transferred specificity
+
+evidence: supported. Targets: MetaCyc:PWY-5386.
+
+Ni-active GloA, Zn-supported GloB and bound FAD on Dld are supported; occupancy and metal-substitution limitations are explicitly retained.
+
+Reviewed mg1-edge-017 through019. The 1998 one-Ni-per-dimer measurement differs from the current structural annotation of two; the record preserves both. Alternative metals are experimental contexts, not obligatory physiological cofactors. FAD is not a freely consumed net substrate.
+
+### Taxon, membrane and conditional pathway flux
+
+scope: supported. Targets: MetaCyc:PWY-5386.
+
+The K-12 sequence scope and peripheral Dld location are supported. The later deletion study supports the complete branch in its tested engineered glycerol-growth context, while the older native uncertainty remains visible.
+
+Reviewed mg1-edge-020 and025 plus the entire description. No direct Dld proton-pumping, UQ6 specificity, constitutive wild-type flux or GloB exclusivity is asserted.
+
+### Native conflicts and source access
+
+provenance: supported. Targets: MetaCyc:PWY-5386.
+
+Native L-lactate, oxidized-glutathione and UQ6 assignments are not silently treated as valid identity mappings. Source versions/hash scopes, abstract-only access and all literal excerpts remain honest.
+
+All 20 reference body hashes and 8 literal quotes independently match. Seven older primary abstracts were inspected; only the 2022 physiology article was inspected as full JATS. No inaccessible full article is represented as read.
+
+### Bounded iModulonDB context
+
+evidence: supported. Targets: MetaCyc:PWY-5386.
+
+The required structured database lookup was performed by the root workflow with a direct unchanged adapter after console dependency failure. Independent offline replay reproduces its exact retained responses. No mechanistic inference follows from module text matches or bounded nonmembership.
+
+### Required gates, authority currentness and generated publication
+
+schema: supported. Targets: MetaCyc:PWY-5386.
+
+All required final checks pass on unchanged scientific inputs. Generated page/KGX preserve every target edge and evidence block; canonical authorities resolve the complete identity set without changing prior term metadata.
+
+Validation and programmatic graphics checks are separate from the scientific assessments above. Generated-page fixes belong to the maintained record and renderer; no generated file was edited by the reviewer.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/methylglyoxal-degradation-i.yaml; Entire record; all 25 edges and 52 evidence blocks | supports | Read the complete final target, including every local node, edge, description, structured assertion, quote and reference. Final source digest d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f. |
+| native-pathway | https://pathway.yeastgenome.org/getxml?META:PWY-5386; Pathway PWY-5386 reaction-list, reaction-layout, common-name, comment | supports | Exact three-reaction GloA/GloB/Dld pathway to pyruvate; native layout selects R2L for GLYOXI and L2R for the others. Dated comment explicitly treats final D-lactate fate as likely, which the record preserves. |
+| native-assembly | https://pathway.yeastgenome.org/getxml?META:GLYOXI-CPLX; GLYOXI-CPLX/component/coefficient and catalyzes; independently inspected GLYOXI-MONOMER dblink | supports | The GloA complex contains two monomers; native monomer unification points to P0AC81. The complex, not its isolated subunit, owns the catalytic edge. |
+| native-bridge | https://pathway.yeastgenome.org/getxml?META:GLYOXI-RXN; GLYOXI-RXN/dblink[RHEA]; GLYOXII-RXN/dblink[RHEA]; DLACTDEHYDROGFAD-RXN left/right/enzymatic-reaction | supports | Independent native XML inspection confirms 19072 is the GloA bidirectional member,25245 is the GloB master, and the Dld reaction has no Rhea dblink. The record accurately uses the separate Dld protein/chemical bridge. |
+| native-pathbank | PathBank:SMP0002125, PW002113.owl; Pathway membership; ReactionCatalysis6107–6109; ProteinComplex4108; ProteinReferences6205/6206/5893; chemical references | supports | All three native controllers verified. The two-copy GloA composition agrees independently. L-lactate and oxidized-glutathione annotations conflict with the supported chemistry and are explicitly rejected; UQ6 specificity is not propagated. |
+| up-p0ac81 | https://rest.uniprot.org/uniprotkb/P0AC81.json; comments0,1,2,4; organism; genes | supports | Reviewed K-12 GloA function explicitly distinguishes spontaneous hemithioacetal formation from its enzymatic isomerization; exact Rhea19069, Ni support and homodimer annotation verified. |
+| up-p0ac84 | https://rest.uniprot.org/uniprotkb/P0AC84.json; comments0,2,3,7; organism; genes | supports | Reviewed K-12 GloB assigns the specific R-lactoylglutathione reaction25245, monomeric assembly, two-Zn annotation and reconstitution alternatives; GloC contribution is explicit. |
+| up-p06149 | https://rest.uniprot.org/uniprotkb/P06149.json; comments0,1,2,5; organism; genes | supports | Reviewed K-12 Dld assigns exact generic quinone reaction51468, enzyme-bound FAD and peripheral inner-membrane cytoplasmic orientation with source-specific evidence. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Masters19069/25245/51468, all directional/bidirectional predicates;12 exact side/contains1/compound/ChEBI chains | supports | Independent complete-RDF stream replay confirms all 12 coefficients and directions:19071 is right-to-left; 25246 and 51469 are left-to-right. ChEBI formulas and charges balance each reaction; corresponding quinone R groups cancel symbolically. |
+| pmid-9628737 | https://pubmed.ncbi.nlm.nih.gov/9628737/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary abstract reports purified E. coli GloA homodimer and solution measurements of one nickel per dimer; the differing later occupancy annotation remains explicit. |
+| pmid-10913283 | https://pubmed.ncbi.nlm.nih.gov/10913283/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary structural abstract distinguishes E. coli Ni-active/Zn-inactive GloA and active Co/Cd complexes from human Zn glyoxalase. |
+| pmid-17196158 | https://pubmed.ncbi.nlm.nih.gov/17196158/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary abstract establishes E. coli GloB hydrolysis to D-lactate/free glutathione and Zn activation, with no evidence for Ni use. |
+| pmid-25670698 | https://pubmed.ncbi.nlm.nih.gov/25670698/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary abstract independently supports additive accessory GloC activity rather than exclusive GloB function. |
+| pmid-3013300 | https://pubmed.ncbi.nlm.nih.gov/3013300/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary abstract explicitly describes purified Dld/UQ8/cytochrome-o reconstitution and non-electrogenic Dld-to-quinone transfer; source truncates at 250 words. |
+| pmid-10944213 | https://pubmed.ncbi.nlm.nih.gov/10944213/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary structural abstract supports bound FAD and peripheral cytoplasmic inner-membrane Dld localization. No full-text inspection is claimed. |
+| pmid-7578233 | https://pubmed.ncbi.nlm.nih.gov/7578233/; Europe PMC exact indexed primary abstract, resultList.result[0].abstractText | supports | Primary kinetic abstract independently supports D-lactate-driven enzyme-bound FAD reduction and subsequent pyruvate release; this contextual source is not relabeled as a full-text study. |
+| physiology | https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10521649/fullTextXML; Methods 2.4/Table1; Results 3.2/Figure 2 and surrounding deletion/growth discussion | supports | The 2022 primary full text uses MG1655-derived SIJ488 glycolysis mutants on glycerol. GloA or Dld loss abolishes growth in the tested bypass; this supports the complete route conditionally, not unrestricted wild-type flux or GloB exclusivity. |
+| identity-search | Independent local search and comparative record inspection; rg -uu exact PWY-5386/SMP0002125/PW002113; closest yeast and methylglyoxalIII records; GO SemanticSQL0019243 | supports | Target is distinct from the yeast two-step R-lactate endpoint and E. coli glutathione-independent acetol route. GO0019243 is obsolete with broader0051596 replacement; exact active MetaCyc identity is justified. |
+| independent-replay | research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-source-replay.json; All independently parsed source, chemistry, quote and identity results | supports | Actual independent script exit 0:20 reference body digests,12 Rhea sides,3 balances,8 literal quotes,native memberships/assembly/crossrefs,22 resolved named IDs. |
+| imodulondb | research/pathway_additions/2026-10-10-next-cohort/imodulondb-context.json; e_coli/precise_mg1655 genes b1651,b0212,b2133; seven queried component tables | context_only | Exact gene matches provide expression-dataset context. Broad gloB search returns lexical global-function hits; none of the three proteins occurs in the seven inspected tables. This is bounded context, not mechanism proof or biological absence. |
+| adapter-replay | research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-imodulondb-replay.json; Unchanged canonical ImodulonDBClient with exact URL-to-retained-body transport | supports | Independent offline replay reproduces datasets,all 30 queries and 7 tables;all 38 bodies rehashed. No fresh network retrieval. Root console failure preceded API calls; direct unchanged-client retrieval succeeded. |
+| final-gates | research/pathway_additions/2026-10-10-next-cohort/integration-validation.json; checks, tests, environment, reports | supports | Root actually executed the full final gates; reviewer inspected and rehashed all logs and report receipts. Test result: 1,048 passed, 3 skipped, 3 upstream warnings in 209.00s; validation covers 177 records, 9,345 evidence blocks and 262 histories. |
+| generated-audit | research/pathway_additions/2026-10-10-next-cohort/generated-graph-kgx-audit.json; records[record_id=MetaCyc:PWY-5386]; SVG and KGX results | supports | Independent programmatic audit preserves all 25 target edges, 52 evidence blocks, 21 SVG nodes and all 22 named nodes in KGX scope. Source/target anchors, bounds, categories, metadata and separate CLI export agree. No browser inspection claim. |
+| authority-final | research/pathway_additions/2026-10-10-next-cohort/authority-integration.json; snapshots; added_manifest_inputs | supports | Canonical authority refresh retains every baseline term and metadata entry unchanged while adding required identities. All named target identifiers resolve; independent scientific checks used complete native source objects. |
+
+## Limits And Additional Notes
+
+- Seven older primary papers were inspected through indexed abstracts; one abstract is truncated by its source. Detailed database assertions are not relabeled as newly inspected full-text experiments.
+- Whole-route physiological support is conditional on the 2022 MG1655-derived SIJ488 engineered glycolysis-mutant/glycerol context; unrestricted wild-type flux and GloB exclusivity are not established.
+- Quinone/quinol are exact source chemical classes with symbolic R-group balance, not a selected isoprenoid-chain pair. GloA nickel-occupancy measurements differ and remain visible.
+- iModulonDB results are computational expression context only. Console dependency failure was bypassed by root through the unchanged canonical client; independent replay was offline, not fresh retrieval.
+- Original Documents checkout is OS-inaccessible. Identity search includes hidden and ignored files in the accessible worktree only.
+- No browser visual inspection or new experiments; structural page/KGX checks are delegated and passed on the frozen final record.
+- Initial review setup used a system Python without PyYAML, then an incorrect optional schema input path. The actual canonical inspect was rerun successfully with the repository environment and src/pathwaymech/schema/pathwaymech.yaml before scientific assessment. These were setup errors, not target defects.
+- An intermediate external review draft failed validation because its timestamp-prefixed review_id was intentionally unfinished; final identity/timestamps were assigned before canonical completed validation. Optional BeautifulSoup was unavailable. An initial standard-library page assertion used a guessed literal/anchor and failed; the corrected readback passed against the observed mechanism-edge-1 through mechanism-edge-25 anchors and exact SIJ488 conditional-scope text. These were reviewer setup errors, not target defects.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T012437Z-methylglyoxal-i-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of methylglyoxal degradation I
+started_at: '2026-10-11T01:16:06Z'
+finished_at: '2026-10-11T01:24:37Z'
+reviewer:
+  identity: Codex /root/pathway_authority_cache
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author or edit the methylglyoxal target or its mechanism
+    dossier. Authored the separate purine-deoxyribonucleosides record in this cohort;
+    shared integration and full gates were owned by root. Target source assertions
+    were independently replayed and primary/native evidence inspected. Earlier work
+    included shared identifier authority tooling; this review checks raw source objects
+    independently of curated authority summaries.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete three-reaction E. coli K-12 methylglyoxal degradation I record
+  is supported. All 25 edges and 52 evidence blocks were reviewed against primary
+  and exact native/current sources; no confirmed findings remain. Conditional physiology,
+  source chemical conflicts, metal occupancy differences and primary-access limitations
+  are preserved. All required final repository gates passed, including 1,048 tests.
+source:
+  git_revision: 117e2e8b99989a846bd04901268a7a49cc0bd500
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: d0a5e6a269c287a9892e2ffd1b5cf3b66f307be21cb4a3e80b808e5314e2e5ea
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: ae975c3ad67b3366deec6b74229f34f89666e1ec5594c0e4d1ffc7402b453a47
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 67e5136727d23ae7cd52c3511b43523d258caffdfae9424dccfe6896c941551a
+    role: context
+  - path: data/pathways/methylglyoxal-degradation-i.yaml
+    sha256: d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/MetaCyc_PWY-5386.html
+    sha256: 6e8c67b06a564523a5c321821b36a9dbd869b3643ca3f73d68f558844daeba77
+    role: generated page; maintained owner data/pathways/methylglyoxal-degradation-i.yaml;
+      renderer src/pathwaymech/cli.py and graph_view.py
+  - path: research/pathway_additions/2026-10-10-next-cohort/authority-integration.json
+    sha256: e5bec82ceedda98886742bf9fe269015e151fc278daa5f9de07dfe12eeb328a7
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/generated-graph-kgx-audit.json
+    sha256: 7a99dfdd6370ebab39c3d63d2e698049955416b74f7732bf5758e4de4b6b92a1
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/imodulondb-context.json
+    sha256: cd09959330f33c6b808962e881755ad6d8d35e1c5a08b42835e8300ca70c4a32
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/imodulondb-parser-replay.json
+    sha256: 0fac3b3a8e5f3f8f893613099746d21f906ba2e5fdb23be47fac411bf436c29f
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/imodulondb-runner-availability.json
+    sha256: 22c60f1b4198096a055f3fd48610531146bfdb2f6c1e760b204585ba14f8152b
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/imodulondb-source-manifest.json
+    sha256: ccc7dab02160c3ec5635a18605050a9f95ccbe601d796d938a19e4846ec65382
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/integration-validation.json
+    sha256: dd58a6913ed745f8d941ef6fa15118c9d9b6e8e20182b366c55596bf8a8b408d
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-curation.md
+    sha256: b09f5d67f9fa2e0b02e6cf369fd6b4549b2f39023c1d9bef199815237cd6e449
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-duplicate-searches.json
+    sha256: 24b1c09be9d54e1826d85a0defd2a2e5aa2a31a2a103bd0b4d31180b9ed0b113
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-identifiers.json
+    sha256: 578f56cb482f6355c40d3e96d69ab50b625b2206242889a34ac26b4ce2d5a366
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-imodulondb-replay.json
+    sha256: 9d977ad47d06b486a6e28d721b2f5220436ccd0425b776efefbf327f92e18c20
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-source-replay.json
+    sha256: b88c47c1925c183c10d9c115ce915226b188b6b508e29aee68a8a72c4e2b17f8
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-replay.py
+    sha256: 327ae59aa9c3ce647acae1fa182763d9c22e9a0931a517d65756cce89b2f7bad
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-source-manifest.json
+    sha256: d41b330136e765610144f11d5f9d1e9b442fa873e2d0057573a5d9e950052f89
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-source-projection.json
+    sha256: 7e56f4123703e15a8712016db85578e77c14f1aacfb73adb7b88c18020d7cb13
+    role: context
+  - path: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-validation.json
+    sha256: 133ff4e4d93bf636e95d9b01c9b5a3250e21c415c825a7791618415f2eb127bf
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+scope:
+  description: 'One maintained pathway: complete 25-edge/52-evidence scientific review
+    with native, current reviewed and primary source checks.'
+  selection: Explicit parent assignment after the separate author froze SHA d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5386
+  exclusions:
+  - target: Other cohort records and unrelated pathways
+    reason: Outside this independent scientific target; adjacent records inspected
+      only for identity boundaries.
+  - target: Browser interaction and experimental replication
+    reason: Programmatic artifact audit is delegated; no browser surfaces or wet-lab
+      experiments claimed.
+targets:
+- target_id: MetaCyc:PWY-5386
+  path: data/pathways/methylglyoxal-degradation-i.yaml
+  label: methylglyoxal degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylglyoxal-degradation-i.yaml
+    role: maintained pathway record; future scientific fixes
+checks:
+- check_id: initial-setup
+  name: Initial review setup in system Python
+  status: failed
+  required: false
+  summary: Failed before inspection because system Python lacked PyYAML; rerun in
+    the repository environment. No target assessment or mutation occurred.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: python3 - (review target and inspect setup)
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids: []
+- check_id: initial-input-path
+  name: Initial canonical inspection input path
+  status: failed
+  required: false
+  summary: Failed on nonexistent optional schema path; corrected to src/pathwaymech/schema/pathwaymech.yaml
+    and reran before scientific assessment.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: uv run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-cohort-review-methylglyoxal-i/targets.yaml
+    --input schema/pathwaymech.yaml (plus other captured inputs)
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids: []
+- check_id: inspect
+  name: Canonical input capture
+  status: passed
+  required: true
+  summary: Successful governed inspect captured exact target and current local source
+    inputs before assessment.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-cohort-review-methylglyoxal-i/targets.yaml
+    --input .claude/skills/add-pathway/SKILL.md --input .claude/skills/review-yaml-record/SKILL.md
+    --input conf/identifier_policy.yaml --input conf/identifier_sources.json --input
+    data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/CAUSAL_GRAPHS.md --input docs/CURATION.md --input docs/HARMONIZATION.md
+    --input docs/record-review-profile.md --input docs/record-reviews.md --input justfile
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-context.json
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-parser-replay.json
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-runner-availability.json
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-source-manifest.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-curation.md
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-duplicate-searches.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-identifiers.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-replay.py
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-source-manifest.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-source-projection.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-validation.json
+    --input src/pathwaymech/schema/pathwaymech.yaml --input src/pathwaymech/schema.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - target
+- check_id: source-replay
+  name: Independent raw source replay
+  status: passed
+  required: true
+  summary: Independent complete-RDF, native XML, exact source hash, literal quote
+    and identifier replay passed.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: .venv/bin/python /private/tmp/pathwaymech-next-cohort-review-methylglyoxal-i/replay.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - independent-replay
+- check_id: adapter-offline-replay
+  name: Independent structured source adapter replay
+  status: passed
+  required: false
+  summary: Unchanged canonical adapter replay reproduced datasets,30 searches and
+    7 components against38 retained rehashed response bodies; no new network retrieval.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: .venv/bin/python /private/tmp/pathwaymech-next-cohort-review-methylglyoxal-i/imodulondb-replay.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - adapter-replay
+- check_id: final-input-recheck
+  name: Final governed inspect and input-currentness check
+  status: passed
+  required: true
+  summary: All previously inspected input hashes remain unchanged. Newly inspected
+    integration/graph/independent receipts and generated page are captured; all final
+    gate log/report hashes match their frozen manifest.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-cohort-review-methylglyoxal-i/targets.yaml
+    --input .claude/skills/add-pathway/SKILL.md --input .claude/skills/review-yaml-record/SKILL.md
+    --input conf/identifier_policy.yaml --input conf/identifier_sources.json --input
+    data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/CAUSAL_GRAPHS.md --input docs/CURATION.md --input docs/HARMONIZATION.md
+    --input docs/record-review-profile.md --input docs/record-reviews.md --input justfile
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-context.json
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-parser-replay.json
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-runner-availability.json
+    --input research/pathway_additions/2026-10-10-next-cohort/imodulondb-source-manifest.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-curation.md
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-duplicate-searches.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-identifiers.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-replay.py
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-source-manifest.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-source-projection.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-validation.json
+    --input src/pathwaymech/schema/pathwaymech.yaml --input src/pathwaymech/schema.py
+    --input research/pathway_additions/2026-10-10-next-cohort/integration-validation.json
+    --input research/pathway_additions/2026-10-10-next-cohort/generated-graph-kgx-audit.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-source-replay.json
+    --input research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-imodulondb-replay.json
+    --input research/pathway_additions/2026-10-10-next-cohort/authority-integration.json
+    --input pages/records/MetaCyc_PWY-5386.html
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - target
+  - final-gates
+  - generated-audit
+- check_id: required-gate-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-render-final.log and independently verified
+    its SHA256 2f096941b33551c29f68670cc461233f028366c9ee2e71c41cf11a32ff22f0ea.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-2
+  name: just lint
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-lint-final.log and independently verified
+    its SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-3
+  name: just check-identifiers
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-identifiers-final.log and independently verified
+    its SHA256 fb398fd0cc9752a631e7843c43729f35a4c0ee7f33f201c3cb22283c25c3d2fe.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-4
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-diff-final.log and independently verified
+    its SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-5
+  name: just kgx-export --output-dir /private/tmp/pathwaymech-next-cohort-kgx
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-kgx-audit-cli.log and independently verified
+    its SHA256 53a80838a5091234b2d8b9662af51756593bf438f337ea0ff4ea7afa019a59aa.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-cohort-kgx
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-6
+  name: just validate
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-validate-final.log and independently verified
+    its SHA256 da46e4455adf7e85717032fcf2cbbfe74c3165fba90aa795cb2250e2dee45f48.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-7
+  name: just test
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-test-final.log and independently verified
+    its SHA256 6a0df6d560f8bc97c2de0dd29c3880a9d726315bc92c476a19a0766469b37ccd.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: required-gate-8
+  name: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    vendored-check
+  status: passed
+  required: true
+  summary: Delegated root execution completed with terminal exit 0; reviewer inspected
+    /private/tmp/pathwaymech-next-cohort-vendored.log and independently verified its
+    SHA256 b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - final-gates
+  scope_note: Full repository gate; not a one-record test. Actual execution supplied
+    by root, log contents and bytes independently inspected.
+- check_id: graph-publication
+  name: Generated SVG and actual CLI KGX audit
+  status: passed
+  required: true
+  summary: Delegated structural artifact audit passes for exact final record; reviewer
+    also read the generated page with the standard-library HTML parser and confirmed
+    the conditional scope and edge 25 anchor.
+  target_ids:
+  - MetaCyc:PWY-5386
+  command: /private/tmp/pathwaymech-next-cohort-graph-audit.py --comparison-kgx-dir
+    /private/tmp/pathwaymech-next-cohort-kgx
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - generated-audit
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/methylglyoxal-degradation-i.yaml
+  locator: Entire record; all 25 edges and 52 evidence blocks
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Read the complete final target, including every local node, edge, description,
+    structured assertion, quote and reference. Final source digest d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f.
+  snapshot_sha256: d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f
+- evidence_id: native-pathway
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-5386
+  locator: Pathway PWY-5386 reaction-list, reaction-layout, common-name, comment
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Exact three-reaction GloA/GloB/Dld pathway to pyruvate; native layout selects
+    R2L for GLYOXI and L2R for the others. Dated comment explicitly treats final D-lactate
+    fate as likely, which the record preserves.
+  snapshot_sha256: 00ff04c1d2806dfa130b6f17082ed158a762b771d5955112927dec4730c8a918
+- evidence_id: native-assembly
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GLYOXI-CPLX
+  locator: GLYOXI-CPLX/component/coefficient and catalyzes; independently inspected
+    GLYOXI-MONOMER dblink
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: The GloA complex contains two monomers; native monomer unification points
+    to P0AC81. The complex, not its isolated subunit, owns the catalytic edge.
+  snapshot_sha256: 5ba519e1ab67d57aa28f7e64770a6d68bcd2b3877f828246e74613aacc324f04
+- evidence_id: native-bridge
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GLYOXI-RXN
+  locator: GLYOXI-RXN/dblink[RHEA]; GLYOXII-RXN/dblink[RHEA]; DLACTDEHYDROGFAD-RXN
+    left/right/enzymatic-reaction
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Independent native XML inspection confirms 19072 is the GloA bidirectional
+    member,25245 is the GloB master, and the Dld reaction has no Rhea dblink. The
+    record accurately uses the separate Dld protein/chemical bridge.
+  snapshot_sha256: 6a7a1b978ba143de4326aaea171f1ffaf14f52bb5506db8825a084248a8a1d31
+- evidence_id: native-pathbank
+  kind: database
+  reference: PathBank:SMP0002125, PW002113.owl
+  locator: Pathway membership; ReactionCatalysis6107–6109; ProteinComplex4108; ProteinReferences6205/6206/5893;
+    chemical references
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: All three native controllers verified. The two-copy GloA composition agrees
+    independently. L-lactate and oxidized-glutathione annotations conflict with the
+    supported chemistry and are explicitly rejected; UQ6 specificity is not propagated.
+  snapshot_sha256: 4acbf2083dba4aa1be7bdd7a1b5e11f7d93694fa919e56a0f6b0fdc104b32193
+- evidence_id: up-p0ac81
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0AC81.json
+  locator: comments0,1,2,4; organism; genes
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Reviewed K-12 GloA function explicitly distinguishes spontaneous hemithioacetal
+    formation from its enzymatic isomerization; exact Rhea19069, Ni support and homodimer
+    annotation verified.
+  snapshot_sha256: 45b8af31cd9ff71ebaa84bdace95022b9105f21de9d8bc6efe7fcdfc81035740
+- evidence_id: up-p0ac84
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0AC84.json
+  locator: comments0,2,3,7; organism; genes
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Reviewed K-12 GloB assigns the specific R-lactoylglutathione reaction25245,
+    monomeric assembly, two-Zn annotation and reconstitution alternatives; GloC contribution
+    is explicit.
+  snapshot_sha256: cb45f73fafd008ac848b645ca5e13883803feb767179f78d92540540cdee9f7c
+- evidence_id: up-p06149
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P06149.json
+  locator: comments0,1,2,5; organism; genes
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Reviewed K-12 Dld assigns exact generic quinone reaction51468, enzyme-bound
+    FAD and peripheral inner-membrane cytoplasmic orientation with source-specific
+    evidence.
+  snapshot_sha256: 60f583cad209142f1903bf985c55046590561c1e6d2ef7330e9d49bdd989ffcb
+- evidence_id: rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Masters19069/25245/51468, all directional/bidirectional predicates;12 exact
+    side/contains1/compound/ChEBI chains
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Independent complete-RDF stream replay confirms all 12 coefficients and
+    directions:19071 is right-to-left; 25246 and 51469 are left-to-right. ChEBI formulas
+    and charges balance each reaction; corresponding quinone R groups cancel symbolically.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: pmid-9628737
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/9628737/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary abstract reports purified E. coli GloA homodimer and solution measurements
+    of one nickel per dimer; the differing later occupancy annotation remains explicit.
+  snapshot_sha256: 035d5dcc535259902b93994cab8ab347eb5677a9b0f4950d3a46326c29747fbf
+- evidence_id: pmid-10913283
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/10913283/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary structural abstract distinguishes E. coli Ni-active/Zn-inactive
+    GloA and active Co/Cd complexes from human Zn glyoxalase.
+  snapshot_sha256: 8f5b4fc79cb48e8bc231dc75091cee265d896f66ab260b615e5e1e170f0d5688
+- evidence_id: pmid-17196158
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/17196158/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary abstract establishes E. coli GloB hydrolysis to D-lactate/free
+    glutathione and Zn activation, with no evidence for Ni use.
+  snapshot_sha256: 5db1a0aa36cf6100e39b8aa40047521371854a22947b3e8970130646e4ca071a
+- evidence_id: pmid-25670698
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/25670698/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary abstract independently supports additive accessory GloC activity
+    rather than exclusive GloB function.
+  snapshot_sha256: a2fc2b0206d1578ea60e8390bfa46bbdb1fa8ba1aeeafb645f1107f45788655a
+- evidence_id: pmid-3013300
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/3013300/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary abstract explicitly describes purified Dld/UQ8/cytochrome-o reconstitution
+    and non-electrogenic Dld-to-quinone transfer; source truncates at 250 words.
+  snapshot_sha256: 9716a91b72ccbc8e0e86334087d0436db715b9a4011bc847f01b51663262147a
+- evidence_id: pmid-10944213
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/10944213/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary structural abstract supports bound FAD and peripheral cytoplasmic
+    inner-membrane Dld localization. No full-text inspection is claimed.
+  snapshot_sha256: cfdbd6444a83c415b84af14a485f5b84d12bbeeee5f112df53f2b5095ab14683
+- evidence_id: pmid-7578233
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/7578233/
+  locator: Europe PMC exact indexed primary abstract, resultList.result[0].abstractText
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Primary kinetic abstract independently supports D-lactate-driven enzyme-bound
+    FAD reduction and subsequent pyruvate release; this contextual source is not relabeled
+    as a full-text study.
+  snapshot_sha256: 554ffff827239de700f79646e07e289631f1225b5e1d82e70321fcdf3abc38eb
+- evidence_id: physiology
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10521649/fullTextXML
+  locator: Methods 2.4/Table1; Results 3.2/Figure 2 and surrounding deletion/growth
+    discussion
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: The 2022 primary full text uses MG1655-derived SIJ488 glycolysis mutants
+    on glycerol. GloA or Dld loss abolishes growth in the tested bypass; this supports
+    the complete route conditionally, not unrestricted wild-type flux or GloB exclusivity.
+  snapshot_sha256: b589694256fb3da774f5d71bd56b10bcefef06ea74772d22e1cb0e20ffe3480d
+- evidence_id: identity-search
+  kind: search
+  reference: Independent local search and comparative record inspection
+  locator: rg -uu exact PWY-5386/SMP0002125/PW002113; closest yeast and methylglyoxalIII
+    records; GO SemanticSQL0019243
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Target is distinct from the yeast two-step R-lactate endpoint and E. coli
+    glutathione-independent acetol route. GO0019243 is obsolete with broader0051596
+    replacement; exact active MetaCyc identity is justified.
+  snapshot_sha256: 6d3ec3f3caf6296996f821175d93c784550286e85e85bee655d5a284a6b5e5d4
+  search_scope: Ignored- and hidden-inclusive accessible worktree data/pathways,research,reviews;
+    excludes .git/.venv. Original Documents repository OS-inaccessible; no whole-computer
+    absence assertion.
+- evidence_id: independent-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-source-replay.json
+  locator: All independently parsed source, chemistry, quote and identity results
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Actual independent script exit 0:20 reference body digests,12 Rhea sides,3
+    balances,8 literal quotes,native memberships/assembly/crossrefs,22 resolved named
+    IDs.
+  snapshot_sha256: b88c47c1925c183c10d9c115ce915226b188b6b508e29aee68a8a72c4e2b17f8
+- evidence_id: imodulondb
+  kind: database
+  reference: research/pathway_additions/2026-10-10-next-cohort/imodulondb-context.json
+  locator: e_coli/precise_mg1655 genes b1651,b0212,b2133; seven queried component
+    tables
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: context_only
+  summary: Exact gene matches provide expression-dataset context. Broad gloB search
+    returns lexical global-function hits; none of the three proteins occurs in the
+    seven inspected tables. This is bounded context, not mechanism proof or biological
+    absence.
+  snapshot_sha256: cd09959330f33c6b808962e881755ad6d8d35e1c5a08b42835e8300ca70c4a32
+- evidence_id: adapter-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-next-cohort/methylglyoxal-i-independent-imodulondb-replay.json
+  locator: Unchanged canonical ImodulonDBClient with exact URL-to-retained-body transport
+  accessed_at: '2026-10-11T01:20:12Z'
+  support: supports
+  summary: Independent offline replay reproduces datasets,all 30 queries and 7 tables;all
+    38 bodies rehashed. No fresh network retrieval. Root console failure preceded
+    API calls; direct unchanged-client retrieval succeeded.
+  snapshot_sha256: 9d977ad47d06b486a6e28d721b2f5220436ccd0425b776efefbf327f92e18c20
+- evidence_id: final-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-next-cohort/integration-validation.json
+  locator: checks, tests, environment, reports
+  accessed_at: '2026-10-11T01:22:41Z'
+  support: supports
+  summary: 'Root actually executed the full final gates; reviewer inspected and rehashed
+    all logs and report receipts. Test result: 1,048 passed, 3 skipped, 3 upstream
+    warnings in 209.00s; validation covers 177 records, 9,345 evidence blocks and
+    262 histories.'
+  snapshot_sha256: dd58a6913ed745f8d941ef6fa15118c9d9b6e8e20182b366c55596bf8a8b408d
+- evidence_id: generated-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-10-next-cohort/generated-graph-kgx-audit.json
+  locator: records[record_id=MetaCyc:PWY-5386]; SVG and KGX results
+  accessed_at: '2026-10-11T01:22:41Z'
+  support: supports
+  summary: Independent programmatic audit preserves all 25 target edges, 52 evidence
+    blocks, 21 SVG nodes and all 22 named nodes in KGX scope. Source/target anchors,
+    bounds, categories, metadata and separate CLI export agree. No browser inspection
+    claim.
+  snapshot_sha256: 7a99dfdd6370ebab39c3d63d2e698049955416b74f7732bf5758e4de4b6b92a1
+- evidence_id: authority-final
+  kind: authority
+  reference: research/pathway_additions/2026-10-10-next-cohort/authority-integration.json
+  locator: snapshots; added_manifest_inputs
+  accessed_at: '2026-10-11T01:22:41Z'
+  support: supports
+  summary: Canonical authority refresh retains every baseline term and metadata entry
+    unchanged while adding required identities. All named target identifiers resolve;
+    independent scientific checks used complete native source objects.
+  snapshot_sha256: e5bec82ceedda98886742bf9fe269015e151fc278daa5f9de07dfe12eeb328a7
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact native route and novelty
+  outcome: supported
+  summary: The active MetaCyc definition is the full three-reaction methylglyoxal-to-pyruvate
+    route; neither adjacent existing record is an exact duplicate. Native obsolete
+    GO identity is not reused.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - target
+  - native-pathway
+  - identity-search
+- assessment_id: chemistry
+  area: grounding
+  topic: Direction, charge, stereochemistry and complete chemical sides
+  outcome: supported
+  summary: All 12 Rhea side assertions are supported with exact coefficient1, including
+    right-to-left19071. R-specific lactate and thioester chemistry are preserved;
+    generic quinone/quinol classes are explicit.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - rhea
+  - native-bridge
+  - up-p0ac81
+  - up-p0ac84
+  - up-p06149
+  - independent-replay
+  details: Reviewed mg1-edge-001 through012,021 through025. The19072 native bidirectional
+    bridge was corrected during author checks before this review; the final assertion
+    is verified directly, without inventing a previous structured finding. The three
+    reaction balances include cancelling R groups and do not establish a chain-length-specific
+    quinone pair.
+- assessment_id: catalysts
+  area: graph
+  topic: Physical assembly and enzyme roles
+  outcome: supported
+  summary: The two-copy GloA complex owns catalysis; GloB monomer annotation and Dld
+    enzyme role are independently supported. Net GloA chemistry includes the documented
+    spontaneous equilibrium without assigning its formation to GloA.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - native-assembly
+  - native-pathbank
+  - up-p0ac81
+  - up-p0ac84
+  - up-p06149
+  - pmid-9628737
+  - pmid-17196158
+  details: Reviewed mg1-edge-013 through016. GloC is acknowledged as an accessory
+    enzyme rather than silently excluded from biology; the exact native GloB branch
+    remains complete. The net reaction is selected consistently without a duplicate
+    hemithioacetal decomposition reaction.
+- assessment_id: cofactors
+  area: evidence
+  topic: Metal and FAD evidence without transferred specificity
+  outcome: supported
+  summary: Ni-active GloA, Zn-supported GloB and bound FAD on Dld are supported; occupancy
+    and metal-substitution limitations are explicitly retained.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - up-p0ac81
+  - up-p0ac84
+  - up-p06149
+  - pmid-9628737
+  - pmid-10913283
+  - pmid-17196158
+  - pmid-10944213
+  details: Reviewed mg1-edge-017 through019. The 1998 one-Ni-per-dimer measurement
+    differs from the current structural annotation of two; the record preserves both.
+    Alternative metals are experimental contexts, not obligatory physiological cofactors.
+    FAD is not a freely consumed net substrate.
+- assessment_id: physiology-scope
+  area: scope
+  topic: Taxon, membrane and conditional pathway flux
+  outcome: supported
+  summary: The K-12 sequence scope and peripheral Dld location are supported. The
+    later deletion study supports the complete branch in its tested engineered glycerol-growth
+    context, while the older native uncertainty remains visible.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - up-p0ac81
+  - up-p0ac84
+  - up-p06149
+  - pmid-3013300
+  - pmid-10944213
+  - physiology
+  details: Reviewed mg1-edge-020 and025 plus the entire description. No direct Dld
+    proton-pumping, UQ6 specificity, constitutive wild-type flux or GloB exclusivity
+    is asserted.
+  dimensions:
+  - name: taxon_and_condition
+    value: K-12 protein core; MG1655-derived SIJ488 glycolysis mutants on glycerol
+      for pathway physiology
+    definition: Separates protein identity annotation from the experimental route-level
+      context.
+    evidence_ids:
+    - up-p06149
+    - physiology
+- assessment_id: source-conflicts
+  area: provenance
+  topic: Native conflicts and source access
+  outcome: supported
+  summary: Native L-lactate, oxidized-glutathione and UQ6 assignments are not silently
+    treated as valid identity mappings. Source versions/hash scopes, abstract-only
+    access and all literal excerpts remain honest.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - native-pathbank
+  - rhea
+  - native-bridge
+  - independent-replay
+  - pmid-3013300
+  details: All 20 reference body hashes and 8 literal quotes independently match.
+    Seven older primary abstracts were inspected; only the 2022 physiology article
+    was inspected as full JATS. No inaccessible full article is represented as read.
+- assessment_id: expression-context
+  area: evidence
+  topic: Bounded iModulonDB context
+  outcome: supported
+  summary: The required structured database lookup was performed by the root workflow
+    with a direct unchanged adapter after console dependency failure. Independent
+    offline replay reproduces its exact retained responses. No mechanistic inference
+    follows from module text matches or bounded nonmembership.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - imodulondb
+  - adapter-replay
+- assessment_id: gates-and-artifacts
+  area: schema
+  topic: Required gates, authority currentness and generated publication
+  outcome: supported
+  summary: All required final checks pass on unchanged scientific inputs. Generated
+    page/KGX preserve every target edge and evidence block; canonical authorities
+    resolve the complete identity set without changing prior term metadata.
+  target_ids:
+  - MetaCyc:PWY-5386
+  evidence_ids:
+  - final-gates
+  - generated-audit
+  - authority-final
+  - independent-replay
+  details: Validation and programmatic graphics checks are separate from the scientific
+    assessments above. Generated-page fixes belong to the maintained record and renderer;
+    no generated file was edited by the reviewer.
+findings: []
+actions: []
+limitations:
+- Seven older primary papers were inspected through indexed abstracts; one abstract
+  is truncated by its source. Detailed database assertions are not relabeled as newly
+  inspected full-text experiments.
+- Whole-route physiological support is conditional on the 2022 MG1655-derived SIJ488
+  engineered glycolysis-mutant/glycerol context; unrestricted wild-type flux and GloB
+  exclusivity are not established.
+- Quinone/quinol are exact source chemical classes with symbolic R-group balance,
+  not a selected isoprenoid-chain pair. GloA nickel-occupancy measurements differ
+  and remain visible.
+- iModulonDB results are computational expression context only. Console dependency
+  failure was bypassed by root through the unchanged canonical client; independent
+  replay was offline, not fresh retrieval.
+- Original Documents checkout is OS-inaccessible. Identity search includes hidden
+  and ignored files in the accessible worktree only.
+- No browser visual inspection or new experiments; structural page/KGX checks are
+  delegated and passed on the frozen final record.
+notes:
+- Initial review setup used a system Python without PyYAML, then an incorrect optional
+  schema input path. The actual canonical inspect was rerun successfully with the
+  repository environment and src/pathwaymech/schema/pathwaymech.yaml before scientific
+  assessment. These were setup errors, not target defects.
+- An intermediate external review draft failed validation because its timestamp-prefixed
+  review_id was intentionally unfinished; final identity/timestamps were assigned
+  before canonical completed validation. Optional BeautifulSoup was unavailable. An
+  initial standard-library page assertion used a guessed literal/anchor and failed;
+  the corrected readback passed against the observed mechanism-edge-1 through mechanism-edge-25
+  anchors and exact SIJ488 conditional-scope text. These were reviewer setup errors,
+  not target defects.
+tags:
+- scientific-review
+- methylglyoxal
+- independent
+```
