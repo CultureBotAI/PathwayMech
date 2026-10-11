@@ -114,6 +114,36 @@ while its source URL identifies the ontology release. Without this field the
 digest denotes the unmodified bytes returned by the source URL. These are
 provenance digests of the inputs, not checksums of the derived JSON file.
 
+KEGG authority extraction accepts three explicit native REST flatfile kinds:
+`kegg-module-flatfile` for `M` plus five digits with ENTRY type `Pathway Module`,
+`kegg-reaction-flatfile` for `R` plus five digits with type `Reaction`, and
+`kegg-compound-flatfile` for `C` plus five digits with type `Compound`. The
+manifest URL must be an official `https://rest.kegg.jp/get/` request for one to
+ten unique identifiers of that same class. Every requested ENTRY must occur
+exactly once in the complete, terminated response; extra, missing, duplicate,
+mixed-class or malformed entries fail before snapshot publication.
+
+Only native ENTRY/NAME fields establish KEGG identity and names. The first
+semicolon-delimited NAME is canonical and subsequent native names are retained
+as synonyms; the KEGG gate requires the canonical label. Conflicting names
+across source inputs fail even for IDs outside the selected corpus. Matching
+duplicate assertions retain the first source's provenance. Module reaction and
+compound lists, KGML display names, filenames and curated labels are not
+authorities for separately issued entries. Other KEGG entry classes remain
+unsupported. These rules follow the native
+[API](https://www.kegg.jp/kegg/rest/keggapi.html) and
+[entry format](https://www.kegg.jp/kegg/docs/dbentry.html).
+
+Hash the complete original HTTP body, including all entries of a batch. Record
+the actual retrieval snapshot when an entry has no native release designation;
+do not invent release or license metadata. Add the policy and independently
+built KEGG snapshot together: an empty namespace or missing identifier remains
+blocking. Identity support does not establish organism, pathway membership,
+reaction direction or chemical equivalence. In particular, generic carrier
+entries need explicit participant categories and evidence; a KEGG Compound
+entry does not necessarily describe a small molecule. KEGG `Rxxxxx` reaction
+nodes export as BiochemicalReaction unless an explicit category overrides it.
+
 The gate does not download or silently refresh authority data. A term absent
 from the selected snapshot fails with `ID_NOT_FOUND`; this means it is
 unverified against that snapshot, not necessarily absent from today's upstream

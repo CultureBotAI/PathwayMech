@@ -245,6 +245,8 @@ def _add_node(
 
 
 def _category(identifier: str) -> str:
+    if re.fullmatch(r"KEGG:R[0-9]{5}", identifier):
+        return "biolink:BiochemicalReaction"
     return _PREFIX_CATEGORIES.get(identifier.split(":", 1)[0], "biolink:NamedThing")
 
 

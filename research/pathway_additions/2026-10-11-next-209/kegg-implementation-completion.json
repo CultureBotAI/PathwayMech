@@ -1,0 +1,99 @@
+{
+  "recorded_at": "2026-10-11T10:54:45.784511+00:00",
+  "repo": "/private/tmp/pathwaymech-next-209-20261011",
+  "observed_head": "f3109cf30b55f7559f349403842b14663e98bbe6",
+  "status": "implementation_and_focused_checks_complete_pending_shared_integration",
+  "owned_changed_files": [
+    {
+      "path": "scripts/build_source_identifier_snapshot.py",
+      "sha256": "088e537926909c8c2cea011013a56bd82d521bf2b2abfbcb59e9b2715c682650"
+    },
+    {
+      "path": "conf/identifier_policy.yaml",
+      "sha256": "c950ccdfff311b4d7218d9464e7d2ac1f7612c2a45192f776afd31e0f94d4d46"
+    },
+    {
+      "path": "src/pathwaymech/kgx.py",
+      "sha256": "b8525aed45522ba702a17669fd71768008368b37e5bb8a01dd20b63639b8e7ff"
+    },
+    {
+      "path": "docs/IDENTIFIERS.md",
+      "sha256": "3e844247e60ae7e712149967f30eb75db67818a8364afec1ebf80e42be57ff41"
+    },
+    {
+      "path": "tests/test_kegg_identifier_authority.py",
+      "sha256": "f9728df21a7090ce16179b4d1d3ce72db48f4732e3de23cd94500cd4a48f7c51"
+    },
+    {
+      "path": "tests/test_kgx_export.py",
+      "sha256": "cd669518b64b5dfe6342284a073ae685668cfd7107a1fcd2c8afa5a5c57c6ca5"
+    }
+  ],
+  "checks": [
+    {
+      "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/python -m pytest tests/test_kegg_identifier_authority.py tests/test_source_identifier_snapshot.py tests/test_pathbank_identifier_authority.py tests/test_kegg.py tests/test_kgx_export.py -q",
+      "session_id": 27939,
+      "exit_code": 0,
+      "result": "130 passed in 32.22s",
+      "log": "/private/tmp/pathwaymech-kegg-authority-plan-20261011/focused-tests-final.log",
+      "sha256": "7a497e985a8aec2580f99e80047143cd73c4a6881b8d4a4b767fc8167f77a338"
+    },
+    {
+      "command": ".venv/bin/python -m ruff check scripts/build_source_identifier_snapshot.py src/pathwaymech/kgx.py tests/test_kegg_identifier_authority.py tests/test_kgx_export.py",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-kegg-authority-implementation-209/lint.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-kegg-authority-implementation-209/diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/python /private/tmp/pathwaymech-kegg-authority-implementation-209/replay_originals.py",
+      "exit_code": 0,
+      "receipt": "/private/tmp/pathwaymech-kegg-authority-implementation-209/original-source-replay.json",
+      "sha256": "fbf3c24f43b936c075d705de9caf45dfc89b1ff21b26c677011a575ed53c5569",
+      "result": "Six original bodies rehashed, seven native terms parsed, four selected identifiers pass canonical gate."
+    },
+    {
+      "check": "Owned-file trailing-whitespace scan including untracked new test file",
+      "issues": []
+    }
+  ],
+  "superseded_checks": [
+    {
+      "session_id": 13870,
+      "exit_code": 1,
+      "result": "123 passed, 5 failed; synthetic gate fixture lacked required empty taxa/participants/reactions lists. Fixture corrected, no production gate relaxation.",
+      "log": "/private/tmp/pathwaymech-kegg-authority-plan-20261011/focused-tests.log",
+      "sha256": "61869263971ba03c68c49bc999c9c3b730df464befd835896a32cb1bfaf1b9be"
+    },
+    {
+      "session_id": 9852,
+      "exit_code": 1,
+      "result": "Diagnostic stop after same fixture failure: 63 passed, 1 failed."
+    },
+    {
+      "check": "Initial Ruff",
+      "exit_code": 1,
+      "result": "One 101-character line; wrapped before final passing checks."
+    }
+  ],
+  "behavior_notes": [
+    "Exact source kinds: kegg-module-flatfile, kegg-reaction-flatfile, kegg-compound-flatfile.",
+    "Official bare-ID REST URLs only; 1-10 same-class unique requested entries must match parsed ENTRY set.",
+    "Conflicting KEGG canonical/alias sets fail before selection; duplicate IDs within a body fail.",
+    "Source-key duplicate detection now includes unselected earlier sources, closing an existing provenance collision gap.",
+    "Native semicolon NAME aliases retained, but maintained KEGG policy remains canonical.",
+    "Full KEGG Rxxxxx IDs export as BiochemicalReaction; explicit generic carrier categories are preserved.",
+    "No SSSOM changes or speculative mapping semantics."
+  ],
+  "remaining_integration": [
+    "Root must add four independently sourced KEGG terms and original-source manifest entries atomically with the canonical policy. A configured empty namespace intentionally blocks whole-corpus QC until then.",
+    "Root owns shared authority/cache/record/history/page integration and global gates; none were run or altered by this task.",
+    "The new biological record still requires independent full scientific review, including formal carrier/protonation scope."
+  ],
+  "scope": "Only the six owned repository files changed by this task; no Git/index, governed files, source manifest/snapshot/shared cache, records or rendered artifacts were edited. Existing untracked .venv is environment setup owned by root."
+}
