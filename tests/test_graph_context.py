@@ -3,6 +3,7 @@ import json
 from copy import deepcopy
 
 import pytest
+from lxml import html
 
 from pathwaymech.cli import _record_page
 from pathwaymech.kgx import kgx_edges, kgx_nodes, write_kgx
@@ -45,6 +46,45 @@ def test_structured_source_and_compartment_survive_validation_rendering_and_expo
     nodes = {node.id: node.category for node in kgx_nodes([checked])}
     assert nodes["GO:0005737"] == "biolink:CellularComponent"
     assert kgx_edges([checked])[0].predicate == "BFO:0000066"
+
+
+def test_generic_chemical_class_keeps_its_kind_through_schema_page_and_kgx(
+    record, checker, tmp_path,
+):
+    identifiers = ["MetaCyc:Demethylated-methyl-acceptors", "MetaCyc:Methylated-methyl-acceptors"]
+    labels = ["generic acceptor", "generic methylated acceptor"]
+    for identifier, label in zip(identifiers, labels, strict=True):
+        record["participants"].append({
+            "id": identifier, "label": label, "category": "chemical_entity",
+        })
+    for number, (subject, predicate, obj) in enumerate([
+        (identifiers[0], "consumes", "gomodel:test/r1"),
+        ("gomodel:test/r1", "produces", identifiers[1]),
+    ]):
+        record["mechanistic_edges"].append({
+            "id": f"generic-{number}", "subject": subject, "predicate": predicate, "object": obj,
+            "evidence": [{
+                "reference_id": "gomodel:test", "source_assertion": "Generic methyl transfer.",
+                "source_locator": f"model.json /facts/{number + 1}",
+            }],
+        })
+
+    assert not checker.validate(record, TARGET_CLASS).results
+    checked = validate_record(record)
+    document = html.fromstring(_record_page(checked))
+    nodes_path, _ = write_kgx([checked], tmp_path)
+    with nodes_path.open() as stream:
+        nodes = {node["id"]: node for node in csv.DictReader(stream, delimiter="\t")}
+    for identifier in identifiers:
+        graphic, = document.xpath("//a[@data-node-id=$identifier]", identifier=identifier)
+        assert graphic.get("data-kind") == "chemical"
+        assert "Declared type: chemical_entity" in graphic.get("aria-label")
+        component, = document.xpath("//*[@id=$anchor]", anchor=graphic.get("href")[1:])
+        assert identifier in component.text_content()
+        assert nodes[identifier]["category"] == "biolink:ChemicalEntity"
+        assert nodes[identifier]["source_category"] == "chemical_entity"
+        assert json.loads(nodes[identifier]["source_contexts"])[0]["category"] == "chemical_entity"
+    assert nodes["CHEBI:15377"]["category"] == "biolink:SmallMolecule"
 
 
 @pytest.mark.parametrize("change", [
@@ -104,7 +144,9 @@ def test_context_nodes_cannot_be_consumed_as_metabolites(record, kind, predicate
         validate_record(record)
 
 
-@pytest.mark.parametrize("kind", [None, "small_molecule", "gene", "molecular_activity"])
+@pytest.mark.parametrize("kind", [
+    None, "chemical_entity", "small_molecule", "gene", "molecular_activity",
+])
 def test_cofactor_subject_must_be_a_supported_enzyme(record, kind):
     record["participants"][0] = {
         "id": "CHEBI:18420", "label": "magnesium(2+)", "category": "cofactor",

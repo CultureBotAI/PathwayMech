@@ -1,0 +1,677 @@
+# Independent review of adenine and adenosine salvage I
+
+- Review: 20261011T054321Z-adenine-salvage-i-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T05:35:48Z
+- Finished UTC: 2026-10-11T05:43:21Z
+- Reviewer: codex /root/pathway_literature_candidates (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete two-step E. coli implementation of P121-PWY is supported with source-specific strain, assembly, inference and assay limitations preserved. All 20 edges and 39 evidence blocks were checked; no actionable finding was identified.
+
+## Scope And Provenance
+
+One frozen maintained pathway, exact identities, every edge/reference, primary/native support and shared gates.
+
+Selection: Parent-assigned independent review of the author-frozen target b8c745da81f095ee1ec00a78ec4d04e16b25de4990d02ec3be79489cc5e42da5.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 0919419d95f65d097e867c6d8452f1ca552f550b.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:P121-PWY | data/pathways/adenine-and-adenosine-salvage-i.yaml | maintained | adenine and adenosine salvage I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent original-source replay | passed | False | MetaCyc:P121-PWY | Native membership/order/assemblies, all source hashes, official RDF/directions, eight chemical sides and balances independently verified. |
+| Independent canonical context parser replay | passed | False | MetaCyc:P121-PWY | 26 retained bodies / 22 searches / 3 tables match unchanged canonical parser; bounded interpretation verified. |
+| render | passed | False | MetaCyc:P121-PWY | Shared full-corpus render terminal exit 0; inspected exact log and input freeze. |
+| validate | passed | True | MetaCyc:P121-PWY | Shared full-corpus validate terminal exit 0; inspected exact log and input freeze. |
+| test | passed | True | MetaCyc:P121-PWY | Shared full-corpus test terminal exit 0; inspected exact log and input freeze. |
+| lint | passed | True | MetaCyc:P121-PWY | Shared full-corpus lint terminal exit 0; inspected exact log and input freeze. |
+| identifiers | passed | False | MetaCyc:P121-PWY | Shared full-corpus identifiers terminal exit 0; inspected exact log and input freeze. |
+| kgx | passed | False | MetaCyc:P121-PWY | Shared full-corpus kgx terminal exit 0; inspected exact log and input freeze. |
+| diff | passed | True | MetaCyc:P121-PWY | Shared full-corpus diff terminal exit 0; inspected exact log and input freeze. |
+
+## Scientific And Domain Assessments
+
+### Exact route and source-specific taxon scope
+
+identity: supported. Targets: MetaCyc:P121-PWY.
+
+The full two-reaction P121 route is correctly distinguished from other salvage pathways. Independent E. coli enzyme/primary grounding does not rewrite the native pathway species list.
+
+### Direction, charge and native/current reaction bridges
+
+grounding: supported. Targets: MetaCyc:P121-PWY.
+
+All eight sides and both selected directions match exact official Rhea identities and ChEBI states, with no added water/proton or missing native reaction.
+
+### Assemblies, activity, metals and localization
+
+evidence: supported. Targets: MetaCyc:P121-PWY.
+
+Both source-defined assemblies and exact protein identities are supported. Primary activity, HAMAP annotations, native Mn alternative and localization evidence remain separately qualified.
+
+### Experimental system and exclusions
+
+scope: supported. Targets: MetaCyc:P121-PWY.
+
+Recombinant assays, K-12 derivative experiments and later condition-specific salvage physiology are accurately distinguished; no dominant wild-type branch flux or specific in vivo metal occupancy is inferred.
+
+### Local graph and nearest-source provenance
+
+graph: supported. Targets: MetaCyc:P121-PWY.
+
+All 20 edges and 39 evidence blocks preserve the intended full route, local identities and nearest supporting source. No confirmed corrective finding remains within this one-record review.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| native-boundary | MetaCyc:P121-PWY; Original P121-PWY.xml reaction-list, reaction-layout, reaction-ordering and all three species objects | supports | Direct source inspection confirms exactly ADENPHOSPHOR-RXN L2R followed by ADENPRIBOSYLTRAN-RXN R2L. Listed taxa are Halobacterium salinarum, human and M. pneumoniae M129; no E. coli native membership is claimed by the target. |
+| rhea-chemistry | Official Rhea release 142; pinned ChEBI255; Master 27642 to 27643 and master 16609 to 16611; all cited side/Participant/Compound triples, official directions table; ChEBI statements | supports | Independent streaming extraction from the full official RDF reproduces all eight coefficient-one sides, chemical identities and two atom/charge balances plus net. Directed metadata is LR for 27643 and RL for 16611. Native bidirectional 27645 and master 16609 links are separately grounded. |
+| native-assemblies | MetaCyc:DEOD-CPLX; MetaCyc:ADENPRIBOSYLTRAN-CPLX and exact monomer frames; component coefficients, catalyzes/reaction links, UniProt unification cross-references, species objects | supports | Direct original XML inspection confirms six DeoD and two Apt subunits with exact P0ABP8/P69503 crosswalks; both K-12 MG1655 enzyme frames ground activity independently of the pathway species list. |
+| protein-annotations | UniProtKB:P0ABP8 and UniProtKB:P69503; release 2026_03; organism, orderedLocusNames, catalytic activity, subunit and subcellular-location comments | supports | DeoD experimental catalytic/subunit references are distinct from Apt HAMAP MF_00004 catalytic inference. Apt homodimer and cytoplasm comments lack an attached experimental code; record wording preserves this distinction. Taxon 83333 and loci b4384/b0469 verified in the native JSON. |
+| deod-primary | PMID:30337572 / PMC6193948; PMC6193948 BioC passages 22/26, 40, 54; Table 1, Fig. 2, Fig. 4 and concluding Results paragraph | supports | Inspected original full text distinguishes WT adenosine/phosphate kinetics from Asp204Ala/Arg217Ala mutants and formycin analog crystal studies. Homohexamer/trimer-of-dimers and cross-subunit active-site support are explicit; no monomer-only activity is asserted. |
+| apt-primary | PMID:21111048 / PMC4125576; BioC Methods passages 26, 29, 45; Results 57, 63; Fig. 3c caption 144 and Table 1 passage 148 | supports | His-tagged recombinant E. coli Apt expressed in BL21(AI) is active with adenine/PRPP. The coupled assay contains 10 mM MgCl2 at pH 7.8; coupling reagents are not inserted into Apt chemistry. The record does not turn recombinant activity into wild-type pathway flux or physiological metal occupancy. |
+| 1975-pathway | PMID:765747; original 7-page publisher-format PDF; Printed p. 85 Fig. 1 and legend; pp. 86–87 Methods/Table 1; figure independently rendered with mutool and visually inspected | supports | The scheme explicitly connects adenosine to adenine via enzyme 4 purine nucleoside phosphorylase and adenine to AMP via enzyme 1 Apt. Table 1 documents K-12 derivatives, not a blanket MG1655 assay. Other arrows in the broader primary scheme are not added to the exact P121 boundary. |
+| localization | PMID:365172; DOI:10.1042/bj1740717; Exact Europe PMC resultList.result PMID 365172 abstractText | supports | The inspected abstract places phosphoribosyltransferases intracellularly and finds no significant association with purified membrane fractions. This supports the scoped Apt localization statement; unavailable full text is not claimed as inspected. |
+| metal-native | MetaCyc:ADENPRIBOSYLTRAN-ENZRXN; cofactor MG+2; alternative-cofactor MG+2/alternate MN+2; cited PUB-4328693 | supports | Magnesium and alternative manganese are explicitly annotated in the exact native enzymatic reaction. The 1971 primary body was unavailable; the record retains this as native annotation, not an independently inspected Mn assay. |
+| later-physiology | PMID:35575513 / PMC9239199; BioC passages 12, 31, 50; Results Fig. 1D and Discussion of alternate salvage; strain Methods | context_only | The independently inspected 2022 full text shows condition-dependent Add/DeoD salvage and possible rihC redundancy in BW25113-derived experiments. It does not establish specific Apt flux; the target appropriately excludes dominance, antibiotic outcome and exclusive-route claims. |
+| context | iModulonDB e_coli/precise_mg1655; canonical source adapter; Retained 26 response bodies; datasets, 22 searches and 3 returned component gene tables | context_only | Independent offline replay through the unchanged canonical parser matches all retained projections. apt/b0469 and deoD/b4384 are query hits; apt also produces substring false positives. Neither target gene occurs in the three returned tables, which is not an exhaustive membership or biological absence finding. |
+| dedup | Current worktree and original checkout; baseline 0919419; Ignored/hidden-inclusive rg search plus complete target and prior salvageIII boundary comparison | supports | P121 is distinct from the complete IMP-producing salvageIII route and the hydrolase variant. Existing research mentions were retained. The bounded selected-directory search found only the new target as a maintained exact route. |
+| record | data/pathways/adenine-and-adenosine-salvage-i.yaml; Entire frozen target; all 20 edges/39 evidence blocks / 16 references | supports | All endpoints and nearest-source evidence were reviewed. No direct-quote field is present. Source assertions preserve native/current bridges, molecular charge state, evidence tier and strain/assay scope. |
+| gate-render | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-render.log | supports | Parent-observed terminal render command exited0; original log rehashed independently. |
+| gate-validate | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-validate.log | supports | Parent-observed terminal validate command exited0; original log rehashed independently. |
+| gate-test | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-test.log | supports | Parent-observed terminal test command exited0; original log rehashed independently. |
+| gate-lint | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-lint.log | supports | Parent-observed terminal lint command exited0; original log rehashed independently. |
+| gate-identifiers | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-identifiers.log | supports | Parent-observed terminal identifiers command exited0; original log rehashed independently. |
+| gate-kgx | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-kgx.log | supports | Parent-observed terminal kgx command exited0; original log rehashed independently. |
+| gate-diff | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; /private/tmp/pathwaymech-next-192-final-diff.log | supports | Parent-observed terminal diff command exited0; original log rehashed independently. |
+
+## Limits And Additional Notes
+
+- Native P121 species annotations do not include E. coli; its K-12 implementation is independently grounded rather than inferred from that list.
+- Apt current catalytic annotation is HAMAP inference; direct recombinant activity does not establish dominant intact wild-type pathway flux. Native manganese is not an independently inspected metal-substitution assay.
+- PMID 365172 was inspected as its actual abstract; the unavailable 1971 metal paper and rejected PMC full-text response were not treated as inspected full articles.
+- iModulon context is computational and bounded to declared search results; it does not establish mechanism or biological absence.
+- No independent browser/UI claim; source figure inspection used a rendered original PDF. Whole-corpus gates were executed by the integration agent and their terminal receipts/logs independently checked.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T054321Z-adenine-salvage-i-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent review of adenine and adenosine salvage I
+started_at: '2026-10-11T05:35:48Z'
+finished_at: '2026-10-11T05:43:21Z'
+reviewer:
+  identity: codex /root/pathway_literature_candidates
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer did not author this target or its dossiers. Reviewer
+    authored the separate SAM cycle I record in the same cohort; that science is outside
+    this review.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete two-step E. coli implementation of P121-PWY is supported with
+  source-specific strain, assembly, inference and assay limitations preserved. All
+  20 edges and 39 evidence blocks were checked; no actionable finding was identified.
+source:
+  git_revision: 0919419d95f65d097e867c6d8452f1ca552f550b
+  state: working_tree
+  inputs:
+  - path: conf/identifier_sources.json
+    sha256: 0a9935940ece68b9dc9d01e53bbb686adb9bb88761c0d4a8ed51222662314cc2
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: ee16d51dd29aa1691fff45c143fa1a1a4c22c58b1058e3e264e34241bb100e0d
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 6d0fba1a3e20b0bf97732406e3a65cb29feaa0ecafd3f402c76ff3e3e2d7d1a0
+    role: context
+  - path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+    sha256: b8c745da81f095ee1ec00a78ec4d04e16b25de4990d02ec3be79489cc5e42da5
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-authority-delta.json
+    sha256: 8a4de8ee34a0d64831743a64c88771658844ab51832538b29deef2568b86bd34
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-curation.md
+    sha256: 96122b5d34e7f06ec7a84401e054acb13497834137fa4ee095eccaca783ce9db
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-dedup.json
+    sha256: 8e82aa00460a0c83e13af9fb3926c5f00ce76c899c95b08806c8e13e6f94f024
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-identifiers.json
+    sha256: ad7873dd66bf61484e99a2e38ca24510ab3dd129ad956ae85b272bec62012b6a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-replay.py
+    sha256: 1df349aedc885c7cee58019193b7118c64e0bf3afd52317cc604add2de047892
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-source-manifest.json
+    sha256: 1a4a5656fb5e46ee4823ae6872c685b4c77a44d23397890ecb16be98f4e32829
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-source-projection.json
+    sha256: 38e41f91e8ca1a5283a39e2e3c175719cb4d781914aa8e6e024ff094d9c25c57
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/adenine-salvage-i-validation.json
+    sha256: 37b5eaf0df6b1a0db3afde98beff9b2a4dafcdee4e4bbd7aea796e11354bbf24
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/authority-integration.json
+    sha256: 31b4563e05bb824f024f3548f78e4f5e5fa6b2e6b775fcf638574a8ffda7ee4d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/cohort-records.json
+    sha256: 1eb4cc5d2280e0bf13358ad59c95bbdd4be36d363fc656dbef61f68ef5cc278c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/generated-graph-kgx-audit.json
+    sha256: 61df1ae5af025bfedce15c11cdcff1da7283c32c77d207233b9af7f18fe7340b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-context.json
+    sha256: 558b20bcf108fdcb7604177f8a8cc83c3dbc30d28b1bc4c43ad467a4dc6a894d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-parser-replay.json
+    sha256: 3e55fee75d36a27a3b2d78d0e2a423b1753f00f4fc0776bfbeeb58181a80760d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-runner-availability.json
+    sha256: 324fd5ef0fcfea2b301cdac3791bbb4a507682897f7eca35406ffa7de3db6fa5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-source-manifest.json
+    sha256: 261292c60259cafc66bc8cb82de6738d6c819fb7d50cde184f2c3d8ecad3b4f7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+    sha256: ce0c463e3aab7995f7ee06112969a0fd6df89d7eb990b9912444b323e89cf212
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: ffa1107da83c8ff173833662e78ba73c779bbab9f2da33cea993b614e99d6345
+    role: context
+scope:
+  description: One frozen maintained pathway, exact identities, every edge/reference,
+    primary/native support and shared gates.
+  selection: Parent-assigned independent review of the author-frozen target b8c745da81f095ee1ec00a78ec4d04e16b25de4990d02ec3be79489cc5e42da5.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:P121-PWY
+  exclusions:
+  - target: Other cohort records, broad pathway inventory and publication licensing
+    reason: Outside this one-record scientific review; no self-review of SAM cycle
+      I.
+targets:
+- target_id: MetaCyc:P121-PWY
+  path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+  label: adenine and adenosine salvage I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+    role: maintained pathway record
+checks:
+- check_id: independent-replay
+  name: Independent original-source replay
+  status: passed
+  required: false
+  summary: Native membership/order/assemblies, all source hashes, official RDF/directions,
+    eight chemical sides and balances independently verified.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: .venv/bin/python /private/tmp/pathwaymech-next-192-review-salvage-i/replay.py
+  exit_code: 0
+  evidence_ids:
+  - rhea-chemistry
+  - native-boundary
+  - native-assemblies
+- check_id: context-replay
+  name: Independent canonical context parser replay
+  status: passed
+  required: false
+  summary: 26 retained bodies / 22 searches / 3 tables match unchanged canonical parser;
+    bounded interpretation verified.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: .venv/bin/python /private/tmp/pathwaymech-next-192-review-salvage-i/context-replay.py
+  exit_code: 0
+  evidence_ids:
+  - context
+- check_id: gate-render
+  name: render
+  status: passed
+  required: false
+  summary: Shared full-corpus render terminal exit 0; inspected exact log and input
+    freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  evidence_ids:
+  - gate-render
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+- check_id: gate-validate
+  name: validate
+  status: passed
+  required: true
+  summary: Shared full-corpus validate terminal exit 0; inspected exact log and input
+    freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  evidence_ids:
+  - gate-validate
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+- check_id: gate-test
+  name: test
+  status: passed
+  required: true
+  summary: Shared full-corpus test terminal exit 0; inspected exact log and input
+    freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  evidence_ids:
+  - gate-test
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+- check_id: gate-lint
+  name: lint
+  status: passed
+  required: true
+  summary: Shared full-corpus lint terminal exit 0; inspected exact log and input
+    freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  evidence_ids:
+  - gate-lint
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+- check_id: gate-identifiers
+  name: identifiers
+  status: passed
+  required: false
+  summary: Shared full-corpus identifiers terminal exit 0; inspected exact log and
+    input freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  exit_code: 0
+  evidence_ids:
+  - gate-identifiers
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+- check_id: gate-kgx
+  name: kgx
+  status: passed
+  required: false
+  summary: Shared full-corpus kgx terminal exit 0; inspected exact log and input freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-192-kgx
+  exit_code: 0
+  evidence_ids:
+  - gate-kgx
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+- check_id: gate-diff
+  name: diff
+  status: passed
+  required: true
+  summary: Shared full-corpus diff terminal exit 0; inspected exact log and input
+    freeze.
+  target_ids:
+  - MetaCyc:P121-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 git
+    diff --check
+  exit_code: 0
+  evidence_ids:
+  - gate-diff
+  scope_note: Parent executed shared gates; reviewer independently inspected terminal
+    receipts/log hashes without duplicating the full suite.
+evidence:
+- evidence_id: native-boundary
+  kind: database
+  reference: MetaCyc:P121-PWY
+  locator: Original P121-PWY.xml reaction-list, reaction-layout, reaction-ordering
+    and all three species objects
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Direct source inspection confirms exactly ADENPHOSPHOR-RXN L2R followed
+    by ADENPRIBOSYLTRAN-RXN R2L. Listed taxa are Halobacterium salinarum, human and
+    M. pneumoniae M129; no E. coli native membership is claimed by the target.
+  snapshot_sha256: 9c80cd6e3f9fc1b42962fdce4de83a7375b6875ca6849aa49c7f492d7af8fb7f
+- evidence_id: rhea-chemistry
+  kind: authority
+  reference: Official Rhea release 142; pinned ChEBI255
+  locator: Master 27642 to 27643 and master 16609 to 16611; all cited side/Participant/Compound
+    triples, official directions table; ChEBI statements
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Independent streaming extraction from the full official RDF reproduces
+    all eight coefficient-one sides, chemical identities and two atom/charge balances
+    plus net. Directed metadata is LR for 27643 and RL for 16611. Native bidirectional
+    27645 and master 16609 links are separately grounded.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: native-assemblies
+  kind: database
+  reference: MetaCyc:DEOD-CPLX; MetaCyc:ADENPRIBOSYLTRAN-CPLX and exact monomer frames
+  locator: component coefficients, catalyzes/reaction links, UniProt unification cross-references,
+    species objects
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Direct original XML inspection confirms six DeoD and two Apt subunits with
+    exact P0ABP8/P69503 crosswalks; both K-12 MG1655 enzyme frames ground activity
+    independently of the pathway species list.
+- evidence_id: protein-annotations
+  kind: database
+  reference: UniProtKB:P0ABP8 and UniProtKB:P69503; release 2026_03
+  locator: organism, orderedLocusNames, catalytic activity, subunit and subcellular-location
+    comments
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: DeoD experimental catalytic/subunit references are distinct from Apt HAMAP
+    MF_00004 catalytic inference. Apt homodimer and cytoplasm comments lack an attached
+    experimental code; record wording preserves this distinction. Taxon 83333 and
+    loci b4384/b0469 verified in the native JSON.
+- evidence_id: deod-primary
+  kind: primary_source
+  reference: PMID:30337572 / PMC6193948
+  locator: PMC6193948 BioC passages 22/26, 40, 54; Table 1, Fig. 2, Fig. 4 and concluding
+    Results paragraph
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Inspected original full text distinguishes WT adenosine/phosphate kinetics
+    from Asp204Ala/Arg217Ala mutants and formycin analog crystal studies. Homohexamer/trimer-of-dimers
+    and cross-subunit active-site support are explicit; no monomer-only activity is
+    asserted.
+  snapshot_sha256: 1218e2d0107c64412a92a0e365c4bedfa2011eabc73008e9aa8399f20e5b821d
+- evidence_id: apt-primary
+  kind: primary_source
+  reference: PMID:21111048 / PMC4125576
+  locator: BioC Methods passages 26, 29, 45; Results 57, 63; Fig. 3c caption 144 and
+    Table 1 passage 148
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: His-tagged recombinant E. coli Apt expressed in BL21(AI) is active with
+    adenine/PRPP. The coupled assay contains 10 mM MgCl2 at pH 7.8; coupling reagents
+    are not inserted into Apt chemistry. The record does not turn recombinant activity
+    into wild-type pathway flux or physiological metal occupancy.
+  snapshot_sha256: 8bcd1b5acffdea4abae8fcda0326e95d13fdc5de1f7681d46bc353271c19156b
+- evidence_id: 1975-pathway
+  kind: primary_source
+  reference: PMID:765747; original 7-page publisher-format PDF
+  locator: Printed p. 85 Fig. 1 and legend; pp. 86–87 Methods/Table 1; figure independently
+    rendered with mutool and visually inspected
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: The scheme explicitly connects adenosine to adenine via enzyme 4 purine
+    nucleoside phosphorylase and adenine to AMP via enzyme 1 Apt. Table 1 documents
+    K-12 derivatives, not a blanket MG1655 assay. Other arrows in the broader primary
+    scheme are not added to the exact P121 boundary.
+  snapshot_sha256: a94c9a8e77e5d839c8bbf07444e21bfbf187347f085d99d5f89745e0043bca0f
+- evidence_id: localization
+  kind: primary_source
+  reference: PMID:365172; DOI:10.1042/bj1740717
+  locator: Exact Europe PMC resultList.result PMID 365172 abstractText
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: The inspected abstract places phosphoribosyltransferases intracellularly
+    and finds no significant association with purified membrane fractions. This supports
+    the scoped Apt localization statement; unavailable full text is not claimed as
+    inspected.
+  snapshot_sha256: 9f90796958cc1a4cd7571e8706d6580d07b5894c81207de48ec6b5fb4ca0cedc
+- evidence_id: metal-native
+  kind: database
+  reference: MetaCyc:ADENPRIBOSYLTRAN-ENZRXN
+  locator: cofactor MG+2; alternative-cofactor MG+2/alternate MN+2; cited PUB-4328693
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Magnesium and alternative manganese are explicitly annotated in the exact
+    native enzymatic reaction. The 1971 primary body was unavailable; the record retains
+    this as native annotation, not an independently inspected Mn assay.
+  snapshot_sha256: ffe8555991465ae4a0112e168da951a0bd288b3ae2f1dc9ccdeb72c7c1094d4d
+- evidence_id: later-physiology
+  kind: primary_source
+  reference: PMID:35575513 / PMC9239199
+  locator: BioC passages 12, 31, 50; Results Fig. 1D and Discussion of alternate salvage;
+    strain Methods
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: context_only
+  summary: The independently inspected 2022 full text shows condition-dependent Add/DeoD
+    salvage and possible rihC redundancy in BW25113-derived experiments. It does not
+    establish specific Apt flux; the target appropriately excludes dominance, antibiotic
+    outcome and exclusive-route claims.
+  snapshot_sha256: 6dc7cb6cf906fd3a83c795e1bc51287bce6d42738c8197d588de238b35ab07ef
+- evidence_id: context
+  kind: database
+  reference: iModulonDB e_coli/precise_mg1655; canonical source adapter
+  locator: Retained 26 response bodies; datasets, 22 searches and 3 returned component
+    gene tables
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: context_only
+  summary: Independent offline replay through the unchanged canonical parser matches
+    all retained projections. apt/b0469 and deoD/b4384 are query hits; apt also produces
+    substring false positives. Neither target gene occurs in the three returned tables,
+    which is not an exhaustive membership or biological absence finding.
+  snapshot_sha256: 90d127f6f598d8edf64e06861a7cc4ff2cdd4e4644ec268c62046b41eb6267ff
+- evidence_id: dedup
+  kind: search
+  reference: Current worktree and original checkout; baseline 0919419
+  locator: Ignored/hidden-inclusive rg search plus complete target and prior salvageIII
+    boundary comparison
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: P121 is distinct from the complete IMP-producing salvageIII route and the
+    hydrolase variant. Existing research mentions were retained. The bounded selected-directory
+    search found only the new target as a maintained exact route.
+  snapshot_sha256: be898c5c07e655dcd5850a027a79fd5e5bd1436e092bbc229d3e8876daa8205e
+  search_scope: rg --no-ignore --hidden in data/pathways, research and reports of
+    both checkout roots; exact P121 identifier/label and 27643/16611. Explicit .git/.venv
+    exclusions; 34 worktree and 18 original matching paths inspected as identity/overlap
+    leads.
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/adenine-and-adenosine-salvage-i.yaml
+  locator: Entire frozen target; all 20 edges/39 evidence blocks / 16 references
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: All endpoints and nearest-source evidence were reviewed. No direct-quote
+    field is present. Source assertions preserve native/current bridges, molecular
+    charge state, evidence tier and strain/assay scope.
+  snapshot_sha256: b8c745da81f095ee1ec00a78ec4d04e16b25de4990d02ec3be79489cc5e42da5
+- evidence_id: gate-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-render.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal render command exited0; original log rehashed
+    independently.
+  snapshot_sha256: c9360c998fc556281b8d7141b0df5a75232fa20fb415cb788b57473a3682c67d
+- evidence_id: gate-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-validate.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal validate command exited0; original log rehashed
+    independently.
+  snapshot_sha256: a196afe7a0a514170f83e75e3a4bb123db4e215d92418210456ff4b077d5fde5
+- evidence_id: gate-test
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-test.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal test command exited0; original log rehashed independently.
+  snapshot_sha256: 87a0802c44e6f18ee33c9e1a4b682cea44d453d1a2b487250937531beecd3511
+- evidence_id: gate-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-lint.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal lint command exited0; original log rehashed independently.
+  snapshot_sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+- evidence_id: gate-identifiers
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-identifiers.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal identifiers command exited0; original log rehashed
+    independently.
+  snapshot_sha256: 352d595d204d38b6b4ad9a4e7487331be258189a62cf08cda5e7a15a250fd3da
+- evidence_id: gate-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-kgx.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal kgx command exited0; original log rehashed independently.
+  snapshot_sha256: 523e1c2079d278abec2dbc2d02afff4f974efed80415ef854c834d0f9b2e9d92
+- evidence_id: gate-diff
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: /private/tmp/pathwaymech-next-192-final-diff.log
+  accessed_at: '2026-10-11T05:43:21Z'
+  support: supports
+  summary: Parent-observed terminal diff command exited0; original log rehashed independently.
+  snapshot_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+assessments:
+- assessment_id: boundary
+  area: identity
+  topic: Exact route and source-specific taxon scope
+  outcome: supported
+  summary: The full two-reaction P121 route is correctly distinguished from other
+    salvage pathways. Independent E. coli enzyme/primary grounding does not rewrite
+    the native pathway species list.
+  target_ids:
+  - MetaCyc:P121-PWY
+  evidence_ids:
+  - native-boundary
+  - 1975-pathway
+  - dedup
+- assessment_id: chemistry
+  area: grounding
+  topic: Direction, charge and native/current reaction bridges
+  outcome: supported
+  summary: All eight sides and both selected directions match exact official Rhea
+    identities and ChEBI states, with no added water/proton or missing native reaction.
+  target_ids:
+  - MetaCyc:P121-PWY
+  evidence_ids:
+  - rhea-chemistry
+  - native-boundary
+- assessment_id: mechanism
+  area: evidence
+  topic: Assemblies, activity, metals and localization
+  outcome: supported
+  summary: Both source-defined assemblies and exact protein identities are supported.
+    Primary activity, HAMAP annotations, native Mn alternative and localization evidence
+    remain separately qualified.
+  target_ids:
+  - MetaCyc:P121-PWY
+  evidence_ids:
+  - native-assemblies
+  - protein-annotations
+  - deod-primary
+  - apt-primary
+  - metal-native
+  - localization
+- assessment_id: scope
+  area: scope
+  topic: Experimental system and exclusions
+  outcome: supported
+  summary: Recombinant assays, K-12 derivative experiments and later condition-specific
+    salvage physiology are accurately distinguished; no dominant wild-type branch
+    flux or specific in vivo metal occupancy is inferred.
+  target_ids:
+  - MetaCyc:P121-PWY
+  evidence_ids:
+  - 1975-pathway
+  - apt-primary
+  - later-physiology
+  - context
+- assessment_id: graph
+  area: graph
+  topic: Local graph and nearest-source provenance
+  outcome: supported
+  summary: All 20 edges and 39 evidence blocks preserve the intended full route, local
+    identities and nearest supporting source. No confirmed corrective finding remains
+    within this one-record review.
+  target_ids:
+  - MetaCyc:P121-PWY
+  evidence_ids:
+  - record
+  - rhea-chemistry
+  - native-assemblies
+findings: []
+actions: []
+limitations:
+- Native P121 species annotations do not include E. coli; its K-12 implementation
+  is independently grounded rather than inferred from that list.
+- Apt current catalytic annotation is HAMAP inference; direct recombinant activity
+  does not establish dominant intact wild-type pathway flux. Native manganese is not
+  an independently inspected metal-substitution assay.
+- PMID 365172 was inspected as its actual abstract; the unavailable 1971 metal paper
+  and rejected PMC full-text response were not treated as inspected full articles.
+- iModulon context is computational and bounded to declared search results; it does
+  not establish mechanism or biological absence.
+- No independent browser/UI claim; source figure inspection used a rendered original
+  PDF. Whole-corpus gates were executed by the integration agent and their terminal
+  receipts/logs independently checked.
+tags:
+- independent
+- pathway
+- adenine-salvage
+```

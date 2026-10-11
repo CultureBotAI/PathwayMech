@@ -1,0 +1,844 @@
+id: MetaCyc:PWY-5705
+label: allantoin degradation to glyoxylate III
+description: The Escherichia coli K-12 glyoxylate branch converts S-allantoin through allantoate and S-ureidoglycine
+  to S-ureidoglycolate, then AllA releases urea and glyoxylate. AllC and AllE release ammonium in separate
+  steps, distinguishing this four-step route from the yeast allantoicase route. Native PWY-5705 contains
+  the complete PWY-5698 module and the terminal ureidoglycolate lyase reaction. K-12 ECL1 experiments
+  support anaerobic allantoin nitrogen utilization, not growth on allantoin as sole carbon source; deleting
+  allA did not abolish nitrogen-supported growth because the alternative oxamate branch remained available.
+  Native assemblies are annotated for MG1655, while reviewed proteins and primary experiments support
+  the broader K-12 scope. AllB is tetrameric and AllC dimeric; AllE monomer status is inferred and AllA
+  homodimer status is structural annotation. Metal alternatives and source evidence tiers are retained.
+  The urea-releasing AllA reaction corrects historical ammonia-releasing hydrolase assignments; glyoxylate
+  hydration in solution does not establish a different net enzymatic mechanism. Downstream glycerate metabolism,
+  transport, transcriptional regulation and the separate oxamate branch are outside this defined route.
+pathway_type: allantoin-degradation
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15678
+  label: (S)-(+)-allantoin
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:17536
+  label: allantoate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:59947
+  label: (S)-2-ureidoglycine zwitterion
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:57296
+  label: (-)-ureidoglycolate
+  category: small_molecule
+- id: CHEBI:16199
+  label: urea
+  category: small_molecule
+- id: CHEBI:36655
+  label: glyoxylate
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: UniProtKB:P77671
+  label: Allantoinase
+  category: protein
+- id: UniProtKB:P77425
+  label: Allantoate amidohydrolase
+  category: protein
+- id: UniProtKB:P75713
+  label: (S)-ureidoglycine aminohydrolase
+  category: protein
+- id: UniProtKB:P77731
+  label: Ureidoglycolate lyase
+  category: protein
+- id: MetaCyc:CPLX-64
+  label: allantoinase
+  category: complex
+- id: MetaCyc:CPLX-7524
+  label: allantoate amidohydrolase
+  category: complex
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:17030
+  label: (S)-allantoin + H2O => allantoate + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27486
+  label: allantoate + H2O + 2 H(+) => (S)-2-ureidoglycine + NH4(+) + CO2
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:25242
+  label: (S)-2-ureidoglycine + H2O => (S)-ureidoglycolate + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:11305
+  label: (S)-ureidoglycolate => urea + glyoxylate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: allantoin-glyoxylate-iii-edge-001
+  subject: CHEBI:15678
+  predicate: consumes
+  object: RHEA:17030
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 substrates contain CHEBI:15678 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:substrates; http://rdf.rhea-db.org/17029_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_2545; http://rdf.rhea-db.org/Participant_17029_compound_2545
+      rh:compound http://rdf.rhea-db.org/Compound_2545; http://rdf.rhea-db.org/Compound_2545 rh:accession
+- id: allantoin-glyoxylate-iii-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17030
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:substrates; http://rdf.rhea-db.org/17029_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_1283; http://rdf.rhea-db.org/Participant_17029_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:accession
+- id: allantoin-glyoxylate-iii-edge-003
+  subject: RHEA:17030
+  predicate: produces
+  object: CHEBI:17536
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 products contain CHEBI:17536 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:products; http://rdf.rhea-db.org/17029_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_4604; http://rdf.rhea-db.org/Participant_17029_compound_4604
+      rh:compound http://rdf.rhea-db.org/Compound_4604; http://rdf.rhea-db.org/Compound_4604 rh:accession
+- id: allantoin-glyoxylate-iii-edge-004
+  subject: RHEA:17030
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 products contain CHEBI:15378 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:products; http://rdf.rhea-db.org/17029_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_3249; http://rdf.rhea-db.org/Participant_17029_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:accession
+- id: allantoin-glyoxylate-iii-edge-005
+  subject: CHEBI:17536
+  predicate: consumes
+  object: RHEA:27486
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 substrates contain CHEBI:17536 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates; http://rdf.rhea-db.org/27485_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_4604; http://rdf.rhea-db.org/Participant_27485_compound_4604
+      rh:compound http://rdf.rhea-db.org/Compound_4604; http://rdf.rhea-db.org/Compound_4604 rh:accession
+- id: allantoin-glyoxylate-iii-edge-006
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:27486
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates; http://rdf.rhea-db.org/27485_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_1283; http://rdf.rhea-db.org/Participant_27485_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:accession
+- id: allantoin-glyoxylate-iii-edge-007
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27486
+  description: Coefficient 2 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 substrates contain CHEBI:15378 with coefficient 2.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates; http://rdf.rhea-db.org/27485_L rh:contains2
+      http://rdf.rhea-db.org/Participant_27485_compound_3249; http://rdf.rhea-db.org/Participant_27485_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:accession
+- id: allantoin-glyoxylate-iii-edge-008
+  subject: RHEA:27486
+  predicate: produces
+  object: CHEBI:59947
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 products contain CHEBI:59947 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products; http://rdf.rhea-db.org/27485_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_6148; http://rdf.rhea-db.org/Participant_27485_compound_6148
+      rh:compound http://rdf.rhea-db.org/Compound_6148; http://rdf.rhea-db.org/Compound_6148 rh:accession
+- id: allantoin-glyoxylate-iii-edge-009
+  subject: RHEA:27486
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 products contain CHEBI:28938 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products; http://rdf.rhea-db.org/27485_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_1012; http://rdf.rhea-db.org/Participant_27485_compound_1012
+      rh:compound http://rdf.rhea-db.org/Compound_1012; http://rdf.rhea-db.org/Compound_1012 rh:accession
+- id: allantoin-glyoxylate-iii-edge-010
+  subject: RHEA:27486
+  predicate: produces
+  object: CHEBI:16526
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 products contain CHEBI:16526 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products; http://rdf.rhea-db.org/27485_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_4391; http://rdf.rhea-db.org/Participant_27485_compound_4391
+      rh:compound http://rdf.rhea-db.org/Compound_4391; http://rdf.rhea-db.org/Compound_4391 rh:accession
+- id: allantoin-glyoxylate-iii-edge-011
+  subject: CHEBI:59947
+  predicate: consumes
+  object: RHEA:25242
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 substrates contain CHEBI:59947 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:substrates; http://rdf.rhea-db.org/25241_L rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_6148; http://rdf.rhea-db.org/Participant_25241_compound_6148
+      rh:compound http://rdf.rhea-db.org/Compound_6148; http://rdf.rhea-db.org/Compound_6148 rh:accession
+- id: allantoin-glyoxylate-iii-edge-012
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:25242
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:substrates; http://rdf.rhea-db.org/25241_L rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_1283; http://rdf.rhea-db.org/Participant_25241_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:accession
+- id: allantoin-glyoxylate-iii-edge-013
+  subject: RHEA:25242
+  predicate: produces
+  object: CHEBI:57296
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 products contain CHEBI:57296 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:products; http://rdf.rhea-db.org/25241_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_4140; http://rdf.rhea-db.org/Participant_25241_compound_4140
+      rh:compound http://rdf.rhea-db.org/Compound_4140; http://rdf.rhea-db.org/Compound_4140 rh:accession
+- id: allantoin-glyoxylate-iii-edge-014
+  subject: RHEA:25242
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 products contain CHEBI:28938 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:products; http://rdf.rhea-db.org/25241_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_1012; http://rdf.rhea-db.org/Participant_25241_compound_1012
+      rh:compound http://rdf.rhea-db.org/Compound_1012; http://rdf.rhea-db.org/Compound_1012 rh:accession
+- id: allantoin-glyoxylate-iii-edge-015
+  subject: CHEBI:57296
+  predicate: consumes
+  object: RHEA:11305
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained. This is the urea-releasing lyase equation; the primary study notes glyoxylate hydration
+    in solution and does not experimentally exclude water participation in the elementary mechanism.
+  evidence:
+  - reference_id: RHEA:11304
+    source_assertion: RHEA:11305 substrates contain CHEBI:57296 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/11305 rh:substrates; http://rdf.rhea-db.org/11304_L rh:contains1
+      http://rdf.rhea-db.org/Participant_11304_compound_4140; http://rdf.rhea-db.org/Participant_11304_compound_4140
+      rh:compound http://rdf.rhea-db.org/Compound_4140; http://rdf.rhea-db.org/Compound_4140 rh:accession
+- id: allantoin-glyoxylate-iii-edge-016
+  subject: RHEA:11305
+  predicate: produces
+  object: CHEBI:16199
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained. This is the urea-releasing lyase equation; the primary study notes glyoxylate hydration
+    in solution and does not experimentally exclude water participation in the elementary mechanism.
+  evidence:
+  - reference_id: RHEA:11304
+    source_assertion: RHEA:11305 products contain CHEBI:16199 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/11305 rh:products; http://rdf.rhea-db.org/11304_R rh:contains1
+      http://rdf.rhea-db.org/Participant_11304_compound_3216; http://rdf.rhea-db.org/Participant_11304_compound_3216
+      rh:compound http://rdf.rhea-db.org/Compound_3216; http://rdf.rhea-db.org/Compound_3216 rh:accession
+- id: allantoin-glyoxylate-iii-edge-017
+  subject: RHEA:11305
+  predicate: produces
+  object: CHEBI:36655
+  description: Coefficient 1 in the selected directed Rhea equation; source charge and stereochemistry
+    are retained. This is the urea-releasing lyase equation; the primary study notes glyoxylate hydration
+    in solution and does not experimentally exclude water participation in the elementary mechanism.
+  evidence:
+  - reference_id: RHEA:11304
+    source_assertion: RHEA:11305 products contain CHEBI:36655 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/11305 rh:products; http://rdf.rhea-db.org/11304_R rh:contains1
+      http://rdf.rhea-db.org/Participant_11304_compound_3124; http://rdf.rhea-db.org/Participant_11304_compound_3124
+      rh:compound http://rdf.rhea-db.org/Compound_3124; http://rdf.rhea-db.org/Compound_3124 rh:accession
+- id: allantoin-glyoxylate-iii-edge-018
+  subject: RHEA:17030
+  predicate: part_of
+  object: MetaCyc:PWY-5705
+  description: Membership in the complete four-step native glyoxylate branch, with the exact selected
+    Rhea direction.
+  evidence:
+  - reference_id: MetaCyc:PWY-5705
+    source_assertion: PWY-5705 contains the PWY-5698 subpathway followed by UREIDOGLYCOLATE-LYASE-RXN,
+      forming the native route to glyoxylate.
+    source_locator: Pathway/reaction-list; Pathway/sub-pathways; Pathway/reaction-layout
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: PWY-5698 explicitly contains ALLANTOINASE-RXN in its three-step reaction list.
+    source_locator: Pathway/reaction-list; Pathway/reaction-layout
+  - reference_id: MetaCyc:ALLANTOINASE-RXN
+    source_assertion: The native reaction has Rhea cross-reference 17030.
+    source_locator: Reaction/dblink[dblink-db=RHEA]/dblink-oid
+  - reference_id: UniProtKB:P77671
+    source_assertion: The reviewed protein catalytic-activity entry identifies RHEA:17029; this grounds
+      the current reaction-family choice.
+    source_locator: comments[1].reaction.reactionCrossReferences[database=Rhea]
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17029 rh:directionalReaction includes RHEA:17030, whose substrates and products
+      define the selected left-to-right reaction.
+    source_locator: http://rdf.rhea-db.org/17029 rh:directionalReaction http://rdf.rhea-db.org/17030;
+      http://rdf.rhea-db.org/17030 rh:substrates and rh:products
+- id: allantoin-glyoxylate-iii-edge-019
+  subject: RHEA:27486
+  predicate: part_of
+  object: MetaCyc:PWY-5705
+  description: Membership in the complete four-step native glyoxylate branch, with the exact selected
+    Rhea direction. The native 13594 cross-reference is stale; current AllC annotation and matched native
+    chemistry ground the 27485 family without treating 13594 as a current exact match.
+  evidence:
+  - reference_id: MetaCyc:PWY-5705
+    source_assertion: PWY-5705 contains the PWY-5698 subpathway followed by UREIDOGLYCOLATE-LYASE-RXN,
+      forming the native route to glyoxylate.
+    source_locator: Pathway/reaction-list; Pathway/sub-pathways; Pathway/reaction-layout
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: PWY-5698 explicitly contains ALLANTOATE-DEIMINASE-RXN in its three-step reaction
+      list.
+    source_locator: Pathway/reaction-list; Pathway/reaction-layout
+  - reference_id: MetaCyc:ALLANTOATE-DEIMINASE-RXN
+    source_assertion: The native allantoate deiminase reaction forms ureidoglycine, ammonium and carbon
+      dioxide; its legacy Rhea cross-reference is 13594.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink[dblink-db=RHEA]
+  - reference_id: UniProtKB:P77425
+    source_assertion: The reviewed protein catalytic-activity entry identifies RHEA:27485; this grounds
+      the current reaction-family choice.
+    source_locator: comments[1].reaction.reactionCrossReferences[database=Rhea]
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27485 rh:directionalReaction includes RHEA:27486, whose substrates and products
+      define the selected left-to-right reaction.
+    source_locator: http://rdf.rhea-db.org/27485 rh:directionalReaction http://rdf.rhea-db.org/27486;
+      http://rdf.rhea-db.org/27486 rh:substrates and rh:products
+- id: allantoin-glyoxylate-iii-edge-020
+  subject: RHEA:25242
+  predicate: part_of
+  object: MetaCyc:PWY-5705
+  description: Membership in the complete four-step native glyoxylate branch, with the exact selected
+    Rhea direction.
+  evidence:
+  - reference_id: MetaCyc:PWY-5705
+    source_assertion: PWY-5705 contains the PWY-5698 subpathway followed by UREIDOGLYCOLATE-LYASE-RXN,
+      forming the native route to glyoxylate.
+    source_locator: Pathway/reaction-list; Pathway/sub-pathways; Pathway/reaction-layout
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: PWY-5698 explicitly contains URUR-RXN in its three-step reaction list.
+    source_locator: Pathway/reaction-list; Pathway/reaction-layout
+  - reference_id: MetaCyc:URUR-RXN
+    source_assertion: The native reaction has Rhea cross-reference 25242.
+    source_locator: Reaction/dblink[dblink-db=RHEA]/dblink-oid
+  - reference_id: UniProtKB:P75713
+    source_assertion: The reviewed protein catalytic-activity entry identifies RHEA:25241; this grounds
+      the current reaction-family choice.
+    source_locator: comments[1].reaction.reactionCrossReferences[database=Rhea]
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25241 rh:directionalReaction includes RHEA:25242, whose substrates and products
+      define the selected left-to-right reaction.
+    source_locator: http://rdf.rhea-db.org/25241 rh:directionalReaction http://rdf.rhea-db.org/25242;
+      http://rdf.rhea-db.org/25242 rh:substrates and rh:products
+- id: allantoin-glyoxylate-iii-edge-021
+  subject: RHEA:11305
+  predicate: part_of
+  object: MetaCyc:PWY-5705
+  description: Membership in the complete four-step native glyoxylate branch, with the exact selected
+    Rhea direction.
+  evidence:
+  - reference_id: MetaCyc:PWY-5705
+    source_assertion: PWY-5705 contains the PWY-5698 subpathway followed by UREIDOGLYCOLATE-LYASE-RXN,
+      forming the native route to glyoxylate.
+    source_locator: Pathway/reaction-list; Pathway/sub-pathways; Pathway/reaction-layout
+  - reference_id: MetaCyc:UREIDOGLYCOLATE-LYASE-RXN
+    source_assertion: The native reaction has Rhea cross-reference 11305.
+    source_locator: Reaction/dblink[dblink-db=RHEA]/dblink-oid
+  - reference_id: UniProtKB:P77731
+    source_assertion: The reviewed protein catalytic-activity entry identifies RHEA:11304; this grounds
+      the current reaction-family choice.
+    source_locator: comments[1].reaction.reactionCrossReferences[database=Rhea]
+  - reference_id: RHEA:11304
+    source_assertion: RHEA:11304 rh:directionalReaction includes RHEA:11305, whose substrates and products
+      define the selected left-to-right reaction.
+    source_locator: http://rdf.rhea-db.org/11304 rh:directionalReaction http://rdf.rhea-db.org/11305;
+      http://rdf.rhea-db.org/11305 rh:substrates and rh:products
+- id: allantoin-glyoxylate-iii-edge-022
+  subject: UniProtKB:P77671
+  predicate: part_of
+  object: MetaCyc:CPLX-64
+  description: The native assembly contains 4 copies of the P77671 subunit; no isolated-subunit catalysis
+    is assigned.
+  evidence:
+  - reference_id: MetaCyc:CPLX-64
+    source_assertion: The native Protein/component contains 4 copies of G6281-MONOMER.
+    source_locator: Protein/component/Protein; Protein/component/coefficient
+  - reference_id: UniProtKB:P77671
+    source_assertion: The SUBUNIT annotation is homotetramer (ECO:0000269); the BioCyc cross-reference
+      identifies the corresponding native monomer.
+    source_locator: comments[6] SUBUNIT; uniProtKBCrossReferences[database=BioCyc]
+  - reference_id: PMID:11092864
+    source_assertion: Purified AllB gel filtration and chemical cross-linking support a homotetramer.
+    source_locator: Results, molecular mass and cross-linking; Figure 4
+- id: allantoin-glyoxylate-iii-edge-023
+  subject: UniProtKB:P77425
+  predicate: part_of
+  object: MetaCyc:CPLX-7524
+  description: The native assembly contains 2 copies of the P77425 subunit; no isolated-subunit catalysis
+    is assigned.
+  evidence:
+  - reference_id: MetaCyc:CPLX-7524
+    source_assertion: The native Protein/component contains 2 copies of G6285-MONOMER.
+    source_locator: Protein/component/Protein; Protein/component/coefficient
+  - reference_id: UniProtKB:P77425
+    source_assertion: The SUBUNIT annotation is homodimer (ECO:0000269); the BioCyc cross-reference identifies
+      the corresponding native monomer.
+    source_locator: comments[6] SUBUNIT; uniProtKBCrossReferences[database=BioCyc]
+  - reference_id: PMID:17362992
+    source_assertion: The AllC structural abstract describes a dimerization domain and the binuclear zinc
+      active center.
+    source_locator: resultList.result[id=17362992].abstractText
+- id: allantoin-glyoxylate-iii-edge-024
+  subject: MetaCyc:CPLX-64
+  predicate: catalyzes
+  object: RHEA:17030
+  description: Purified E. coli AllB hydrolyzes S-allantoin. The native homotetramer is the catalyst;
+    cobalt-substituted preparations also turn over R-allantoin more slowly, outside this S-specific route.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: Catalytic activity assigns RHEA:17029 with experimental evidence from PMID:11092864.
+    source_locator: comments[1].reaction; comments[1].reaction.evidences
+  - reference_id: MetaCyc:CPLX-64
+    source_assertion: The complex catalyzes ENZRXN0-268, whose reaction is ALLANTOINASE-RXN.
+    source_locator: Protein/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: PMID:11092864
+    source_assertion: The purified AllB protein has allantoinase activity and tetrameric molecular size.
+    source_locator: Results, purification and molecular mass determination; Figures 3B and 4
+  - reference_id: PMID:12486048
+    source_assertion: The zinc enzyme consumes S-allantoin; cobalt preparations prefer S but also turn
+      over R at about one tenth the rate.
+    source_locator: Results, Enantioselectivity; Figure 6
+- id: allantoin-glyoxylate-iii-edge-025
+  subject: MetaCyc:CPLX-7524
+  predicate: catalyzes
+  object: RHEA:27486
+  description: AllC generates S-ureidoglycine; it does not replace the distinct AllE step. The earlier
+    structural paper described a combined downstream product, corrected by the later product-identification
+    study.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: AllC catalytic activity is RHEA:27485 with experimental evidence PMID:20038185.
+    source_locator: comments[1].reaction; comments[1].reaction.evidences
+  - reference_id: MetaCyc:CPLX-7524
+    source_assertion: The complex catalyzes ENZRXN-323, whose reaction is ALLANTOATE-DEIMINASE-RXN.
+    source_locator: Protein/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: PMID:20038185
+    source_assertion: NMR identifies S-ureidoglycine as the true AAH product; the bacterial AllE protein
+      performs a separate manganese-dependent hydrolysis.
+    source_locator: resultList.result[id=20038185].abstractText
+- id: allantoin-glyoxylate-iii-edge-026
+  subject: UniProtKB:P75713
+  predicate: catalyzes
+  object: RHEA:25242
+  description: AllE hydrolyzes S-ureidoglycine to S-ureidoglycolate and ammonium. Its monomer assignment
+    is curator inference; it is not upgraded to an experimentally measured oligomeric state.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: Catalytic activity assigns RHEA:25241 with experimental PMID:19935661 and curator-inference
+      PMID:20038185 evidence; the monomer annotation is ECO:0000305.
+    source_locator: comments[1].reaction; comments[3] SUBUNIT
+  - reference_id: PMID:20038185
+    source_assertion: E. coli YlbA catalyzes manganese-dependent hydrolysis of S-ureidoglycine, yielding
+      S-ureidoglycolate with configurational inversion.
+    source_locator: resultList.result[id=20038185].abstractText
+- id: allantoin-glyoxylate-iii-edge-027
+  subject: UniProtKB:P77731
+  predicate: enables
+  object: RHEA:11305
+  description: AllA supplies the experimentally demonstrated urea-releasing activity. Current structural
+    annotation describes a homodimer; this gene-product role does not assert that an isolated subunit
+    suffices. Older ammonia-releasing hydrolase annotations are rejected.
+  evidence:
+  - reference_id: UniProtKB:P77731
+    source_assertion: Catalytic activity assigns RHEA:11304 with experimental PMID:24107613 evidence.
+      SUBUNIT is homodimer, supported by structural submission Ref.6 and HAMAP inference.
+    source_locator: comments[1].reaction; comments[4] SUBUNIT; references[citation.id=CI-4ICJD7CSP0B6L]
+  - reference_id: PMID:24107613
+    source_assertion: Recombinant E. coli AllA releases urea, detected as ammonia only after urease addition;
+      the expressed clone is JW0493.
+    source_locator: Results and discussion, Nickel-dependent urea-release activity of AllA; Figure 2A-B;
+      Methods, Biochemistry
+  - reference_id: PMID:10601204
+    source_assertion: allA disruption abolishes ureidoglycolate-cleaving activity but does not impair
+      growth on xylose-allantoin medium.
+    source_locator: HTML section#sec13, allA disruption and JA174 growth paragraph
+- id: allantoin-glyoxylate-iii-edge-028
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Alternative AllB metal preparation, not a simultaneous four-metal requirement. Zinc is
+    favored as the physiological metal in the 2003 study; alternative activity and occupancy depend on
+    preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB is annotated to use zinc and alternatively nickel, cobalt or manganese; this
+      combines ECO:0000269 and ECO:0000305 evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted preparations show different occupancy, activity and stereoselectivity;
+      nickel and cobalt substitution does not establish their physiological necessity.
+    source_locator: Abstract; Results, metal content; Discussion
+- id: allantoin-glyoxylate-iii-edge-029
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: Alternative AllB metal preparation, not a simultaneous four-metal requirement. Zinc is
+    favored as the physiological metal in the 2003 study; alternative activity and occupancy depend on
+    preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB is annotated to use zinc and alternatively nickel, cobalt or manganese; this
+      combines ECO:0000269 and ECO:0000305 evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted preparations show different occupancy, activity and stereoselectivity;
+      nickel and cobalt substitution does not establish their physiological necessity.
+    source_locator: Abstract; Results, metal content; Discussion
+- id: allantoin-glyoxylate-iii-edge-030
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Alternative AllB metal preparation, not a simultaneous four-metal requirement. Zinc is
+    favored as the physiological metal in the 2003 study; alternative activity and occupancy depend on
+    preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB is annotated to use zinc and alternatively nickel, cobalt or manganese; this
+      combines ECO:0000269 and ECO:0000305 evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted preparations show different occupancy, activity and stereoselectivity;
+      nickel and cobalt substitution does not establish their physiological necessity.
+    source_locator: Abstract; Results, metal content; Discussion
+- id: allantoin-glyoxylate-iii-edge-031
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Alternative AllB metal preparation, not a simultaneous four-metal requirement. Zinc is
+    favored as the physiological metal in the 2003 study; alternative activity and occupancy depend on
+    preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB is annotated to use zinc and alternatively nickel, cobalt or manganese; this
+      combines ECO:0000269 and ECO:0000305 evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+- id: allantoin-glyoxylate-iii-edge-032
+  subject: MetaCyc:CPLX-7524
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Two bound zinc ions per AllC subunit are reported in the earlier structure; this does not
+    make zinc the unique physiological metal.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: AllC binds two Zn2+ ions per subunit, with experimental evidence PMID:17362992.
+    source_locator: comments[2] COFACTOR; note
+  - reference_id: PMID:17362992
+    source_assertion: The active center contains two co-catalytic zinc ions.
+    source_locator: resultList.result[id=17362992].abstractText
+- id: allantoin-glyoxylate-iii-edge-033
+  subject: MetaCyc:CPLX-7524
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: AllC also binds manganese, and its functional manganese dependence is supported separately
+    from the earlier zinc structure.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: AllC is also able to bind Mn2+, with experimental evidence PMID:25020232.
+    source_locator: comments[2].note
+  - reference_id: PMID:20038185
+    source_assertion: Allantoate amidohydrolase is described as a manganese-dependent enzyme found in
+      plants and bacteria.
+    source_locator: resultList.result[id=20038185].abstractText
+- id: allantoin-glyoxylate-iii-edge-034
+  subject: UniProtKB:P75713
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Manganese and cobalt support alternative AllE preparations; they are not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: AllE uses Mn2+ and can also use Co2+, supported by ECO:0000269 from PMID:20038185.
+    source_locator: comments[2] COFACTOR; note
+- id: allantoin-glyoxylate-iii-edge-035
+  subject: UniProtKB:P75713
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Manganese and cobalt support alternative AllE preparations; they are not simultaneous requirements.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: AllE uses Mn2+ and can also use Co2+, supported by ECO:0000269 from PMID:20038185.
+    source_locator: comments[2] COFACTOR; note
+- id: allantoin-glyoxylate-iii-edge-036
+  subject: UniProtKB:P77731
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: AllA urea-release activity is nickel dependent in the purified-protein experiment. This
+    protein-level relation does not resolve metal occupancy per protomer or imply isolated-subunit catalysis.
+  evidence:
+  - reference_id: UniProtKB:P77731
+    source_assertion: Ni2+ is the annotated AllA cofactor, with experimental PMID:24107613 and HAMAP evidence.
+    source_locator: comments[2] COFACTOR
+  - reference_id: PMID:24107613
+    source_assertion: EDTA treatment abolishes AllA urea-release activity; only Ni2+ rescues it among
+      the tested divalent ions.
+    source_locator: Results and discussion, Nickel-dependent urea-release activity of AllA; Figure 2C;
+      Methods, Biochemistry
+- id: allantoin-glyoxylate-iii-edge-037
+  subject: UniProtKB:P77425
+  predicate: located_in
+  object: GO:0005737
+  description: Protein-level cytoplasmic localization at the source evidence tier; this is not propagated
+    to the other pathway proteins.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: The protein is annotated in the cytoplasm with ECO:0000305; GO cross-reference IEA:UniProtKB-SubCell.
+    source_locator: comments[7] SUBCELLULAR LOCATION; uniProtKBCrossReferences[database=GO,id=GO:0005737]
+- id: allantoin-glyoxylate-iii-edge-038
+  subject: UniProtKB:P75713
+  predicate: located_in
+  object: GO:0005737
+  description: Protein-level cytoplasmic localization at the source evidence tier; this is not propagated
+    to the other pathway proteins.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: The protein is annotated in the cytoplasm with ECO:0000269; GO cross-reference EXP:UniProtKB.
+    source_locator: comments[4] SUBCELLULAR LOCATION; uniProtKBCrossReferences[database=GO,id=GO:0005737]
+- id: allantoin-glyoxylate-iii-edge-039
+  subject: RHEA:17030
+  predicate: provides_input_for
+  object: RHEA:27486
+  description: The product CHEBI:17536 is the shared intermediate in the native ordered sequence; this
+    states metabolite handoff, not a physical channeling complex.
+  evidence:
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: Native reaction-ordering places ALLANTOINASE-RXN before ALLANTOATE-DEIMINASE-RXN.
+    source_locator: Pathway/reaction-ordering; Pathway/reaction-layout
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 produces CHEBI:17536, the intermediate used by the next selected reaction.
+    source_locator: http://rdf.rhea-db.org/17030 rh:products http://rdf.rhea-db.org/17029_R; http://rdf.rhea-db.org/17029_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_17029_compound_4604; rh:compound http://rdf.rhea-db.org/Compound_4604;
+      rh:accession
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 consumes CHEBI:17536, matching the preceding selected reaction product.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates http://rdf.rhea-db.org/27485_L; http://rdf.rhea-db.org/27485_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_27485_compound_4604; rh:compound http://rdf.rhea-db.org/Compound_4604;
+      rh:accession
+- id: allantoin-glyoxylate-iii-edge-040
+  subject: RHEA:27486
+  predicate: provides_input_for
+  object: RHEA:25242
+  description: The product CHEBI:59947 is the shared intermediate in the native ordered sequence; this
+    states metabolite handoff, not a physical channeling complex.
+  evidence:
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: Native reaction-ordering places ALLANTOATE-DEIMINASE-RXN before URUR-RXN.
+    source_locator: Pathway/reaction-ordering; Pathway/reaction-layout
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 produces CHEBI:59947, the intermediate used by the next selected reaction.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products http://rdf.rhea-db.org/27485_R; http://rdf.rhea-db.org/27485_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_27485_compound_6148; rh:compound http://rdf.rhea-db.org/Compound_6148;
+      rh:accession
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 consumes CHEBI:59947, matching the preceding selected reaction product.
+    source_locator: http://rdf.rhea-db.org/25242 rh:substrates http://rdf.rhea-db.org/25241_L; http://rdf.rhea-db.org/25241_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_25241_compound_6148; rh:compound http://rdf.rhea-db.org/Compound_6148;
+      rh:accession
+- id: allantoin-glyoxylate-iii-edge-041
+  subject: RHEA:25242
+  predicate: provides_input_for
+  object: RHEA:11305
+  description: The product CHEBI:57296 is the shared intermediate in the native ordered sequence; this
+    states metabolite handoff, not a physical channeling complex.
+  evidence:
+  - reference_id: MetaCyc:PWY-5705
+    source_assertion: Native reaction-ordering places URUR-RXN before UREIDOGLYCOLATE-LYASE-RXN.
+    source_locator: Pathway/reaction-ordering; Pathway/reaction-layout
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 produces CHEBI:57296, the intermediate used by the next selected reaction.
+    source_locator: http://rdf.rhea-db.org/25242 rh:products http://rdf.rhea-db.org/25241_R; http://rdf.rhea-db.org/25241_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_25241_compound_4140; rh:compound http://rdf.rhea-db.org/Compound_4140;
+      rh:accession
+  - reference_id: RHEA:11304
+    source_assertion: RHEA:11305 consumes CHEBI:57296, matching the preceding selected reaction product.
+    source_locator: http://rdf.rhea-db.org/11305 rh:substrates http://rdf.rhea-db.org/11304_L; http://rdf.rhea-db.org/11304_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_11304_compound_4140; rh:compound http://rdf.rhea-db.org/Compound_4140;
+      rh:accession
+references:
+- id: MetaCyc:PWY-5705
+  title: MetaCyc PWY-5705
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5705
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: e13b689bbcc88cc5521fcb520d0ea8c4471f24aed4d38da236948686c1f692e4
+- id: MetaCyc:PWY-5698
+  title: MetaCyc PWY-5698
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5698
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: a89a140f3dc86e1e05cc22c7cd90fed3cd3e20cfe15ad041961fa6a6c45a4071
+- id: MetaCyc:CPLX-64
+  title: MetaCyc CPLX-64
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX-64
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: 77ce25b4f49e54caa1b24ea6d316fade6124713adc17cbc0371a52ca62bbbf44
+- id: MetaCyc:CPLX-7524
+  title: MetaCyc CPLX-7524
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX-7524
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: 4bcbfbc55456c65eb5dd44811a3028b7124cf4ecc12c5424e6a9f4d1fd5e3cde
+- id: MetaCyc:ALLANTOINASE-RXN
+  title: MetaCyc ALLANTOINASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:ALLANTOINASE-RXN
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: ffde639061cf1091bc7e1b70dab1bc42217e3fb47dd85382e48a4581e802fdf2
+- id: MetaCyc:ALLANTOATE-DEIMINASE-RXN
+  title: MetaCyc ALLANTOATE-DEIMINASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:ALLANTOATE-DEIMINASE-RXN
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: 508bed1d9de239993214c5e6d32a3e73e4396aad76a0202d7e088eac35d10300
+- id: MetaCyc:URUR-RXN
+  title: MetaCyc URUR-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:URUR-RXN
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: 8aae4d1274bd5fe140d9f6678e153ffce7ca59d8ca777c9e2122f50c5bbde746
+- id: MetaCyc:UREIDOGLYCOLATE-LYASE-RXN
+  title: MetaCyc UREIDOGLYCOLATE-LYASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:UREIDOGLYCOLATE-LYASE-RXN
+  source_version: 22.5; complete native XML; retrieved or digest-verified 2026-10-11 UTC
+  source_sha256: f9ee1d3c5715ece0c58b1b5c25bafd5efc14e072f9a33b670c238b064af47782
+- id: UniProtKB:P77671
+  title: Reviewed UniProtKB P77671
+  url: https://rest.uniprot.org/uniprotkb/P77671.json
+  source_version: 2026_03 (2026-09-02); complete response retrieved 2026-10-11 UTC
+  source_sha256: d506ba7a7bd21613ad6dbdc1bd67b1dfeb06d55ac7558ece69ca48ca6cc39fd8
+- id: UniProtKB:P77425
+  title: Reviewed UniProtKB P77425
+  url: https://rest.uniprot.org/uniprotkb/P77425.json
+  source_version: 2026_03 (2026-09-02); complete response retrieved 2026-10-11 UTC
+  source_sha256: 880e9d42e786beb498bf8e2e71c59fb0e4c769e06423a5ba3d15594ee0827907
+- id: UniProtKB:P75713
+  title: Reviewed UniProtKB P75713
+  url: https://rest.uniprot.org/uniprotkb/P75713.json
+  source_version: 2026_03 (2026-09-02); complete response retrieved 2026-10-11 UTC
+  source_sha256: 157e35398d7aa8c6c0962b8b39458433bbc82489b78df0b9ce316183042cac5a
+- id: UniProtKB:P77731
+  title: Reviewed UniProtKB P77731
+  url: https://rest.uniprot.org/uniprotkb/P77731.json
+  source_version: 2026_03 (2026-09-02); complete response retrieved 2026-10-11 UTC
+  source_sha256: 7670311224e3e977c9c105616079708ea3d71f9a0aab3a69c280df97090c41e6
+- id: PMID:11092864
+  title: Functional expression and characterization of the two cyclic amidohydrolase enzymes, allantoinase
+    and a novel phenylhydantoinase, from Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC94829/
+  source_version: Full primary article HTML; preserved original response rehashed 2026-10-11 UTC
+  source_sha256: 2f4e068944272532911d29449d7a133e5b995b1db7fa27984219f82364fb8304
+- id: PMID:12486048
+  title: Metal ion dependence of recombinant Escherichia coli allantoinase.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC141845/
+  source_version: Full primary article HTML; preserved original response rehashed 2026-10-11 UTC
+  source_sha256: b10a113c20794a750b2c58a1fdae1278800153b085f1d18b329f258b0b0665b4
+- id: PMID:17362992
+  title: Structural analysis of a ternary complex of allantoate amidohydrolase from Escherichia coli reveals
+    its mechanics.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A%2811092864%20OR%2012486048%20OR%2017362992%20OR%2025020232%20OR%2020038185%20OR%2019935661%29&format=json&resultType=core&pageSize=20
+  source_version: Indexed primary abstract only; complete retained multi-publication core JSON body digest;
+    rehashed 2026-10-11 UTC
+  source_sha256: 8752189e192ffec0125e1750211c19a9973e72313c508ffd76811bb5b1345a29
+- id: PMID:20038185
+  title: 'Chemical basis of nitrogen recovery through the ureide pathway: formation and hydrolysis of
+    S-ureidoglycine in plants and bacteria.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A%2811092864%20OR%2012486048%20OR%2017362992%20OR%2025020232%20OR%2020038185%20OR%2019935661%29&format=json&resultType=core&pageSize=20
+  source_version: Indexed primary abstract only; complete retained multi-publication core JSON body digest;
+    rehashed 2026-10-11 UTC
+  source_sha256: 8752189e192ffec0125e1750211c19a9973e72313c508ffd76811bb5b1345a29
+- id: PMID:19935661
+  title: Ureide catabolism in Arabidopsis thaliana and Escherichia coli.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A%2811092864%20OR%2012486048%20OR%2017362992%20OR%2025020232%20OR%2020038185%20OR%2019935661%29&format=json&resultType=core&pageSize=20
+  source_version: Indexed primary abstract only; complete retained multi-publication core JSON body digest;
+    rehashed 2026-10-11 UTC
+  source_sha256: 8752189e192ffec0125e1750211c19a9973e72313c508ffd76811bb5b1345a29
+- id: PMID:10601204
+  title: Genetic Analysis of a Chromosomal Region Containing Genes Required for Assimilation of Allantoin
+    Nitrogen and Linked Glyoxylate Metabolism in Escherichia coli
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC94204/
+  source_version: Full primary article HTML; retrieved 2026-10-11 UTC
+  source_sha256: a8fdc4fde9bbbb25a906b2f84c34a5cfa72914a2ffa8afcdfc066e5604a19350
+- id: PMID:24107613
+  title: 'Ureidoglycolate hydrolase, amidohydrolase, lyase: how errors in biological databases are incorporated
+    in scientific papers and vice versa'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3793230/fullTextXML
+  source_version: Full primary article XML; retrieved 2026-10-11 UTC
+  source_sha256: 856f106774e34dca4bbfde4bc74c741c9f461ff9b23686ad5a9a2510e22a7a4d
+- id: RHEA:17029
+  title: Rhea 17029 reaction family; selected 17030
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 covers complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27485
+  title: Rhea 27485 reaction family; selected 27486
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 covers complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:25241
+  title: Rhea 25241 reaction family; selected 25242
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 covers complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:11304
+  title: Rhea 11304 reaction family; selected 11305
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 covers complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf

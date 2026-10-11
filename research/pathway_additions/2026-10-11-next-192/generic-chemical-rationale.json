@@ -1,0 +1,64 @@
+{
+  "observed_at": "2026-10-11T05:27:31.654735+00:00",
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/354",
+  "scope": "Representation of source-defined generic chemical classes; not a new chemical identity, exact structure or specific methyltransferase claim.",
+  "baseline_behavior": "At base0919419 the closed category enum has no general chemical_entity option. Existing uncategorized MetaCyc participants correctly fall back to biolink:NamedThing and neutral graph styling; they are not exported as reactions. The change preserves the source-supported general chemical kind without asserting small-molecule, polymer or cofactor specificity.",
+  "sources": [
+    {
+      "frame": "MetaCyc:SAM-PWY",
+      "url": "https://pathway.yeastgenome.org/getxml?id=META:SAM-PWY&detail=full",
+      "native_version": "22.5",
+      "cache_path": "/private/tmp/pathwaymech-next-192-evidence/sam-cycle/metacyc-SAM-PWY.xml",
+      "sha256": "ee0359d30840846650d89bfd872b6886f691e3416f97917de3afb698ca6ee82b",
+      "locator": "Pathway/comment",
+      "inspected_assertion": "The source describes methylation targets spanning nucleic acids, proteins, phospholipids, biological amines and small molecules."
+    },
+    {
+      "frame": "MetaCyc:RXN-7605",
+      "url": "https://pathway.yeastgenome.org/getxml?id=META:RXN-7605&detail=full",
+      "native_version": "22.5",
+      "cache_path": "/private/tmp/pathwaymech-next-192-evidence/sam-cycle/metacyc-RXN-7605.xml",
+      "sha256": "f44fc8d5f627e20f1b41f289ff89e733586b62c4c65ec0b1bd9696eedee998ef",
+      "locator": "Reaction/comment",
+      "inspected_assertion": "The native reaction transfers a methyl group from SAM to an unspecified acceptor; specific acceptor reactions are special cases."
+    },
+    {
+      "frame": "MetaCyc:Demethylated-methyl-acceptors",
+      "url": "https://pathway.yeastgenome.org/getxml?id=META:Demethylated-methyl-acceptors&detail=full",
+      "native_version": "22.5",
+      "cache_path": "/private/tmp/pathwaymech-next-192-evidence/sam-cycle/metacyc-Demethylated-methyl-acceptors.xml",
+      "sha256": "ef9cf0464f2e12361b06fa69afa57aee6be43ceeeb9484349293eafc51be553e",
+      "locator": "Compound[@class=\"true\"]/comment",
+      "inspected_assertion": "The native compound class leaves the identity of the methyl donor or acceptor unknown or undefined."
+    },
+    {
+      "frame": "MetaCyc:Methylated-methyl-acceptors",
+      "url": "https://pathway.yeastgenome.org/getxml?id=META:Methylated-methyl-acceptors&detail=full",
+      "native_version": "22.5",
+      "cache_path": "/private/tmp/pathwaymech-next-192-evidence/sam-cycle/metacyc-Methylated-methyl-acceptors.xml",
+      "sha256": "fdad0a0d34db04b07b326310509b5a1bcbfa2c2c48766eee74a58331e0122f2b",
+      "locator": "Compound[@class=\"true\"]/comment",
+      "inspected_assertion": "The native class represents methylated forms without selecting one biological substrate."
+    }
+  ],
+  "implementation": {
+    "category": "chemical_entity",
+    "semantic_schema": "src/pathwaymech/schema.py:NODE_CATEGORIES",
+    "closed_schema": "src/pathwaymech/schema/pathwaymech.yaml:NodeCategoryEnum",
+    "kgx": "biolink:ChemicalEntity; source_category and per-record source_contexts retain chemical_entity",
+    "diagram": "Existing chemical styling; exact generic label and component navigation retained",
+    "identifier_policy": "Unchanged; every named native class must independently resolve to its issuing authority."
+  },
+  "focused_validation": {
+    "command": ".venv/bin/pytest tests/test_graph_context.py tests/test_kgx_export.py tests/test_graph_view.py",
+    "exit_code": 0,
+    "passed": 50,
+    "duration_seconds": 31.53,
+    "new_regression": "Generic native input/output classes survive both validators, exact KGX categories and contexts, chemical SVG styling and component navigation; concrete water remains SmallMolecule. Generic chemical subjects do not bypass enzyme-only cofactor constraints.",
+    "lint": "Three initial style findings corrected; subsequent ruff check of changed Python files passed. Full frozen-corpus gates remain separate."
+  },
+  "limits": [
+    "This rationale is integration-agent analysis, not the independent scientific review.",
+    "No supported subtype is broadened and no existing pathway record is changed by this category addition."
+  ]
+}

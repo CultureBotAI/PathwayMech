@@ -52,6 +52,7 @@ LOCAL_PREDICATE_CURIES = {
 }
 
 EXPLICIT_CATEGORIES = {
+    "chemical_entity": "biolink:ChemicalEntity",
     "small_molecule": "biolink:SmallMolecule",
     "lipid": "biolink:ChemicalEntity",
     "polymer": "biolink:ChemicalEntity",
