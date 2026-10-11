@@ -1,0 +1,217 @@
+{
+  "review_started_at": "2026-10-11T09:04:27.161423+00:00",
+  "assessment_at": "2026-10-11T09:10:51.518480+00:00",
+  "target_sha256": "a0a26b897757e072ec5640805db8ab9ed0961b6499e1c576d0751996a0f97b37",
+  "independence": "Did not author or edit target. Authored only separate MMPA record.",
+  "original_source_replay": {
+    "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/python /private/tmp/pathwaymech-next-203-ergothioneine-review/independent-replay.py",
+    "exit_code": 0,
+    "receipt_path": "/private/tmp/pathwaymech-next-203-ergothioneine-review/independent-replay.json",
+    "receipt_sha256": "1cc46281aaf36ce92e79392dc7b0fe645ed0f62333edefaece66d1d891a39890",
+    "original_bodies_rehashed": 54,
+    "chemical_sides": 33,
+    "balances": {
+      "RHEA:13286": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "S": 0,
+        "charge": 0,
+        "P": 0
+      },
+      "RHEA:38472": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "charge": 0,
+        "S": 0
+      },
+      "RHEA:42673": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "S": 0,
+        "charge": 0
+      },
+      "RHEA:42685": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "S": 0,
+        "charge": 0
+      },
+      "RHEA:52781": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "S": 0,
+        "charge": 0
+      },
+      "MetaCyc:RXN-18089": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "S": 0,
+        "charge": 0,
+        "A": 0
+      },
+      "MetaCyc:RXN-15804": {
+        "C": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "S": 0,
+        "charge": 0
+      }
+    },
+    "kgx_edges": 55,
+    "kgx_evidence": 101,
+    "helper_attempts": [
+      {
+        "exit_code": 1,
+        "reason": "Reviewer helper assumed an RDF direction property; fixed to exact left/right side and master directionalReaction predicates. No source or target change."
+      },
+      {
+        "exit_code": 0,
+        "session": 30119
+      }
+    ]
+  },
+  "construct_comparison": {
+    "source": "PMC4014345.html",
+    "sha256": "89ced1b7b2b1aad3ace06e7d0656d79285140ac46293e03f78f19a2a5f4701dd",
+    "locator": "section sec2.1 paragraph 1, complete published construct and DSM43465/ATCC607 cloning statement",
+    "length_excluding_tags": 321,
+    "differences": [
+      {
+        "position": 2,
+        "construct_residue": "A",
+        "A0R5M8_residue": "T"
+      }
+    ],
+    "remaining_residues_identical": 320,
+    "scope": "Does not demonstrate inhibition is absent from mc2155. The measured construct and strain should be explicit, with transfer marked as inference rather than direct exact-protein assay.",
+    "linked_2018_source": "Misson2018-si.pdf p11 Protein Production and Crystallization, reference3 on p25; p3 FigureS2 product inhibition"
+  },
+  "assessments": [
+    {
+      "topic": "Complete native boundary",
+      "outcome": "supported",
+      "evidence": "PWY7255 exact seven-member list, two precursor branches converge; no combined RHEA42689 duplicate."
+    },
+    {
+      "topic": "Terminal formal chemistry",
+      "outcome": "supported with limits",
+      "evidence": "Native neutral RXN18089 plus reversible RXN15804; current ChEBI C-S versus C=S preserves tautomer distinction despite shared standard InChI; formal AH2/A retained, physiological donor unestablished."
+    },
+    {
+      "topic": "Evidence tiers and strains",
+      "outcome": "supported with one correction",
+      "evidence": "EgtA ECO0250 accurately scoped. 2010 DSM43465 B/C/D not called mc2155; EgtC2015 and EgtE2023 clone exact mc2155. Edge048 misses the linked construct-specific boundary."
+    },
+    {
+      "topic": "Assembly and cofactors",
+      "outcome": "supported",
+      "evidence": "EgtC tetramer PISA+SEC original PDFp2 and exact clone pp5\u20136; EgtE dimer JATS sec1.1 p2, sec3.2 p1; PLP2015 sec1p1; FeII2010SI S7FigureS6 visually confirmed. No isolated-monomer sufficiency claim."
+    },
+    {
+      "topic": "Physiology",
+      "outcome": "supported with limits",
+      "evidence": "2013 sec5/sec12 Table3 exact mc2155 deletion/complementation supports pathway production, not all seven chemical states. No Mtb expression transfer."
+    }
+  ],
+  "findings": [
+    {
+      "issue_key": "ergothioneine-egtd-product-inhibition-construct-scope",
+      "local_id": "f-egtd-inhibition-construct",
+      "severity": "minor",
+      "status": "open",
+      "edge": "ergothioneine-edge-048",
+      "field": "mechanistic_edges[47]",
+      "description": "Product-inhibition evidence describes a related DSM43465/ATCC607-derived engineered EgtD construct. The exact A0R5M8/mc2155 node needs an explicit construct/strain-transfer qualification or the observation should remain contextual. The experiment and product-inhibition interpretation themselves are supported."
+    }
+  ],
+  "bounded_duplicate_searches": [
+    {
+      "root": "/private/tmp/pathwaymech-next-203-20261011",
+      "command": [
+        "rg",
+        "-uu",
+        "-l",
+        "-i",
+        "-e",
+        "PWY-7255|ergothioneine|A0R5M[789]|A0R5N[01]|MSMEG_624[6789]|MSMEG_6250",
+        "data/pathways",
+        "research",
+        "reviews"
+      ],
+      "exit_code": 0,
+      "matched_paths": [
+        "data/pathways/ergothioneine-biosynthesis-i.yaml",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-replay.py",
+        "research/pathway_additions/2026-10-11-next-203/authority-source-inspection.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-authority-delta.json",
+        "research/pathway_additions/2026-10-11-next-203/authority-integration.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-protein-projection.json",
+        "research/pathway_additions/2026-10-11-next-203/sulfoed-dedup.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-source-projection.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-source-manifest.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-dedup.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-curation.md",
+        "research/pathway_additions/2026-10-11-next-203/cohort-records.json",
+        "research/pathway_additions/2026-10-11-next-203/imodulondb-applicability.json",
+        "research/pathway_additions/2026-10-11-next-203/ergothioneine-identifiers.json",
+        "research/pathway_additions/2026-10-11-next-203/authority-acquisition-integration.json",
+        "research/pathway_additions/2026-10-11-next-203/README.md",
+        "research/pathway_additions/2026-10-11-next-201/sulfoquinovose-dedup.json",
+        "research/pathway_additions/2026-10-11-next-201/discovery-scout-literature.json",
+        "research/pathway_additions/2026-10-11-next-201/README.md"
+      ],
+      "stderr": "",
+      "scope": "hidden and ignored files included in data/pathways, research, reviews; no whole-computer absence claim"
+    },
+    {
+      "root": "/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech",
+      "command": [
+        "rg",
+        "-uu",
+        "-l",
+        "-i",
+        "-e",
+        "PWY-7255|ergothioneine|A0R5M[789]|A0R5N[01]|MSMEG_624[6789]|MSMEG_6250",
+        "data/pathways",
+        "research",
+        "reviews"
+      ],
+      "exit_code": 0,
+      "matched_paths": [
+        "research/pathway_additions/2026-10-11-next-201/sulfoquinovose-dedup.json",
+        "research/pathway_additions/2026-10-11-next-201/discovery-scout-literature.json",
+        "research/pathway_additions/2026-10-11-next-201/README.md"
+      ],
+      "stderr": "",
+      "scope": "hidden and ignored files included in data/pathways, research, reviews; no whole-computer absence claim"
+    }
+  ],
+  "later_primary_search": {
+    "queries": [
+      "EgtA Mycobacterium smegmatis gamma glutamylcysteine synthetase characterization MSMEG 6250",
+      "EgtD 2018 hercynine inhibition Mycobacterium smegmatis Misson strain"
+    ],
+    "inspected_primary_metadata": [
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC6154287/",
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC8593015/"
+    ],
+    "disposition": "These studies concern M. tuberculosis; not transferred to selected mc2155 activity or inhibition."
+  },
+  "limitations": [
+    "The scientific judgement is independent of the author replay; original primary sections and rendered critical PDF pages inspected.",
+    "Whole-repository final checks remain coordinated by root; no pass attested before actual receipts."
+  ]
+}

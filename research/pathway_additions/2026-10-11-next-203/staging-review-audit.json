@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-10-11T09:32:34.865205+00:00",
+  "status": "accepted_bounded_exception",
+  "repository_modified": false,
+  "actual_check": {
+    "command": "git diff --cached --check",
+    "exit_code": 2,
+    "stdout": "research/pathway_additions/2026-10-11-next-203/final-checks/identifiers.txt:1: trailing whitespace.\n+uv run pathwaymech-check-identifiers \nresearch/pathway_additions/2026-10-11-next-203/final-checks/test.txt:93: trailing whitespace.\n+  \nresearch/pathway_additions/2026-10-11-next-203/initial-checks/identifiers.txt:1: trailing whitespace.\n+uv run pathwaymech-check-identifiers \nresearch/pathway_additions/2026-10-11-next-203/initial-checks/test.txt:93: trailing whitespace.\n+  \nresearch/pathway_additions/2026-10-11-next-203/sulfoed-replay.py:527: trailing whitespace.\n+                \nresearch/pathway_additions/2026-10-11-next-203/sulfoed-replay.py:530: trailing whitespace.\n+                \n",
+    "stderr": ""
+  },
+  "exact_allowed_occurrences": [
+    {
+      "path": "research/pathway_additions/2026-10-11-next-203/final-checks/identifiers.txt",
+      "line": 1,
+      "line_repr": "'uv run pathwaymech-check-identifiers '",
+      "file_sha256": "caa41fbc7e49c0fbdfcf6d0c410395136c3cefe70d34ba5d5157bb2de04705b3"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-203/final-checks/test.txt",
+      "line": 93,
+      "line_repr": "'  '",
+      "file_sha256": "158e3de6324689d08482f125437bad7f749f6b46364f3b92bd954702788afe3c"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-203/initial-checks/identifiers.txt",
+      "line": 1,
+      "line_repr": "'uv run pathwaymech-check-identifiers '",
+      "file_sha256": "caa41fbc7e49c0fbdfcf6d0c410395136c3cefe70d34ba5d5157bb2de04705b3"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-203/initial-checks/test.txt",
+      "line": 93,
+      "line_repr": "'  '",
+      "file_sha256": "325982f66557a57dbf3707b839849a37dc902d8d967013921b7372c79cd63af4"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-203/sulfoed-replay.py",
+      "line": 527,
+      "line_repr": "'                '",
+      "file_sha256": "95e4f7cbc2b2b4aa9cc4ae13febd6c8bf8a4887275b5d1968576d0eb9100a860"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-203/sulfoed-replay.py",
+      "line": 530,
+      "line_repr": "'                '",
+      "file_sha256": "95e4f7cbc2b2b4aa9cc4ae13febd6c8bf8a4887275b5d1968576d0eb9100a860"
+    }
+  ],
+  "all_other_staged_diff_lines": "No additional whitespace findings: complete unfiltered Git output equals the six-occurrence allowlist exactly. No file-wide or global whitespace suppression.",
+  "helper_semantic_check": "Both lines contain only spaces outside string literals; removing only those two blank-line spaces yields an identical Python AST, independently checked in memory. No source modification or replay claimed.",
+  "review_dependency": {
+    "review": "reviews/structured/20261011T092715Z-sulfoed-independent-review/review.yaml",
+    "review_sha256": "5753f25c46324280f3406c2b6ec0c2f11dd5cd1889a0c93838047beca85de73a",
+    "formal_input": {
+      "path": "research/pathway_additions/2026-10-11-next-203/sulfoed-replay.py",
+      "sha256": "95e4f7cbc2b2b4aa9cc4ae13febd6c8bf8a4887275b5d1968576d0eb9100a860",
+      "role": "context"
+    },
+    "other_dependency": "research/pathway_additions/2026-10-11-next-203/sulfoed-validation.json"
+  },
+  "contract_assessment": "Local add-pathway and record-review profile require running git diff --check and reporting actual scope; they do not impose an unconditional zero-whitespace publication rule. Immutable review requirements apply to saved review pairs, not every maintained helper. Keeping the helper unchanged is a bounded evidence-preservation choice, not a claimed mandatory immutability exception.",
+  "recommendation": "Preserve exact log and reviewed helper bytes; record this full staged failure and the exact six-line exception in a new receipt and PR validation. Retain the earlier unstaged command as an honest narrower observation; do not claim the full staged whitespace gate passed. No scientific or executable defect requires a helper correction, replay, or new scientific review.",
+  "limitations": [
+    "This assessment is confined to the six observed whitespace occurrences and their formal review dependencies.",
+    "Future changes require rerunning the complete staged whitespace check; exceptions must not grow silently."
+  ]
+}

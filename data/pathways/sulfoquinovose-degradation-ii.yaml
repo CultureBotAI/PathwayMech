@@ -1,0 +1,849 @@
+id: MetaCyc:PWY-7722
+label: sulfoquinovose degradation II
+description: The complete five-transformation sulfo-Entner-Doudoroff route from free sulfoquinovose to
+  pyruvate and sulfolactate in Pseudomonas putida strain SQ1 (DSM 100120). Six exact Rhea activities represent
+  the five native members because the final SLA oxidation has alternative NAD- and NADP-dependent forms.
+  All five SQ1 enzymes were reconstituted in vitro and induced during aerobic SQ growth. Current native
+  reaction structures and reviewed Rhea/UniProt assignments retain S-SLA/S-SL; older native protein prose
+  linking R-SLA is superseded, without recasting the SQ1 HPLC-MS assay as an enantiomer-resolved experiment.
+  SQDH has direct tetramer evidence; the other functional protein/activity relations do not assert monomer
+  sufficiency. Metal annotations preserve inference levels, and the aldolase genomic-start difference
+  is explicit. The endpoint retains organic sulfur. SQ-glycoside hydrolysis, mutarotation, unidentified
+  transport/regulatory mechanisms, downstream pyruvate metabolism and partner-organism sulfolactate mineralization
+  are outside this exact native boundary. KT2440 expression datasets do not establish SQ1 applicability.
+pathway_type: sulfo-ED-catabolism
+taxa:
+- id: NCBITaxon:303
+  label: Pseudomonas putida
+participants:
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:61289
+  label: (S)-3-sulfonatolactate(2-)
+  category: small_molecule
+- id: CHEBI:77132
+  label: 6-sulfo-D-quinovose(1-)
+  category: small_molecule
+- id: CHEBI:88091
+  label: 6-deoxy-6-sulfoglucono-1,5-lactone(1-)
+  category: small_molecule
+- id: CHEBI:88093
+  label: 6-deoxy-6-sulfo-D-gluconate(2-)
+  category: small_molecule
+- id: CHEBI:88094
+  label: 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate(2-)
+  category: small_molecule
+- id: CHEBI:90109
+  label: L-3-sulfolactaldehyde(1-)
+  category: small_molecule
+- id: CHEBI:60240
+  label: divalent metal cation
+  category: cofactor
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: UniProtKB:P0DOV5
+  label: Sulfoquinovose 1-dehydrogenase
+  category: protein
+- id: UniProtKB:P0DOV6
+  label: 6-deoxy-6-sulfogluconolactonase
+  category: protein
+- id: UniProtKB:P0DOV7
+  label: 6-deoxy-6-sulfo-D-gluconate dehydratase
+  category: protein
+- id: UniProtKB:P0DOV8
+  label: 2-dehydro-3,6-dideoxy-6-sulfogluconate aldolase
+  category: protein
+- id: UniProtKB:P0DOV9
+  label: 3-sulfolactaldehyde dehydrogenase
+  category: protein
+reactions:
+- id: RHEA:47897
+  label: 6-sulfo-D-quinovose + NAD(+) => 6-deoxy-6-sulfo-D-glucono-1,5-lactone + NADH + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:47909
+  label: 6-deoxy-6-sulfo-D-glucono-1,5-lactone + H2O => 6-deoxy-6-sulfo-D-gluconate + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:47913
+  label: 6-deoxy-6-sulfo-D-gluconate => 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate + H2O
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:47925
+  label: 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate => (2S)-3-sulfolactaldehyde + pyruvate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:47929
+  label: (2S)-3-sulfolactaldehyde + NADP(+) + H2O => (2S)-3-sulfolactate + NADPH + 2 H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:47933
+  label: (2S)-3-sulfolactaldehyde + NAD(+) + H2O => (2S)-3-sulfolactate + NADH + 2 H(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: sulfoed-edge-001
+  subject: CHEBI:77132
+  predicate: consumes
+  object: RHEA:47897
+  evidence:
+  - reference_id: RHEA:47897
+    source_assertion: RHEA:47897 assigns CHEBI:77132 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47896_compound_9101"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9101)
+- id: sulfoed-edge-002
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:47897
+  evidence:
+  - reference_id: RHEA:47897
+    source_assertion: RHEA:47897 assigns CHEBI:57540 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47896_compound_3484"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3484)
+- id: sulfoed-edge-003
+  subject: RHEA:47897
+  predicate: produces
+  object: CHEBI:88091
+  evidence:
+  - reference_id: RHEA:47897
+    source_assertion: RHEA:47897 assigns CHEBI:88091 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47896_compound_11949"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11949)
+- id: sulfoed-edge-004
+  subject: RHEA:47897
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: RHEA:47897
+    source_assertion: RHEA:47897 assigns CHEBI:57945 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47896_compound_1650"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1650)
+- id: sulfoed-edge-005
+  subject: RHEA:47897
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:47897
+    source_assertion: RHEA:47897 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47896_compound_3249"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: sulfoed-edge-006
+  subject: CHEBI:88091
+  predicate: consumes
+  object: RHEA:47909
+  evidence:
+  - reference_id: RHEA:47909
+    source_assertion: RHEA:47909 assigns CHEBI:88091 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47908_compound_11949"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11949)
+- id: sulfoed-edge-007
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:47909
+  evidence:
+  - reference_id: RHEA:47909
+    source_assertion: RHEA:47909 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47908_compound_1283"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: sulfoed-edge-008
+  subject: RHEA:47909
+  predicate: produces
+  object: CHEBI:88093
+  evidence:
+  - reference_id: RHEA:47909
+    source_assertion: RHEA:47909 assigns CHEBI:88093 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47908_compound_11950"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11950)
+- id: sulfoed-edge-009
+  subject: RHEA:47909
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:47909
+    source_assertion: RHEA:47909 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47908_compound_3249"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: sulfoed-edge-010
+  subject: CHEBI:88093
+  predicate: consumes
+  object: RHEA:47913
+  evidence:
+  - reference_id: RHEA:47913
+    source_assertion: RHEA:47913 assigns CHEBI:88093 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47913"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47912_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47912_compound_11950"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11950)
+- id: sulfoed-edge-011
+  subject: RHEA:47913
+  predicate: produces
+  object: CHEBI:88094
+  evidence:
+  - reference_id: RHEA:47913
+    source_assertion: RHEA:47913 assigns CHEBI:88094 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47913"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47912_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47912_compound_11951"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11951)
+- id: sulfoed-edge-012
+  subject: RHEA:47913
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:47913
+    source_assertion: RHEA:47913 assigns CHEBI:15377 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47913"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47912_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47912_compound_1283"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: sulfoed-edge-013
+  subject: CHEBI:88094
+  predicate: consumes
+  object: RHEA:47925
+  evidence:
+  - reference_id: RHEA:47925
+    source_assertion: RHEA:47925 assigns CHEBI:88094 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47924_compound_11951"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11951)
+- id: sulfoed-edge-014
+  subject: RHEA:47925
+  predicate: produces
+  object: CHEBI:90109
+  evidence:
+  - reference_id: RHEA:47925
+    source_assertion: RHEA:47925 assigns CHEBI:90109 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47924_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoed-edge-015
+  subject: RHEA:47925
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:47925
+    source_assertion: RHEA:47925 assigns CHEBI:15361 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47924_compound_3719"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3719)
+- id: sulfoed-edge-016
+  subject: CHEBI:90109
+  predicate: consumes
+  object: RHEA:47929
+  evidence:
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:90109 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoed-edge-017
+  subject: CHEBI:58349
+  predicate: consumes
+  object: RHEA:47929
+  evidence:
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:58349 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_5188"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_5188)
+- id: sulfoed-edge-018
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:47929
+  evidence:
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_1283"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: sulfoed-edge-019
+  subject: RHEA:47929
+  predicate: produces
+  object: CHEBI:61289
+  evidence:
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:61289 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_6369"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_6369)
+- id: sulfoed-edge-020
+  subject: RHEA:47929
+  predicate: produces
+  object: CHEBI:57783
+  evidence:
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:57783 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_3438"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3438)
+- id: sulfoed-edge-021
+  subject: RHEA:47929
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:15378 to its products with coefficient 2.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_R"]/rh:contains2[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_3249"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: sulfoed-edge-022
+  subject: CHEBI:90109
+  predicate: consumes
+  object: RHEA:47933
+  evidence:
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:90109 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoed-edge-023
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:47933
+  evidence:
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:57540 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_3484"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3484)
+- id: sulfoed-edge-024
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:47933
+  evidence:
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_1283"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: sulfoed-edge-025
+  subject: RHEA:47933
+  predicate: produces
+  object: CHEBI:61289
+  evidence:
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:61289 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_6369"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_6369)
+- id: sulfoed-edge-026
+  subject: RHEA:47933
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:57945 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_1650"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1650)
+- id: sulfoed-edge-027
+  subject: RHEA:47933
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:15378 to its products with coefficient 2.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_R"]/rh:contains2[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_3249"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: sulfoed-edge-028
+  subject: RHEA:47897
+  predicate: part_of
+  object: MetaCyc:PWY-7722
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The complete native pathway lists RXN-17096 among its five reaction members.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-list/Reaction[@frameid="RXN-17096"]
+  - reference_id: MetaCyc:RXN-17096
+    source_assertion: The native reaction cross-references RHEA:47897 and records physiological left-to-right
+      orientation.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-17096"]/dblink[dblink-db="RHEA"]/dblink-oid; /ptools-xml/Reaction/reaction-direction
+  - reference_id: RHEA:47897
+    source_assertion: Rhea master 47896 explicitly has directional reaction 47897; its left-to-right substrate
+      and product assignment is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/47897"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:substrates and rh:products
+- id: sulfoed-edge-029
+  subject: RHEA:47909
+  predicate: part_of
+  object: MetaCyc:PWY-7722
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The complete native pathway lists RXN-17095 among its five reaction members.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-list/Reaction[@frameid="RXN-17095"]
+  - reference_id: MetaCyc:RXN-17095
+    source_assertion: The native reaction cross-references RHEA:47909 and records physiological left-to-right
+      orientation.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-17095"]/dblink[dblink-db="RHEA"]/dblink-oid; /ptools-xml/Reaction/reaction-direction
+  - reference_id: RHEA:47909
+    source_assertion: Rhea master 47908 explicitly has directional reaction 47909; its left-to-right substrate
+      and product assignment is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/47909"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:substrates and rh:products
+- id: sulfoed-edge-030
+  subject: RHEA:47913
+  predicate: part_of
+  object: MetaCyc:PWY-7722
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The complete native pathway lists RXN-17097 among its five reaction members.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-list/Reaction[@frameid="RXN-17097"]
+  - reference_id: MetaCyc:RXN-17097
+    source_assertion: The native reaction cross-references RHEA:47913 and records physiological left-to-right
+      orientation.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-17097"]/dblink[dblink-db="RHEA"]/dblink-oid; /ptools-xml/Reaction/reaction-direction
+  - reference_id: RHEA:47913
+    source_assertion: Rhea master 47912 explicitly has directional reaction 47913; its left-to-right substrate
+      and product assignment is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47912"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/47913"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/47913"]/rh:substrates and rh:products
+- id: sulfoed-edge-031
+  subject: RHEA:47925
+  predicate: part_of
+  object: MetaCyc:PWY-7722
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The complete native pathway lists RXN-17098 among its five reaction members.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-list/Reaction[@frameid="RXN-17098"]
+  - reference_id: MetaCyc:RXN-17098
+    source_assertion: The native reaction cross-references RHEA:47925 and records physiological left-to-right
+      orientation.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-17098"]/dblink[dblink-db="RHEA"]/dblink-oid; /ptools-xml/Reaction/reaction-direction
+  - reference_id: RHEA:47925
+    source_assertion: Rhea master 47924 explicitly has directional reaction 47925; its left-to-right substrate
+      and product assignment is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/47925"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:substrates and rh:products
+- id: sulfoed-edge-032
+  subject: RHEA:47929
+  predicate: part_of
+  object: MetaCyc:PWY-7722
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The complete native pathway lists RXN-17101 among its five reaction members.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-list/Reaction[@frameid="RXN-17101"]
+  - reference_id: MetaCyc:RXN-17101
+    source_assertion: The native final reaction uses generic NAD(P)+ and NAD(P)H classes and links RHEA:47929.
+      Its complete cofactor scope is represented by alternative NADP- and NAD-dependent activities, not
+      two consecutive oxidations.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-17101"]/left; /ptools-xml/Reaction/right; /ptools-xml/Reaction/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: UniProtKB:P0DOV9
+    source_assertion: 'ECO:0000269 (PMID26195800): the reviewed SQ1 protein explicitly assigns the NADP-dependent
+      activity to RHEA:47928.'
+    source_locator: /comments/1/reaction/name; /comments/1/reaction/reactionCrossReferences/0; /comments/1/reaction/evidences
+  - reference_id: RHEA:47929
+    source_assertion: Rhea master 47928 explicitly has directional reaction 47929; its left-to-right substrate
+      and product assignment is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/47929"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:substrates and rh:products
+- id: sulfoed-edge-033
+  subject: RHEA:47933
+  predicate: part_of
+  object: MetaCyc:PWY-7722
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The complete native pathway lists RXN-17101 among its five reaction members.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-list/Reaction[@frameid="RXN-17101"]
+  - reference_id: MetaCyc:RXN-17101
+    source_assertion: The native final reaction uses generic NAD(P)+ and NAD(P)H classes and links RHEA:47929.
+      Its complete cofactor scope is represented by alternative NADP- and NAD-dependent activities, not
+      two consecutive oxidations.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-17101"]/left; /ptools-xml/Reaction/right; /ptools-xml/Reaction/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: UniProtKB:P0DOV9
+    source_assertion: 'ECO:0000269 (PMID26195800): the reviewed SQ1 protein explicitly assigns the NAD-dependent
+      activity to RHEA:47932.'
+    source_locator: /comments/2/reaction/name; /comments/2/reaction/reactionCrossReferences/0; /comments/2/reaction/evidences
+  - reference_id: RHEA:47933
+    source_assertion: Rhea master 47932 explicitly has directional reaction 47933; its left-to-right substrate
+      and product assignment is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/47933"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:substrates and rh:products
+- id: sulfoed-edge-034
+  subject: UniProtKB:P0DOV5
+  predicate: enables
+  object: RHEA:47897
+  evidence:
+  - reference_id: UniProtKB:P0DOV5
+    source_assertion: 'ECO:0000269, PMID26195800: this reviewed SQ1 gene product is assigned the specified
+      catalytic activity; its cited genomic and experimental references explicitly name strain SQ1.'
+    source_locator: /comments/1/reaction; /references/0/referenceComments; /references/1/referenceComments
+  - reference_id: PMID:26195800
+    source_assertion: SQ1 IMG0090 was cloned and purified from recombinant E. coli; it oxidized SQ to
+      SGL with a strong NAD+ preference. Whole-pathway reconstitution used the purified protein.
+    source_locator: //*[@id="s4"]/p[1]; //*[@id="s5"]/p[2]; Figure 4B; SI Heterologous Overproduction
+      and Purification of His-Tagged Proteins
+  - reference_id: PMID:39840830
+    source_assertion: The codon-harmonized SQ1 SQDH construct has a tetrameric solution state by SEC-MALLS
+      (~119 kDa versus ~28 kDa monomer), consistent with its crystals. The published untagged sequence
+      equals P0DOV5.
+    source_locator: //*[@id="s2-2"]/p[1]; Figure 4; //*[@id="s5-2"]; //*[@id="s5-3"]/p[1]
+  - reference_id: PMID:39840830
+    source_assertion: Under the 2025 kinetic conditions, NAD+ was favored over NADP+ by about 10^6 in
+      catalytic efficiency, and very weak G6P turnover was detectable at high enzyme concentration; the
+      2015 negative assay is condition-specific.
+    source_locator: //*[@id="s2-1"]/p[1]; //*[@id="s2-1"]/p[2]; Table 1
+  description: Functional protein/activity relation, not monomer sufficiency. The 2025 recombinant SQ1
+    enzyme is tetrameric in solution and crystals. Minor NADP activity and trace G6P activity are assay-dependent
+    side activities outside the native NAD-dependent step.
+- id: sulfoed-edge-035
+  subject: UniProtKB:P0DOV6
+  predicate: enables
+  object: RHEA:47909
+  evidence:
+  - reference_id: UniProtKB:P0DOV6
+    source_assertion: 'ECO:0000269, PMID26195800: this reviewed SQ1 gene product is assigned the specified
+      catalytic activity; its cited genomic and experimental references explicitly name strain SQ1.'
+    source_locator: /comments/1/reaction; /references/0/referenceComments; /references/1/referenceComments
+  - reference_id: PMID:26195800
+    source_assertion: Purified recombinant SQ1 IMG0091 converted SGL to SG in sequential reconstitution.
+      Minor spontaneous hydrolysis was also observed before lactonase addition; it does not replace the
+      enzyme-supported native step.
+    source_locator: //*[@id="s5"]/p[1]; //*[@id="s5"]/p[2]; Figure 4B-C
+  description: Functional activity assignment. Divalent-metal binding below is a reviewed similarity inference,
+    not an SQ1 metal-titration measurement. No physical monomer or oligomer state is inferred from the
+    native MONOMER frame name.
+- id: sulfoed-edge-036
+  subject: UniProtKB:P0DOV7
+  predicate: enables
+  object: RHEA:47913
+  evidence:
+  - reference_id: UniProtKB:P0DOV7
+    source_assertion: 'ECO:0000269, PMID26195800: this reviewed SQ1 gene product is assigned the specified
+      catalytic activity; its cited genomic and experimental references explicitly name strain SQ1.'
+    source_locator: /comments/1/reaction; /references/0/referenceComments; /references/1/referenceComments
+  - reference_id: PMID:26195800
+    source_assertion: Purified recombinant SQ1 IMG0089 converted SG to KDSG in the sequential reconstitution;
+      its preparation also contained C-terminally truncated products identified by peptide fingerprinting.
+    source_locator: //*[@id="s5"]/p[1]; //*[@id="s5"]/p[2]; Figure 4C-D; Figure S4 legend
+  - reference_id: UniProtKB:P0DOV7
+    source_assertion: The homodimer annotation is ECO:0000250 inference from Q1JUQ1. It is not direct
+      experimental assembly evidence for SQ1.
+    source_locator: /comments/3/texts/0
+  description: Functional activity assignment; current reviewed homodimer and one [4Fe-4S] cluster annotations
+    are inferred by similarity to Q1JUQ1, not directly measured SQ1 assembly or cluster occupancy.
+- id: sulfoed-edge-037
+  subject: UniProtKB:P0DOV8
+  predicate: enables
+  object: RHEA:47925
+  evidence:
+  - reference_id: UniProtKB:P0DOV8
+    source_assertion: 'ECO:0000269, PMID26195800: this reviewed SQ1 gene product is assigned the specified
+      catalytic activity; its cited genomic and experimental references explicitly name strain SQ1.'
+    source_locator: /comments/1/reaction; /references/0/referenceComments; /references/1/referenceComments
+  - reference_id: PMID:26195800
+    source_assertion: Purified recombinant SQ1 IMG0100 cleaved KDSG to SLA and pyruvate. Pyruvate was
+      verified by a positive lactate-dehydrogenase assay and HPLC cochromatography; the SLA assay was
+      not enantiomer-resolved.
+    source_locator: //*[@id="s5"]/p[1]; //*[@id="s5"]/p[2]; Figure 4D-E
+  - reference_id: PMID:26195800
+    source_assertion: The cloned IMG00100 used forward primer CACCATGTCCACTGCTGTCACG. All recombinant
+      inserts came from SQ1 chromosomal DNA and were sequence-verified; the paper does not specify current
+      UniProt accessions.
+    source_locator: //*[@id="si8"]/p[1]; Table S2, PpSQ1_00100f row
+  - reference_id: NCBIProtein:KHL76360.1
+    source_assertion: The original SQ1 protein record locates PpSQ1_00455 at complement(JTCJ01000004.1:18793..19560).
+      This is the current annotated gene call, not a claim that its N terminus equals the longer 2015
+      construct.
+    source_locator: /GBSet/GBSeq/GBSeq_feature-table/GBFeature[GBFeature_key="source"]/GBFeature_quals;
+      /GBSet/GBSeq/GBSeq_feature-table/GBFeature[GBFeature_key="CDS"]/GBFeature_quals; /GBSet/GBSeq/GBSeq_sequence
+  - reference_id: PMID:41830472
+    source_assertion: The 2026 P. putida aldolase abstract reports a homohexamer, optimal Co/Mn activity
+      and modest KDPG cross-reactivity. The accessible abstract does not expose its strain or construct
+      sequence; these details are contextual and are not transferred as direct SQ1 assembly/metal assignments.
+    source_locator: /resultList/result[0]/abstractText
+  description: Functional assignment of the reviewed SQ1 gene product. The 2015 cloned IMG00100 gene uses
+    an upstream start relative to the current GenBank annotation at the same locus. Native prose has stale
+    R-SLA/family annotations; current native reaction and Rhea/UniProt chemistry select S-SLA. No monomer
+    sufficiency is asserted.
+- id: sulfoed-edge-038
+  subject: UniProtKB:P0DOV9
+  predicate: enables
+  object: RHEA:47929
+  evidence:
+  - reference_id: UniProtKB:P0DOV9
+    source_assertion: 'ECO:0000269, PMID26195800: this reviewed SQ1 gene product is assigned the specified
+      catalytic activity; its cited genomic and experimental references explicitly name strain SQ1.'
+    source_locator: /comments/1/reaction; /references/0/referenceComments; /references/1/referenceComments
+  - reference_id: PMID:26195800
+    source_assertion: Purified recombinant SQ1 IMG0088 oxidized SLA to SL with both NAD+ and NADP+. Published
+      kinetic constants used succinate semialdehyde because the SLA concentration was undefined; no SLA
+      Km is assigned here.
+    source_locator: //*[@id="s4"]/p[2]; Table 1 and footnote; Figure 4E-F
+  - reference_id: PMID:37886098
+    source_assertion: The later tetramer and stereoselectivity experiments concern Rhizobium leguminosarum
+      SRDI565 RlGabD, not SQ1. They are not transferred as direct assembly or enantiomer-assay evidence
+      for P0DOV9.
+    source_locator: //*[@id="abstract1"]/p[1]; //*[@id="sec3"]/p[1]; //*[@id="sec6"]/p[1]
+  description: Alternative NADP- and NAD-dependent final activity, not sequential steps. Current Rhea/UniProt
+    and native reaction sides select S-SLA/S-SL; stale native protein prose links R-SLA. The SQ1 HPLC-MS
+    assay was not an independent enantiomer-resolved characterization.
+- id: sulfoed-edge-039
+  subject: UniProtKB:P0DOV9
+  predicate: enables
+  object: RHEA:47933
+  evidence:
+  - reference_id: UniProtKB:P0DOV9
+    source_assertion: 'ECO:0000269, PMID26195800: this reviewed SQ1 gene product is assigned the specified
+      catalytic activity; its cited genomic and experimental references explicitly name strain SQ1.'
+    source_locator: /comments/2/reaction; /references/0/referenceComments; /references/1/referenceComments
+  - reference_id: PMID:26195800
+    source_assertion: Purified recombinant SQ1 IMG0088 oxidized SLA to SL with both NAD+ and NADP+. Published
+      kinetic constants used succinate semialdehyde because the SLA concentration was undefined; no SLA
+      Km is assigned here.
+    source_locator: //*[@id="s4"]/p[2]; Table 1 and footnote; Figure 4E-F
+  - reference_id: PMID:37886098
+    source_assertion: The later tetramer and stereoselectivity experiments concern Rhizobium leguminosarum
+      SRDI565 RlGabD, not SQ1. They are not transferred as direct assembly or enantiomer-assay evidence
+      for P0DOV9.
+    source_locator: //*[@id="abstract1"]/p[1]; //*[@id="sec3"]/p[1]; //*[@id="sec6"]/p[1]
+  description: Alternative NADP- and NAD-dependent final activity, not sequential steps. Current Rhea/UniProt
+    and native reaction sides select S-SLA/S-SL; stale native protein prose links R-SLA. The SQ1 HPLC-MS
+    assay was not an independent enantiomer-resolved characterization.
+- id: sulfoed-edge-040
+  subject: UniProtKB:P0DOV6
+  predicate: has_cofactor
+  object: CHEBI:60240
+  evidence:
+  - reference_id: UniProtKB:P0DOV6
+    source_assertion: 'ECO:0000250 inference from Q15493: the reviewed entry assigns one divalent metal
+      cation per subunit. This is a similarity annotation, not direct SQ1 metal identity or occupancy
+      measurement.'
+    source_locator: /comments/2/cofactors/0; /comments/2/note/texts/0
+- id: sulfoed-edge-041
+  subject: UniProtKB:P0DOV7
+  predicate: has_cofactor
+  object: CHEBI:49883
+  evidence:
+  - reference_id: UniProtKB:P0DOV7
+    source_assertion: 'ECO:0000250 inference from Q1JUQ1: the reviewed entry assigns one [4Fe-4S] cluster.
+      This is a similarity annotation, not direct SQ1 metal identity or occupancy measurement.'
+    source_locator: /comments/2/cofactors/0; /comments/2/note/texts/0
+- id: sulfoed-edge-042
+  subject: UniProtKB:P0DOV8
+  predicate: has_cofactor
+  object: CHEBI:60240
+  evidence:
+  - reference_id: UniProtKB:P0DOV8
+    source_assertion: 'ECO:0000250 inference from Q47098: the reviewed entry assigns one divalent metal
+      cation per subunit. This is a similarity annotation, not direct SQ1 metal identity or occupancy
+      measurement.'
+    source_locator: /comments/2/cofactors/0; /comments/2/note/texts/0
+- id: sulfoed-edge-043
+  subject: RHEA:47897
+  predicate: provides_input_for
+  object: RHEA:47909
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The native predecessor list places RXN-17096 before RXN-17095. This citation supports
+      native order; the shared current chemical identity is separately grounded in Rhea.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-ordering[Reaction/@frameid="RXN-17095"]/predecessor-reactions/Reaction[@frameid="RXN-17096"]
+  - reference_id: RHEA:47897
+    source_assertion: RHEA:47897 assigns CHEBI:88091 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47897"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47896_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47896_compound_11949"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11949)
+  - reference_id: RHEA:47909
+    source_assertion: RHEA:47909 assigns CHEBI:88091 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47908_compound_11949"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11949)
+- id: sulfoed-edge-044
+  subject: RHEA:47909
+  predicate: provides_input_for
+  object: RHEA:47913
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The native predecessor list places RXN-17095 before RXN-17097. This citation supports
+      native order; the shared current chemical identity is separately grounded in Rhea.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-ordering[Reaction/@frameid="RXN-17097"]/predecessor-reactions/Reaction[@frameid="RXN-17095"]
+  - reference_id: RHEA:47909
+    source_assertion: RHEA:47909 assigns CHEBI:88093 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47909"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47908_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47908_compound_11950"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11950)
+  - reference_id: RHEA:47913
+    source_assertion: RHEA:47913 assigns CHEBI:88093 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47913"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47912_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47912_compound_11950"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11950)
+- id: sulfoed-edge-045
+  subject: RHEA:47913
+  predicate: provides_input_for
+  object: RHEA:47925
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The native predecessor list places RXN-17097 before RXN-17098. This citation supports
+      native order; the shared current chemical identity is separately grounded in Rhea.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-ordering[Reaction/@frameid="RXN-17098"]/predecessor-reactions/Reaction[@frameid="RXN-17097"]
+  - reference_id: RHEA:47913
+    source_assertion: RHEA:47913 assigns CHEBI:88094 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47913"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47912_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47912_compound_11951"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11951)
+  - reference_id: RHEA:47925
+    source_assertion: RHEA:47925 assigns CHEBI:88094 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47924_compound_11951"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_11951)
+- id: sulfoed-edge-046
+  subject: RHEA:47925
+  predicate: provides_input_for
+  object: RHEA:47929
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The native predecessor list places RXN-17098 before RXN-17101. This citation supports
+      native order; the shared current chemical identity is separately grounded in Rhea.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-ordering[Reaction/@frameid="RXN-17101"]/predecessor-reactions/Reaction[@frameid="RXN-17098"]
+  - reference_id: RHEA:47925
+    source_assertion: RHEA:47925 assigns CHEBI:90109 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47924_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+  - reference_id: RHEA:47929
+    source_assertion: RHEA:47929 assigns CHEBI:90109 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47929"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47928_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47928_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoed-edge-047
+  subject: RHEA:47925
+  predicate: provides_input_for
+  object: RHEA:47933
+  evidence:
+  - reference_id: MetaCyc:PWY-7722
+    source_assertion: The native predecessor list places RXN-17098 before RXN-17101. This citation supports
+      native order; the shared current chemical identity is separately grounded in Rhea.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7722"]/reaction-ordering[Reaction/@frameid="RXN-17101"]/predecessor-reactions/Reaction[@frameid="RXN-17098"]
+  - reference_id: RHEA:47925
+    source_assertion: RHEA:47925 assigns CHEBI:90109 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47925"]/rh:products; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47924_R"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47924_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+  - reference_id: RHEA:47933
+    source_assertion: RHEA:47933 assigns CHEBI:90109 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/47933"]/rh:substrates; rdf:Description[@rdf:about="http://rdf.rhea-db.org/47932_L"]/rh:contains1[@rdf:resource="http://rdf.rhea-db.org/Participant_47932_compound_12045"];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoed-edge-048
+  subject: CHEBI:57945
+  predicate: inhibits
+  object: UniProtKB:P0DOV5
+  evidence:
+  - reference_id: PMID:39840830
+    source_assertion: NADH competitively inhibits NAD+ in the recombinant SQDH product-inhibition assays,
+      supporting an ordered mechanism with NAD+ binding first and NADH leaving last. This is assay-level
+      product inhibition, not a measured cellular flux threshold.
+    source_locator: //*[@id="s2-1"]/p[4]; Figure 3; section 5.5 Enzyme kinetics
+  description: Conditional recombinant-enzyme inhibition; no cellular regulation or new transcription-factor
+    identity is inferred.
+references:
+- id: MetaCyc:PWY-7722
+  title: sulfoquinovose degradation II
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-7722
+  source_version: MetaCyc 22.5 public mirror; full original XML retrieved 2026-10-11
+  source_sha256: 99e2817a7fa24b23192f0a765629840443e117d68b20a1d0edac3fd264c2d0f4
+- id: MetaCyc:RXN-17096
+  title: RXN-17096
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-17096
+  source_version: MetaCyc 22.5 public mirror; full original XML retrieved 2026-10-11
+  source_sha256: a09ebed0103a50e86c881214ae0c31c5518120395260bc39dbcf34e1170a0da1
+- id: MetaCyc:RXN-17095
+  title: RXN-17095
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-17095
+  source_version: MetaCyc 22.5 public mirror; full original XML retrieved 2026-10-11
+  source_sha256: 4f39b6fc92e4b39d3079f4b3a0f41d088dddee457af5e4774cfbb2be1f30e4fa
+- id: MetaCyc:RXN-17097
+  title: RXN-17097
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-17097
+  source_version: MetaCyc 22.5 public mirror; full original XML retrieved 2026-10-11
+  source_sha256: 58b474bddc570e9cbb155268648d85a08035febb6f559d14464e5cc8c950a5da
+- id: MetaCyc:RXN-17098
+  title: RXN-17098
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-17098
+  source_version: MetaCyc 22.5 public mirror; full original XML retrieved 2026-10-11
+  source_sha256: 62b14fc7e9a8fa9e1c46841f5a0f07fd3581d3192af0ad3857a350496561462b
+- id: MetaCyc:RXN-17101
+  title: RXN-17101
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-17101
+  source_version: MetaCyc 22.5 public mirror; full original XML retrieved 2026-10-11
+  source_sha256: 56a6675908d1a19f36f93f1281a84f0781b948473beb56aab6447b70616e1b47
+- id: UniProtKB:P0DOV5
+  title: Sulfoquinovose 1-dehydrogenase
+  url: https://rest.uniprot.org/uniprotkb/P0DOV5.json
+  source_version: Complete reviewed entry JSON retrieved 2026-10-11; entry version 25, sequence version
+    1; last annotation 2026-09-02
+  source_sha256: c39828a60a1c3ba040a95bd392a9d1514fa8b2134cf5d1bc2fa7ae475b9ebd24
+- id: UniProtKB:P0DOV6
+  title: 6-deoxy-6-sulfogluconolactonase
+  url: https://rest.uniprot.org/uniprotkb/P0DOV6.json
+  source_version: Complete reviewed entry JSON retrieved 2026-10-11; entry version 21, sequence version
+    1; last annotation 2026-06-10
+  source_sha256: c2c78a34870f5edbf56ec4d4ee56fe715cdebad570050ffcb8e159b87a378ab9
+- id: UniProtKB:P0DOV7
+  title: 6-deoxy-6-sulfo-D-gluconate dehydratase
+  url: https://rest.uniprot.org/uniprotkb/P0DOV7.json
+  source_version: Complete reviewed entry JSON retrieved 2026-10-11; entry version 26, sequence version
+    1; last annotation 2026-09-02
+  source_sha256: 0566981bd12cca55a07e8a7bb627a5798bbb41859b6168e9aaf2a2f6e6e02ee8
+- id: UniProtKB:P0DOV8
+  title: 2-dehydro-3,6-dideoxy-6-sulfogluconate aldolase
+  url: https://rest.uniprot.org/uniprotkb/P0DOV8.json
+  source_version: Complete reviewed entry JSON retrieved 2026-10-11; entry version 21, sequence version
+    1; last annotation 2026-09-02
+  source_sha256: 16dc1c10fef8e123b0b42f19cfe81abfbe68e0bd2c534ee6125d425d14e51021
+- id: UniProtKB:P0DOV9
+  title: 3-sulfolactaldehyde dehydrogenase
+  url: https://rest.uniprot.org/uniprotkb/P0DOV9.json
+  source_version: Complete reviewed entry JSON retrieved 2026-10-11; entry version 25, sequence version
+    1; last annotation 2026-09-02
+  source_sha256: 6531fc0a96b3975502f6ac4befa17ea0137d3f4055edb8fb4769b2c7f65cb100
+- id: PMID:26195800
+  title: Entner-Doudoroff pathway for sulfoquinovose degradation in Pseudomonas putida SQ1.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4534283/?pdf=render
+  source_version: Original 2015 full primary article including SI methods, tables and figure legends in
+    publisher-deposited PMC HTML; retrieved 2026-10-11
+  source_sha256: e82307720415251fbe81a8293ed7078effeb5e268502c5776ce9b30f632e8afc
+- id: PMID:39840830
+  title: Structure, kinetics, and mechanism of Pseudomonas putida sulfoquinovose dehydrogenase, the first
+    enzyme in the sulfoglycolytic Entner-Doudoroff pathway.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12133307/?pdf=render
+  source_version: Original 2025 full primary PMC HTML, including complete construct sequences and Methods;
+    retrieved 2026-10-11
+  source_sha256: d3059313116aeac892709ea5a759bc1900fc4f47e8d021ff965a5a3c557f36b3
+- id: PMID:37886098
+  title: Molecular basis of sulfolactate synthesis by sulfolactaldehyde dehydrogenase from Rhizobium leguminosarum.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10599462/?pdf=render
+  source_version: Original 2023 primary full PMC HTML; other-organism scope, inspected as a transfer limit;
+    retrieved 2026-10-11
+  source_sha256: e5e213c79ca6b4b0b5648555bc91d6af4e373f6f7cb2d389a0ded2effcbaa735
+- id: PMID:41830472
+  title: 'Metal-Dependent 2-Keto-3,6-dideoxy-6-sulfo-gluconate (KDSG) Aldolase: Decoding the Key C-C Bond
+    Cleaving Step in Bacterial Sulfoglycolysis.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:41830472%20AND%20SRC:MED&resultType=core&format=json
+  source_version: Original 2026 primary abstract only, through Europe PMC single-PMID core JSON; full
+    article/SI unavailable and deposited structure API requests returned404; retrieved 2026-10-11
+  source_sha256: bfaee9c036939b4db87a8076aacfcebd894569f3f7a31fab54d5a28b49a3c055
+- id: NCBIProtein:KHL76360.1
+  title: SQ1 PpSQ1_00455 protein and genomic CDS annotation
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=KHL76360.1&rettype=gb&retmode=xml
+  source_version: Original accession-version GBSet/GBSeq XML retrieved 2026-10-11; sequence and strain/CDS
+    identity only, automated original functional name not imported
+  source_sha256: 8736f6a5439a022c10f154cafdeb607f32515739d029ccbfe72020b7bf5165e7
+- id: RHEA:47897
+  title: 6-sulfo-D-quinovose + NAD(+) => 6-deoxy-6-sulfo-D-glucono-1,5-lactone + NADH + H(+)
+  url: https://www.rhea-db.org/rhea/47897
+  source_version: Rhea 142, 2026-09-02; digest covers full original compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47909
+  title: 6-deoxy-6-sulfo-D-glucono-1,5-lactone + H2O => 6-deoxy-6-sulfo-D-gluconate + H(+)
+  url: https://www.rhea-db.org/rhea/47909
+  source_version: Rhea 142, 2026-09-02; digest covers full original compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47913
+  title: 6-deoxy-6-sulfo-D-gluconate => 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate + H2O
+  url: https://www.rhea-db.org/rhea/47913
+  source_version: Rhea 142, 2026-09-02; digest covers full original compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47925
+  title: 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate => (2S)-3-sulfolactaldehyde + pyruvate
+  url: https://www.rhea-db.org/rhea/47925
+  source_version: Rhea 142, 2026-09-02; digest covers full original compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47929
+  title: (2S)-3-sulfolactaldehyde + NADP(+) + H2O => (2S)-3-sulfolactate + NADPH + 2 H(+)
+  url: https://www.rhea-db.org/rhea/47929
+  source_version: Rhea 142, 2026-09-02; digest covers full original compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47933
+  title: (2S)-3-sulfolactaldehyde + NAD(+) + H2O => (2S)-3-sulfolactate + NADH + 2 H(+)
+  url: https://www.rhea-db.org/rhea/47933
+  source_version: Rhea 142, 2026-09-02; digest covers full original compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
