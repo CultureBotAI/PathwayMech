@@ -1,0 +1,600 @@
+id: MetaCyc:PWY-5901
+label: 2,3-dihydroxybenzoate biosynthesis
+description: The complete three-step pathway converts chorismate to 2,3-dihydroxybenzoate through isochorismate
+  and (2S,3S)-2,3-dihydroxy-2,3-dihydrobenzoate. It follows the exact MetaCyc PWY-5901 boundary and the
+  experimentally resolved EntC–EntB–EntA sequence in Escherichia coli K-12. EntC is an active monomer;
+  its reversible chemistry is oriented toward biosynthesis. EntB contributes its N-terminal isochorismatase
+  activity, represented by the native holo-EntB dimer with two explicitly modified protein components.
+  That form does not establish a requirement for phosphopantetheinylation of its separate carrier domain
+  in DHB production. EntA uses NAD and produces DHB by oxidation followed by rapid aromatization, represented
+  once as the net reaction. Its selected native tetramer coexists with concentration-dependent dimer–tetramer
+  behavior; an older octamer estimate remains a historical conflict. Magnesium annotations are retained
+  for EntC and EntB with their stated evidence limits. K-12 mutant physiology and reviewed K-12 proteins
+  ground the taxon; native MG1655 assembly attribution does not relabel every experiment as MG1655. Upstream
+  chorismate biosynthesis, downstream EntB carrier maturation/loading and enterobactin assembly, and the
+  extra CueO-associated oxidation on the broader PathBank map are outside this independently defined pathway.
+  Pairwise EntC–EntB interaction does not establish obligatory substrate channeling or a fixed multienzyme
+  assembly.
+pathway_type: 2-3-dihydroxybenzoate-biosynthesis
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29748
+  label: chorismate(2-)
+  category: small_molecule
+- id: CHEBI:29780
+  label: isochorismate(2-)
+  category: small_molecule
+- id: CHEBI:36654
+  label: 2,3-dihydroxybenzoate
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:58764
+  label: (2S,3S)-2,3-dihydroxy-2,3-dihydrobenzoate
+  category: small_molecule
+- id: UniProtKB:P0AEJ2
+  label: Isochorismate synthase EntC
+  category: protein
+- id: UniProtKB:P15047
+  label: 2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase
+  category: protein
+- id: MetaCyc:HOLO-ENTB
+  label: holo EntB
+  category: protein
+- id: MetaCyc:ENTB-CPLX
+  label: holo-EntB dimer
+  category: complex
+- id: MetaCyc:ENTA-CPLX
+  label: 2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase
+  category: complex
+reactions:
+- id: RHEA:18986
+  label: chorismate => isochorismate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:11113
+  label: isochorismate + H2O => (2S,3S)-2,3-dihydroxy-2,3-dihydrobenzoate + pyruvate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:23825
+  label: (2S,3S)-2,3-dihydroxy-2,3-dihydrobenzoate + NAD(+) => 2,3-dihydroxybenzoate + NADH + H(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: dhb-edge-001
+  subject: CHEBI:29748
+  predicate: consumes
+  object: RHEA:18986
+  evidence:
+  - reference_id: RHEA:18986
+    source_assertion: RHEA:18986 assigns CHEBI:29748 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/18986 rh:substrates; http://rdf.rhea-db.org/18985_L rh:contains1
+      http://rdf.rhea-db.org/Participant_18985_compound_3304; http://rdf.rhea-db.org/Participant_18985_compound_3304
+      rh:compound http://rdf.rhea-db.org/Compound_3304; rh:chebi
+- id: dhb-edge-002
+  subject: RHEA:18986
+  predicate: produces
+  object: CHEBI:29780
+  evidence:
+  - reference_id: RHEA:18986
+    source_assertion: RHEA:18986 assigns CHEBI:29780 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/18986 rh:products; http://rdf.rhea-db.org/18985_R rh:contains1
+      http://rdf.rhea-db.org/Participant_18985_compound_3577; http://rdf.rhea-db.org/Participant_18985_compound_3577
+      rh:compound http://rdf.rhea-db.org/Compound_3577; rh:chebi
+- id: dhb-edge-003
+  subject: CHEBI:29780
+  predicate: consumes
+  object: RHEA:11113
+  evidence:
+  - reference_id: RHEA:11113
+    source_assertion: RHEA:11113 assigns CHEBI:29780 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11113 rh:substrates; http://rdf.rhea-db.org/11112_L rh:contains1
+      http://rdf.rhea-db.org/Participant_11112_compound_3577; http://rdf.rhea-db.org/Participant_11112_compound_3577
+      rh:compound http://rdf.rhea-db.org/Compound_3577; rh:chebi
+- id: dhb-edge-004
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:11113
+  evidence:
+  - reference_id: RHEA:11113
+    source_assertion: RHEA:11113 assigns CHEBI:15377 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11113 rh:substrates; http://rdf.rhea-db.org/11112_L rh:contains1
+      http://rdf.rhea-db.org/Participant_11112_compound_1283; http://rdf.rhea-db.org/Participant_11112_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; rh:chebi
+- id: dhb-edge-005
+  subject: RHEA:11113
+  predicate: produces
+  object: CHEBI:58764
+  evidence:
+  - reference_id: RHEA:11113
+    source_assertion: RHEA:11113 assigns CHEBI:58764 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11113 rh:products; http://rdf.rhea-db.org/11112_R rh:contains1
+      http://rdf.rhea-db.org/Participant_11112_compound_5459; http://rdf.rhea-db.org/Participant_11112_compound_5459
+      rh:compound http://rdf.rhea-db.org/Compound_5459; rh:chebi
+- id: dhb-edge-006
+  subject: RHEA:11113
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:11113
+    source_assertion: RHEA:11113 assigns CHEBI:15361 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11113 rh:products; http://rdf.rhea-db.org/11112_R rh:contains1
+      http://rdf.rhea-db.org/Participant_11112_compound_3719; http://rdf.rhea-db.org/Participant_11112_compound_3719
+      rh:compound http://rdf.rhea-db.org/Compound_3719; rh:chebi
+- id: dhb-edge-007
+  subject: CHEBI:58764
+  predicate: consumes
+  object: RHEA:23825
+  evidence:
+  - reference_id: RHEA:23825
+    source_assertion: RHEA:23825 assigns CHEBI:58764 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23825 rh:substrates; http://rdf.rhea-db.org/23824_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23824_compound_5459; http://rdf.rhea-db.org/Participant_23824_compound_5459
+      rh:compound http://rdf.rhea-db.org/Compound_5459; rh:chebi
+- id: dhb-edge-008
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:23825
+  evidence:
+  - reference_id: RHEA:23825
+    source_assertion: RHEA:23825 assigns CHEBI:57540 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23825 rh:substrates; http://rdf.rhea-db.org/23824_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23824_compound_3484; http://rdf.rhea-db.org/Participant_23824_compound_3484
+      rh:compound http://rdf.rhea-db.org/Compound_3484; rh:chebi
+- id: dhb-edge-009
+  subject: RHEA:23825
+  predicate: produces
+  object: CHEBI:36654
+  evidence:
+  - reference_id: RHEA:23825
+    source_assertion: RHEA:23825 assigns CHEBI:36654 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23825 rh:products; http://rdf.rhea-db.org/23824_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23824_compound_3751; http://rdf.rhea-db.org/Participant_23824_compound_3751
+      rh:compound http://rdf.rhea-db.org/Compound_3751; rh:chebi
+- id: dhb-edge-010
+  subject: RHEA:23825
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: RHEA:23825
+    source_assertion: RHEA:23825 assigns CHEBI:57945 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23825 rh:products; http://rdf.rhea-db.org/23824_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23824_compound_1650; http://rdf.rhea-db.org/Participant_23824_compound_1650
+      rh:compound http://rdf.rhea-db.org/Compound_1650; rh:chebi
+- id: dhb-edge-011
+  subject: RHEA:23825
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:23825
+    source_assertion: RHEA:23825 assigns CHEBI:15378 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23825 rh:products; http://rdf.rhea-db.org/23824_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23824_compound_3249; http://rdf.rhea-db.org/Participant_23824_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; rh:chebi
+- id: dhb-edge-012
+  subject: UniProtKB:P0AEJ2
+  predicate: catalyzes
+  object: RHEA:18986
+  description: The selected forward reaction supplies isochorismate to DHB synthesis. EntC is reversible;
+    this direction is not a claim of irreversible chemistry. Purified EntC itself is active, so the protein
+    node has direct catalytic support.
+  evidence:
+  - reference_id: UniProtKB:P0AEJ2
+    source_assertion: Reviewed K-12 EntC assigns chorismate/isochorismate interconversion to RHEA:18985
+      with ECO:0000269 citations 17243787, 20079748 and 2139795; SUBUNIT specifies monomer.
+    source_locator: /organism/taxonId; /comments/1/reaction; /comments/5
+  - reference_id: MetaCyc:ENTC-MONOMER
+    source_assertion: ENTC-MONOMER catalyzes ISOCHORSYN-RXN through ENTC-ENZRXN and explicitly unifies
+      UniProt P0AEJ2.
+    source_locator: Protein[@frameid="ENTC-MONOMER"]/catalyzes/Enzymatic-Reaction[@frameid="ENTC-ENZRXN"]/reaction;
+      dblink[dblink-db="UNIPROT"]
+  - reference_id: PMID:2139795
+    source_assertion: Purified E. coli EntC is an active monomer and alone catalyzes reversible chorismate/isochorismate
+      interconversion; EntA does not alter that activity. The measured equilibrium favors chorismate.
+    source_locator: /resultList/result[id="2139795"]/abstractText
+  - reference_id: RHEA:18986
+    source_assertion: Master RHEA:18985 explicitly links directionalReaction RHEA:18986.
+    source_locator: http://rdf.rhea-db.org/18985 rh:directionalReaction http://rdf.rhea-db.org/18986
+- id: dhb-edge-013
+  subject: MetaCyc:ENTB-CPLX
+  predicate: catalyzes
+  object: RHEA:11113
+  description: The catalyst is the exact source-defined holo-EntB dimer. This retains a supported active
+    form without asserting that phosphopantetheinylation of the separate carrier domain is necessary for
+    isochorismatase activity or that apo-EntB lacks that activity.
+  evidence:
+  - reference_id: MetaCyc:ENTB-CPLX
+    source_assertion: The native holo-EntB dimer catalyzes ISOCHORMAT-RXN through ISOCHORMAT-ENZRXN. Its
+      N-terminal domain is the isochorismatase; its C-terminal aryl carrier domain participates later
+      in enterobactin assembly.
+    source_locator: Protein[@frameid="ENTB-CPLX"]/catalyzes/Enzymatic-Reaction[@frameid="ISOCHORMAT-ENZRXN"]/reaction;
+      comment
+  - reference_id: UniProtKB:P0ADI4
+    source_assertion: K-12 EntB CATALYTIC ACTIVITY assigns RHEA:11112, isochorismate plus water to the
+      (2S,3S) dihydroxy-dihydrobenzoate and pyruvate, with ECO:0000269 citations 16632253, 2139796, 9214294
+      and 9485415.
+    source_locator: /organism/taxonId; /comments/2/reaction
+  - reference_id: PMID:2139796
+    source_assertion: Purified recombinant EntB catalyzes the isochorismate reaction; proton NMR followed
+      the expected dihydro-dihydroxybenzoate product. This experiment assigns the protein activity, not
+      a requirement for carrier-domain phosphopantetheinylation.
+    source_locator: /resultList/result[id="2139796"]/abstractText
+  - reference_id: RHEA:11113
+    source_assertion: Master RHEA:11112 explicitly links directionalReaction RHEA:11113.
+    source_locator: http://rdf.rhea-db.org/11112 rh:directionalReaction http://rdf.rhea-db.org/11113
+- id: dhb-edge-014
+  subject: MetaCyc:ENTA-CPLX
+  predicate: catalyzes
+  object: RHEA:23825
+  description: One net reaction includes the subsequent rapid aromatization; a separate aromatization
+    edge would double count the selected net chemistry. NAD is a consumed redox cosubstrate, not an additional
+    bound-cofactor claim.
+  evidence:
+  - reference_id: MetaCyc:ENTA-CPLX
+    source_assertion: ENTA-CPLX catalyzes DHBDEHYD-RXN through DHBDEHYD-ENZRXN; its comment distinguishes
+      C3 oxidation and rapid aromatization from the net DHB-forming reaction.
+    source_locator: Protein[@frameid="ENTA-CPLX"]/catalyzes/Enzymatic-Reaction[@frameid="DHBDEHYD-ENZRXN"]/reaction;
+      comment
+  - reference_id: UniProtKB:P15047
+    source_assertion: K-12 EntA CATALYTIC ACTIVITY assigns RHEA:23824 and the exact (2S,3S) dihydroxy-dihydrobenzoate/NAD
+      reaction with ECO:0000269 PMID:2144454.
+    source_locator: /organism/taxonId; /comments/1/reaction
+  - reference_id: PMID:2144454
+    source_assertion: EntA oxidizes the C3 hydroxyl with NAD; the transient keto intermediate aromatizes
+      to DHB. Reversibility was demonstrated with substrate analogues, not by demonstrating physiological
+      reduction of aromatic DHB.
+    source_locator: /resultList/result[id="2144454"]/abstractText
+  - reference_id: RHEA:23825
+    source_assertion: Master RHEA:23824 explicitly links directionalReaction RHEA:23825.
+    source_locator: http://rdf.rhea-db.org/23824 rh:directionalReaction http://rdf.rhea-db.org/23825
+- id: dhb-edge-015
+  subject: UniProtKB:P15047
+  predicate: part_of
+  object: MetaCyc:ENTA-CPLX
+  description: Four EntA subunits define the selected native complex. The record does not claim that the
+    tetramer is the only populated or catalytically competent state. PathBank preserves an older eight-subunit
+    interpretation that is not imported as the selected assembly.
+  evidence:
+  - reference_id: MetaCyc:ENTA-CPLX
+    source_assertion: The native assembly contains four ENTA-MONOMER components. Its comment preserves
+      the older gel-filtration octamer estimate, tetrameric crystal structure and later concentration-dependent
+      dimer-to-tetramer transition.
+    source_locator: Protein[@frameid="ENTA-CPLX"]/component/Protein; component/coefficient; comment
+  - reference_id: MetaCyc:ENTA-MONOMER
+    source_assertion: ENTA-MONOMER explicitly unifies UniProt P15047 and has native MG1655 taxonomic provenance.
+    source_locator: Protein[@frameid="ENTA-MONOMER"]/dblink[dblink-db="UNIPROT"]; species/Organism
+  - reference_id: UniProtKB:P15047
+    source_assertion: SUBUNIT annotates a homotetramer, a dimer of dimers, with ECO:0000269 citations
+      16790929, 21166461 and 2521622.
+    source_locator: /comments/5
+  - reference_id: PMID:21166461
+    source_assertion: Analytical ultracentrifugation shows concentration-dependent EntA dimer-tetramer
+      self-association, with a reported dissociation constant of 12.3 micromolar; this is not evidence
+      that only one assembly exists.
+    source_locator: /resultList/result[id="21166461"]/abstractText
+  - reference_id: PMID:2521622
+    source_assertion: The 1989 purified preparation migrated at an estimated native mass of 210,000 on
+      Superose 12, interpreted as an octamer. This historical estimate is retained as a conflicting assembly
+      result.
+    source_locator: PMC209666 full PDF p.795, Results/Purification of diDHB-DH; p.797 Discussion
+- id: dhb-edge-016
+  subject: MetaCyc:HOLO-ENTB
+  predicate: part_of
+  object: MetaCyc:ENTB-CPLX
+  description: Two modified EntB protein components are retained under their exact native state identifier.
+    Their underlying sequence is P0ADI4. Carrier maturation and aryl loading belong to the surrounding
+    enterobactin pathway and are not added as DHB-biosynthesis steps.
+  evidence:
+  - reference_id: MetaCyc:ENTB-CPLX
+    source_assertion: ENTB-CPLX contains two HOLO-ENTB components. The comment identifies phosphopantetheinylated
+      carrier-domain holo-EntB and records the modern dimer assignment versus earlier trimer/pentamer
+      estimates.
+    source_locator: Protein[@frameid="ENTB-CPLX"]/component/Protein[@frameid="HOLO-ENTB"]; component/coefficient;
+      comment
+  - reference_id: MetaCyc:HOLO-ENTB
+    source_assertion: HOLO-ENTB explicitly names ENTB-MONOMER as its unmodified form and ENTB-CPLX as
+      its containing assembly.
+    source_locator: Protein[@frameid="HOLO-ENTB"]/unmodified-form; component-of
+  - reference_id: MetaCyc:ENTB-MONOMER
+    source_assertion: The unmodified ENTB-MONOMER explicitly unifies UniProt P0ADI4. Its comment distinguishes
+      the N-terminal isochorismatase from the C-terminal aryl carrier domain and EntD-dependent carrier
+      maturation.
+    source_locator: Protein[@frameid="ENTB-MONOMER"]/dblink[dblink-db="UNIPROT"]; comment
+  - reference_id: UniProtKB:P0ADI4
+    source_assertion: SUBUNIT specifies homodimer citing PMID:16632253 with ECO:0000269. Its wider EntB/EntD/EntE/EntF
+      synthase association concerns downstream enterobactin assembly.
+    source_locator: /comments/7
+- id: dhb-edge-017
+  subject: UniProtKB:P0AEJ2
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Magnesium binding is an explicit reviewed experimental annotation; it is not inferred merely
+    from an assay containing magnesium.
+  evidence:
+  - reference_id: UniProtKB:P0AEJ2
+    source_assertion: COFACTOR explicitly names Mg(2+), CHEBI:18420, and states two magnesium ions per
+      subunit, with ECO:0000269 PMID:20079748.
+    source_locator: /comments/2/cofactors; /comments/2/note
+  - reference_id: PMID:20079748
+    source_assertion: The primary abstract reports an EntC structure in complex with isochorismate and
+      Mg(2+) at 2.3 angstrom resolution. The two-ion count is sourced to the separate reviewed UniProt
+      annotation, not this abstract.
+    source_locator: /resultList/result[id="20079748"]/abstractText
+- id: dhb-edge-018
+  subject: MetaCyc:ENTB-CPLX
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: This is the reviewed EntB magnesium-cofactor annotation, retained at the source-defined
+    dimer. The inspected primary abstract does not independently establish metal dependence or an occupancy
+    count; crystallographic magnesium sites alone are not treated as a stoichiometric requirement.
+  evidence:
+  - reference_id: UniProtKB:P0ADI4
+    source_assertion: COFACTOR explicitly names Mg(2+), CHEBI:18420, with ECO:0000269 PMID:16632253; no
+      occupancy count is asserted by this annotation.
+    source_locator: /comments/3/cofactors
+  - reference_id: MetaCyc:ENTB-CPLX
+    source_assertion: The source-defined EntB dimer is the isochorismatase catalyst; its two HOLO-ENTB
+      components are the modified forms of the P0ADI4 gene product.
+    source_locator: Protein[@frameid="ENTB-CPLX"]/catalyzes/Enzymatic-Reaction[@frameid="ISOCHORMAT-ENZRXN"];
+      component
+  - reference_id: MetaCyc:HOLO-ENTB
+    source_assertion: HOLO-ENTB explicitly links to unmodified ENTB-MONOMER.
+    source_locator: Protein[@frameid="HOLO-ENTB"]/unmodified-form
+  - reference_id: MetaCyc:ENTB-MONOMER
+    source_assertion: ENTB-MONOMER explicitly unifies UniProt P0ADI4.
+    source_locator: Protein[@frameid="ENTB-MONOMER"]/dblink[dblink-db="UNIPROT"]
+- id: dhb-edge-019
+  subject: RHEA:18986
+  predicate: part_of
+  object: MetaCyc:PWY-5901
+  evidence:
+  - reference_id: MetaCyc:PWY-5901
+    source_assertion: The complete native pathway explicitly lists ISOCHORSYN-RXN and orients it left-to-right
+      in its pathway layout.
+    source_locator: Pathway[@frameid="PWY-5901"]/reaction-list; reaction-layout
+  - reference_id: MetaCyc:ISOCHORSYN-RXN
+    source_assertion: ISOCHORSYN-RXN explicitly cross-references RHEA:18988; its native chemistry and
+      pathway orientation identify the selected reaction.
+    source_locator: Reaction[@frameid="ISOCHORSYN-RXN"]/dblink[dblink-db="RHEA"]; reaction-direction;
+      left; right
+  - reference_id: RHEA:18986
+    source_assertion: Master RHEA:18985 links directionalReaction RHEA:18986 and bidirectionalReaction
+      RHEA:18988; the native reversible reaction is projected in its pathway synthesis direction.
+    source_locator: http://rdf.rhea-db.org/18985 rh:directionalReaction http://rdf.rhea-db.org/18986;
+      rh:bidirectionalReaction http://rdf.rhea-db.org/18988
+- id: dhb-edge-020
+  subject: RHEA:11113
+  predicate: part_of
+  object: MetaCyc:PWY-5901
+  evidence:
+  - reference_id: MetaCyc:PWY-5901
+    source_assertion: The complete native pathway explicitly lists ISOCHORMAT-RXN and orients it left-to-right
+      in its pathway layout.
+    source_locator: Pathway[@frameid="PWY-5901"]/reaction-list; reaction-layout
+  - reference_id: MetaCyc:ISOCHORMAT-RXN
+    source_assertion: ISOCHORMAT-RXN explicitly cross-references RHEA:11112; its native chemistry and
+      pathway orientation identify the selected reaction.
+    source_locator: Reaction[@frameid="ISOCHORMAT-RXN"]/dblink[dblink-db="RHEA"]; reaction-direction;
+      left; right
+  - reference_id: RHEA:11113
+    source_assertion: Master RHEA:11112 explicitly links directionalReaction RHEA:11113.
+    source_locator: http://rdf.rhea-db.org/11112 rh:directionalReaction http://rdf.rhea-db.org/11113
+- id: dhb-edge-021
+  subject: RHEA:23825
+  predicate: part_of
+  object: MetaCyc:PWY-5901
+  evidence:
+  - reference_id: MetaCyc:PWY-5901
+    source_assertion: The complete native pathway explicitly lists DHBDEHYD-RXN and orients it left-to-right
+      in its pathway layout.
+    source_locator: Pathway[@frameid="PWY-5901"]/reaction-list; reaction-layout
+  - reference_id: MetaCyc:DHBDEHYD-RXN
+    source_assertion: DHBDEHYD-RXN explicitly cross-references RHEA:23825; its native chemistry and pathway
+      orientation identify the selected reaction.
+    source_locator: Reaction[@frameid="DHBDEHYD-RXN"]/dblink[dblink-db="RHEA"]; reaction-direction; left;
+      right
+  - reference_id: RHEA:23825
+    source_assertion: Master RHEA:23824 explicitly links directionalReaction RHEA:23825.
+    source_locator: http://rdf.rhea-db.org/23824 rh:directionalReaction http://rdf.rhea-db.org/23825
+- id: dhb-edge-022
+  subject: RHEA:18986
+  predicate: precedes
+  object: RHEA:11113
+  description: Biochemical ordering through a shared small-molecule intermediate; no obligate channeling
+    or stable multienzyme complex is asserted.
+  evidence:
+  - reference_id: MetaCyc:PWY-5901
+    source_assertion: Native reaction ordering places ISOCHORSYN-RXN before ISOCHORMAT-RXN; the shared
+      native intermediate connects the two complete transformations.
+    source_locator: Pathway[@frameid="PWY-5901"]/reaction-ordering
+  - reference_id: RHEA:18986
+    source_assertion: RHEA:18986 has CHEBI:29780 on its products side via its participant and compound
+      objects.
+    source_locator: http://rdf.rhea-db.org/18986 rh:products http://rdf.rhea-db.org/18985_R; http://rdf.rhea-db.org/18985_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_18985_compound_3577; rh:compound http://rdf.rhea-db.org/Compound_3577;
+      rh:chebi
+  - reference_id: RHEA:11113
+    source_assertion: RHEA:11113 has CHEBI:29780 on its substrates side via its participant and compound
+      objects.
+    source_locator: http://rdf.rhea-db.org/11113 rh:substrates http://rdf.rhea-db.org/11112_L; http://rdf.rhea-db.org/11112_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_11112_compound_3577; rh:compound http://rdf.rhea-db.org/Compound_3577;
+      rh:chebi
+  - reference_id: PMID:4928016
+    source_assertion: K-12 mutant extract complementation and intermediate accumulation resolve the EntC,
+      EntB and EntA sequence from chorismate through isochorismate and dihydro-dihydroxybenzoate to DHB.
+    source_locator: PMC248643 full PDF pp.54-55, Identification of enzyme deficiency; Tables 2 and 3
+- id: dhb-edge-023
+  subject: RHEA:11113
+  predicate: precedes
+  object: RHEA:23825
+  description: Biochemical ordering through a shared small-molecule intermediate; no obligate channeling
+    or stable multienzyme complex is asserted.
+  evidence:
+  - reference_id: MetaCyc:PWY-5901
+    source_assertion: Native reaction ordering places ISOCHORMAT-RXN before DHBDEHYD-RXN; the shared native
+      intermediate connects the two complete transformations.
+    source_locator: Pathway[@frameid="PWY-5901"]/reaction-ordering
+  - reference_id: RHEA:11113
+    source_assertion: RHEA:11113 has CHEBI:58764 on its products side via its participant and compound
+      objects.
+    source_locator: http://rdf.rhea-db.org/11113 rh:products http://rdf.rhea-db.org/11112_R; http://rdf.rhea-db.org/11112_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_11112_compound_5459; rh:compound http://rdf.rhea-db.org/Compound_5459;
+      rh:chebi
+  - reference_id: RHEA:23825
+    source_assertion: RHEA:23825 has CHEBI:58764 on its substrates side via its participant and compound
+      objects.
+    source_locator: http://rdf.rhea-db.org/23825 rh:substrates http://rdf.rhea-db.org/23824_L; http://rdf.rhea-db.org/23824_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_23824_compound_5459; rh:compound http://rdf.rhea-db.org/Compound_5459;
+      rh:chebi
+  - reference_id: PMID:4928016
+    source_assertion: K-12 mutant extract complementation and intermediate accumulation resolve the EntC,
+      EntB and EntA sequence from chorismate through isochorismate and dihydro-dihydroxybenzoate to DHB.
+    source_locator: PMC248643 full PDF pp.54-55, Identification of enzyme deficiency; Tables 2 and 3
+references:
+- id: RHEA:18986
+  title: Rhea directional reaction 18986
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF, with exact subjects selected
+    by evidence locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:11113
+  title: Rhea directional reaction 11113
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF, with exact subjects selected
+    by evidence locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:23825
+  title: Rhea directional reaction 23825
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF, with exact subjects selected
+    by evidence locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P0AEJ2
+  title: Isochorismate synthase EntC
+  url: https://rest.uniprot.org/uniprotkb/P0AEJ2.json
+  source_version: Reviewed UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: 15c91f10c971c01fd6293782a86575c7f4543ea292b9bc741ec7f35ef8b9a4b6
+- id: MetaCyc:ENTC-MONOMER
+  title: 'MetaCyc ENTC-MONOMER: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ENTC-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 52e0e6b20a111e2a648b47d8fe063fcd038a2de1553138bfdacba1d561836e91
+- id: PMID:2139795
+  title: Overexpression, purification, and characterization of isochorismate synthase (EntC), the first
+    enzyme involved in the biosynthesis of enterobactin from chorismate.
+  url: https://pubmed.ncbi.nlm.nih.gov/2139795/
+  source_version: 1990; indexed abstract in retained Europe PMC core JSON, not full article
+  source_sha256: 85cfb55849c394ca17e80f980e7285886619c6f65f820e3d6d374ef9d079b46f
+- id: MetaCyc:ENTB-CPLX
+  title: 'MetaCyc ENTB-CPLX: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ENTB-CPLX
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 6de80c7a21186f5fd510252cbecf992748d13d421b996ff0b1169118b71f43d0
+- id: UniProtKB:P0ADI4
+  title: Enterobactin synthase component B
+  url: https://rest.uniprot.org/uniprotkb/P0ADI4.json
+  source_version: Reviewed UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: 4bb0083a3305cf700583822edbc55244ac3ade3cf47b49847ee10495dd8464d1
+- id: PMID:2139796
+  title: 'Subcloning of the enterobactin biosynthetic gene entB: expression, purification, characterization,
+    and substrate specificity of isochorismatase.'
+  url: https://pubmed.ncbi.nlm.nih.gov/2139796/
+  source_version: 1990; indexed abstract in retained Europe PMC core JSON, not full article
+  source_sha256: 715986c5918c80d590e79f0aac6c3f149d81bfbd791994232b410fc2e3312965
+- id: MetaCyc:ENTA-CPLX
+  title: 'MetaCyc ENTA-CPLX: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ENTA-CPLX
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 94bfacaa03b3f3339833839470b382fdc28f7384fa92b70fcc535d1c18e6de88
+- id: UniProtKB:P15047
+  title: 2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase
+  url: https://rest.uniprot.org/uniprotkb/P15047.json
+  source_version: Reviewed UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: b00850662da8517045c70ff9519dd5411795a6da50549184d13067eec86211a1
+- id: PMID:2144454
+  title: Mechanistic studies on trans-2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase (Ent A) in the biosynthesis
+    of the iron chelator enterobactin.
+  url: https://pubmed.ncbi.nlm.nih.gov/2144454/
+  source_version: 1990; indexed abstract in retained Europe PMC core JSON, not full article
+  source_sha256: 04794f0f8e2ce8236604656840bf1503f51f3d4a10341098cc19029e9991c21e
+- id: MetaCyc:ENTA-MONOMER
+  title: 'MetaCyc ENTA-MONOMER: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ENTA-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: c7ef86c457fb2f332f054fcc6866e36f8b9ef591804d1ac6d302f1bdb608dfa2
+- id: PMID:21166461
+  title: Enzymatic adenylation of 2,3-dihydroxybenzoate is enhanced by a protein-protein interaction between
+    Escherichia coli 2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase (EntA) and 2,3-dihydroxybenzoate-AMP
+    ligase (EntE).
+  url: https://pubmed.ncbi.nlm.nih.gov/21166461/
+  source_version: 2011; indexed abstract in retained Europe PMC core JSON, not full article
+  source_sha256: 201f74cd1a680d18b48e939605ab3dbb7bd557e449079f558c59242da32d59a4
+- id: PMID:2521622
+  title: 'Nucleotide sequence of a cluster of Escherichia coli enterobactin biosynthesis genes: identification
+    of entA and purification of its product 2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase.'
+  url: https://europepmc.org/articles/PMC209666?pdf=render
+  source_version: 1989; complete scanned primary PDF, independently extracted and rendered; retrieved
+    2026-10-11 UTC
+  source_sha256: 7202c514814dfe9e67fc5838273b600f8479a0e43d7588f3313f7591e9d1a19f
+- id: MetaCyc:HOLO-ENTB
+  title: 'MetaCyc HOLO-ENTB: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:HOLO-ENTB
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: d362d5b6e979a61c48384ee743b5ae26be7d41b92644f49d51860530a622842e
+- id: MetaCyc:ENTB-MONOMER
+  title: 'MetaCyc ENTB-MONOMER: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ENTB-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 7f8a62919119df6a3a2ccbf489ec3b88da45fd0941095e2cf7f0bdf52772d1b9
+- id: PMID:20079748
+  title: 'Crystal structure of Escherichia coli enterobactin-specific isochorismate synthase (EntC) bound
+    to its reaction product isochorismate: implications for the enzyme mechanism and differential activity
+    of chorismate-utilizing enzymes.'
+  url: https://pubmed.ncbi.nlm.nih.gov/20079748/
+  source_version: 2010; indexed abstract in retained Europe PMC core JSON, not full article
+  source_sha256: 939a0b488eb4c78e124c74398c41f137c95639cdba0fe85713a693d1f5ea1c58
+- id: MetaCyc:PWY-5901
+  title: 'MetaCyc PWY-5901: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5901
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 2b978bba42064a27efcf351934b22c6c0fa9c335e1f24965cc70897daf22427c
+- id: MetaCyc:ISOCHORSYN-RXN
+  title: 'MetaCyc ISOCHORSYN-RXN: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ISOCHORSYN-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 12b0f7a51414fd2dc6ea14d9596d9cc7f0fcc121d0843c434e3ae5b23af90198
+- id: MetaCyc:ISOCHORMAT-RXN
+  title: 'MetaCyc ISOCHORMAT-RXN: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:ISOCHORMAT-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 17750d21f912eb41d92fa0e73773cf03caa447c64bcf1467fda491f69175c76c
+- id: MetaCyc:DHBDEHYD-RXN
+  title: 'MetaCyc DHBDEHYD-RXN: exact native definition'
+  url: https://pathway.yeastgenome.org/getxml?META:DHBDEHYD-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: e694e624fe8f8d1690686a60f51bed77323eb276f5ccecf67ecc9860c83de4e0
+- id: PMID:4928016
+  title: 'Biosynthesis of the iron-transport compound enterochelin: mutants of Escherichia coli unable
+    to synthesize 2,3-dihydroxybenzoate.'
+  url: https://europepmc.org/articles/PMC248643?pdf=render
+  source_version: 1971; complete scanned primary PDF, independently extracted and rendered; retrieved
+    2026-10-11 UTC
+  source_sha256: 297a466d033a1c5898897547cf390837d23aa3ff25b97cb32318b3c0bd8c7aae

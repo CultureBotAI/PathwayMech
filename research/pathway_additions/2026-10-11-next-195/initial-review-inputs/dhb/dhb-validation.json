@@ -1,0 +1,123 @@
+{
+  "status": "passed",
+  "target": "data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml",
+  "target_sha256": "94a671009cfae9c61381d26067a07e80edaeb5d6e4f73a00ae8c81bfb35b1144",
+  "checks": [
+    "native and closed schemas",
+    "all original hashes",
+    "all reference-body hashes",
+    "four canonical native HTML identities",
+    "original full RDF reaction/side/coefficient/compound replay",
+    "native directions and Rhea direction table",
+    "nine native compound ChEBI identity/InChI crosswalks",
+    "all three whole reactions atom/charge balanced",
+    "native complete boundary and all catalysts",
+    "three protein identity/activity crosswalks",
+    "exact holo component and tetramer assembly",
+    "reviewed Mg annotations",
+    "actual target KGX complete evidence/metadata/categories"
+  ],
+  "counts": {
+    "original_bodies": 51,
+    "references": 23,
+    "rhea_sides": 11,
+    "balanced_reactions": 3,
+    "named_nodes": 20,
+    "edges": 23,
+    "evidence": 55
+  },
+  "balance_vectors": {
+    "18986": {
+      "substrates": {
+        "C": 10,
+        "H": 8,
+        "O": 6,
+        "charge": -2
+      },
+      "products": {
+        "C": 10,
+        "H": 8,
+        "O": 6,
+        "charge": -2
+      }
+    },
+    "11113": {
+      "substrates": {
+        "C": 10,
+        "H": 10,
+        "O": 7,
+        "charge": -2
+      },
+      "products": {
+        "C": 10,
+        "H": 10,
+        "O": 7,
+        "charge": -2
+      }
+    },
+    "23825": {
+      "substrates": {
+        "C": 28,
+        "H": 33,
+        "O": 18,
+        "charge": -2,
+        "N": 7,
+        "P": 2
+      },
+      "products": {
+        "C": 28,
+        "H": 33,
+        "O": 18,
+        "charge": -2,
+        "N": 7,
+        "P": 2
+      }
+    }
+  },
+  "limits": [
+    "Author replay is not independent scientific review or an experimental validation.",
+    "Full corpus gates are delegated to root.",
+    "Primary abstract and source-state limitations remain in the curation dossier and edge evidence."
+  ],
+  "finished_at": "2026-10-11T06:12:51.765321+00:00",
+  "command": ".venv/bin/python research/pathway_additions/2026-10-11-next-195/dhb-replay.py",
+  "cwd": "/private/tmp/pathwaymech-next-195-20261011",
+  "exit_code": 0,
+  "tool_session": 66832,
+  "stdout": {
+    "path": "/private/tmp/pathwaymech-next-195-evidence/dhb/replay-sealed.json",
+    "sha256": "a529a61571f0fe4a64ab48bf5e0950fab68ef7306d919d22c08103bed1c85ce6"
+  },
+  "stderr": {
+    "path": "/private/tmp/pathwaymech-next-195-evidence/dhb/replay-sealed.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "replay_helper_sha256": "df7702456213e7d38fb22cf338efea738671c73d5ba3a8374ebb55e3c4a3d254",
+  "owned_inputs": {
+    "research/pathway_additions/2026-10-11-next-195/dhb-authority-inputs.json": "77fb5d26e817984db622d7e58e016fb2ea9a75201470972e6dcfb3869af34b55",
+    "research/pathway_additions/2026-10-11-next-195/dhb-curation.md": "b38a12b8d00703d18cb1207e8adb2432f78289db89fbfa6709ba2ff364d88df2",
+    "research/pathway_additions/2026-10-11-next-195/dhb-dedup.json": "1766ee8819662a07fef302275f229cefe36cc65db9e459143835f829a9c8ab56",
+    "research/pathway_additions/2026-10-11-next-195/dhb-identifiers.json": "f8e4cf3ee5bdebe7bad4aec5660066bb5e9e83a43b53220ec31bdcb2caf86b1a",
+    "research/pathway_additions/2026-10-11-next-195/dhb-replay.py": "df7702456213e7d38fb22cf338efea738671c73d5ba3a8374ebb55e3c4a3d254",
+    "research/pathway_additions/2026-10-11-next-195/dhb-source-manifest.json": "f0f48dcc3620d236da9b21da969937fb6b8afa66470011d03db686fb5724c49b",
+    "research/pathway_additions/2026-10-11-next-195/dhb-source-projection.json": "a6f3ee0e1361115a6456244f0af251cdbd8f5b9d7a8a37154068b20cfc2e563e"
+  },
+  "other_actual_checks": [
+    {
+      "command": ".venv/bin/ruff check research/pathway_additions/2026-10-11-next-195/dhb-replay.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check -- data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml research/pathway_additions/2026-10-11-next-195/dhb-replay.py",
+      "exit_code": 0
+    }
+  ],
+  "author_iteration_notes": [
+    "An initial draft used occurs_in for a taxon endpoint; native schema correctly rejected it. The invalid edge was removed before freeze; K-12 scope remains explicit in taxa, description, source dossier and primary-supported sequential edges.",
+    "Initial replay-helper lint reported formatting/line lengths. Final frozen helper passes Ruff.",
+    "During author receipt inspection, a copied fallback ontology URL was found in draft metadata. Both full DB URLs/version/hash scopes were corrected to exact preserved ontology source metadata and a replay assertion now enforces that equality. No source bytes, selected chemistry or identifiers changed.",
+    "Preliminary original-source replay passed in session18896; second replay12513 passed. Final sealed run66832 includes the explicit provenance guard and frozen helper.",
+    "A receipt-only command invoked system Python with an unused PyYAML import and failed before writing; repeated in the project environment."
+  ],
+  "scientific_review": false
+}
