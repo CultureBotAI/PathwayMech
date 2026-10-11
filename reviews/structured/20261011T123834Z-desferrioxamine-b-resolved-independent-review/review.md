@@ -1,0 +1,950 @@
+# Independent successor review of complete desferrioxamine B biosynthesis
+
+- Review: 20261011T123834Z-desferrioxamine-b-resolved-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T12:34:21.626357Z
+- Finished UTC: 2026-10-11T12:38:34.732808Z
+- Reviewer: Codex independent scientific reviewer (/root/verify_graph_publication) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete five-transformation coelicolor desferrioxamine B pathway passes with explicit evidence limitations. Issue381 is resolved: exact original Figure4 panelsa/b and supplementary assay sections now ground the two DesC locators, with no other parsed record change. All53 final formal inputs, exact merged-baseline tree,901 retained baseline file blobs, terminal7-gate receipts and generated32-node/50-edge/130-evidence scope were verified. Full tests passed1131 with3 skips and3 warnings. Proposed DesB chemistry, generic donor, construct/assembly scope and model-derived two-ATP coupling remain qualified; no scientific identity or pathway-boundary defect remains in the assessed record.
+
+## Scope And Provenance
+
+Complete independent scientific successor for the exact corrected maintained five-step record, with exact issue381 lineage and current authority/generated evidence. Earlier source preflight is reused only through proven unchanged scientific content.
+
+Selection: Explicit parent assignment after actual PR379 merge, completed shared gates and final integration seal.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 75b6c586be91719f5d5d8db1183581403c36a485.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6376 | data/pathways/desferrioxamine-b-biosynthesis.yaml | maintained | desferrioxamine B biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical final inspection and current input recheck | passed | True | MetaCyc:PWY-6376 | Session33368 exited0 before final assessment; all53 input hashes remained identical through final drafting. Entire target and initial YAML/Markdown lineage were read. |
+| Independent complete original-source scientific/chemical replay | passed | False | MetaCyc:PWY-6376 | Prior actual78738 passed63 original bodies,44 reference hashes,5native members,27native/26selected sides,12exact InChI bridges,4concrete+1conditional-redox balance, exact595aa DesD and actual32node/50edge/130evidence export. Final two-locator-only comparison preserves that entire scientific scope. |
+| Original DesC figure reassessment and genuine negative guard | passed | True | MetaCyc:PWY-6376 | Independent14507 positive current guard passed and historical defective target failed as expected. Both exact corrected figure panels and separate SI assay sections were inspected. Only the two locator strings changed. |
+| Independent native identity authority and preservation assessment | passed | True | MetaCyc:PWY-6376 | Actual canonical builders passed;17 new original native HTML entries independently parsed, all original identities preserved, and all32 selected IDs grounded. Whole14GB ontology-source digest was not redundantly reread; exact selected indexed original facts were independently queried. |
+| Independent exact-strain iModulon original-body parser replay | passed | False | MetaCyc:PWY-6376 | Actual20-body unchanged canonical replay passed; four exact loci/proteins are explicit module35/57 members in s_coelicolor/modulome478. Native null-regulator query failures preserved; only successful bounded gene/table parsing is claimed. |
+| Actual merged baseline and prepared-source equivalence | passed | True | MetaCyc:PWY-6376 | Local Git verifies75b6c586 and506c7ef exact whole-tree equality. All53 formal inputs and all901 baseline blobs independently rehashed. The bridge remains a historical transition receipt; later README-only final-check prose is explicitly distinguished. |
+| Integrated render | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:24:44.378394+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-render.log. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Integrated validate | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:26:25.812708+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-validate.log. 212 records,closed schema,identifiers,13005 evidence,330 histories and generated-page currency passed. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Integrated test | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:30:57.721991+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-test.log. 1131 passed,3 skipped,3 warnings in371.65s. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Integrated lint | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:24:44.620036+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-lint.log. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Integrated identifiers | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:24:59.056613+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-identifiers.log. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Integrated kgx | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:25:15.014856+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-kgx.log. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Integrated diff | passed | True | MetaCyc:PWY-6376 | Parent-executed terminal exit0 at 2026-10-11T12:25:15.635931+00:00; reviewer independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-diff.log. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs. |
+| Governed artifact synchronization | passed | False | MetaCyc:PWY-6376 | Parent actual11649 exit0; original inspected transcript confirms all22 governed artifacts match the pinned revision. |
+| Complete SVG/KGX and preserved baseline verification | passed | True | MetaCyc:PWY-6376 | Programmatic graph audit passed exact32nodes/50edges/130evidence. Independently compared current download bytes to CLI export and all901 baseline file blobs. This is not browser/visual QA. |
+
+## Scientific And Domain Assessments
+
+### Complete native B pathway and exact organism
+
+completeness: supported. Targets: MetaCyc:PWY-6376.
+
+All five native transformations retained: lysine decarboxylation, proposed hydroxylation, succinyl and acetyl branches, and complete iterative B assembly. Weighted net uses three initial substrate transformations, two succinylations and one acetylation. Ferric loading/uptake, E cyclization and longer congeners are outside this exact native B scope. NCBITaxon100226 and source-qualified S.coelicolorA3(2)/M145 evidence are explicit.
+
+### Exact chemical states, generic redox and ATP bookkeeping
+
+representation: supported. Targets: MetaCyc:PWY-6376.
+
+Twelve exact native InChI bridges and four concrete balances passed; hydroxylation balance is conditional on source generic Donor-H2/Acceptor classes. Native charged metabolite structures are preserved rather than conflated with older neutral crossrefs. Terminal2HSC+HAC+2ATP→B+2AMP+2PPi+2H+ is a qualified two-ligation model without net water; native1ATP/water also balances and remains an explicit source conflict. Balance alone is not mechanistic coupling proof.
+
+### Direct versus proposed catalyst and construct evidence
+
+evidence: supported. Targets: MetaCyc:PWY-6376.
+
+DesA direct source is original abstract only. DesB remains native proposed/unpurified coelicolor assignment with unresolved physiological donor; S.sviceus FAD/tetramer/kinetics are not transferred. PLP/FAD from automatic annotations are qualified inference. Current MbtG/MbtK automatic names and exact DesABC construct mismatches are preserved as conflicts. Direct M145 DesC authentic-standard LC-MS/MS supports both acylations and preparation-specific monomer behavior; full sequence equality is not claimed.
+
+### Exact DesD core, assembly and product scope
+
+scope: supported. Targets: MetaCyc:PWY-6376.
+
+Primary2022 SI TableS7/S9 establishes exact595-aa DesD core with20-aa tag; native2×SCO2785 assembly and B-forming experiments are separately grounded. Primary2023 failed tested HSC/HAC monomer assays and successful preformed-dimer/HAC route remain explicit.2026 two-ligation/HAC-cap model is not direct measured ATP coupling, and Sg structures are not transferred to Sc. MgATP assay conditions do not create an unsupported free-metal binding edge.
+
+### Issue381 exact source-local resolution
+
+provenance: supported. Targets: MetaCyc:PWY-6376.
+
+Original Figure4(a)/(b), Results2(a), and SI1.6.1/1.6.2/1.7 now identify the specific DesC assays. Original Figure2/3 contextual fragments were the only defect. Exact semantic/KGX comparisons and positive/negative guards substantiate resolution without altering any scientific assertion.
+
+### Computational expression context
+
+scope: supported. Targets: MetaCyc:PWY-6376.
+
+Exact four-locus s_coelicolor module35/57 membership is retained as computational context only. Null-regulator native query errors are preserved; no catalysis, carrier specificity or causal regulatory relation derives from membership.
+
+### Current authority, merged base and completed local validation
+
+provenance: supported. Targets: MetaCyc:PWY-6376.
+
+Final authority snapshots preserve baseline terms and17 verified native additions. Actual merged base has the same tree as the baseline used by all passed gates. Current formal input hashes and actual logs/graphs match;901 prior scientific/history/review/page blobs are unchanged. No post-render record REVIEW history is added.
+
+## Findings
+
+### f-desc-assay-figure-locators: DesC assay figure locators corrected to original Figure4 panelsa/b
+
+minor / resolved / confirmed; issue key: desferrioxamine-b-desc-assay-figure-locators.
+
+The initial source-locator defect was confined to two edge-local figure fragments. The corrected record now separately identifies exact Figure4 panela for succinyl activity and panelb for acetyl activity, Results2(a) and corresponding official SI assay sections. All scientific claims and the full pathway are unchanged.
+
+Disposition: Independent original Figure4/Results/SI reassessment supports the exact two corrected selectors. Full parsed-record comparison finds no other delta; original inputs remain preserved. The source guard passes corrected bytes and genuinely rejects the archived defective target; independent KGX comparison preserves all chemistry and edge evidence except those locator strings. Current merged-base/authority/input checks and all seven actual integrated gates passed, including1131tests with3skips. This resolves only the proven minor locator issue and preserves scientific qualifications.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-primary | https://pmc.ncbi.nlm.nih.gov/articles/PMC5915712/; section[@id="s2a"]; figures RSTB20170068F2/F3/F4, especially Figure 4 panels a and b | supports | Original Results reports authentic-standard LC-MS/MS and CoA assays for succinyl/acetyl activity. Figures 2/3 supply chemical/cluster context; Figure 4(a)/(b) contains the assay traces. This distinguishes a locator mistake from an unsupported activity claim. |
+| e-preflight | research/pathway_additions/2026-10-11-next-211/independent-scientific-preflight.json; Entire sealed independent preflight; primary inspection, scientific limitations and actual executed checks | supports | Earlier complete independent original-source assessment found only the DesC locator defect. Direct/proposed, exact strain/construct, inferred cofactor and ATP-model limits remain applicable because the final record differs in exactly those two source_locator strings. |
+| e-replay | research/pathway_additions/2026-10-11-next-211/independent-original-source-replay.json; Full actual session 78738 independent original-source/chemistry/sequence/KGX replay | supports | Prior actual independent replay78738 passed on the archived f9bb3586 scientific state. The corrected fc82621b record is identical except two locators; independent current delta and KGX checks establish the scientific scope is unchanged. This is not described as a new full chemistry execution. |
+| e-imod | research/pathway_additions/2026-10-11-next-211/independent-imodulondb-replay.json; Original 20-body parser replay and exact four-locus module membership | context_only | Expression context only; original null-regulator query failures preserved, gene/table parsing passed. |
+| e-inspect | /private/tmp/pathwaymech-next-211-dfo-final-canonical/inspect.json; Complete canonical final capture; session33368 terminal0 | supports | Fresh final inspection at actual merged base75b6c586;53 formal inputs include original finding, final record, correction proofs, authority snapshots, page/export outputs and sealed gates. |
+| e-current | /private/tmp/pathwaymech-next-211-dfo-final-canonical/final-recheck.json; Complete independent current-byte, Git tree/blob and log reassessment; session45280 terminal0 | supports | All53 formal inputs unchanged,901 baseline blob bytes exact, current generated files equal sealed hashes and separate CLI outputs, exact two-locator-only record delta. The historical47-file transition bridge has one subsequent README documentation update; README is not a formal review input. |
+| e-initial | reviews/structured/20261011T121520Z-desferrioxamine-b-initial-independent-review/review.yaml; Entire initial authoritative YAML and paired Markdown | supports | Initial partial needs_curation observation retains f-desc-assay-figure-locators and exact issue381. Original bytes and the17 initial inputs were independently checked; initial target is preserved at its archived path. |
+| e-correction | research/pathway_additions/2026-10-11-next-211/desc-locator-correction.json; Both old/new evidence locators and preserved initial target | supports | Author correction is limited to panelsa/b and exact SI sections for DesC. No node, chemistry, assertion, reference or boundary change. |
+| e-acceptance | research/pathway_additions/2026-10-11-next-211/independent-locator-acceptance.json; Independent original source selectors, full semantic comparison, positive and historical-negative guard, authority and KGX checks; actual14507 exit0 | supports | Original Figure4 and Results support both corrected locators. Current guard passed; archived defective target genuinely failed at the intended guard. Independent exact KGX comparison reverts to the initial export by reverting only the two locators. |
+| e-authorities | research/pathway_additions/2026-10-11-next-211/authority-integration.json; Terminal canonical builders and baseline term/metadata preservation | supports | All17 native MetaCyc authority bodies independently rehashed/reparsed; shared manifest459→476, source terms2047→2064 and ontology1779→1781. Existing terms/metadata preserved. Indexed original SQLite checks confirm cadaverine(2+) and exact coelicolor taxon; the prior complete large-file digest validation is delegated, not falsely rerun. |
+| e-bridge | research/pathway_additions/2026-10-11-next-211/merged-baseline-equivalence.json; Historical47-file transition and actual merge tree273ab3b0 | supports | Actual base75b6c586 and reviewed preparation506c7ef have identical entire Git trees. Full gates finished before promotion on the same tree/scientific bytes. Root later appended final-check prose to README; no assessed scientific input changed. |
+| e-gates | research/pathway_additions/2026-10-11-next-211/integration-receipt.json; Seven terminal shared gate commands, supporting receipts and actual test summary | supports | Parent full gate session97447 exited0; test1131passed/3skipped/3warnings371.65s. Vendored11649 passed22. Reviewer independently verified every gate exit/log digest, generated file hash and stable scientific input; no full-suite duplication claimed. |
+| e-console | research/pathway_additions/2026-10-11-next-211/console-transcripts.json; Eight lossless UTF-8 transcripts, byte counts/digests matched to actual external logs | supports | Validation confirms212 records, closed schema, identifiers,13005evidence,330histories and current pages. Full test/lint/identifier/KGX/diff and vendored outputs were inspected. All transcripts reproduce actual original bytes. |
+| e-graph | research/pathway_additions/2026-10-11-next-211/generated-graph-kgx-audit.json; Programmatic complete generated SVG/KGX audit and baseline901-file inventory | supports | Independent graph agent retained32 target nodes,50edges and130evidence blocks. Reviewer independently checked target/hash/download parity and every901 baseline file against actual merged Git blobs; browser rendering and publication are not claimed. |
+
+## Limits And Additional Notes
+
+- Complete five native transformations; no substitution with ferric uptake or desferrioxamine E synthesis.
+- DesB is proposed for coelicolor; the native generic donor classes do not specify NADPH/NADH, and S.sviceus data are not direct target evidence.
+- DesA primary evidence is abstract-limited; current PLP/FAD edges are automatic inference.
+- M145-derived DesC supports both acylations and preparation-specific monomeric behavior, without exact full construct equality; 2023 DesABC sequence mismatches are preserved.
+- 595-aa ScDesD core is exact; native dimer evidence and B-product assays remain separately attributed.
+- Terminal twoATP is a model-supported net for two ligations, not measured coupling; original native oneATP/water equation remains an explicit conflict.
+- All20 iModulon originals and exact four-locus module35/57 membership are computational context; null-regulator query parser failures preserved.
+- Local required gates were executed by root and independently checked through actual terminal receipts, original logs, hashes and unchanged input proofs; no duplicate full-suite execution is claimed.
+- Programmatic SVG/KGX verification does not establish browser appearance or live publication. Remote review/merge/deployment of this DFO addition remains separate.
+- Historical author dossiers remain immutable at the original f9bb3586 record hash; current approval relies on proven two-locator-only correction and successor receipts, not silently rewritten historical results.
+- Earlier external scientific preflight began11:55:29Z and finished12:03:12Z; initial canonical review121520Z and correction acceptance were read in full and re-used only with unchanged source hashes. This final review has its own actual final inspection and completion timestamps.
+- Generated context owners are the maintained target, declared corpus records, authority configuration and the three captured pre-render history events; pages/downloads were read and verified, never edited by this reviewer.
+- Independent final recheck first stopped before its output write on the historical bridge README hash. Root confirmed final-check prose appended after the transition; current README is not a formal input. The corrected reassessment distinguishes this documented metadata update from unchanged scientific bytes and preserves both external attempt logs.
+- No additional curation history is created by this review; all existing DFO record/history events were present before full render.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T123834Z-desferrioxamine-b-resolved-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent successor review of complete desferrioxamine B biosynthesis
+started_at: '2026-10-11T12:34:21.626357Z'
+finished_at: '2026-10-11T12:38:34.732808Z'
+reviewer:
+  identity: Codex independent scientific reviewer (/root/verify_graph_publication)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Reviewer did not author the pathway, locator correction, source
+    integration, history or full gates. Independent original primary/native source,
+    chemistry, sequence, KGX and iModulon replays preceded the initial review and
+    remain byte-linked. Root executed the integrated gates; reviewer inspected their
+    actual logs, hashes and unchanged final scientific inputs. Final review does not
+    substitute those gates for scientific assessment.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: 'The complete five-transformation coelicolor desferrioxamine B pathway passes
+  with explicit evidence limitations. Issue381 is resolved: exact original Figure4
+  panelsa/b and supplementary assay sections now ground the two DesC locators, with
+  no other parsed record change. All53 final formal inputs, exact merged-baseline
+  tree,901 retained baseline file blobs, terminal7-gate receipts and generated32-node/50-edge/130-evidence
+  scope were verified. Full tests passed1131 with3 skips and3 warnings. Proposed DesB
+  chemistry, generic donor, construct/assembly scope and model-derived two-ATP coupling
+  remain qualified; no scientific identity or pathway-boundary defect remains in the
+  assessed record.'
+source:
+  git_revision: 75b6c586be91719f5d5d8db1183581403c36a485
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: c950ccdfff311b4d7218d9464e7d2ac1f7612c2a45192f776afd31e0f94d4d46
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 7a1fb7de71c03214fe6b418d4f60b08827ee80c88495e780ad3873058fffeb06
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: f892f0a0697888428b750660d9ea498bc93af769dcd7fe18aee4a04532aecaa4
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: b8c49ffa890b9f4fea17c2dd6dfdea3bb4cad590a196604db86077277726ada0
+    role: context
+  - path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    sha256: fc82621bf3a7b47ece33ab621b0412e98fe7d27aa5f72e5bc293a84a85b2145d
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/infrastructure/desferrioxamine-b-authority-integration/2026-10-11T121528Z-codex-fe3cf9.yaml
+    sha256: 7756a4d4516bf66092ae700860f58067806b5da76855ad68e06bbad7b6f00753
+    role: context
+  - path: history/records/desferrioxamine-b-biosynthesis/2026-10-11T121454Z-codex-15ff2b.yaml
+    sha256: 52ea7cb23ee7b35b2883bc107a572ea1c786b26f449161a7b4b0a1753835bb30
+    role: context
+  - path: history/records/desferrioxamine-b-biosynthesis/2026-10-11T121807Z-codex-39b199.yaml
+    sha256: ba3bc08e1c8b2028c647f66f4a2d110698e4c37211e55355a0f78aa7278b58db
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 614e29a55aeaa657d7f00344bca0069c82855b9205fb34807e99304d147724d8
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: a250ecf3a45c57ca659c763ff51b7333e28a10c3a658bdfae163bf92c009ce46
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: baabc194e6d4a1b1d639e2222270b7c1985ff7f61335532e5f9111d7ea81008b
+    role: context
+  - path: pages/records/MetaCyc_PWY-6376.html
+    sha256: 8f9899295339f3a1d7ef889931029399692a26ddb7cc101ee5915ef7fdbc45de
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/authority-integration.json
+    sha256: 37f71ec2ffbf8318498dff22c5ad40d9b4d4025ad5c00c70761c60fad75f6fdd
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/console-transcripts.json
+    sha256: fa948828d6e714d2b87119a4de8d7d6e6c864ba47cb6480a1fbb7c2486177b12
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desc-locator-correction.json
+    sha256: 0e1fbc43c1b46a6b1bd6bbe454b61ccbcf5062311e79a31772d026ff528f8469
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desc-locator-replay.json
+    sha256: bff14d4ca660a4d07d02e35077f11fbfecdfa8d51c7d6c13c3619779d85489e6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-authority-inputs.json
+    sha256: ef6e065545eb7c7731f3fd4ceafaaa5fd0ed76b205c1dd20a3d2cad854e867f9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-curation.md
+    sha256: 176c287443ee5a65b0aa9162b90e1c106d0470ef9fb90ac1dbfb7bde47456edf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-dedup.json
+    sha256: 2a64ccee2741353a061145fd20dbe4535cac458c192ca50ab787e10ac1cb495c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-identifiers.json
+    sha256: b50e8f6ecabd9fe262945f134e89b610a536244dbd12096a8a5bd60794afe6fa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-primary-index.json
+    sha256: 8a8b005e0ed0880b84d5558121bb48e33801f552df393fcd753def394efdfac5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-replay.py
+    sha256: 748b6ca72c710fd96257c712242bc6db58f82f036b238cd0c33861b2d7d00f8e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-source-manifest.json
+    sha256: 46325800d78b16f45bb07302d7bb3292dde5bcd0002e52d115a17a03acca2f1e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-source-projection.json
+    sha256: 161b2445565151df688752a495dea71164d6fb35601d57c8b35ade0db6218c8f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-validation.json
+    sha256: 323da8de5242029e57f5c70378bd7bf381653326039f1467ebf956220778aa92
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/full-gate-receipts.json
+    sha256: ff35ea5fb8de311efb5059f7f5945adf95565b5e23a36082199051882c0cc37c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/generated-graph-kgx-audit.json
+    sha256: 6fd0291a574812f7b05d52925a0a6e5e991e62e1688fcd5582d87b524042589e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/imodulondb-assessment.json
+    sha256: bd656e168fe48e58c9a5ab2205202bc75c571e2dff457f46e969604aa3f33503
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/imodulondb-context.json
+    sha256: c35e3960e656adad4ef5f8ca4dba599446f9afcff5d305bfef5382e75e7b5096
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/imodulondb-initial-acquisition-observation.json
+    sha256: d1d25f1f789c1c79c35c63965dfeba953ede02d004abe089370ccf76dedc1589
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/imodulondb-source-manifest.json
+    sha256: 1e8697a0705303060464b6731cbe8186765bbe2e753b90da57c7755561036261
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-imodulondb-replay.json
+    sha256: e0e53e4479e5c4176538533606ecc3033b92abacc66fea6bbd2336cb783999fc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-locator-acceptance.json
+    sha256: 8ae693c1148b4d07a07528b8ea8a8d578e4cfc234988a6b976b1b23b88f0aa73
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-original-source-replay.json
+    sha256: 809f907fffa413765a24fc446987fb3e65a22aff891f90397111137cd68b0680
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-scientific-preflight.json
+    sha256: e39720d1dbccb6c1b7f6b53f60615d96ecc0e6cd75418fd15a3faf8ca50ed7d7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/initial-review-inputs/desferrioxamine-b-biosynthesis.yaml
+    sha256: f9bb35866f883f0e47f5f5e98ba6ae2caf1d2d8ea967793b96f67d91e8fa1690
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/initial-scientific-findings.json
+    sha256: 548e3a4a13076c958b448e24eada6997b46a9ecde330fc4ebc434da09ee3da93
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/integration-receipt.json
+    sha256: 76ee0344717be95f61a76eec9302b6326671b2b754ad6394ec254447b0fedd3d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/merged-baseline-equivalence.json
+    sha256: 04dbf53f5541407b2587f9ba303e88019c30aa980551b4911b3e8953baa5fda8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/preintegration-dedup.json
+    sha256: b83e5c847419016d769bce9cfe881b3433de17bf3ed376660e6b03a3eebb70e6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/reviewed-baseline-transition.json
+    sha256: 970beac3ef863fcf2508cabf9134e946ae04a7119572ed55a2d2b8ce6c098b24
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/verify-desc-locators.py
+    sha256: c0ebe3e8af442942b68f75fef5a85a265443290228a0f83d23cb8e22f397c684
+    role: context
+  - path: reviews/structured/20261011T121520Z-desferrioxamine-b-initial-independent-review/review.md
+    sha256: 7cab275a03fc5bee44a7463785c515d8f9836a6438df9363055e62786d282e9d
+    role: context
+  - path: reviews/structured/20261011T121520Z-desferrioxamine-b-initial-independent-review/review.yaml
+    sha256: 93740acb2030c9df238f5f70e8bb80a2dcf1dea9688d0b8201078452ffe39181
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+scope:
+  description: Complete independent scientific successor for the exact corrected maintained
+    five-step record, with exact issue381 lineage and current authority/generated
+    evidence. Earlier source preflight is reused only through proven unchanged scientific
+    content.
+  selection: Explicit parent assignment after actual PR379 merge, completed shared
+    gates and final integration seal.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6376
+  exclusions:
+  - target: Remote PR lifecycle, live deployment and browser interaction
+    reason: These are subsequent publication activities; this review establishes local
+      scientific and programmatic integration status only.
+  - target: Fresh corpus-wide source exhaustion
+    reason: Deduplication and source review concern this exact complete pathway; no
+      claim that all microbial pathways have been discovered.
+targets:
+- target_id: MetaCyc:PWY-6376
+  path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+  label: desferrioxamine B biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    role: maintained_scientific_source
+checks:
+- check_id: c-inspect
+  name: Canonical final inspection and current input recheck
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Session33368 exited0 before final assessment; all53 input hashes remained
+    identical through final drafting. Entire target and initial YAML/Markdown lineage
+    were read.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-inspect
+  - e-current
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-211-dfo-final-canonical/targets.yaml
+    with declared context inputs
+- check_id: c-original-source
+  name: Independent complete original-source scientific/chemical replay
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Prior actual78738 passed63 original bodies,44 reference hashes,5native
+    members,27native/26selected sides,12exact InChI bridges,4concrete+1conditional-redox
+    balance, exact595aa DesD and actual32node/50edge/130evidence export. Final two-locator-only
+    comparison preserves that entire scientific scope.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-preflight
+  - e-replay
+  - e-current
+- check_id: c-locators
+  name: Original DesC figure reassessment and genuine negative guard
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Independent14507 positive current guard passed and historical defective
+    target failed as expected. Both exact corrected figure panels and separate SI
+    assay sections were inspected. Only the two locator strings changed.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-primary
+  - e-acceptance
+  - e-correction
+- check_id: c-authorities
+  name: Independent native identity authority and preservation assessment
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Actual canonical builders passed;17 new original native HTML entries independently
+    parsed, all original identities preserved, and all32 selected IDs grounded. Whole14GB
+    ontology-source digest was not redundantly reread; exact selected indexed original
+    facts were independently queried.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-authorities
+  - e-acceptance
+- check_id: c-imod
+  name: Independent exact-strain iModulon original-body parser replay
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Actual20-body unchanged canonical replay passed; four exact loci/proteins
+    are explicit module35/57 members in s_coelicolor/modulome478. Native null-regulator
+    query failures preserved; only successful bounded gene/table parsing is claimed.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-imod
+- check_id: c-bridge
+  name: Actual merged baseline and prepared-source equivalence
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Local Git verifies75b6c586 and506c7ef exact whole-tree equality. All53
+    formal inputs and all901 baseline blobs independently rehashed. The bridge remains
+    a historical transition receipt; later README-only final-check prose is explicitly
+    distinguished.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-current
+  - e-bridge
+- check_id: c-render
+  name: Integrated render
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:24:44.378394+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-render.log.
+    Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical
+    tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just render-pages
+- check_id: c-validate
+  name: Integrated validate
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:26:25.812708+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-validate.log.
+    212 records,closed schema,identifiers,13005 evidence,330 histories and generated-page
+    currency passed. Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586
+    has identical tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just validate
+- check_id: c-test
+  name: Integrated test
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:30:57.721991+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-test.log.
+    1131 passed,3 skipped,3 warnings in371.65s. Executed on reviewed506c7ef baseline;
+    subsequent actual merged75b6c586 has identical tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just test
+- check_id: c-lint
+  name: Integrated lint
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:24:44.620036+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-lint.log.
+    Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical
+    tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just lint
+- check_id: c-identifiers
+  name: Integrated identifiers
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:24:59.056613+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-identifiers.log.
+    Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical
+    tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just check-identifiers
+- check_id: c-kgx
+  name: Integrated kgx
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:25:15.014856+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-kgx.log.
+    Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical
+    tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just kgx-export --output-dir /private/tmp/pathwaymech-next-211-initial-kgx
+- check_id: c-diff
+  name: Integrated diff
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Parent-executed terminal exit0 at 2026-10-11T12:25:15.635931+00:00; reviewer
+    independently read and rehashed original log /private/tmp/pathwaymech-next-211-initial-diff.log.
+    Executed on reviewed506c7ef baseline; subsequent actual merged75b6c586 has identical
+    tree and unchanged assessed inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  - e-bridge
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    git diff --check
+- check_id: c-vendored
+  name: Governed artifact synchronization
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Parent actual11649 exit0; original inspected transcript confirms all22
+    governed artifacts match the pinned revision.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-gates
+  - e-console
+  command: just vendored-check
+- check_id: c-graph
+  name: Complete SVG/KGX and preserved baseline verification
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Programmatic graph audit passed exact32nodes/50edges/130evidence. Independently
+    compared current download bytes to CLI export and all901 baseline file blobs.
+    This is not browser/visual QA.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-graph
+  - e-current
+evidence:
+- evidence_id: e-primary
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC5915712/
+  locator: section[@id="s2a"]; figures RSTB20170068F2/F3/F4, especially Figure 4 panels
+    a and b
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Original Results reports authentic-standard LC-MS/MS and CoA assays for
+    succinyl/acetyl activity. Figures 2/3 supply chemical/cluster context; Figure
+    4(a)/(b) contains the assay traces. This distinguishes a locator mistake from
+    an unsupported activity claim.
+  snapshot_sha256: 1bd6c3e3a9a9048f03545ede3a17af2a8de138f070acc00827cec61ac5d557f3
+- evidence_id: e-preflight
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-scientific-preflight.json
+  locator: Entire sealed independent preflight; primary inspection, scientific limitations
+    and actual executed checks
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Earlier complete independent original-source assessment found only the
+    DesC locator defect. Direct/proposed, exact strain/construct, inferred cofactor
+    and ATP-model limits remain applicable because the final record differs in exactly
+    those two source_locator strings.
+  snapshot_sha256: e39720d1dbccb6c1b7f6b53f60615d96ecc0e6cd75418fd15a3faf8ca50ed7d7
+- evidence_id: e-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-original-source-replay.json
+  locator: Full actual session 78738 independent original-source/chemistry/sequence/KGX
+    replay
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Prior actual independent replay78738 passed on the archived f9bb3586 scientific
+    state. The corrected fc82621b record is identical except two locators; independent
+    current delta and KGX checks establish the scientific scope is unchanged. This
+    is not described as a new full chemistry execution.
+  snapshot_sha256: 809f907fffa413765a24fc446987fb3e65a22aff891f90397111137cd68b0680
+- evidence_id: e-imod
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-imodulondb-replay.json
+  locator: Original 20-body parser replay and exact four-locus module membership
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: context_only
+  summary: Expression context only; original null-regulator query failures preserved,
+    gene/table parsing passed.
+  snapshot_sha256: e0e53e4479e5c4176538533606ecc3033b92abacc66fea6bbd2336cb783999fc
+- evidence_id: e-inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-211-dfo-final-canonical/inspect.json
+  locator: Complete canonical final capture; session33368 terminal0
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Fresh final inspection at actual merged base75b6c586;53 formal inputs include
+    original finding, final record, correction proofs, authority snapshots, page/export
+    outputs and sealed gates.
+  snapshot_sha256: c482e07e99d278807c7052323a07557408925c186dd19ae146d8808de9e9367f
+- evidence_id: e-current
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-211-dfo-final-canonical/final-recheck.json
+  locator: Complete independent current-byte, Git tree/blob and log reassessment;
+    session45280 terminal0
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: All53 formal inputs unchanged,901 baseline blob bytes exact, current generated
+    files equal sealed hashes and separate CLI outputs, exact two-locator-only record
+    delta. The historical47-file transition bridge has one subsequent README documentation
+    update; README is not a formal review input.
+  snapshot_sha256: 4cfe8b2493236951a3a8705634de2bd59ce5103f2dd265364b19efb3d6ddbaf4
+- evidence_id: e-initial
+  kind: validation
+  reference: reviews/structured/20261011T121520Z-desferrioxamine-b-initial-independent-review/review.yaml
+  locator: Entire initial authoritative YAML and paired Markdown
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Initial partial needs_curation observation retains f-desc-assay-figure-locators
+    and exact issue381. Original bytes and the17 initial inputs were independently
+    checked; initial target is preserved at its archived path.
+  snapshot_sha256: 93740acb2030c9df238f5f70e8bb80a2dcf1dea9688d0b8201078452ffe39181
+- evidence_id: e-correction
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/desc-locator-correction.json
+  locator: Both old/new evidence locators and preserved initial target
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Author correction is limited to panelsa/b and exact SI sections for DesC.
+    No node, chemistry, assertion, reference or boundary change.
+  snapshot_sha256: 0e1fbc43c1b46a6b1bd6bbe454b61ccbcf5062311e79a31772d026ff528f8469
+- evidence_id: e-acceptance
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-locator-acceptance.json
+  locator: Independent original source selectors, full semantic comparison, positive
+    and historical-negative guard, authority and KGX checks; actual14507 exit0
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Original Figure4 and Results support both corrected locators. Current guard
+    passed; archived defective target genuinely failed at the intended guard. Independent
+    exact KGX comparison reverts to the initial export by reverting only the two locators.
+  snapshot_sha256: 8ae693c1148b4d07a07528b8ea8a8d578e4cfc234988a6b976b1b23b88f0aa73
+- evidence_id: e-authorities
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/authority-integration.json
+  locator: Terminal canonical builders and baseline term/metadata preservation
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: All17 native MetaCyc authority bodies independently rehashed/reparsed;
+    shared manifest459→476, source terms2047→2064 and ontology1779→1781. Existing
+    terms/metadata preserved. Indexed original SQLite checks confirm cadaverine(2+)
+    and exact coelicolor taxon; the prior complete large-file digest validation is
+    delegated, not falsely rerun.
+  snapshot_sha256: 37f71ec2ffbf8318498dff22c5ad40d9b4d4025ad5c00c70761c60fad75f6fdd
+- evidence_id: e-bridge
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/merged-baseline-equivalence.json
+  locator: Historical47-file transition and actual merge tree273ab3b0
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Actual base75b6c586 and reviewed preparation506c7ef have identical entire
+    Git trees. Full gates finished before promotion on the same tree/scientific bytes.
+    Root later appended final-check prose to README; no assessed scientific input
+    changed.
+  snapshot_sha256: 04dbf53f5541407b2587f9ba303e88019c30aa980551b4911b3e8953baa5fda8
+- evidence_id: e-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/integration-receipt.json
+  locator: Seven terminal shared gate commands, supporting receipts and actual test
+    summary
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Parent full gate session97447 exited0; test1131passed/3skipped/3warnings371.65s.
+    Vendored11649 passed22. Reviewer independently verified every gate exit/log digest,
+    generated file hash and stable scientific input; no full-suite duplication claimed.
+  snapshot_sha256: 76ee0344717be95f61a76eec9302b6326671b2b754ad6394ec254447b0fedd3d
+- evidence_id: e-console
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/console-transcripts.json
+  locator: Eight lossless UTF-8 transcripts, byte counts/digests matched to actual
+    external logs
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Validation confirms212 records, closed schema, identifiers,13005evidence,330histories
+    and current pages. Full test/lint/identifier/KGX/diff and vendored outputs were
+    inspected. All transcripts reproduce actual original bytes.
+  snapshot_sha256: fa948828d6e714d2b87119a4de8d7d6e6c864ba47cb6480a1fbb7c2486177b12
+- evidence_id: e-graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/generated-graph-kgx-audit.json
+  locator: Programmatic complete generated SVG/KGX audit and baseline901-file inventory
+  accessed_at: '2026-10-11T12:38:34.732808Z'
+  support: supports
+  summary: Independent graph agent retained32 target nodes,50edges and130evidence
+    blocks. Reviewer independently checked target/hash/download parity and every901
+    baseline file against actual merged Git blobs; browser rendering and publication
+    are not claimed.
+  snapshot_sha256: 6fd0291a574812f7b05d52925a0a6e5e991e62e1688fcd5582d87b524042589e
+assessments:
+- assessment_id: a-boundary
+  area: completeness
+  topic: Complete native B pathway and exact organism
+  outcome: supported
+  summary: 'All five native transformations retained: lysine decarboxylation, proposed
+    hydroxylation, succinyl and acetyl branches, and complete iterative B assembly.
+    Weighted net uses three initial substrate transformations, two succinylations
+    and one acetylation. Ferric loading/uptake, E cyclization and longer congeners
+    are outside this exact native B scope. NCBITaxon100226 and source-qualified S.coelicolorA3(2)/M145
+    evidence are explicit.'
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-preflight
+  - e-replay
+  - e-authorities
+- assessment_id: a-chemistry
+  area: representation
+  topic: Exact chemical states, generic redox and ATP bookkeeping
+  outcome: supported
+  summary: Twelve exact native InChI bridges and four concrete balances passed; hydroxylation
+    balance is conditional on source generic Donor-H2/Acceptor classes. Native charged
+    metabolite structures are preserved rather than conflated with older neutral crossrefs.
+    Terminal2HSC+HAC+2ATP→B+2AMP+2PPi+2H+ is a qualified two-ligation model without
+    net water; native1ATP/water also balances and remains an explicit source conflict.
+    Balance alone is not mechanistic coupling proof.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-preflight
+  - e-replay
+- assessment_id: a-catalysts
+  area: evidence
+  topic: Direct versus proposed catalyst and construct evidence
+  outcome: supported
+  summary: DesA direct source is original abstract only. DesB remains native proposed/unpurified
+    coelicolor assignment with unresolved physiological donor; S.sviceus FAD/tetramer/kinetics
+    are not transferred. PLP/FAD from automatic annotations are qualified inference.
+    Current MbtG/MbtK automatic names and exact DesABC construct mismatches are preserved
+    as conflicts. Direct M145 DesC authentic-standard LC-MS/MS supports both acylations
+    and preparation-specific monomer behavior; full sequence equality is not claimed.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-preflight
+  - e-primary
+  - e-acceptance
+- assessment_id: a-desd
+  area: scope
+  topic: Exact DesD core, assembly and product scope
+  outcome: supported
+  summary: Primary2022 SI TableS7/S9 establishes exact595-aa DesD core with20-aa tag;
+    native2×SCO2785 assembly and B-forming experiments are separately grounded. Primary2023
+    failed tested HSC/HAC monomer assays and successful preformed-dimer/HAC route
+    remain explicit.2026 two-ligation/HAC-cap model is not direct measured ATP coupling,
+    and Sg structures are not transferred to Sc. MgATP assay conditions do not create
+    an unsupported free-metal binding edge.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-preflight
+  - e-replay
+- assessment_id: a-locators
+  area: provenance
+  topic: Issue381 exact source-local resolution
+  outcome: supported
+  summary: Original Figure4(a)/(b), Results2(a), and SI1.6.1/1.6.2/1.7 now identify
+    the specific DesC assays. Original Figure2/3 contextual fragments were the only
+    defect. Exact semantic/KGX comparisons and positive/negative guards substantiate
+    resolution without altering any scientific assertion.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-initial
+  - e-primary
+  - e-correction
+  - e-acceptance
+  - e-current
+- assessment_id: a-context
+  area: scope
+  topic: Computational expression context
+  outcome: supported
+  summary: Exact four-locus s_coelicolor module35/57 membership is retained as computational
+    context only. Null-regulator native query errors are preserved; no catalysis,
+    carrier specificity or causal regulatory relation derives from membership.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-imod
+- assessment_id: a-integration
+  area: provenance
+  topic: Current authority, merged base and completed local validation
+  outcome: supported
+  summary: Final authority snapshots preserve baseline terms and17 verified native
+    additions. Actual merged base has the same tree as the baseline used by all passed
+    gates. Current formal input hashes and actual logs/graphs match;901 prior scientific/history/review/page
+    blobs are unchanged. No post-render record REVIEW history is added.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-authorities
+  - e-bridge
+  - e-gates
+  - e-console
+  - e-graph
+  - e-current
+findings:
+- finding_id: f-desc-assay-figure-locators
+  issue_key: desferrioxamine-b-desc-assay-figure-locators
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: DesC assay figure locators corrected to original Figure4 panelsa/b
+  description: The initial source-locator defect was confined to two edge-local figure
+    fragments. The corrected record now separately identifies exact Figure4 panela
+    for succinyl activity and panelb for acetyl activity, Results2(a) and corresponding
+    official SI assay sections. All scientific claims and the full pathway are unchanged.
+  target_ids:
+  - MetaCyc:PWY-6376
+  field_paths:
+  - mechanistic_edges[id="dfoB-edge-029"].evidence[1].source_locator
+  - mechanistic_edges[id="dfoB-edge-030"].evidence[1].source_locator
+  evidence_ids:
+  - e-initial
+  - e-primary
+  - e-correction
+  - e-acceptance
+  - e-current
+  - e-gates
+  rule_id: docs/CAUSAL_GRAPHS.md edge-local source assertion and locator scope
+  native_severity: minor provenance-locator defect
+  normalization_reason: Both activity assertions are supported by the correctly cited
+    Results section and separate original supplement. The wrong figure fragment does
+    not change chemical or catalyst identity.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    role: maintained_scientific_source
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/381
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T121520Z-desferrioxamine-b-initial-independent-review
+    finding_id: f-desc-assay-figure-locators
+  disposition_reason: Independent original Figure4/Results/SI reassessment supports
+    the exact two corrected selectors. Full parsed-record comparison finds no other
+    delta; original inputs remain preserved. The source guard passes corrected bytes
+    and genuinely rejects the archived defective target; independent KGX comparison
+    preserves all chemistry and edge evidence except those locator strings. Current
+    merged-base/authority/input checks and all seven actual integrated gates passed,
+    including1131tests with3skips. This resolves only the proven minor locator issue
+    and preserves scientific qualifications.
+actions: []
+limitations:
+- Complete five native transformations; no substitution with ferric uptake or desferrioxamine
+  E synthesis.
+- DesB is proposed for coelicolor; the native generic donor classes do not specify
+  NADPH/NADH, and S.sviceus data are not direct target evidence.
+- DesA primary evidence is abstract-limited; current PLP/FAD edges are automatic inference.
+- M145-derived DesC supports both acylations and preparation-specific monomeric behavior,
+  without exact full construct equality; 2023 DesABC sequence mismatches are preserved.
+- 595-aa ScDesD core is exact; native dimer evidence and B-product assays remain separately
+  attributed.
+- Terminal twoATP is a model-supported net for two ligations, not measured coupling;
+  original native oneATP/water equation remains an explicit conflict.
+- All20 iModulon originals and exact four-locus module35/57 membership are computational
+  context; null-regulator query parser failures preserved.
+- Local required gates were executed by root and independently checked through actual
+  terminal receipts, original logs, hashes and unchanged input proofs; no duplicate
+  full-suite execution is claimed.
+- Programmatic SVG/KGX verification does not establish browser appearance or live
+  publication. Remote review/merge/deployment of this DFO addition remains separate.
+- Historical author dossiers remain immutable at the original f9bb3586 record hash;
+  current approval relies on proven two-locator-only correction and successor receipts,
+  not silently rewritten historical results.
+notes:
+- Earlier external scientific preflight began11:55:29Z and finished12:03:12Z; initial
+  canonical review121520Z and correction acceptance were read in full and re-used
+  only with unchanged source hashes. This final review has its own actual final inspection
+  and completion timestamps.
+- Generated context owners are the maintained target, declared corpus records, authority
+  configuration and the three captured pre-render history events; pages/downloads
+  were read and verified, never edited by this reviewer.
+- Independent final recheck first stopped before its output write on the historical
+  bridge README hash. Root confirmed final-check prose appended after the transition;
+  current README is not a formal input. The corrected reassessment distinguishes this
+  documented metadata update from unchanged scientific bytes and preserves both external
+  attempt logs.
+- No additional curation history is created by this review; all existing DFO record/history
+  events were present before full render.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/381
+```

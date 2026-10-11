@@ -1,0 +1,1236 @@
+id: MetaCyc:PWY-6376
+label: desferrioxamine B biosynthesis
+description: Complete five-transformation desferrioxamine B biosynthesis in Streptomyces coelicolor A3(2)/M145.
+  Lysine decarboxylation and cadaverine N-hydroxylation supply both the succinylated HSC and acetylated
+  HAC branches; DesD combines two HSC and one HAC in two successive ligations represented by one complete
+  net reaction. RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+  successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+  selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+  curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+  ratio. Native ionic compound identities preserve hydroxycadaverine(+1), HAC(+1), zwitterionic HSC and
+  B(+1); old neutral ChEBI cross-references are not treated as exact. The native reaction retains generic
+  reduced/oxidized electron-acceptor classes. It does not identify a specific physiological coelicolor
+  donor. The S. sviceus NADPH/NADH experiments and the sequence-unmatched 2023 DesABC preparation do not
+  establish donor specificity for this exact coelicolor protein. The coelicolor DesB activity remains
+  a proposed native assignment. Current automatic UniProt MbtG/MbtK function names conflict with native/experimental
+  DesB/DesC roles and are not adopted. PLP and FAD cofactor edges preserve current automatic inference
+  rather than direct binding measurements on the selected proteins. Direct DesA evidence is abstract-limited;
+  the M145-derived DesC preparation supports both acylations and monomeric behavior, but the complete
+  construct sequence is not verified. The 2023 DesABC construct sequences differ from current coelicolor
+  entries and are not transferred. In contrast, the coelicolor DesD native core is sequence-verified against
+  the 2022 construct reused in 2023; the source-defined dimer is retained. Primary model details, physiological
+  precursor-pool control, exact donor specificity and assembly outside the measured preparations remain
+  limited. E synthesis/cyclization, ferric loading, uptake, longer-chain congeners and hypothetical DesG/DesH
+  tailoring lie outside the complete B boundary.
+pathway_type: desferrioxamine-b-biosynthesis
+taxa:
+- id: NCBITaxon:100226
+  label: Streptomyces coelicolor A3(2)
+participants:
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:32551
+  label: L-lysinium(1+)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:57292
+  label: succinyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: CHEBI:58384
+  label: cadaverine(2+)
+  category: small_molecule
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
+- id: MetaCyc:Acceptor
+  label: an oxidized electron acceptor
+  category: chemical_entity
+- id: MetaCyc:CPD-11953
+  label: N-hydroxycadaverine
+  category: small_molecule
+- id: MetaCyc:CPD-11955
+  label: N-hydroxy-N-succinylcadaverine
+  category: small_molecule
+- id: MetaCyc:CPD-11959
+  label: N-hydroxy-N-acetylcadaverine
+  category: small_molecule
+- id: MetaCyc:CPD-3764
+  label: desferrioxamine B
+  category: small_molecule
+- id: MetaCyc:Donor-H2
+  label: a reduced electron acceptor
+  category: chemical_entity
+- id: MetaCyc:SCO2782-MONOMER
+  label: lysine decarboxylase
+  category: protein
+- id: MetaCyc:SCO2783-MONOMER
+  label: cadaverine hydroxylase
+  category: protein
+- id: MetaCyc:SCO2784-MONOMER
+  label: hydroxycadaverine acyl transferase
+  category: protein
+- id: MetaCyc:SCO2785-MONOMER
+  label: desferrioxamine E synthetase monomer
+  category: protein
+- id: MetaCyc:CPLX-7949
+  label: desferrioxamine E synthetase
+  category: complex
+reactions:
+- id: MetaCyc:LYSDECARBOX-RXN
+  label: L-lysine decarboxylation
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN-10995
+  label: Cadaverine N-hydroxylation with native generic redox partners
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN-10996
+  label: N-Hydroxycadaverine succinylation
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN-10999
+  label: N-Hydroxycadaverine acetylation
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN-11001
+  label: 'DesD iterative B assembly: primary-supported two-ATP net'
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: dfoB-edge-001
+  subject: CHEBI:15378
+  predicate: consumes
+  object: MetaCyc:LYSDECARBOX-RXN
+  evidence:
+  - reference_id: MetaCyc:LYSDECARBOX-RXN
+    source_assertion: The native left side assigns PROTON with coefficient 1.
+    source_locator: Reaction[@frameid="LYSDECARBOX-RXN"]/left[Compound/@frameid="PROTON"]; coefficient
+      (absent means 1)
+  - reference_id: MetaCyc:PROTON
+    source_assertion: The source PROTON CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="PROTON"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:15378 independently has the same full InChI as native PROTON, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:15378",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-002
+  subject: CHEBI:32551
+  predicate: consumes
+  object: MetaCyc:LYSDECARBOX-RXN
+  evidence:
+  - reference_id: MetaCyc:LYSDECARBOX-RXN
+    source_assertion: The native left side assigns LYS with coefficient 1.
+    source_locator: Reaction[@frameid="LYSDECARBOX-RXN"]/left[Compound/@frameid="LYS"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:LYS
+    source_assertion: The source LYS CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="LYS"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:32551 independently has the same full InChI as native LYS, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:32551",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-003
+  subject: MetaCyc:LYSDECARBOX-RXN
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: MetaCyc:LYSDECARBOX-RXN
+    source_assertion: The native right side assigns CARBON-DIOXIDE with coefficient 1.
+    source_locator: Reaction[@frameid="LYSDECARBOX-RXN"]/right[Compound/@frameid="CARBON-DIOXIDE"]; coefficient
+      (absent means 1)
+  - reference_id: MetaCyc:CARBON-DIOXIDE
+    source_assertion: The source CARBON-DIOXIDE CML structure and InChI specify the selected chemical
+      charge and stereochemical form.
+    source_locator: Compound[@frameid="CARBON-DIOXIDE"]/cml/molecule/@formalCharge; cml/molecule/formula;
+      inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:16526 independently has the same full InChI as native CARBON-DIOXIDE, including
+      charge and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:16526",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-004
+  subject: MetaCyc:LYSDECARBOX-RXN
+  predicate: produces
+  object: CHEBI:58384
+  evidence:
+  - reference_id: MetaCyc:LYSDECARBOX-RXN
+    source_assertion: The native right side assigns CADAVERINE with coefficient 1.
+    source_locator: Reaction[@frameid="LYSDECARBOX-RXN"]/right[Compound/@frameid="CADAVERINE"]; coefficient
+      (absent means 1)
+  - reference_id: MetaCyc:CADAVERINE
+    source_assertion: The source CADAVERINE CML structure and InChI specify the selected chemical charge
+      and stereochemical form.
+    source_locator: Compound[@frameid="CADAVERINE"]/cml/molecule/@formalCharge; cml/molecule/formula;
+      inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:58384 independently has the same full InChI as native CADAVERINE, including
+      charge and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:58384",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-005
+  subject: CHEBI:58384
+  predicate: consumes
+  object: MetaCyc:RXN-10995
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native left side assigns CADAVERINE with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/left[Compound/@frameid="CADAVERINE"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CADAVERINE
+    source_assertion: The source CADAVERINE CML structure and InChI specify the selected chemical charge
+      and stereochemical form.
+    source_locator: Compound[@frameid="CADAVERINE"]/cml/molecule/@formalCharge; cml/molecule/formula;
+      inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:58384 independently has the same full InChI as native CADAVERINE, including
+      charge and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:58384",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-006
+  subject: CHEBI:15379
+  predicate: consumes
+  object: MetaCyc:RXN-10995
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native left side assigns OXYGEN-MOLECULE with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/left[Compound/@frameid="OXYGEN-MOLECULE"]; coefficient
+      (absent means 1)
+  - reference_id: MetaCyc:OXYGEN-MOLECULE
+    source_assertion: The source OXYGEN-MOLECULE CML structure and InChI specify the selected chemical
+      charge and stereochemical form.
+    source_locator: Compound[@frameid="OXYGEN-MOLECULE"]/cml/molecule/@formalCharge; cml/molecule/formula;
+      inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:15379 independently has the same full InChI as native OXYGEN-MOLECULE, including
+      charge and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:15379",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-007
+  subject: MetaCyc:Donor-H2
+  predicate: consumes
+  object: MetaCyc:RXN-10995
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native left side assigns Donor-H2 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/left[Compound/@frameid="Donor-H2"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:Donor-H2
+    source_assertion: This native object denotes a generic electron-acceptor redox class rather than a
+      specific flavin, nicotinamide donor or physiological partner.
+    source_locator: Compound/common-name; parent; comment; dblink
+  description: The native reaction retains generic reduced/oxidized electron-acceptor classes. It does
+    not identify a specific physiological coelicolor donor. The S. sviceus NADPH/NADH experiments and
+    the sequence-unmatched 2023 DesABC preparation do not establish donor specificity for this exact coelicolor
+    protein.
+- id: dfoB-edge-008
+  subject: MetaCyc:RXN-10995
+  predicate: produces
+  object: MetaCyc:CPD-11953
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native right side assigns CPD-11953 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/right[Compound/@frameid="CPD-11953"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CPD-11953
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11953"]/cml/molecule; inchi; dblink
+- id: dfoB-edge-009
+  subject: MetaCyc:RXN-10995
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native right side assigns WATER with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/right[Compound/@frameid="WATER"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:WATER
+    source_assertion: The source WATER CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="WATER"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:15377 independently has the same full InChI as native WATER, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:15377",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-010
+  subject: MetaCyc:RXN-10995
+  predicate: produces
+  object: MetaCyc:Acceptor
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native right side assigns Acceptor with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/right[Compound/@frameid="Acceptor"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:Acceptor
+    source_assertion: This native object denotes a generic electron-acceptor redox class rather than a
+      specific flavin, nicotinamide donor or physiological partner.
+    source_locator: Compound/common-name; parent; comment; dblink
+  description: The native reaction retains generic reduced/oxidized electron-acceptor classes. It does
+    not identify a specific physiological coelicolor donor. The S. sviceus NADPH/NADH experiments and
+    the sequence-unmatched 2023 DesABC preparation do not establish donor specificity for this exact coelicolor
+    protein.
+- id: dfoB-edge-011
+  subject: MetaCyc:RXN-10995
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: The native right side assigns PROTON with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10995"]/right[Compound/@frameid="PROTON"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:PROTON
+    source_assertion: The source PROTON CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="PROTON"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:15378 independently has the same full InChI as native PROTON, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:15378",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-012
+  subject: MetaCyc:CPD-11953
+  predicate: consumes
+  object: MetaCyc:RXN-10996
+  evidence:
+  - reference_id: MetaCyc:RXN-10996
+    source_assertion: The native left side assigns CPD-11953 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10996"]/left[Compound/@frameid="CPD-11953"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CPD-11953
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11953"]/cml/molecule; inchi; dblink
+- id: dfoB-edge-013
+  subject: CHEBI:57292
+  predicate: consumes
+  object: MetaCyc:RXN-10996
+  evidence:
+  - reference_id: MetaCyc:RXN-10996
+    source_assertion: The native left side assigns SUC-COA with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10996"]/left[Compound/@frameid="SUC-COA"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:SUC-COA
+    source_assertion: The source SUC-COA CML structure and InChI specify the selected chemical charge
+      and stereochemical form.
+    source_locator: Compound[@frameid="SUC-COA"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:57292 independently has the same full InChI as native SUC-COA, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:57292",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-014
+  subject: MetaCyc:RXN-10996
+  predicate: produces
+  object: MetaCyc:CPD-11955
+  evidence:
+  - reference_id: MetaCyc:RXN-10996
+    source_assertion: The native right side assigns CPD-11955 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10996"]/right[Compound/@frameid="CPD-11955"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CPD-11955
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11955"]/cml/molecule; inchi; dblink
+- id: dfoB-edge-015
+  subject: MetaCyc:RXN-10996
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: MetaCyc:RXN-10996
+    source_assertion: The native right side assigns CO-A with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10996"]/right[Compound/@frameid="CO-A"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CO-A
+    source_assertion: The source CO-A CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="CO-A"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:57287 independently has the same full InChI as native CO-A, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:57287",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-016
+  subject: MetaCyc:CPD-11953
+  predicate: consumes
+  object: MetaCyc:RXN-10999
+  evidence:
+  - reference_id: MetaCyc:RXN-10999
+    source_assertion: The native left side assigns CPD-11953 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10999"]/left[Compound/@frameid="CPD-11953"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CPD-11953
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11953"]/cml/molecule; inchi; dblink
+- id: dfoB-edge-017
+  subject: CHEBI:57288
+  predicate: consumes
+  object: MetaCyc:RXN-10999
+  evidence:
+  - reference_id: MetaCyc:RXN-10999
+    source_assertion: The native left side assigns ACETYL-COA with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10999"]/left[Compound/@frameid="ACETYL-COA"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:ACETYL-COA
+    source_assertion: The source ACETYL-COA CML structure and InChI specify the selected chemical charge
+      and stereochemical form.
+    source_locator: Compound[@frameid="ACETYL-COA"]/cml/molecule/@formalCharge; cml/molecule/formula;
+      inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:57288 independently has the same full InChI as native ACETYL-COA, including
+      charge and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:57288",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-018
+  subject: MetaCyc:RXN-10999
+  predicate: produces
+  object: MetaCyc:CPD-11959
+  evidence:
+  - reference_id: MetaCyc:RXN-10999
+    source_assertion: The native right side assigns CPD-11959 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10999"]/right[Compound/@frameid="CPD-11959"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CPD-11959
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11959"]/cml/molecule; inchi; dblink
+- id: dfoB-edge-019
+  subject: MetaCyc:RXN-10999
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: MetaCyc:RXN-10999
+    source_assertion: The native right side assigns CO-A with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-10999"]/right[Compound/@frameid="CO-A"]; coefficient (absent
+      means 1)
+  - reference_id: MetaCyc:CO-A
+    source_assertion: The source CO-A CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="CO-A"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:57287 independently has the same full InChI as native CO-A, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:57287",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+- id: dfoB-edge-020
+  subject: MetaCyc:CPD-11955
+  predicate: consumes
+  object: MetaCyc:RXN-11001
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native left side assigns CPD-11955 with coefficient 2.
+    source_locator: Reaction[@frameid="RXN-11001"]/left[Compound/@frameid="CPD-11955"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net left coefficient for CPD-11955 is
+      2.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:CPD-11955
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11955"]/cml/molecule; inchi; dblink
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-021
+  subject: MetaCyc:CPD-11959
+  predicate: consumes
+  object: MetaCyc:RXN-11001
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native left side assigns CPD-11959 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-11001"]/left[Compound/@frameid="CPD-11959"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net left coefficient for CPD-11959 is
+      1.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:CPD-11959
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-11959"]/cml/molecule; inchi; dblink
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-022
+  subject: CHEBI:30616
+  predicate: consumes
+  object: MetaCyc:RXN-11001
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native left side assigns ATP with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-11001"]/left[Compound/@frameid="ATP"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net left coefficient for ATP is 2.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:ATP
+    source_assertion: The source ATP CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="ATP"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:30616 independently has the same full InChI as native ATP, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:30616",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-023
+  subject: MetaCyc:RXN-11001
+  predicate: produces
+  object: MetaCyc:CPD-3764
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native right side assigns CPD-3764 with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-11001"]/right[Compound/@frameid="CPD-3764"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net right coefficient for CPD-3764 is
+      1.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:CPD-3764
+    source_assertion: The independently issued native compound preserves its CML structure and ionic form;
+      stale external chemical cross-references are not treated as exact equivalence.
+    source_locator: Compound[@frameid="CPD-3764"]/cml/molecule; inchi; dblink
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-024
+  subject: MetaCyc:RXN-11001
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native right side assigns AMP with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-11001"]/right[Compound/@frameid="AMP"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net right coefficient for AMP is 2.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:AMP
+    source_assertion: The source AMP CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="AMP"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:456215 independently has the same full InChI as native AMP, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:456215",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-025
+  subject: MetaCyc:RXN-11001
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native right side assigns PPI with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-11001"]/right[Compound/@frameid="PPI"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net right coefficient for PPI is 2.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:PPI
+    source_assertion: The source PPI CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="PPI"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:33019 independently has the same full InChI as native PPI, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:33019",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-026
+  subject: MetaCyc:RXN-11001
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: The native right side assigns PROTON with coefficient 1.
+    source_locator: Reaction[@frameid="RXN-11001"]/right[Compound/@frameid="PROTON"]; coefficient (absent
+      means 1)
+  - reference_id: PMID:37207292
+    source_assertion: The complete organic assembly combines two HSC and one HAC. Figure 4 uses two successive
+      ATP-dependent adenylation/condensation cycles; the curated net right coefficient for PROTON is 2.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results/discussion pp.3–5
+  - reference_id: PMID:42630954
+    source_assertion: The updated model describes formation of HSC-HSC-AMP after the first condensation,
+      followed by HAC capping to form B; the co-substrate coefficients are derived from two cycles, not
+      a measured coupling ratio.
+    source_locator: PMC13495013 body/sec[@id="sec1"]/p[3]; body/sec[@id="sec3"]/p[5]
+  - reference_id: MetaCyc:PROTON
+    source_assertion: The source PROTON CML structure and InChI specify the selected chemical charge and
+      stereochemical form.
+    source_locator: Compound[@frameid="PROTON"]/cml/molecule/@formalCharge; cml/molecule/formula; inchi
+  - reference_id: CHEBI:30616
+    source_assertion: CHEBI:15378 independently has the same full InChI as native PROTON, including charge
+      and any specified stereochemistry.
+    source_locator: statements[subject="CHEBI:15378",predicate="chemrof:inchi_string"]; chemrof:generalized_empirical_formula;
+      chemrof:charge
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-027
+  subject: MetaCyc:SCO2782-MONOMER
+  predicate: enables
+  object: MetaCyc:LYSDECARBOX-RXN
+  evidence:
+  - reference_id: MetaCyc:SCO2782-MONOMER
+    source_assertion: The native SCO2782/desA object identifies lysine decarboxylase in coelicolor A3(2);
+      deletion and whole-cluster complementation support pathway involvement.
+    source_locator: Protein/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN-17211"]; gene; comment
+  - reference_id: PMID:22906379
+    source_assertion: The original abstract directly reports that S. coelicolor desA encodes a lysine
+      decarboxylase, distinct from the formerly predicted diaminobutyrate activity.
+    source_locator: PubmedArticle/MedlineCitation/Article/Abstract
+  description: DesA gene-product activity is supported by the original coelicolor biochemical abstract
+    and native annotation. Whole-cluster complementation is not proof of isolated monomer sufficiency;
+    the original 2012 full methods were not inspected.
+- id: dfoB-edge-028
+  subject: MetaCyc:SCO2783-MONOMER
+  predicate: enables
+  object: MetaCyc:RXN-10995
+  evidence:
+  - reference_id: MetaCyc:SCO2783-MONOMER
+    source_assertion: SCO2783/desB is natively assigned the proposed cadaverine-hydroxylase step; the
+      comment explicitly states that this coelicolor protein had not been purified or biochemically characterized.
+    source_locator: Protein/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN-17212"]; gene; comment
+  - reference_id: PMID:33784308
+    source_assertion: The directly characterized enzyme is S. sviceus SSEG_08523, expressed with a His
+      tag. Its NADPH/NADH kinetics, FAD and tetramer observations are cross-species context, not direct
+      coelicolor evidence.
+    source_locator: PMC8009421 Methods/sec[@id="sec003"]/p[1]; cloning sec[@id="sec011"]/p[1]; Results
+      and Discussion
+  - reference_id: UniProtKB:Q9L071
+    source_assertion: The current entry explicitly cross-identifies SCO2783/desB but automatically assigns
+      MbtG lysine-hydroxylase function. That substrate/function transfer is not adopted for this native
+      cadaverine pathway.
+    source_locator: results[primaryAccession="Q9L071"]/genes; proteinDescription; comments[commentType="CATALYTIC
+      ACTIVITY"]; evidence ECO:0000256
+  description: This enables relation preserves a proposed native coelicolor gene-product assignment, not
+    an experimentally established isolated activity. The native reaction retains generic reduced/oxidized
+    electron-acceptor classes. It does not identify a specific physiological coelicolor donor. The S.
+    sviceus NADPH/NADH experiments and the sequence-unmatched 2023 DesABC preparation do not establish
+    donor specificity for this exact coelicolor protein.
+- id: dfoB-edge-029
+  subject: MetaCyc:SCO2784-MONOMER
+  predicate: enables
+  object: MetaCyc:RXN-10996
+  evidence:
+  - reference_id: MetaCyc:SCO2784-MONOMER
+    source_assertion: The native object identifies SCO2784/desC and UniProt Q9L070; its old uncharacterized
+      annotation predates the direct 2018 DesC experiments.
+    source_locator: Protein/gene; dblink[dblink-db="UNIPROT"]; comment
+  - reference_id: PMID:29685972
+    source_assertion: Purified tagged DesC from coelicolor catalyzed N-hydroxycadaverine acylation with
+      succinyl-CoA, giving the corresponding authentic-standard-matched product and CoA.
+    source_locator: PMC5915712 section[@id="s2a"] (Results and discussion §2(a)); figure[@id="RSTB20170068F4"] panel a; separately cited original supplement §1.6.1 and §1.7
+  - reference_id: DOI:10.6084/m9.figshare.5965882.v2
+    source_assertion: The gene was cloned from S. coelicolor M145 genomic DNA. Section 1.6.1 reports the
+      succinyl-CoA assay and authentic-standard LC-MS/MS comparison; section1.7 supports CoA formation.
+    source_locator: Original DOC §1.3; §1.6.1; §1.7
+  - reference_id: UniProtKB:Q9L070
+    source_assertion: Q9L070 cross-identifies SCO2784/desC but its automatic MbtK/mycobactin assignment
+      conflicts with the directly measured cadaverine acylation and is not used as pathway evidence.
+    source_locator: results[primaryAccession="Q9L070"]/genes; proteinDescription; comments[commentType="FUNCTION"]
+  description: Directly tested in a M145-derived N-terminal His6 preparation. Gel filtration supports
+    a monomer for that preparation, not all conditions. The published primers and locus bridge are preserved;
+    the supplement’s 517-bp gene length differs from the current full entry, so exact complete construct
+    equality is not asserted.
+- id: dfoB-edge-030
+  subject: MetaCyc:SCO2784-MONOMER
+  predicate: enables
+  object: MetaCyc:RXN-10999
+  evidence:
+  - reference_id: MetaCyc:SCO2784-MONOMER
+    source_assertion: The native object identifies SCO2784/desC and UniProt Q9L070; its old uncharacterized
+      annotation predates the direct 2018 DesC experiments.
+    source_locator: Protein/gene; dblink[dblink-db="UNIPROT"]; comment
+  - reference_id: PMID:29685972
+    source_assertion: Purified tagged DesC from coelicolor catalyzed N-hydroxycadaverine acylation with
+      acetyl-CoA, giving the corresponding authentic-standard-matched product and CoA.
+    source_locator: PMC5915712 section[@id="s2a"] (Results and discussion §2(a)); figure[@id="RSTB20170068F4"] panel b; separately cited original supplement §1.6.2 and §1.7
+  - reference_id: DOI:10.6084/m9.figshare.5965882.v2
+    source_assertion: The gene was cloned from S. coelicolor M145 genomic DNA. Section 1.6.2 reports the
+      acetyl-CoA assay and authentic-standard LC-MS/MS comparison; section1.7 supports CoA formation.
+    source_locator: Original DOC §1.3; §1.6.2; §1.7
+  - reference_id: UniProtKB:Q9L070
+    source_assertion: Q9L070 cross-identifies SCO2784/desC but its automatic MbtK/mycobactin assignment
+      conflicts with the directly measured cadaverine acylation and is not used as pathway evidence.
+    source_locator: results[primaryAccession="Q9L070"]/genes; proteinDescription; comments[commentType="FUNCTION"]
+  description: Directly tested in a M145-derived N-terminal His6 preparation. Gel filtration supports
+    a monomer for that preparation, not all conditions. The published primers and locus bridge are preserved;
+    the supplement’s 517-bp gene length differs from the current full entry, so exact complete construct
+    equality is not asserted.
+- id: dfoB-edge-031
+  subject: MetaCyc:CPLX-7949
+  predicate: catalyzes
+  object: MetaCyc:RXN-11001
+  evidence:
+  - reference_id: MetaCyc:CPLX-7949
+    source_assertion: The native coelicolor DesD complex contains two SCO2785-MONOMER subunits and reports
+      dimeric recombinant enzyme; its canonical E-synthetase name does not limit the experimentally observed
+      substrate range.
+    source_locator: Protein/component[Protein/@frameid="SCO2785-MONOMER"]/coefficient; species; comment
+  - reference_id: PMID:37207292
+    source_assertion: ScDesD catalyzed formation of B from HSC-HSC plus HAC. The tested HSC plus HSC-HAC
+      combination did not yield detectable B; the proposed cycle requires successive adenylations.
+    source_locator: Original author manuscript Figure 3 p.11; Figure 4 p.12; Results pp.2–4
+  - reference_id: DOI:10.1016/j.jbc.2022.102166
+    source_assertion: The coelicolor native DesD sequence in Table S7 and the native core of the His6
+      construct in Table S9 both exactly match current Q9L069 after removal of the explicitly supplied
+      tag.
+    source_locator: Original mmc1.pdf Table S7 p.S52; Table S9 p.S56; full native/construct sequence comparison
+  - reference_id: DOI:10.1021/acschembio.3c00167.s001
+    source_assertion: The DesD ortholog constructs were prepared as reported in the 2022 study; the B-product
+      assay used HSC-HSC plus HAC and ATP/Mg-containing buffer.
+    source_locator: Original supplement p.S7 Protein expression and purification; p.S8 Product formation
+      assay; Table S1 p.S10
+  description: Native coelicolor DesD homodimer with B-forming activity supported by the sequence-grounded
+    ScDesD preparation. Native assignment of dimeric assembly is separate from primary B-product measurement.
+    Assay MgATP does not alone justify an obligatory free-Mg cofactor edge. The cellular control favoring
+    B over G/E remains unresolved. RXN-11001 retains the source-issued complete organic transformation.
+    Primary-supported successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with
+    no net water in the selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water.
+    This is an explicit curated coefficient correction, not exact native-equation equivalence or a measured
+    ATP/product coupling ratio.
+- id: dfoB-edge-032
+  subject: MetaCyc:LYSDECARBOX-RXN
+  predicate: part_of
+  object: MetaCyc:PWY-6376
+  evidence:
+  - reference_id: MetaCyc:PWY-6376
+    source_assertion: The native full B pathway includes LYSDECARBOX-RXN and selects its L2R pathway layout.
+    source_locator: Pathway[@frameid="PWY-6376"]/reaction-list; reaction-layout[Reaction/@frameid="LYSDECARBOX-RXN"]/direction
+- id: dfoB-edge-033
+  subject: MetaCyc:RXN-10995
+  predicate: part_of
+  object: MetaCyc:PWY-6376
+  evidence:
+  - reference_id: MetaCyc:PWY-6376
+    source_assertion: The native full B pathway includes RXN-10995 and selects its L2R pathway layout.
+    source_locator: Pathway[@frameid="PWY-6376"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-10995"]/direction
+- id: dfoB-edge-034
+  subject: MetaCyc:RXN-10996
+  predicate: part_of
+  object: MetaCyc:PWY-6376
+  evidence:
+  - reference_id: MetaCyc:PWY-6376
+    source_assertion: The native full B pathway includes RXN-10996 and selects its L2R pathway layout.
+    source_locator: Pathway[@frameid="PWY-6376"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-10996"]/direction
+- id: dfoB-edge-035
+  subject: MetaCyc:RXN-10999
+  predicate: part_of
+  object: MetaCyc:PWY-6376
+  evidence:
+  - reference_id: MetaCyc:PWY-6376
+    source_assertion: The native full B pathway includes RXN-10999 and selects its L2R pathway layout.
+    source_locator: Pathway[@frameid="PWY-6376"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-10999"]/direction
+- id: dfoB-edge-036
+  subject: MetaCyc:RXN-11001
+  predicate: part_of
+  object: MetaCyc:PWY-6376
+  evidence:
+  - reference_id: MetaCyc:PWY-6376
+    source_assertion: The native full B pathway includes RXN-11001 and selects its L2R pathway layout.
+    source_locator: Pathway[@frameid="PWY-6376"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-11001"]/direction
+  description: RXN-11001 retains the source-issued complete organic transformation. Primary-supported
+    successive adenylations imply two ATP, two AMP, two diphosphate and two H+ with no net water in the
+    selected ionic forms. Native MetaCyc and KEGG instead encode one ATP and water. This is an explicit
+    curated coefficient correction, not exact native-equation equivalence or a measured ATP/product coupling
+    ratio.
+- id: dfoB-edge-037
+  subject: MetaCyc:LYSDECARBOX-RXN
+  predicate: provides_input_for
+  object: MetaCyc:RXN-10995
+  evidence:
+  - reference_id: MetaCyc:LYSDECARBOX-RXN
+    source_assertion: LYSDECARBOX-RXN produces native CADAVERINE, which supplies the connected transformation.
+    source_locator: Reaction/right[Compound/@frameid="CADAVERINE"]
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: RXN-10995 consumes the same native CADAVERINE.
+    source_locator: Reaction/left[Compound/@frameid="CADAVERINE"]; coefficient
+- id: dfoB-edge-038
+  subject: MetaCyc:RXN-10995
+  predicate: provides_input_for
+  object: MetaCyc:RXN-10996
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: RXN-10995 produces native CPD-11953, which supplies the connected transformation.
+    source_locator: Reaction/right[Compound/@frameid="CPD-11953"]
+  - reference_id: MetaCyc:RXN-10996
+    source_assertion: RXN-10996 consumes the same native CPD-11953.
+    source_locator: Reaction/left[Compound/@frameid="CPD-11953"]; coefficient
+- id: dfoB-edge-039
+  subject: MetaCyc:RXN-10995
+  predicate: provides_input_for
+  object: MetaCyc:RXN-10999
+  evidence:
+  - reference_id: MetaCyc:RXN-10995
+    source_assertion: RXN-10995 produces native CPD-11953, which supplies the connected transformation.
+    source_locator: Reaction/right[Compound/@frameid="CPD-11953"]
+  - reference_id: MetaCyc:RXN-10999
+    source_assertion: RXN-10999 consumes the same native CPD-11953.
+    source_locator: Reaction/left[Compound/@frameid="CPD-11953"]; coefficient
+- id: dfoB-edge-040
+  subject: MetaCyc:RXN-10996
+  predicate: provides_input_for
+  object: MetaCyc:RXN-11001
+  evidence:
+  - reference_id: MetaCyc:RXN-10996
+    source_assertion: RXN-10996 produces native CPD-11955, which supplies the connected transformation.
+    source_locator: Reaction/right[Compound/@frameid="CPD-11955"]
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: RXN-11001 consumes the same native CPD-11955; two HSC and one HAC are required per
+      B product.
+    source_locator: Reaction/left[Compound/@frameid="CPD-11955"]; coefficient
+  description: The upstream decarboxylation and hydroxylation operate three times, the succinyl branch
+    twice and the acetyl branch once per B product.
+- id: dfoB-edge-041
+  subject: MetaCyc:RXN-10999
+  predicate: provides_input_for
+  object: MetaCyc:RXN-11001
+  evidence:
+  - reference_id: MetaCyc:RXN-10999
+    source_assertion: RXN-10999 produces native CPD-11959, which supplies the connected transformation.
+    source_locator: Reaction/right[Compound/@frameid="CPD-11959"]
+  - reference_id: MetaCyc:RXN-11001
+    source_assertion: RXN-11001 consumes the same native CPD-11959; two HSC and one HAC are required per
+      B product.
+    source_locator: Reaction/left[Compound/@frameid="CPD-11959"]; coefficient
+  description: The upstream decarboxylation and hydroxylation operate three times, the succinyl branch
+    twice and the acetyl branch once per B product.
+- id: dfoB-edge-042
+  subject: MetaCyc:SCO2785-MONOMER
+  predicate: part_of
+  object: MetaCyc:CPLX-7949
+  evidence:
+  - reference_id: MetaCyc:CPLX-7949
+    source_assertion: The native physical DesD complex explicitly contains two copies of SCO2785-MONOMER.
+    source_locator: Protein/component[Protein/@frameid="SCO2785-MONOMER"]/coefficient
+  description: Two-subunit source stoichiometry; membership does not make each monomer an independent
+    catalyst.
+- id: dfoB-edge-043
+  subject: MetaCyc:SCO2782-MONOMER
+  predicate: part_of
+  object: NCBITaxon:100226
+  evidence:
+  - reference_id: MetaCyc:SCO2782-MONOMER
+    source_assertion: The native protein species object identifies coelicolor A3(2), taxon100226, and
+      its own gene locus.
+    source_locator: Protein/species/Organism[@frameid="TAX-100226"]; gene
+  - reference_id: UniProtKB:Q9L072
+    source_assertion: The current entry cross-identifies desA/SCO2782 and taxon100226; automatic activity
+      annotations are separately adjudicated.
+    source_locator: results[primaryAccession="Q9L072"]/organism/taxonId; genes
+- id: dfoB-edge-044
+  subject: MetaCyc:SCO2783-MONOMER
+  predicate: part_of
+  object: NCBITaxon:100226
+  evidence:
+  - reference_id: MetaCyc:SCO2783-MONOMER
+    source_assertion: The native protein species object identifies coelicolor A3(2), taxon100226, and
+      its own gene locus.
+    source_locator: Protein/species/Organism[@frameid="TAX-100226"]; gene
+  - reference_id: UniProtKB:Q9L071
+    source_assertion: The current entry cross-identifies desB/SCO2783 and taxon100226; automatic activity
+      annotations are separately adjudicated.
+    source_locator: results[primaryAccession="Q9L071"]/organism/taxonId; genes
+- id: dfoB-edge-045
+  subject: MetaCyc:SCO2784-MONOMER
+  predicate: part_of
+  object: NCBITaxon:100226
+  evidence:
+  - reference_id: MetaCyc:SCO2784-MONOMER
+    source_assertion: The native protein species object identifies coelicolor A3(2), taxon100226, and
+      its own gene locus.
+    source_locator: Protein/species/Organism[@frameid="TAX-100226"]; gene
+  - reference_id: UniProtKB:Q9L070
+    source_assertion: The current entry cross-identifies desC/SCO2784 and taxon100226; automatic activity
+      annotations are separately adjudicated.
+    source_locator: results[primaryAccession="Q9L070"]/organism/taxonId; genes
+- id: dfoB-edge-046
+  subject: MetaCyc:SCO2785-MONOMER
+  predicate: part_of
+  object: NCBITaxon:100226
+  evidence:
+  - reference_id: MetaCyc:SCO2785-MONOMER
+    source_assertion: The native protein species object identifies coelicolor A3(2), taxon100226, and
+      its own gene locus.
+    source_locator: Protein/species/Organism[@frameid="TAX-100226"]; gene
+  - reference_id: UniProtKB:Q9L069
+    source_assertion: The current entry cross-identifies desD/SCO2785 and taxon100226; automatic activity
+      annotations are separately adjudicated.
+    source_locator: results[primaryAccession="Q9L069"]/organism/taxonId; genes
+- id: dfoB-edge-047
+  subject: MetaCyc:CPLX-7949
+  predicate: part_of
+  object: NCBITaxon:100226
+  evidence:
+  - reference_id: MetaCyc:CPLX-7949
+    source_assertion: The native complex belongs to coelicolor A3(2), with an explicit taxon100226 cross-reference.
+    source_locator: Protein/species/Organism/dblink[dblink-db="NCBI-TAXONOMY-DB"]/dblink-oid
+- id: dfoB-edge-048
+  subject: MetaCyc:PWY-6376
+  predicate: part_of
+  object: NCBITaxon:100226
+  evidence:
+  - reference_id: PMID:29685972
+    source_assertion: The introduction identifies coelicolor A3(2) as producing B and E; experiments and
+      supplement establish the M145 DesC precursor branches.
+    source_locator: PMC5915712 Introduction §1; Results §2(a); Figure 3
+  - reference_id: PMID:37207292
+    source_assertion: ScDesD forms the B product from HSC-HSC and HAC in the purified-enzyme assay. The
+      coelicolor implementation retains a proposed native DesB assignment.
+    source_locator: Original manuscript Figure 3 p.11; coelicolor ortholog scope pp.2–3
+  - reference_id: NCBITaxon:100226
+    source_assertion: NCBI Taxonomy identifies the scoped organism as Streptomyces coelicolor A3(2).
+    source_locator: TaxaSet/Taxon/TaxId; ScientificName
+- id: dfoB-edge-049
+  subject: MetaCyc:SCO2782-MONOMER
+  predicate: has_cofactor
+  object: CHEBI:597326
+  evidence:
+  - reference_id: UniProtKB:Q9L072
+    source_assertion: The current unreviewed DesA entry explicitly assigns pyridoxal phosphate (CHEBI:597326)
+      by automatic annotation; this is not direct cofactor binding measured on the selected native protein.
+    source_locator: results[primaryAccession="Q9L072"]/comments[commentType="COFACTOR"]/cofactors; evidences
+  description: Source-scoped automatic cofactor assignment; the complete original 2012 biochemical methods
+    were not inspected.
+- id: dfoB-edge-050
+  subject: MetaCyc:SCO2783-MONOMER
+  predicate: has_cofactor
+  object: CHEBI:57692
+  evidence:
+  - reference_id: UniProtKB:Q9L071
+    source_assertion: The current unreviewed entry separately assigns FAD (CHEBI:57692) as cofactor by
+      ECO:0000256/ARBA00001974. This inferred binding assignment does not validate its conflicting MbtG
+      substrate annotation or identify the physiological reductant.
+    source_locator: results[primaryAccession="Q9L071"]/comments[commentType="COFACTOR"]/cofactors; evidences
+  - reference_id: MetaCyc:SCO2783-MONOMER
+    source_assertion: The native DesB comment identifies similarity to FAD-dependent amine monooxygenases
+      but states that this coelicolor protein was not purified or biochemically characterized.
+    source_locator: Protein/comment
+  description: Explicitly inferred FAD cofactor assignment; direct FAD experiments concern S. sviceus.
+    Bound flavin is not substituted for the generic exchanged redox classes.
+references:
+- id: MetaCyc:PWY-6376
+  title: MetaCyc 22.5 native PWY-6376
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-6376
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: dae85f1da639c7f6ea757c6f74a61499b117f7dd11aa30c4977612bbe6ae6299
+- id: MetaCyc:LYSDECARBOX-RXN
+  title: MetaCyc 22.5 native LYSDECARBOX-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:LYSDECARBOX-RXN
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: f124e4cd7163352a336b9dd574b84eb6792385b4274eb88eed549e8f397a7b85
+- id: MetaCyc:RXN-10995
+  title: MetaCyc 22.5 native RXN-10995
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-10995
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 755a35c3df4bd60be7b026bb92f95fc53473aa5c2baec77e1b9acb70060b71c2
+- id: MetaCyc:RXN-10996
+  title: MetaCyc 22.5 native RXN-10996
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-10996
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: d21cd0a6068731fca241a5729dbb74fc7e06faa504cc2b17f9d0a968c94dc6fa
+- id: MetaCyc:RXN-10999
+  title: MetaCyc 22.5 native RXN-10999
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-10999
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: c101e3b2d91dce9c0887c88c126048467e98d527635cebbedfef7777f7c66726
+- id: MetaCyc:RXN-11001
+  title: MetaCyc 22.5 native RXN-11001
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-11001
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 3a4abb007c7bb06ec55603c9e732cb1eb6540f31f828c98bdf1b78cdb62216e9
+- id: MetaCyc:LYS
+  title: MetaCyc 22.5 native LYS
+  url: https://pathway.yeastgenome.org/getxml?META:LYS
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 87090d8347b0a4e6753b8aa50f70c50c1881efc0f4d079e9472b3b7fd68122c4
+- id: MetaCyc:CADAVERINE
+  title: MetaCyc 22.5 native CADAVERINE
+  url: https://pathway.yeastgenome.org/getxml?META:CADAVERINE
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: e05947d9b4b1bdd3697a96b9740cb0dfd3b0b5f4271ceb3a0628a959a40ccbe2
+- id: MetaCyc:CARBON-DIOXIDE
+  title: MetaCyc 22.5 native CARBON-DIOXIDE
+  url: https://pathway.yeastgenome.org/getxml?META:CARBON-DIOXIDE
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: dee7bb381e506053f7e7560e66dd049cb5771f075fc8eb9a20479eed8f1eeb54
+- id: MetaCyc:PROTON
+  title: MetaCyc 22.5 native PROTON
+  url: https://pathway.yeastgenome.org/getxml?META:PROTON
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 2df2c98d80ad6c76b622e5ff6d31e50244f036b3ecb26f4a0b647cf195029eb7
+- id: MetaCyc:OXYGEN-MOLECULE
+  title: MetaCyc 22.5 native OXYGEN-MOLECULE
+  url: https://pathway.yeastgenome.org/getxml?META:OXYGEN-MOLECULE
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 1b33927a897ac326b7a788e5ff5df7490e8c73cb5e1690869353f154b0998a6f
+- id: MetaCyc:WATER
+  title: MetaCyc 22.5 native WATER
+  url: https://pathway.yeastgenome.org/getxml?META:WATER
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 47621552fb854daf04df0375c4540b0f42103652ec2d2a5f384ad06dead702e3
+- id: MetaCyc:ACETYL-COA
+  title: MetaCyc 22.5 native ACETYL-COA
+  url: https://pathway.yeastgenome.org/getxml?META:ACETYL-COA
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: eac54e35abb0efbcb4856ee6742432a838f9b11da0499221416c21885be898d5
+- id: MetaCyc:SUC-COA
+  title: MetaCyc 22.5 native SUC-COA
+  url: https://pathway.yeastgenome.org/getxml?META:SUC-COA
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 1fe54faca97094a0871c6d8ac554d62d5310f2942a774209b3c178cc57c74e20
+- id: MetaCyc:CO-A
+  title: MetaCyc 22.5 native CO-A
+  url: https://pathway.yeastgenome.org/getxml?META:CO-A
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: a3caac48cbbfe4de6d3156f81b553012a65605df6e3709f6812ab5835a533307
+- id: MetaCyc:ATP
+  title: MetaCyc 22.5 native ATP
+  url: https://pathway.yeastgenome.org/getxml?META:ATP
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: bb03bc7d49a62af159cb0563a5b5a58e655787bb44290cf682b4a723a2d93f50
+- id: MetaCyc:AMP
+  title: MetaCyc 22.5 native AMP
+  url: https://pathway.yeastgenome.org/getxml?META:AMP
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: f4de874fe3fd147827332ac5f9544e83b533d99e1141ba599a73ac9853f65a62
+- id: MetaCyc:PPI
+  title: MetaCyc 22.5 native PPI
+  url: https://pathway.yeastgenome.org/getxml?META:PPI
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 9e6257dbc2e18b5c475d4a546eef842e55dd1432dbdada4d0a88d22c381aede9
+- id: MetaCyc:CPD-11953
+  title: MetaCyc 22.5 native CPD-11953
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-11953
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 0c904cb264cfed4e678ec9a35545682ba6909fd6bb012fa197280989b42ccb6b
+- id: MetaCyc:CPD-11955
+  title: MetaCyc 22.5 native CPD-11955
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-11955
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 5197d2b33565fbf0f0628000ff0de41724b9c6f86cbc2cafb18ea00b99a370db
+- id: MetaCyc:CPD-11959
+  title: MetaCyc 22.5 native CPD-11959
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-11959
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 2580b0c693c72b08ce08856ba30800ef97a9a39862bf3a3bf2746d81bb2efaeb
+- id: MetaCyc:CPD-3764
+  title: MetaCyc 22.5 native CPD-3764
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-3764
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 0d03bd8aec8aedc34adf9ba87279d6570e323643275e51f1d3f27f9cf922de21
+- id: MetaCyc:Donor-H2
+  title: MetaCyc 22.5 native Donor-H2
+  url: https://pathway.yeastgenome.org/getxml?META:Donor-H2
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: a2cad5be6b6ec96bc2fabaa2d1d7fbcf0ef6549b846dce6870dd0879ac2e7bb9
+- id: MetaCyc:Acceptor
+  title: MetaCyc 22.5 native Acceptor
+  url: https://pathway.yeastgenome.org/getxml?META:Acceptor
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: ec1f3b9cc8b8fcc9615706ab317adc59d9117883ce6631a30b8c795f4a3fe19f
+- id: MetaCyc:SCO2782-MONOMER
+  title: MetaCyc 22.5 native SCO2782-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:SCO2782-MONOMER
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 6c1352618b665bc70876525504761b31c01cfc05f4d6491c5bf2f4a4185e3805
+- id: MetaCyc:SCO2783-MONOMER
+  title: MetaCyc 22.5 native SCO2783-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:SCO2783-MONOMER
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 753135fe55cddbc1749e9dd9499cb24ea379bd91121f6dbf2d38a605698cffea
+- id: MetaCyc:SCO2784-MONOMER
+  title: MetaCyc 22.5 native SCO2784-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:SCO2784-MONOMER
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 9856a1077ca516a7cfc5c7037e69cb261688ad16306ccc268b39496b2e572879
+- id: MetaCyc:SCO2785-MONOMER
+  title: MetaCyc 22.5 native SCO2785-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:SCO2785-MONOMER
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: ad17401f2ece0109f7a985dad3062cc9b1c6936eb337bd8d11ab630edd354df3
+- id: MetaCyc:CPLX-7949
+  title: MetaCyc 22.5 native CPLX-7949
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX-7949
+  source_version: MetaCyc 22.5 original XML; retrieved 2026-10-11
+  source_sha256: 33718d8536034939f699d545bd125cb8301455a9ec34799fb828d31b17a99e2e
+- id: UniProtKB:Q9L072
+  title: UniProtKB Q9L072 complete current native entry
+  url: https://rest.uniprot.org/uniprotkb/search?query=%28gene_exact%3AdesA+OR+gene_exact%3AdesB+OR+gene_exact%3AdesC+OR+gene_exact%3AdesD%29+AND+organism_id%3A100226&format=json&size=100
+  source_version: UniProtKB 2026_03; complete original four-entry search batch retrieved 2026-10-11; unreviewed
+    entries
+  source_sha256: 40f49d3bc21c6eb581891fae186b79c96851ed1a339c62bf418ebeba4c5f0905
+- id: UniProtKB:Q9L071
+  title: UniProtKB Q9L071 complete current native entry
+  url: https://rest.uniprot.org/uniprotkb/search?query=%28gene_exact%3AdesA+OR+gene_exact%3AdesB+OR+gene_exact%3AdesC+OR+gene_exact%3AdesD%29+AND+organism_id%3A100226&format=json&size=100
+  source_version: UniProtKB 2026_03; complete original four-entry search batch retrieved 2026-10-11; unreviewed
+    entries
+  source_sha256: 40f49d3bc21c6eb581891fae186b79c96851ed1a339c62bf418ebeba4c5f0905
+- id: UniProtKB:Q9L070
+  title: UniProtKB Q9L070 complete current native entry
+  url: https://rest.uniprot.org/uniprotkb/search?query=%28gene_exact%3AdesA+OR+gene_exact%3AdesB+OR+gene_exact%3AdesC+OR+gene_exact%3AdesD%29+AND+organism_id%3A100226&format=json&size=100
+  source_version: UniProtKB 2026_03; complete original four-entry search batch retrieved 2026-10-11; unreviewed
+    entries
+  source_sha256: 40f49d3bc21c6eb581891fae186b79c96851ed1a339c62bf418ebeba4c5f0905
+- id: UniProtKB:Q9L069
+  title: UniProtKB Q9L069 complete current native entry
+  url: https://rest.uniprot.org/uniprotkb/search?query=%28gene_exact%3AdesA+OR+gene_exact%3AdesB+OR+gene_exact%3AdesC+OR+gene_exact%3AdesD%29+AND+organism_id%3A100226&format=json&size=100
+  source_version: UniProtKB 2026_03; complete original four-entry search batch retrieved 2026-10-11; unreviewed
+    entries
+  source_sha256: 40f49d3bc21c6eb581891fae186b79c96851ed1a339c62bf418ebeba4c5f0905
+- id: NCBITaxon:100226
+  title: NCBI Taxonomy Streptomyces coelicolor A3(2)
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=100226&retmode=xml
+  source_version: NCBI Taxonomy original XML retrieved 2026-10-11
+  source_sha256: e812291698a51a1a856e65b17390b9dc3cc02a2ab0a3aa0eea231dd04ebb287e
+- id: CHEBI:30616
+  title: ChEBI exact chemical structures and ionic forms
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; hash covers the complete original uncompressed Semantic SQL database; selected
+    term locators identify each cited chemical
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: PMID:22906379
+  title: Evolution of a novel lysine decarboxylase in siderophore biosynthesis.
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=22906379&retmode=xml
+  source_version: Original PubMed indexed abstract only; retrieved 2026-10-11
+  source_sha256: 1aaa2e3574b41d9b21f9e629ecce18de0134b67f9474e8854a21ad5b7f96c048
+- id: PMID:29685972
+  title: 'Desferrioxamine biosynthesis: diverse hydroxamate assembly by substrate-tolerant acyl transferase
+    DesC'
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5915712/
+  source_version: Original full primary HTML retrieved 2026-10-11
+  source_sha256: 1bd6c3e3a9a9048f03545ede3a17af2a8de138f070acc00827cec61ac5d557f3
+- id: DOI:10.6084/m9.figshare.5965882.v2
+  title: 'Supplementary Material: Desferrioxamine biosynthesis: Diverse hydroxamate assembly by substrate-tolerant
+    acyl transferase DesC'
+  url: https://ndownloader.figshare.com/files/10912295
+  source_version: Original Royal Society Figshare version2 CDFV2 DOC; collection4027009/article5965882/file10912295;
+    retrieved 2026-10-11
+  source_sha256: 78add31499240881314a6a9a068691b9ad7fbd5eec93c5ec0bf3a314988611d3
+- id: PMID:37207292
+  title: Siderophore Synthetase DesD Catalyzes N-to-C Condensation in Desferrioxamine Biosynthesis
+  url: https://par.nsf.gov/servlets/purl/10505308
+  source_version: Original NSF-hosted author manuscript PDF; retrieved 2026-10-11
+  source_sha256: 8f72641f62e460e677aa6d1a582c968ff93b89fcc24b487bb8dd2aa0ac1bfa9a
+- id: DOI:10.1021/acschembio.3c00167.s001
+  title: 'Supporting Information: Siderophore Synthetase DesD Catalyzes N-to-C Condensation in Desferrioxamine
+    Biosynthesis'
+  url: https://ndownloader.figshare.com/files/40713082
+  source_version: Original ACS Figshare supplement PDF; article22970446/file40713082; retrieved 2026-10-11
+  source_sha256: 3a63baf7a649475c52167f33ecbc8fd01942c53f2d7258566f5af1e564ec8365
+- id: PMID:35750210
+  title: An acyl-adenylate mimic reveals the structural basis for substrate recognition by the iterative
+    siderophore synthetase DesD
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9356276/fullTextXML
+  source_version: Original complete primary JATS XML retrieved 2026-10-11
+  source_sha256: c6babbe3e1d615f957b906b535cbea6d2828f37dcbb6fa932dec532ae5527f4a
+- id: PMID:42630954
+  title: Modular Inhibitor Approach to Map the Catalytic Trajectory of an Iterative Siderophore Synthetase,
+    DesD
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13495013/fullTextXML
+  source_version: Original complete primary JATS XML retrieved 2026-10-11
+  source_sha256: a015d255b9ff76a5967be70c2f722e86b00e69d2b11b2df338d437812ebe3a99
+- id: PMID:33784308
+  title: Characterization of a broadly specific cadaverine N-hydroxylase involved in desferrioxamine B
+    biosynthesis in Streptomyces sviceus
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8009421/fullTextXML
+  source_version: Original complete primary JATS XML retrieved 2026-10-11
+  source_sha256: 65eff35c4cf612dc2cba832e64932c93ef3653471f4d755ef7417da4f203c9bb
+- id: DOI:10.1016/j.jbc.2022.102166
+  title: Supporting Information mmc1.pdf to An acyl-adenylate mimic reveals the structural basis for substrate
+    recognition by the iterative siderophore synthetase DesD
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9356276/supplementaryFiles
+  source_version: Original archive member mmc1.pdf; reference digest covers extracted unchanged PDF; archive
+    digest and extraction receipt in source manifest
+  source_sha256: a77346959739a59578f8a492cde02bdd942fc570e7f8654d858ccf7c0779ecba

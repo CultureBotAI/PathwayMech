@@ -1,0 +1,523 @@
+# Initial independent review of the complete desferrioxamine B pathway
+
+- Review: 20261011T121520Z-desferrioxamine-b-initial-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T12:13:56.440649Z
+- Finished UTC: 2026-10-11T12:15:20.657501Z
+- Reviewer: Codex independent scientific reviewer (/root/verify_graph_publication) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+One grouped minor source-locator finding affects the two DesC assay citations: Figures 2–3 supply structural/pathway context, while Figure 4(a)/(b) contains the actual succinyl/acetyl assay traces. The activities remain supported by the cited Results and separate supplement. The complete five-step pathway was assessed in the sealed original-source preflight, but final authority integration, merged baseline and full corpus gates remain pending; this observation does not grant final scientific approval.
+
+## Scope And Provenance
+
+Initial full-record source assessment with a bounded, reproducible DesC locator finding on the exact maintained f9bb3586 bytes; integrated final checks remain pending.
+
+Selection: Explicit independent reviewer assignment and parent authorization to save the confirmed finding before source-locator correction.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 6647fd69597d516ca41dec6e6c8314032cbd7c3a.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6376 | data/pathways/desferrioxamine-b-biosynthesis.yaml | maintained | desferrioxamine B biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical initial maintained-target inspection | passed | True | MetaCyc:PWY-6376 | Actual session 74819 exited 0 before maintained-record assessment. All 17 declared input hashes rechecked unchanged; the whole maintained YAML was read and equals the earlier independently assessed frozen draft. |
+| Earlier independent original-source and exact-chemistry replay | passed | False | MetaCyc:PWY-6376 | Actual preflight session 78738 exited 0 on the identical f9bb3586 draft: 63 original bodies, 44 references, five native members, 27 native and 26 selected sides, 12 exact InChI bridges, four concrete balances and conditional generic-redox balance, exact 595-aa DesD core, actual KGX 32 nodes/50 edges/130 evidence. This is preserved prior execution, not a fresh current whole-corpus run. |
+| Independent original iModulon parser replay | passed | False | MetaCyc:PWY-6376 | Original 20 source bodies replayed with the unchanged canonical parser; all four exact loci are explicit module 35/57 members. Null-regulator search failures remain disclosed. This expression context does not establish catalysis or physiological donor identity. |
+| Fresh original Figure 2/3/4 and Results source reassessment | passed | True | MetaCyc:PWY-6376 | Original source SHA and exact current evidence blocks rechecked. Figure 2 is chemical structures, Figure 3 is the cluster/pathway, and Figure 4(a)/(b) shows HSC/HAC LC-MS assays. The cited Results section independently supports the claims, making the error a bounded source-locator defect. |
+| Integrated whole-corpus QC | skipped | True | MetaCyc:PWY-6376 | Pending parent integration/final baseline and gates for this prospective cohort; no result is claimed in this partial initial observation. Mutable shared snapshots are deliberately excluded from formal inputs. |
+| Integrated full tests | skipped | True | MetaCyc:PWY-6376 | Pending parent integration/final baseline and gates for this prospective cohort; no result is claimed in this partial initial observation. Mutable shared snapshots are deliberately excluded from formal inputs. |
+| Final integrated lint | skipped | True | MetaCyc:PWY-6376 | Pending parent integration/final baseline and gates for this prospective cohort; no result is claimed in this partial initial observation. Mutable shared snapshots are deliberately excluded from formal inputs. |
+| Final integrated whitespace check | skipped | True | MetaCyc:PWY-6376 | Pending parent integration/final baseline and gates for this prospective cohort; no result is claimed in this partial initial observation. Mutable shared snapshots are deliberately excluded from formal inputs. |
+| Final canonical authority and exact merged baseline | skipped | True | MetaCyc:PWY-6376 | Pending parent integration/final baseline and gates for this prospective cohort; no result is claimed in this partial initial observation. Mutable shared snapshots are deliberately excluded from formal inputs. |
+
+## Scientific And Domain Assessments
+
+### Exact edge-local DesC assay locators
+
+provenance: concern. Targets: MetaCyc:PWY-6376.
+
+Both stored Figure 2–3 fragments point to adjacent context rather than Figure 4 assay evidence. Correct only the figure fragments to panels a/b while retaining the accurate Results and supplement evidence.
+
+### Full five-step B pathway and source qualifications
+
+completeness: supported. Targets: MetaCyc:PWY-6376.
+
+Source preflight covers lysine decarboxylation, proposed native hydroxylation, both acylation branches and complete iterative DesD B assembly. Native one-ATP/water versus primary-supported two-ATP net, unresolved generic donor, exact DesD core, unmatched DesABC constructs and conditional assembly/cofactor evidence remain explicitly qualified. Final approval waits for integrated checks.
+
+### Provisional baseline and incomplete global checks
+
+scope: unknown. Targets: MetaCyc:PWY-6376.
+
+The new maintained target is byte-identical to the preflight, but final merged baseline, canonical authorities and shared gates are pending. They are not inferred from the author replay or partial review.
+
+## Findings
+
+### f-desc-assay-figure-locators: DesC assay evidence cites pathway figures instead of the assay figure
+
+minor / open / confirmed; issue key: desferrioxamine-b-desc-assay-figure-locators.
+
+Two edge-local primary locators cite Figures 2–3, which show chemical structures and the pathway schematic. The actual succinyl/acetyl LC-MS assay traces are Figure 4(a)/(b). The cited Results section and separate SI evidence support both assertions, so this is a bounded locator error with no chemistry/catalyst change.
+
+## Recommended Actions And Acceptance Checks
+
+### a-correct-locators
+
+After preserving this initial observation and its exact inputs, replace only the two incorrect Figure 2–3 fragments with original Figure 4 panel a for the succinyl assay and panel b for the acetyl assay; retain exact Results/supplement selectors and update successor dossier checks.
+
+- Exact original primary figure and Results selectors support both corrected locators.
+- No node, reaction, edge, evidence assertion or pathway boundary changes; preserve all initial reviewed bytes.
+- A new source guard rejects the old figure fragments on these specific DesC assay edges.
+- Final merged baseline, canonical authority inputs, full validation/tests/lint/diff and actual graph/export checks pass before final successor approval.
+- Save a linked successor with this exact issue key and previous occurrence after original-source reassessment.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-inspect | /private/tmp/pathwaymech-next-211-dfo-initial-canonical/inspect.json; Complete canonical capture and final exact input-hash recheck | supports | Working-tree snapshot is based on reviewed PR379 head 6647fd6, not an asserted final merged baseline. Seventeen stable inputs; shared authority snapshots intentionally excluded. |
+| e-primary | https://pmc.ncbi.nlm.nih.gov/articles/PMC5915712/; section[@id="s2a"]; figures RSTB20170068F2/F3/F4, especially Figure 4 panels a and b | supports | Original Results reports authentic-standard LC-MS/MS and CoA assays for succinyl/acetyl activity. Figures 2/3 supply chemical/cluster context; Figure 4(a)/(b) contains the assay traces. This distinguishes a locator mistake from an unsupported activity claim. |
+| e-current-source | /private/tmp/pathwaymech-next-211-dfo-initial-canonical/source-reassessment.json; Original figure/section selections and exact two current edge-local evidence blocks | supports | Source selector reassessment after canonical inspection reproduces the bounded initial finding on the unchanged maintained YAML. |
+| e-preflight | research/pathway_additions/2026-10-11-next-211/independent-scientific-preflight.json; Entire sealed independent preflight; primary inspection, scientific limitations and actual executed checks | context_only | Full native five-step source review found one grouped minor locator defect. Direct/proposed, species/construct, cofactor and ATP-coupling qualifications remain essential; this is not final maintained-record approval. |
+| e-replay | research/pathway_additions/2026-10-11-next-211/independent-original-source-replay.json; Full actual session 78738 independent original-source/chemistry/sequence/KGX replay | supports | Independent replay did not import the author helper. All selected chemistry/source preservation checks passed for the exact current f9bb3586 bytes. |
+| e-imod | research/pathway_additions/2026-10-11-next-211/independent-imodulondb-replay.json; Original 20-body parser replay and exact four-locus module membership | context_only | Expression context only; original null-regulator query failures preserved, gene/table parsing passed. |
+| e-copy | research/pathway_additions/2026-10-11-next-211/author-copy-receipt.json; Provisional base and unchanged copied author/independent source inputs | context_only | Preparation is at the reviewed aerobactin head pending its technical fix and actual merge. No merged-baseline or full-gate approval is inferred. |
+
+## Limits And Additional Notes
+
+- Partial observation: final merged baseline and global authority/full-corpus gates are pending.
+- Coelicolor DesB activity remains a proposed native assignment; its physiological electron donor is unresolved.
+- DesA direct source access is abstract-limited; the complete DesC construct sequence is not verified and the 2023 DesABC sequences do not match current selected entries.
+- Two ATP is a primary-supported net mechanistic model, not a measured ATP/product coupling ratio; source-native one-ATP chemistry remains explicit.
+- Assembly and cofactor observations retain exact source/organism/construct scope; inferred PLP/FAD is not direct binding evidence.
+- iModulon membership is computational expression context only; native query parser failures remain preserved.
+- The external preflight began 11:55:29Z and finished 12:03:12Z before a maintained next-cohort checkout existed; this canonical observation uses its own actual inspection times and explicitly carries that earlier evidence.
+- Seventeen declared inputs were rehashed and archived externally after inspection; no target or author source file was edited by the reviewer.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T121520Z-desferrioxamine-b-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Initial independent review of the complete desferrioxamine B pathway
+started_at: '2026-10-11T12:13:56.440649Z'
+finished_at: '2026-10-11T12:15:20.657501Z'
+reviewer:
+  identity: Codex independent scientific reviewer (/root/verify_graph_publication)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Reviewer did not author the target, author dossiers or authority
+    integration. The reviewer independently inspected original primary/native bodies
+    and wrote the separate preflight/replay. Root acquired iModulon sources; reviewer
+    independently replayed their unchanged canonical parser. Prior source inspection
+    is disclosed and was linked by exact unchanged draft hashes.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: 'One grouped minor source-locator finding affects the two DesC assay citations:
+  Figures 2–3 supply structural/pathway context, while Figure 4(a)/(b) contains the
+  actual succinyl/acetyl assay traces. The activities remain supported by the cited
+  Results and separate supplement. The complete five-step pathway was assessed in
+  the sealed original-source preflight, but final authority integration, merged baseline
+  and full corpus gates remain pending; this observation does not grant final scientific
+  approval.'
+source:
+  git_revision: 6647fd69597d516ca41dec6e6c8314032cbd7c3a
+  state: working_tree
+  inputs:
+  - path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    sha256: f9bb35866f883f0e47f5f5e98ba6ae2caf1d2d8ea967793b96f67d91e8fa1690
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/author-copy-receipt.json
+    sha256: 4947255d2938eb970b54d76f2681d758158a791933c80ec5906044d3b479ded8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-authority-inputs.json
+    sha256: ef6e065545eb7c7731f3fd4ceafaaa5fd0ed76b205c1dd20a3d2cad854e867f9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-curation.md
+    sha256: 176c287443ee5a65b0aa9162b90e1c106d0470ef9fb90ac1dbfb7bde47456edf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-identifiers.json
+    sha256: b50e8f6ecabd9fe262945f134e89b610a536244dbd12096a8a5bd60794afe6fa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-primary-index.json
+    sha256: 8a8b005e0ed0880b84d5558121bb48e33801f552df393fcd753def394efdfac5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-replay.py
+    sha256: 748b6ca72c710fd96257c712242bc6db58f82f036b238cd0c33861b2d7d00f8e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-source-manifest.json
+    sha256: 46325800d78b16f45bb07302d7bb3292dde5bcd0002e52d115a17a03acca2f1e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-source-projection.json
+    sha256: 161b2445565151df688752a495dea71164d6fb35601d57c8b35ade0db6218c8f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/desferrioxamine-b-validation.json
+    sha256: 323da8de5242029e57f5c70378bd7bf381653326039f1467ebf956220778aa92
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-imodulondb-replay.json
+    sha256: e0e53e4479e5c4176538533606ecc3033b92abacc66fea6bbd2336cb783999fc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-original-source-replay.json
+    sha256: 809f907fffa413765a24fc446987fb3e65a22aff891f90397111137cd68b0680
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/independent-scientific-preflight.json
+    sha256: e39720d1dbccb6c1b7f6b53f60615d96ecc0e6cd75418fd15a3faf8ca50ed7d7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/initial-scientific-findings.json
+    sha256: 548e3a4a13076c958b448e24eada6997b46a9ecde330fc4ebc434da09ee3da93
+    role: context
+scope:
+  description: Initial full-record source assessment with a bounded, reproducible
+    DesC locator finding on the exact maintained f9bb3586 bytes; integrated final
+    checks remain pending.
+  selection: Explicit independent reviewer assignment and parent authorization to
+    save the confirmed finding before source-locator correction.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6376
+  exclusions:
+  - target: Mutable shared authority snapshots, rendered pages and final publication
+      state
+    reason: Integration and actual merged baseline are not yet settled; these are
+      excluded from initial source hashes and require final successor inspection.
+targets:
+- target_id: MetaCyc:PWY-6376
+  path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+  label: desferrioxamine B biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    role: maintained_scientific_source
+checks:
+- check_id: c-inspect
+  name: Canonical initial maintained-target inspection
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-211-dfo-initial-canonical/targets.yaml
+    with declared context inputs
+  summary: Actual session 74819 exited 0 before maintained-record assessment. All
+    17 declared input hashes rechecked unchanged; the whole maintained YAML was read
+    and equals the earlier independently assessed frozen draft.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-inspect
+- check_id: c-source-replay
+  name: Earlier independent original-source and exact-chemistry replay
+  status: passed
+  required: false
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-desferrioxamine-b-independent-review-20261011/replay.py
+  summary: 'Actual preflight session 78738 exited 0 on the identical f9bb3586 draft:
+    63 original bodies, 44 references, five native members, 27 native and 26 selected
+    sides, 12 exact InChI bridges, four concrete balances and conditional generic-redox
+    balance, exact 595-aa DesD core, actual KGX 32 nodes/50 edges/130 evidence. This
+    is preserved prior execution, not a fresh current whole-corpus run.'
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-replay
+  - e-preflight
+- check_id: c-imod
+  name: Independent original iModulon parser replay
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Original 20 source bodies replayed with the unchanged canonical parser;
+    all four exact loci are explicit module 35/57 members. Null-regulator search failures
+    remain disclosed. This expression context does not establish catalysis or physiological
+    donor identity.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-imod
+- check_id: c-locator
+  name: Fresh original Figure 2/3/4 and Results source reassessment
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Original source SHA and exact current evidence blocks rechecked. Figure
+    2 is chemical structures, Figure 3 is the cluster/pathway, and Figure 4(a)/(b)
+    shows HSC/HAC LC-MS assays. The cited Results section independently supports the
+    claims, making the error a bounded source-locator defect.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-primary
+  - e-current-source
+- check_id: c-pending-validate
+  name: Integrated whole-corpus QC
+  status: skipped
+  required: true
+  command: just validate
+  summary: Pending parent integration/final baseline and gates for this prospective
+    cohort; no result is claimed in this partial initial observation. Mutable shared
+    snapshots are deliberately excluded from formal inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids: []
+- check_id: c-pending-test
+  name: Integrated full tests
+  status: skipped
+  required: true
+  command: just test
+  summary: Pending parent integration/final baseline and gates for this prospective
+    cohort; no result is claimed in this partial initial observation. Mutable shared
+    snapshots are deliberately excluded from formal inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids: []
+- check_id: c-pending-lint
+  name: Final integrated lint
+  status: skipped
+  required: true
+  command: just lint
+  summary: Pending parent integration/final baseline and gates for this prospective
+    cohort; no result is claimed in this partial initial observation. Mutable shared
+    snapshots are deliberately excluded from formal inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids: []
+- check_id: c-pending-diff
+  name: Final integrated whitespace check
+  status: skipped
+  required: true
+  command: git diff --check
+  summary: Pending parent integration/final baseline and gates for this prospective
+    cohort; no result is claimed in this partial initial observation. Mutable shared
+    snapshots are deliberately excluded from formal inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids: []
+- check_id: c-pending-authority
+  name: Final canonical authority and exact merged baseline
+  status: skipped
+  required: true
+  command: canonical source/ontology builders and exact merged-tree verification
+  summary: Pending parent integration/final baseline and gates for this prospective
+    cohort; no result is claimed in this partial initial observation. Mutable shared
+    snapshots are deliberately excluded from formal inputs.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids: []
+evidence:
+- evidence_id: e-inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-211-dfo-initial-canonical/inspect.json
+  locator: Complete canonical capture and final exact input-hash recheck
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Working-tree snapshot is based on reviewed PR379 head 6647fd6, not an asserted
+    final merged baseline. Seventeen stable inputs; shared authority snapshots intentionally
+    excluded.
+  snapshot_sha256: 09328ae6b3e0025b34d3a4112ee72f4699dfbbf2376d9e598414e315c2b59d65
+- evidence_id: e-primary
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC5915712/
+  locator: section[@id="s2a"]; figures RSTB20170068F2/F3/F4, especially Figure 4 panels
+    a and b
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Original Results reports authentic-standard LC-MS/MS and CoA assays for
+    succinyl/acetyl activity. Figures 2/3 supply chemical/cluster context; Figure
+    4(a)/(b) contains the assay traces. This distinguishes a locator mistake from
+    an unsupported activity claim.
+  snapshot_sha256: 1bd6c3e3a9a9048f03545ede3a17af2a8de138f070acc00827cec61ac5d557f3
+- evidence_id: e-current-source
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-211-dfo-initial-canonical/source-reassessment.json
+  locator: Original figure/section selections and exact two current edge-local evidence
+    blocks
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Source selector reassessment after canonical inspection reproduces the
+    bounded initial finding on the unchanged maintained YAML.
+  snapshot_sha256: f3d4a3f13b44089fb0b5387672e76143e09b5fd1160626100fbdc207f2833cb6
+- evidence_id: e-preflight
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-scientific-preflight.json
+  locator: Entire sealed independent preflight; primary inspection, scientific limitations
+    and actual executed checks
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: context_only
+  summary: Full native five-step source review found one grouped minor locator defect.
+    Direct/proposed, species/construct, cofactor and ATP-coupling qualifications remain
+    essential; this is not final maintained-record approval.
+  snapshot_sha256: e39720d1dbccb6c1b7f6b53f60615d96ecc0e6cd75418fd15a3faf8ca50ed7d7
+- evidence_id: e-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-original-source-replay.json
+  locator: Full actual session 78738 independent original-source/chemistry/sequence/KGX
+    replay
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: supports
+  summary: Independent replay did not import the author helper. All selected chemistry/source
+    preservation checks passed for the exact current f9bb3586 bytes.
+  snapshot_sha256: 809f907fffa413765a24fc446987fb3e65a22aff891f90397111137cd68b0680
+- evidence_id: e-imod
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/independent-imodulondb-replay.json
+  locator: Original 20-body parser replay and exact four-locus module membership
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: context_only
+  summary: Expression context only; original null-regulator query failures preserved,
+    gene/table parsing passed.
+  snapshot_sha256: e0e53e4479e5c4176538533606ecc3033b92abacc66fea6bbd2336cb783999fc
+- evidence_id: e-copy
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/author-copy-receipt.json
+  locator: Provisional base and unchanged copied author/independent source inputs
+  accessed_at: '2026-10-11T12:15:20.657501Z'
+  support: context_only
+  summary: Preparation is at the reviewed aerobactin head pending its technical fix
+    and actual merge. No merged-baseline or full-gate approval is inferred.
+  snapshot_sha256: 4947255d2938eb970b54d76f2681d758158a791933c80ec5906044d3b479ded8
+assessments:
+- assessment_id: a-locators
+  area: provenance
+  topic: Exact edge-local DesC assay locators
+  outcome: concern
+  summary: Both stored Figure 2–3 fragments point to adjacent context rather than
+    Figure 4 assay evidence. Correct only the figure fragments to panels a/b while
+    retaining the accurate Results and supplement evidence.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-primary
+  - e-current-source
+- assessment_id: a-boundary
+  area: completeness
+  topic: Full five-step B pathway and source qualifications
+  outcome: supported
+  summary: Source preflight covers lysine decarboxylation, proposed native hydroxylation,
+    both acylation branches and complete iterative DesD B assembly. Native one-ATP/water
+    versus primary-supported two-ATP net, unresolved generic donor, exact DesD core,
+    unmatched DesABC constructs and conditional assembly/cofactor evidence remain
+    explicitly qualified. Final approval waits for integrated checks.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-preflight
+  - e-replay
+- assessment_id: a-integration
+  area: scope
+  topic: Provisional baseline and incomplete global checks
+  outcome: unknown
+  summary: The new maintained target is byte-identical to the preflight, but final
+    merged baseline, canonical authorities and shared gates are pending. They are
+    not inferred from the author replay or partial review.
+  target_ids:
+  - MetaCyc:PWY-6376
+  evidence_ids:
+  - e-inspect
+  - e-copy
+findings:
+- finding_id: f-desc-assay-figure-locators
+  issue_key: desferrioxamine-b-desc-assay-figure-locators
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: DesC assay evidence cites pathway figures instead of the assay figure
+  description: Two edge-local primary locators cite Figures 2–3, which show chemical
+    structures and the pathway schematic. The actual succinyl/acetyl LC-MS assay traces
+    are Figure 4(a)/(b). The cited Results section and separate SI evidence support
+    both assertions, so this is a bounded locator error with no chemistry/catalyst
+    change.
+  target_ids:
+  - MetaCyc:PWY-6376
+  field_paths:
+  - mechanistic_edges[id="dfoB-edge-029"].evidence[1].source_locator
+  - mechanistic_edges[id="dfoB-edge-030"].evidence[1].source_locator
+  evidence_ids:
+  - e-primary
+  - e-current-source
+  rule_id: docs/CAUSAL_GRAPHS.md edge-local source assertion and locator scope
+  native_severity: minor provenance-locator defect
+  normalization_reason: Both activity assertions are supported by the correctly cited
+    Results section and separate original supplement. The wrong figure fragment does
+    not change chemical or catalyst identity.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    role: maintained_scientific_source
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/381
+actions:
+- action_id: a-correct-locators
+  description: After preserving this initial observation and its exact inputs, replace
+    only the two incorrect Figure 2–3 fragments with original Figure 4 panel a for
+    the succinyl assay and panel b for the acetyl assay; retain exact Results/supplement
+    selectors and update successor dossier checks.
+  finding_ids:
+  - f-desc-assay-figure-locators
+  target_ids:
+  - MetaCyc:PWY-6376
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    role: maintained_scientific_source
+  acceptance_checks:
+  - Exact original primary figure and Results selectors support both corrected locators.
+  - No node, reaction, edge, evidence assertion or pathway boundary changes; preserve
+    all initial reviewed bytes.
+  - A new source guard rejects the old figure fragments on these specific DesC assay
+    edges.
+  - Final merged baseline, canonical authority inputs, full validation/tests/lint/diff
+    and actual graph/export checks pass before final successor approval.
+  - Save a linked successor with this exact issue key and previous occurrence after
+    original-source reassessment.
+limitations:
+- 'Partial observation: final merged baseline and global authority/full-corpus gates
+  are pending.'
+- Coelicolor DesB activity remains a proposed native assignment; its physiological
+  electron donor is unresolved.
+- DesA direct source access is abstract-limited; the complete DesC construct sequence
+  is not verified and the 2023 DesABC sequences do not match current selected entries.
+- Two ATP is a primary-supported net mechanistic model, not a measured ATP/product
+  coupling ratio; source-native one-ATP chemistry remains explicit.
+- Assembly and cofactor observations retain exact source/organism/construct scope;
+  inferred PLP/FAD is not direct binding evidence.
+- iModulon membership is computational expression context only; native query parser
+  failures remain preserved.
+notes:
+- The external preflight began 11:55:29Z and finished 12:03:12Z before a maintained
+  next-cohort checkout existed; this canonical observation uses its own actual inspection
+  times and explicitly carries that earlier evidence.
+- Seventeen declared inputs were rehashed and archived externally after inspection;
+  no target or author source file was edited by the reviewer.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/381
+```
