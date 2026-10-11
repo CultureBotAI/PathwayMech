@@ -1,0 +1,718 @@
+"""Audit actual generated PathwayMech SVG pages and KGX artifacts against final YAML."""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import html
+import io
+import json
+import math
+import re
+import subprocess
+import sys
+from collections import defaultdict
+from datetime import UTC, datetime
+from pathlib import Path
+from xml.etree import ElementTree as ET
+
+import yaml
+from lxml import html as lhtml
+
+TARGETS = {"myxochelin-a-and-b-biosynthesis.yaml"}
+TARGET_SHA256 = "5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2"
+NS = {"s": "http://www.w3.org/2000/svg"}
+CATEGORIES = {
+    "chemical_entity": "biolink:ChemicalEntity",
+    "small_molecule": "biolink:SmallMolecule",
+    "cofactor": "biolink:ChemicalEntity",
+    "protein": "biolink:Protein",
+    "complex": "biolink:MacromolecularComplex",
+    "molecular_activity": "biolink:MolecularActivity",
+    "polymer": "biolink:ChemicalEntity",
+    "lipid": "biolink:ChemicalEntity",
+    "cellular_component": "biolink:CellularComponent",
+    "biological_process": "biolink:BiologicalProcess",
+    "gene": "biolink:Gene",
+    "dna": "biolink:NucleicAcidEntity",
+    "rna": "biolink:RNAProduct",
+}
+PREDICATES = {
+    "consumes": "pathwaymech:consumes",
+    "produces": "pathwaymech:produces",
+    "catalyzes": "pathwaymech:catalyzes",
+    "precedes": "pathwaymech:precedes",
+    "enables": "pathwaymech:enables",
+    "part_of": "BFO:0000050",
+    "has_part": "BFO:0000051",
+    "has_cofactor": "pathwaymech:has_cofactor",
+    "regulates": "pathwaymech:regulates",
+    "inhibits": "pathwaymech:inhibits",
+    "activates": "pathwaymech:activates",
+    "has_input": "RO:0002233",
+    "has_output": "RO:0002234",
+    "provides_input_for": "RO:0002413",
+    "occurs_in": "BFO:0000066",
+    "located_in": "RO:0001025",
+}
+
+
+def digest(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def plain(value):
+    return re.sub(r"</?(?:sup|sub|i|em)>", "", html.unescape(value), flags=re.I)
+
+
+def csv_rows(path):
+    with path.open() as stream:
+        return list(csv.DictReader(stream, delimiter="\t"))
+
+
+def named(record):
+    yield "pathway", {"id": record["id"], "label": record["label"]}
+    for collection in ("taxa", "participants", "reactions"):
+        for node in record[collection]:
+            yield collection, node
+
+
+def classes(element, target):
+    return target in element.get("class", "").split()
+
+
+def box(element):
+    shape = next(c for c in element if classes(c, "graph-node-shape"))
+    if shape.tag.endswith("rect"):
+        x, y, w, h = (float(shape.get(k)) for k in ("x", "y", "width", "height"))
+        return x, y, x + w, y + h
+    points = [tuple(map(float, point.split(","))) for point in shape.get("points").split()]
+    return (
+        min(p[0] for p in points),
+        min(p[1] for p in points),
+        max(p[0] for p in points),
+        max(p[1] for p in points),
+    )
+
+
+def audit_svg(record, path):
+    text = path.read_text()
+    document = lhtml.fromstring(text)
+    id_elements = defaultdict(list)
+    for item in document.xpath("//*[@id]"):
+        id_elements[item.get("id")].append(item)
+    assert all(len(items) == 1 for items in id_elements.values()), "Duplicate HTML anchors"
+    assert record["id"] in id_elements["pathway-identity"][0].text_content()
+    assert record["description"] in document.text_content(), "Record description was not preserved"
+    declared_components = [(group, node) for group, node in named(record) if group != "pathway"]
+    assert len([key for key in id_elements if key.startswith("component-")]) == len(
+        declared_components
+    )
+    for number, (group, node) in enumerate(declared_components, 1):
+        cells = id_elements[f"component-{number}"][0].xpath("./td")
+        assert node["id"] in cells[0].xpath("./code/text()")
+        assert plain(node["label"]) in cells[0].text_content()
+        kind = node.get("category", "taxon" if group == "taxa" else group.removesuffix("s"))
+        assert cells[1].text_content() == kind.replace("_", " ")
+        assert cells[2].text_content() == node.get("direction", "").replace("_", " ")
+    start = text.index('<svg xmlns="http://www.w3.org/2000/svg" class="pathway-network-svg"')
+    svg = ET.fromstring(text[start : text.index("</svg>", start) + 6])
+    width, height = float(svg.get("width")), float(svg.get("height"))
+    assert math.isfinite(width) and math.isfinite(height) and width > 0 and height > 0
+    assert svg.get("viewBox") == f"0 0 {int(width)} {int(height)}"
+    links = svg.findall(".//s:a", NS)
+    node_elements = [e for e in links if classes(e, "graph-node")]
+    node_map = {e.get("data-node-id"): e for e in node_elements}
+    endpoints = {e[k] for e in record["mechanistic_edges"] for k in ("subject", "object")}
+    expected = {
+        n["id"]: (group, n)
+        for group, n in named(record)
+        if group in ("participants", "reactions") or n["id"] in endpoints
+    }
+    assert len(node_map) == len(node_elements) == len(expected)
+    assert node_map.keys() == expected.keys()
+    for identifier, element in node_map.items():
+        group, node = expected[identifier]
+        category = node.get("category")
+        kind = {"pathway": "pathway", "reactions": "reaction", "taxa": "taxon"}.get(group)
+        if kind is None:
+            kind = (
+                "chemical"
+                if category in {"chemical_entity", "small_molecule", "cofactor", "polymer", "lipid"}
+                else "protein"
+                if category in {"protein", "complex"}
+                else "context"
+                if category in {"cellular_component", "biological_process"}
+                else "participant"
+            )
+        assert element.get("data-node-label") == plain(node["label"])
+        assert element.get("data-kind") == kind
+        assert element.get("tabindex") == "0"
+        type_text = element.find("s:text[@class='graph-node-type']", NS).text
+        expected_type = (
+            category
+            or {
+                "pathway": "pathway",
+                "taxa": "taxon",
+                "reactions": "reaction / activity",
+                "participants": "participant · type not recorded",
+            }[group]
+        ).replace("_", " ")
+        assert type_text == expected_type
+        anchor = element.get("href").removeprefix("#")
+        assert anchor in id_elements and identifier in id_elements[anchor][0].text_content()
+        if group == "reactions":
+            assert "Source reaction direction: " + node["direction"] in element.get("aria-label")
+        x0, y0, x1, y1 = box(element)
+        assert 0 <= x0 < x1 <= width and 0 <= y0 < y1 <= height
+    edge_elements = [e for e in links if classes(e, "graph-edge")]
+    assert len(edge_elements) == len(record["mechanistic_edges"])
+    paths = []
+    evidence_count = 0
+    edge_by_href = {e.get("href"): e for e in edge_elements}
+    assert len(edge_by_href) == len(edge_elements)
+    for number, source in enumerate(record["mechanistic_edges"], 1):
+        element = edge_by_href[f"#mechanism-edge-{number}"]
+        assert tuple(
+            element.get("data-" + key) for key in ("subject", "predicate", "object")
+        ) == tuple(source[key] for key in ("subject", "predicate", "object"))
+        assert element.get("href") == f"#mechanism-edge-{number}"
+        assert element.get("tabindex") == "0"
+        row = id_elements[f"mechanism-edge-{number}"][0]
+        cells = row.xpath("./td")
+        assert len(cells) == 4
+        assert source["subject"] in cells[0].xpath("./code/text()")
+        assert source["object"] in cells[2].xpath("./code/text()")
+        assert cells[1].text == source["predicate"]
+        assert source.get("description", "") in cells[1].text_content()
+        evidence_items = cells[3].xpath("./ul/li")
+        assert len(evidence_items) == len(source["evidence"])
+        for evidence, item in zip(source["evidence"], evidence_items, strict=True):
+            link = item.xpath("./a")[0]
+            assert link.text_content() == evidence["reference_id"]
+            reference = id_elements[link.get("href").removeprefix("#")][0]
+            assert evidence["reference_id"] in reference.text_content()
+            assert evidence.get("quote", evidence.get("source_assertion")) in item.text_content()
+            if evidence.get("source_locator"):
+                assert evidence["source_locator"] in item.text_content()
+            assert evidence["reference_id"] in element.get("aria-label")
+            evidence_count += 1
+        if source.get("description"):
+            assert plain(source["description"]) in element.get("aria-label")
+        path_element = element.find("s:path", NS)
+        marker = re.fullmatch(r"url\(#(.+)\)", path_element.get("marker-end"))
+        assert marker and marker[1] in id_elements
+        path_data = path_element.get("d")
+        paths.append(path_data)
+        assert not re.sub(r"[MHVC0-9eE+.,\s-]", "", path_data), "Unexpected SVG path syntax"
+        commands = re.findall(r"([MHVC])([^MHVC]+)", path_data)
+        assert commands and commands[0][0] == "M"
+        assert len([c for c, _ in commands if c == "M"]) == 1
+        cursor = None
+        origin = None
+        for command, raw in commands:
+            values = [float(value) for value in raw.replace(",", " ").split()]
+            assert values and all(math.isfinite(value) for value in values)
+            if command in ("M", "C"):
+                assert len(values) == (2 if command == "M" else 6)
+                assert all(0 <= value <= width for value in values[::2])
+                assert all(0 <= value <= height for value in values[1::2])
+                cursor = (values[-2], values[-1])
+                if command == "M":
+                    origin = cursor
+            elif command == "H":
+                assert all(0 <= value <= width for value in values)
+                cursor = values[-1], cursor[1]
+            elif command == "V":
+                assert all(0 <= value <= height for value in values)
+                cursor = cursor[0], values[-1]
+        source_box, target_box = box(node_map[source["subject"]]), box(node_map[source["object"]])
+        assert origin[0] == source_box[2] and source_box[1] <= origin[1] <= source_box[3]
+        assert cursor[0] == target_box[0] and target_box[1] <= cursor[1] <= target_box[3]
+        label = element.find("s:text", NS)
+        assert 0 <= float(label.get("x")) <= width and 0 <= float(label.get("y")) <= height
+        assert label.text == source["predicate"].replace("_", " ")
+    assert len(paths) == len(set(paths)), (
+        "Distinct assertions were collapsed into identical SVG paths"
+    )
+    options = document.xpath("//*[@id='graph-node-picker']/option[@value!='']")
+    assert {o.get("value") for o in options} == set(node_map)
+    assert len(options) == len(node_map)
+    for index, reference in enumerate(record["references"], 1):
+        element = id_elements[f"reference-{index}"][0]
+        assert plain(reference["title"]) in element.text_content()
+        if reference.get("source_version"):
+            assert reference["source_version"] in element.text_content()
+        if reference.get("url"):
+            assert reference["url"] in element.xpath("./code/a/@href")
+    return {
+        "svg_nodes": len(node_elements),
+        "svg_edges": len(edge_elements),
+        "evidence_blocks_linked_and_preserved": evidence_count,
+        "node_and_evidence_anchors": "all resolve to the corresponding IDs",
+        "endpoints": "all asserted triples and source/target box extents match",
+        "geometry": "all checked paths, node boxes and label coordinates lie within SVG bounds",
+        "sha256": digest(path),
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--root", type=Path, default=Path("/private/tmp/pathwaymech-next-217-20261011")
+    )
+    parser.add_argument("--comparison-kgx-dir", type=Path, required=True)
+    parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument(
+        "--base",
+        required=True,
+        help="Exact reviewed baseline commit; record whether actual merge is still pending",
+    )
+    parser.add_argument("--gate-receipts", type=Path, required=True)
+    parser.add_argument("--target-sha256", default=TARGET_SHA256)
+    parser.add_argument("--expected-baseline-records", type=int, default=217)
+    args = parser.parse_args()
+    if sys.flags.optimize:
+        raise SystemExit("Assertions are required; optimized Python is unsupported")
+    root = args.root.resolve()
+    assert args.target_sha256 == TARGET_SHA256, "This audit is pinned to the frozen target"
+    assert args.expected_baseline_records == 217, "Unexpected baseline count"
+    assert not args.receipt.resolve().is_relative_to(root), "Receipt must stay external"
+    assert not args.receipt.exists() and not args.receipt.is_symlink(), (
+        "Do not overwrite an existing sealed audit"
+    )
+    started_at = datetime.now(UTC).isoformat()
+
+    def git(*arguments):
+        return subprocess.check_output(["git", *arguments], cwd=root)
+
+    assert git("rev-parse", "--verify", args.base + "^{commit}").decode().strip() == args.base
+    assert git("merge-base", args.base, "HEAD").decode().strip() == args.base
+    audit_head = git("rev-parse", "HEAD").decode().strip()
+    audit_tree = git("rev-parse", "HEAD^{tree}").decode().strip()
+    baseline_tree = {}
+    for row in git("ls-tree", "-r", "-z", args.base).split(b"\0"):
+        if not row:
+            continue
+        metadata, path = row.split(b"\t", 1)
+        mode, kind, oid = metadata.decode().split()
+        if kind == "blob":
+            baseline_tree[path.decode()] = {"mode": mode, "oid": oid}
+    baseline_records = {
+        p for p in baseline_tree if p.startswith("data/pathways/") and p.endswith(".yaml")
+    }
+    assert len(baseline_records) == args.expected_baseline_records
+    baseline_ids = {
+        yaml.safe_load(git("show", args.base + ":" + p))["id"] for p in baseline_records
+    }
+    assert "MetaCyc:PWY-8383" not in baseline_ids
+    # Capture the exact bytes before parsing; later fresh hashes guard concurrent changes.
+    record_bytes = {p: p.read_bytes() for p in sorted((root / "data/pathways").rglob("*.yaml"))}
+    records = [(p, yaml.safe_load(body)) for p, body in record_bytes.items()]
+    targets = [(p, r) for p, r in records if p.name in TARGETS]
+    initial_record_hashes = {
+        str(p): hashlib.sha256(body).hexdigest() for p, body in record_bytes.items()
+    }
+    initial_target_page = root / "pages/records/MetaCyc_PWY-8383.html"
+    initial_page_hash = digest(initial_target_page)
+    aggregate_bytes = {name: (root / "pages" / name).read_bytes() for name in ["index.html", "browse.html", "pathway_index.json"]}
+    captured_gate_bytes = args.gate_receipts.read_bytes()
+    gate_receipt_digest = hashlib.sha256(captured_gate_bytes).hexdigest()
+    initial_comparison_hashes = {
+        name: digest(args.comparison_kgx_dir / name) for name in ("nodes.tsv", "edges.tsv")
+    }
+    initial_download_hashes = {
+        name: digest(root / "pages/downloads" / name)
+        for name in ("nodes.tsv", "edges.tsv", "manifest.json")
+    }
+    assert len(targets) == len(TARGETS)
+    assert len(records) == args.expected_baseline_records + 1
+    assert {str(p.relative_to(root)) for p, _ in records} == baseline_records | {
+        "data/pathways/myxochelin-a-and-b-biosynthesis.yaml"
+    }
+    assert targets[0][1]["id"] == "MetaCyc:PWY-8383"
+    assert digest(targets[0][0]) == args.target_sha256
+    assert len(targets[0][1]["mechanistic_edges"]) == 78
+    assert len(targets[0][1]["reactions"]) == 9
+    assert len(targets[0][1]["participants"]) == 27
+    assert sum(1 for _ in named(targets[0][1])) == 38
+    target = targets[0][1]
+    endpoint_ids = {e[k] for e in target["mechanistic_edges"] for k in ("subject", "object")}
+    declared_ids = {node["id"] for _, node in named(target)}
+    assert endpoint_ids <= declared_ids
+    # Derive expected SVG nodes from declared participant/reaction nodes and actual edge endpoints.
+    declared_graph_ids = {
+        node["id"] for group, node in named(target) if group in ("participants", "reactions")
+    } | endpoint_ids
+    assert declared_graph_ids == endpoint_ids
+    assert declared_ids - endpoint_ids == {"NCBITaxon:675526"}
+    assert len(declared_graph_ids) == 37
+    assert len(target["references"]) == 62
+    expected_svg_count = len(declared_graph_ids)
+    assert sum(len(x["evidence"]) for x in targets[0][1]["mechanistic_edges"]) == 239
+    preserved_paths = []
+    preserved_hashes = {}
+    for path in sorted(baseline_tree):
+        if path.startswith(("data/pathways/", "history/", "reviews/structured/", "pages/records/")):
+            expected = git("show", args.base + ":" + path)
+            assert (root / path).is_file() and (root / path).read_bytes() == expected, (
+                "baseline bytes changed",
+                path,
+            )
+            preserved_paths.append(path)
+            preserved_hashes[path] = hashlib.sha256(expected).hexdigest()
+    selected_ids = {n["id"] for _, r in targets for _, n in named(r)}
+    downloads = root / "pages/downloads"
+    node_rows = csv_rows(downloads / "nodes.tsv")
+    edge_rows = csv_rows(downloads / "edges.tsv")
+    assert list(node_rows[0]) == ["id", "name", "category", "provided_by", "source_category", "direction", "source_contexts"]
+    assert list(edge_rows[0]) == ["id", "subject", "predicate", "object", "category", "primary_knowledge_source", "knowledge_level", "agent_type", "source_records", "description", "evidence", "reference_metadata"]
+    nodes = {n["id"]: n for n in node_rows}
+    edges = {e["id"]: e for e in edge_rows}
+    assert len(nodes) == len(node_rows) and len(edges) == len(edge_rows)
+    manifest = json.loads((downloads / "manifest.json").read_text())
+    for name, count in (("nodes.tsv", len(nodes)), ("edges.tsv", len(edges))):
+        assert manifest["files"][name]["sha256"] == digest(downloads / name)
+        assert manifest["files"][name]["rows"] == count
+        if args.comparison_kgx_dir:
+            assert (downloads / name).read_bytes() == (args.comparison_kgx_dir / name).read_bytes()
+    contexts = defaultdict(list)
+    for _, record in records:
+        for collection, node in named(record):
+            if node["id"] in selected_ids:
+                details = {"label": node["label"]} if collection == "pathway" else node
+                contexts[node["id"]].append(
+                    {"record_id": record["id"], "collection": collection, **details}
+                )
+    for identifier in selected_ids:
+        row = nodes[identifier]
+        expected_contexts = sorted(
+            contexts[identifier], key=lambda x: json.dumps(x, sort_keys=True)
+        )
+        assert (
+            sorted(json.loads(row["source_contexts"]), key=lambda x: json.dumps(x, sort_keys=True))
+            == expected_contexts
+        )
+        explicit = {c["category"] for c in expected_contexts if c.get("category")}
+        expected_categories = {CATEGORIES[k] for k in explicit}
+        if not explicit:
+            collections = {c["collection"] for c in expected_contexts}
+            assert len(collections) == 1, (identifier, collections)
+            expected_categories = {
+                {
+                    "taxa": "biolink:OrganismTaxon",
+                    "reactions": "biolink:BiochemicalReaction",
+                    "pathway": "biolink:Pathway",
+                }[next(iter(collections))]
+            }
+        assert set(row["category"].split("|")) == expected_categories, (
+            identifier,
+            row["category"],
+            expected_categories,
+        )
+        assert set(filter(None, row["source_category"].split("|"))) == explicit
+        directions = {c["direction"] for c in expected_contexts if c.get("direction")}
+        assert row["direction"] == (next(iter(directions)) if len(directions) == 1 else "")
+        assert row["name"] in {c["label"] for c in expected_contexts}
+        assert row["provided_by"] == "infores:pathwaymech"
+    baseline_edge_rows = list(
+        csv.DictReader(
+            io.StringIO(git("show", args.base + ":pages/downloads/edges.tsv").decode()),
+            delimiter="\t",
+        )
+    )
+    baseline_node_rows = list(
+        csv.DictReader(
+            io.StringIO(git("show", args.base + ":pages/downloads/nodes.tsv").decode()),
+            delimiter="\t",
+        )
+    )
+    for old in baseline_edge_rows:
+        assert old["id"] in edges and edges[old["id"]] == old, ("baseline edge changed", old["id"])
+    old_contexts = 0
+    exact_unchanged_node_rows = 0
+    for old in baseline_node_rows:
+        assert old["id"] in nodes
+        if old["id"] not in selected_ids:
+            assert nodes[old["id"]] == old, ("unrelated baseline node row changed", old["id"])
+            exact_unchanged_node_rows += 1
+        assert {k: v for k, v in old.items() if k != "source_contexts"} == {k: v for k, v in nodes[old["id"]].items() if k != "source_contexts"}, ("baseline node field changed", old["id"])
+        before_contexts = json.loads(old["source_contexts"])
+        after_contexts = [
+            x
+            for x in json.loads(nodes[old["id"]]["source_contexts"])
+            if x["record_id"] in baseline_ids
+        ]
+        assert sorted(before_contexts, key=lambda x: json.dumps(x, sort_keys=True)) == sorted(
+            after_contexts, key=lambda x: json.dumps(x, sort_keys=True)
+        ), ("baseline node contexts changed", old["id"])
+        old_contexts += len(before_contexts)
+    old_index = json.loads(git("show", args.base + ":pages/pathway_index.json"))
+    current_index = json.loads(aggregate_bytes["pathway_index.json"])
+    assert {k: v for k, v in old_index.items() if k != "records"} == {k: v for k, v in current_index.items() if k != "records"}
+    old_index_rows = {r["id"]: r for r in old_index["records"]}
+    new_index_rows = {r["id"]: r for r in current_index["records"]}
+    assert len(new_index_rows) == len(current_index["records"]) == len(records)
+    assert all(new_index_rows[k] == v for k, v in old_index_rows.items())
+    assert set(new_index_rows) - set(old_index_rows) == {target["id"]}
+    ir = new_index_rows[target["id"]]
+    assert ir["label"] == target["label"] and ir["taxa"] == target["taxa"]
+    assert set(ir["reactions"]) == {r["id"] for r in target["reactions"]}
+    assert ir["page"] == "records/MetaCyc_PWY-8383.html"
+    assert {p["id"] for p in ir["proteins"]} == {p["id"] for p in target["participants"] if p["id"].startswith("UniProtKB:")}
+    browse = lhtml.fromstring(aggregate_bytes["browse.html"])
+    assert ir["page"] in browse.xpath("//a/@href")
+    old_browse = lhtml.fromstring(git("show", args.base + ":pages/browse.html"))
+    old_cards = {li.xpath("./a/@href")[0]: lhtml.tostring(li) for li in old_browse.xpath("//li[@data-search]")}
+    new_cards = {li.xpath("./a/@href")[0]: lhtml.tostring(li) for li in browse.xpath("//li[@data-search]")}
+    assert all(new_cards[k] == v for k, v in old_cards.items())
+    assert set(new_cards) - set(old_cards) == {ir["page"]}
+    home = lhtml.fromstring(aggregate_bytes["index.html"])
+    home_stats = {x.xpath("./dt")[0].text_content(): int(x.xpath("./dd")[0].text_content().replace(",", "")) for x in home.xpath("//div[@class='home-stat']")}
+    assert home_stats == {"Pathway records": len(records), "Taxa represented": len({t["id"] for _, r in records for t in r["taxa"]}), "Mechanistic edges": sum(len(r["mechanistic_edges"]) for _, r in records), "Distinct references": len({v["id"] for _, r in records for v in r["references"]})}
+    assert manifest["pathway_records"] == len(records)
+    assert manifest["version"].removeprefix("sha256:") in home.text_content()
+    assert {"browse.html", "downloads/nodes.tsv", "downloads/edges.tsv", "downloads/manifest.json"} <= set(home.xpath("//a/@href"))
+    assert "CHEBI:31877" not in declared_ids and "MetaCyc:CPD-25904" in declared_ids and "CHEBI:7061" in declared_ids
+    qualified = [e for e in target["mechanistic_edges"] if "experimentally unresolved" in e.get("description", "")]
+    assert len(qualified) == 21
+    endpoint_branches = {(e["subject"], e["object"]) for e in target["mechanistic_edges"] if e["predicate"] == "produces" and e["object"] in {"MetaCyc:CPD-25904", "CHEBI:7061", "MetaCyc:CPD-25916"}}
+    assert endpoint_branches == {("MetaCyc:RXN-23313", "MetaCyc:CPD-25916"), ("MetaCyc:RXN-23314", "MetaCyc:CPD-25904"), ("MetaCyc:RXN-23315", "CHEBI:7061")}
+    assert next(r for r in target["reactions"] if r["id"] == "MetaCyc:RXN-23314")["direction"] == "right_to_left"
+    record_results = []
+    normalized_descriptions = []
+    exporter_input_sha256 = digest(root / "src/pathwaymech/kgx.py")
+    expected_target_edge_ids = set()
+    for path, record in targets:
+        references = {r["id"]: r for r in record["references"]}
+        for source in record["mechanistic_edges"]:
+            safe = re.sub(r"[^A-Za-z0-9._-]+", "_", f"{record['id']}_{source['id']}").strip("_")
+            suffix = hashlib.sha256(f"{record['id']}\0{source['id']}".encode()).hexdigest()[:12]
+            identifier = f"pathwaymech:{safe}_{suffix}"
+            expected_target_edge_ids.add(identifier)
+            row = edges[identifier]
+            assert (row["subject"], row["predicate"], row["object"]) == (
+                source["subject"],
+                PREDICATES[source["predicate"]],
+                source["object"],
+            )
+            raw_description = source.get("description", "")
+            expected_description = re.sub(r"[\t\r\n]+", " ", raw_description).strip()
+            assert row["description"] == expected_description, ("description content mismatch", source["id"])
+            if row["description"] != raw_description:
+                normalized_descriptions.append({"edge_id": source["id"], "original": raw_description, "exported": row["description"], "rule": "Existing kgx._cell: replace TAB/CR/LF runs with one space and strip surrounding whitespace."})
+            assert json.loads(row["evidence"]) == source["evidence"]
+            reference_ids = sorted({ev["reference_id"] for ev in source["evidence"]})
+            assert row["source_records"] == "|".join(reference_ids)
+            assert json.loads(row["reference_metadata"]) == [
+                references[key] for key in reference_ids
+            ]
+            assert row["category"] == "biolink:Association"
+            assert row["primary_knowledge_source"] == "infores:pathwaymech"
+            assert row["knowledge_level"] == "knowledge_assertion"
+            assert row["agent_type"] == "manual_validation_of_automated_agent"
+        page = root / "pages/records" / (record["id"].replace(":", "_").replace("/", "_") + ".html")
+        record_results.append(
+            {
+                "record_id": record["id"],
+                "record": str(path.relative_to(root)),
+                "record_sha256": digest(path),
+                "named_nodes_including_scope_taxon": sum(1 for _ in named(record)),
+                "edges": len(record["mechanistic_edges"]),
+                "page": str(page.relative_to(root)),
+                "svg_audit": audit_svg(record, page),
+            }
+        )
+    assert set(edges) - {r["id"] for r in baseline_edge_rows} == expected_target_edge_ids, "Unexpected added KGX edges"
+    assert set(nodes) - {r["id"] for r in baseline_node_rows} == selected_ids - {r["id"] for r in baseline_node_rows}, "Unexpected added KGX nodes"
+    target_prefixes = [
+        "pathwaymech:" + re.sub(r"[^A-Za-z0-9._-]+", "_", r["id"]) + "_" for _, r in targets
+    ]
+    assert {
+        identifier
+        for identifier in edges
+        if any(identifier.startswith(prefix) for prefix in target_prefixes)
+    } == expected_target_edge_ids
+    assert digest(initial_target_page) == initial_page_hash, "Target page changed during audit"
+    assert initial_record_hashes == {str(p): digest(p) for p, _ in records}, (
+        "Record bytes changed during audit"
+    )
+    assert initial_download_hashes == {
+        name: digest(downloads / name) for name in initial_download_hashes
+    }, "Published downloads changed during audit"
+    gate_receipts = json.loads(captured_gate_bytes)
+    if isinstance(gate_receipts, dict):
+        gate_receipts = gate_receipts["checks"]
+    render_gate = next(x for x in gate_receipts if x["name"] == "render")
+    assert render_gate["exit_code"] == 0 and render_gate["finished_at"]
+    assert digest(Path(render_gate["log"])) == render_gate["log_sha256"]
+    gate = next(x for x in gate_receipts if x["name"] == "kgx")
+    cli_log = Path(gate["log"])
+    assert gate["exit_code"] == 0 and gate["log_sha256"] == digest(cli_log)
+    command = gate["command"]
+    assert "kgx-export" in command and "--output-dir" in command
+    assert (
+        Path(command[command.index("--output-dir") + 1]).resolve()
+        == args.comparison_kgx_dir.resolve()
+    )
+    assert f"from {len(records)} pathway records" in cli_log.read_text()
+    receipt = {
+        "execution": {
+            "CLI_command": " ".join(command),
+            "CLI_exit_code": 0,
+            "CLI_log": str(cli_log),
+            "CLI_log_sha256": digest(cli_log),
+            "corpus_records": len(records),
+            "input_records_stable_during_audit": True,
+            "published_downloads_stable_during_audit": True,
+        },
+        "audit_type": (
+            "Programmatic generated SVG and KGX integration audit; "
+            "not a browser visual inspection or scientific review"
+        ),
+        "status": "passed",
+        "verified_at": datetime.now(UTC).isoformat(),
+        "command": " ".join(sys.argv),
+        "script_sha256": digest(Path(__file__)),
+        "records": record_results,
+        "totals": {
+            "record_local_named_nodes": sum(
+                x["named_nodes_including_scope_taxon"] for x in record_results
+            ),
+            "distinct_target_KGX_nodes": len(selected_ids),
+            "SVG_nodes_across_pages": sum(x["svg_audit"]["svg_nodes"] for x in record_results),
+            "target_edges": len(expected_target_edge_ids),
+            "target_evidence_blocks": sum(
+                x["svg_audit"]["evidence_blocks_linked_and_preserved"] for x in record_results
+            ),
+        },
+        "scope_checks": {
+            "target_identity": (
+                "Exactly the added complete myxochelin A/B maintained record "
+                "and all its declared nodes and edges were audited"
+            )
+        },
+        "KGX": {
+            "all_target_nodes_categories_labels_directions_and_complete_contexts": (
+                "verified against every corpus declaration"
+            ),
+            "all_target_edges_complete_evidence_reference_metadata_and_descriptions": (
+                "Evidence and reference metadata exactly preserved; descriptions follow unchanged TSV whitespace normalization"
+            ),
+            "download_manifest_hashes_and_counts": "verified",
+            "separate_CLI_export": str(args.comparison_kgx_dir)
+            if args.comparison_kgx_dir
+            else "not supplied",
+            "files": {name: digest(downloads / name) for name in ("nodes.tsv", "edges.tsv")},
+        },
+        "limits": [
+            "No browser rendering or interaction inspection was performed.",
+            (
+                "This structural artifact audit does not establish scientific correctness "
+                "of source assertions."
+            ),
+        ],
+    }
+    receipt["baseline_preservation"] = {
+        "base": args.base,
+        "baseline_records": len(baseline_records),
+        "immutable_record_history_review_page_files": len(preserved_paths),
+        "paths": preserved_paths,
+        "unchanged_exported_edges": len(baseline_edge_rows),
+        "unchanged_record_scoped_node_contexts": old_contexts,
+        "exact_unchanged_unrelated_node_rows": exact_unchanged_node_rows,
+        "all_prior_pathway_index_rows_unchanged": len(old_index_rows),
+        "all_prior_browse_cards_unchanged": len(old_cards),
+        "all_prior_node_noncontext_fields_unchanged": len(baseline_node_rows),
+    }
+    receipt["representation_checks"] = {
+        "A_B_branches": sorted(endpoint_branches),
+        "native_A_identity": "MetaCyc:CPD-25904, no CHEBI:31877 node or exact equivalence added",
+        "native_reverse_reaction": "MetaCyc:RXN-23314 right_to_left preserved",
+        "qualified_acylation_order_edges": [e["id"] for e in qualified],
+        "qualification": "All 21 original descriptions and their evidence are byte-equivalent in KGX and text-preserved on the page; no acylation-order certainty is introduced by this export.",
+        "carrier_categories": "Every named participant and its declared category/context was checked against YAML; carrier states remain protein categories.",
+    }
+    receipt["text_normalization"] = {
+        "source": "src/pathwaymech/kgx.py:_cell and _SPACE",
+        "source_sha256": exporter_input_sha256,
+        "descriptions_with_only_normalization": normalized_descriptions,
+        "evidence_metadata": "Parsed evidence/reference JSON objects are exact; no relaxed comparison is used for their fields.",
+        "initial_audit": "graph-audit.py exited 1 on an over-strict raw description equality assumption; initial script/log remain preserved, no repository change made.",
+    }
+    receipt["exact_KGX_ID_set_delta"] = {"added_nodes": len(set(nodes) - {r["id"] for r in baseline_node_rows}), "added_edges": len(set(edges) - {r["id"] for r in baseline_edge_rows}), "unexpected_additions": []}
+    receipt["aggregation_artifacts"] = {name: hashlib.sha256(b).hexdigest() for name, b in aggregate_bytes.items()}
+    receipt["execution"]["render"] = render_gate
+    receipt["execution"]["gate_receipt"] = str(args.gate_receipts)
+    receipt["execution"]["gate_receipt_sha256"] = gate_receipt_digest
+    receipt["execution"]["target_expected_sha256"] = args.target_sha256
+    assert receipt["totals"]["SVG_nodes_across_pages"] == expected_svg_count
+    receipt["SVG_expected_node_derivation"] = {
+        "edge_endpoints": sorted(endpoint_ids),
+        "retained_declared_participants_and_reactions": sorted(declared_graph_ids),
+        "expected_count": expected_svg_count,
+        "isolated_declared_ids": sorted(declared_ids - endpoint_ids),
+    }
+    assert receipt["totals"]["distinct_target_KGX_nodes"] == 38
+    assert git("rev-parse", "HEAD").decode().strip() == audit_head
+    receipt["started_at"] = started_at
+    receipt["baseline_state"] = (
+        "Actual merged PR403 baseline babe44ad1992d2950701e432f400965631d538a7; "
+        "maintained bridge independently inspected separately"
+    )
+    assert args.base == "babe44ad1992d2950701e432f400965631d538a7"
+    receipt["audit_checkout"] = {"head": audit_head, "tree": audit_tree}
+    receipt["limits"].append(
+        "Only the observed terminal KGX export and programmatic artifact checks are attested here. "
+        "No full-suite, scientific-review or publication status is inferred."
+    )
+    receipt["reviewer_role"] = {
+        "scope": (
+            "Independent graph artifact comparison, not independent acceptance "
+            "of preparer-authored code"
+        ),
+        "disclosure": (
+            "Reviewer previously assessed the external Myx source/helper successor and subsequently "
+            "prepared production authority selection and the copy plan. Root independently "
+            "accepted/adopted them. This new rendering audit does not self-approve those "
+            "preparations or establish independent source-identity/scientific approval."
+        ),
+    }
+    assert preserved_hashes == {p: digest(root / p) for p in preserved_hashes}, (
+        "Baseline owner bytes changed during audit"
+    )
+    assert initial_comparison_hashes == {
+        name: digest(args.comparison_kgx_dir / name) for name in initial_comparison_hashes
+    }, "Comparison export changed during audit"
+    assert digest(args.gate_receipts) == gate_receipt_digest, "Gate receipt changed during audit"
+    assert gate["log_sha256"] == digest(cli_log), "Gate log changed during audit"
+    assert initial_record_hashes == {str(p): digest(p) for p in record_bytes}, (
+        "Record changed before output"
+    )
+    assert digest(initial_target_page) == initial_page_hash, "Target page changed before output"
+    assert initial_download_hashes == {
+        name: digest(downloads / name) for name in initial_download_hashes
+    }, "Downloads changed before output"
+    assert aggregate_bytes == {name: (root / "pages" / name).read_bytes() for name in aggregate_bytes}, "Aggregate artifacts changed during audit"
+    assert digest(root / "src/pathwaymech/kgx.py") == exporter_input_sha256, "Exporter source changed during audit"
+    receipt_path = args.receipt
+    with receipt_path.open("x", encoding="utf-8") as stream:
+        stream.write(json.dumps(receipt, indent=2) + "\n")
+    print(
+        json.dumps(
+            {
+                "status": receipt["status"],
+                "receipt": str(receipt_path),
+                "sha256": digest(receipt_path),
+                "totals": receipt["totals"],
+                "baseline_files": len(preserved_paths),
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

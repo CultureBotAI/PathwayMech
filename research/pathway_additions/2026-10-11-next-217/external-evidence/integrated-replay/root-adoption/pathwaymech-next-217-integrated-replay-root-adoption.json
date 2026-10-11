@@ -1,0 +1,102 @@
+{
+  "status": "accepted_current_integrated_source_replay_and_canonical_child_checks",
+  "at": "2026-10-11T17:18:46.842997+00:00",
+  "actual_execution": {
+    "session": 92304,
+    "exit_code": 0,
+    "terminal_chunk": "325b2d"
+  },
+  "integration_receipt_sha256": "453b8abcfd0c7336582465fa2cacc68b510ee5db91aa70da13c6c83e1a2b5b89",
+  "child_receipt_sha256": "5b5a65d2fe88d4c2d2e4919faa37cfef1c4cbd5c5b3233d79404c03544a16778",
+  "binding_manifest_sha256": "39b94e1fe4285bb26704a4809569010320b7325b896425463d42a84a9c6c9c17",
+  "target_sha256": "5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2",
+  "formal_bindings_freshly_rehashed": 1533,
+  "small_source_and_proof_bindings_freshly_rehashed": 111,
+  "bound_total": 1645,
+  "checks": [
+    {
+      "name": "source-replay",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "/private/tmp/pathwaymech-next-217-20261011/research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py",
+        "--record",
+        "/private/tmp/pathwaymech-next-217-20261011/data/pathways/myxochelin-a-and-b-biosynthesis.yaml",
+        "--repo",
+        "/private/tmp/pathwaymech-next-217-20261011",
+        "--output",
+        "/private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011/source-replay.json"
+      ],
+      "started_at": "2026-10-11T17:15:35.099954Z",
+      "finished_at": "2026-10-11T17:16:30.609578Z",
+      "exit_code": 0,
+      "stdout_sha256": "74a3d6f32607f14840957183a3a5195fa3632989c0b6c9947f7d53f6a7c8c60f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "identifiers",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "-c",
+        "from pathlib import Path;import sys;from pathwaymech.cli import check_identifiers_main;raise SystemExit(check_identifiers_main([],root=Path(sys.argv[1])))",
+        "/private/tmp/pathwaymech-next-217-20261011"
+      ],
+      "started_at": "2026-10-11T17:16:30.610894Z",
+      "finished_at": "2026-10-11T17:16:56.564957Z",
+      "exit_code": 0,
+      "stdout_sha256": "64e4edc44ad34407f01e202c81eba263680711647d210f2d1cf6d2e4951cd3ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-schema",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "-c",
+        "from pathwaymech.cli import validate_main;raise SystemExit(validate_main())"
+      ],
+      "started_at": "2026-10-11T17:16:56.566329Z",
+      "finished_at": "2026-10-11T17:17:20.988291Z",
+      "exit_code": 0,
+      "stdout_sha256": "909892ef808abb4925178de5500b47cb59268f2237def0b1a0a76ddafb2e1ae0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "strict-schema",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "-c",
+        "from pathlib import Path;import sys;from pathwaymech.cli import validate_strict_main;raise SystemExit(validate_strict_main([sys.argv[2]],root=Path(sys.argv[1])))",
+        "/private/tmp/pathwaymech-next-217-20261011",
+        "/private/tmp/pathwaymech-next-217-20261011/data/pathways/myxochelin-a-and-b-biosynthesis.yaml"
+      ],
+      "started_at": "2026-10-11T17:17:20.991601Z",
+      "finished_at": "2026-10-11T17:17:24.398155Z",
+      "exit_code": 0,
+      "stdout_sha256": "2633eb4651bde400f48623b604be8f10162a37da338fe1fc24c2fa0302e1d948",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_counts": {
+    "original_bodies": 103,
+    "reactions": 9,
+    "edges": 78,
+    "evidence": 239,
+    "references": 62,
+    "biological_negative_controls": 7
+  },
+  "interpretation": "Root read driver and child scope/results, checked all child logs and KGX outputs, exact accepted bindings and current target, freshly rehashed all formal bindings and small source/prior-proof files. Complete issuing database was freshly hashed before/after by the accepted driver and unchanged child; root did not repeat that large database pass here.",
+  "limits": [
+    "Unchanged child checks its original authority proposal; it does not certify corrected production metadata. Current identifier gate and root authority-selection acceptance are separate evidence.",
+    "Identifier and native schema checks are current corpus checks; the explicit strict check targets this pathway. Root full validation/history/render/tests/lint/KGX and independent scientific review remain separate.",
+    "Installed-distribution metadata and interpreter identities are bound provenance, not a claim to hash every third-party package or standard-library implementation.",
+    "Endpoint checks cannot exclude arbitrary transient machine-state mutation between observations. No production guard bypass or test-only runtime injection exists.",
+    "Full corpus gate session28093 still includes a running test suite; no final corpus pass or current canonical scientific review is claimed by this adoption."
+  ]
+}

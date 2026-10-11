@@ -1,0 +1,133 @@
+"""Independent bounded source/structure check; no record or author-helper imports."""
+from pathlib import Path
+import hashlib
+import json
+import sqlite3
+from collections import Counter
+from datetime import datetime, timezone
+import xml.etree.ElementTree as E
+from rdkit import Chem
+from rdkit.Chem import rdMolDescriptors
+
+ROOT = Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011')
+OUT = Path(__file__).parent
+ORIG = ROOT / 'originals'
+
+
+def sha(path):
+    with Path(path).open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+
+def native(fid):
+    extra = '-native' if fid == 'CPD-25916' else ''
+    p = ORIG / ('metacyc-' + fid + extra + '.xml')
+    tree = E.parse(p)
+    return p, next(n for n in tree.getroot() if n.get('frameid') == fid)
+
+
+def inchi(fid):
+    return native(fid)[1].findtext('inchi')
+
+
+def cml_molecule(fid):
+    p, n = native(fid)
+    root = n.find('cml/molecule')
+    mol = Chem.RWMol()
+    indices = {}
+    for atom in root.findall('atomArray/atom'):
+        indices[atom.get('id')] = mol.AddAtom(Chem.Atom(atom.get('elementType')))
+    for bond in root.findall('bondArray/bond'):
+        x, y = bond.get('atomRefs').split()
+        bondtype = {'1': Chem.BondType.SINGLE, '2': Chem.BondType.DOUBLE, '3': Chem.BondType.TRIPLE}[bond.get('order')]
+        mol.AddBond(indices[x], indices[y], bondtype)
+    Chem.SanitizeMol(mol)
+    return Chem.RemoveHs(mol.GetMol())
+
+
+db = Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+conn = sqlite3.connect('file:' + str(db) + '?mode=ro', uri=True)
+chemical = {}
+sql = {}
+for curie in ['CHEBI:31877', 'CHEBI:7061']:
+    sql[curie] = [dict(predicate=p, value=v, object=o) for p, v, o in conn.execute('select predicate,value,object from statements where subject=? order by predicate,value,object', (curie,))]
+def prop(curie, predicate):
+    return next(r['value'] for r in sql[curie] if r['predicate'] == predicate)
+for fid in ['CPD-25904', 'CPD-25905', 'CPD-25916']:
+    source, n = native(fid)
+    i = n.findtext('inchi')
+    mol = Chem.MolFromInchi(i)
+    assert mol is not None
+    cml = cml_molecule(fid)
+    # Standard InChI resolves mobile-H amide/imidic-acid tautomerism; raw
+    # SMILES from an InChI round trip need not retain the drawn bond order.
+    cml_inchi = Chem.MolToInchi(cml)
+    assert cml_inchi == i.split('/t', 1)[0]
+    chemical[fid] = {'original': str(source), 'sha256': sha(source), 'inchi': i, 'formula': rdMolDescriptors.CalcMolFormula(mol), 'charge': Chem.GetFormalCharge(mol), 'chiral_centers': Chem.FindMolChiralCenters(mol, includeUnassigned=True), 'cml_standard_inchi_matches_stereo_stripped_native': True, 'cml_derived_standard_inchi': cml_inchi, 'cml_has_no_absolute_stereo_assertion': True, 'canonical_isomeric_smiles': Chem.MolToSmiles(mol), 'generic_cml_smiles_not_used': n.findtext("cml/molecule/string[@title='smiles']")}
+assert inchi('CPD-25905') == prop('CHEBI:7061', 'chemrof:inchi_string')
+assert inchi('CPD-25904') != prop('CHEBI:31877', 'chemrof:inchi_string')
+a = Chem.MolFromInchi(inchi('CPD-25904'))
+broad = Chem.MolFromInchi(prop('CHEBI:31877', 'chemrof:inchi_string'))
+assert Chem.MolToSmiles(a, isomericSmiles=False) == Chem.MolToSmiles(broad, isomericSmiles=False)
+assert all(code == '?' for _, code in Chem.FindMolChiralCenters(broad, includeUnassigned=True))
+
+pwpath, pw = native('PWY-8383')
+members = [n.get('frameid') for n in pw.findall('reaction-list/Reaction')]
+assert len(members) == len(set(members)) == 9
+assert not pw.findall('reaction-list/Pathway')
+expected = {'DHBAMPLIG-RXN','RXN-23310','RXN-22679','RXN-23308','RXN-23316','RXN-23312','RXN-23313','RXN-23314','RXN-23315'}
+assert set(members) == expected
+equations = {}
+for fid in members:
+    path, n = native(fid)
+    equation = Counter()
+    direction = n.findtext('reaction-direction')
+    for side, factor in [('left', -1), ('right', 1)]:
+        for s in n.findall(side):
+            participants = [x for x in s if x.get('frameid')]
+            assert len(participants) == 1
+            compound = participants[0]
+            coefficient = int(s.findtext('coefficient') or '1')
+            equation[compound.get('frameid')] += factor * coefficient
+    if direction == 'PHYSIOL-RIGHT-TO-LEFT':
+        equation = Counter({k: -v for k,v in equation.items()})
+    else:
+        assert direction == 'PHYSIOL-LEFT-TO-RIGHT'
+    equations[fid] = {'path':str(path), 'sha256':sha(path), 'native_direction':direction, 'physiological_stoichiometry':dict(equation)}
+common = {'DHBAMPLIG-RXN':2,'RXN-23310':2,'RXN-22679':1,'RXN-23308':1,'RXN-23316':1,'RXN-23312':1,'RXN-23313':1}
+nets = {}
+for product, extra in [('A','RXN-23314'),('B','RXN-23315')]:
+    total = Counter()
+    for fid, repeat in {**common,extra:1}.items():
+        for key,value in equations[fid]['physiological_stoichiometry'].items():
+            total[key] += repeat*value
+    total = {k:v for k,v in sorted(total.items()) if v}
+    assert all(not any(z in k for z in ['MxcF','MxcG']) for k in total)
+    nets[product]=total
+
+gb = E.parse(ORIG/'AF299336.1.xml').getroot()
+assert gb.findtext('.//GBSeq_accession-version') == 'AF299336.1'
+proteins = {}
+uniprot = json.loads((ORIG/'UniProt-mxc.json').read_text())
+entries = {r['primaryAccession']:r for r in uniprot['results']}
+for accession, gene in [('Q9F638','mxcE'),('Q9F637','mxcF'),('Q9F636','mxcG'),('Q9F631','mxcL')]:
+    for feature in gb.findall('.//GBFeature'):
+        quals = {q.findtext('GBQualifier_name'):q.findtext('GBQualifier_value') for q in feature.findall('GBFeature_quals/GBQualifier')}
+        if quals.get('gene') == gene and 'translation' in quals:
+            sequence = quals['translation']
+            assert sequence == entries[accession]['sequence']['value']
+            proteins[gene] = {'protein_id':quals['protein_id'],'uniprot':accession,'sequence_sha256':hashlib.sha256(sequence.encode()).hexdigest(),'length':len(sequence),'current_uniprot_taxon':entries[accession]['organism']['taxonId'],'entry_type':entries[accession]['entryType'],'exact_native_sequence_not_tagged_construct_claim':True}
+assert len(proteins)==4
+
+manifest=json.loads((ROOT/'source-manifest.json').read_text())
+rehashes=[]
+for row in manifest['bodies']:
+    assert sha(row['path'])==row['sha256'], row['path']
+    rehashes.append({'path':row['path'],'sha256':row['sha256']})
+handoff=json.loads((ROOT/'handoff.json').read_text())
+for row in handoff['artifacts']:
+    assert sha(row['path'])==row['sha256']
+result={'at':datetime.now(timezone.utc).isoformat(),'scope':'Independent original-source structural and native-boundary check; not a maintained record gate or scientific approval by testing alone.','handoff_sha256':sha(ROOT/'handoff.json'),'chemical_structures':chemical,'chebi_source':{'path':str(db),'sha256':sha(db),'selected_native_sql_rows':sql},'A_structure_decision':'Same connectivity, but CHEBI31877 has unspecified stereochemistry and cannot be declared exact to native CPD25904.','B_structure_decision':'Native CPD25905 and CHEBI7061 full InChIs match exactly, including stereochemistry and protonation.','native_pathway':{'path':str(pwpath),'sha256':sha(pwpath),'members':members,'nested_pathway_count':0,'precursor_links':[n.get('frameid') for n in pw.findall('pathway-link/link-target/Pathway')]},'original_equations':equations,'native_branch_nets':nets,'native_sequence_bridges':proteins,'source_body_rehashes':rehashes,'all_frozen_handoff_artifacts_unchanged':True}
+with (OUT/'source-structure-check.json').open('x') as f:
+    json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':'passed','members':len(members),'sources':len(rehashes),'structures':{k:v['chiral_centers'] for k,v in chemical.items()},'nets':nets},indent=2))

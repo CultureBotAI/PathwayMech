@@ -1,0 +1,112 @@
+"""Reviewer-authored small-original audit; does not replace full-database proofs."""
+import hashlib
+import json
+import sqlite3
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+from lxml import etree, html
+
+W = Path('/private/tmp/pathwaymech-next-217-20261011')
+O = Path('/private/tmp/pathwaymech-next-217-independent-scientific-review')
+A = Path('/private/tmp/pathwaymech-myxochelin-author-20261011')
+P = Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011/originals')
+D = W / 'research/pathway_additions/2026-10-11-next-217'
+started = datetime.now(timezone.utc).isoformat()
+digest = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+target = W / 'data/pathways/myxochelin-a-and-b-biosynthesis.yaml'
+record = yaml.safe_load(target.read_bytes())
+assert digest(target) == '5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2'
+manifest = json.loads((D/'draft/myxochelin-source-manifest.json').read_text())
+sources = {}
+checked = []
+for b in manifest['bodies']:
+    assert digest(b['path']) == b['sha256'], b['path']
+    sources[b['sha256']] = Path(b['path'])
+    checked.append({'path': b['path'], 'sha256': b['sha256'], 'bytes': Path(b['path']).stat().st_size})
+for b in manifest['issuing_databases']:
+    sources[b['sha256']] = Path(b['path'])
+# Whole SQL bytes deliberately use named exact prior/root proof; this current run
+# opens the original SQL read-only and independently compares selected assertions.
+db = sqlite3.connect('file:/Users/marcin/.data/oaklib/chebi.db?mode=ro', uri=True)
+refs = {v['id']: v for v in record['references']}
+assertions = []
+for edge in record['mechanistic_edges']:
+    for n, e in enumerate(edge['evidence']):
+        ref = refs[e['reference_id']]
+        path = sources[ref['source_sha256']]
+        locator = e['source_locator']
+        matches = []
+        if locator.startswith('/'):
+            if path.suffix == '.json':
+                body = json.loads(path.read_text())
+                for selector in locator.split('; '):
+                    value = body
+                    for key in selector.strip('/').split('/'):
+                        key = key.replace('~1', '/').replace('~0', '~')
+                        value = value[int(key)] if isinstance(value, list) else value[key]
+                    matches.append(1)
+            else:
+                body = html.fromstring(path.read_bytes()) if path.suffix == '.html' else etree.fromstring(path.read_bytes())
+                for selector in locator.split('; '):
+                    value = body.xpath(selector)
+                    assert value, (edge['id'], n, selector)
+                    matches.append(len(value))
+        assertions.append({'edge':edge['id'],'evidence_index':n,'reference':ref['id'],'body_sha256':ref['source_sha256'],'locator':locator,'matches':matches})
+assert len(assertions) == 239
+def frame(name):
+    suffix = '-native' if name == 'CPD-25916' else ''
+    e = etree.parse(str(P/f'metacyc-{name}{suffix}.xml')).xpath(f'/*/*[@frameid="{name}"]')
+    assert len(e) == 1
+    return e[0]
+chem = {'ATP':'30616','2-3-DIHYDROXYBENZOATE':'36654','PROTON':'15378','CPD-62':'57417','PPI':'33019','AMP':'456215','LYS':'32551','CPD-24910':'176581','NADPH':'57783','NADP':'58349','GLT':'29985','CPD-25905':'7061','2-KETOGLUTARATE':'16810'}
+structures = []
+for native, accession in chem.items():
+    x = frame(native).findtext('inchi')
+    q = db.execute("SELECT value FROM statements WHERE subject=? AND predicate='chemrof:inchi_string'", ('CHEBI:'+accession,)).fetchall()
+    assert len(q)==1 and q[0][0]==x
+    structures.append({'native':native,'chebi':'CHEBI:'+accession,'inchi':x})
+generic_a = db.execute("SELECT value FROM statements WHERE subject='CHEBI:31877' AND predicate='chemrof:inchi_string'").fetchone()[0]
+native_a = frame('CPD-25904').findtext('inchi')
+assert '/t' in native_a and '/t' not in generic_a and native_a.split('/t')[0] == generic_a
+carrier = ['MxcF','MxcG','23-DHB-MxcF','Lysyl-MxcG','N-23-DHB-Lysyl-MxcG','N-N-di23-DHB-Lysyl-MxcG']
+for name in carrier:
+    assert frame(name).tag == 'Protein' and frame(name).find('inchi') is None
+mapping = {k:'CHEBI:'+v for k,v in chem.items()}
+mapping.update({k:'MetaCyc:'+k for k in carrier+['CPD-25904','CPD-25916']})
+members = [e.get('frameid') for e in frame('PWY-8383').xpath('./reaction-list/Reaction')]
+assert len(members)==9 and set(members)=={r['id'].removeprefix('MetaCyc:') for r in record['reactions']}
+expected = Counter(); equations = {}
+for name in members:
+    obj = frame(name)
+    reverse = obj.findtext('reaction-direction') == 'PHYSIOL-RIGHT-TO-LEFT'
+    assert reverse == (name == 'RXN-23314')
+    terms = {}
+    for side, tag in [('consumes','right' if reverse else 'left'),('produces','left' if reverse else 'right')]:
+        terms[side] = []
+        for term in obj.findall(tag):
+            identity = term[0].get('frameid'); coefficient = int(term.findtext('coefficient','1'))
+            assert coefficient == 1
+            terms[side].append([identity,coefficient])
+            key = (mapping[identity],side,'MetaCyc:'+name) if side=='consumes' else ('MetaCyc:'+name,side,mapping[identity])
+            expected[key] += coefficient
+    equations[name] = terms
+actual = Counter((e['subject'],e['predicate'],e['object']) for e in record['mechanistic_edges'] if e['predicate'] in ['consumes','produces'])
+assert actual==expected and sum(actual.values())==46
+gb = etree.parse(str(P/'AF299336.1.xml')); bridges=[]
+for accession, protein_id in [('Q9F638','AAG31128.1'),('Q9F637','AAG31129.1'),('Q9F636','AAG31130.1'),('Q9F631','AAG31135.1')]:
+    u = json.loads((A/f'originals/uniprot-{accession}.json').read_text())
+    fs = gb.xpath(f'//GBFeature[GBFeature_key="CDS" and GBFeature_quals/GBQualifier[GBQualifier_name="protein_id" and GBQualifier_value="{protein_id}"]]')
+    assert len(fs)==1
+    sequence = fs[0].xpath('string(GBFeature_quals/GBQualifier[GBQualifier_name="translation"]/GBQualifier_value)')
+    assert sequence==u['sequence']['value'] and u['organism']['taxonId']==41
+    links = [x for x in u['uniProtKBCrossReferences'] if x['database']=='EMBL' and x['id']=='AF299336']
+    assert any(p['value']==protein_id for x in links for p in x['properties'])
+    bridges.append({'accession':accession,'protein_id':protein_id,'length':len(sequence),'sequence_sha256':hashlib.sha256(sequence.encode()).hexdigest(),'uniprot_taxon':41})
+qual = {x.findtext('GBQualifier_name'):x.findtext('GBQualifier_value') for x in gb.xpath('//GBFeature[GBFeature_key="source"]/GBFeature_quals/GBQualifier')}
+assert qual['strain']=='Sg a15' and qual['db_xref']=='taxon:675526'
+out = {'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'target_sha256':digest(target),'original_response_count':len(checked),'original_responses':checked,'evidence_occurrences':assertions,'native_members':members,'native_equations':equations,'chemical_side_count':46,'exact_structure_comparisons':structures,'A_structure_scope':{'native':native_a,'generic_CHEBI_31877':generic_a,'result':'native stereospecific; generic entry not exact'},'symbolic_carriers':carrier,'sequence_bridges':bridges,'ncbi_source_scope':qual,'limits':['This is a current small-original/selected-SQL audit, not a fresh whole SQL hash, full runtime replay or scientific entailment inferred from selector resolution.','Full atom/charge balance, RDKit structure parsing, Rhea original-chain and late-binding-control proofs are separately attributed to preserved exact independent/root evidence.','Primary 2001 text/Figure 5 and complete 2008 SI text/four rendered pages were freshly read by reviewer outside this mechanical audit.']}
+(O/'fresh-source-check.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({k:out[k] for k in ['started_at','finished_at','target_sha256','original_response_count','native_members','chemical_side_count','sequence_bridges','limits']}))

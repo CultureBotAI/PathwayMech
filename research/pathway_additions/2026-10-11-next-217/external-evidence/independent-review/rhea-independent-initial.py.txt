@@ -1,0 +1,24 @@
+import gzip,hashlib,json
+from pathlib import Path
+from lxml import etree
+R=Path('/private/tmp/pathwaymech-myxochelin-independent-review-20261011');path=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');h=hashlib.sha256(path.read_bytes()).hexdigest();assert h=='8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf'
+base='http://rdf.rhea-db.org/';rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#';subs=['20229','20230','20229_L','20229_R']+['Participant_20229_compound_'+n for n in ['3751','6372','3249','2580','2106']]+['Compound_'+n for n in ['3751','6372','3249','2580','2106']];wanted={base+s for s in subs};nodes={}
+with gzip.open(path,'rb') as f:
+ for _,e in etree.iterparse(f,events=('end',)):
+  p=e.getparent()
+  if p is not None and p.tag=='{'+rdf+'}RDF':
+   uri=e.get('{'+rdf+'}about')
+   if uri in wanted:
+    d={}
+    for c in e:d.setdefault(etree.QName(c).localname,[]).append(c.get('{'+rdf+'}resource') or c.text)
+    nodes[uri]=d
+   e.clear()
+   while e.getprevious() is not None:del p[0]
+assert wanted==set(nodes)
+assert base+'20230' in nodes[base+'20229']['directionalReaction'];chains=[]
+for field,chebis in [('substrates',{'CHEBI:36654','CHEBI:30616','CHEBI:15378'}),('products',{'CHEBI:57417','CHEBI:33019'})]:
+ side=nodes[base+'20230'][field][0];found=set()
+ for participant in nodes[side]['contains1']:
+  compound=nodes[participant]['compound'][0];vals=nodes[compound];cid=next(x for x in vals.get('chebi',[]) if 'CHEBI_' in x);curie='CHEBI:'+cid.split('CHEBI_')[1];found.add(curie);chains.append({'role':field,'side':side,'participant':participant,'compound':compound,'chebi':curie,'coefficient':1})
+ assert found==chebis,(field,found)
+(R/'rhea-independent.json').write_text(json.dumps({'source':str(path),'sha256':h,'release':'142','master':'RHEA:20229','direction':'RHEA:20230','chains':chains,'source_scope':'Exact source chemical corroboration of DHB adenylation; no organism-specific catalyst inference from Rhea.'},indent=2)+'\n');print('Five exact Rhea142 participant chains match native selected direction and ChEBI identities.')

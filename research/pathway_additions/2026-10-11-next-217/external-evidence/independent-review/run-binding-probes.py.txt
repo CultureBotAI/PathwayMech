@@ -1,0 +1,30 @@
+import concurrent.futures, hashlib, json, shutil, subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+ROOT=Path('/private/tmp/pathwaymech-myxochelin-independent-review-20261011')
+A=Path('/private/tmp/pathwaymech-myxochelin-author-20261011')
+PYTHON='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+REPO='/private/tmp/pathwaymech-next-216-20261011'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+wrapper='''import builtins,json,runpy,sys\nfrom pathlib import Path\nhookfile=Path(sys.argv[1]); kind=sys.argv[2]; helper=sys.argv[3]; args=sys.argv[4:]\noriginal_import=builtins.__import__; installed=False\ndef replacement(*a,**kw):\n global installed\n m=original_import(*a,**kw)\n if a[0]=='pathwaymech.kgx' and not installed:\n  installed=True\n  original_write=m.write_kgx\n  def write(*x,**y):\n   if kind=='projection':\n    d=json.loads(hookfile.read_text());d['graph_to_source']=[];hookfile.write_text(json.dumps(d))\n   else:hookfile.write_text('{"mutated_at_real_write_kgx":true}\\n')\n   return original_write(*x,**y)\n  m.write_kgx=write\n return m\nbuiltins.__import__=replacement\nsys.argv=[helper]+args\nrunpy.run_path(helper,run_name='__main__')\n'''
+(ROOT/'binding-wrapper.py').write_text(wrapper)
+def run(kind):
+ d=ROOT/('binding-'+kind); d.mkdir()
+ (d/'draft').mkdir()
+ for p in A.glob('draft/*'):
+  if p.is_file():shutil.copyfile(p,d/'draft'/p.name)
+ for n in ['myxochelin-replay.py','rhea-crosscheck.json']:shutil.copyfile(A/n,d/n)
+ manifest=d/'draft/myxochelin-source-manifest.json';m=json.loads(manifest.read_text())
+ if kind=='prior-proof':
+  row=m['prior_proof_inputs'][4];hook=d/'root-prior-acceptance.json';shutil.copyfile(row['path'],hook);row['path']=str(hook);manifest.write_text(json.dumps(m,indent=2)+'\n')
+ else:hook=d/'draft/myxochelin-source-projection.json'
+ initial=sha(hook)
+ out=d/'result.json'
+ argv=[PYTHON,str(ROOT/'binding-wrapper.py'),str(hook),kind,str(d/'myxochelin-replay.py'),'--record',str(d/'draft/myxochelin-a-and-b-biosynthesis.yaml'),'--repo',REPO,'--output',str(out)]
+ start=datetime.now(timezone.utc).isoformat()
+ with (d/'console.log').open('w') as f:p=subprocess.run(argv,stdout=f,stderr=subprocess.STDOUT)
+ data={'kind':kind,'command':argv,'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':p.returncode,'helper_sha256':sha(d/'myxochelin-replay.py'),'hook_path':str(hook),'before_sha256':initial,'after_sha256':sha(hook),'output_exists':out.exists(),'output_sha256':sha(out) if out.exists() else None,'log_sha256':sha(d/'console.log'),'scope':'Actual unchanged helper and full original source replay; only isolated copied metadata/proof changed at the real write_kgx call. Original author files remain untouched.'}
+ (d/'probe.json').write_text(json.dumps(data,indent=2)+'\n');return data
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(run,['projection','prior-proof']))
+(ROOT/'binding-probes.json').write_text(json.dumps(results,indent=2)+'\n')
+print(json.dumps(results,indent=2))

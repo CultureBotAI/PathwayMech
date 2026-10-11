@@ -1,0 +1,5 @@
+The accepted `f91bb984` replay can remain byte-identical if its five `draft/` inputs and adjacent `rhea-crosscheck.json` are copied in the same layout. Pass the maintained record and current repository explicitly. Retain the original external native-source directory and invoke the declared PDF virtualenv interpreter path.
+
+The helper validates original-source chemistry, schema and KGX, and parses the old authority proposal for identity labels. It does not validate integrated identifier snapshots or policy; it must not be advertised as doing so. A separate current-integration guard must bind the actual maintained target, both snapshots, policy/source manifests, complete local runtime and adopted production selection before import and freshly recheck them before exclusive success. Issue404 production metadata stays distinct from the immutable old proposal.
+
+This is production preparation, not independent acceptance of the proposed wrapper or authority outputs. No accepted helper, target, source or maintained file was changed.

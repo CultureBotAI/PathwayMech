@@ -1,0 +1,30 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json
+root=Path('/private/tmp/pathwaymech-next-217-20261011');D=root/'research/pathway_additions/2026-10-11-next-217';dest=D/'external-evidence/current-full-gates';assert not dest.exists()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+receipts=Path('/private/tmp/pathwaymech-next-217-final-gate-receipts.json');inputs=Path('/private/tmp/pathwaymech-next-217-final-gate-inputs.json');driver=Path('/private/tmp/pathwaymech-next-217-final-gates.py')
+r=json.loads(receipts.read_text());bound=json.loads(inputs.read_text());assert len(bound)==422
+assert [x['name'] for x in r]==['render','validate','test','lint','identifiers','kgx','diff-tracked'] and all(x['exit_code']==0 for x in r)
+for rel,expected in bound.items():assert sha(root/rel)==expected,rel
+for x in r:assert sha(x['log'])==x['log_sha256']
+test=next(x for x in r if x['name']=='test');assert '1256 passed, 3 skipped, 3 warnings' in Path(test['log']).read_text()
+dest.mkdir(parents=True)
+files=[]
+def write(name,data,source):
+ p=dest/name
+ with p.open('xb') as f:f.write(data)
+ files.append({'path':str(p.relative_to(root)),'sha256':sha(p),'source':str(source)})
+for p in [receipts,inputs,driver]:write(p.name+('.txt' if p.suffix=='.py' else ''),p.read_bytes(),p)
+for x in r:
+ p=Path(x['log']);b=p.read_bytes();wrapper={'format':'lossless-immutable-evidence-v1','original_sha256':sha(p),'original_bytes':len(b),'encoding':'utf-8','content':b.decode()}
+ write(p.name+'.json',(json.dumps(wrapper,indent=2)+'\n').encode(),p)
+p=Path(__file__);write(p.name+'.txt',p.read_bytes(),p)
+result={'status':'passed','at':datetime.now(timezone.utc).isoformat(),'execution':{'session':28093,'exit_code':0,'terminal':'93010c'},'input_count':len(bound),'inputs_freshly_rechecked':True,'tests':{'passed':1256,'skipped':3,'warnings':3},'checks':[{'name':x['name'],'exit_code':x['exit_code']} for x in r],'files':files,'limits':['Whitespace command covered tracked diff only; complete staged check remains required.','Scientific review is independent of deterministic validation; canonical bundle is not yet saved.']}
+q=dest/'root-adoption.json';q.write_text(json.dumps(result,indent=2)+'\n')
+readme=D/'README.md';s=readme.read_text();old='Validation and the current canonical scientific review are pending at this preparation stage. Historical external successes are not presented as a current full-corpus pass. Source exhaustion remains false.'
+assert old in s
+new='Current full-corpus validation passed on the integrated record: render, validate, lint, identifier checks and KGX export all exited zero; the test suite reported 1,256 passed and three skipped. The driver and root adoption freshly rechecked all 422 bound source, test, policy, record, authority and active-helper inputs. Logs and actual execution receipts are preserved under `external-evidence/current-full-gates/`. The tracked whitespace check passed; the final staged check is part of PR preparation.\n\nThe separate integrated replay passed its four actual child checks and rechecked 1,645 bound inputs at completion. It connects the unchanged historical scientific helper to the current record, runtime, production authorities and corpus validators without changing the helper\'s proposal-only scope. `external-evidence/integrated-replay/` preserves its driver, binding manifest, controls, execution, root adoption and packaging provenance. Archived scripts are inert historical evidence, not interchangeable execution manifests.\n\nThe current static graph audit found 37 SVG nodes, 38 KGX nodes, 78 mechanistic edges and all 239 evidence blocks. It verified the A/B branches, qualified N6-first convention, reverse native RXN-23314 direction and preservation of prior records, pages, edges and node context. This is programmatic graph verification, not a browser interaction check. See `external-evidence/current-graph-review/`.\n\nA fresh independent scientific preassessment inspected every edge evidence occurrence and all references, original native objects, structures, protein sequences and current authority version claims; it found no actionable scientific defect while retaining the stated literature and biochemical limits. Its immutable proof is under `external-evidence/current-scientific-preassessment/`. The canonical saved scientific review uses `reviews/structured/` and is distinct from these preparatory observations and deterministic gates. Source exhaustion remains false.'
+readme.write_text(s.replace(old,new)+'\n' if not s.endswith('\n') else s.replace(old,new))
+state=Path('/private/tmp/pathwaymech-next-217-state.json');d=json.loads(state.read_text());d.update(phase='full_gates_and_integration_proofs_passed_canonical_review_pending',updated_at=datetime.now(timezone.utc).isoformat());d['full_gates']={'session':28093,'exit_code':0,'terminal':'93010c','state':'passed','tests_passed':1256,'tests_skipped':3,'adoption_sha256':sha(q)};d['final_proofs_adoption']={'exit_code':0,'terminal':'c55a52','sha256':sha(D/'final-proofs-adoption.json')};state.write_text(json.dumps(d,indent=2)+'\n')
+print(json.dumps({'status':'passed','gate_adoption_sha256':sha(q),'README_sha256':sha(readme),'archived_files':len(files)}))

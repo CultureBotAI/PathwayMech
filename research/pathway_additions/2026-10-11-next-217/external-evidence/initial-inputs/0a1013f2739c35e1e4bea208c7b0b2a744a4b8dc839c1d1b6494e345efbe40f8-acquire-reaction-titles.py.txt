@@ -1,0 +1,16 @@
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime,timezone
+import hashlib,json,urllib.request,urllib.error
+from pathlib import Path
+O=Path(__file__).parent
+ids=['DHBAMPLIG-RXN','RXN-23310','RXN-22679','RXN-23308','RXN-23316','RXN-23312','RXN-23313','RXN-23314','RXN-23315']
+jobs=[(f'metacyc-{i}-compound.html','https://bf2i-artsymbiocyc.insa-lyon.fr/compound?orgid=META&id='+i) for i in ids]
+def fetch(job):
+ name,url=job;p=O/'originals'/name;assert not p.exists();at=datetime.now(timezone.utc).isoformat()
+ try:r=urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech scientific curation'}),timeout=60)
+ except urllib.error.HTTPError as e:r=e
+ b=r.read();p.write_bytes(b)
+ return {'path':str(p),'url':url,'final_url':r.url,'status':r.code,'content_type':r.headers.get('Content-Type'),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'started_at':at,'finished_at':datetime.now(timezone.utc).isoformat()}
+with ThreadPoolExecutor(max_workers=4) as pool: rows=list(pool.map(fetch,jobs))
+with (O/'acquisition3.json').open('x') as f:json.dump(rows,f,indent=2);f.write('\n')
+print(json.dumps([{'path':x['path'],'status':x['status'],'bytes':x['bytes']} for x in rows]))

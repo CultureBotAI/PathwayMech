@@ -1,0 +1,20 @@
+import builtins,json,runpy,sys
+from pathlib import Path
+hookfile=Path(sys.argv[1]); kind=sys.argv[2]; helper=sys.argv[3]; args=sys.argv[4:]
+original_import=builtins.__import__; installed=False
+def replacement(*a,**kw):
+ global installed
+ m=original_import(*a,**kw)
+ if a[0]=='pathwaymech.kgx' and not installed:
+  installed=True
+  original_write=m.write_kgx
+  def write(*x,**y):
+   if kind=='projection':
+    d=json.loads(hookfile.read_text());d['graph_to_source']=[];hookfile.write_text(json.dumps(d))
+   else:hookfile.write_text('{"mutated_at_real_write_kgx":true}\n')
+   return original_write(*x,**y)
+  m.write_kgx=write
+ return m
+builtins.__import__=replacement
+sys.argv=[helper]+args
+runpy.run_path(helper,run_name='__main__')

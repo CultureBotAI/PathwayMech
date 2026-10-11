@@ -1,0 +1,60 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,importlib.util,subprocess,re
+import yaml
+from lxml import html
+O=Path(__file__).parent;D=O/'draft';P=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011');repo=Path('/private/tmp/pathwaymech-next-216-20261011')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(4*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def dump(p,j):
+ with p.open('x') as f:json.dump(j,f,indent=2);f.write('\n')
+# Correct an unsealed authoring title placeholder against the exact original h1.
+target=D/'myxochelin-a-and-b-biosynthesis.yaml';prior=target.read_bytes();(O/'unsealed-first-draft.yaml.txt').write_bytes(prior);r=yaml.safe_load(prior)
+t=html.fromstring((P/'originals/PMC58696.html').read_bytes());title=' '.join(t.xpath('//hgroup/h1')[0].text_content().split());ref=next(x for x in r['references'] if x['id']=='PMID:11562468');old=ref['title'];ref['title']=title
+target.write_text(yaml.safe_dump(r,sort_keys=False,allow_unicode=True,width=100));builder=O/'build-draft.py';s=builder.read_text();assert old in s;s=s.replace(old,title);builder.write_text(s)
+p=D/'myxochelin-source-projection.json';pj=json.loads(p.read_text());pj['record_sha256']=sha(target);p.write_text(json.dumps(pj,indent=2)+'\n')
+dump(O/'pre-freeze-title-correction.json',{'scope':'Unsealed author-preparation correction before review; exact original h1 replaces mistaken placeholder title. No scientific edge changed.','old':old,'new':title,'before_sha256':hashlib.sha256(prior).hexdigest(),'after_sha256':sha(target)})
+spec=importlib.util.spec_from_file_location('sb',repo/'scripts/build_source_identifier_snapshot.py');sb=importlib.util.module_from_spec(spec);spec.loader.exec_module(sb)
+acquisitions=json.loads((O/'acquisition.json').read_text())+json.loads((O/'acquisition2.json').read_text())
+inputs=[];inspection=[]
+for a in acquisitions:
+ p=Path(a['path']);assert sha(p)==a['sha256'];kind='metacyc-html' if p.suffix=='.html' else ('uniprot' if 'uniprot-' in p.name else None)
+ if not kind:continue
+ try:terms=list(sb.source_terms(kind,p));valid=True
+ except ValueError as e:terms=[];valid=False;error=str(e)
+ inspection.append({'path':str(p),'sha256':a['sha256'],'kind':kind,'terms':terms,'status':'canonical_parser_pass' if valid else 'not_selected_canonical_input','limit':'' if valid else error})
+ if valid and (kind=='uniprot' or any(i in {n['id'] for k in ['participants','taxa'] for n in r[k]}|{r['id']} for i,_,_ in terms)):
+  inputs.append({'manifest_entry':{'key':'myxochelin-'+p.stem.lower()+'-2026-10-11','kind':kind,'path':p.name,'url':a['url'],'version':'current original retrieved 2026-10-11; MetaCyc HTML frontend 22.5 where applicable','license':'Public original identity metadata only; no raw redistribution proposed','sha256':a['sha256']},'original_path':str(p),'terms':[{'id':i,'label':l,'synonyms':syn} for i,l,syn in terms]})
+  for i,l,syn in terms:
+   if i.startswith('MetaCyc:'):
+    node=next((x for x in r['participants'] if x['id']==i),None)
+    if node:assert node['label']==l,(node,l)
+dump(D/'myxochelin-authority-proposal.json',{'record_sha256':sha(target),'scope':'External proposal only; no shared manifest/snapshot/policy writes or gate acceptance. Native reaction IDs have contextual labels, actual existence verified by original XML.','proposed_inputs':inputs,'source_parser_inspection':inspection,'ontology_ids':sorted({n['id'] for k in ['participants','taxa'] for n in r[k] if n['id'].startswith(('CHEBI:','NCBITaxon:'))})})
+orig=json.loads((P/'source-manifest.json').read_text());allb=orig['bodies']+[{**a,'accepted_source_body':a['status']==200,'scope':'Issuing label/taxon/sequence source, not experimental chemistry'} for a in acquisitions]
+# Retain failed redirects and unresolved native labels as access facts, not accepted authority inputs.
+for a in allb:
+ if str(a['path']) in {str(O/'originals/metacyc-CPD-25904.html'),str(O/'originals/metacyc-CPD-25916.html')}:
+  a['accepted_source_body']=False;a['scope']='Native JavaScript redirect only; exact compound endpoint acquired separately.'
+im=Path('/private/tmp/pathwaymech-myxochelin-imod-context-20261011');allb+=json.loads((im/'manifest.json').read_text())
+for b in allb:assert sha(b['path'])==b['sha256']
+chem=json.loads((D/'myxochelin-chemical-identities.json').read_text())
+checks=[{'path':str(p),'sha256':sha(p)} for p in [P/'handoff.json',P/'replay-final.json',Path('/private/tmp/pathwaymech-myxochelin-independent-adjudication-20261011/handoff.json'),Path('/private/tmp/pathwaymech-myxochelin-independent-adjudication-20261011/decision.json'),Path('/private/tmp/pathwaymech-myxochelin-root-authoring-acceptance-20261011.json'),im/'completion.json',im/'context.json',im/'manifest.json']]
+dump(D/'myxochelin-source-manifest.json',{'created_at':datetime.now(timezone.utc).isoformat(),'bodies':allb,'issuing_databases':[{'path':chem['source_path'],'sha256':chem['source_sha256'],'scope':'Complete ChEBI255 semantic SQL, freshly hashed by author builder'}],'references':r['references'],'reference_scope':'Each reference digest maps to an original whole body; NCBI protein references share exact original nucleotide XML with explicit CDS selectors; ChEBI references share full original SQL. Failed/redirect bodies are retained but not mechanism evidence.','prior_proof_inputs':checks,'source_access_limits':orig.get('scope'),'record_sha256':sha(target)})
+roots=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),repo]
+pat=r'PWY-8383|myxochelin|RXN-233(08|09|10|11|12|13|14|15|16)|RXN-22679|CPD-259(04|05|16)|Q9F63[1678]|AF299336|11562468|18498160|15678426|BGC0001345'
+searches=[]
+for ix,root in enumerate(roots):
+ cmd=['rg','-uu','--follow','-n','-i','--json','--glob','!.git/**','--glob','!.venv/**',pat,'.'];z=subprocess.run(cmd,cwd=root,capture_output=True);assert z.returncode in [0,1],z.stderr
+ out=O/f'dedup-{ix}.jsonl';out.write_bytes(z.stdout);hits=[json.loads(x)['data'] for x in z.stdout.splitlines() if json.loads(x).get('type')=='match'];paths=sorted({x['path']['text'] for x in hits})
+ recs=[];dups=[]
+ for f in (root/'data/pathways').glob('*.yaml'):
+  q=yaml.safe_load(f.read_text());recs.append(q);rs={x['id'] for x in q.get('reactions',[])}
+  if q['id']==r['id'] or set(x['id'] for x in r['reactions'])<=rs:dups.append(str(f))
+ assert not dups
+ searches.append({'root':str(root),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'command':cmd,'exit':z.returncode,'raw_output':str(out),'sha256':sha(out),'hit_paths':paths,'hits':len(hits),'maintained_records':len(recs),'exact_or_full_route_duplicates':dups,'scope':'Ignored and hidden included; symlinks followed. Git internals and dependency environments excluded, binary archives not recursively unpacked.'})
+ print('DEDUP',root,len(hits),paths)
+dump(D/'myxochelin-dedup.json',{'at':datetime.now(timezone.utc).isoformat(),'searches':searches,'prior_dedup':str(P/'handoff.json'),'disposition':'No exact pathway or complete nine-reaction graph found. Current defining hits are read in the retained output before final handoff; shared precursor chemistry is not a duplicate.'})
+print(json.dumps({'target':sha(target),'authority_inputs':len(inputs),'original_responses':len(allb),'counts':pj['counts']}))

@@ -1,0 +1,76 @@
+from pathlib import Path
+import hashlib,json,datetime,subprocess,base64,os
+O=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-217-20261011');D=Path('research/pathway_additions/2026-10-11-next-217');S=Path('/private/tmp/pathwaymech-myxochelin-authority-selection-20261011')
+def h(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def save(p,x):
+ with p.open('x') as f:json.dump(x,f,indent=2);f.write('\n')
+plan=json.loads((O/'copy-plan.json').read_text());(O/'copy-plan-before-root-proof.json').write_bytes((O/'copy-plan.json').read_bytes())
+root_review=Path('/private/tmp/pathwaymech-next-217-authority-root-review.json')
+assert h(root_review)=='2d3fd54c7f707b33e6e780f734c82e3813a6373d93f65c1b7cc4471408d27b51'
+for p in [root_review,root_review.with_suffix('.py'),Path('/private/tmp/pathwaymech-next-217-merged-baseline-bridge.json'),Path('/private/tmp/pathwaymech-next-217-core-adoption.json'),Path('/private/tmp/pathwaymech-next-217-adopt-record-authorities.py'),Path('/private/tmp/pathwaymech-next-217-current-duplicate-check.json')]:
+ b=p.read_bytes();dst=D/'external-evidence/root-integration'/p.name
+ if p.suffix=='.py':dst=dst.with_name(dst.name+'.txt')
+ assert not any(e['destination']==str(dst) for e in plan['copy_entries'])
+ assert not any(l.rstrip(b'\r\n').endswith((b' ',b'\t')) for l in b.splitlines(keepends=True)) and not b.endswith(b'\n\n')
+ e={'path':str(p),'sha256':h(p),'bytes':len(b),'source_name':p.name,'disposition':'planned-copy','destination':str(dst),'copy_source':str(p),'destination_sha256':h(p),'mode':'exact_bytes','role':'Independent root acceptance or actual merged-baseline bridge; source agent does not self-approve'}
+ plan['copy_entries'].append(e);q=O/'preview'/dst;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(b)
+head,tree=subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}'],cwd=R,text=True).splitlines()
+assert head=='babe44ad1992d2950701e432f400965631d538a7' and tree==plan['provisional_base']['tree']
+plan['merge_bridge'].update(actual_merged_head=head,actual_merged_tree=tree,observed_tree_equal_to_candidate=True,root_bridge={'path':'/private/tmp/pathwaymech-next-217-merged-baseline-bridge.json','sha256':h('/private/tmp/pathwaymech-next-217-merged-baseline-bridge.json')},local_transition_and_root_proof_required_before_canonical_review=False)
+adoption=Path('/private/tmp/pathwaymech-next-217-core-adoption.json')
+assert h(adoption)=='c9e1a1c00aab4a149699909932a92a9459552d21b7ffc1755d1abeec4cc3dfdf'
+assert h('/private/tmp/pathwaymech-next-217-current-duplicate-check.json')=='2f25b8fd5ca5833c0675ca8df1e584aa9b748ae0b20427f3060b30618eaa71ed'
+plan['authority_apply_status']='Root independently accepted and applied the exact target, three authority files and21 original cache bodies. This plan author performed no maintained writes. All remaining copy destinations must be absent.'
+plan['root_core_adoption']={'path':str(adoption),'sha256':h(adoption)}
+plan['already_present_protected']=[]
+for e in list(plan['copy_entries']):
+ if e['destination']=='data/pathways/myxochelin-a-and-b-biosynthesis.yaml':
+  assert h(R/e['destination'])==e['sha256']
+  plan['copy_entries'].remove(e)
+  e['disposition']='root-already-adopted-exact-protected-no-copy'
+  plan['already_present_protected'].append(e)
+for e in json.loads(adoption.read_text())['maintained_files']:
+ assert h(R/e['destination'])==e['sha256']
+
+plan['root_authority_review']={'path':str(root_review),'sha256':h(root_review)}
+plan['expected_existing_tracked_changes']=[{'path':rel,'sha256':h(S/'canonical-dry-run'/name)} for rel,name in [('conf/identifier_sources.json','identifier_sources.json'),('data/identifier_authorities/ontology.json','ontology.json'),('data/identifier_authorities/sources.json','sources.json')]]
+plan['application_contract'][1]='The actual merged baseline babe44ad has been observed with the exact candidate tree. Before apply, recheck this bridge and the root-accepted authority output hashes; only three listed shared authority changes may already be present.'
+cmd=['git','diff','--no-index','--check',str(O/'empty'),str(O/'preview')];r=subprocess.run(cmd,capture_output=True,text=True);assert r.returncode==1 and not r.stdout and not r.stderr
+plan['validation']['whitespace_check']={'command':cmd,'exit_code':r.returncode,'stdout':r.stdout,'stderr':r.stderr,'meaning':'No-index difference exit1; no whitespace bit or diagnostics. Actual staged diff check remains root-owned.'}
+# Freshly verify exact copies, aliases, decoded fixtures and all destinations.
+index={x['destination']:x for x in plan['copy_entries']+plan['already_present_protected']}
+for e in plan['copy_entries']:
+ assert not os.path.lexists(R/e['destination']),e['destination']
+ assert h(e['copy_source'])==e['destination_sha256']
+ b=Path(e['copy_source']).read_bytes()
+ if e['mode']=='lossless_json_wrapper':
+  w=json.loads(b);b=w['content'].encode('utf-8') if w['encoding']=='utf-8' else base64.b64decode(w['content'],validate=True)
+ assert hashlib.sha256(b).hexdigest()==e['sha256'] and len(b)==e['bytes']
+for e in plan['exact_byte_aliases']:
+ assert index[e['destination']]['sha256']==e['sha256']
+for e in plan['formal_input_resolution']+plan['fixture_resolution']:
+ assert index[e['destination']]['sha256']==e['sha256']
+plan['validation']['all_destinations_absent']=False
+plan['validation']['all_remaining_destinations_absent']=True
+plan['validation']['protected_existing_target_exact']=True
+plan['sealed_at']=datetime.datetime.now(datetime.UTC).isoformat()
+(O/'copy-plan.json').write_text(json.dumps(plan,indent=2)+'\n')
+md=f'''# Myxochelin production copy plan
+
+This plan prepares {len(plan['copy_entries'])} exact copies and {len(plan['exact_byte_aliases'])} byte aliases for cohort 217. It applies nothing. The accepted target remains `5331f505…`; the sole active replay is unchanged `f91bb984…`, beside its original `draft/` JSON inputs and `rhea-crosscheck.json`.
+
+The 35 initial author inputs, both issue402 observations and corrected controls, all 239 edge evidence assessments, and issue404 source-version correction remain distinct. Every one of {len(plan['fixture_resolution'])} independent replay fixture files is recoverable through a lossless JSON wrapper; the same-byte symlink retarget is recorded separately for external reconstruction. Historical Python/YAML/logs are inert. Duplicate byte streams resolve through explicit aliases. Raw article, native/API bodies, rendered paper pages and full text extractions stay external with source-manifest and acceptance hashes.
+
+The actual merged base is `{head}` with tree `{tree}`, equal to the provisional reviewed tree. Root's independent authority acceptance and merged-baseline bridge are included. The authority preparation adds 21 original inputs; it changes no prior terms or metadata. Three exact shared authority files may already be applied by root; their expected hashes are listed. Root has applied only the exact target, three authority files and21 source bodies; their adoption receipt is included. The target is marked protected and must not be copied or overwritten. The plan author applied nothing.
+
+For each copy entry, root should require an absent destination (including dangling symlinks), rehash the source, create exclusively, and verify copied bytes. Preserve `copy-plan.json`, this README, validation and handoff as new preparation evidence; they do not fabricate historical canonical review lineage. Wrapper content must be decoded before comparison with historical hashes. Preserve all original external paths and the declared PDF virtualenv path.
+
+The source replay does not validate integrated authority snapshots or complete current runtime. Run it on the current maintained target, then separately bind and validate current policy/snapshots/runtime and run corpus gates before canonical review. This preparation is a new implementation contribution by the earlier external reviewer, not independent approval of its own outputs.
+
+The complete prepared addition tree passed whitespace inspection: actual `git diff --no-index --check` returned 1 for differences with empty output; a deliberate whitespace control returned 3 with its diagnostic. Initial harness assumptions about that exit code are preserved in `preparation-failures.json`. The real staged `git diff --check` remains root-owned.
+'''
+(O/'README.md').write_text(md)
+validation={'at':datetime.datetime.now(datetime.UTC).isoformat(),'status':'external_copy_plan_validated_not_applied','plan_sha256':h(O/'copy-plan.json'),'copies':len(plan['copy_entries']),'aliases':len(plan['exact_byte_aliases']),'formal_input_bindings':len(plan['formal_input_resolution']),'fixture_files':len(plan['fixture_resolution']),'fixture_symlinks':len(plan['fixture_symlinks']),'all_copies_rehashed':True,'all_aliases_and_decoded_fixture_bytes_resolve':True,'all_remaining_destinations_absent':True,'protected_existing_target_exact':True,'raw_body_trees_excluded':plan['excluded_trees'],'current_helper_unchanged':True,'actual_head':head,'actual_tree':tree,'whitespace_check':plan['validation']['whitespace_check'],'root_authority_review':plan['root_authority_review'],'maintained_writes':[]}
+save(O/'validation.json',validation)
+print(json.dumps({'plan_sha256':h(O/'copy-plan.json'),'copies':len(plan['copy_entries']),'validation_sha256':h(O/'validation.json')},indent=2))

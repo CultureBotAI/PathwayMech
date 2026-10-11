@@ -1,0 +1,110 @@
+{
+  "status": "actual_full_positive_replay_completed",
+  "session_id": 92304,
+  "started_chunk": "3c7cd0",
+  "terminal_chunk": "325b2d",
+  "exit_code": 0,
+  "cwd": "/private/tmp/pathwaymech-next-217-20261011",
+  "login": false,
+  "command": "env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/integration-replay.py --repo /private/tmp/pathwaymech-next-217-20261011 --helper /private/tmp/pathwaymech-next-217-20261011/research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py --binding-manifest /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/expected-bindings.json --binding-sha256 39b94e1fe4285bb26704a4809569010320b7325b896425463d42a84a9c6c9c17 --output-dir /private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011",
+  "receipt": {
+    "path": "/private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011/integration-replay.json",
+    "sha256": "453b8abcfd0c7336582465fa2cacc68b510ee5db91aa70da13c6c83e1a2b5b89"
+  },
+  "children": [
+    {
+      "name": "source-replay",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "/private/tmp/pathwaymech-next-217-20261011/research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py",
+        "--record",
+        "/private/tmp/pathwaymech-next-217-20261011/data/pathways/myxochelin-a-and-b-biosynthesis.yaml",
+        "--repo",
+        "/private/tmp/pathwaymech-next-217-20261011",
+        "--output",
+        "/private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011/source-replay.json"
+      ],
+      "started_at": "2026-10-11T17:15:35.099954Z",
+      "finished_at": "2026-10-11T17:16:30.609578Z",
+      "exit_code": 0,
+      "stdout_sha256": "74a3d6f32607f14840957183a3a5195fa3632989c0b6c9947f7d53f6a7c8c60f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "identifiers",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "-c",
+        "from pathlib import Path;import sys;from pathwaymech.cli import check_identifiers_main;raise SystemExit(check_identifiers_main([],root=Path(sys.argv[1])))",
+        "/private/tmp/pathwaymech-next-217-20261011"
+      ],
+      "started_at": "2026-10-11T17:16:30.610894Z",
+      "finished_at": "2026-10-11T17:16:56.564957Z",
+      "exit_code": 0,
+      "stdout_sha256": "64e4edc44ad34407f01e202c81eba263680711647d210f2d1cf6d2e4951cd3ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-schema",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "-c",
+        "from pathwaymech.cli import validate_main;raise SystemExit(validate_main())"
+      ],
+      "started_at": "2026-10-11T17:16:56.566329Z",
+      "finished_at": "2026-10-11T17:17:20.988291Z",
+      "exit_code": 0,
+      "stdout_sha256": "909892ef808abb4925178de5500b47cb59268f2237def0b1a0a76ddafb2e1ae0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "strict-schema",
+      "command": [
+        "/private/tmp/pathwaymech-next-217-20261011/.venv/bin/python",
+        "-B",
+        "-P",
+        "-c",
+        "from pathlib import Path;import sys;from pathwaymech.cli import validate_strict_main;raise SystemExit(validate_strict_main([sys.argv[2]],root=Path(sys.argv[1])))",
+        "/private/tmp/pathwaymech-next-217-20261011",
+        "/private/tmp/pathwaymech-next-217-20261011/data/pathways/myxochelin-a-and-b-biosynthesis.yaml"
+      ],
+      "started_at": "2026-10-11T17:17:20.991601Z",
+      "finished_at": "2026-10-11T17:17:24.398155Z",
+      "exit_code": 0,
+      "stdout_sha256": "2633eb4651bde400f48623b604be8f10162a37da338fe1fc24c2fa0302e1d948",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "bounded_result": {
+    "native_reactions": 9,
+    "original_source_bodies": 103,
+    "evidence_anchors": 239,
+    "scientific_mutants_rejected": 7,
+    "native_sequence_bridges": 4,
+    "pdf_pages": 4,
+    "proposal_inputs_parsed": 22,
+    "KGX": {
+      "nodes": 38,
+      "edges": 78,
+      "evidence": 239
+    },
+    "canonical_identifiers": "verified identifiers and label policies in 218 pathway records against authority snapshots",
+    "canonical_native_schema": "validated 218 pathway records",
+    "canonical_target_strict_schema": "validated 1 records against the closed LinkML schema",
+    "final_uncached_recheck": "passed before exclusive integration receipt creation"
+  },
+  "limits": [
+    "Unchanged child checks its original authority proposal; it does not certify corrected production metadata. Current identifier gate and root authority-selection acceptance are separate evidence.",
+    "Identifier and native schema checks are current corpus checks; the explicit strict check targets this pathway. Root full validation/history/render/tests/lint/KGX and independent scientific review remain separate.",
+    "Installed-distribution metadata and interpreter identities are bound provenance, not a claim to hash every third-party package or standard-library implementation.",
+    "Endpoint checks cannot exclude arbitrary transient machine-state mutation between observations. No production guard bypass or test-only runtime injection exists."
+  ],
+  "browser_interaction": false,
+  "maintained_writes": []
+}

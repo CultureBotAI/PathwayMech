@@ -1,0 +1,92 @@
+{
+  "created_at": "2026-10-11T16:39:09.615432+00:00",
+  "status": "confirmed_open",
+  "issue_key": "myxochelin-replay-prior-proof-final-binding",
+  "severity": "minor",
+  "scope": "External author replay provenance, not a biological or equation defect",
+  "target_sha256": "5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2",
+  "helper": {
+    "path": "/private/tmp/pathwaymech-myxochelin-author-20261011/myxochelin-replay.py",
+    "sha256": "59d89e69a51dd4119ede1cb08bd212951210ef66c55696620bda4e4a8c943cef",
+    "startup_location": "lines 74-75: prior_proof_inputs hashes checked",
+    "final_location": "lines 531-538: final checks cover captured core, original bodies and issuing databases but omit prior_proof_inputs"
+  },
+  "finding": "A declared prior proof can change after its initial hash check and the unchanged helper still emits a successful full replay receipt whose captured manifest declares the previous digest. The demonstrated replacement is an isolated copy of the root authoring acceptance proof, changed at the real write_kgx call. No original author files or proofs were mutated.",
+  "probe": {
+    "kind": "prior-proof",
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-wrapper.py",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-prior-proof/root-prior-acceptance.json",
+      "prior-proof",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-prior-proof/myxochelin-replay.py",
+      "--record",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-prior-proof/draft/myxochelin-a-and-b-biosynthesis.yaml",
+      "--repo",
+      "/private/tmp/pathwaymech-next-216-20261011",
+      "--output",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-prior-proof/result.json"
+    ],
+    "started_at": "2026-10-11T16:37:21.635153+00:00",
+    "finished_at": "2026-10-11T16:38:11.967680+00:00",
+    "exit_code": 0,
+    "helper_sha256": "59d89e69a51dd4119ede1cb08bd212951210ef66c55696620bda4e4a8c943cef",
+    "hook_path": "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-prior-proof/root-prior-acceptance.json",
+    "before_sha256": "22200e303451419b9efb9cab8d92559b688931fe65812c98365c808f4835ef1e",
+    "after_sha256": "36d95c76a60b1540bd6db18a9c787cd915bd25e56e2c4b3814fe1d74583be5c3",
+    "output_exists": true,
+    "output_sha256": "76018891c02fa587a18f6e9d6d743d3bafc5a73b352bb892d19f9dc4012dfef1",
+    "log_sha256": "ab2b54012b4f37acbd05e43322a66751ab278dfe7dce53db8d7e02a8cfe3b6a5",
+    "scope": "Actual unchanged helper and full original source replay; only isolated copied metadata/proof changed at the real write_kgx call. Original author files remain untouched."
+  },
+  "control": {
+    "kind": "projection",
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-wrapper.py",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-projection/draft/myxochelin-source-projection.json",
+      "projection",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-projection/myxochelin-replay.py",
+      "--record",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-projection/draft/myxochelin-a-and-b-biosynthesis.yaml",
+      "--repo",
+      "/private/tmp/pathwaymech-next-216-20261011",
+      "--output",
+      "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-projection/result.json"
+    ],
+    "started_at": "2026-10-11T16:37:21.628928+00:00",
+    "finished_at": "2026-10-11T16:37:58.467959+00:00",
+    "exit_code": 1,
+    "helper_sha256": "59d89e69a51dd4119ede1cb08bd212951210ef66c55696620bda4e4a8c943cef",
+    "hook_path": "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/binding-projection/draft/myxochelin-source-projection.json",
+    "before_sha256": "d27edc38af264315b38f0efa5a07938a2a04a6e65bdfe8d6915045e2defc85b5",
+    "after_sha256": "4800be4c3d7e4290a30e6f699bafe340fb471ff1e1d9312c6eed93448a216d1e",
+    "output_exists": false,
+    "output_sha256": null,
+    "log_sha256": "a80bfd1f57f055ca5a22256cd08a478b4461e13fdba4b3b2c7060c80365c5326",
+    "scope": "Actual unchanged helper and full original source replay; only isolated copied metadata/proof changed at the real write_kgx call. Original author files remain untouched."
+  },
+  "positive": {
+    "path": "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/unchanged-replay.json",
+    "sha256": "3922cb311b8be91fc1518f3ba527ec0cc30a197bf544c6386f72bb82b047bb34",
+    "actual_tool_session": 46269,
+    "terminal_chunk": "b0ffac",
+    "exit_code": 0
+  },
+  "binding_probe_driver": {
+    "actual_tool_session": 40192,
+    "terminal_chunk": "5f269c",
+    "exit_code": 0
+  },
+  "preservation_manifest": {
+    "path": "/private/tmp/pathwaymech-myxochelin-independent-review-20261011/initial-inputs/manifest.json",
+    "sha256": "a76dff70d2de8d925e392bb229cac7b29d5dc4bf7709dc059aa7728ae32d7096"
+  },
+  "requested_correction": [
+    "Capture every declared prior-proof path as a resolved identity and expected digest before scientific imports.",
+    "Perform an uncached final recheck of all declared formal and prior-proof inputs before exclusively creating the success receipt.",
+    "Keep the original helper, target, original positive receipt and failing independent proof immutable; create a separate successor.",
+    "Repeat the authentic late-proof mutation on corrected code and require nonzero exit with no success output; a fresh unchanged full replay must pass."
+  ],
+  "science_status": "Whole-record scientific review ongoing; no target defect confirmed so far."
+}

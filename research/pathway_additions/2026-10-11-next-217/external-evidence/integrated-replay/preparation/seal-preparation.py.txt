@@ -1,0 +1,61 @@
+"""Seal actual preparation evidence without running the scientific replay."""
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-217-20261011')
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write(name, value):
+    with (ROOT / name).open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+commands = [
+    {'name': 'boundary-controls', 'command': 'env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/boundary-controls.py controls-attempt-1', 'session_id': None, 'terminal_chunk': 'f42823', 'exit_code': 0},
+    {'name': 'prepare-bindings', 'command': 'env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/prepare-bindings.py', 'session_id': 93592, 'started_chunk': 'cd5449', 'terminal_chunk': '54c881', 'exit_code': 0},
+    {'name': 'fatal-lint', 'command': 'env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/ruff check --isolated --select E9,F63,F7,F82 /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/integration-replay.py /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/prepare-bindings.py /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/boundary-controls.py', 'session_id': None, 'terminal_chunk': '96d4c7', 'exit_code': 0},
+]
+for row in commands:
+    row['cwd'] = str(REPO)
+    row['login'] = False
+write('actual-execution.json', {'status': 'actual_terminal_receipts', 'commands': commands})
+helpers = []
+for path in [Path('/private/tmp/pathwaymech-myxochelin-author-20261011/myxochelin-replay-successor.py'), REPO / 'research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py']:
+    actual = sha(path)
+    if actual != 'f91bb984deb34364e794cc2f83b4fcdff6ba53567df066f4af55a123e96cf1ad':
+        raise RuntimeError('Accepted helper changed')
+    helpers.append({'path': str(path), 'sha256': actual})
+artifacts = []
+for path in sorted(ROOT.rglob('*')):
+    if '__pycache__' in path.parts:
+        continue
+    if path.is_symlink():
+        artifacts.append({'path': str(path), 'kind': 'symlink', 'link_target': str(path.readlink()), 'resolved_path': str(path.resolve()), 'target_sha256': sha(path) if path.is_file() else None})
+    elif path.is_file():
+        artifacts.append({'path': str(path), 'sha256': sha(path)})
+write('proof-artifacts.json', {'scope': 'Preparation artifacts and retained narrow control fixtures; includes ignored and hidden files; interpreter caches excluded.', 'artifacts': artifacts})
+controls = json.loads((ROOT / 'controls-attempt-1/results.json').read_bytes())
+bindings = json.loads((ROOT / 'expected-bindings.json').read_bytes())
+completion = {
+    'status': 'ready_for_root_review_no_full_replay_run',
+    'accepted_helpers': helpers, 'target_sha256': '5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2',
+    'interface': '--repo PATH --helper PATH --binding-manifest PATH --binding-sha256 SHA256 --output-dir NEW_EXTERNAL_PATH',
+    'narrow_controls_passed': controls['count'], 'expected_input_bindings': len(bindings['files']),
+    'deferred_actual_source_hashes': len(bindings['deferred_source_digest_paths']),
+    'scientific_replay_run': False, 'canonical_gates_run': False, 'maintained_writes': [],
+    'canonical_approval': False, 'root_full_gates_and_independent_scientific_review': 'separate',
+    'actual_execution': commands,
+    'artifacts': [{'path': str(ROOT / name), 'sha256': sha(ROOT / name)} for name in [
+        'integration-replay.py', 'prepare-bindings.py', 'boundary-controls.py',
+        'expected-bindings.json', 'controls-attempt-1/results.json', 'README.md',
+        'actual-execution.json', 'proof-artifacts.json', 'seal-preparation.py']],
+}
+write('completion.json', completion)
+print(json.dumps({'path': str(ROOT / 'completion.json'), 'sha256': sha(ROOT / 'completion.json'), 'status': completion['status']}))

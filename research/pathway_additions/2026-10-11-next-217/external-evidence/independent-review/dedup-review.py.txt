@@ -1,0 +1,22 @@
+import json,subprocess,hashlib
+from pathlib import Path
+from datetime import datetime,timezone
+import yaml
+r=Path('/private/tmp/pathwaymech-myxochelin-independent-review-20261011');roots=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),Path('/private/tmp/pathwaymech-next-216-20261011')];out=[]
+pattern=r'PWY-8383|myxochelin|RXN-233(08|09|10|11|12|13|14|15|16)|RXN-22679|CPD-259(04|05|16)|Q9F63[1678]|AF299336|11562468|18498160|15678426|BGC0001345'
+for i,p in enumerate(roots):
+ cmd=['rg','-uu','--follow','-n','-i','--json','--glob','!.git/**','--glob','!.venv/**',pattern,'.']
+ proc=subprocess.run(cmd,cwd=p,capture_output=True,text=True);assert proc.returncode in [0,1]
+ file=r/f'independent-dedup-{i}.jsonl';file.write_text(proc.stdout)
+ hits=[]
+ for line in proc.stdout.splitlines():
+  x=json.loads(line)
+  if x.get('type')=='match':hits.append(x['data'])
+ records=[];duplicates=[]
+ for q in (p/'data/pathways').rglob('*.yaml'):
+  y=yaml.safe_load(q.read_text());records.append(y['id'])
+  mids={x['id'] for x in y.get('reactions',[])}
+  if y['id']=='MetaCyc:PWY-8383' or {'MetaCyc:RXN-23313','MetaCyc:RXN-23314','MetaCyc:RXN-23315'}<=mids:duplicates.append(str(q))
+ assert not duplicates
+ out.append({'root':str(p),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=p,text=True).strip(),'command':cmd,'exit_code':proc.returncode,'hits':[{'path':x['path']['text'],'line_number':x['line_number'],'text':x['lines']['text'].strip()} for x in hits],'parsed_records':len(records),'exact_or_full_both_branch_records':duplicates,'output_sha256':hashlib.sha256(file.read_bytes()).hexdigest(),'scope':'Ignored and hidden text included, symlinks followed; Git internals/dependency environment excluded. Binary archives not unpacked; no whole-computer absence claim.'})
+(r/'dedup-review.json').write_text(json.dumps({'at':datetime.now(timezone.utc).isoformat(),'searches':out,'disposition':'Four prior cross-Mech protein annotation rows in each checkout are identity context, not a maintained complete Myxochelin pathway. Shared DHB activation chemistry and upstream DHB biosynthesis do not duplicate the nine-object A/B route.'},indent=2)+'\n');print(json.dumps(out,indent=2))

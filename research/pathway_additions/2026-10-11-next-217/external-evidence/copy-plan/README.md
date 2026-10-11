@@ -1,0 +1,13 @@
+# Myxochelin production copy plan
+
+This plan prepares 249 exact copies and 159 byte aliases for cohort 217. It applies nothing. The accepted target remains `5331f505…`; the sole active replay is unchanged `f91bb984…`, beside its original `draft/` JSON inputs and `rhea-crosscheck.json`.
+
+The 35 initial author inputs, both issue402 observations and corrected controls, all 239 edge evidence assessments, and issue404 source-version correction remain distinct. Every one of 152 independent replay fixture files is recoverable through a lossless JSON wrapper; the same-byte symlink retarget is recorded separately for external reconstruction. Historical Python/YAML/logs are inert. Duplicate byte streams resolve through explicit aliases. Raw article, native/API bodies, rendered paper pages and full text extractions stay external with source-manifest and acceptance hashes.
+
+The actual merged base is `babe44ad1992d2950701e432f400965631d538a7` with tree `da6f5d71ef74c5c0ae1499f1b4f7cad5f31fc275`, equal to the provisional reviewed tree. Root's independent authority acceptance and merged-baseline bridge are included. The authority preparation adds 21 original inputs; it changes no prior terms or metadata. Three exact shared authority files may already be applied by root; their expected hashes are listed. Root has applied only the exact target, three authority files and21 source bodies; their adoption receipt is included. The target is marked protected and must not be copied or overwritten. The plan author applied nothing.
+
+For each copy entry, root should require an absent destination (including dangling symlinks), rehash the source, create exclusively, and verify copied bytes. Preserve `copy-plan.json`, this README, validation and handoff as new preparation evidence; they do not fabricate historical canonical review lineage. Wrapper content must be decoded before comparison with historical hashes. Preserve all original external paths and the declared PDF virtualenv path.
+
+The source replay does not validate integrated authority snapshots or complete current runtime. Run it on the current maintained target, then separately bind and validate current policy/snapshots/runtime and run corpus gates before canonical review. This preparation is a new implementation contribution by the earlier external reviewer, not independent approval of its own outputs.
+
+The complete prepared addition tree passed whitespace inspection: actual `git diff --no-index --check` returned 1 for differences with empty output; a deliberate whitespace control returned 3 with its diagnostic. Initial harness assumptions about that exit code are preserved in `preparation-failures.json`. The real staged `git diff --check` remains root-owned.

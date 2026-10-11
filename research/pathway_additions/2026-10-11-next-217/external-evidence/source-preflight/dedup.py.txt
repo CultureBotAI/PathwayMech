@@ -1,0 +1,17 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import subprocess,json,hashlib
+O=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011')
+roots=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),Path('/private/tmp/pathwaymech-next-215-20261011')]
+groups={'defining':['PWY-8383','myxochelin','MxcG','MxcL','MxcE','MxcF','RXN-23316','RXN-23315','RXN-23314','RXN-23313','RXN-23312','RXN-23310','RXN-23308','CPD-25916','CPD-25904','CPD-25905','N-N-di23-DHB-Lysyl-MxcG','N-23-DHB-Lysyl-MxcG','Lysyl-MxcG','23-DHB-MxcF','11562468','18498160','11029592','ja8025278','201167098','BGC0001345','BGC0002492','AF299336','Q9F631','Q9F636','Q9F637','Q9F638','AAG31128','AAG31129','AAG31130','AAG31135'],'shared':['DHBAMPLIG-RXN','RXN-22679','PWY-5901']}
+rows=[]
+for root in roots:
+ for group,terms in groups.items():
+  cmd=['rg','-uu','--follow','-n','-i','-F','-g','!.git','-g','!.venv']
+  for term in terms:cmd+=['-e',term]
+  cmd+=['.'];start=datetime.now(UTC).isoformat();r=subprocess.run(cmd,cwd=root,capture_output=True)
+  name=root.name+'-'+group;p=O/(name+'.txt');p.write_bytes(r.stdout);(O/(name+'.stderr.txt')).write_bytes(r.stderr)
+  assert r.returncode in [0,1],r.stderr
+  rows.append({'root':str(root),'group':group,'terms':terms,'command':cmd,'started_at':start,'finished_at':datetime.now(UTC).isoformat(),'exit_code':r.returncode,'matched_lines':len(r.stdout.splitlines()),'output':str(p),'sha256':hashlib.sha256(r.stdout).hexdigest(),'stderr':r.stderr.decode()})
+(O/'dedup-raw.json').write_text(json.dumps({'queries':rows,'scope':'Ignored and hidden included, symlinks followed, only Git internals and dependency environments excluded; text search does not claim exhaustive inspection of compressed archives. Exact native ID and defining reaction/accession semantic search, with shared precursor frames assessed separately.'},indent=2)+'\n')
+print(json.dumps([{k:v for k,v in x.items() if k in ['root','group','exit_code','matched_lines']} for x in rows]))

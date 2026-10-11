@@ -1,0 +1,151 @@
+"""Package completed replay evidence externally; never write maintained owners."""
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+PREP = Path('/private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011')
+POSITIVE = Path('/private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011')
+REPO = Path('/private/tmp/pathwaymech-next-217-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-217/external-evidence/integrated-replay')
+STAGE = ROOT / 'packaged'
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def write(path, document):
+    with path.open('x') as stream:
+        json.dump(document, stream, indent=2)
+        stream.write('\n')
+
+
+for path, expected in {
+    PREP / 'integration-replay.py': '0ef1dd3bea13d2e9d4f69a3a4090e74d75990bd97f90794a72090280e634c8ab',
+    PREP / 'expected-bindings.json': '39b94e1fe4285bb26704a4809569010320b7325b896425463d42a84a9c6c9c17',
+    REPO / 'research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py': 'f91bb984deb34364e794cc2f83b4fcdff6ba53567df066f4af55a123e96cf1ad',
+    POSITIVE / 'integration-replay.json': '453b8abcfd0c7336582465fa2cacc68b510ee5db91aa70da13c6c83e1a2b5b89',
+    Path('/private/tmp/pathwaymech-next-217-integrated-driver-root-review.json'): '50bc16fb16b97586df8c7dada377b80b5ff844aaefa42f9502fda030a298c667',
+}.items():
+    require(sha(path.read_bytes()) == expected, 'Sealed input changed: ' + str(path))
+
+integration = json.loads((POSITIVE / 'integration-replay.json').read_bytes())
+source = json.loads((POSITIVE / 'source-replay.json').read_bytes())
+require(integration['status'] == 'passed_current_integrated_replay_not_independent_scientific_approval', 'Wrong integration status')
+require(sha((POSITIVE / 'source-replay.json').read_bytes()) == integration['child_receipt_sha256'], 'Child receipt changed')
+for row in integration['commands']:
+    require(row['exit_code'] == 0, 'Nonzero child')
+    for suffix in ['stdout', 'stderr']:
+        require(sha((POSITIVE / (row['name'] + '.' + suffix)).read_bytes()) == row[suffix + '_sha256'], 'Child stream changed')
+for row in source['KGX']['paths']:
+    require(sha(Path(row['path']).read_bytes()) == row['sha256'], 'Child KGX output changed')
+
+execution = {
+    'status': 'actual_full_positive_replay_completed',
+    'session_id': 92304, 'started_chunk': '3c7cd0', 'terminal_chunk': '325b2d', 'exit_code': 0,
+    'cwd': str(REPO), 'login': False,
+    'command': 'env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/integration-replay.py --repo /private/tmp/pathwaymech-next-217-20261011 --helper /private/tmp/pathwaymech-next-217-20261011/research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py --binding-manifest /private/tmp/pathwaymech-myxochelin-integrated-replay-preparation-20261011/expected-bindings.json --binding-sha256 39b94e1fe4285bb26704a4809569010320b7325b896425463d42a84a9c6c9c17 --output-dir /private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011',
+    'receipt': {'path': str(POSITIVE / 'integration-replay.json'), 'sha256': sha((POSITIVE / 'integration-replay.json').read_bytes())},
+    'children': integration['commands'],
+    'bounded_result': {'native_reactions': len(source['native_members']), 'original_source_bodies': source['original_bodies'],
+                       'evidence_anchors': len(source['all_evidence_anchors']), 'scientific_mutants_rejected': len(source['negative_controls']),
+                       'native_sequence_bridges': len(source['native_sequence_bridges']), 'pdf_pages': source['PDF_extraction']['pages'],
+                       'proposal_inputs_parsed': source['authority_proposal_inputs'],
+                       'KGX': {key: source['KGX'][key] for key in ['nodes', 'edges', 'evidence']},
+                       'canonical_identifiers': (POSITIVE / 'identifiers.stdout').read_text().strip(),
+                       'canonical_native_schema': (POSITIVE / 'native-schema.stdout').read_text().strip(),
+                       'canonical_target_strict_schema': (POSITIVE / 'strict-schema.stdout').read_text().strip(),
+                       'final_uncached_recheck': 'passed before exclusive integration receipt creation'},
+    'limits': integration['limits'], 'browser_interaction': False, 'maintained_writes': [],
+}
+write(ROOT / 'execution-completion.json', execution)
+STAGE.mkdir(exist_ok=False)
+rows = []
+
+
+def package(path, relative):
+    require(path.is_file() or path.is_symlink(), 'Unexpected package entry')
+    declared = str(path)
+    if path.is_symlink():
+        original = str(path.readlink()).encode()
+        document = {'format': 'immutable-symlink-observation-v1', 'original_path': declared,
+                    'link_target': original.decode(), 'resolved_path': str(path.resolve()),
+                    'target_exists': path.exists(), 'target_sha256': sha(path.read_bytes()) if path.is_file() else None}
+        relative = Path(str(relative) + '.symlink.json')
+        raw = (json.dumps(document, indent=2) + '\n').encode()
+        mode = 'symlink_observation_no_maintained_symlink'
+    else:
+        original = path.read_bytes()
+        fixture = 'controls-attempt-1' in path.parts and path.name != 'results.json'
+        if path.suffix == '.py':
+            relative = Path(str(relative) + '.txt')
+            raw, mode = original, 'byte_exact_inert_script'
+        elif fixture or path.suffix in {'.stdout', '.stderr', '.tsv'}:
+            document = {'format': 'lossless-immutable-evidence-v1', 'original_sha256': sha(original),
+                        'original_bytes': len(original), 'encoding': 'utf-8', 'content': original.decode('utf-8')}
+            relative = Path(str(relative) + '.bytes.json')
+            raw = (json.dumps(document, indent=2) + '\n').encode()
+            require(json.loads(raw)['content'].encode('utf-8') == original, 'Wrapper round trip failed')
+            mode = 'lossless_utf8_wrapper'
+        else:
+            raw, mode = original, 'byte_exact'
+    destination = STAGE / relative
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open('xb') as stream:
+        stream.write(raw)
+    require(destination.suffix != '.py', 'Active Python would enter maintained tree')
+    proposed = DOSSIER / relative
+    require(not (REPO / proposed).exists() and not (REPO / proposed).is_symlink(), 'Proposed maintained collision')
+    rows.append({'source_path': declared, 'source_resolved_path': str(path.resolve()), 'source_sha256': sha(original),
+                 'source_bytes': len(original), 'mode': mode, 'packaged_path': str(destination),
+                 'packaged_sha256': sha(raw), 'maintained_relative_path': str(proposed)})
+
+
+for base, prefix in [(PREP, Path('preparation')), (POSITIVE, Path('positive'))]:
+    for path in sorted(base.rglob('*')):
+        if '__pycache__' not in path.parts and (path.is_file() or path.is_symlink()):
+            package(path, prefix / path.relative_to(base))
+package(Path('/private/tmp/pathwaymech-next-217-integrated-driver-root-review.json'), Path('root-driver-review.json'))
+package(ROOT / 'execution-completion.json', Path('execution-completion.json'))
+package(Path(__file__).resolve(), Path('prepare-adoption.py'))
+
+# Every exact body and decoded wrapper is independently checked again here.
+for row in rows:
+    path = Path(row['packaged_path'])
+    raw = path.read_bytes()
+    require(sha(raw) == row['packaged_sha256'], 'Packaged file changed')
+    if row['mode'] == 'lossless_utf8_wrapper':
+        document = json.loads(raw)
+        require(sha(document['content'].encode('utf-8')) == row['source_sha256'], 'Decoded bytes differ')
+    elif row['mode'] in {'byte_exact', 'byte_exact_inert_script'}:
+        require(sha(raw) == row['source_sha256'], 'Exact bytes differ')
+    # Whitespace analysis targets eventual maintained bytes, never source fixtures.
+    text = raw.decode('utf-8')
+    require(not any(line.endswith((' ', '\t')) for line in text.splitlines()), 'Packaged trailing whitespace: ' + str(path))
+    require(not text.endswith('\n\n'), 'Packaged blank line at EOF: ' + str(path))
+
+copy_map = {'status': 'external_copy_map_for_root_adoption_no_maintained_writes',
+            'target_root': str(REPO), 'maintained_prefix': str(DOSSIER), 'copies': rows,
+            'binding_manifest_policy': 'Archived byte-exact. Its declared external identity is preserved; no path rewrite and no claim that the archive is an interchangeable execution input.',
+            'script_policy': 'All proposed Python scripts are byte-exact inert .py.txt. No src/scripts/record inventory member changes.',
+            'fixture_policy': 'Intentional byte mutants and stream/KGX evidence are lossless UTF-8 JSON wrappers; symlink identities are recorded as JSON, not recreated.',
+            'checks': {'all_packaged_hashes': True, 'all_wrapper_decodes': True, 'no_active_python': True, 'no_maintained_collisions': True, 'packaged_trailing_whitespace': 'none', 'packaged_blank_EOF': 'none'},
+            'actual_execution': execution}
+write(ROOT / 'copy-map.json', copy_map)
+completion = {'status': 'full_positive_replay_passed_external_adoption_prepared', 'scientific_approval': False,
+              'maintained_writes': [], 'copy_count': len(rows),
+              'lossless_wrappers': sum(x['mode'] == 'lossless_utf8_wrapper' for x in rows),
+              'inert_scripts': sum(x['mode'] == 'byte_exact_inert_script' for x in rows),
+              'symlink_observations': sum(x['mode'] == 'symlink_observation_no_maintained_symlink' for x in rows),
+              'actual_execution': {'session_id': 92304, 'terminal_chunk': '325b2d', 'exit_code': 0},
+              'artifacts': [{'path': str(path), 'sha256': sha(path.read_bytes())} for path in [
+                  ROOT / 'prepare-adoption.py', ROOT / 'execution-completion.json', ROOT / 'copy-map.json',
+                  POSITIVE / 'integration-replay.json', POSITIVE / 'source-replay.json']]}
+write(ROOT / 'completion.json', completion)
+print(json.dumps({'completion': str(ROOT / 'completion.json'), 'sha256': sha((ROOT / 'completion.json').read_bytes()), 'copies': len(rows), 'wrappers': completion['lossless_wrappers']}))

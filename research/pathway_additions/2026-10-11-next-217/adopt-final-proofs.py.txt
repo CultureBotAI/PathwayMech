@@ -1,0 +1,65 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,os
+root=Path('/private/tmp/pathwaymech-next-217-20261011');D=Path('research/pathway_additions/2026-10-11-next-217')
+p=Path('/private/tmp/pathwaymech-myxochelin-integrated-replay-adoption-20261011');g=Path('/private/tmp/pathwaymech-myxochelin-graph-review-20261011');s=Path('/private/tmp/pathwaymech-next-217-independent-scientific-review')
+out=Path('/private/tmp/pathwaymech-next-217-final-proofs-adoption.json');assert not out.exists()
+def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def digest(b):return hashlib.sha256(b).hexdigest()
+assert sha(p/'completion.json')=='f95ee2e4d42958e4bab6f0a1a63f1f077fa30703aafcb6c2b8f701d5ee68f03a'
+assert sha(p/'copy-map.json')=='02dcf4d440aafda4d08013dbbe3d90e506bc87cfe78c0e345b5cd48ecdb39dce'
+assert sha(g/'completion.json')=='6028c1af6a63cd9179c5db2478aa5f73501f21d113d84eb70c3416943f8a3d14'
+assert sha(s/'preassessment-handoff.json')=='58fa3dd7f1bf8aebb018881f8cb053781025eccea3d18e69f35776329d66e802'
+package=json.loads((p/'completion.json').read_text());graph=json.loads((g/'completion.json').read_text());science=json.loads((s/'preassessment-handoff.json').read_text())
+for owner,key in [(package,'artifacts'),(graph,'artifacts'),(science,'files')]:
+ for row in owner[key]:assert sha(row['path'])==row['sha256'],row['path']
+main_graph=json.loads((g/'graph-audit-successor.json').read_text());assert main_graph['status']=='passed'
+for row in main_graph['records']:
+ assert sha(root/row['record'])==row['record_sha256']
+ assert sha(root/row['page'])==row['svg_audit']['sha256']
+for name,expected in main_graph['KGX']['files'].items():
+ assert sha(root/'pages/downloads'/name)==expected==sha(Path('/private/tmp/pathwaymech-next-217-final-kgx')/name)
+for name,expected in main_graph['aggregation_artifacts'].items():assert sha(root/'pages'/name)==expected
+planned={};provenance=[]
+def add(dest,raw,source,mode):
+ dest=Path(dest);assert not dest.is_absolute() and '..' not in dest.parts and dest.is_relative_to(D) and not str(dest).endswith('.py')
+ assert str(dest) not in planned and not os.path.lexists(root/dest),str(dest)
+ planned[str(dest)]=raw;provenance.append({'source':str(source),'destination':str(dest),'sha256':digest(raw),'mode':mode})
+for row in json.loads((p/'copy-map.json').read_text())['copies']:
+ source=Path(row['source_path']);raw=Path(row['packaged_path']).read_bytes();assert digest(raw)==row['packaged_sha256']
+ mode=row['mode'];assert str(source.resolve(strict=False))==row['source_resolved_path']
+ if mode=='symlink_observation_no_maintained_symlink':
+  assert source.is_symlink();original=os.readlink(source).encode();observation=json.loads(raw)
+  assert observation['link_target']==os.readlink(source) and observation['resolved_path']==str(source.resolve(strict=False))
+  assert observation['target_exists']==source.exists()
+  if source.exists():assert sha(source)==observation['target_sha256']
+ else:
+  original=source.read_bytes()
+  if mode in ['byte_exact','byte_exact_inert_script']:assert raw==original
+  else:
+   assert mode=='lossless_utf8_wrapper';wrapper=json.loads(raw)
+   assert wrapper['encoding']=='utf-8' and wrapper['content'].encode()==original and wrapper['original_sha256']==digest(original) and wrapper['original_bytes']==len(original)
+ assert digest(original)==row['source_sha256'] and len(original)==row['source_bytes']
+ add(row['maintained_relative_path'],raw,source,mode)
+def archive(source,prefix):
+ source=Path(source);raw=source.read_bytes();name=source.name
+ if source.suffix=='.py':name+='.txt';mode='inert_exact_script'
+ elif source.suffix=='.log':
+  raw=(json.dumps({'format':'lossless-immutable-evidence-v1','original_sha256':digest(raw),'original_bytes':len(raw),'encoding':'utf-8','content':raw.decode()},indent=2)+'\n').encode();name+='.json';mode='lossless_utf8_wrapper'
+ else:mode='exact_bytes'
+ add(prefix/name,raw,source,mode)
+for name in ['copy-map.json','completion.json','execution-completion.json','prepare-adoption.py']:archive(p/name,D/'external-evidence/integrated-replay/adoption')
+for row in graph['artifacts']:archive(row['path'],D/'external-evidence/current-graph-review')
+archive(g/'completion.json',D/'external-evidence/current-graph-review');archive(g/'summary.md',D/'external-evidence/current-graph-review')
+for row in science['files']:archive(row['path'],D/'external-evidence/current-scientific-preassessment')
+archive(s/'preassessment-handoff.json',D/'external-evidence/current-scientific-preassessment')
+for name in ['pathwaymech-next-217-integrated-driver-root-review.json','pathwaymech-next-217-integrated-replay-root-adoption.json','pathwaymech-next-217-adopt-integrated-replay.py']:archive(Path('/private/tmp')/name,D/'external-evidence/integrated-replay/root-adoption')
+for dest,raw in planned.items():
+ path=root/dest;path.parent.mkdir(parents=True,exist_ok=True)
+ with path.open('xb') as f:f.write(raw)
+ assert sha(path)==digest(raw)
+r={'status':'current_integration_graph_and_scientific_preassessment_proofs_adopted','at':datetime.now(timezone.utc).isoformat(),'copies':len(planned),'files':provenance,'graph_acceptance':{'receipt_sha256':sha(g/'graph-audit-successor.json'),'actual_execution':graph['actual_execution'],'totals':graph['totals'],'baseline_preservation':graph['baseline_preservation'],'limitations':graph['limits']},'scientific_preassessment_sha256':sha(s/'scientific-preassessment.json'),'basis':'Root read complete scientific preassessment and graph summary/metadata, rehashed every supplied proof, verified current target/page/download/index against accepted graph receipts, verified every replay wrapper against original bytes and every retained symlink observation, and copied all proofs exclusively with post-copy hashes.','limits':['Full test suite completed: 1256 passed, 3 skipped, actual driver28093 terminal0/93010c; canonical saved review is not yet created.','Graph proof is static programmatic verification, not browser interaction.','Scientific preassessment remains a preparatory observation awaiting final canonical review.']}
+with out.open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+with (root/D/'final-proofs-adoption.json').open('xb') as f:f.write(out.read_bytes())
+with (root/D/'adopt-final-proofs.py.txt').open('xb') as f:f.write(Path(__file__).read_bytes())
+print(json.dumps({'status':r['status'],'files':len(planned),'receipt_sha256':sha(out)}))

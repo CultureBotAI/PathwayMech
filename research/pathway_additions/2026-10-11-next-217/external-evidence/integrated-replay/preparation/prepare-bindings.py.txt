@@ -1,0 +1,138 @@
+"""Prepare reviewable expected bindings; never runs the scientific source replay."""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-217-20261011')
+HELPER = REPO / 'research/pathway_additions/2026-10-11-next-217/myxochelin-replay-successor.py'
+OUTPUT = ROOT / 'expected-bindings.json'
+PDF = Path('/private/tmp/pathwaymech-curation-uv-cache/archive-v0/72U0-9MM3QESIENlwcOMR/bin/python')
+spec = importlib.util.spec_from_file_location('integration_driver', ROOT / 'integration-replay.py')
+driver = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(driver)
+driver.require(not OUTPUT.exists(), 'Expected manifest already exists; preserve it and prepare a successor')
+files = {}
+deferred_sources = []
+
+
+def add(path, role, expected=None, defer=False):
+    path = driver.absolute(path)
+    driver.require(path.is_file(), 'Missing binding input: ' + str(path))
+    if defer:
+        driver.require(expected is not None, 'Deferred source needs accepted digest')
+        actual = expected
+        deferred_sources.append(str(path))
+    else:
+        actual = driver.file_hash(path)
+        driver.require(expected is None or actual == expected, 'Accepted input changed: ' + str(path))
+    entry = {'path': str(path), 'resolved_path': str(path.resolve(strict=True)), 'sha256': actual, 'role': role}
+    if str(path) in files:
+        driver.require(files[str(path)]['sha256'] == actual, 'Conflicting expected digest')
+    else:
+        files[str(path)] = entry
+
+
+inventories = []
+for relative, role in [('src', 'runtime'), ('scripts', 'runtime'), ('data/pathways', 'record')]:
+    root = REPO / relative
+    paths = driver.inventory(root)
+    inventories.append({'root': str(root), 'paths': paths})
+    for path in paths:
+        add(path, role)
+for relative in sorted(driver.REQUIRED):
+    role = ('authority' if relative.startswith('data/identifier_authorities/') else
+            'policy' if relative == 'conf/identifier_policy.yaml' else 'formal')
+    add(REPO / relative, role)
+add(REPO / driver.TARGET, 'record', driver.TARGET_SHA)
+add(HELPER, 'formal', driver.HELPER_SHA)
+add(ROOT / 'integration-replay.py', 'runtime')
+add(Path(__file__), 'formal')
+for relative, expected in driver.ADJACENT.items():
+    add(HELPER.parent / relative, 'formal', expected)
+for relative, expected in {
+    'conf/identifier_sources.json': 'd3af218f3256620c8c8138505bd81652323bac2e9b0d9159a0279a575da72476',
+    'data/identifier_authorities/ontology.json': '98851d38c6f2b81dc166054815f42784b84cbbfd1d42a54b8353402e8b6c1e02',
+    'data/identifier_authorities/sources.json': '842f5f41d3a9f9bb92972b069f1916b17303f2c65e119556fa50991ced6bc070',
+}.items():
+    driver.require(files[str(REPO / relative)]['sha256'] == expected, 'Root accepted production input changed')
+
+source = driver.read_json((HELPER.parent / 'draft/myxochelin-source-manifest.json').read_bytes())
+for key, role in [('bodies', 'source'), ('issuing_databases', 'source'), ('prior_proof_inputs', 'prior_proof')]:
+    for item in source[key]:
+        add(item['path'], role, item['sha256'], defer=True)
+proposal = driver.read_json((HELPER.parent / 'draft/myxochelin-authority-proposal.json').read_bytes())
+for item in proposal['proposed_inputs']:
+    add(item['original_path'], 'source', item['manifest_entry']['sha256'], defer=True)
+chemical = driver.read_json((HELPER.parent / 'draft/myxochelin-chemical-identities.json').read_bytes())
+add(chemical['source_path'], 'source', chemical['source_sha256'], defer=True)
+
+proofs = {
+    '/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/portability-assessment.json': None,
+    '/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/selected/selection.json': None,
+    '/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/handoff.json': None,
+    '/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/version-production-disposition.json': None,
+    '/private/tmp/pathwaymech-next-217-authority-root-review.json': '2d3fd54c7f707b33e6e780f734c82e3813a6373d93f65c1b7cc4471408d27b51',
+    '/private/tmp/pathwaymech-next-217-core-adoption.json': 'c9e1a1c00aab4a149699909932a92a9459552d21b7ffc1755d1abeec4cc3dfdf',
+    '/private/tmp/pathwaymech-next-217-merged-baseline-bridge.json': None,
+    str(HELPER.parent / 'dossier-adoption.json'): '7c04e9b4fe012f9c77791fea312f86516dd02e95cfb1338b066a86006bee25f6',
+}
+for path, expected in proofs.items():
+    add(path, 'integration_proof', expected)
+
+# Stdlib-only subprocess reports environment identity and distribution metadata.
+# It imports no pathwaymech, YAML, LinkML, lxml, or PDF implementation.
+probe = '''import importlib.metadata as m,json,sys
+from pathlib import Path
+distributions=[];metadata=[]
+for d in m.distributions():
+    distributions.append({"name":d.metadata.get("Name"),"version":d.version})
+    for f in d.files or []:
+        p=Path(d.locate_file(f))
+        if any(x.endswith((".dist-info",".egg-info")) for x in p.parts) and p.is_file():
+            metadata.append(str(p.absolute()))
+for site in sys.path:
+    p=Path(site)
+    if p.is_dir() and p.name in ("site-packages","dist-packages"):
+        metadata.extend(str(x.absolute()) for x in p.glob("*.pth") if x.is_file())
+v=Path(sys.prefix)/"pyvenv.cfg"
+if v.is_file():metadata.append(str(v.absolute()))
+print(json.dumps({"executable":sys.executable,"version":sys.version,"prefix":sys.prefix,"base_prefix":sys.base_prefix,"sys_path":sys.path,"distributions":sorted(distributions,key=lambda x:(x["name"] or "",x["version"])),"metadata_files":sorted(set(metadata))}))
+'''
+env = dict(os.environ, PYTHONPATH=str(REPO / 'src'), PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1')
+env.pop('PYTHONOPTIMIZE', None)
+env.pop('PYTHONHOME', None)
+provenance = []
+for name, executable in [('python', Path(sys.executable)), ('pdf_python', PDF)]:
+    process = subprocess.run([str(executable), '-B', '-P', '-c', probe], env=env, cwd=REPO, capture_output=True, check=True)
+    value = driver.read_json(process.stdout)
+    driver.require(value['executable'] == str(executable), 'Environment probe changed executable')
+    add(executable, 'environment', 'ad67715379ea955de1a1f4405673acd056097a261eccdf86f1f220ccd1fdfd98' if name == 'pdf_python' else None)
+    for path in value['metadata_files']:
+        add(path, 'environment')
+    provenance.append((name, value))
+
+document = {
+    'format': 'myxochelin-integration-bindings-v1', 'prepared_at': driver.now(),
+    'manifest_identity': {'path': str(OUTPUT), 'resolved_path': str(OUTPUT.resolve())},
+    'repo': {'path': str(REPO), 'resolved_path': str(REPO.resolve())}, 'helper': str(HELPER),
+    'files': [files[key] for key in sorted(files)], 'inventories': inventories,
+    'integration_proofs': sorted(proofs),
+    'protected_roots': [str(REPO), str(HELPER.parent),
+                        '/private/tmp/pathwaymech-myxochelin-author-20261011',
+                        '/private/tmp/pathwaymech-myxochelin-preflight-20261011',
+                        '/private/tmp/pathwaymech-myxochelin-authority-selection-20261011'],
+    'preparation_scope': 'Current formal inputs were hashed. Original source/proof expected digests are copied from accepted immutable manifests; full source hashes must be checked by the approved actual replay. No scientific replay or maintained write performed.',
+    'deferred_source_digest_paths': sorted(set(deferred_sources)),
+    **dict(provenance),
+}
+driver.check_contract(document, REPO, HELPER)
+driver.check_source_coverage(document, HELPER)
+driver.check_inventories(inventories, document['files'])
+with OUTPUT.open('x') as stream:
+    json.dump(document, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': 'prepared_expected_bindings_for_root_review_only', 'path': str(OUTPUT), 'sha256': driver.file_hash(OUTPUT), 'bindings': len(files), 'source_hashes_deferred': len(set(deferred_sources)), 'metadata_provenance_not_package_implementation_attestation': True}))

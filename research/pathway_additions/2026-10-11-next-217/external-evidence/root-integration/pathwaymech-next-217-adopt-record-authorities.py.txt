@@ -1,0 +1,44 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,os,subprocess
+root=Path('/private/tmp/pathwaymech-next-217-20261011')
+prep=Path('/private/tmp/pathwaymech-myxochelin-authority-selection-20261011')
+out=Path('/private/tmp/pathwaymech-next-217-core-adoption.json')
+assert __debug__ and not out.exists()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def git(*a):return subprocess.check_output(['git',*a],cwd=root,text=True).strip()
+review=Path('/private/tmp/pathwaymech-next-217-authority-root-review.json')
+assert sha(review)=='2d3fd54c7f707b33e6e780f734c82e3813a6373d93f65c1b7cc4471408d27b51'
+acceptance=json.loads(review.read_text());assert acceptance['status']=='accepted_exact_canonical_authority_artifacts_for_guarded_adoption'
+assert git('rev-parse','HEAD')=='babe44ad1992d2950701e432f400965631d538a7'
+assert git('branch','--show-current')=='feat/pathway-next-217-20261011'
+assert git('status','--porcelain=v1') in ('?? .venv','')
+selection_path=prep/'selected/selection.json';assert sha(selection_path)==acceptance['selection_sha256']
+s=json.loads(selection_path.read_text());lock=s['preparation_baseline']
+for rel,digest in {**lock['baseline_files'],**lock['runtime_files']}.items():assert sha(root/rel)==digest,rel
+target=root/'data/pathways/myxochelin-a-and-b-biosynthesis.yaml'
+assert not os.path.lexists(target)
+source=Path(s['target']['path']);assert sha(source)==acceptance['target_sha256']
+plan=[(source,target,acceptance['target_sha256'])]
+for source_name,dest,digest in [('identifier_sources.json','conf/identifier_sources.json',acceptance['manifest']['sha256']),('ontology.json','data/identifier_authorities/ontology.json',acceptance['preservation']['ontology']['sha256']),('sources.json','data/identifier_authorities/sources.json',acceptance['preservation']['sources']['sha256'])]:
+ source=prep/'canonical-dry-run'/source_name;assert sha(source)==digest;plan.append((source,root/dest,digest))
+cache_plan=[]
+for row in s['selected_new_inputs']:
+ source=Path(row['original_path']);dest=Path(row['prospective_cache_path']);assert sha(source)==row['sha256']
+ if os.path.lexists(dest):assert dest.is_file() and sha(dest)==row['sha256'],str(dest)
+ cache_plan.append((source,dest,row['sha256'],os.path.lexists(dest)))
+# All guards complete before maintained or shared cache writes.
+for source,dest,digest,exists in cache_plan:
+ if not exists:
+  with dest.open('xb') as f:f.write(source.read_bytes())
+ assert sha(dest)==digest
+for source,dest,digest in plan:
+ data=source.read_bytes();assert hashlib.sha256(data).hexdigest()==digest
+ if dest==target:
+  with dest.open('xb') as f:f.write(data)
+ else:dest.write_bytes(data)
+ assert sha(dest)==digest
+receipt={'status':'reviewed_record_and_authorities_adopted','at':datetime.now(timezone.utc).isoformat(),'base':git('rev-parse','HEAD'),'target_sha256':acceptance['target_sha256'],'authority_acceptance_sha256':sha(review),'selection_sha256':sha(selection_path),'maintained_files':[{'source':str(a),'destination':str(b.relative_to(root)),'sha256':c} for a,b,c in plan],'cache_entries':[{'path':str(b),'sha256':c,'newly_copied':not d} for a,b,c,d in cache_plan],'limits':['Source replay, history, rendering, full corpus gates and canonical scientific review remain required.','Original source proposal retained unchanged; corrected production metadata follows issue404.']}
+with out.open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+print(json.dumps({'status':receipt['status'],'maintained_files':len(plan),'new_cache_entries':sum(not r[3] for r in cache_plan),'receipt_sha256':sha(out)}))
