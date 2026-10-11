@@ -1,0 +1,860 @@
+# Independent galactonate review: full source assessment and resolved figure locators
+
+- Review: 20261011T045635Z-galactonate-resolved-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T04:37:00Z
+- Finished UTC: 2026-10-11T04:56:35Z
+- Reviewer: Codex independent reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete three-reaction route, all 27 edges and 19 local nodes are supported within the stated K-12 and experimental limits. Both saved minor issue #352 figure-locator findings are independently verified as resolved; no open findings remain. Current shared native gates and generated artifacts were inspected separately from scientific source evidence.
+
+## Scope And Provenance
+
+Full one-record independent scientific review of exact native boundary, all named identities, all 27 mechanistic edges, reaction chemistry, cofactors, assembly, strain, regulation and source-specific attribution; explicit resolution of both initial findings.
+
+Selection: Exactly the assigned corrected GALACTCAT-PWY target SHA 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 7bab6407d811db928abe049854ccb6107e591a3e.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:GALACTCAT-PWY | data/pathways/d-galactonate-degradation.yaml | maintained | D-galactonate degradation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Final shared render | passed | False | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:48:57.777419+00:00 with exit 0; original log independently read and SHA-256 verified: 9736e176d9481d773aef8079fb9fc4554d77093a42ca37cb2051f0582c47de07. |
+| Final shared validate | passed | True | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:51:03.273799+00:00 with exit 0; original log independently read and SHA-256 verified: dea3d38bf1b2cff589506d00d7034bc4e037de50d2483e1802c427852e84c1a0. Final 192-record corpus and current generated pages passed. |
+| Final shared test | passed | True | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:55:09.604517+00:00 with exit 0; original log independently read and SHA-256 verified: e8b0ed0b316ead428485b41b71b581cb0ab9b72a7d8da7efe1ca3255904dbeb0. Full corpus: 1,048 passed, 3 skipped, 3 upstream warnings in 370.12 seconds. |
+| Final shared lint | passed | True | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:48:58.073435+00:00 with exit 0; original log independently read and SHA-256 verified: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41. |
+| Final shared identifiers | passed | False | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:49:18.435329+00:00 with exit 0; original log independently read and SHA-256 verified: d1b80f02c733ab1bee984cd0e9e07cbcb526b4c4449910178433bfa6f987237c. |
+| Final shared kgx | passed | False | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:49:36.497671+00:00 with exit 0; original log independently read and SHA-256 verified: c1ddd360c46ebb937096197e2378dae0d51bbadaaf9b6a066a69692c58bf920e. |
+| Final shared diff | passed | True | MetaCyc:GALACTCAT-PWY | Root final shared run finished 2026-10-11T04:49:37.260974+00:00 with exit 0; original log independently read and SHA-256 verified: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. |
+| Frozen generated SVG and KGX audit receipt | passed | False | MetaCyc:GALACTCAT-PWY | Root session18042 terminal0; final script/log/page/download digests independently matched. Galactonate has19 SVG nodes,27edges and44evidence; no browser inspection is claimed. |
+| Canonical changed-input inspection | passed | True | MetaCyc:GALACTCAT-PWY | Initial and changed target/source/projection/replay/generated input bytes were read and reassessed; canonical final inspect captured those actual hashes. |
+| Independent original-source replay | passed | False | MetaCyc:GALACTCAT-PWY | Final session 79685 exited 0: all 11 chemical sides,3 balances,3 native members, 4 protein identities,19 nodes, 27 edges/44 evidence independently verified from original sources. This is not a substitute for the full scientific assessment. |
+| Independent retained-body structured adapter replay | passed | False | MetaCyc:GALACTCAT-PWY | All 42 retained bodies,35 declared queries and 6 returned component tables reproduced through the unchanged canonical client. Dgo gene hits are context only; no gene membership absence or catalytic inference. |
+
+## Scientific And Domain Assessments
+
+### Exact full native boundary
+
+identity: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+The complete native three-step route is distinct from broader PathBank transport/galactitol maps and general GO breakdown. No convenient shortened module is presented under a larger source title.
+
+### All chemical sides, current charged states and direction
+
+graph: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+All 11 chemical-side occurrences,9 reaction chemicals and 3 reaction balances agree with original Rhea/ChEBI. Native reversible aldolase and current directed member have separate source evidence; all shared-intermediate ordering evidence is sound.
+
+### Catalyst function versus assembly and evidence tier
+
+evidence: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+Exact reviewed/native catalyst assignments support all three functional enables edges. DgoA has direct recombinant and structural support. DgoD/DgoK annotations are not described as newly inspected purified assays; homotrimer wording prevents monomer-sufficiency inference.
+
+### DgoD magnesium inference
+
+grounding: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+The one-Mg-per-subunit annotation retains ECO:0000250 by-similarity scope; it is not a direct K-12 metal-binding result. No kinase Mg or unique DgoR metal is invented.
+
+### K-12 identity and actual experimental strains
+
+scope: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+Reviewed K-12 proteins, native MG1655 frames and BW25113 physiological experiments are kept distinct. Recombinant expression hosts do not become pathway physiology evidence. Corrected DgoA/DgoD sequences avoid the old fused-ORF prediction.
+
+### Transcriptional repression and conditional effector effect
+
+evidence: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+DgoR regulation concerns operon transcription; D-galactonate inhibition concerns repressor DNA binding under tested metal conditions. Original Results, rather than ambiguous secondary wording, support the selected polarity.
+
+### Verified successor disposition
+
+provenance: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+Both initial minor figure errors are corrected and independently rechecked against original captions. Exact predecessor issue keys and finding identities remain in this successor.
+
+### Structured database context without mechanism inference
+
+scope: supported. Targets: MetaCyc:GALACTCAT-PWY.
+
+Canonical MG1655 context was independently replayed and remains computational context only, without interpreting query misses as biological absence.
+
+## Findings
+
+### f-growth-figure: Knockout-growth locator cites the pathway cartoon
+
+minor / resolved / confirmed; issue key: galactonate-growth-figure-locator.
+
+Edge025 cites Fig.1B for loss of growth of dgoD/dgoK/dgoA deletions, but original Results #s2.1 and Fig.1 caption place growth spots in Fig.1C. The cited section itself supports the assertion.
+
+Disposition: The exact corrected target 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84 and original figure captions were independently reinspected. Only the named locator string changed; source digests and scientific assertions are preserved.
+
+### f-effector-figure: Effector-response locator cites the wrong figure
+
+minor / resolved / confirmed; issue key: galactonate-effector-figure-locator.
+
+Edge027 cites Fig.7 for D-galactonate-dependent DNA release and altered proteolysis; original Results #s2.7 explicitly places these observations in Fig.8A/B and Fig.8C.
+
+Disposition: The exact corrected target 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84 and original figure captions were independently reinspected. Only the named locator string changed; source digests and scientific assertions are preserved.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-target | data/pathways/d-galactonate-degradation.yaml; All participants, reactions, edges001-027 and references | supports | Full corrected record read; exactly two original figure locators changed, with all chemistry, assertions and identities preserved. |
+| e-initial | reviews/structured/20261011T043907Z-galactonate-initial-independent-review/review.yaml; f-growth-figure; f-effector-figure | supports | Immutable initial partial observation retains both minor provenance findings and original target hash. This successor explicitly resolves each exact finding. |
+| e-native | https://pathway.yeastgenome.org/getxml?META:GALACTCAT-PWY; Pathway reaction-list, reaction-layout, reaction-ordering and comment | supports | Original XML has exactly three reactions and catabolic L2R layouts. The full boundary is D-galactonate to pyruvate and D-glyceraldehyde phosphate. Broader transport/galactitol/downstream routes are outside this exact identity. |
+| e-native-galactondehydrat-rxn | https://pathway.yeastgenome.org/getxml?META:GALACTONDEHYDRAT-RXN; Reaction dblink[RHEA], reaction-direction, left/right | supports | Exact native reaction identity and chemistry independently inspected; native crossrefs are 18650,16526 and bidirectional 24467 respectively, without attributing current directed 24465 to the old native object. |
+| e-native-dehyddeoxgalactkin-rxn | https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXGALACTKIN-RXN; Reaction dblink[RHEA], reaction-direction, left/right | supports | Exact native reaction identity and chemistry independently inspected; native crossrefs are 18650,16526 and bidirectional 24467 respectively, without attributing current directed 24465 to the old native object. |
+| e-native-dehyddeoxphosgalact-aldol-rxn | https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXPHOSGALACT-ALDOL-RXN; Reaction dblink[RHEA], reaction-direction, left/right | supports | Exact native reaction identity and chemistry independently inspected; native crossrefs are 18650,16526 and bidirectional 24467 respectively, without attributing current directed 24465 to the old native object. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Masters 18649/16525/24464, directionalReaction and bidirectionalReaction; all selected substrates/products/contains1/compound/chebi chains | supports | Original complete release 142 RDF independently replayed. All 11 coefficient-one sides and 3 L2R selections agree, including 24467/24465 family correspondence. All 3 equations balance against ChEBI charged formulas. Digest covers complete compressed RDF. |
+| e-chebi | http://purl.obolibrary.org/obo/chebi/255/chebi.owl; ChEBI 255 SemanticSQL rdfs:label, chemrof:charge/generalized_empirical_formula for all 10 declared chemicals | supports | Original selected rows establish all exact labels/identities and 9 reaction formulas/charges. Root independently verified the full database digest; reviewer did not rehash that whole database. Magnesium is a separate cofactor annotation. |
+| e-up-q6bf17 | https://rest.uniprot.org/uniprotkb/Q6BF17.json; proteinDescription, organism, genes, exact cited comments; native protein cross-reference bridge | supports | Complete original reviewed entry inspected with its source evidence codes. K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters, DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is a transcriptional repressor. Protein-specific claims were assessed only where present. |
+| e-up-p31459 | https://rest.uniprot.org/uniprotkb/P31459.json; proteinDescription, organism, genes, exact cited comments; native protein cross-reference bridge | supports | Complete original reviewed entry inspected with its source evidence codes. K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters, DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is a transcriptional repressor. Protein-specific claims were assessed only where present. |
+| e-up-q6bf16 | https://rest.uniprot.org/uniprotkb/Q6BF16.json; proteinDescription, organism, genes, exact cited comments; native protein cross-reference bridge | supports | Complete original reviewed entry inspected with its source evidence codes. K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters, DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is a transcriptional repressor. Protein-specific claims were assessed only where present. |
+| e-up-p31460 | https://rest.uniprot.org/uniprotkb/P31460.json; proteinDescription, organism, genes, exact cited comments; native protein cross-reference bridge | supports | Complete original reviewed entry inspected with its source evidence codes. K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters, DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is a transcriptional repressor. Protein-specific claims were assessed only where present. |
+| e-primary-growth | https://pmc.ncbi.nlm.nih.gov/articles/PMC6351737/; Results s2.1/F1C; s2.4/F4/F5; s2.7/F8A-C; Methods s4.3/Table1, s4.9,s4.12 | supports | Original body supports BW25113-derived knockout physiology, DgoR IR1/IR2 transcriptional repression, and conditional galactonate-dependent DNA release/proteolysis. Original captions independently confirm both corrected figure references. MgCl2 was present in assays; growth results do not become purified DgoD/DgoK evidence. |
+| e-primary-aldolase | https://pmc.ncbi.nlm.nih.gov/articles/PMC3326530/; Introduction P4; Results P5/P6/P10; Methods P22-P25/P33 | supports | Original body supports recombinant KDPGal retro-aldol cleavage, substrate distinction from KDPG and homotrimer context. Eda-deficient DF71 reduced contaminating KDPG activity. NADH belongs to the coupled assay, not a pathway cofactor; expression host is not endogenous physiology evidence. |
+| e-primary-metal | https://pmc.ncbi.nlm.nih.gov/articles/PMC7674646/; Results S3.SS3/F6; Discussion S4; Methods cloning/EMSA and PDB 7C7E deposit | supports | Original body shows metal-depleted DgoR retains DNA binding; galactonate plus selected Zn/Ca/Mg destabilizes the complex. No unique physiological metal is demonstrated. The ligand pose is modeled; 7C7E/current P31460 cross-reference supports protein identity. Confusing abstract/discussion repression wording is not used to invert the actual Results. |
+| e-primary-historical | https://link.springer.com/article/10.1007/BF00415730; Original publisher Abstract, numbered statements1,2,6 | supports | Abstract-only source supports K-12 enzyme-activity mutants, linked structural loci and induction. No uninspected full-text assay details are inferred. |
+| e-go | https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:0034194; Active definition and synonyms | supports | GO names D-galactonate breakdown generically; it does not delimit the exact three-reaction phosphorylative native route. Exact MetaCyc identity is retained. |
+| e-context | /private/tmp/pathwaymech-next-189-galactonate-review/imodulon-independent-replay.json; Exact canonical cached-response replay and dgo query results | context_only | Forty-two retained API bodies and all 35 queries/6 returned tables reproduce. The selected dgo genes resolve in MG1655. Lack of matching module-name hits is not lack of membership; no scientific graph assertion is derived from this context. |
+| e-raw-replay | /private/tmp/pathwaymech-next-189-galactonate-review/independent-source-replay.json; All independently reconstructed source chains and formula/charge residuals | supports | Independent reviewer replay complements manual evidence assessment. It reads original native/Rhea/ChEBI/UniProt bodies, not author projection rows as scientific authority. |
+| e-fix | /private/tmp/pathwaymech-next-189-galactonate-review/issue352-independent-verification.json; Both source-caption checks and exact before/after target hashes | supports | Independent raw caption and structural comparison confirms only edge025 Fig. 1C and edge027 Fig. 8A-C changed. The prior saved observations remain intact. |
+
+## Limits And Additional Notes
+
+- Full historical PMID211976 and324806 articles were not inspected; 211976 publisher abstract and database assertions retain their respective source tiers.
+- DgoD magnesium assignment remains by similarity, and DgoK primary purified-enzyme details were not inspected.
+- Only relevant material primary sections, Methods and captions were assessed; no claim of exhaustive reinterpretation of every experiment in the papers.
+- 2020 paper wording has internal derepression ambiguity; actual Results/Fig6 and database annotation support the carefully qualified record claim.
+- Pinned whole ChEBI database digest verified by root; reviewer independently read selected original database rows and rehashed31 other source bodies.
+- Independent iModulon replay covers42 retained API bodies/35 searches/6 returned component tables. Search misses are not absence of membership, and expression context is not mechanism evidence.
+- No maintained scientific record or author source artifact was edited by this reviewer.
+- The initial partial review preserved the actual pending shared gates; this successor records final gate outcomes after their terminal execution.
+- Generated pages/downloads are owned by maintained records and src/pathwaymech rendering/export code; root regenerated and validated them. Shared authority snapshots are generated from original inputs in conf/identifier_sources.json, not hand-edited for labels.
+- A separate technical integration audit covers all three current records; that does not independently reassess reviewer-authored phenylethylamine-II science.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T045635Z-galactonate-resolved-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Independent galactonate review: full source assessment and resolved figure
+  locators'
+started_at: '2026-10-11T04:37:00Z'
+finished_at: '2026-10-11T04:56:35Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Reviewer did not author this target or its dossiers. Entire
+    target and cited primary sections were independently read; reviewer-authored phenylethylamine-II
+    is outside this review.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: 'The complete three-reaction route, all 27 edges and 19 local nodes are supported
+  within the stated K-12 and experimental limits. Both saved minor issue #352 figure-locator
+  findings are independently verified as resolved; no open findings remain. Current
+  shared native gates and generated artifacts were inspected separately from scientific
+  source evidence.'
+source:
+  git_revision: 7bab6407d811db928abe049854ccb6107e591a3e
+  state: working_tree
+  inputs:
+  - path: conf/identifier_sources.json
+    sha256: 5ca18c1883cc03ab1162886757d2f563c7441892b1cb439a72a553120da917b7
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: f28d31faca7a30e89f06df41ab4a013f5a047084bf6ad3b6fdab6c808fba209f
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: b5758e542e643729105a685a5f4205c6b83d160feb17aac1ec467bfa0775aa6e
+    role: context
+  - path: data/pathways/d-galactonate-degradation.yaml
+    sha256: 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: e164c7f6ef2508bde98e1a333f1235cd0649520d7f6be277bdd8970f93a6da08
+    role: context
+  - path: pages/records/MetaCyc_GALACTCAT-PWY.html
+    sha256: dc653d1fac6266f1eee6da6a0b5980f84604895b344e34e78cc5bfa2cfe5e96e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/authority-integration.json
+    sha256: e2fee5689c0925b96177ee6bbbb4ca401236a724256c9acb84c6d3ef47303809
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/authority-source-inspection.json
+    sha256: 3ae0885a4967640afd87d73062d27c79fa500537db825f4be7e619903f61882c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/baseline-preservation.json
+    sha256: 185f7baa8f181a072468a8652ec5b44b66fe708d0e1038acc1293dfcb618e80c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-authority-delta.json
+    sha256: 95b11d867ab01e10f6e6202406b06b31fafa574c7da58cdf1ffa9e9fbbb2e0b8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-curation.md
+    sha256: 3aa3e26ff2541c7ad0ea7d67bba5c837df6a7cf80704a4b5d2ae4ba250ded5d1
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-dedup.json
+    sha256: 8b0c072b0a2fb57ab0e80ef9493dada08cfec6b78598cc731c422adf5815dd10
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-identifiers.json
+    sha256: b449c7920f9a058a177c4b58220ab66ee44c41929a39a162fe6fc59f12327031
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-protein-projection.json
+    sha256: e86e584a75d8dfb8e01d47c76109ab84fffaefec3ae165df1871173808e415ef
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-replay.py
+    sha256: 7870590e4dadf27114cbaab8c5787d82a29fff2fd7560ec7baccce7b8d8f02d0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-source-manifest.json
+    sha256: ea4fb7ae23605820fa7b9fa2eecb4b787057d80af939cea22eb4e0decbe3b0f2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-source-projection.json
+    sha256: 87118b40783befd970f77460a4cea1a7a43298eadbbab4981ba4b4504b0833ec
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/galactonate-validation.json
+    sha256: 3f5741b65950d3c30d0e75eb3f061921f9b29335e2c7e561776cd7beefc2d07e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/generated-graph-kgx-audit.json
+    sha256: 1d74b8b18e7768cf361e06111e0a7efbfe12a82b0eb9f9618992ce1f10f28503
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/historical-drafts/README.json
+    sha256: 5a32406d690a59ab9791494495812289099ff6cd4c315c661a8c5f3572a2af20
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/imodulondb-context.json
+    sha256: 1318348de55b55b0898292ba61a3373c47388ac77379e35b3f8efd6b4db5e098
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/imodulondb-parser-replay.json
+    sha256: 6fd68fec831065032af81ff3e85ad3fcf13b9f2dc5b6ac21bd444861736398e0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/imodulondb-runner-availability.json
+    sha256: ca9709067610633d054068e3514b1924f1cae86052c4a82c927630af5898d54d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/imodulondb-source-manifest.json
+    sha256: 91d0a180550744a6ed1faeab759c075fab5509af29ea7e4932a925a0781be565
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-189/integration-receipt.json
+    sha256: 4b5512324dc0a5b88da68be53f421a968d5fb770c28251f90065e21c7a7c52cf
+    role: context
+  - path: reviews/structured/20261011T043907Z-galactonate-initial-independent-review/review.yaml
+    sha256: 8c30963058f17b56b3f9606330577d7a171b02e04a6e1ec62f363082db389bac
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+targets:
+- target_id: MetaCyc:GALACTCAT-PWY
+  path: data/pathways/d-galactonate-degradation.yaml
+  label: D-galactonate degradation
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactonate-degradation.yaml
+    role: maintained_record
+scope:
+  description: Full one-record independent scientific review of exact native boundary,
+    all named identities, all 27 mechanistic edges, reaction chemistry, cofactors,
+    assembly, strain, regulation and source-specific attribution; explicit resolution
+    of both initial findings.
+  selection: Exactly the assigned corrected GALACTCAT-PWY target SHA 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  exclusions:
+  - target: Other pathway records, including reviewer-authored phenylethylamine-II
+    reason: Outside this one-record independent scientific review.
+  - target: New biological experiments and inaccessible historical full primary articles
+    reason: Scientific assessment uses inspected original structured statements and
+      primary bodies/abstracts with their stated tiers.
+checks:
+- check_id: final-render
+  name: Final shared render
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  status: passed
+  required: false
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:48:57.777419+00:00 with exit
+    0; original log independently read and SHA-256 verified: 9736e176d9481d773aef8079fb9fc4554d77093a42ca37cb2051f0582c47de07.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-validate
+  name: Final shared validate
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  status: passed
+  required: true
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:51:03.273799+00:00 with exit
+    0; original log independently read and SHA-256 verified: dea3d38bf1b2cff589506d00d7034bc4e037de50d2483e1802c427852e84c1a0.
+    Final 192-record corpus and current generated pages passed.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-test
+  name: Final shared test
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  status: passed
+  required: true
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:55:09.604517+00:00 with exit
+    0; original log independently read and SHA-256 verified: e8b0ed0b316ead428485b41b71b581cb0ab9b72a7d8da7efe1ca3255904dbeb0.
+    Full corpus: 1,048 passed, 3 skipped, 3 upstream warnings in 370.12 seconds.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-lint
+  name: Final shared lint
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  status: passed
+  required: true
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:48:58.073435+00:00 with exit
+    0; original log independently read and SHA-256 verified: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-identifiers
+  name: Final shared identifiers
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  status: passed
+  required: false
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:49:18.435329+00:00 with exit
+    0; original log independently read and SHA-256 verified: d1b80f02c733ab1bee984cd0e9e07cbcb526b4c4449910178433bfa6f987237c.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-kgx
+  name: Final shared kgx
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-189-kgx
+  status: passed
+  required: false
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:49:36.497671+00:00 with exit
+    0; original log independently read and SHA-256 verified: c1ddd360c46ebb937096197e2378dae0d51bbadaaf9b6a066a69692c58bf920e.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-diff
+  name: Final shared diff
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  summary: 'Root final shared run finished 2026-10-11T04:49:37.260974+00:00 with exit
+    0; original log independently read and SHA-256 verified: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: final-generated-audit
+  name: Frozen generated SVG and KGX audit receipt
+  command: /private/tmp/pathwaymech-next-189-graph-audit.py --comparison-kgx-dir /private/tmp/pathwaymech-next-189-kgx
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Root session18042 terminal0; final script/log/page/download digests independently
+    matched. Galactonate has19 SVG nodes,27edges and44evidence; no browser inspection
+    is claimed.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: inspect-final
+  name: Canonical changed-input inspection
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-189-galactonate-review/targets.yaml
+    with declared final context inputs
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Initial and changed target/source/projection/replay/generated input bytes
+    were read and reassessed; canonical final inspect captured those actual hashes.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: independent-source-replay
+  name: Independent original-source replay
+  command: .venv/bin/python /private/tmp/pathwaymech-next-189-galactonate-review/replay.py
+  status: passed
+  required: false
+  exit_code: 0
+  summary: 'Final session 79685 exited 0: all 11 chemical sides,3 balances,3 native
+    members, 4 protein identities,19 nodes, 27 edges/44 evidence independently verified
+    from original sources. This is not a substitute for the full scientific assessment.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+- check_id: independent-imodulon
+  name: Independent retained-body structured adapter replay
+  command: .venv/bin/python /private/tmp/pathwaymech-next-189-galactonate-review/imodulon-replay.py
+  status: passed
+  required: false
+  exit_code: 0
+  summary: All 42 retained bodies,35 declared queries and 6 returned component tables
+    reproduced through the unchanged canonical client. Dgo gene hits are context only;
+    no gene membership absence or catalytic inference.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+evidence:
+- evidence_id: e-target
+  kind: record_content
+  reference: data/pathways/d-galactonate-degradation.yaml
+  locator: All participants, reactions, edges001-027 and references
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Full corrected record read; exactly two original figure locators changed,
+    with all chemistry, assertions and identities preserved.
+  snapshot_sha256: 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+- evidence_id: e-initial
+  kind: prior_review
+  reference: reviews/structured/20261011T043907Z-galactonate-initial-independent-review/review.yaml
+  locator: f-growth-figure; f-effector-figure
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Immutable initial partial observation retains both minor provenance findings
+    and original target hash. This successor explicitly resolves each exact finding.
+  snapshot_sha256: 8c30963058f17b56b3f9606330577d7a171b02e04a6e1ec62f363082db389bac
+- evidence_id: e-native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GALACTCAT-PWY
+  locator: Pathway reaction-list, reaction-layout, reaction-ordering and comment
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Original XML has exactly three reactions and catabolic L2R layouts. The
+    full boundary is D-galactonate to pyruvate and D-glyceraldehyde phosphate. Broader
+    transport/galactitol/downstream routes are outside this exact identity.
+  snapshot_sha256: fd37229b22a120444fec0df7b4cc41b13b2b7517cae07b628a0538789c6ad20f
+- evidence_id: e-native-galactondehydrat-rxn
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GALACTONDEHYDRAT-RXN
+  locator: Reaction dblink[RHEA], reaction-direction, left/right
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Exact native reaction identity and chemistry independently inspected; native
+    crossrefs are 18650,16526 and bidirectional 24467 respectively, without attributing
+    current directed 24465 to the old native object.
+  snapshot_sha256: 7a9f7ce85da89aadffa5a41fdfc00c25fe954cecf307bfb81642939abbc5e375
+- evidence_id: e-native-dehyddeoxgalactkin-rxn
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXGALACTKIN-RXN
+  locator: Reaction dblink[RHEA], reaction-direction, left/right
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Exact native reaction identity and chemistry independently inspected; native
+    crossrefs are 18650,16526 and bidirectional 24467 respectively, without attributing
+    current directed 24465 to the old native object.
+  snapshot_sha256: 0b306ee63e5498a9ace9423d4eb89c23a8906e5b51741529cb6caab0b468e57a
+- evidence_id: e-native-dehyddeoxphosgalact-aldol-rxn
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:DEHYDDEOXPHOSGALACT-ALDOL-RXN
+  locator: Reaction dblink[RHEA], reaction-direction, left/right
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Exact native reaction identity and chemistry independently inspected; native
+    crossrefs are 18650,16526 and bidirectional 24467 respectively, without attributing
+    current directed 24465 to the old native object.
+  snapshot_sha256: c66e4fbab0476b5db784885e71babe25624df7739d2f0fcd7ee901db27b40cc8
+- evidence_id: e-rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Masters 18649/16525/24464, directionalReaction and bidirectionalReaction;
+    all selected substrates/products/contains1/compound/chebi chains
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Original complete release 142 RDF independently replayed. All 11 coefficient-one
+    sides and 3 L2R selections agree, including 24467/24465 family correspondence.
+    All 3 equations balance against ChEBI charged formulas. Digest covers complete
+    compressed RDF.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-chebi
+  kind: authority
+  reference: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  locator: ChEBI 255 SemanticSQL rdfs:label, chemrof:charge/generalized_empirical_formula
+    for all 10 declared chemicals
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Original selected rows establish all exact labels/identities and 9 reaction
+    formulas/charges. Root independently verified the full database digest; reviewer
+    did not rehash that whole database. Magnesium is a separate cofactor annotation.
+  snapshot_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- evidence_id: e-up-q6bf17
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/Q6BF17.json
+  locator: proteinDescription, organism, genes, exact cited comments; native protein
+    cross-reference bridge
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Complete original reviewed entry inspected with its source evidence codes.
+    K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters,
+    DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is
+    a transcriptional repressor. Protein-specific claims were assessed only where
+    present.
+  snapshot_sha256: 77084e43c46dcd45816a3bd2c425e885c8b4687f9048d8517721be4359ddf60f
+- evidence_id: e-up-p31459
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P31459.json
+  locator: proteinDescription, organism, genes, exact cited comments; native protein
+    cross-reference bridge
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Complete original reviewed entry inspected with its source evidence codes.
+    K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters,
+    DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is
+    a transcriptional repressor. Protein-specific claims were assessed only where
+    present.
+  snapshot_sha256: b770b4613dcf98e6aa24952569ec4c7acb0c922f4aa1ccba28c163edf80aeaac
+- evidence_id: e-up-q6bf16
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/Q6BF16.json
+  locator: proteinDescription, organism, genes, exact cited comments; native protein
+    cross-reference bridge
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Complete original reviewed entry inspected with its source evidence codes.
+    K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters,
+    DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is
+    a transcriptional repressor. Protein-specific claims were assessed only where
+    present.
+  snapshot_sha256: 9f0d514e7167c0d7fe0e393b7fdcc45b013cf53a2ea8dd1cad5e60168ab17cc6
+- evidence_id: e-up-p31460
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P31460.json
+  locator: proteinDescription, organism, genes, exact cited comments; native protein
+    cross-reference bridge
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Complete original reviewed entry inspected with its source evidence codes.
+    K-12 taxon 83333 and exact label agree; catalyst comments name the expected masters,
+    DgoD Mg evidence is ECO:0000250, DgoA is a documented homotrimer, and DgoR is
+    a transcriptional repressor. Protein-specific claims were assessed only where
+    present.
+  snapshot_sha256: ea07011665016cfabcd538e0faa80b7adeddcbac8659ae3c45ada60f502c38a8
+- evidence_id: e-primary-growth
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC6351737/
+  locator: Results s2.1/F1C; s2.4/F4/F5; s2.7/F8A-C; Methods s4.3/Table1, s4.9,s4.12
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Original body supports BW25113-derived knockout physiology, DgoR IR1/IR2
+    transcriptional repression, and conditional galactonate-dependent DNA release/proteolysis.
+    Original captions independently confirm both corrected figure references. MgCl2
+    was present in assays; growth results do not become purified DgoD/DgoK evidence.
+  snapshot_sha256: 1bab347e98dafa6dfb04253e6b080cad78cff4b2c6139a1b77e6ff29509fec07
+- evidence_id: e-primary-aldolase
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3326530/
+  locator: Introduction P4; Results P5/P6/P10; Methods P22-P25/P33
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Original body supports recombinant KDPGal retro-aldol cleavage, substrate
+    distinction from KDPG and homotrimer context. Eda-deficient DF71 reduced contaminating
+    KDPG activity. NADH belongs to the coupled assay, not a pathway cofactor; expression
+    host is not endogenous physiology evidence.
+  snapshot_sha256: 58a7e34b46e22091c33481f273f62c2606844ccd703cb5122fb11c72f7d783e1
+- evidence_id: e-primary-metal
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC7674646/
+  locator: Results S3.SS3/F6; Discussion S4; Methods cloning/EMSA and PDB 7C7E deposit
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Original body shows metal-depleted DgoR retains DNA binding; galactonate
+    plus selected Zn/Ca/Mg destabilizes the complex. No unique physiological metal
+    is demonstrated. The ligand pose is modeled; 7C7E/current P31460 cross-reference
+    supports protein identity. Confusing abstract/discussion repression wording is
+    not used to invert the actual Results.
+  snapshot_sha256: 2a6d1a7b8712676db20544de7dc6f85fc1e45159730ae429d811664489f0ade5
+- evidence_id: e-primary-historical
+  kind: primary_source
+  reference: https://link.springer.com/article/10.1007/BF00415730
+  locator: Original publisher Abstract, numbered statements1,2,6
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Abstract-only source supports K-12 enzyme-activity mutants, linked structural
+    loci and induction. No uninspected full-text assay details are inferred.
+  snapshot_sha256: 64570c405c388eba927e697a30f097bfcc2d8892e0deb96bf50d613008cbde6a
+- evidence_id: e-go
+  kind: authority
+  reference: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:0034194
+  locator: Active definition and synonyms
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: GO names D-galactonate breakdown generically; it does not delimit the exact
+    three-reaction phosphorylative native route. Exact MetaCyc identity is retained.
+  snapshot_sha256: 6f91d14a086515138d2e7c6b7220f7bf3907b655331274d8a9a1bd78d2811177
+- evidence_id: e-context
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-189-galactonate-review/imodulon-independent-replay.json
+  locator: Exact canonical cached-response replay and dgo query results
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: context_only
+  summary: Forty-two retained API bodies and all 35 queries/6 returned tables reproduce.
+    The selected dgo genes resolve in MG1655. Lack of matching module-name hits is
+    not lack of membership; no scientific graph assertion is derived from this context.
+  snapshot_sha256: 41d8ec1a6c7df256d52fe47e8a3f4ccac7ee2f1339d414465fd0654840708439
+- evidence_id: e-raw-replay
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-189-galactonate-review/independent-source-replay.json
+  locator: All independently reconstructed source chains and formula/charge residuals
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Independent reviewer replay complements manual evidence assessment. It
+    reads original native/Rhea/ChEBI/UniProt bodies, not author projection rows as
+    scientific authority.
+  snapshot_sha256: 8ab95961688e4408bf053724004bcf5193d610adffac4d5aeec5adf117fa0fa0
+- evidence_id: e-fix
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-189-galactonate-review/issue352-independent-verification.json
+  locator: Both source-caption checks and exact before/after target hashes
+  accessed_at: '2026-10-11T04:56:35Z'
+  support: supports
+  summary: Independent raw caption and structural comparison confirms only edge025
+    Fig. 1C and edge027 Fig. 8A-C changed. The prior saved observations remain intact.
+  snapshot_sha256: 997aa240ded6f3ac3632bac4c82ea9e0dca97cf1c223ec27791edf9590e34479
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact full native boundary
+  outcome: supported
+  summary: The complete native three-step route is distinct from broader PathBank
+    transport/galactitol maps and general GO breakdown. No convenient shortened module
+    is presented under a larger source title.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-native
+  - e-go
+- assessment_id: a-chemistry
+  area: graph
+  topic: All chemical sides, current charged states and direction
+  outcome: supported
+  summary: All 11 chemical-side occurrences,9 reaction chemicals and 3 reaction balances
+    agree with original Rhea/ChEBI. Native reversible aldolase and current directed
+    member have separate source evidence; all shared-intermediate ordering evidence
+    is sound.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-rhea
+  - e-chebi
+  - e-native
+  - e-raw-replay
+- assessment_id: a-enzymes
+  area: evidence
+  topic: Catalyst function versus assembly and evidence tier
+  outcome: supported
+  summary: Exact reviewed/native catalyst assignments support all three functional
+    enables edges. DgoA has direct recombinant and structural support. DgoD/DgoK annotations
+    are not described as newly inspected purified assays; homotrimer wording prevents
+    monomer-sufficiency inference.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-up-q6bf17
+  - e-up-p31459
+  - e-up-q6bf16
+  - e-primary-aldolase
+  - e-native
+  dimensions:
+  - name: assembly
+    value: DgoA homotrimer; functional enables graph
+    definition: Protein activity association does not assert isolated monomer sufficiency
+      or invent a physical complex identifier.
+    evidence_ids:
+    - e-primary-aldolase
+- assessment_id: a-cofactor
+  area: grounding
+  topic: DgoD magnesium inference
+  outcome: supported
+  summary: The one-Mg-per-subunit annotation retains ECO:0000250 by-similarity scope;
+    it is not a direct K-12 metal-binding result. No kinase Mg or unique DgoR metal
+    is invented.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-up-q6bf17
+  - e-primary-metal
+- assessment_id: a-strain
+  area: scope
+  topic: K-12 identity and actual experimental strains
+  outcome: supported
+  summary: Reviewed K-12 proteins, native MG1655 frames and BW25113 physiological
+    experiments are kept distinct. Recombinant expression hosts do not become pathway
+    physiology evidence. Corrected DgoA/DgoD sequences avoid the old fused-ORF prediction.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-up-q6bf17
+  - e-up-p31459
+  - e-up-q6bf16
+  - e-up-p31460
+  - e-primary-growth
+  - e-primary-aldolase
+  - e-primary-historical
+- assessment_id: a-regulation
+  area: evidence
+  topic: Transcriptional repression and conditional effector effect
+  outcome: supported
+  summary: DgoR regulation concerns operon transcription; D-galactonate inhibition
+    concerns repressor DNA binding under tested metal conditions. Original Results,
+    rather than ambiguous secondary wording, support the selected polarity.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-up-p31460
+  - e-primary-growth
+  - e-primary-metal
+- assessment_id: a-provenance
+  area: provenance
+  topic: Verified successor disposition
+  outcome: supported
+  summary: Both initial minor figure errors are corrected and independently rechecked
+    against original captions. Exact predecessor issue keys and finding identities
+    remain in this successor.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-initial
+  - e-target
+  - e-primary-growth
+  - e-fix
+- assessment_id: a-context
+  area: scope
+  topic: Structured database context without mechanism inference
+  outcome: supported
+  summary: Canonical MG1655 context was independently replayed and remains computational
+    context only, without interpreting query misses as biological absence.
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  evidence_ids:
+  - e-context
+findings:
+- finding_id: f-growth-figure
+  issue_key: galactonate-growth-figure-locator
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Knockout-growth locator cites the pathway cartoon
+  description: 'Edge025 cites Fig.1B for loss of growth of dgoD/dgoK/dgoA deletions,
+    but original Results #s2.1 and Fig.1 caption place growth spots in Fig.1C. The
+    cited section itself supports the assertion.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  field_paths:
+  - mechanistic_edges[id=galactonate-edge-025]/evidence[reference_id=PMID:30455279]/source_locator
+  evidence_ids:
+  - e-initial
+  - e-primary-growth
+  - e-fix
+  - e-target
+  rule_id: review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source
+    locators
+  native_severity: minor
+  normalization_reason: 'Bounded provenance defect: scientific assertion is supported
+    by the correctly named source section, but the exact figure locator is wrong.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactonate-degradation.yaml
+    role: maintained_record
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T043907Z-galactonate-initial-independent-review
+    finding_id: f-growth-figure
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/352
+  disposition_reason: The exact corrected target 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+    and original figure captions were independently reinspected. Only the named locator
+    string changed; source digests and scientific assertions are preserved.
+- finding_id: f-effector-figure
+  issue_key: galactonate-effector-figure-locator
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Effector-response locator cites the wrong figure
+  description: 'Edge027 cites Fig.7 for D-galactonate-dependent DNA release and altered
+    proteolysis; original Results #s2.7 explicitly places these observations in Fig.8A/B
+    and Fig.8C.'
+  target_ids:
+  - MetaCyc:GALACTCAT-PWY
+  field_paths:
+  - mechanistic_edges[id=galactonate-edge-027]/evidence[reference_id=PMID:30455279]/source_locator
+  evidence_ids:
+  - e-initial
+  - e-primary-growth
+  - e-fix
+  - e-target
+  rule_id: review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source
+    locators
+  native_severity: minor
+  normalization_reason: 'Bounded provenance defect: scientific assertion is supported
+    by the correctly named source section, but the exact figure locator is wrong.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactonate-degradation.yaml
+    role: maintained_record
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T043907Z-galactonate-initial-independent-review
+    finding_id: f-effector-figure
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/352
+  disposition_reason: The exact corrected target 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+    and original figure captions were independently reinspected. Only the named locator
+    string changed; source digests and scientific assertions are preserved.
+actions: []
+limitations:
+- Full historical PMID211976 and324806 articles were not inspected; 211976 publisher
+  abstract and database assertions retain their respective source tiers.
+- DgoD magnesium assignment remains by similarity, and DgoK primary purified-enzyme
+  details were not inspected.
+- Only relevant material primary sections, Methods and captions were assessed; no
+  claim of exhaustive reinterpretation of every experiment in the papers.
+- 2020 paper wording has internal derepression ambiguity; actual Results/Fig6 and
+  database annotation support the carefully qualified record claim.
+- Pinned whole ChEBI database digest verified by root; reviewer independently read
+  selected original database rows and rehashed31 other source bodies.
+- Independent iModulon replay covers42 retained API bodies/35 searches/6 returned
+  component tables. Search misses are not absence of membership, and expression context
+  is not mechanism evidence.
+notes:
+- No maintained scientific record or author source artifact was edited by this reviewer.
+- The initial partial review preserved the actual pending shared gates; this successor
+  records final gate outcomes after their terminal execution.
+- Generated pages/downloads are owned by maintained records and src/pathwaymech rendering/export
+  code; root regenerated and validated them. Shared authority snapshots are generated
+  from original inputs in conf/identifier_sources.json, not hand-edited for labels.
+- A separate technical integration audit covers all three current records; that does
+  not independently reassess reviewer-authored phenylethylamine-II science.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/352
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261011T043907Z-galactonate-initial-independent-review
+  relationship: Resolves both saved minor locator findings and completes the remaining
+    full independent scientific assessment.
+```

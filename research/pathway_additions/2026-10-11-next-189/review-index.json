@@ -1,0 +1,333 @@
+{
+  "created_at": "2026-10-11T04:57:05.924491+00:00",
+  "reviews": [
+    {
+      "review_id": "20261011T043907Z-galactonate-initial-independent-review",
+      "yaml": "reviews/structured/20261011T043907Z-galactonate-initial-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261011T043907Z-galactonate-initial-independent-review/review.md",
+      "sha256": "8c30963058f17b56b3f9606330577d7a171b02e04a6e1ec62f363082db389bac",
+      "completion": "partial",
+      "verdict": "needs_curation",
+      "target_ids": [
+        "MetaCyc:GALACTCAT-PWY"
+      ],
+      "reviewer": {
+        "identity": "Codex independent reviewer (/root/pathway_literature_candidates)",
+        "kind": "agent",
+        "model": "gpt-6",
+        "independence": "independent",
+        "independence_basis": "Reviewer did not author this target or its dossiers. Entire target and cited primary sections were independently read; reviewer-authored phenylethylamine-II is outside this review."
+      },
+      "findings": [
+        {
+          "finding_id": "f-growth-figure",
+          "issue_key": "galactonate-growth-figure-locator",
+          "category": "provenance",
+          "severity": "minor",
+          "status": "open",
+          "certainty": "confirmed",
+          "title": "Knockout-growth locator cites the pathway cartoon",
+          "description": "Edge025 cites Fig.1B for loss of growth of dgoD/dgoK/dgoA deletions, but original Results #s2.1 and Fig.1 caption place growth spots in Fig.1C. The cited section itself supports the assertion.",
+          "target_ids": [
+            "MetaCyc:GALACTCAT-PWY"
+          ],
+          "field_paths": [
+            "mechanistic_edges[id=galactonate-edge-025]/evidence[reference_id=PMID:30455279]/source_locator"
+          ],
+          "evidence_ids": [
+            "e-target",
+            "e-primary"
+          ],
+          "rule_id": "review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source locators",
+          "native_severity": "minor",
+          "normalization_reason": "Bounded provenance defect: scientific assertion is supported by the correctly named source section, but the exact figure locator is wrong.",
+          "owner_paths": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "path": "data/pathways/d-galactonate-degradation.yaml",
+              "role": "maintained_record"
+            }
+          ]
+        },
+        {
+          "finding_id": "f-effector-figure",
+          "issue_key": "galactonate-effector-figure-locator",
+          "category": "provenance",
+          "severity": "minor",
+          "status": "open",
+          "certainty": "confirmed",
+          "title": "Effector-response locator cites the wrong figure",
+          "description": "Edge027 cites Fig.7 for D-galactonate-dependent DNA release and altered proteolysis; original Results #s2.7 explicitly places these observations in Fig.8A/B and Fig.8C.",
+          "target_ids": [
+            "MetaCyc:GALACTCAT-PWY"
+          ],
+          "field_paths": [
+            "mechanistic_edges[id=galactonate-edge-027]/evidence[reference_id=PMID:30455279]/source_locator"
+          ],
+          "evidence_ids": [
+            "e-target",
+            "e-primary"
+          ],
+          "rule_id": "review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source locators",
+          "native_severity": "minor",
+          "normalization_reason": "Bounded provenance defect: scientific assertion is supported by the correctly named source section, but the exact figure locator is wrong.",
+          "owner_paths": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "path": "data/pathways/d-galactonate-degradation.yaml",
+              "role": "maintained_record"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "review_id": "20261011T044538Z-adenine-salvage-initial-independent-review",
+      "yaml": "reviews/structured/20261011T044538Z-adenine-salvage-initial-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261011T044538Z-adenine-salvage-initial-independent-review/review.md",
+      "sha256": "90e00c38008d6117e4fcea4cff2aeae745c776b27d0e7eefbdfabc61cb413893",
+      "completion": "completed",
+      "verdict": "needs_curation",
+      "target_ids": [
+        "MetaCyc:PWY-6609"
+      ],
+      "reviewer": {
+        "identity": "Codex independent reviewer (/root/verify_graph_publication)",
+        "kind": "agent",
+        "model": "gpt-6",
+        "independence": "independent",
+        "independence_basis": "Reviewer authored the separate D-galactonate record. This salvage target was authored by /root/pathway_authority_cache; reviewer independently inspected its complete YAML, original source bodies, primary PDF and XML, native Rhea/ChEBI and assemblies without editing the target."
+      },
+      "findings": [
+        {
+          "finding_id": "f-shared-intermediate-attribution",
+          "issue_key": "adenine-salvage-shared-intermediate-source-attribution",
+          "category": "provenance",
+          "severity": "minor",
+          "status": "open",
+          "certainty": "confirmed",
+          "title": "Native pathway evidence overattributes normalized ChEBI intermediates",
+          "description": "Edges040/041/042 evidence[0] says native pathway ordering transfers CHEBI:16335/17596/17368, but the cited PWY-6609 XML contains only native ADENOSINE/INOSINE/HYPOXANTHINE frame names. Rhea independently supports the correct intermediates. Issue https://github.com/CultureBotAI/PathwayMech/issues/351 tracks the bounded source-attribution correction.",
+          "target_ids": [
+            "MetaCyc:PWY-6609"
+          ],
+          "field_paths": [
+            "mechanistic_edges[id=adenine-salvage-edge-040]/evidence[0]",
+            "mechanistic_edges[id=adenine-salvage-edge-041]/evidence[0]",
+            "mechanistic_edges[id=adenine-salvage-edge-042]/evidence[0]"
+          ],
+          "evidence_ids": [
+            "e-target",
+            "e-native",
+            "e-rhea"
+          ],
+          "rule_id": "review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md exact source attribution",
+          "native_severity": "minor",
+          "normalization_reason": "Bounded non-blocking provenance defect: independently inspected Rhea supports the intended chemistry, and complete native pathway identity is correct.",
+          "owner_paths": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "path": "data/pathways/adenine-and-adenosine-salvage-iii.yaml",
+              "role": "maintained_record"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "review_id": "20261011T045604Z-adenine-salvage-resolved-independent-review",
+      "yaml": "reviews/structured/20261011T045604Z-adenine-salvage-resolved-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261011T045604Z-adenine-salvage-resolved-independent-review/review.md",
+      "sha256": "9c9541c5b2d636e6f921539df92c295dcb1e1f30cbfc4330951bf8d601319d56",
+      "completion": "completed",
+      "verdict": "pass_with_limitations",
+      "target_ids": [
+        "MetaCyc:PWY-6609"
+      ],
+      "reviewer": {
+        "identity": "Codex independent reviewer (/root/verify_graph_publication)",
+        "kind": "agent",
+        "model": "gpt-6",
+        "independence": "independent",
+        "independence_basis": "Reviewer authored the separate D-galactonate record. This salvage target was authored by /root/pathway_authority_cache; reviewer independently inspected its complete YAML, original source bodies, primary PDF and XML, native Rhea/ChEBI and assemblies without editing the target."
+      },
+      "findings": [
+        {
+          "finding_id": "f-shared-intermediate-attribution",
+          "issue_key": "adenine-salvage-shared-intermediate-source-attribution",
+          "category": "provenance",
+          "severity": "minor",
+          "status": "resolved",
+          "certainty": "confirmed",
+          "title": "Native pathway evidence overattributes normalized ChEBI intermediates",
+          "description": "Initial edges040-042 overattributed normalized ChEBI IDs to native pathway XML. Corrected record26f0adf now limits native evidence to predecessor relationships and adds six separately cited Rhea chains. Chemistry, identities, graph endpoints and primary qualifications are unchanged.",
+          "target_ids": [
+            "MetaCyc:PWY-6609"
+          ],
+          "field_paths": [
+            "mechanistic_edges[id=adenine-salvage-edge-040]/evidence[0]",
+            "mechanistic_edges[id=adenine-salvage-edge-041]/evidence[0]",
+            "mechanistic_edges[id=adenine-salvage-edge-042]/evidence[0]"
+          ],
+          "evidence_ids": [
+            "e-target",
+            "e-native",
+            "e-rhea",
+            "e-fix-replay"
+          ],
+          "rule_id": "review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md exact source attribution",
+          "native_severity": "minor",
+          "normalization_reason": "Bounded non-blocking provenance defect: independently inspected Rhea supports the intended chemistry, and complete native pathway identity is correct.",
+          "owner_paths": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "path": "data/pathways/adenine-and-adenosine-salvage-iii.yaml",
+              "role": "maintained_record"
+            }
+          ],
+          "external_issues": [
+            "https://github.com/CultureBotAI/PathwayMech/issues/351"
+          ],
+          "previous_occurrences": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "review_id": "20261011T044538Z-adenine-salvage-initial-independent-review",
+              "finding_id": "f-shared-intermediate-attribution"
+            }
+          ],
+          "disposition_reason": "Independent full RDF replay verifies all six added product/substrate\u2192participant\u2192compound\u2192ChEBI chains and structural comparison proves the correction is confined to three evidence lists. Final generated output and required gates pass; source-attribution defect is resolved."
+        }
+      ]
+    },
+    {
+      "review_id": "20261011T045635Z-galactonate-resolved-independent-review",
+      "yaml": "reviews/structured/20261011T045635Z-galactonate-resolved-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261011T045635Z-galactonate-resolved-independent-review/review.md",
+      "sha256": "def3610432d706ad97c3e3c0653e02bbb70691bd2019e474dc4f23fbc3a241b0",
+      "completion": "completed",
+      "verdict": "pass_with_limitations",
+      "target_ids": [
+        "MetaCyc:GALACTCAT-PWY"
+      ],
+      "reviewer": {
+        "identity": "Codex independent reviewer (/root/pathway_literature_candidates)",
+        "kind": "agent",
+        "model": "gpt-6",
+        "independence": "independent",
+        "independence_basis": "Reviewer did not author this target or its dossiers. Entire target and cited primary sections were independently read; reviewer-authored phenylethylamine-II is outside this review."
+      },
+      "findings": [
+        {
+          "finding_id": "f-growth-figure",
+          "issue_key": "galactonate-growth-figure-locator",
+          "category": "provenance",
+          "severity": "minor",
+          "status": "resolved",
+          "certainty": "confirmed",
+          "title": "Knockout-growth locator cites the pathway cartoon",
+          "description": "Edge025 cites Fig.1B for loss of growth of dgoD/dgoK/dgoA deletions, but original Results #s2.1 and Fig.1 caption place growth spots in Fig.1C. The cited section itself supports the assertion.",
+          "target_ids": [
+            "MetaCyc:GALACTCAT-PWY"
+          ],
+          "field_paths": [
+            "mechanistic_edges[id=galactonate-edge-025]/evidence[reference_id=PMID:30455279]/source_locator"
+          ],
+          "evidence_ids": [
+            "e-initial",
+            "e-primary-growth",
+            "e-fix",
+            "e-target"
+          ],
+          "rule_id": "review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source locators",
+          "native_severity": "minor",
+          "normalization_reason": "Bounded provenance defect: scientific assertion is supported by the correctly named source section, but the exact figure locator is wrong.",
+          "owner_paths": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "path": "data/pathways/d-galactonate-degradation.yaml",
+              "role": "maintained_record"
+            }
+          ],
+          "previous_occurrences": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "review_id": "20261011T043907Z-galactonate-initial-independent-review",
+              "finding_id": "f-growth-figure"
+            }
+          ],
+          "external_issues": [
+            "https://github.com/CultureBotAI/PathwayMech/issues/352"
+          ],
+          "disposition_reason": "The exact corrected target 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84 and original figure captions were independently reinspected. Only the named locator string changed; source digests and scientific assertions are preserved."
+        },
+        {
+          "finding_id": "f-effector-figure",
+          "issue_key": "galactonate-effector-figure-locator",
+          "category": "provenance",
+          "severity": "minor",
+          "status": "resolved",
+          "certainty": "confirmed",
+          "title": "Effector-response locator cites the wrong figure",
+          "description": "Edge027 cites Fig.7 for D-galactonate-dependent DNA release and altered proteolysis; original Results #s2.7 explicitly places these observations in Fig.8A/B and Fig.8C.",
+          "target_ids": [
+            "MetaCyc:GALACTCAT-PWY"
+          ],
+          "field_paths": [
+            "mechanistic_edges[id=galactonate-edge-027]/evidence[reference_id=PMID:30455279]/source_locator"
+          ],
+          "evidence_ids": [
+            "e-initial",
+            "e-primary-growth",
+            "e-fix",
+            "e-target"
+          ],
+          "rule_id": "review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source locators",
+          "native_severity": "minor",
+          "normalization_reason": "Bounded provenance defect: scientific assertion is supported by the correctly named source section, but the exact figure locator is wrong.",
+          "owner_paths": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "path": "data/pathways/d-galactonate-degradation.yaml",
+              "role": "maintained_record"
+            }
+          ],
+          "previous_occurrences": [
+            {
+              "repository": "CultureBotAI/PathwayMech",
+              "review_id": "20261011T043907Z-galactonate-initial-independent-review",
+              "finding_id": "f-effector-figure"
+            }
+          ],
+          "external_issues": [
+            "https://github.com/CultureBotAI/PathwayMech/issues/352"
+          ],
+          "disposition_reason": "The exact corrected target 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84 and original figure captions were independently reinspected. Only the named locator string changed; source digests and scientific assertions are preserved."
+        }
+      ]
+    },
+    {
+      "review_id": "20261011T045637Z-phenylethylamine-ii-independent-review",
+      "yaml": "reviews/structured/20261011T045637Z-phenylethylamine-ii-independent-review/review.yaml",
+      "markdown": "reviews/structured/20261011T045637Z-phenylethylamine-ii-independent-review/review.md",
+      "sha256": "978db8d61a54f7147237c17ad4dc0112bb19ce6a267424d148b19653ba282252",
+      "completion": "completed",
+      "verdict": "pass_with_limitations",
+      "target_ids": [
+        "MetaCyc:PWY-6534"
+      ],
+      "reviewer": {
+        "identity": "Codex /root/pathway_authority_cache",
+        "kind": "agent",
+        "independence": "independent",
+        "independence_basis": "Did not author the target or its author dossiers. Authored the separate adenine and adenosine salvage III record, which is excluded from this scientific assessment. Root owns shared authorities, integrated gates and publication."
+      },
+      "findings": []
+    }
+  ],
+  "latest_by_target": {
+    "MetaCyc:GALACTCAT-PWY": "reviews/structured/20261011T045635Z-galactonate-resolved-independent-review/review.yaml",
+    "MetaCyc:PWY-6609": "reviews/structured/20261011T045604Z-adenine-salvage-resolved-independent-review/review.yaml",
+    "MetaCyc:PWY-6534": "reviews/structured/20261011T045637Z-phenylethylamine-ii-independent-review/review.yaml"
+  },
+  "limits": "Initial findings remain immutable. Resolved successor observations preserve exact previous_occurrences; a clean verdict alone does not close a prior finding."
+}

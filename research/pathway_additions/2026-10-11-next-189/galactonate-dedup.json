@@ -1,0 +1,90 @@
+{
+  "observed_at": "2026-10-11T04:30:45.883720+00:00",
+  "searches": [
+    {
+      "root": "/private/tmp/pathwaymech-next-189-20261011",
+      "command": [
+        "rg",
+        "--no-ignore",
+        "--hidden",
+        "-n",
+        "-i",
+        "--max-columns",
+        "350",
+        "--max-columns-preview",
+        "D.?galacton(?:ate|ic)|GALACTCAT-PWY|\\bdgo[DKART]\\b|SMP0000840|PW000820|SMP0121294|0034194|\\b(?:18649|18650|16525|16526|24464|24465|24467)\\b|Q6BF17|P31459|Q6BF16|P31460|30455279|17981470|211976|33224125|JB\\.00281-18|2007\\.10\\.043|M00552",
+        ".",
+        "-g",
+        "!/.git",
+        "-g",
+        "!/.venv"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "output": "/private/tmp/pathwaymech-next-189-evidence/galactonate/dedup-final-0.txt",
+      "sha256": "2b7ae8af8ec82d8e71933d93c78e22a4d89a94f14fb58c4f9cb04ddc3eeb50ab",
+      "line_count": 3709
+    },
+    {
+      "root": "/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech",
+      "command": [
+        "rg",
+        "--no-ignore",
+        "--hidden",
+        "-n",
+        "-i",
+        "--max-columns",
+        "350",
+        "--max-columns-preview",
+        "D.?galacton(?:ate|ic)|GALACTCAT-PWY|\\bdgo[DKART]\\b|SMP0000840|PW000820|SMP0121294|0034194|\\b(?:18649|18650|16525|16526|24464|24465|24467)\\b|Q6BF17|P31459|Q6BF16|P31460|30455279|17981470|211976|33224125|JB\\.00281-18|2007\\.10\\.043|M00552",
+        ".",
+        "-g",
+        "!/.git",
+        "-g",
+        "!/.venv"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "output": "/private/tmp/pathwaymech-next-189-evidence/galactonate/dedup-final-1.txt",
+      "sha256": "04789025675da817820c8ed2e31ec769b7abadf359b679d5739cf1a5e149733c",
+      "line_count": 3686
+    }
+  ],
+  "included_hidden_and_ignored": true,
+  "exclusions": [
+    ".git internals",
+    ".venv environment only"
+  ],
+  "scope": "Both current cohort worktree and accessible original Documents checkout, before writing candidate YAML. Generated and ignored reports included.",
+  "dispositions": [
+    {
+      "source": "Prior frozen PathBank screening TSVs and taxonomy audit",
+      "decision": "Discovery lead only: SMP0000840/PW000820 contains galactitol and galactonate, transport and another pathway; inspected actual native member independently. Preserve old pending-scientific-review disposition; do not call the three-step record full PathBank map coverage."
+    },
+    {
+      "source": "Ignored reports/local_source_ingestion/2026-10-08-dram-seed/dram/module_step_form.tsv and ingested-native.tsv, M00552 rows2288-2292",
+      "decision": "Prior source ingestion covers a five-step KEGG module through glycerate3P; not a curated pathway record. GALACTCAT-PWY has a different exact three-step boundary. No M00552 exactMatch or complete coverage claim."
+    },
+    {
+      "source": "Ignored DRAM M00309/M00633 rows",
+      "decision": "Different nonphosphorylative/broader semiphosphorylative glucose/galactose maps. Do not equate to this exact E. coli pathway."
+    },
+    {
+      "source": "data/pathways/galactose-degradation.yaml",
+      "decision": "Yeast Leloir pathway converts galactose via galactose1P/UDP-galactose/glucose1P to glucose6P, with distinct enzymes and reactions; not a duplicate."
+    },
+    {
+      "source": "data/pathways/d-glucarate-degradation-i.yaml",
+      "decision": "Distinct six-carbon acid route via tartronate semialdehyde/glycerate; only endpoint pyruvate overlaps. No identical enzyme/reaction IDs."
+    },
+    {
+      "source": "Pre-existing numerical matches in pages/output/authority projections",
+      "decision": "Bare local-number search intentionally broad; CHEBI:16526 (carbon dioxide) and incidental numeric strings collide with RHEA:16526. Namespace-aware review found no maintained GALACTCAT pathway, selected enzyme accession, or defining directed reaction occurrence."
+    },
+    {
+      "source": "Current cohort imodulondb-*",
+      "decision": "Root-created expression context for current task, not an older pathway record. No biochemical evidence inferred."
+    }
+  ],
+  "result": "Distinct complete MetaCyc route accepted; bounded dedup establishes this target missing, not exhaustion of remaining pathways."
+}
