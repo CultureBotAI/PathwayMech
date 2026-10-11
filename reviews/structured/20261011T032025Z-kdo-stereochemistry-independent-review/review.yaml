@@ -1,0 +1,521 @@
+schema_version: 1.0.0
+review_id: 20261011T032025Z-kdo-stereochemistry-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Partial independent review of CMP-Kdo terminal stereochemistry
+started_at: '2026-10-11T03:14:47.196327Z'
+finished_at: '2026-10-11T03:20:25Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: A different agent authored CMP-Kdo. Reviewer read the complete
+    target and independently inspected the terminal primary sources, exact chemical
+    identity and actual graph export without editing the target. Reviewer-authored
+    biotin science is excluded.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: 'One confirmed major representation finding: the graph asserts an alpha-Kdo
+  terminal substrate and KdsB reaction role despite inspected beta-specific primary
+  evidence. Prose caveats do not alter exported knowledge assertions. Exact pathway
+  identity is supported; this is a focused partial scientific review, not completion
+  of all-edge source verification.'
+source:
+  git_revision: 3886f14c33d37054dc92e8133bb65aced30ee4ef
+  state: working_tree
+  inputs:
+  - path: data/pathways/cmp-kdo-biosynthesis.yaml
+    sha256: fb4d4f947db0402d7f109b96d85961d37812008e5c1c088d12afbad2127f108c
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/imodulondb-context.json
+    sha256: 1bb951de28d1fa0efe7c2e441432d7abffdd2995a9f97892d553456c8e89d7fe
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/kdo-curation.md
+    sha256: 259baa14423467bbcf3e507c661a10e78f095ac48fd3587e60a441ade7bc2e06
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/kdo-independent-review-audit.json
+    sha256: d57b18faee6f6f5585e151f6330fbfb4e2128f807efbf7a0bdbd61dbc3aad1a5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/kdo-source-projection.json
+    sha256: 93c9173a50c0f3bc11f0d7576ec32b1660198d35fd1ef07b6fe930b0ec89e9fd
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: e1d2f085f8e257170a434400265a400ffac07e4aa23b1b830a8fde990ba6a520
+    role: context
+scope:
+  description: Entire single target read; independent adjudication of exact GO/native
+    identity and terminal KdsB stereochemistry, chemical grounding and export semantics.
+  selection: Exactly the frozen CMP-Kdo candidate requested by parent, before any
+    archival or maintained-record removal.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - GO:0033468
+  exclusions:
+  - target: Other Kdo mechanistic edges
+    reason: Not every source assertion outside the terminal conflict has received
+      independent scientific verification.
+  - target: Other cohort records, including reviewer-authored biotin
+    reason: Outside this record review.
+targets:
+- target_id: GO:0033468
+  path: data/pathways/cmp-kdo-biosynthesis.yaml
+  label: CMP-keto-3-deoxy-D-manno-octulosonic acid biosynthetic process
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cmp-kdo-biosynthesis.yaml
+    role: maintained pathway record
+checks:
+- check_id: inspect-before-assessment
+  name: Canonical target inspection before assessment
+  status: passed
+  required: true
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-184-evidence/kdo-independent-review/targets.yaml
+    --input docs/CAUSAL_GRAPHS.md --input research/pathway_additions/2026-10-11-next-184/kdo-source-projection.json
+    --input research/pathway_additions/2026-10-11-next-184/kdo-curation.md
+  exit_code: 0
+  summary: Initial governed inspection captured the exact target before assessment;
+    final inspection rechecked unchanged initial inputs and added inspected context.
+  target_ids:
+  - GO:0033468
+- check_id: focused-source-export-audit
+  name: Focused independent raw-source and actual KGX audit
+  status: passed
+  required: false
+  command: .venv/bin/python - (read-only GO/ChEBI queries, native membership and actual
+    KGX inspection)
+  exit_code: 0
+  summary: Actual successful inspection retained exact source hashes and three exported
+    edges in the maintained independent audit; this is not a full-corpus or all-edge
+    scientific validation.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-kgx
+  - e-chebi
+  - e-identity
+- check_id: corpus-gate-1
+  name: just render-pages
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  summary: Parent executed the actual command; reviewer independently verified the
+    terminal receipt and log digest. Candidate bytes match the reviewed frozen target.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-1
+  scope_note: Full 187-record candidate corpus; does not certify scientific correctness.
+- check_id: corpus-gate-2
+  name: just lint
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  summary: Parent executed the actual command; reviewer independently verified the
+    terminal receipt and log digest. Candidate bytes match the reviewed frozen target.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-2
+  scope_note: Full 187-record candidate corpus; does not certify scientific correctness.
+- check_id: corpus-gate-3
+  name: just check-identifiers
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  exit_code: 0
+  summary: Parent executed the actual command; reviewer independently verified the
+    terminal receipt and log digest. Candidate bytes match the reviewed frozen target.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-3
+  scope_note: Full 187-record candidate corpus; does not certify scientific correctness.
+- check_id: corpus-gate-4
+  name: git diff --check
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 git
+    diff --check
+  exit_code: 0
+  summary: Parent executed the actual command; reviewer independently verified the
+    terminal receipt and log digest. Candidate bytes match the reviewed frozen target.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-4
+  scope_note: Full 187-record candidate corpus; does not certify scientific correctness.
+- check_id: corpus-gate-5
+  name: just kgx-export --output-dir /private/tmp/pathwaymech-next-184-kgx
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-184-kgx
+  exit_code: 0
+  summary: Parent executed the actual command; reviewer independently verified the
+    terminal receipt and log digest. Candidate bytes match the reviewed frozen target.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-5
+  scope_note: Full 187-record candidate corpus; does not certify scientific correctness.
+- check_id: corpus-gate-6
+  name: just validate
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  summary: Parent executed the actual command; reviewer independently verified the
+    terminal receipt and log digest. Candidate bytes match the reviewed frozen target.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-6
+  scope_note: Full 187-record candidate corpus; does not certify scientific correctness.
+- check_id: full-tests
+  name: Full corpus test suite
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  summary: 'Actual parent terminal run independently inspected: 1048 passed, 3 skipped,
+    3 warnings, 312.20 seconds.'
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-gate-tests
+  scope_note: Full 187-record candidate corpus; does not complete unperformed all-edge
+    scientific assessment.
+evidence:
+- evidence_id: e-target
+  kind: record_content
+  reference: data/pathways/cmp-kdo-biosynthesis.yaml
+  locator: reactions[id=RHEA:23449]; mechanistic_edges[id=kdo-edge-012,kdo-edge-025,kdo-edge-031]
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: Entire target read. The terminal alpha-Kdo reaction and its consumption,
+    KdsB role and pathway membership remain asserted despite prose disavowal of experimental
+    alpha catalysis.
+  snapshot_sha256: fb4d4f947db0402d7f109b96d85961d37812008e5c1c088d12afbad2127f108c
+- evidence_id: e-nmr1985
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/2997221/
+  locator: Indexed Europe PMC CORE abstract, abstractText
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: The original 13C-NMR study reports preferential depletion of beta-pyranose
+    Kdo and retention of beta configuration in CMP-Kdo. Reviewed indexed abstract,
+    not the full 1985 paper.
+  snapshot_sha256: a3aae92937a179157eae33589458ea0d65fe3232d7f864d7619e9cdee1a5c715
+- evidence_id: e-kinetics2009
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2790981/
+  locator: RESULTS AND DISCUSSION / Kinetic Characterization of KdsB / paragraph beginning
+    A major limitation
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: Full primary text identifies the approximately 2% beta-pyranose solution
+    fraction as the form accepted by KdsB; the solution mixture is not equivalent
+    to the specific alpha stereoisomer.
+  snapshot_sha256: 96f365413077e7f3d5680bcef4de52cb2dd1244894aabe475b9fb3046c54c697
+- evidence_id: e-specificity2022
+  kind: primary_source
+  reference: https://doi.org/10.1038/s41467-022-33988-1
+  locator: PMC9587256 / Results / Par8; E. coli KdsB donor-generation context
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: The primary WbbB study uses E. coli KdsB to generate CMP-beta-Kdo and explicitly
+    limits KdsB usage to beta-pyranose Kdo. This statement cites the earlier NMR work;
+    it is not a new KdsB NMR specificity experiment.
+  snapshot_sha256: 9b577dabf18990397e766bf9a706be4a22673dd18e991c0b28fe121e096bb831
+  quote: can only use the minor (~2%) non-lactonized β-pyranose Kdo isomer as a substrate
+- evidence_id: e-chebi
+  kind: authority
+  reference: ChEBI release 255 / CHEBI:85986
+  locator: rdfs:label; IAO:0000115; chemrof:inchi_string; chemrof:smiles_string; direct
+    read-only SQLite queries retained in kdo-independent-review-audit.json
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: CHEBI:85986 explicitly denotes 3-deoxy-alpha-D-manno-oct-2-ulosonate, with
+    stereospecific InChI and SMILES. It is not an anomer-unspecified solution pool.
+- evidence_id: e-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-184/kdo-independent-review-audit.json
+  locator: affected_exports for kdo-edge-012, kdo-edge-025 and kdo-edge-031; src/pathwaymech/kgx.py:119
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: Independent actual export inspection shows all three edges retain knowledge_level=knowledge_assertion.
+    Qualifying prose is preserved but does not supply a machine-readable nonasserted
+    source-model status.
+  snapshot_sha256: d57b18faee6f6f5585e151f6330fbfb4e2128f807efbf7a0bdbd61dbc3aad1a5
+- evidence_id: e-identity
+  kind: authority
+  reference: GO:0033468; MetaCyc:PWY-1269
+  locator: GO exact label, definition and MetaCyc cross-reference; native PWY-1269
+    reaction-list
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: supports
+  summary: Exact GO identity matches the five-member native biosynthetic route; independently
+    inspected native members are RXN-16804, DARAB5PISOM-RXN, KDO-8PSYNTH-RXN, KDO-8PPHOSPHAT-RXN
+    and CPM-KDOSYNTH-RXN. No wrong-pathway-identity finding.
+- evidence_id: e-native-kdsb
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:CPM-KDOSYNTH-MONOMER
+  locator: Protein frame CPM-KDOSYNTH-MONOMER / comment; dblink
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: refutes
+  summary: Native E. coli KdsB polypeptide maps P04951 and itself describes preference
+    for beta-pyranose Kdo, reinforcing that the alpha equation is not direct experimental
+    support.
+  snapshot_sha256: 4fd1f1328c56640f22522f3bd6e000d5507757fdfc52f0f4debe5d9e0826462a
+- evidence_id: e-expression
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-184/imodulondb-context.json
+  locator: dataset e_coli/precise_mg1655; queries kdsD, gutQ, kdsA, kdsC, kdsB
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: Inspected root canonical-client results show b3197, b2708, b1215, b3198
+    and b0918 gene-name hits with zero module-name hits for these queries. This does
+    not establish module-membership absence or stereochemistry. Reviewer did not independently
+    replay the HTTP acquisition.
+  snapshot_sha256: 1bb951de28d1fa0efe7c2e441432d7abffdd2995a9f97892d553456c8e89d7fe
+- evidence_id: e-gate-1
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-render-final.log
+  locator: complete command log; parent execution receipt independently rehashed and
+    inspected
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: just render-pages exited 0 over the 187-record candidate corpus. Completed
+    2026-10-11T03:14:43.715612+00:00. These deterministic results do not resolve the
+    scientific finding.
+  snapshot_sha256: abee2b535b22dc042dca89ade7357b251c350c1526c3f55e4db385c72c9024c5
+- evidence_id: e-gate-2
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-lint-final.log
+  locator: complete command log; parent execution receipt independently rehashed and
+    inspected
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: just lint exited 0 over the 187-record candidate corpus. Completed 2026-10-11T03:14:44.061375+00:00.
+    These deterministic results do not resolve the scientific finding.
+  snapshot_sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+- evidence_id: e-gate-3
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-identifiers-final.log
+  locator: complete command log; parent execution receipt independently rehashed and
+    inspected
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: just check-identifiers exited 0 over the 187-record candidate corpus. Completed
+    2026-10-11T03:15:03.090603+00:00. These deterministic results do not resolve the
+    scientific finding.
+  snapshot_sha256: 8bfc6c5f87ce0b7c642ef45f31cc629b65f3191c0471c2459fef22edcde88308
+- evidence_id: e-gate-4
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-diff-final.log
+  locator: complete command log; parent execution receipt independently rehashed and
+    inspected
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: git diff --check exited 0 over the 187-record candidate corpus. Completed
+    2026-10-11T03:15:03.687473+00:00. These deterministic results do not resolve the
+    scientific finding.
+  snapshot_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- evidence_id: e-gate-5
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-kgx-audit-cli.log
+  locator: complete command log; parent execution receipt independently rehashed and
+    inspected
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: just kgx-export --output-dir /private/tmp/pathwaymech-next-184-kgx exited
+    0 over the 187-record candidate corpus. Completed 2026-10-11T03:15:06.124992+00:00.
+    These deterministic results do not resolve the scientific finding.
+  snapshot_sha256: ec8642ffc5c55c72f07b82eb7d29a4bef0c5c3b65cc80dadcf043e5742cc75e1
+- evidence_id: e-gate-6
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-validate-final.log
+  locator: complete command log; parent execution receipt independently rehashed and
+    inspected
+  accessed_at: '2026-10-11T03:20:00Z'
+  support: context_only
+  summary: just validate exited 0 over the 187-record candidate corpus. Completed
+    2026-10-11T03:16:30.498617+00:00. These deterministic results do not resolve the
+    scientific finding.
+  snapshot_sha256: 1d49188f4baad8e77b418d83ed7125cba97c55cb6dd52750ea3794025d96dbe6
+- evidence_id: e-gate-tests
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-184-test-final.log
+  locator: terminal summary and parent execution receipt
+  accessed_at: '2026-10-11T03:20:25Z'
+  support: context_only
+  summary: Full test suite completed with 1048 passed, 3 skipped and 3 upstream warnings
+    in 312.20 seconds. Reviewer independently read and rehashed the actual terminal
+    log. Scientific review remains partial.
+  snapshot_sha256: 95eef46b71f7b7699b96460ea5d20302f30e14936ae41761ff585071b179ce6a
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact full native pathway identity
+  outcome: supported
+  summary: The active GO term denotes the requested CMP-Kdo biosynthetic process and
+    maps the five native MetaCyc members; the finding is not identity substitution
+    or a conveniently shortened pathway.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-identity
+- assessment_id: a-terminal
+  area: representation
+  topic: Alpha equation versus beta-specific enzyme mechanism
+  outcome: concern
+  summary: An explicit alpha chemical and its current database reaction remain asserted
+    as biological consumption/catalytic-role/pathway edges. The retained literature
+    caveats correctly disclose a disagreement but cannot reverse those machine-readable
+    assertions.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-target
+  - e-nmr1985
+  - e-kinetics2009
+  - e-specificity2022
+  - e-chebi
+  - e-kgx
+  - e-native-kdsb
+- assessment_id: a-remaining
+  area: scope
+  topic: Incomplete wider scientific review
+  outcome: unknown
+  summary: Complete target text was read, but all-edge source validation, all assembly/cofactor
+    assertions and a search for a fully valid alternate beta-specific route representation
+    remain unfinished. Completed deterministic gates are contextual only.
+  target_ids:
+  - GO:0033468
+  evidence_ids:
+  - e-target
+  - e-expression
+findings:
+- finding_id: f-kdo-alpha-substrate
+  issue_key: cmp-kdo-alpha-substrate-assertion
+  category: representation
+  severity: major
+  status: open
+  certainty: confirmed
+  title: Specific alpha-Kdo equation is asserted despite beta-specific primary evidence
+  description: CHEBI:85986 is explicitly alpha-Kdo. Edge012 assigns its consumption
+    by RHEA:23449, edge025 assigns E. coli KdsB to that reaction, and edge031 assigns
+    it to the biological pathway. Original NMR evidence and inspected later primary
+    texts support the beta-pyranose substrate. The current exporter emits these as
+    knowledge_assertion; caveats in descriptions/evidence do not encode a nonasserted
+    database model. Faithful reproduction of a database convention alone does not
+    establish the stated stereospecific enzyme mechanism.
+  target_ids:
+  - GO:0033468
+  field_paths:
+  - reactions[id=RHEA:23449]
+  - mechanistic_edges[id=kdo-edge-012]
+  - mechanistic_edges[id=kdo-edge-025]
+  - mechanistic_edges[id=kdo-edge-031]
+  evidence_ids:
+  - e-target
+  - e-nmr1985
+  - e-kinetics2009
+  - e-specificity2022
+  - e-chebi
+  - e-kgx
+  - e-native-kdsb
+  rule_id: docs/CAUSAL_GRAPHS.md; .claude/skills/review-yaml-record/SKILL.md / Evidence
+    Rules / exact grounding and preserve conflicts
+  native_severity: major
+  normalization_reason: Materially unsupported stereospecific biological assertion
+    and inadequate machine-readable representation; exact overall pathway identity
+    remains sound.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cmp-kdo-biosynthesis.yaml
+    role: maintained pathway record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/346
+actions:
+- action_id: a-preserve-and-defer
+  description: Preserve the exact candidate and this finding as research, and defer
+    maintained publication until the terminal representation is justified. Withdrawal
+    is containment, not proof that the stereochemistry conflict is resolved.
+  finding_ids:
+  - f-kdo-alpha-substrate
+  target_ids:
+  - GO:0033468
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cmp-kdo-biosynthesis.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Archive candidate bytes with the reviewed SHA256 and an explicit mapping from
+    the original maintained path; retain the open issue and immutable review.
+  - Ensure maintained generated pages and KGX do not publish the unsupported terminal
+    biological assertion after removal; run native gates on the remaining corpus.
+- action_id: a-resolve-terminal
+  description: Resolve a source-supported full beta-specific reaction/state representation
+    or introduce an explicitly nonasserted source-model representation that survives
+    schema, page and KGX export.
+  finding_ids:
+  - f-kdo-alpha-substrate
+  target_ids:
+  - GO:0033468
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cmp-kdo-biosynthesis.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Verify exact external chemical/reaction identities and full native pathway continuity
+    against primary evidence; do not silently substitute a near-match identifier or
+    omit the terminal step.
+  - Independently verify that exported biological assertions no longer claim alpha-specific
+    KdsB catalysis; preserve the source conflict and version scope.
+  - Complete all-edge scientific review and all required corpus gates before maintained
+    promotion.
+limitations:
+- 'This is partial scientific review: the complete record was read, but only exact
+  identity and the terminal stereochemistry conflict were independently adjudicated
+  in depth.'
+- The 1985 primary experiment was inspected through its indexed abstract, not full
+  text. The 2009 and 2022 primary bodies were inspected directly.
+- The 2022 WbbB paper repeats the KdsB specificity statement with a citation to earlier
+  NMR; it is not an independent new KdsB NMR experiment.
+- The reviewer has not exhausted external beta-specific chemical/reaction identity
+  alternatives and does not assert that none exists.
+- All seven required and supporting corpus checks passed; they do not resolve the
+  scientific finding or complete unperformed all-edge verification.
+- Structured expression results were inspected as bounded context only; they do not
+  prove reaction mechanism, stereochemistry, or absence of module membership.
+notes:
+- No target, shared authority, history or generated-page edits were made by this reviewer.
+- No prior immutable finding is fabricated; this is the first saved observation of
+  issue346.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/346
+- https://pubmed.ncbi.nlm.nih.gov/2997221/
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC2790981/
+- https://doi.org/10.1038/s41467-022-33988-1

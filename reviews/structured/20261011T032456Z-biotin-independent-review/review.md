@@ -1,0 +1,865 @@
+# Independent scientific review of biotin biosynthesis I
+
+- Review: 20261011T032456Z-biotin-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T03:14:07.060239Z
+- Finished UTC: 2026-10-11T03:24:56.642566Z
+- Reviewer: Codex /root/verify_graph_publication (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete 14-reaction native biotin route is supported, with no confirmed curation findings in this target. Exact carrier states, chemistry, assemblies and source tiers are preserved. First-condensation catalyst uncertainty, indirect FAS assignments, foreign BioC homolog evidence and BioB formal-donor limits remain explicit. Final corpus gates are assessed separately from this scientific review.
+
+## Scope And Provenance
+
+Full review of one maintained pathway: 59 participants, 14 reactions, 126 edges, 218 evidence entries and 72 references.
+
+Selection: Parent assigned the frozen biotin target; no sampling.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 3886f14c33d37054dc92e8133bb65aced30ee4ef.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | data/pathways/biotin-biosynthesis-i.yaml | maintained | biotin biosynthesis I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Governed initial and final input capture | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Initial correct-parent inspect preceded assessment. All six initially recorded input hashes remained identical; final source inputs add the completed author and integration artifacts. |
+| Independent original source replay | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Fresh original RDF/native replay passed: 98 source body hashes, 72 reference digests, six master-to-directed families, 73 chemical edges, 14 native steps, 13 orderings, eight assembly copy counts and ten current UniProt identities. All 126 edges were assessed against nearest sources. |
+| Independent chemical identity and balance check | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Fresh RDF reactive-part and ChEBI query passed: six exact formula/charge balances and 34 ChEBI identities. Seven native ACP classes lack empirical formulas; no full empirical mass balance is claimed for the eight native FAS reactions. |
+| Independent native-name and expression-context replay | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | All 24 selected native HTML ID/name pairs agree with record and snapshot. Rehashed all 83 iModulon source bodies and independently checked component 99 gene rows. |
+| just render-pages | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Actual terminal exit 0; full retained log inspected and hash replayed. |
+| just lint | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Actual terminal exit 0; full retained log inspected and hash replayed. |
+| git diff --check | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Actual terminal exit 0; full retained log inspected and hash replayed. |
+| just check-identifiers | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Actual terminal exit 0; full retained log inspected and hash replayed. |
+| just kgx-export --output-dir /private/tmp/pathwaymech-next-184-kgx | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Actual terminal exit 0; full retained log inspected and hash replayed. |
+| just validate | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Actual terminal exit 0; full retained log inspected and hash replayed. |
+| just test | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | 1048 passed, 3 skipped, 3 warnings in 312.20 seconds, exit 0; this full-suite run used the earlier 187-record superset. |
+| UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just vendored-check | passed | True | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | bash scripts/check_vendored_sync.sh<br>OK: 22 governed artifacts match the pinned claw revision<br> |
+| Interactive browser diagram inspection | unavailable | False | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | Root inventory found no enabled browser surface. Programmatic SVG/KGX checks are retained; no visual rendering or interaction result is claimed. |
+
+## Scientific And Domain Assessments
+
+### Complete exact native route
+
+identity: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+The parent contains all 14 steps, spanning precursor synthesis and ring assembly; broader discovery metabolism/ligation maps are not substituted.
+
+### Exact stereochemistry, whole carriers and directions
+
+grounding: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+All chemical sides and native orientations agree with original sources. Six precise balances pass; no empirical formula is invented for native ACP classes.
+
+### Evidence-tier and strain-specific enzyme claims
+
+evidence: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+Native FAS enables assignments remain indirect; first condensation is not given an invented catalyst. Foreign BioC enzymology and older BioF substrate inference retain their limits.
+
+### Native assemblies and cofactor states
+
+representation: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+Eight native complex identities/copy counts are exact and strain scoped; transient substrate binding is not a permanent assembly. PLP, Mg and two BioB cluster roles remain distinct.
+
+### Nearest-source evidence placement
+
+provenance: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+Every edge was assessed and all 72 original reference digests replayed. Current release headers, exact native object identities and master-direction triples corroborate selected terms.
+
+### Formal donor and assay limits
+
+scope: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+BioB database carrier chemistry remains formal and distinct from flavodoxin assay conditions, without a claimed complete regeneration pathway. K-12 annotation does not make all experiments MG1655.
+
+### Expression context only
+
+scope: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+Component 99 contains the five bio operon genes; neither catalytic proof nor negative membership inferences follow from expression context.
+
+### Final integration and generated artifacts
+
+schema: supported. Targets: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY.
+
+Required shared checks passed with actual execution scope retained. Source review and deterministic checks are separate; final generated assertions are preserved.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| record | data/pathways/biotin-biosynthesis-i.yaml; Complete file: identity, description, all local nodes, 126 edges, 218 evidence and 72 references. | supports | Full frozen target read before assessment; final bytes equal initial correct-parent governed capture. |
+| audit | research/pathway_additions/2026-10-11-next-184/biotin-independent-review-audit.json; Independent raw source replay, six balances, all-edge assessments, source limitations, context and scoped semantic searches. | supports | Scientific source audit passed with limits. The audit original pending-gate note reflects its capture time; this later review adds final integration checks. |
+| native | https://pathway.yeastgenome.org/getxml?META:BIOTIN-BIOSYNTHESIS-PWY; Original parent/sub-pathway list, PWY-6519 and PWY0-1507 full reaction lists, all 14 reaction XMLs, 13 orderings, 13 catalytic frames and eight complexes with exact monomer cross-references. | supports | Parent identity includes the complete precursor and ring-assembly routes. Native FAS directions and indirect evidence are preserved; first condensation has chemistry but no assigned catalyst. Native MG1655 assembly membership is not generalized to every strain. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Release 142 master rh:directionalReaction triples 17105→17106, 42700→42701, 42288→42289, 16861→16862, 15805→15806, 22060→22061; original substrates/products/contains/compound/reactivePart triples. | supports | All six families and 35 Rhea side occurrences independently replayed. RHEA-COMP nodes remain whole carriers, not isolated reactive parts. The 38 other chemical edges follow exact native FAS source sides/orientations. |
+| chemistry | http://purl.obolibrary.org/obo/chebi/255/chebi.owl; Retained semantic SQL database current labels/formulas/charge; 34 selected and reactive-part ChEBI identities; seven original native ACP class XMLs. | supports | Six Rhea balances pass with unchanged scaffold cancellation; native ACP classes with absent formulas are explicitly not asserted empirically balanced. Stereochemistry and protonation in BioF/A/D products are preserved. |
+| proteins | https://rest.uniprot.org/uniprotkb/P12999.json; Ten complete current UniProt bodies P12999/P13001/P12998/P12995/P13000/P12996/P0AEK2/P0A6Q6/P0AEK4/P0A953; names, taxon, FUNCTION, CATALYTIC ACTIVITY, COFACTOR, SUBUNIT and evidence codes. | supports | Current K-12 identities, cofactor specificity and annotation tiers agree with the record. Release 2026_03 was independently verified against retained native response release headers. No exact biotin FAS substrate claim is attributed solely to broad UniProt function. |
+| primary2010 | https://pmc.ncbi.nlm.nih.gov/articles/PMC2925990/; Full original HTML; Results P6/P9/P12/P13, Discussion P16/P19 and Methods P21-P25; Fig1 and Fig4 captions. | supports | Growth bypass and coupled cell-extract experiments support the ACP-dependent route. The source old FabH/CoA model and older inability-to-turnover BioB are superseded explicitly; purified exact E. coli BioC or ACP-BioF kinetics are not claimed. |
+| primaryBioC | https://pmc.ncbi.nlm.nih.gov/articles/PMC3481302/; Full original HTML; Results substrate comparison and complementation, Discussion especially final paragraph. | supports | Purified B. cereus BioC favors malonyl-ACP and complements E. coli bioC. ACP priming excludes FabH and does not establish a unique FabB/F first catalyst. Foreign monomeric assembly is not transferred to E. coli. |
+| primaryBioH | https://pmc.ncbi.nlm.nih.gov/articles/PMC3491474/; Full original HTML; Results BioH–ACP structure/interface mutant activity, in-vivo complementation and Discussion. | supports | BioH S82A substrate trap and E. coli interface mutants support the physiological methyl-pimeloyl-ACP substrate. This transient enzyme-substrate complex is not represented as a constitutive assembly. |
+| primaryBioB | https://pmc.ncbi.nlm.nih.gov/articles/PMC6541390/ ; https://pmc.ncbi.nlm.nih.gov/articles/PMC1456065/; 2010 assay P9, multiple-turnover P40-P42; 2004 structure P6-P8/P12-P13 and Fig1. | supports | Optimized anaerobic flavodoxin/FNR/NADPH experiments show multiple turnovers. The structure supports distinct [4Fe-4S]/[2Fe-2S] sites and no PLP site. These findings are not conflated with formal Rhea sulfur-carrier/ferredoxin participants. |
+| abstracts | https://pubmed.ncbi.nlm.nih.gov/10642176/ ; https://pubmed.ncbi.nlm.nih.gov/1092681/ ; https://pubmed.ncbi.nlm.nih.gov/7669755/; Original Europe PMC indexed core abstracts retained in primary-core.json; 7669755 is explicitly truncated. | supports | BioF 8S product/PLP/CoA kinetics, BioA SAM donor/PLP/dimer and BioD N7-carbamate/MgATP commitment support the narrow assertions. No full-paper or supplement inspection is claimed. |
+| later-context | https://pmc.ncbi.nlm.nih.gov/articles/PMC11661456/ ; https://pubmed.ncbi.nlm.nih.gov/38176024/; 2024 BioC original main HTML homolog/purification scope; 2024 BioF original indexed abstract. | context_only | A. baumannii BioC structure does not establish E. coli structure. Later BioF–AcpP crosslink/crystal/mutational findings corroborate the older qualified ACP interpretation. These sources are contextual and do not inflate the frozen edge evidence. |
+| authorities | research/pathway_additions/2026-10-11-next-184/authority-integration.json; Biotin-selected source labels and independent native fetch manifest; shared preserved snapshots. | supports | All selected MetaCyc native labels independently match exact parsed object identity/title. Current protein names match separately retrieved bodies; retained Kdo name facts do not certify withheld catalytic claims. |
+| imodulon | research/pathway_additions/2026-10-11-next-184/imodulondb-context.json; e_coli/precise_mg1655 component 99; b0774–b0778 bioA/B/F/C/D raw rows; runner and parser receipts. | context_only | Console/project runner unavailable; root used unchanged canonical direct client. Five exact selected genes are module members. All original bodies rehashed and rows independently checked. Expression context is not catalysis or regulatory evidence. |
+| dedup | research/pathway_additions/2026-10-11-next-184/biotin-independent-review-audit.json; ignored_inclusive_identity_search and author pre-addition semantic search ledger. | supports | Current exact parent/child identity searches match only this maintained target; prior broader PathBank Biotin Metabolism discovery maps are explicit distinct-scope leads. |
+| gates | research/pathway_additions/2026-10-11-next-184/integration-validation.json; Actual final command receipts, log hashes and execution chronology, including withheld Kdo transition. | supports | Root executed shared corpus commands; reviewer independently inspected receipts and rehashed full logs, without rerunning expensive corpus checks. Exact commands and timing limitations are retained in checks. |
+| graph | research/pathway_additions/2026-10-11-next-184/generated-graph-kgx-audit.json; Final biotin SVG/KGX node/edge/evidence counts, full contexts and baseline preservation; browser-availability receipt. | supports | Final structural checks retain all 126 biotin edges and 218 evidence entries; no browser visual claim. |
+
+## Limits And Additional Notes
+
+- Eight native FAS reactions lack full empirical formulas for seven generic ACP classes; no complete empirical mass-balance claim.
+- Six Rhea balances use reactive-part formulas with unchanged carrier scaffold cancellation; graph nodes remain whole proteins.
+- Expression-module membership is context only.
+- No browser visual inspection claimed.
+- No scientific assessment of Rut or withheld Kdo is included.
+- PMIDs 10642176, 1092681 and 7669755 were inspected as indexed abstracts, with the last explicitly truncated. Supporting supplements were not independently inspected; main-text statements are not represented as direct supplement inspection.
+- This qualified review does not establish measured wild-type whole-cell flux, all-strain generality or a complete BioB Fe-S regeneration cycle.
+- All six initial recorded input hashes were rechecked and unchanged. Final inspection adds final author receipts, the independent audit and current shared integration artifacts. The initial child-ID reviewer capture was corrected before scientific assessment; scratch history is retained externally.
+- The independent source audit records its original pending-gate state. This later governed review adds actual final gate results.
+- Authority names for withheld CMP-Kdo may remain as identity facts for retained research; this review does not certify the withheld catalytic claims.
+- Bounded later-literature search found compatible BioF–AcpP primary evidence (PMID38176024 abstract); this strengthens the current qualified interpretation without requiring an unsupported rewrite.
+- The first provisional review validation rejected target.kind=pathway. The reviewer target descriptor was corrected to the governed maintained enum, final inspect was repeated, and canonical validation passed. Target scientific bytes and all source inputs were unchanged.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T032456Z-biotin-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of biotin biosynthesis I
+started_at: '2026-10-11T03:14:07.060239Z'
+finished_at: '2026-10-11T03:24:56.642566Z'
+reviewer:
+  identity: Codex /root/verify_graph_publication
+  kind: agent
+  independence: independent
+  independence_basis: Did not author biotin YAML or author dossiers. Authored the
+    separate Rut record; its scientific assessment is excluded. Root runs shared integration
+    gates.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete 14-reaction native biotin route is supported, with no confirmed
+  curation findings in this target. Exact carrier states, chemistry, assemblies and
+  source tiers are preserved. First-condensation catalyst uncertainty, indirect FAS
+  assignments, foreign BioC homolog evidence and BioB formal-donor limits remain explicit.
+  Final corpus gates are assessed separately from this scientific review.
+source:
+  git_revision: 3886f14c33d37054dc92e8133bb65aced30ee4ef
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 661ba15fad01d42ad74de3e18d5f90d6aa8829b5c999ae7d7865aa47aa24bcfa
+    role: context
+  - path: conf/sources.yaml
+    sha256: 49507bca325f9529bd25b3507b062a1241c403916293dbab96d3cb598d6a7a95
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 01c56339018869d7f5fe65b2f432ad0a5c750d4adbba8425f76947f310cf0322
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 32822e7fdd5194edca3c02ddaa92c4907c1894e59c8a66d07cb99e6eb47003d3
+    role: context
+  - path: data/pathways/biotin-biosynthesis-i.yaml
+    sha256: b95b35d22f813ecb167b068554b4cee9e44bdb2d0ce4765338e82ecd84df0dff
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: dba50be9c2a6cf7a166790f3bab4d86fd89dbc3bea042a0f8e013e9586624328
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: de71eb03762b210404c9680d089c21723068ca4441acfa7f803328864080c22a
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: bfd5b6fe562f4fbf916fdd7a3662e792e415277faf140ca7ccdbe0f16b51d236
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 24fdec7e0749a2217f3e7abd7f0935800bc4f8c89d6a8e92ef0cb6db80030bf7
+    role: context
+  - path: pages/records/MetaCyc_BIOTIN-BIOSYNTHESIS-PWY.html
+    sha256: 14ff7a06519e0b5b13ed3d889c00f7e79e78b7168881cbe5f18f45caef04452e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/authority-integration.json
+    sha256: f43c42c70de58f21c50d47e933444c77e906429ca6056d6e19a1da326a676d94
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/authority-protein-crosscheck.json
+    sha256: a072d287db56a7f1b89edfec20fbf655f862949d0eb7dc80288ea4f855b15993
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/authority-source-inspection.json
+    sha256: 60f9ae2644a71813266c22028da8ecae85a11c6c4be77a5365afbb173e620f96
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/baseline-preservation.json
+    sha256: 04105cb56160302dcfaef827b4c013ec15025748250684d498f71f784e4a8b11
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-curation.md
+    sha256: 1defcacb9f9dccbcde8779c2e3271df5e72ed2f96b2be806c933e8bf0e144e49
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-dedup.json
+    sha256: 1165f7c0ef6a43af46babc906d38d6245bd98040ae2b468c3891957d2b5740f2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-identifiers.json
+    sha256: 855d59d9c59c6c92496c8ba49f9b0bda605c44b18683c20972a246282b1a8e7d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-independent-review-audit.json
+    sha256: 6f39d0abe30608dd41c3e5c6c98b7c8e9e48c0cff612733810874d329d618396
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-protein-acquisition-crosscheck.json
+    sha256: 2d63729f001866bfaa3a3747785eea2205e451bdcf93a3ff079b48cbcc9b3540
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-protein-projection.json
+    sha256: 4a31d28b9553495328a08752c9f3ec7ce2e90eaa0482f1b08176fda56f5112ea
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-replay.py
+    sha256: 73399b3db13594f68bb1e15b957eb2a57172a8ed93c7b765abf1ee294645f52f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-source-manifest.json
+    sha256: e37a3cfd104cbe89c74fabfbc69d703d0faf33f76c276ede8343af26ce3a1190
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-source-projection.json
+    sha256: bd07484f64410a006b7cb672add003afa90c8ede4165e8d9e86b4bdd1c22ae85
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/biotin-validation.json
+    sha256: 11f45136d17167a5fb8714873c72b885efc56f2b695e59d079216a2315a1f73a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/browser-availability.json
+    sha256: 144cd5cb3f296b2859cb4c26ddfa43054b1887884101e4267da420618f133228
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/generated-graph-kgx-audit.json
+    sha256: 8ae1cd19b62e7bf95e640da133624f1d0465d8d8f62be9e003461bbec3adffa8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/identifiers-added.json
+    sha256: 8dfd812975e60992028e1cdb3063f861d6eda479b3498ef39234ad154487cd65
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/imodulondb-context.json
+    sha256: 1bb951de28d1fa0efe7c2e441432d7abffdd2995a9f97892d553456c8e89d7fe
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/imodulondb-parser-replay.json
+    sha256: c82ff2c1db863b3fedf35727749943e94a0a260424131edb2b717922eccf3b11
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/imodulondb-runner-availability.json
+    sha256: 77e86bda6a06951103928b4e65039533f60c3254d958cab4bf8dcd8805728c7c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/imodulondb-source-manifest.json
+    sha256: de358d7fcc44f162392e04589c238c5c3649c0b90c8669565a92cba0befec3f5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/integration-validation.json
+    sha256: 9aa62e86c7bc9391cca423ca230a226137d65df7ce48006b23a2087677d81d32
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/kdo-publication-exclusion.json
+    sha256: cf379593fcbee8fd9473497990aa19371b30595da17924f44e340292293cbb75
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/kdo-withheld.json
+    sha256: 663c35fa95b788cec413b3cea20c91f2080ffb4b03970f79a8a1dc9aa945016f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/native-authority-fetch.json
+    sha256: 63b89e52727f6a8e6eaf8a854ebb8b46c92aaa4b36fd34380dadce0f7c894013
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/publication-scope-audit.json
+    sha256: 445e25976da89bdc0c94b15ebe19d1faa592c0b7e2d1dd2f72613479e8aabe02
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-184/vendored-check.json
+    sha256: d2f31e5c5550e2221da07d06236068da8794dbd3442fb81af535cd451fd1c7a2
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+scope:
+  description: 'Full review of one maintained pathway: 59 participants, 14 reactions,
+    126 edges, 218 evidence entries and 72 references.'
+  selection: Parent assigned the frozen biotin target; no sampling.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  exclusions:
+  - target: Rut, withheld CMP-Kdo, other records and baseline pathway science
+    reason: Separate author/reviewer assignments. Root integration and archive handling
+      are context only.
+targets:
+- target_id: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  path: data/pathways/biotin-biosynthesis-i.yaml
+  label: biotin biosynthesis I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/biotin-biosynthesis-i.yaml
+    role: maintained_record
+  - repository: CultureBotAI/PathwayMech
+    path: pages/records/MetaCyc_BIOTIN-BIOSYNTHESIS-PWY.html
+    role: generated_page
+checks:
+- check_id: inspect
+  name: Governed initial and final input capture
+  status: passed
+  required: true
+  summary: Initial correct-parent inspect preceded assessment. All six initially recorded
+    input hashes remained identical; final source inputs add the completed author
+    and integration artifacts.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - audit
+  - record
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache uv
+    run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-biotin-independent-review/targets.yaml
+    with declared --input paths
+  exit_code: 0
+- check_id: raw-replay
+  name: Independent original source replay
+  status: passed
+  required: true
+  summary: 'Fresh original RDF/native replay passed: 98 source body hashes, 72 reference
+    digests, six master-to-directed families, 73 chemical edges, 14 native steps,
+    13 orderings, eight assembly copy counts and ten current UniProt identities. All
+    126 edges were assessed against nearest sources.'
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - audit
+  - native
+  - rhea
+  - proteins
+  command: .venv/bin/python /private/tmp/pathwaymech-biotin-independent-review/replay.py
+  exit_code: 0
+- check_id: balances
+  name: Independent chemical identity and balance check
+  status: passed
+  required: true
+  summary: 'Fresh RDF reactive-part and ChEBI query passed: six exact formula/charge
+    balances and 34 ChEBI identities. Seven native ACP classes lack empirical formulas;
+    no full empirical mass balance is claimed for the eight native FAS reactions.'
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - audit
+  - rhea
+  - chemistry
+  command: .venv/bin/python /private/tmp/pathwaymech-biotin-independent-review/balances.py
+  exit_code: 0
+- check_id: authority-context
+  name: Independent native-name and expression-context replay
+  status: passed
+  required: true
+  summary: All 24 selected native HTML ID/name pairs agree with record and snapshot.
+    Rehashed all 83 iModulon source bodies and independently checked component 99
+    gene rows.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - audit
+  - authorities
+  - imodulon
+  command: .venv/bin/python /private/tmp/pathwaymech-biotin-independent-review/authorities-context.py
+  exit_code: 0
+- check_id: integration-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Actual terminal exit 0; full retained log inspected and hash replayed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    render-pages
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: integration-2
+  name: just lint
+  status: passed
+  required: true
+  summary: Actual terminal exit 0; full retained log inspected and hash replayed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    lint
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: integration-3
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Actual terminal exit 0; full retained log inspected and hash replayed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: git diff --check
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: integration-4
+  name: just check-identifiers
+  status: passed
+  required: true
+  summary: Actual terminal exit 0; full retained log inspected and hash replayed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    check-identifiers
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: integration-5
+  name: just kgx-export --output-dir /private/tmp/pathwaymech-next-184-kgx
+  status: passed
+  required: true
+  summary: Actual terminal exit 0; full retained log inspected and hash replayed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-184-kgx
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: integration-6
+  name: just validate
+  status: passed
+  required: true
+  summary: Actual terminal exit 0; full retained log inspected and hash replayed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    validate
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: integration-7
+  name: just test
+  status: passed
+  required: true
+  summary: 1048 passed, 3 skipped, 3 warnings in 312.20 seconds, exit 0; this full-suite
+    run used the earlier 187-record superset.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    test
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+    Full suite ran on the superset187-record draft. After the CMP-Kdo candidate was
+    withheld, final186 corpus rendering, validation, identifier, lint, KGX and review
+    checks were rerun. Implementation, tests, biotin and Rut scientific bytes were
+    unchanged by this withdrawal.
+- check_id: integration-8
+  name: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    vendored-check
+  status: passed
+  required: true
+  summary: 'bash scripts/check_vendored_sync.sh
+
+    OK: 22 governed artifacts match the pinned claw revision
+
+    '
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    vendored-check
+  exit_code: 0
+  scope_note: Actual integrating-root execution. Reviewer inspected receipt and full
+    log and independently rehashed it, without rerunning this full-corpus command.
+- check_id: browser-visual
+  name: Interactive browser diagram inspection
+  status: unavailable
+  required: false
+  summary: Root inventory found no enabled browser surface. Programmatic SVG/KGX checks
+    are retained; no visual rendering or interaction result is claimed.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - graph
+evidence:
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/biotin-biosynthesis-i.yaml
+  locator: 'Complete file: identity, description, all local nodes, 126 edges, 218
+    evidence and 72 references.'
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Full frozen target read before assessment; final bytes equal initial correct-parent
+    governed capture.
+  snapshot_sha256: b95b35d22f813ecb167b068554b4cee9e44bdb2d0ce4765338e82ecd84df0dff
+- evidence_id: audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-184/biotin-independent-review-audit.json
+  locator: Independent raw source replay, six balances, all-edge assessments, source
+    limitations, context and scoped semantic searches.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Scientific source audit passed with limits. The audit original pending-gate
+    note reflects its capture time; this later review adds final integration checks.
+  snapshot_sha256: 6f39d0abe30608dd41c3e5c6c98b7c8e9e48c0cff612733810874d329d618396
+- evidence_id: native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:BIOTIN-BIOSYNTHESIS-PWY
+  locator: Original parent/sub-pathway list, PWY-6519 and PWY0-1507 full reaction
+    lists, all 14 reaction XMLs, 13 orderings, 13 catalytic frames and eight complexes
+    with exact monomer cross-references.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Parent identity includes the complete precursor and ring-assembly routes.
+    Native FAS directions and indirect evidence are preserved; first condensation
+    has chemistry but no assigned catalyst. Native MG1655 assembly membership is not
+    generalized to every strain.
+- evidence_id: rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Release 142 master rh:directionalReaction triples 17105→17106, 42700→42701,
+    42288→42289, 16861→16862, 15805→15806, 22060→22061; original substrates/products/contains/compound/reactivePart
+    triples.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: All six families and 35 Rhea side occurrences independently replayed. RHEA-COMP
+    nodes remain whole carriers, not isolated reactive parts. The 38 other chemical
+    edges follow exact native FAS source sides/orientations.
+- evidence_id: chemistry
+  kind: authority
+  reference: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  locator: Retained semantic SQL database current labels/formulas/charge; 34 selected
+    and reactive-part ChEBI identities; seven original native ACP class XMLs.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Six Rhea balances pass with unchanged scaffold cancellation; native ACP
+    classes with absent formulas are explicitly not asserted empirically balanced.
+    Stereochemistry and protonation in BioF/A/D products are preserved.
+- evidence_id: proteins
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P12999.json
+  locator: Ten complete current UniProt bodies P12999/P13001/P12998/P12995/P13000/P12996/P0AEK2/P0A6Q6/P0AEK4/P0A953;
+    names, taxon, FUNCTION, CATALYTIC ACTIVITY, COFACTOR, SUBUNIT and evidence codes.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Current K-12 identities, cofactor specificity and annotation tiers agree
+    with the record. Release 2026_03 was independently verified against retained native
+    response release headers. No exact biotin FAS substrate claim is attributed solely
+    to broad UniProt function.
+- evidence_id: primary2010
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2925990/
+  locator: Full original HTML; Results P6/P9/P12/P13, Discussion P16/P19 and Methods
+    P21-P25; Fig1 and Fig4 captions.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Growth bypass and coupled cell-extract experiments support the ACP-dependent
+    route. The source old FabH/CoA model and older inability-to-turnover BioB are
+    superseded explicitly; purified exact E. coli BioC or ACP-BioF kinetics are not
+    claimed.
+- evidence_id: primaryBioC
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3481302/
+  locator: Full original HTML; Results substrate comparison and complementation, Discussion
+    especially final paragraph.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Purified B. cereus BioC favors malonyl-ACP and complements E. coli bioC.
+    ACP priming excludes FabH and does not establish a unique FabB/F first catalyst.
+    Foreign monomeric assembly is not transferred to E. coli.
+- evidence_id: primaryBioH
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3491474/
+  locator: Full original HTML; Results BioH–ACP structure/interface mutant activity,
+    in-vivo complementation and Discussion.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: BioH S82A substrate trap and E. coli interface mutants support the physiological
+    methyl-pimeloyl-ACP substrate. This transient enzyme-substrate complex is not
+    represented as a constitutive assembly.
+- evidence_id: primaryBioB
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC6541390/ ; https://pmc.ncbi.nlm.nih.gov/articles/PMC1456065/
+  locator: 2010 assay P9, multiple-turnover P40-P42; 2004 structure P6-P8/P12-P13
+    and Fig1.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Optimized anaerobic flavodoxin/FNR/NADPH experiments show multiple turnovers.
+    The structure supports distinct [4Fe-4S]/[2Fe-2S] sites and no PLP site. These
+    findings are not conflated with formal Rhea sulfur-carrier/ferredoxin participants.
+- evidence_id: abstracts
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/10642176/ ; https://pubmed.ncbi.nlm.nih.gov/1092681/
+    ; https://pubmed.ncbi.nlm.nih.gov/7669755/
+  locator: Original Europe PMC indexed core abstracts retained in primary-core.json;
+    7669755 is explicitly truncated.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: BioF 8S product/PLP/CoA kinetics, BioA SAM donor/PLP/dimer and BioD N7-carbamate/MgATP
+    commitment support the narrow assertions. No full-paper or supplement inspection
+    is claimed.
+- evidence_id: later-context
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC11661456/ ; https://pubmed.ncbi.nlm.nih.gov/38176024/
+  locator: 2024 BioC original main HTML homolog/purification scope; 2024 BioF original
+    indexed abstract.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: context_only
+  summary: A. baumannii BioC structure does not establish E. coli structure. Later
+    BioF–AcpP crosslink/crystal/mutational findings corroborate the older qualified
+    ACP interpretation. These sources are contextual and do not inflate the frozen
+    edge evidence.
+- evidence_id: authorities
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-184/authority-integration.json
+  locator: Biotin-selected source labels and independent native fetch manifest; shared
+    preserved snapshots.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: All selected MetaCyc native labels independently match exact parsed object
+    identity/title. Current protein names match separately retrieved bodies; retained
+    Kdo name facts do not certify withheld catalytic claims.
+  snapshot_sha256: f43c42c70de58f21c50d47e933444c77e906429ca6056d6e19a1da326a676d94
+- evidence_id: imodulon
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-184/imodulondb-context.json
+  locator: e_coli/precise_mg1655 component 99; b0774–b0778 bioA/B/F/C/D raw rows;
+    runner and parser receipts.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: context_only
+  summary: Console/project runner unavailable; root used unchanged canonical direct
+    client. Five exact selected genes are module members. All original bodies rehashed
+    and rows independently checked. Expression context is not catalysis or regulatory
+    evidence.
+  snapshot_sha256: 1bb951de28d1fa0efe7c2e441432d7abffdd2995a9f97892d553456c8e89d7fe
+- evidence_id: dedup
+  kind: search
+  reference: research/pathway_additions/2026-10-11-next-184/biotin-independent-review-audit.json
+  locator: ignored_inclusive_identity_search and author pre-addition semantic search
+    ledger.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Current exact parent/child identity searches match only this maintained
+    target; prior broader PathBank Biotin Metabolism discovery maps are explicit distinct-scope
+    leads.
+  snapshot_sha256: 6f39d0abe30608dd41c3e5c6c98b7c8e9e48c0cff612733810874d329d618396
+  search_scope: rg -uu over data/pathways, research/pathway_additions, docs and .claude
+    in both current worktree and now-readable original Documents checkout; hidden
+    and ignored files included within named roots. No filesystem-wide absence claim.
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-184/integration-validation.json
+  locator: Actual final command receipts, log hashes and execution chronology, including
+    withheld Kdo transition.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Root executed shared corpus commands; reviewer independently inspected
+    receipts and rehashed full logs, without rerunning expensive corpus checks. Exact
+    commands and timing limitations are retained in checks.
+  snapshot_sha256: 9aa62e86c7bc9391cca423ca230a226137d65df7ce48006b23a2087677d81d32
+- evidence_id: graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-184/generated-graph-kgx-audit.json
+  locator: Final biotin SVG/KGX node/edge/evidence counts, full contexts and baseline
+    preservation; browser-availability receipt.
+  accessed_at: '2026-10-11T03:24:56.642566Z'
+  support: supports
+  summary: Final structural checks retain all 126 biotin edges and 218 evidence entries;
+    no browser visual claim.
+  snapshot_sha256: 8ae1cd19b62e7bf95e640da133624f1d0465d8d8f62be9e003461bbec3adffa8
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete exact native route
+  outcome: supported
+  summary: The parent contains all 14 steps, spanning precursor synthesis and ring
+    assembly; broader discovery metabolism/ligation maps are not substituted.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - native
+  - record
+  - dedup
+- assessment_id: chemistry
+  area: grounding
+  topic: Exact stereochemistry, whole carriers and directions
+  outcome: supported
+  summary: All chemical sides and native orientations agree with original sources.
+    Six precise balances pass; no empirical formula is invented for native ACP classes.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - rhea
+  - chemistry
+  - audit
+- assessment_id: catalysts
+  area: evidence
+  topic: Evidence-tier and strain-specific enzyme claims
+  outcome: supported
+  summary: Native FAS enables assignments remain indirect; first condensation is not
+    given an invented catalyst. Foreign BioC enzymology and older BioF substrate inference
+    retain their limits.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - primary2010
+  - primaryBioC
+  - primaryBioH
+  - abstracts
+  - proteins
+- assessment_id: assemblies
+  area: representation
+  topic: Native assemblies and cofactor states
+  outcome: supported
+  summary: Eight native complex identities/copy counts are exact and strain scoped;
+    transient substrate binding is not a permanent assembly. PLP, Mg and two BioB
+    cluster roles remain distinct.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - native
+  - proteins
+  - primaryBioB
+  - abstracts
+- assessment_id: provenance
+  area: provenance
+  topic: Nearest-source evidence placement
+  outcome: supported
+  summary: Every edge was assessed and all 72 original reference digests replayed.
+    Current release headers, exact native object identities and master-direction triples
+    corroborate selected terms.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - audit
+  - record
+  - authorities
+  - rhea
+- assessment_id: physiology
+  area: scope
+  topic: Formal donor and assay limits
+  outcome: supported
+  summary: BioB database carrier chemistry remains formal and distinct from flavodoxin
+    assay conditions, without a claimed complete regeneration pathway. K-12 annotation
+    does not make all experiments MG1655.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - primaryBioB
+  - primary2010
+  - proteins
+  - record
+- assessment_id: context
+  area: scope
+  topic: Expression context only
+  outcome: supported
+  summary: Component 99 contains the five bio operon genes; neither catalytic proof
+    nor negative membership inferences follow from expression context.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - imodulon
+- assessment_id: validation
+  area: schema
+  topic: Final integration and generated artifacts
+  outcome: supported
+  summary: Required shared checks passed with actual execution scope retained. Source
+    review and deterministic checks are separate; final generated assertions are preserved.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  evidence_ids:
+  - gates
+  - graph
+  - audit
+findings: []
+actions: []
+limitations:
+- Eight native FAS reactions lack full empirical formulas for seven generic ACP classes;
+  no complete empirical mass-balance claim.
+- Six Rhea balances use reactive-part formulas with unchanged carrier scaffold cancellation;
+  graph nodes remain whole proteins.
+- Expression-module membership is context only.
+- No browser visual inspection claimed.
+- No scientific assessment of Rut or withheld Kdo is included.
+- PMIDs 10642176, 1092681 and 7669755 were inspected as indexed abstracts, with the
+  last explicitly truncated. Supporting supplements were not independently inspected;
+  main-text statements are not represented as direct supplement inspection.
+- This qualified review does not establish measured wild-type whole-cell flux, all-strain
+  generality or a complete BioB Fe-S regeneration cycle.
+notes:
+- All six initial recorded input hashes were rechecked and unchanged. Final inspection
+  adds final author receipts, the independent audit and current shared integration
+  artifacts. The initial child-ID reviewer capture was corrected before scientific
+  assessment; scratch history is retained externally.
+- The independent source audit records its original pending-gate state. This later
+  governed review adds actual final gate results.
+- Authority names for withheld CMP-Kdo may remain as identity facts for retained research;
+  this review does not certify the withheld catalytic claims.
+- Bounded later-literature search found compatible BioF–AcpP primary evidence (PMID38176024
+  abstract); this strengthens the current qualified interpretation without requiring
+  an unsupported rewrite.
+- The first provisional review validation rejected target.kind=pathway. The reviewer
+  target descriptor was corrected to the governed maintained enum, final inspect was
+  repeated, and canonical validation passed. Target scientific bytes and all source
+  inputs were unchanged.
+```

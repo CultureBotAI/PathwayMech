@@ -1,0 +1,736 @@
+id: GO:0033468
+label: CMP-keto-3-deoxy-D-manno-octulosonic acid biosynthetic process
+description: 'CMP-Kdo biosynthesis in Escherichia coli K-12 converts D-ribulose 5-phosphate to the activated
+  lipid-A sugar donor through KdsD or GutQ, KdsA, KdsC and KdsB. The complete MetaCyc PWY-1269 boundary
+  includes four enzymatic conversions and a reversible spontaneous arabinose-5-phosphate ring equilibrium.
+  KdsA consumes the open-chain sugar in current Rhea and primary substrate studies; the older native furanose
+  substrate assignment is not treated as an obligatory intermediate. A second unresolved source conflict
+  concerns KdsB: current Rhea and MetaCyc use free alpha-Kdo, whereas primary NMR and kinetic evidence
+  identifies beta-pyranose Kdo as the accepted substrate and reports retained beta configuration in CMP-Kdo.
+  The alpha-Kdo edges preserve the current database convention, not direct experimental alpha catalysis
+  or an inferred anomerase. Native KdsD and GutQ tetramers are supported; native KdsA is a tetramer, conflicting
+  with the unqualified current UniProt homotrimer annotation. K-12 KdsC catalysis, tetramer and Mg binding
+  are annotated by similarity to the B/BL21 protein. KdsC and KdsB gene-product roles do not imply isolated
+  monomer sufficiency; KdsB structural studies show a dimer. Downstream Kdo transfer to lipid IVA, capsule-specific
+  paralogs and LPS assembly are outside this boundary.'
+pathway_type: cmp-kdo-biosynthesis
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: UniProtKB:P45395
+  label: Arabinose 5-phosphate isomerase KdsD
+  category: protein
+- id: UniProtKB:P17115
+  label: Arabinose 5-phosphate isomerase GutQ
+  category: protein
+- id: UniProtKB:P0A715
+  label: 2-dehydro-3-deoxyphosphooctonate aldolase
+  category: protein
+- id: UniProtKB:P0ABZ4
+  label: 3-deoxy-D-manno-octulosonate 8-phosphate phosphatase KdsC
+  category: protein
+- id: UniProtKB:P04951
+  label: 3-deoxy-manno-octulosonate cytidylyltransferase
+  category: protein
+- id: MetaCyc:CPLX0-1262
+  label: D-arabinose 5-phosphate isomerase KdsD
+  category: complex
+- id: MetaCyc:CPLX0-3929
+  label: D-arabinose 5-phosphate isomerase GutQ
+  category: complex
+- id: MetaCyc:KDO-8PSYNTH-CPLX
+  label: 3-deoxy-D-manno-octulosonate 8-phosphate synthase
+  category: complex
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:37563
+  label: CTP(4-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57693
+  label: aldehydo-D-arabinose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58121
+  label: D-ribulose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58702
+  label: phosphonatoenolpyruvate
+  category: small_molecule
+- id: CHEBI:85971
+  label: D-arabinofuranose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:85985
+  label: 3-deoxy-alpha-D-manno-2-octulosonate-8-phosphate(3-)
+  category: small_molecule
+- id: CHEBI:85986
+  label: 3-deoxy-alpha-D-manno-oct-2-ulosonate
+  category: small_molecule
+- id: CHEBI:85987
+  label: CMP-3-deoxy-beta-D-manno-octulosonate(2-)
+  category: small_molecule
+reactions:
+- id: RHEA:23106
+  label: D-ribulose 5-phosphate => D-arabinose 5-phosphate
+  direction: right_to_left
+  category: molecular_activity
+- id: MetaCyc:RXN-16804
+  label: aldehydo-D-arabinose 5-phosphate D-arabinofuranose 5-phosphate
+  direction: reversible
+- id: RHEA:14054
+  label: D-arabinose 5-phosphate + phosphoenolpyruvate + H2O => 3-deoxy-alpha-D-manno-2-octulosonate-8-phosphate
+    + phosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:11501
+  label: 3-deoxy-alpha-D-manno-2-octulosonate-8-phosphate + H2O => 3-deoxy-alpha-D-manno-oct-2-ulosonate
+    + phosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:23449
+  label: 3-deoxy-alpha-D-manno-oct-2-ulosonate + CTP => CMP-3-deoxy-beta-D-manno-octulosonate + diphosphate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: kdo-edge-001
+  subject: CHEBI:58121
+  predicate: consumes
+  object: RHEA:23106
+  evidence:
+  - reference_id: RHEA:23106
+    source_assertion: RHEA:23106 assigns CHEBI:58121 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23106 rh:substrates; http://rdf.rhea-db.org/23104_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23104_compound_1531; http://rdf.rhea-db.org/Participant_23104_compound_1531
+      rh:compound http://rdf.rhea-db.org/Compound_1531; rh:chebi
+- id: kdo-edge-002
+  subject: RHEA:23106
+  predicate: produces
+  object: CHEBI:57693
+  evidence:
+  - reference_id: RHEA:23106
+    source_assertion: RHEA:23106 assigns CHEBI:57693 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/23106 rh:products; http://rdf.rhea-db.org/23104_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23104_compound_6475; http://rdf.rhea-db.org/Participant_23104_compound_6475
+      rh:compound http://rdf.rhea-db.org/Compound_6475; rh:chebi
+- id: kdo-edge-003
+  subject: CHEBI:57693
+  predicate: consumes
+  object: RHEA:14054
+  evidence:
+  - reference_id: RHEA:14054
+    source_assertion: RHEA:14054 assigns CHEBI:57693 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/14054 rh:substrates; http://rdf.rhea-db.org/14053_L rh:contains1
+      http://rdf.rhea-db.org/Participant_14053_compound_6475; http://rdf.rhea-db.org/Participant_14053_compound_6475
+      rh:compound http://rdf.rhea-db.org/Compound_6475; rh:chebi
+  - reference_id: PMID:1521535
+    source_assertion: The indexed primary abstract reports turnover of a noncyclizable A5P analogue and
+      supports enzyme use of the acyclic natural substrate. Native annotation places these studies in
+      E. coli B, not a K-12 strain-specific assay.
+    source_locator: /resultList/result[id="1521535"]/abstractText
+  - reference_id: MetaCyc:KDO-8PSYNTH-RXN
+    source_assertion: MetaCyc 22.5 instead lists CPD-18118 (furanose) as its substrate while unifying
+      RHEA:14054. Current Rhea open-chain CHEBI:57693 is retained; the native stereochemical mismatch
+      remains explicit.
+    source_locator: Reaction[@frameid="KDO-8PSYNTH-RXN"]/left; dblink[dblink-db="RHEA"]
+- id: kdo-edge-004
+  subject: CHEBI:58702
+  predicate: consumes
+  object: RHEA:14054
+  evidence:
+  - reference_id: RHEA:14054
+    source_assertion: RHEA:14054 assigns CHEBI:58702 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/14054 rh:substrates; http://rdf.rhea-db.org/14053_L rh:contains1
+      http://rdf.rhea-db.org/Participant_14053_compound_3582; http://rdf.rhea-db.org/Participant_14053_compound_3582
+      rh:compound http://rdf.rhea-db.org/Compound_3582; rh:chebi
+- id: kdo-edge-005
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:14054
+  evidence:
+  - reference_id: RHEA:14054
+    source_assertion: RHEA:14054 assigns CHEBI:15377 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/14054 rh:substrates; http://rdf.rhea-db.org/14053_L rh:contains1
+      http://rdf.rhea-db.org/Participant_14053_compound_1283; http://rdf.rhea-db.org/Participant_14053_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; rh:chebi
+- id: kdo-edge-006
+  subject: RHEA:14054
+  predicate: produces
+  object: CHEBI:85985
+  evidence:
+  - reference_id: RHEA:14054
+    source_assertion: RHEA:14054 assigns CHEBI:85985 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/14054 rh:products; http://rdf.rhea-db.org/14053_R rh:contains1
+      http://rdf.rhea-db.org/Participant_14053_compound_11523; http://rdf.rhea-db.org/Participant_14053_compound_11523
+      rh:compound http://rdf.rhea-db.org/Compound_11523; rh:chebi
+- id: kdo-edge-007
+  subject: RHEA:14054
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:14054
+    source_assertion: RHEA:14054 assigns CHEBI:43474 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/14054 rh:products; http://rdf.rhea-db.org/14053_R rh:contains1
+      http://rdf.rhea-db.org/Participant_14053_compound_5518; http://rdf.rhea-db.org/Participant_14053_compound_5518
+      rh:compound http://rdf.rhea-db.org/Compound_5518; rh:chebi
+- id: kdo-edge-008
+  subject: CHEBI:85985
+  predicate: consumes
+  object: RHEA:11501
+  evidence:
+  - reference_id: RHEA:11501
+    source_assertion: RHEA:11501 assigns CHEBI:85985 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11501 rh:substrates; http://rdf.rhea-db.org/11500_L rh:contains1
+      http://rdf.rhea-db.org/Participant_11500_compound_11523; http://rdf.rhea-db.org/Participant_11500_compound_11523
+      rh:compound http://rdf.rhea-db.org/Compound_11523; rh:chebi
+- id: kdo-edge-009
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:11501
+  evidence:
+  - reference_id: RHEA:11501
+    source_assertion: RHEA:11501 assigns CHEBI:15377 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11501 rh:substrates; http://rdf.rhea-db.org/11500_L rh:contains1
+      http://rdf.rhea-db.org/Participant_11500_compound_1283; http://rdf.rhea-db.org/Participant_11500_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; rh:chebi
+- id: kdo-edge-010
+  subject: RHEA:11501
+  predicate: produces
+  object: CHEBI:85986
+  evidence:
+  - reference_id: RHEA:11501
+    source_assertion: RHEA:11501 assigns CHEBI:85986 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11501 rh:products; http://rdf.rhea-db.org/11500_R rh:contains1
+      http://rdf.rhea-db.org/Participant_11500_compound_11524; http://rdf.rhea-db.org/Participant_11500_compound_11524
+      rh:compound http://rdf.rhea-db.org/Compound_11524; rh:chebi
+- id: kdo-edge-011
+  subject: RHEA:11501
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:11501
+    source_assertion: RHEA:11501 assigns CHEBI:43474 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/11501 rh:products; http://rdf.rhea-db.org/11500_R rh:contains1
+      http://rdf.rhea-db.org/Participant_11500_compound_5518; http://rdf.rhea-db.org/Participant_11500_compound_5518
+      rh:compound http://rdf.rhea-db.org/Compound_5518; rh:chebi
+- id: kdo-edge-012
+  subject: CHEBI:85986
+  predicate: consumes
+  object: RHEA:23449
+  description: Current database convention; primary studies instead identify beta-pyranose Kdo as the
+    accepted KdsB substrate. This edge does not establish experimental alpha catalysis.
+  evidence:
+  - reference_id: RHEA:23449
+    source_assertion: RHEA:23449 assigns CHEBI:85986 to its substrates, coefficient 1 via rh:contains1.
+      This is the current database alpha-Kdo convention, not experimental substrate preference.
+    source_locator: http://rdf.rhea-db.org/23449 rh:substrates; http://rdf.rhea-db.org/23448_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23448_compound_11524; http://rdf.rhea-db.org/Participant_23448_compound_11524
+      rh:compound http://rdf.rhea-db.org/Compound_11524; rh:chebi
+  - reference_id: PMID:2997221
+    source_assertion: The indexed primary abstract reports beta-pyranose Kdo as the preferred substrate
+      and retention of beta configuration in CMP-Kdo; it does not support alpha-Kdo preference.
+    source_locator: /resultList/result[id="2997221"]/abstractText
+  - reference_id: PMID:19815542
+    source_assertion: Kdo is a solution mixture; the kinetic discussion identifies its approximately 2%
+      beta-pyranose fraction as the form accepted by KdsB.
+    source_locator: RESULTS AND DISCUSSION / Kinetic Characterization of KdsB / paragraph beginning "A
+      major limitation"
+- id: kdo-edge-013
+  subject: CHEBI:37563
+  predicate: consumes
+  object: RHEA:23449
+  description: Current database convention; primary studies instead identify beta-pyranose Kdo as the
+    accepted KdsB substrate. This edge does not establish experimental alpha catalysis.
+  evidence:
+  - reference_id: RHEA:23449
+    source_assertion: RHEA:23449 assigns CHEBI:37563 to its substrates, coefficient 1 via rh:contains1.
+      This is the current database alpha-Kdo convention, not experimental substrate preference.
+    source_locator: http://rdf.rhea-db.org/23449 rh:substrates; http://rdf.rhea-db.org/23448_L rh:contains1
+      http://rdf.rhea-db.org/Participant_23448_compound_6434; http://rdf.rhea-db.org/Participant_23448_compound_6434
+      rh:compound http://rdf.rhea-db.org/Compound_6434; rh:chebi
+- id: kdo-edge-014
+  subject: RHEA:23449
+  predicate: produces
+  object: CHEBI:85987
+  description: Current database convention; primary studies instead identify beta-pyranose Kdo as the
+    accepted KdsB substrate. This edge does not establish experimental alpha catalysis.
+  evidence:
+  - reference_id: RHEA:23449
+    source_assertion: RHEA:23449 assigns CHEBI:85987 to its products, coefficient 1 via rh:contains1.
+      This is the current database alpha-Kdo convention, not experimental substrate preference.
+    source_locator: http://rdf.rhea-db.org/23449 rh:products; http://rdf.rhea-db.org/23448_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23448_compound_11525; http://rdf.rhea-db.org/Participant_23448_compound_11525
+      rh:compound http://rdf.rhea-db.org/Compound_11525; rh:chebi
+- id: kdo-edge-015
+  subject: RHEA:23449
+  predicate: produces
+  object: CHEBI:33019
+  description: Current database convention; primary studies instead identify beta-pyranose Kdo as the
+    accepted KdsB substrate. This edge does not establish experimental alpha catalysis.
+  evidence:
+  - reference_id: RHEA:23449
+    source_assertion: RHEA:23449 assigns CHEBI:33019 to its products, coefficient 1 via rh:contains1.
+      This is the current database alpha-Kdo convention, not experimental substrate preference.
+    source_locator: http://rdf.rhea-db.org/23449 rh:products; http://rdf.rhea-db.org/23448_R rh:contains1
+      http://rdf.rhea-db.org/Participant_23448_compound_2106; http://rdf.rhea-db.org/Participant_23448_compound_2106
+      rh:compound http://rdf.rhea-db.org/Compound_2106; rh:chebi
+- id: kdo-edge-016
+  subject: CHEBI:57693
+  predicate: consumes
+  object: MetaCyc:RXN-16804
+  evidence:
+  - reference_id: MetaCyc:RXN-16804
+    source_assertion: The native reversible, spontaneous reaction has ARABINOSE-5P on the left, coefficient
+      1. The displayed left-to-right orientation closes the ring; it is an equilibrium, not an enzyme-catalyzed
+      obligatory KdsA step.
+    source_locator: Reaction[@frameid="RXN-16804"]/left; reaction-direction; spontaneous
+  - reference_id: MetaCyc:ARABINOSE-5P
+    source_assertion: ARABINOSE-5P explicitly unifies CHEBI:57693; this is the aldehydo open-chain form.
+    source_locator: Compound[@frameid="ARABINOSE-5P"]/dblink[dblink-db="CHEBI"]; common-name
+- id: kdo-edge-017
+  subject: MetaCyc:RXN-16804
+  predicate: produces
+  object: CHEBI:85971
+  evidence:
+  - reference_id: MetaCyc:RXN-16804
+    source_assertion: The native reversible, spontaneous reaction has CPD-18118 on the right, coefficient
+      1. The displayed left-to-right orientation closes the ring; it is an equilibrium, not an enzyme-catalyzed
+      obligatory KdsA step.
+    source_locator: Reaction[@frameid="RXN-16804"]/right; reaction-direction; spontaneous
+  - reference_id: MetaCyc:CPD-18118
+    source_assertion: CPD-18118 explicitly unifies CHEBI:85971; this is the furanose form.
+    source_locator: Compound[@frameid="CPD-18118"]/dblink[dblink-db="CHEBI"]; common-name
+- id: kdo-edge-018
+  subject: UniProtKB:P45395
+  predicate: part_of
+  object: MetaCyc:CPLX0-1262
+  description: Native stoichiometry is 4 identical protein subunits.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1262
+    source_assertion: The native MG1655 assembly contains four copies of G7662-MONOMER.
+    source_locator: Protein[@frameid="CPLX0-1262"]/component; species
+  - reference_id: MetaCyc:G7662-MONOMER
+    source_assertion: The native component explicitly unifies UniProtKB:P45395.
+    source_locator: Protein[@frameid="G7662-MONOMER"]/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:P45395
+    source_assertion: The reviewed subunit statement is homotetramer with experimental ECO:0000269 evidence.
+    source_locator: /comments/6/texts/0
+  - reference_id: PMID:12805358
+    source_assertion: The indexed primary abstract characterizes recombinant E. coli K-12 YrbH/KdsD as
+      a tetramer and identifies reversible arabinose-5-phosphate isomerase activity.
+    source_locator: /resultList/result[id="12805358"]/abstractText
+- id: kdo-edge-019
+  subject: UniProtKB:P17115
+  predicate: part_of
+  object: MetaCyc:CPLX0-3929
+  description: Native stoichiometry is 4 identical protein subunits.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-3929
+    source_assertion: The native MG1655 assembly contains four copies of EG10973-MONOMER.
+    source_locator: Protein[@frameid="CPLX0-3929"]/component; species
+  - reference_id: MetaCyc:EG10973-MONOMER
+    source_assertion: The native component explicitly unifies UniProtKB:P17115.
+    source_locator: Protein[@frameid="EG10973-MONOMER"]/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:P17115
+    source_assertion: The reviewed subunit statement is homotetramer with experimental ECO:0000269 evidence.
+    source_locator: /comments/3/texts/0
+- id: kdo-edge-020
+  subject: UniProtKB:P0A715
+  predicate: part_of
+  object: MetaCyc:KDO-8PSYNTH-CPLX
+  description: Native stoichiometry is 4 identical protein subunits. UniProt currently says homotrimer;
+    the source conflict remains unresolved.
+  evidence:
+  - reference_id: MetaCyc:KDO-8PSYNTH-CPLX
+    source_assertion: The native MG1655 assembly contains four copies of KDO-8PSYNTH-MONOMER.
+    source_locator: Protein[@frameid="KDO-8PSYNTH-CPLX"]/component; species
+  - reference_id: MetaCyc:KDO-8PSYNTH-MONOMER
+    source_assertion: The native component explicitly unifies UniProtKB:P0A715.
+    source_locator: Protein[@frameid="KDO-8PSYNTH-MONOMER"]/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:P0A715
+    source_assertion: The current entry instead says homotrimer, without an evidence code on that statement.
+      The disagreement with the native tetramer is unresolved.
+    source_locator: /comments/4/texts/0
+  - reference_id: PMID:10926505
+    source_assertion: The indexed structural abstract discusses the earlier tetrameric asymmetric unit
+      and conservation of its intermonomer contacts in a different crystal form. This corroborates the
+      native structural assembly, not a condition explaining the UniProt discrepancy.
+    source_locator: /resultList/result[id="10926505"]/abstractText
+- id: kdo-edge-021
+  subject: MetaCyc:CPLX0-1262
+  predicate: catalyzes
+  object: RHEA:23106
+  evidence:
+  - reference_id: MetaCyc:DARAB5PISOM-ENZRXN
+    source_assertion: The native enzyme annotation assigns CPLX0-1262 to DARAB5PISOM-RXN as physiologically
+      relevant reversible isomerization.
+    source_locator: Enzymatic-Reaction[@frameid="DARAB5PISOM-ENZRXN"]/enzyme; reaction; reaction-direction;
+      physiologically-relevant
+  - reference_id: UniProtKB:P45395
+    source_assertion: The reviewed protein assigns RHEA:23104 with selected physiological RHEA:23106;
+      catalysis has experimental ECO:0000269 evidence.
+    source_locator: /comments/1/reaction; /comments/1/physiologicalReactions/1
+- id: kdo-edge-022
+  subject: MetaCyc:CPLX0-3929
+  predicate: catalyzes
+  object: RHEA:23106
+  evidence:
+  - reference_id: MetaCyc:ENZRXN0-6149
+    source_assertion: The native enzyme annotation assigns CPLX0-3929 to DARAB5PISOM-RXN as physiologically
+      relevant reversible isomerization.
+    source_locator: Enzymatic-Reaction[@frameid="ENZRXN0-6149"]/enzyme; reaction; reaction-direction;
+      physiologically-relevant
+  - reference_id: UniProtKB:P17115
+    source_assertion: The reviewed protein assigns RHEA:23104 with selected physiological RHEA:23106;
+      catalysis has experimental ECO:0000269 evidence.
+    source_locator: /comments/1/reaction; /comments/1/physiologicalReactions/1
+  - reference_id: PMID:16199563
+    source_assertion: K-12 GutQ was biochemically characterized and supported LPS synthesis in a kdsD
+      mutant; this is alternative supply of A5P, not proof of the proposed regulatory mechanism.
+    source_locator: Abstract; RESULTS / GutQ is capable of sustaining lipopolysaccharide biosynthesis
+- id: kdo-edge-023
+  subject: MetaCyc:KDO-8PSYNTH-CPLX
+  predicate: catalyzes
+  object: RHEA:14054
+  evidence:
+  - reference_id: MetaCyc:KDO-8PSYNTH-ENZRXN
+    source_assertion: The native enzyme annotation assigns KDO-8PSYNTH-CPLX to KDO-8PSYNTH-RXN as physiologically
+      relevant irreversible synthesis.
+    source_locator: Enzymatic-Reaction[@frameid="KDO-8PSYNTH-ENZRXN"]/enzyme; reaction; reaction-direction;
+      physiologically-relevant
+  - reference_id: UniProtKB:P0A715
+    source_assertion: The reviewed protein assigns RHEA:14053 and open-chain CHEBI:57693 to KdsA; this
+      comment does not carry an explicit experimental evidence code.
+    source_locator: /comments/1/reaction; /comments/1/reaction/reactionCrossReferences
+- id: kdo-edge-024
+  subject: UniProtKB:P0ABZ4
+  predicate: enables
+  object: RHEA:11501
+  description: K-12 functional assignment by similarity; the source tetramer characterized in B/BL21 is
+    not relabeled as a K-12 native complex.
+  evidence:
+  - reference_id: UniProtKB:P0ABZ4
+    source_assertion: The K-12 KdsC reaction RHEA:11500 is assigned by similarity (ECO:0000250) to A0A140N5J7;
+      it is not a direct K-12 purified-enzyme experiment.
+    source_locator: /comments/1/reaction
+  - reference_id: UniProtKB:P0ABZ4
+    source_assertion: Homotetramer is also annotated by similarity to A0A140N5J7. This gene-product role
+      does not assert isolated monomer sufficiency.
+    source_locator: /comments/5/texts/0
+- id: kdo-edge-025
+  subject: UniProtKB:P04951
+  predicate: enables
+  object: RHEA:23449
+  description: Current database convention; primary studies instead identify beta-pyranose Kdo as the
+    accepted KdsB substrate. This edge does not establish experimental alpha catalysis. The gene-product
+    role does not assert isolated monomer sufficiency.
+  evidence:
+  - reference_id: UniProtKB:P04951
+    source_assertion: KdsB is assigned current RHEA:23448 by HAMAP MF_00057 (ECO:0000255). The alpha-Kdo
+      substrate is a database convention, not direct experimental alpha catalysis.
+    source_locator: /comments/1/reaction
+  - reference_id: MetaCyc:CPM-KDOSYNTH-MONOMER
+    source_assertion: The MG1655 native polypeptide unifies P04951 and cites the preference for beta-pyranose
+      Kdo. The frame name does not establish active monomer sufficiency.
+    source_locator: Protein[@frameid="CPM-KDOSYNTH-MONOMER"]/dblink[dblink-db="UNIPROT"]; comment; catalyzes
+  - reference_id: PMID:19815542
+    source_assertion: The E. coli LPS-specific KdsB structures contain dimers with an opposite-subunit
+      CTP interaction; its kinetic discussion identifies beta-pyranose Kdo as accepted substrate. Expression
+      in BL21 does not establish donor-strain identity.
+    source_locator: EXPERIMENTAL PROCEDURES / Preparation of KdsB; RESULTS AND DISCUSSION / Crystal Structures
+      of Free and Ligand-bound KdsB; Kinetic Characterization of KdsB
+- id: kdo-edge-026
+  subject: UniProtKB:P0ABZ4
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: K-12 cofactor assignment by similarity; no Ca2+ requirement or direct K-12 binding experiment
+    is inferred.
+  evidence:
+  - reference_id: UniProtKB:P0ABZ4
+    source_assertion: Mg(2+) is explicitly annotated as cofactor by similarity (ECO:0000250) to A0A140N5J7.
+    source_locator: /comments/2/cofactors/0
+- id: kdo-edge-027
+  subject: UniProtKB:P04951
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: One observed Mg site and a proposed second catalytic site; no fixed two-ion occupancy is
+    asserted.
+  evidence:
+  - reference_id: UniProtKB:P04951
+    source_assertion: Mg(2+) is explicitly listed as cofactor; no evidence code accompanies this comment.
+    source_locator: /comments/2/cofactors/0
+  - reference_id: PMID:19815542
+    source_assertion: The ternary structure directly shows one Mg site. A second catalytic Mg site is
+      proposed from modeling and Mn-substituted EPR, not directly resolved as two Mg ions in the crystal.
+    source_locator: RESULTS AND DISCUSSION / Crystal Structures of Free and Ligand-bound KdsB; Modeling
+      of a Second Mg2+-binding Site in KdsB; Metal Ion Binding to KdsB
+- id: kdo-edge-028
+  subject: RHEA:23106
+  predicate: part_of
+  object: GO:0033468
+  evidence:
+  - reference_id: MetaCyc:PWY-1269
+    source_assertion: The native pathway explicitly includes DARAB5PISOM-RXN and selects R2L flux.
+    source_locator: Pathway[@frameid="PWY-1269"]/reaction-list; reaction-layout[Reaction/@frameid="DARAB5PISOM-RXN"]
+  - reference_id: MetaCyc:DARAB5PISOM-RXN
+    source_assertion: DARAB5PISOM-RXN explicitly unifies RHEA:23107.
+    source_locator: Reaction[@frameid="DARAB5PISOM-RXN"]/dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:23106
+    source_assertion: Master RHEA:23104 links directed RHEA:23106 via rh:directionalReaction. Its bidirectional
+      member 23107 uses rh:bidirectionalReaction.
+    source_locator: http://rdf.rhea-db.org/23104 rh:directionalReaction; rh:bidirectionalReaction
+  - reference_id: PMID:16199563
+    source_assertion: The study identifies K-12 KdsD/GutQ-mediated A5P supply for Kdo/LPS synthesis. Genomic
+      DNA was MG1655; deletion physiology used BW30270-derived K-12 strains.
+    source_locator: Abstract; MATERIALS AND METHODS / Materials; Strain construction and growth conditions
+- id: kdo-edge-029
+  subject: RHEA:14054
+  predicate: part_of
+  object: GO:0033468
+  evidence:
+  - reference_id: MetaCyc:PWY-1269
+    source_assertion: The native pathway explicitly includes KDO-8PSYNTH-RXN and selects L2R flux.
+    source_locator: Pathway[@frameid="PWY-1269"]/reaction-list; reaction-layout[Reaction/@frameid="KDO-8PSYNTH-RXN"]
+  - reference_id: MetaCyc:KDO-8PSYNTH-RXN
+    source_assertion: KDO-8PSYNTH-RXN explicitly unifies RHEA:14054. Its furanose substrate differs from
+      the current Rhea open-chain form.
+    source_locator: Reaction[@frameid="KDO-8PSYNTH-RXN"]/dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:14054
+    source_assertion: Master RHEA:14053 links directed RHEA:14054 via rh:directionalReaction.
+    source_locator: http://rdf.rhea-db.org/14053 rh:directionalReaction
+- id: kdo-edge-030
+  subject: RHEA:11501
+  predicate: part_of
+  object: GO:0033468
+  evidence:
+  - reference_id: MetaCyc:PWY-1269
+    source_assertion: The native pathway explicitly includes KDO-8PPHOSPHAT-RXN and selects L2R flux.
+    source_locator: Pathway[@frameid="PWY-1269"]/reaction-list; reaction-layout[Reaction/@frameid="KDO-8PPHOSPHAT-RXN"]
+  - reference_id: MetaCyc:KDO-8PPHOSPHAT-RXN
+    source_assertion: KDO-8PPHOSPHAT-RXN explicitly unifies RHEA:11501.
+    source_locator: Reaction[@frameid="KDO-8PPHOSPHAT-RXN"]/dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:11501
+    source_assertion: Master RHEA:11500 links directed RHEA:11501 via rh:directionalReaction.
+    source_locator: http://rdf.rhea-db.org/11500 rh:directionalReaction
+- id: kdo-edge-031
+  subject: RHEA:23449
+  predicate: part_of
+  object: GO:0033468
+  description: Current database convention; primary studies instead identify beta-pyranose Kdo as the
+    accepted KdsB substrate. This edge does not establish experimental alpha catalysis.
+  evidence:
+  - reference_id: MetaCyc:PWY-1269
+    source_assertion: The native pathway explicitly includes CPM-KDOSYNTH-RXN and selects L2R flux.
+    source_locator: Pathway[@frameid="PWY-1269"]/reaction-list; reaction-layout[Reaction/@frameid="CPM-KDOSYNTH-RXN"]
+  - reference_id: MetaCyc:CPM-KDOSYNTH-RXN
+    source_assertion: CPM-KDOSYNTH-RXN explicitly unifies RHEA:23449.
+    source_locator: Reaction[@frameid="CPM-KDOSYNTH-RXN"]/dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:23449
+    source_assertion: Master RHEA:23448 links directed RHEA:23449 via rh:directionalReaction.
+    source_locator: http://rdf.rhea-db.org/23448 rh:directionalReaction
+- id: kdo-edge-032
+  subject: MetaCyc:RXN-16804
+  predicate: part_of
+  object: GO:0033468
+  description: Reversible ring equilibrium. The open-chain form directly feeds KdsA in the selected current
+    chemistry; no obligatory furanose-to-KdsA edge is asserted.
+  evidence:
+  - reference_id: MetaCyc:PWY-1269
+    source_assertion: RXN-16804 is one of the five native reaction-list members. Its displayed closure
+      orientation precedes native furanose-fed KdsA, a substrate convention not retained by current Rhea
+      or primary acyclic-substrate evidence.
+    source_locator: Pathway[@frameid="PWY-1269"]/reaction-list; reaction-layout; reaction-ordering
+  - reference_id: MetaCyc:RXN-16804
+    source_assertion: The exact native reaction is reversible and spontaneous. It is retained as a sugar-pool
+      equilibrium without a catalyst or molecular-activity override.
+    source_locator: Reaction[@frameid="RXN-16804"]/reaction-direction; spontaneous
+references:
+- id: MetaCyc:PWY-1269
+  title: CMP-3-deoxy-D-manno-octulosonate biosynthesis
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-1269
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 8712a91e2350672b9b08b4b80e08481f9af9e65549c0f80d44c3c4b43f88d0e3
+- id: MetaCyc:RXN-16804
+  title: RXN-16804
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-16804
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 5d06c5a1c976b26b6a2db29e417e19e60330274c11312f7b082b73b7510ff7ba
+- id: MetaCyc:DARAB5PISOM-RXN
+  title: DARAB5PISOM-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DARAB5PISOM-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 2bb4a39fce3de5e895129b477392c4d5bc513b3d1a8d3f2927052c87bec51d2c
+- id: MetaCyc:KDO-8PSYNTH-RXN
+  title: KDO-8PSYNTH-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:KDO-8PSYNTH-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 3c9201eb18a7df7359a8fea6c77ba4a2ec44eb8e3ef9fa7940de2fd85eb11f6e
+- id: MetaCyc:KDO-8PPHOSPHAT-RXN
+  title: KDO-8PPHOSPHAT-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:KDO-8PPHOSPHAT-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 2bc72e9ab43bca987c2b203097e3cfe3e013c3a32fe0fcd023c1449ffbd54d1b
+- id: MetaCyc:CPM-KDOSYNTH-RXN
+  title: CPM-KDOSYNTH-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:CPM-KDOSYNTH-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 3356acad909a50212eb14fcead3792e7a7c8660051b94c28de86d5ade98633bd
+- id: MetaCyc:ARABINOSE-5P
+  title: aldehydo-D-arabinose 5-phosphate
+  url: https://pathway.yeastgenome.org/getxml?META:ARABINOSE-5P
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 6bb8e7d1d5e3bf4ecd245733467d8c376efd92987a20e161b29e2cc8d7c3a1ac
+- id: MetaCyc:CPD-18118
+  title: D-arabinofuranose 5-phosphate
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-18118
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 38042dfadf6bac22e81b2c648347ac22d036d0e3780d9c7f1984551fb200779d
+- id: MetaCyc:CPLX0-1262
+  title: D-arabinose 5-phosphate isomerase KdsD
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-1262
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 2ed5f62547560ed457aa2154dd3749decc6feaaed6f622c70df6536899d7b22f
+- id: MetaCyc:CPLX0-3929
+  title: D-arabinose 5-phosphate isomerase GutQ
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-3929
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: b6bc082f3a7c99828d947b43074cf6f4f8a98b51959699b74ea759ba4d00be95
+- id: MetaCyc:KDO-8PSYNTH-CPLX
+  title: 3-deoxy-D-manno-octulosonate 8-phosphate synthase
+  url: https://pathway.yeastgenome.org/getxml?META:KDO-8PSYNTH-CPLX
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: ffa0c1b1815eb5e8165f9c9299da07ab026aa654d8ca65ad305f08c5d36b158f
+- id: MetaCyc:G7662-MONOMER
+  title: D-arabinose 5-phosphate isomerase KdsD
+  url: https://pathway.yeastgenome.org/getxml?META:G7662-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 66e90f9312ecdaeb71908c9da9389494505722d236a19af6302a798b59761230
+- id: MetaCyc:EG10973-MONOMER
+  title: D-arabinose 5-phosphate isomerase GutQ
+  url: https://pathway.yeastgenome.org/getxml?META:EG10973-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 4261b0b7bb6aabcfd47d11946edad60af7f3710cdd5eb38871f88443cb5c0bc9
+- id: MetaCyc:KDO-8PSYNTH-MONOMER
+  title: 3-deoxy-D-manno-octulosonate 8-phosphate synthase
+  url: https://pathway.yeastgenome.org/getxml?META:KDO-8PSYNTH-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 5ca71563cf65c0dad30d0fc6bedf4d0e5b24812c3e3e3f852c8f2f26db3b00ac
+- id: MetaCyc:CPM-KDOSYNTH-MONOMER
+  title: 3-deoxy-manno-octulosonate cytidylyltransferase
+  url: https://pathway.yeastgenome.org/getxml?META:CPM-KDOSYNTH-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 4fd1f1328c56640f22522f3bd6e000d5507757fdfc52f0f4debe5d9e0826462a
+- id: MetaCyc:DARAB5PISOM-ENZRXN
+  title: D-arabinose 5-phosphate isomerase
+  url: https://pathway.yeastgenome.org/getxml?META:DARAB5PISOM-ENZRXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 245a62292f97983802974c2a633b4e7dd7cfed604debe98a26834e200c101749
+- id: MetaCyc:ENZRXN0-6149
+  title: D-arabinose 5-phosphate isomerase
+  url: https://pathway.yeastgenome.org/getxml?META:ENZRXN0-6149
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: b124f3e0339e9d9efae846221ffa329f3fd0831465b7b0725bc455621315e07b
+- id: MetaCyc:KDO-8PSYNTH-ENZRXN
+  title: 3-deoxy-D-manno-octulosonate 8-phosphate synthase
+  url: https://pathway.yeastgenome.org/getxml?META:KDO-8PSYNTH-ENZRXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 0e9956b9cd1e2db3b2b1d818016a1008f8c08fc0a5945435423ec5431a93bd71
+- id: MetaCyc:CPM-KDOSYNTH-ENZRXN
+  title: 3-deoxy-manno-octulosonate cytidylyltransferase
+  url: https://pathway.yeastgenome.org/getxml?META:CPM-KDOSYNTH-ENZRXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 7847d7570575e03e4bdf94d263dbf3af3416711f441c48b9f92b71c07277e228
+- id: UniProtKB:P45395
+  title: Reviewed K-12 Arabinose 5-phosphate isomerase KdsD
+  url: https://rest.uniprot.org/uniprotkb/P45395.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: 8df312b2a69602634e2e795e588c393d2dc6966246814e39515d8f5dbd623935
+- id: UniProtKB:P17115
+  title: Reviewed K-12 Arabinose 5-phosphate isomerase GutQ
+  url: https://rest.uniprot.org/uniprotkb/P17115.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: 6aef527f71209ef41deb54963c345ac8376b6c0548600f4b3f644e1300e98340
+- id: UniProtKB:P0A715
+  title: Reviewed K-12 2-dehydro-3-deoxyphosphooctonate aldolase
+  url: https://rest.uniprot.org/uniprotkb/P0A715.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: c3d361add8a0558c667327ecd6739d21773734db114ccb5481b0d10054adfdb8
+- id: UniProtKB:P0ABZ4
+  title: Reviewed K-12 3-deoxy-D-manno-octulosonate 8-phosphate phosphatase KdsC
+  url: https://rest.uniprot.org/uniprotkb/P0ABZ4.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: 4292a44c1521776dcc0b179021ed6b4566e5cb1ab1e75c1d109cf5e4982fcce8
+- id: UniProtKB:P04951
+  title: Reviewed K-12 3-deoxy-manno-octulosonate cytidylyltransferase
+  url: https://rest.uniprot.org/uniprotkb/P04951.json
+  source_version: UniProt 2026_03; complete JSON retrieved 2026-10-11 UTC
+  source_sha256: 314b3eec5dd670f79a666223385498c91ea64dbe9dc90927a1bbacc9c27d52e2
+- id: PMID:12805358
+  title: Escherichia coli YrbH is a D-arabinose 5-phosphate isomerase.
+  url: https://pubmed.ncbi.nlm.nih.gov/12805358/
+  source_version: Indexed Europe PMC CORE abstract JSON; digest is not full article; retrieved 2026-10-11
+    UTC
+  source_sha256: d994f89b99af0a29ab078d812861b56bb420d265e9cf8ba5f7edcdc108c2608b
+- id: PMID:16199563
+  title: Identification of GutQ from Escherichia coli as a D-arabinose 5-phosphate isomerase.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC1251629/
+  source_version: Full PMC HTML article; retrieved 2026-10-11 UTC
+  source_sha256: 8ec8d00815d1192e88986bf65fd46d066a494765e6053787e346a07026d325f8
+- id: PMID:10926505
+  title: 3-Deoxy-D-manno-octulosonate-8-phosphate synthase from Escherichia coli. Model of binding of
+    phosphoenolpyruvate and D-arabinose-5-phosphate.
+  url: https://pubmed.ncbi.nlm.nih.gov/10926505/
+  source_version: Indexed Europe PMC CORE abstract JSON; digest is not full article; retrieved 2026-10-11
+    UTC
+  source_sha256: ff34028ae36158486fa81ffbdf78862aed869fa05a57b90fef33fe634e68582a
+- id: PMID:1521535
+  title: Mechanistic studies of 3-deoxy-D-manno-2-octulosonate-8-phosphate synthase from Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/1521535/
+  source_version: Indexed Europe PMC CORE abstract JSON; digest is not full article; retrieved 2026-10-11
+    UTC
+  source_sha256: 927e0656ae16db489cc86a1f61b714dfa2d52fb56f13f46029dfc4fe7b15116f
+- id: PMID:19815542
+  title: 'Structure-based mechanism of CMP-2-keto-3-deoxymanno-octulonic acid synthetase: convergent evolution
+    of a sugar-activating enzyme with DNA/RNA polymerases.'
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2790981/
+  source_version: Full PMC HTML article; retrieved 2026-10-11 UTC
+  source_sha256: 96f365413077e7f3d5680bcef4de52cb2dd1244894aabe475b9fb3046c54c697
+- id: PMID:2997221
+  title: Determination of the anomeric specificity of the Escherichia coli CTP:CMP-3-deoxy-D-manno-octulosonate
+    cytidylyltransferase by 13C NMR spectroscopy.
+  url: https://pubmed.ncbi.nlm.nih.gov/2997221/
+  source_version: Indexed Europe PMC CORE abstract JSON; digest is not full article; retrieved 2026-10-11
+    UTC
+  source_sha256: a3aae92937a179157eae33589458ea0d65fe3232d7f864d7619e9cdee1a5c715
+- id: RHEA:23106
+  title: Rhea directional reaction 23106
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers full compressed RDF, locators select exact reaction
+    triples
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:14054
+  title: Rhea directional reaction 14054
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers full compressed RDF, locators select exact reaction
+    triples
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:11501
+  title: Rhea directional reaction 11501
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers full compressed RDF, locators select exact reaction
+    triples
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:23449
+  title: Rhea directional reaction 23449
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers full compressed RDF, locators select exact reaction
+    triples
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
