@@ -1,0 +1,130 @@
+"""Verify current record/page/KGX preservation against the exact merge baseline."""
+import csv
+import hashlib
+import io
+import json
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-221-20261011')
+OUT = Path('/private/tmp/pathwaymech-ethylmalonyl-integration-20261011')
+BASE = '7b5201e93c0608631af73e629780d829efd26426'
+TARGET = 'data/pathways/ethylmalonyl-coa-pathway.yaml'
+TARGET_HASH = '1c58f2d1b27fd7a8a3928971a49311a742e004a1b28f349b9331b8fe0f369912'
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=ROOT)
+
+
+def baseline(path):
+    return git('show', BASE + ':' + path)
+
+
+def rows(raw):
+    result = list(csv.DictReader(io.StringIO(raw.decode()), delimiter='\t'))
+    indexed = {row['id']: row for row in result}
+    assert len(result) == len(indexed), 'Duplicate KGX row IDs'
+    return indexed
+
+
+assert __debug__ and sys.dont_write_bytecode
+assert git('rev-parse', 'HEAD').decode().strip() == BASE
+record_bytes = (ROOT / TARGET).read_bytes()
+assert digest(record_bytes) == TARGET_HASH
+doc = yaml.safe_load(record_bytes)
+paths = git('ls-tree', '-r', '--name-only', BASE, 'data/pathways').decode().splitlines()
+paths = [path for path in paths if path.endswith('.yaml')]
+assert len(paths) == 221
+current_paths = subprocess.check_output(
+    ['rg', '-uu', '-L', '--files', '-g', '*.yaml', 'data/pathways'], cwd=ROOT, text=True
+).splitlines()
+assert set(current_paths) == set(paths) | {TARGET}
+preserved = {}
+for path in paths:
+    original = baseline(path)
+    assert original == (ROOT / path).read_bytes(), path
+    preserved[path] = digest(original)
+page_paths = git('ls-tree', '-r', '--name-only', BASE, 'pages/records').decode().splitlines()
+assert len(page_paths) == 221
+for path in page_paths:
+    original = baseline(path)
+    assert original == (ROOT / path).read_bytes(), path
+    preserved[path] = digest(original)
+
+sys.path.insert(0, str(ROOT / 'src'))
+from pathwaymech.kgx import write_kgx
+from pathwaymech.schema import validate_record
+
+one = OUT / 'current-target-kgx'
+assert not one.exists()
+write_kgx([validate_record(doc)], one)
+old_edges = rows(baseline('pages/downloads/edges.tsv'))
+all_edges_raw = (ROOT / 'pages/downloads/edges.tsv').read_bytes()
+all_edges = rows(all_edges_raw)
+target_edges = rows((one / 'edges.tsv').read_bytes())
+assert len(target_edges) == 105
+assert set(all_edges) == set(old_edges) | set(target_edges)
+assert not set(old_edges) & set(target_edges)
+for key, row in {**old_edges, **target_edges}.items():
+    assert all_edges[key] == row, key
+
+old_nodes = rows(baseline('pages/downloads/nodes.tsv'))
+all_nodes_raw = (ROOT / 'pages/downloads/nodes.tsv').read_bytes()
+all_nodes = rows(all_nodes_raw)
+target_nodes = rows((one / 'nodes.tsv').read_bytes())
+assert len(target_nodes) == 66
+assert set(all_nodes) == set(old_nodes) | set(target_nodes)
+global_changes = []
+for key, row in all_nodes.items():
+    expected_contexts = []
+    for source in (old_nodes, target_nodes):
+        for context in json.loads(source.get(key, {}).get('source_contexts', '[]')):
+            if context not in expected_contexts:
+                expected_contexts.append(context)
+    actual_contexts = json.loads(row['source_contexts'])
+    canon = lambda values: sorted(json.dumps(x, sort_keys=True) for x in values)
+    assert canon(actual_contexts) == canon(expected_contexts), key
+    if key in old_nodes:
+        changes = {field: [old_nodes[key][field], row[field]] for field in row
+                   if field != 'source_contexts' and old_nodes[key][field] != row[field]}
+        if changes:
+            global_changes.append({'id': key, 'changes': changes})
+    if key in target_nodes:
+        assert row['category'] == target_nodes[key]['category'], (key, row['category'])
+    if key in old_nodes and key not in target_nodes:
+        assert row == old_nodes[key], key
+
+manifest = json.loads((ROOT / 'pages/downloads/manifest.json').read_text())
+assert manifest['pathway_records'] == 222
+for name, raw, count in [('nodes.tsv', all_nodes_raw, len(all_nodes)),
+                         ('edges.tsv', all_edges_raw, len(all_edges))]:
+    assert (OUT / 'gates/kgx' / name).read_bytes() == raw
+    assert manifest['files'][name]['sha256'] == digest(raw)
+    assert manifest['files'][name]['rows'] == count
+assert (ROOT / TARGET).read_bytes() == record_bytes
+assert git('rev-parse', 'HEAD').decode().strip() == BASE
+report = {
+    'status': 'passed', 'checked_at': datetime.now(timezone.utc).isoformat(),
+    'baseline': BASE, 'target_sha256': TARGET_HASH,
+    'prior_records_unchanged': len(paths), 'prior_record_pages_unchanged': len(page_paths),
+    'prior_edges_preserved_exactly': len(old_edges), 'target_edges_preserved_exactly': 105,
+    'prior_node_contexts_preserved': len(old_nodes), 'target_node_contexts_preserved': 66,
+    'target_global_categories_match': True, 'shared_node_global_changes': global_changes,
+    'downloads_match_current_export_and_manifest': True,
+    'final_node_count': len(all_nodes), 'final_edge_count': len(all_edges),
+    'preserved_files': preserved, 'script_sha256': digest(Path(__file__).read_bytes()),
+    'scope': 'Deterministic record, page and KGX preservation; not scientific review or browser inspection.'
+}
+with (OUT / 'preservation.json').open('x') as stream:
+    json.dump(report, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({k: v for k, v in report.items() if k != 'preserved_files'}, indent=2))

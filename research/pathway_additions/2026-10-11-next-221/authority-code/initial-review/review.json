@@ -1,0 +1,164 @@
+{
+  "completed_at": "2026-10-11T21:00:25.136233+00:00",
+  "reviewer": "/root/calvin_integration_review",
+  "status": "changes_requested",
+  "scope": {
+    "worktree": "/private/tmp/pathwaymech-next-221-20261011",
+    "base_head": "7b5201e93c0608631af73e629780d829efd26426",
+    "files": [
+      {
+        "path": "/private/tmp/pathwaymech-next-221-20261011/scripts/build_source_identifier_snapshot.py",
+        "relative_path": "scripts/build_source_identifier_snapshot.py",
+        "sha256": "dc1567fada2e811389c55b4f8936230cadd2f83f958da64357aa6eb9cd0847bf",
+        "archive": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/final-owned-files/build_source_identifier_snapshot.py.txt",
+        "archive_sha256": "dc1567fada2e811389c55b4f8936230cadd2f83f958da64357aa6eb9cd0847bf"
+      },
+      {
+        "path": "/private/tmp/pathwaymech-next-221-20261011/tests/test_metacyc_protein_authority.py",
+        "relative_path": "tests/test_metacyc_protein_authority.py",
+        "sha256": "624d87e488f792257d3cc4a9dd54985a17c4eb436a82480afcbdbf7b5a2504ad",
+        "archive": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/final-owned-files/test_metacyc_protein_authority.py.txt",
+        "archive_sha256": "624d87e488f792257d3cc4a9dd54985a17c4eb436a82480afcbdbf7b5a2504ad"
+      },
+      {
+        "path": "/private/tmp/pathwaymech-next-221-20261011/docs/IDENTIFIERS.md",
+        "relative_path": "docs/IDENTIFIERS.md",
+        "sha256": "88c81034f1ae724e38f748d2f61399642adbb17e669f770ca12fb8bc44ea1498",
+        "archive": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/final-owned-files/IDENTIFIERS.md.txt",
+        "archive_sha256": "88c81034f1ae724e38f748d2f61399642adbb17e669f770ca12fb8bc44ea1498"
+      }
+    ],
+    "author_handoff": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/handoff.json",
+    "author_handoff_sha256": "f9ea4c8d58991d8c9346fef7e416f12db31d7b57604231616cc54def50c175c7",
+    "maintained_mutations": false,
+    "git_github_mutations": false
+  },
+  "findings": [
+    {
+      "id": "MCXML-001",
+      "severity": "P2",
+      "title": "Reject unresolved numeric references and invalid decoded characters before issuing canonical names",
+      "locations": [
+        {
+          "path": "scripts/build_source_identifier_snapshot.py",
+          "line": 371
+        },
+        {
+          "path": "scripts/build_source_identifier_snapshot.py",
+          "line": 478
+        }
+      ],
+      "trigger": "A well-formed Protein XML common-name contains escaped malformed numeric markup such as protein &amp;#-1;, extra-escaped numeric markup such as protein &amp;amp;#946;, or an escaped numeric reference to U+FFFF (protein &amp;#xFFFF;).",
+      "observed": "HTMLParser treats the malformed numeric form as ordinary data and the final label guard only checks named entities. A valid numeric reference to U+FFFF passes the 32..10FFFF/non-surrogate range check. The parser emits protein &#-1;, protein &#946; or a literal U+FFFF as a canonical name. Two independent actual CLI builds (malformed numeric and U+FFFF) exit 0 and replace a prior output sentinel.",
+      "expected": "Malformed/unresolved numeric markup and disallowed decoded character values fail before term emission; CLI retains existing output, or creates no output. Ordinary escaped beta/numeric beta and the four native source labels still succeed.",
+      "impact": "The newly advertised resolved-name guard can publish malformed native authority labels. This is a parser-contract defect demonstrated with synthetic mutations; the four intended original bodies are unaffected.",
+      "cause": "handle_data retains unrecognized numeric-reference syntax; the final residual-entity check omits numeric references, and handle_charref permits U+FFFF.",
+      "suggested_fix": "Validate the final decoded label for residual numeric-reference syntax and invalid characters, without recursive unescaping or chemical-name rewriting; add direct and CLI failure-before-write regression cases.",
+      "evidence": [
+        "/private/tmp/pathwaymech-ethylmalonyl-authority-code-review-20261011/probe-12.xml",
+        "/private/tmp/pathwaymech-ethylmalonyl-authority-code-review-20261011/probe-13.xml",
+        "/private/tmp/pathwaymech-ethylmalonyl-authority-code-review-20261011/probe-14.xml",
+        "/private/tmp/pathwaymech-ethylmalonyl-authority-code-review-20261011/probe-results.json"
+      ],
+      "probe_result_sha256": "8c0540701a397141894087a5b231dec91a33113ef9a700b1f9a2b0675854d2bd"
+    }
+  ],
+  "passed_checks": [
+    "Four independently rehashed untouched original XML bodies emit exactly the expected four native canonical labels and no aliases.",
+    "Duplicate query/species fields, wrong ID/database version, missing direct name, wrong datatype, nested-name fallback, wrong service host and malformed tags reject.",
+    "DTD declarations reject in UTF-8 and UTF-16 via the explicit callback. Explicit UTF-16-LE/BE encoding-name fixtures fail at decoder support before content use; no claim that these exercised the callback.",
+    "Actual XML/HTML canonical-name conflicts fail in both manifest orders and preserve prior authority-output bytes.",
+    "AST comparison confirms all prior parser functions and main unchanged; only source_terms and build_snapshot existing definitions changed, plus four new definitions.",
+    "Reviewed complete three-file implementation and original-source support assessment.",
+    "Final reviewed owned-file and archived-file digests match author sealed handoff."
+  ],
+  "execution": {
+    "independent_probe_case_count": 23,
+    "actual_cli_invocations": 4,
+    "terminal_chunk": "7cd372",
+    "terminal_exit_code": 0,
+    "meaning": "Probe script completed and recorded outcomes; this is not a claim that every negative case was rejected.",
+    "author_validation_receipts": [
+      {
+        "receipt": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/focused-final.json",
+        "sha256": "431d437fc0be7c06a7cc8bb4c7fabebb4b18d57d8fa8bd91e6e0e142ae585ca3",
+        "content": {
+          "command": [
+            "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+            "-B",
+            "-m",
+            "pytest",
+            "tests/test_metacyc_protein_authority.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": "/private/tmp/pathwaymech-next-221-20261011",
+          "started_at": "2026-10-11T20:55:40.326883+00:00",
+          "finished_at": "2026-10-11T20:55:41.320506+00:00",
+          "exit_code": 0,
+          "log": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/focused-final.log",
+          "log_sha256": "9cc168191e13f94397eb8e8b1a366b6e88d1d4c84fd1e08a7318cbc6d617c7b4"
+        },
+        "log": "........................................................................ [ 67%]\n..................................                                       [100%]\n106 passed in 0.50s\n"
+      },
+      {
+        "receipt": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/regressions-final.json",
+        "sha256": "8b2f42f752e34c7661115967813c7b78f41b6452321e71b6c3c938cdd8058ad9",
+        "content": {
+          "command": [
+            "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+            "-B",
+            "-m",
+            "pytest",
+            "tests/test_metacyc_protein_authority.py",
+            "tests/test_source_identifier_snapshot.py",
+            "tests/test_metacyc_authority_encoding.py",
+            "tests/test_identifier_snapshot_builders.py",
+            "tests/test_kegg_identifier_authority.py",
+            "tests/test_metanetx_identifier_authority.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": "/private/tmp/pathwaymech-next-221-20261011",
+          "head": "7b5201e93c0608631af73e629780d829efd26426",
+          "started_at": "2026-10-11T20:57:00.077184+00:00",
+          "finished_at": "2026-10-11T20:57:05.271003+00:00",
+          "exit_code": 0,
+          "log": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/regressions-final.log",
+          "log_sha256": "aa44fa5daa3cc57ce2bc324b6f75585f64a610b08fb9d31937e30e48eff3d675"
+        },
+        "log": "........................................................................ [ 23%]\n........................................................................ [ 46%]\n........................................................................ [ 69%]\n........................................................................ [ 93%]\n.....................                                                    [100%]\n309 passed in 3.98s\n"
+      },
+      {
+        "receipt": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/lint-final.json",
+        "sha256": "4fa17bdd808be98840160999bf66acc2a7c77929054f133c88229ee7cfba6ec9",
+        "content": {
+          "command": [
+            "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/ruff",
+            "check",
+            "--no-cache",
+            "scripts/build_source_identifier_snapshot.py",
+            "tests/test_metacyc_protein_authority.py"
+          ],
+          "cwd": "/private/tmp/pathwaymech-next-221-20261011",
+          "started_at": "2026-10-11T20:55:41.321188+00:00",
+          "finished_at": "2026-10-11T20:55:41.351000+00:00",
+          "exit_code": 0,
+          "log": "/private/tmp/pathwaymech-ethylmalonyl-authority-implementation-20261011/lint-final.log",
+          "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        "log": "All checks passed!\n"
+      }
+    ]
+  },
+  "limits": [
+    "No full canonical snapshot rebuild or full corpus test rerun. Author 106 focused/309 relevant tests and lint receipts inspected, not independently rerun here.",
+    "No scientific approval or organism/assembly/function equivalence inferred.",
+    "No production source/manifest adoption occurred in review.",
+    "Supported-source metadata host matching intentionally tolerates native proxy scheme formatting; no new authenticity or network-acquisition claim.",
+    "No global absence/source-exhaustion claim.",
+    "Exploratory extra-escaped apos rejection and HTML no-semicolon behavior are recorded but not promoted to findings for the four-source scope."
+  ]
+}

@@ -1,0 +1,308 @@
+"""External author replay: original RDF direction/sides and fail-closed publication.
+
+This checks an external author proposal, not maintained production authorities or
+scientific-review approval. Every consumed semantic file is SHA-256 bound before
+use and rehashed before the accepted bundle and success receipt appear together.
+"""
+import sys
+sys.dont_write_bytecode = True
+from pathlib import Path
+import argparse, collections, csv, gzip, hashlib, json, re, shutil, sqlite3
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
+from lxml import html, etree
+import yaml
+
+def now(): return datetime.now(timezone.utc).isoformat()
+def require(ok, code, detail=''):
+    if not ok: raise ValueError(f'{code}: {detail}')
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for block in iter(lambda: f.read(1024*1024), b''): h.update(block)
+    return h.hexdigest()
+def dump(path, value):
+    Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False)+'\n')
+
+class Bindings:
+    def __init__(self, manifest):
+        self.manifest = Path(manifest).resolve()
+        self.manifest_hash = sha(self.manifest)
+        self.data = json.loads(self.manifest.read_text())
+        require(self.data['version'] == 1, 'INPUT_MANIFEST_VERSION')
+        self.entries = {}
+        self.start = {}
+        for role, entry in self.data['inputs'].items(): self.add(entry, role)
+    def add(self, entry, role):
+        p = str(Path(entry['path']).absolute())
+        require(re.fullmatch('[0-9a-f]{64}',entry['sha256']), 'INPUT_HASH_FORMAT', p)
+        if p in self.entries:
+            require(self.entries[p]['sha256'] == entry['sha256'], 'CONFLICTING_INPUT_HASH', p)
+            self.entries[p]['roles'].append(role)
+        else: self.entries[p] = {'path':p,'sha256':entry['sha256'],'roles':[role]}
+    def path(self, role): return Path(self.data['inputs'][role]['path'])
+    def verify(self, path):
+        p = str(Path(path).absolute())
+        expected = self.entries[p]['sha256']
+        observed = sha(p)
+        require(observed == expected, 'INPUT_HASH_MISMATCH', {'path':p,'expected':expected,'observed':observed})
+        self.start[p] = observed
+        return observed
+    def bytes(self, path):
+        p = str(Path(path).absolute()); raw = Path(p).read_bytes()
+        observed = hashlib.sha256(raw).hexdigest()
+        require(observed == self.entries[p]['sha256'], 'INPUT_HASH_MISMATCH', p)
+        self.start[p] = observed
+        return raw
+    def text(self, role): return self.bytes(self.path(role)).decode()
+    def json(self, role): return json.loads(self.text(role))
+    def check_all(self):
+        require(sha(self.manifest) == self.manifest_hash, 'MANIFEST_CHANGED')
+        for p in self.entries: self.verify(p)
+    def final(self):
+        require(set(self.start) == set(self.entries), 'UNVERIFIED_SEMANTIC_INPUT')
+        self.check_all()
+        return list(self.entries.values())
+
+RH = 'http://rdf.rhea-db.org/'
+NS = {'rh':RH,'rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+WRAPPER = '<root '+' '.join(f'xmlns:{k}="{v}"' for k,v in NS.items())+'>'
+
+def original_rhea(raw_gzip, record, projection):
+    """Resolve exact selected objects, reverse master links and native side URIs.
+
+    Neither numeric Rhea offsets nor stored orientations supply the direction.
+    Every master is discovered by its rh:directionalReaction link in original RDF;
+    direction is then determined by native master_L/master_R substrate/product
+    resources. All projected properties are compared to freshly parsed originals.
+    """
+    raw = gzip.decompress(raw_gzip).decode()
+    starts = {}
+    for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',raw):
+        starts.setdefault(m[1],[]).append(m.start())
+    nodes = {}
+    def get(uri):
+        if uri in nodes: return nodes[uri]
+        require(uri in starts, 'RDF_OBJECT_MISSING', uri)
+        props = {}
+        for start in starts[uri]:
+            end = raw.index('</rdf:Description>',start)+len('</rdf:Description>')
+            node = ET.fromstring(WRAPPER+raw[start:end]+'</root>')[0]
+            for child in node:
+                key = child.tag.split('}',1)[1]
+                value = child.get('{'+NS['rdf']+'}resource') or child.text
+                if value not in props.setdefault(key,[]): props[key].append(value)
+        nodes[uri] = props
+        return props
+    evidence = []
+    for reaction in record['reactions']:
+        rid = reaction['id']; uri = RH+rid.split(':')[1]; n = get(uri)
+        require(n.get('accession') == [rid] and n.get('id') == [rid.split(':')[1]] and n.get('status') == [RH+'Approved'] and RH+'DirectionalReaction' in n.get('subClassOf',[]), 'RDF_DIRECTIONAL_IDENTITY', rid)
+        # Search every original link to this exact URI, then identify its enclosing
+        # RDF subject. The selected record/projection never supplies the master ID.
+        masters = []
+        token = '<rh:directionalReaction rdf:resource="'+uri+'"/>'
+        for match in re.finditer(re.escape(token),raw):
+            start = raw.rfind('<rdf:Description rdf:about="',0,match.start())
+            match_master = re.match(r'<rdf:Description rdf:about="([^"]+)">',raw[start:])
+            require(match_master is not None,'RDF_MASTER_SUBJECT',rid)
+            master_uri = match_master[1]
+            if master_uri not in masters: masters.append(master_uri)
+        require(len(masters) == 1,'RDF_UNIQUE_MASTER',{'id':rid,'masters':masters})
+        master_uri = masters[0]; master = get(master_uri); mid = master_uri.removeprefix(RH)
+        require(master.get('accession') == ['RHEA:'+mid] and master.get('id') == [mid] and master.get('status') == [RH+'Approved'] and RH+'Reaction' in master.get('subClassOf',[]) and uri in master.get('directionalReaction',[]), 'RDF_MASTER_IDENTITY', rid)
+        left,right = master_uri+'_L',master_uri+'_R'
+        require(set(master.get('side',[])) == {left,right} and len(master['side']) == 2, 'RDF_MASTER_SIDES',rid)
+        pair = (n.get('substrates'),n.get('products'))
+        if pair == ([left],[right]): direction = 'left_to_right'
+        elif pair == ([right],[left]): direction = 'right_to_left'
+        else: raise ValueError('RDF_ORIENTATION_UNRESOLVED: '+rid)
+        require(reaction['direction'] == direction,'NATIVE_DIRECTION_MISMATCH',{'id':rid,'declared':reaction['direction'],'native':direction,'master':'RHEA:'+mid,'substrates':n['substrates'],'products':n['products']})
+        require(n.get('equation') == [reaction['label']], 'NATIVE_EQUATION_MISMATCH', rid)
+        sides = {}
+        for side,predicate in [('substrates','consumes'),('products','produces')]:
+            expected = {}
+            for sid in n[side]:
+                s = get(sid)
+                for participant in s['contains']:
+                    coefs = [int(key[8:]) for key,values in s.items() if re.fullmatch(r'contains\d+',key) and participant in values]
+                    require(len(coefs) == 1,'RDF_COEFFICIENT',participant)
+                    cu = get(participant)['compound'];require(len(cu)==1,'RDF_COMPOUND',participant)
+                    compound = get(cu[0]); accession = compound['accession'][0]
+                    cid = accession if accession.startswith('CHEBI:') else 'RHEA-COMP:'+cu[0].split('Compound_')[1]
+                    require(cid not in expected,'DUPLICATE_RDF_CHEMICAL_SIDE',cid)
+                    expected[cid] = coefs[0]
+            actual = {}
+            for edge in record['mechanistic_edges']:
+                if edge['predicate'] == predicate and edge['object' if predicate == 'consumes' else 'subject'] == rid:
+                    cid = edge['subject' if predicate == 'consumes' else 'object']
+                    require(cid not in actual,'DUPLICATE_RECORD_CHEMICAL_SIDE',cid)
+                    coefficient = re.search(r'^Stoichiometric coefficient (\d+)\.',edge['description'])
+                    require(coefficient is not None,'COEFFICIENT_MISSING',edge['id'])
+                    actual[cid] = int(coefficient[1])
+            require(expected == actual,'NATIVE_CHEMICAL_SIDE_MISMATCH',{'id':rid,'side':side,'native':expected,'actual':actual})
+            sides[side] = expected
+        evidence.append({'reaction':rid,'master':'RHEA:'+mid,'native_direction':direction,'declared_direction':reaction['direction'],'native_substrate_resources':n['substrates'],'native_product_resources':n['products'],'chemical_sides':sides})
+    # Recursively replay every property in the predecessor projection, including
+    # compounds/reactive moieties, without treating it as chemistry authority.
+    for uri, projected in projection['nodes'].items():
+        require(get(uri) == projected,'DERIVED_PROJECTION_MISMATCH',uri)
+    require(len(evidence) == 14 and sum(len(v) for e in evidence for v in e['chemical_sides'].values()) == 50,'FULL_ROUTE_COUNTS')
+    return nodes, evidence, len(starts)
+
+def execute(manifest, output):
+    started = now(); bindings = Bindings(manifest)
+    needed = {'helper','record','runtime_binding','authority_proposal','authority_inputs','coverage','rhea_projection','reference_bindings','assemblies','module','net_assessment','mcd','extension','ncbi','rhea','style'}
+    require(set(bindings.data['inputs']) == needed,'MANIFEST_ROLES')
+    require(bindings.path('helper').resolve() == Path(__file__).resolve(),'HELPER_PATH')
+    bindings.verify(__file__)
+    doc = yaml.safe_load(bindings.text('record'))
+    projection = bindings.json('rhea_projection')
+    rdf = bindings.bytes(bindings.path('rhea'))
+    require(projection['original_sha256'] == hashlib.sha256(rdf).hexdigest(), 'RDF_PROJECTION_SOURCE_BINDING')
+    nodes,directions,description_count = original_rhea(rdf,doc,projection)
+    print('CHECKPOINT native-direction-and-sides-passed',flush=True)
+    coverage = bindings.json('coverage')['reactions']
+    fields = {}; key = None
+    for line in bindings.text('module').splitlines():
+        if not line.strip() or line == '///': continue
+        if line[:12].strip(): key = line[:12].strip()
+        fields.setdefault(key,[]).append(line[12:].strip())
+    require(' '.join(fields['DEFINITION']) == 'K00626 K00023 K17865 K14446 K14447 K14448 K14449 K08691 K14451 K01965+K01966 K05606 K01847','MODULE_DEFINITION')
+    module_reactions = re.findall(r'\bR\d{5}\b',' '.join(fields['REACTION']))
+    require(len(module_reactions) == 14 and set(module_reactions) == {x['kegg'] for x in coverage} and {x['id'] for x in doc['reactions']} == {x['rhea_directional'] for x in coverage},'MODULE_COMPLETE_COVERAGE')
+    runtime = bindings.json('runtime_binding'); R = Path(runtime['source_root'])
+    for entry in runtime['files']: bindings.add(entry,'runtime')
+    source_bindings = bindings.json('reference_bindings')
+    for rid,entry in source_bindings.items(): bindings.add(entry,'reference:'+rid)
+    assemblies = bindings.json('assemblies')['assemblies']
+    for entry in assemblies: bindings.add(entry,'assembly:'+entry['id'])
+    authority_inputs = bindings.json('authority_inputs')['sources']
+    for entry in authority_inputs: bindings.add(entry,'authority:'+entry['key'])
+    print('CHECKPOINT binding-all-semantic-inputs',flush=True)
+    bindings.check_all()
+    sys.path.insert(0,str(R/'src'))
+    from pathwaymech.schema import validate_record
+    from pathwaymech.strict import strict_errors
+    from pathwaymech.identifiers import identifier_errors
+    from pathwaymech.cli import render_site
+    from pathwaymech.kgx import write_kgx,LOCAL_PREDICATE_CURIES
+    # Imports are covered by exact native source bytes, not changing worktree HEAD.
+    for name, module in list(sys.modules.items()):
+        if name.startswith('pathwaymech') and getattr(module,'__file__',None):
+            require(str(Path(module.__file__).absolute()) in bindings.entries,'UNBOUND_RUNTIME_IMPORT',module.__file__)
+    record = validate_record(doc)
+    require(not (errors := strict_errors([bindings.path('record')],R)), 'CLOSED_SCHEMA',errors)
+    out = Path(output).absolute();require(not out.exists(),'OUTPUT_ALREADY_EXISTS',str(out));out.mkdir(parents=True)
+    work = out/'work';work.mkdir()
+    stage = work/'canonical-gate';(stage/'data/pathways').mkdir(parents=True);(stage/'conf').mkdir()
+    (stage/'data/pathways/ethylmalonyl-coa-pathway.yaml').write_bytes(bindings.bytes(bindings.path('record')))
+    (stage/'authority.json').write_bytes(bindings.bytes(bindings.path('authority_proposal')))
+    declared = [doc,*doc['taxa'],*doc['participants'],*doc['reactions']]
+    policy = {'version':1,'namespaces':{prefix:{'snapshot':'authority.json','policy':'canonical'} for prefix in sorted({n['id'].split(':')[0] for n in declared})},'contextual_labels':[]}
+    (stage/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(policy,sort_keys=False))
+    require(not (errors := identifier_errors(stage)),'AUTHOR_PROPOSAL_IDENTIFIER_GATE',errors)
+    chebi = next(x for x in authority_inputs if x['key'].startswith('chebi-'))
+    conn = sqlite3.connect(Path(chebi['path']).resolve().as_uri()+'?mode=ro',uri=True)
+    balances = [];net = collections.Counter();side_count = 0
+    for reaction in doc['reactions']:
+        native = nodes[RH+reaction['id'].split(':')[1]];bal = collections.Counter()
+        for side,sign in [('substrates',-1),('products',1)]:
+            for sid in native[side]:
+                s = nodes[sid]
+                for pp in s['contains']:
+                    coef = next(int(k[8:]) for k,v in s.items() if re.fullmatch(r'contains\d+',k) and pp in v)
+                    compound_uri = nodes[pp]['compound'][0];c = nodes[compound_uri]
+                    small = c['accession'][0].startswith('CHEBI:')
+                    cid = c['accession'][0] if small else 'RHEA-COMP:'+compound_uri.split('Compound_')[1]
+                    z = c if small else nodes[c['reactivePart'][0]]
+                    formula,charge = z['formula'][0],int(z['charge'][0])
+                    if small:
+                        native_formula = dict(conn.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('chemrof:generalized_empirical_formula','chemrof:charge')",(cid,)))
+                        require(native_formula['chemrof:generalized_empirical_formula'] == formula and int(native_formula['chemrof:charge']) == charge,'CHEBI_FORMULA_CHARGE',cid)
+                    parts = re.findall(r'([A-Z][a-z]?)(\d*)',formula)
+                    require(''.join(a+b for a,b in parts) == formula,'FORMULA_PARSE',formula)
+                    for atom,count in parts: bal[atom] += sign*coef*int(count or 1)
+                    bal['charge'] += sign*coef*charge;net[cid] += sign*coef;side_count += 1
+        residual = {k:v for k,v in bal.items() if v}
+        require(not residual,'CHEMICAL_BALANCE',{'reaction':reaction['id'],'residual':residual})
+        balances.append({'reaction':reaction['id'],'element_charge_residual':residual})
+    conn.close()
+    require(side_count == 50,'CHEMICAL_SIDE_COUNT')
+    require({i:v for i,v in net.items() if v} == bindings.json('net_assessment')['current_chemistry']['formal_net_coefficients'],'FORMAL_NET')
+    byref = {x['id']:x for x in doc['references']}
+    require(set(source_bindings) == set(byref),'REFERENCE_COVERAGE')
+    for rid,b in source_bindings.items(): require(b['sha256'] == byref[rid]['source_sha256'],'REFERENCE_BINDING',rid)
+    jsonchecks = 0; htmlchecks = 0
+    for edge in doc['mechanistic_edges']:
+        for ev in edge['evidence']:
+            require(len(ev['source_assertion']) <= 400 and bool(ev['source_locator']),'COMPACT_EVIDENCE',edge['id'])
+            rid,loc = ev['reference_id'],ev['source_locator'];p = Path(source_bindings[rid]['path'])
+            if rid.startswith('UniProtKB:'):
+                d = json.loads(bindings.bytes(p))
+                for pointer in re.findall(r'/(?:primaryAccession|organism/taxonId|comments/\d+|secondaryAccessions|sequence)\b',loc):
+                    z = d
+                    for token in pointer.strip('/').split('/'): z = z[int(token)] if isinstance(z,list) else z[token]
+                    jsonchecks += 1
+            if rid.startswith('PMID:') and p.suffix == '.html':
+                d = html.fromstring(bindings.bytes(p))
+                for tag,key,num in re.findall(r'(section|figure|table)#([A-Za-z0-9_-]+)(?:/p\[(\d+)\])?',loc):
+                    matches = d.xpath('//*[@id=$i]',i=key)
+                    require(len(matches)==1 and matches[0].tag==tag,'PRIMARY_ANCHOR',{'reference':rid,'anchor':key})
+                    if num: require(len(matches[0].xpath('p'))>=int(num),'PRIMARY_PARAGRAPH',key)
+                    htmlchecks += 1
+    up = bindings.json('mcd');other = bindings.json('extension')
+    x = etree.fromstring(bindings.bytes(bindings.path('ncbi'))).xpath('//GBSeq[GBSeq_accession-version="ADC44452.1"]')[0]
+    seq = x.findtext('GBSeq_sequence').upper()
+    require(seq == up['sequence']['value'] == other['sequence']['value'][7:] and len(seq)==548 and len(other['sequence']['value'])==555,'MCD_SEQUENCE_SCOPE')
+    require(x.xpath('.//GBFeature[GBFeature_key="source"]//GBQualifier[GBQualifier_name="strain"]/GBQualifier_value/text()')==['2.4.1'] and up['organism']['taxonId']==1063,'MCD_STRAIN_SCOPE')
+    node_ids = {x['id'] for x in declared}
+    require(not ({'MetaCyc:PWY-5741','UniProtKB:Q3J5V7','UniProtKB:Q3IZW0','UniProtKB:Q3J425'} & node_ids) and not doc.get('source_mappings'),'PRESERVED_EXCLUSIONS')
+    require({'RHEA:38292','RHEA:23721','RHEA:20555','RHEA:22889'} <= {x['id'] for x in doc['reactions']} and {'RHEA-COMP:10685','RHEA-COMP:10686'} <= node_ids,'TERMINAL_BRANCH_ETF_SCOPE')
+    for x in assemblies:
+        root = etree.fromstring(bindings.bytes(x['path']))
+        require(root.xpath('/ptools-xml/Protein/component[Protein/@frameid=$m]/coefficient/text()',m=x['component']) == [str(x['copies'])],'NATIVE_ASSEMBLY',x['id'])
+        require(any(e['subject']==x['id'] and e['predicate']=='has_part' and e['object']==x['selected_protein'] for e in doc['mechanistic_edges']),'ASSEMBLY_EDGE',x['id'])
+    files = render_site([record],{record.id:'data/pathways/ethylmalonyl-coa-pathway.yaml'})
+    site = work/'generated-site';site.mkdir()
+    for name,body in files.items():
+        path = site/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(body)
+    (site/'style.css').write_bytes(bindings.bytes(bindings.path('style')))
+    record_pages = [n for n in files if n.startswith('records/')]
+    require(len(record_pages)==1,'RECORD_PAGE_COUNT')
+    page = html.fromstring(files[record_pages[0]])
+    graph_edges = page.xpath('//*[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]')
+    graph_nodes = page.xpath('//*[@data-node-id]')
+    require(len(graph_edges)==len(doc['mechanistic_edges'])==105 and {x.get('data-node-id') for x in graph_nodes}==node_ids-{'NCBITaxon:272943'},'SVG_GRAPH_PRESERVATION')
+    write_kgx([record],work/'kgx')
+    with (work/'kgx/edges.tsv').open() as f: rows=list(csv.DictReader(f,delimiter='\t'))
+    require(len(rows)==105,'KGX_EDGE_COUNT')
+    for inp,outrow in zip(doc['mechanistic_edges'],rows,strict=True):
+        require((inp['subject'],LOCAL_PREDICATE_CURIES[inp['predicate']],inp['object'])==(outrow['subject'],outrow['predicate'],outrow['object']),'KGX_EDGE')
+        require(json.loads(outrow['evidence'])==inp['evidence'],'KGX_EVIDENCE')
+        require({x['id']:x for x in json.loads(outrow['reference_metadata'])}=={v['reference_id']:byref[v['reference_id']] for v in inp['evidence']},'KGX_REFERENCES')
+    dump(work/'native-direction-and-chemistry.json',{'original_rdf_sha256':bindings.data['inputs']['rhea']['sha256'],'rdf_subject_count':description_count,'reactions':directions,'chemical_sides':50,'balances':balances,'formal_net_coefficients':{i:v for i,v in net.items() if v},'scope':'Native master_L/master_R orientation; formal ETF reactive FAD/FADH2 balance with unchanged protein scaffold cancellation.'})
+    result = {'status':'External author checks passed; independent reassessment and production integration remain pending.','record_sha256':bindings.data['inputs']['record']['sha256'],'runtime_source_binding_sha256':bindings.data['inputs']['runtime_binding']['sha256'],'runtime_files':len(runtime['files']),'schema':'local and closed LinkML passed','proposal_canonical_identifier_gate':'External author proposal only, canonical policy without label exemptions. The predecessor independently extracted four native Protein XML authorities; maintained production replay is not claimed.','reactions':14,'native_master_orientations_checked':14,'chemical_sides':50,'declared_ids':len(node_ids),'references':len(source_bindings),'evidence_items':sum(len(e['evidence']) for e in doc['mechanistic_edges']),'json_anchors':jsonchecks,'html_anchors':htmlchecks,'svg_nodes':len(graph_nodes),'svg_edges':len(graph_edges),'kgx_edges':len(rows),'not_run':'Maintained full-corpus gates/history/Git, new production authority output, and independent review.'}
+    dump(work/'author-checks.json',result)
+    output_hashes = {str(p.relative_to(work)):sha(p) for p in sorted(work.rglob('*')) if p.is_file()}
+    print('CHECKPOINT pre-publication',flush=True)
+    final_inputs = bindings.final()  # Includes SQL bytes, helper and manifest.
+    current_paths = {str(p.relative_to(work)) for p in work.rglob('*') if p.is_file()}
+    require(current_paths==set(output_hashes),'OUTPUT_SET_CHANGED')
+    for rel,expected in output_hashes.items(): require(sha(work/rel)==expected,'OUTPUT_HASH_MISMATCH',rel)
+    require(sha(bindings.manifest)==bindings.manifest_hash,'MANIFEST_CHANGED_AT_PUBLICATION')
+    receipt = {'status':'success','started_at':started,'finished_at':now(),'manifest':str(bindings.manifest),'manifest_sha256':bindings.manifest_hash,'record_sha256':result['record_sha256'],'helper_sha256':bindings.data['inputs']['helper']['sha256'],'all_semantic_inputs_hashed_before_use_and_rehashed_before_publication':True,'inputs':final_inputs,'outputs':output_hashes,'publication':'Validated work and receipt renamed together to accepted. No accepted directory or success receipt is published on a failed check. This is a bounded filesystem recheck, not an atomic snapshot of external source files.','scope':result['status']}
+    dump(work/'success-receipt.json',receipt)
+    require(not (out/'accepted').exists(),'ACCEPTED_ALREADY_EXISTS')
+    work.rename(out/'accepted')
+    print(json.dumps({'status':'success','accepted':str(out/'accepted'),'record_sha256':result['record_sha256'],'input_count':len(final_inputs),'output_count':len(output_hashes)},indent=2),flush=True)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--manifest',required=True)
+    parser.add_argument('--output',required=True)
+    args = parser.parse_args()
+    try: execute(args.manifest,args.output)
+    except Exception as exc:
+        print(json.dumps({'status':'failed','error':str(exc),'error_type':type(exc).__name__,'at':now()},indent=2),file=sys.stderr,flush=True)
+        raise

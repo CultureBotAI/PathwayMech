@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-11T21:36:49.156025+00:00",
+  "issue_key": "ethylmalonyl-authority-logs-omitted-from-index",
+  "severity": "minor",
+  "status": "open",
+  "scope": "Precommit packaging/index completeness only; product output bytes unchanged.",
+  "description": "The maintained adoption receipt inventories both exact authority-builder logs, but both are ignored by *.log and absent from the staged Git tree. A checkout of the current staged tree would omit these two claimed archived log bodies.",
+  "affected_paths": [
+    "research/pathway_additions/2026-10-11-next-221/authorities/canonical-build/ontology.log",
+    "research/pathway_additions/2026-10-11-next-221/authorities/canonical-build/sources.log"
+  ],
+  "evidence": {
+    "actual_check": "0186b1/0",
+    "git_ignore_rules": ".gitignore:19:*.log\tresearch/pathway_additions/2026-10-11-next-221/authorities/canonical-build/ontology.log\n.gitignore:19:*.log\tresearch/pathway_additions/2026-10-11-next-221/authorities/canonical-build/sources.log\n",
+    "current_bodies": [
+      {
+        "path": "research/pathway_additions/2026-10-11-next-221/authorities/canonical-build/ontology.log",
+        "sha256": "17b6e45a6f2089c4239f3eceab9aae5f1533e12f780ab584261bacd41570b383",
+        "text": "CHEBI: resolved 915/915 from http://purl.obolibrary.org/obo/chebi/255/chebi.owl\nGO: resolved 130/130 from http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn\nNCBITaxon: resolved 37/37 from http://purl.obolibrary.org/obo/ncbitaxon/2026-07-12/ncbitaxon.owl\nRHEA: resolved 787/789 from https://w3id.org/biopragmatics/resources/rhea/139/rhea.ofn\nWrote 1871 authority terms to /private/tmp/pathwaymech-ethylmalonyl-authority-selection-20261011/canonical-build/ontology.json\n"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-11-next-221/authorities/canonical-build/sources.log",
+        "sha256": "459e2a91128a3d2171e8cf9a1a4803006e043ae897ed70c73fbd6aeb48235492",
+        "text": "Retained 2251 independently sourced identifiers from 471 sources\n"
+      }
+    ]
+  },
+  "proposed_action": "Preserve and stage the exact two original log bodies, or explicitly archive exact bodies with unambiguous mappings.",
+  "acceptance": "Both claimed archive logs are represented by exact bytes in the proposed Git tree; all prior approved product/review input bytes remain unchanged.",
+  "absence_scope": "Git index exhaustively enumerated; ignored local files and matching ignore rules explicitly inspected.",
+  "canonical_key_assignment": {
+    "assigned_by": "root",
+    "original_provisional_key": "ethylmalonyl-adopted-authority-logs-not-staged",
+    "original_observation": "/private/tmp/pathwaymech-ethylmalonyl-integration-review-20261011/packaging-finding.json",
+    "original_observation_sha256": "85863f41365af6eb838b202e1b269bbec135cccefc7bf867e5ebf7a001e98965",
+    "same_finding": true
+  },
+  "github_issue": "https://github.com/CultureBotAI/PathwayMech/issues/419"
+}

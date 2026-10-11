@@ -1,0 +1,19 @@
+# Ethylmalonyl pathway integration dossier
+
+This is a prepared evidence package for **KEGG:M00373**, not an integration acceptance record. The author draft covers all fourteen issued reactions and twelve mandatory KO groups (thirteen KOs), with 50 participants, 105 edges and 44 references. The held eleven-member MetaCyc PWY-5741 definition remains distinct. Source/organism, assembly, experimental and annotation limits remain in the author ledger and independent review.
+
+## Review state at preparation
+
+The original author record and replay helper are archived as inert `.yaml.txt` and `.py.txt` files. Their original dates, hashes and status text are unchanged. Independent review demonstrated that the original helper falsely accepts a reversed RHEA:21037 direction ([#416](https://github.com/CultureBotAI/PathwayMech/issues/416)). It also requested precise ETF/PccR source anchors and separation of observed ETF semiquinone formation from the family-level two-ETF mechanism ([#417](https://github.com/CultureBotAI/PathwayMech/issues/417)). The provisional corrected target is bound in `pending-correction/`; the complete corrected replay, independent scientific successor and maintained review are still pending in this package.
+
+The native MetaCyc Protein XML parser had a separate malformed-name acceptance defect ([#418](https://github.com/CultureBotAI/PathwayMech/issues/418)). Its correction is independently verified: all three original bad fixtures reject in six real CLI processes while valid beta names and all four native source outputs are preserved. The code archives and receipts are under `authority-code/`. This establishes identifier/name parsing, not biological or full-corpus acceptance. All three GitHub issues remain open for the PR/merge lifecycle as reported by root at package preparation.
+
+## Duplicate and source boundaries
+
+The current duplicate assessment includes hidden and ignored files and followed symlinks in the named feature worktree. All 221 maintained records were parsed; no complete-route duplicate was found. The actual Calvin merge `7b5201e93c0608631af73e629780d829efd26426` has the exact reviewed tree `9878a6535289a4f389d36b1f3af7ddf3927c5213`; the historical scan was run on the feature head, not retrospectively on main. Related reactions and historical source menus remain related evidence. The known DRAM lead has four rows and three step coordinates but **four RN identifiers**: R01859, R02765, R09979 and R00833. Its K05606 row displays ethylmalonyl epimers. Earlier three-propionyl-reaction shorthand remains historical and is qualified by `dedup/dram-source-recheck.json`. No source-exhaustion claim is made.
+
+## Pending integration
+
+`authorities/selection-provisional.json` records authorized source selection and exact baseline/runtime hashes. Actual full canonical builder receipts and prior-term/provenance preservation are pending in this prepared package. Maintained record adoption, history, full render/validate/test/lint/KGX checks, graph/download parity, canonical scientific review and PR/merge/publication checks are not claimed here. Later evidence should be appended as separately identified successor files and reflected in an updated integration status.
+
+`archive-inventory.json` maps every selected original to its proposed maintained archive path and exact digest, and identifies the compact derived duplicate projection. All primary-source bodies, broad paper paragraph extracts, source caches and unselected review/probe artifacts remain external. Historical handoffs reference those external paths; their inclusion does not make this archive self-contained. Replaying an archived helper requires its exact external pinned inputs and runtime. Licensing determination remains deferred, without a public-release clearance claim.

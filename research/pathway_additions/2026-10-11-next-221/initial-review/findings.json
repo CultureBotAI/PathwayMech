@@ -1,0 +1,53 @@
+[
+  {
+    "issue_key": "ethylmalonyl-author-replay-direction-false-pass",
+    "severity": "major",
+    "status": "open",
+    "title": "External ethylmalonyl replay reports success after a native reaction direction is reversed",
+    "owner": "External author replay successor; preserve original author directory",
+    "paths": [
+      "/private/tmp/pathwaymech-ethylmalonyl-author-20261011/replay-author.py",
+      "/private/tmp/pathwaymech-ethylmalonyl-author-20261011/draft/ethylmalonyl-coa-pathway.yaml"
+    ],
+    "observed": "Both the byte-identical unchanged positive and a copy differing only in reactions[0].direction exit 0. The mutated RHEA:21037 uses right_to_left while the pinned native RDF has substrates21036_L/products21036_R. The helper writes a passed report and generated pages/KGX for the mutation.",
+    "evidence": [
+      "direction-false-pass-proof.json",
+      "author-replay-probes.json",
+      "rhea-original-independent.json",
+      "audit-result.json"
+    ],
+    "rationale": "This is an external replay-integrity defect, not a chemical defect in the sealed current record. The claimed original-source replay does not validate reaction direction, so a materially wrong exported orientation can pass the proposed acceptance evidence.",
+    "proposed_action": "In a new successor directory bind each selected directional Rhea object and master to freshly inspected original RDF, verify the native source orientation along with all chemical sides, and reject mismatched direction before generating accepted output. Keep the original helper and failed negative-control artifacts.",
+    "acceptance": [
+      "Unchanged full 14-reaction draft passes the corrected complete replay.",
+      "A single-field RHEA:21037 direction reversal fails specifically on native direction.",
+      "Check all 14 directions, not just this canary; existing chemistry/evidence/identifier checks still pass.",
+      "Retain exact input/helper/result hashes and actual terminal executions."
+    ]
+  },
+  {
+    "issue_key": "ethylmalonyl-paper-anchors-and-etf-inference",
+    "severity": "minor",
+    "status": "open",
+    "title": "Two paper assertions omit their precise supporting anchors and ETF wording overstates the measured scope",
+    "owner": "External draft successor, then data/pathways/ethylmalonyl-coa-pathway.yaml at approved integration",
+    "paths": [
+      "mechanistic_edges[id=emc-084].evidence[reference_id=PMID:29283425]",
+      "mechanistic_edges[id=emc-105].evidence[reference_id=PMID:26170412]",
+      "description and emc-029/emc-032/emc-084 ETF qualifications"
+    ],
+    "observed": "emc-084 cites Results 2.3, Methods 4.1 and Table 1 for an assertion including two consecutive one-electron transfers to two ETF molecules. That explicit two-ETF statement is in Introduction section#sec1-molecules-23-00068/p[2], where it describes the ACAD-family mechanism with cited prior work; Results 2.3 observes ETF semiquinone formation and Mcd/ETF activity. The current record describes these as measured one-electron transfers. emc-105 cites sec3-3 and sec4/p[1], which support deletion effects, growth complementation and the failed binding experiment, but cellular PCC-activity complementation is in section#T1 under section#sec3-1.",
+    "evidence": [
+      "primary-anchor-extracts.json",
+      "paper-anchor-adjudication.json"
+    ],
+    "rationale": "The biological direction and regulation are supported, and this does not alter any pathway reaction. Precise source locations and observed-versus-inferred scope are required for traceability. The two-ETF microscopic interpretation should not be represented as a directly measured stoichiometric result of those Mcd assays.",
+    "proposed_action": "Add the Introduction p2 anchor for the two-ETF ACAD mechanism, retain the Mcd Results 2.3 anchor, and state the two-ETF interpretation as the family mechanism consistent with observed Mcd semiquinone formation. Add the PCC Table 1/sec3-1 anchor and scope complementation to the measured growth/cellular PCC activity, without implying a measured rescued transcript response. Preserve all 14 reactions and formal whole-ETF Rhea states.",
+    "acceptance": [
+      "Every revised selector resolves to the exact supporting native text/table.",
+      "ETF descriptions distinguish observed semiquinone production from the family-level microscopic mechanism; no direct 2-ETF stoichiometry claim without newly inspected evidence.",
+      "PccR complementation support locates Table1 (section#T1) and no direct DNA-binding/ligand claim is introduced.",
+      "Record still has 14 reactions, 50 chemical-side edges and all complete branches."
+    ]
+  }
+]

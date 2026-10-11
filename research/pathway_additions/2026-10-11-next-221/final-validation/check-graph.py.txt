@@ -1,0 +1,244 @@
+from __future__ import annotations
+
+import argparse
+
+import csv
+
+import hashlib
+
+import html
+
+import io
+
+import json
+
+import math
+
+import re
+
+import subprocess
+
+import sys
+
+from collections import defaultdict
+
+from datetime import UTC, datetime
+
+from pathlib import Path
+
+from xml.etree import ElementTree as ET
+
+import yaml
+
+from lxml import html as lhtml
+
+NS = {"s": "http://www.w3.org/2000/svg"}
+
+def digest(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+def plain(value):
+    return re.sub(r"</?(?:sup|sub|i|em)>", "", html.unescape(value), flags=re.I)
+
+def named(record):
+    yield "pathway", {"id": record["id"], "label": record["label"]}
+    for collection in ("taxa", "participants", "reactions"):
+        for node in record[collection]:
+            yield collection, node
+
+def classes(element, target):
+    return target in element.get("class", "").split()
+
+def box(element):
+    shape = next(c for c in element if classes(c, "graph-node-shape"))
+    if shape.tag.endswith("rect"):
+        x, y, w, h = (float(shape.get(k)) for k in ("x", "y", "width", "height"))
+        return x, y, x + w, y + h
+    points = [tuple(map(float, point.split(","))) for point in shape.get("points").split()]
+    return (
+        min(p[0] for p in points),
+        min(p[1] for p in points),
+        max(p[0] for p in points),
+        max(p[1] for p in points),
+    )
+
+def audit_svg(record, path):
+    text = path.read_text()
+    document = lhtml.fromstring(text)
+    id_elements = defaultdict(list)
+    for item in document.xpath("//*[@id]"):
+        id_elements[item.get("id")].append(item)
+    assert all(len(items) == 1 for items in id_elements.values()), "Duplicate HTML anchors"
+    assert record["id"] in id_elements["pathway-identity"][0].text_content()
+    assert record["description"] in document.text_content(), "Record description was not preserved"
+    declared_components = [(group, node) for group, node in named(record) if group != "pathway"]
+    assert len([key for key in id_elements if key.startswith("component-")]) == len(
+        declared_components
+    )
+    for number, (group, node) in enumerate(declared_components, 1):
+        cells = id_elements[f"component-{number}"][0].xpath("./td")
+        assert node["id"] in cells[0].xpath("./code/text()")
+        assert plain(node["label"]) in cells[0].text_content()
+        kind = node.get("category", "taxon" if group == "taxa" else group.removesuffix("s"))
+        assert cells[1].text_content() == kind.replace("_", " ")
+        assert cells[2].text_content() == node.get("direction", "").replace("_", " ")
+    start = text.index('<svg xmlns="http://www.w3.org/2000/svg" class="pathway-network-svg"')
+    svg = ET.fromstring(text[start : text.index("</svg>", start) + 6])
+    width, height = float(svg.get("width")), float(svg.get("height"))
+    assert math.isfinite(width) and math.isfinite(height) and width > 0 and height > 0
+    assert svg.get("viewBox") == f"0 0 {int(width)} {int(height)}"
+    links = svg.findall(".//s:a", NS)
+    node_elements = [e for e in links if classes(e, "graph-node")]
+    node_map = {e.get("data-node-id"): e for e in node_elements}
+    endpoints = {e[k] for e in record["mechanistic_edges"] for k in ("subject", "object")}
+    expected = {
+        n["id"]: (group, n)
+        for group, n in named(record)
+        if group in ("participants", "reactions") or n["id"] in endpoints
+    }
+    assert len(node_map) == len(node_elements) == len(expected)
+    assert node_map.keys() == expected.keys()
+    for identifier, element in node_map.items():
+        group, node = expected[identifier]
+        category = node.get("category")
+        kind = {"pathway": "pathway", "reactions": "reaction", "taxa": "taxon"}.get(group)
+        if kind is None:
+            kind = (
+                "chemical"
+                if category in {"chemical_entity", "small_molecule", "cofactor", "polymer", "lipid"}
+                else "protein"
+                if category in {"protein", "complex"}
+                else "context"
+                if category in {"cellular_component", "biological_process"}
+                else "participant"
+            )
+        assert element.get("data-node-label") == plain(node["label"])
+        assert element.get("data-kind") == kind
+        assert element.get("tabindex") == "0"
+        type_text = element.find("s:text[@class='graph-node-type']", NS).text
+        expected_type = (
+            category
+            or {
+                "pathway": "pathway",
+                "taxa": "taxon",
+                "reactions": "reaction / activity",
+                "participants": "participant · type not recorded",
+            }[group]
+        ).replace("_", " ")
+        assert type_text == expected_type
+        anchor = element.get("href").removeprefix("#")
+        assert anchor in id_elements and identifier in id_elements[anchor][0].text_content()
+        if group == "reactions":
+            assert "Source reaction direction: " + node["direction"] in element.get("aria-label")
+        x0, y0, x1, y1 = box(element)
+        assert 0 <= x0 < x1 <= width and 0 <= y0 < y1 <= height
+    edge_elements = [e for e in links if classes(e, "graph-edge")]
+    assert len(edge_elements) == len(record["mechanistic_edges"])
+    paths = []
+    evidence_count = 0
+    edge_by_href = {e.get("href"): e for e in edge_elements}
+    assert len(edge_by_href) == len(edge_elements)
+    for number, source in enumerate(record["mechanistic_edges"], 1):
+        element = edge_by_href[f"#mechanism-edge-{number}"]
+        assert tuple(
+            element.get("data-" + key) for key in ("subject", "predicate", "object")
+        ) == tuple(source[key] for key in ("subject", "predicate", "object"))
+        assert element.get("href") == f"#mechanism-edge-{number}"
+        assert element.get("tabindex") == "0"
+        row = id_elements[f"mechanism-edge-{number}"][0]
+        cells = row.xpath("./td")
+        assert len(cells) == 4
+        assert source["subject"] in cells[0].xpath("./code/text()")
+        assert source["object"] in cells[2].xpath("./code/text()")
+        assert cells[1].text == source["predicate"]
+        assert source.get("description", "") in cells[1].text_content()
+        evidence_items = cells[3].xpath("./ul/li")
+        assert len(evidence_items) == len(source["evidence"])
+        for evidence, item in zip(source["evidence"], evidence_items, strict=True):
+            link = item.xpath("./a")[0]
+            assert link.text_content() == evidence["reference_id"]
+            reference = id_elements[link.get("href").removeprefix("#")][0]
+            assert evidence["reference_id"] in reference.text_content()
+            assert evidence.get("quote", evidence.get("source_assertion")) in item.text_content()
+            if evidence.get("source_locator"):
+                assert evidence["source_locator"] in item.text_content()
+            assert evidence["reference_id"] in element.get("aria-label")
+            evidence_count += 1
+        if source.get("description"):
+            assert plain(source["description"]) in element.get("aria-label")
+        path_element = element.find("s:path", NS)
+        marker = re.fullmatch(r"url\(#(.+)\)", path_element.get("marker-end"))
+        assert marker and marker[1] in id_elements
+        path_data = path_element.get("d")
+        paths.append(path_data)
+        assert not re.sub(r"[MHVC0-9eE+.,\s-]", "", path_data), "Unexpected SVG path syntax"
+        commands = re.findall(r"([MHVC])([^MHVC]+)", path_data)
+        assert commands and commands[0][0] == "M"
+        assert len([c for c, _ in commands if c == "M"]) == 1
+        cursor = None
+        origin = None
+        for command, raw in commands:
+            values = [float(value) for value in raw.replace(",", " ").split()]
+            assert values and all(math.isfinite(value) for value in values)
+            if command in ("M", "C"):
+                assert len(values) == (2 if command == "M" else 6)
+                assert all(0 <= value <= width for value in values[::2])
+                assert all(0 <= value <= height for value in values[1::2])
+                cursor = (values[-2], values[-1])
+                if command == "M":
+                    origin = cursor
+            elif command == "H":
+                assert all(0 <= value <= width for value in values)
+                cursor = values[-1], cursor[1]
+            elif command == "V":
+                assert all(0 <= value <= height for value in values)
+                cursor = cursor[0], values[-1]
+        source_box, target_box = box(node_map[source["subject"]]), box(node_map[source["object"]])
+        assert origin[0] == source_box[2] and source_box[1] <= origin[1] <= source_box[3]
+        assert cursor[0] == target_box[0] and target_box[1] <= cursor[1] <= target_box[3]
+        label = element.find("s:text", NS)
+        assert 0 <= float(label.get("x")) <= width and 0 <= float(label.get("y")) <= height
+        assert label.text == source["predicate"].replace("_", " ")
+    assert len(paths) == len(set(paths)), (
+        "Distinct assertions were collapsed into identical SVG paths"
+    )
+    options = document.xpath("//*[@id='graph-node-picker']/option[@value!='']")
+    assert {o.get("value") for o in options} == set(node_map)
+    assert len(options) == len(node_map)
+    for index, reference in enumerate(record["references"], 1):
+        element = id_elements[f"reference-{index}"][0]
+        assert plain(reference["title"]) in element.text_content()
+        if reference.get("source_version"):
+            assert reference["source_version"] in element.text_content()
+        if reference.get("url"):
+            assert reference["url"] in element.xpath("./code/a/@href")
+    return {
+        "svg_nodes": len(node_elements),
+        "svg_edges": len(edge_elements),
+        "evidence_blocks_linked_and_preserved": evidence_count,
+        "node_and_evidence_anchors": "all resolve to the corresponding IDs",
+        "endpoints": "all asserted triples and source/target box extents match",
+        "geometry": "all checked paths, node boxes and label coordinates lie within SVG bounds",
+        "sha256": digest(path),
+    }
+
+ROOT = Path('/private/tmp/pathwaymech-next-221-20261011')
+TARGET = ROOT / 'data/pathways/ethylmalonyl-coa-pathway.yaml'
+PAGE = ROOT / 'pages/records/KEGG_M00373.html'
+OUT = Path('/private/tmp/pathwaymech-ethylmalonyl-integration-20261011/graph-audit.json')
+assert __debug__
+record_bytes = TARGET.read_bytes()
+assert hashlib.sha256(record_bytes).hexdigest() == '1c58f2d1b27fd7a8a3928971a49311a742e004a1b28f349b9331b8fe0f369912'
+record = yaml.safe_load(record_bytes)
+assert record['id'] == 'KEGG:M00373'
+assert (len(record['reactions']), len(record['participants']), len(record['mechanistic_edges'])) == (14, 50, 105)
+assert sum(len(e['evidence']) for e in record['mechanistic_edges']) == 155
+result = audit_svg(record, PAGE)
+assert result['svg_nodes'] == 65 and result['svg_edges'] == 105 and result['evidence_blocks_linked_and_preserved'] == 155
+assert TARGET.read_bytes() == record_bytes
+receipt = dict(status='passed', checked_at=datetime.now(UTC).isoformat(), scope='Actual generated SVG, component, reference, and evidence anchors against entire maintained record; programmatic inspection only, not browser or scientific review', record_sha256=hashlib.sha256(record_bytes).hexdigest(), graph=result, script_sha256=digest(Path(__file__)), reused_function_origin='Generic audit_svg and support functions from the previously inspected Calvin audit, with no prior result reused', origin_sha256='8d19ee667e1c04ed9048e08895c480fc8f45b7f5a1a8be838219d7a0bd79f57e')
+with OUT.open('x') as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write('\n')
+print(json.dumps(receipt, indent=2))

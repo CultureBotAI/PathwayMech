@@ -1,0 +1,79 @@
+"""Archive completed gate evidence without rewriting original tool logs."""
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+SOURCE = Path('/private/tmp/pathwaymech-ethylmalonyl-integration-20261011')
+DEST = Path('/private/tmp/pathwaymech-next-221-20261011/research/pathway_additions/2026-10-11-next-221')
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+execution = json.loads((SOURCE / 'gates/execution.json').read_bytes())
+assert execution['all_requested_ran'] and execution['all_passed']
+assert {check['name'] for check in execution['checks']} == {'render', 'validate', 'test', 'lint', 'kgx', 'whitespace'}
+preservation = json.loads((SOURCE / 'preservation-successor.json').read_bytes())
+assert preservation['status'] == 'passed'
+assert preservation['prior_records_unchanged'] == 221
+assert preservation['prior_record_pages_unchanged'] == 221
+assert {item['id'] for item in preservation['shared_node_global_changes']} == {'RHEA:21037', 'RHEA:45798'}
+assert all(set(item['changes']) == {'name'} for item in preservation['shared_node_global_changes'])
+assert json.loads((SOURCE / 'graph-audit.json').read_bytes())['status'] == 'passed'
+assert json.loads((SOURCE / 'vendored-check.json').read_bytes())['exit_code'] == 0
+
+mapping = [(name, 'final-validation/' + name) for name in
+           ['graph-audit.json', 'preservation-successor.json', 'preservation-checker-incident.json', 'vendored-check.json', 'history-scaffold.json']]
+mapping += [(name, 'final-validation/' + name + '.txt') for name in
+            ['run-gates.py', 'check-graph.py', 'check-preservation.py', 'check-preservation-successor.py', 'archive-final-gates.py']]
+mapping += [('gates/execution.json', 'final-validation/gates/execution.json')]
+for check in execution['checks']:
+    assert check['exit_code'] == 0
+    name = check['name']
+    mapping.append((f'gates/{name}-receipt.json', f'final-validation/gates/{name}-receipt.json'))
+    raw = (SOURCE / f'gates/{name}.log').read_bytes()
+    assert sha(raw) == check['log_sha256']
+
+archive = []
+for src, dst in mapping:
+    raw = (SOURCE / src).read_bytes()
+    output = DEST / dst
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open('xb') as stream:
+        stream.write(raw)
+    assert output.read_bytes() == raw
+    archive.append({'source': str(SOURCE / src), 'destination': dst, 'sha256': sha(raw), 'transformation': 'none'})
+for check in execution['checks']:
+    name = check['name']
+    original = SOURCE / f'gates/{name}.log'
+    raw = original.read_bytes()
+    wrapped = {'original_path': str(original), 'sha256': sha(raw), 'encoding': 'UTF-8',
+               'text': raw.decode('utf-8'),
+               'note': 'Lossless JSON string wrapping preserves exact whitespace and terminal escapes.'}
+    dst = f'final-validation/gates/{name}-log.json'
+    with (DEST / dst).open('x') as stream:
+        json.dump(wrapped, stream, indent=2)
+        stream.write('\n')
+    assert json.loads((DEST / dst).read_bytes())['text'].encode('utf-8') == raw
+    archive.append({'source': str(original), 'destination': dst, 'source_sha256': sha(raw),
+                    'sha256': sha((DEST / dst).read_bytes()), 'transformation': 'lossless UTF-8 JSON wrapper'})
+
+readme = DEST / 'README.md'
+old = readme.read_bytes()
+pending = 'Maintained rendering, whole-corpus validation, tests, lint, graph/KGX preservation and the canonical saved scientific review follow adoption; this paragraph does not claim they have passed. Their actual receipts and final status will be added separately.'
+updated = ('Maintained rendering, whole-corpus validation, tests (1,378 passed, three skipped), lint and KGX export passed. '
+           'All 221 prior records and their rendered pages remain byte-identical; all prior graph edges and source contexts are preserved. '
+           'The new page has 65 interactive nodes, 105 edges and 155 linked evidence blocks. Programmatic geometry and anchor checks passed; no browser inspection is claimed. '
+           'The two shared Rhea display labels now use exact issuing equations because this record sorts earlier; prior contextual labels remain in KGX source contexts. '
+           'All 22 governed artifacts match the pinned claw revision. Actual commands, timestamps, results, unmodified log contents and preservation hashes are archived under `final-validation/`. '
+           'These stable inputs support a separately saved canonical review under `reviews/structured/`; deterministic checks do not replace scientific assessment.')
+assert old.decode().count(pending) == 1
+readme.write_text(old.decode().replace(pending, updated))
+receipt = {'created_at': datetime.now(timezone.utc).isoformat(), 'files': archive,
+           'readme_previous_sha256': sha(old), 'readme_final_sha256': sha(readme.read_bytes()),
+           'shared_node_label_assessment': 'Only RHEA:21037 and RHEA:45798 names change to issuing equations; original source contexts remain intact.',
+           'limitations': 'Tracked diff check preceded staging of new files; a staged check and canonical saved review follow separately.'}
+with (DEST / 'final-validation/archive-receipt.json').open('x') as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'archived_files': len(archive), 'readme_sha256': sha(readme.read_bytes())}))
