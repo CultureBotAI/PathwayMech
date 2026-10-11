@@ -1,0 +1,171 @@
+{
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/375",
+  "issue_key": "glyoxylate-rxn8965-native-hydration-attribution",
+  "previous_occurrence": {
+    "review_id": "20261011T101702Z-glyoxylate-initial-independent-review",
+    "finding_id": "f-native-hydration-attribution"
+  },
+  "corrected_at": "2026-10-11T10:20:07.717871+00:00",
+  "target": "data/pathways/glyoxylate-assimilation.yaml",
+  "before_sha256": "b28136c61fae7fcf2b9673d176e74d0c001b6cfedeab652ba75ab4ac01aa01e5",
+  "after_sha256": "218feaba4c438ac1f7dff5765e5993153040fa1b0cc80b135440ad4ece8622ea",
+  "archive_manifests": [
+    "research/pathway_additions/2026-10-11-next-206/initial-review-inputs/20261011T101702Z-glyoxylate-initial-independent-review/manifest.json",
+    "research/pathway_additions/2026-10-11-next-206/initial-review-inputs/author-inputs-before-correction.json"
+  ],
+  "archive_bodies_verified": 13,
+  "semantic_delta": [
+    {
+      "edge_id": "glyox-edge-066",
+      "evidence_index": 1,
+      "field": "source_assertion",
+      "before": "The native carboxyl-transfer equation transfers a carboxyl group from protein-bound carboxybiotin to acetyl-CoA. Current Rhea retains generic whole protein carrier states.",
+      "after": "The native equation stores CPD-627 on the left and CPD-14205 plus WATER on the right, with RIGHT-TO-LEFT physiological direction, supporting mesaconyl-C4-CoA hydration to (S)-citramalyl-CoA."
+    },
+    {
+      "edge_id": "glyox-edge-066",
+      "evidence_index": 1,
+      "field": "source_locator",
+      "before": "Reaction[@detail=\"full\"]/left; right",
+      "after": "Reaction[@detail=\"full\"]/left; right; reaction-direction"
+    }
+  ],
+  "semantic_unchanged_except_exact_two_fields": true,
+  "original_native": {
+    "path": "/private/tmp/pathwaymech-next-206-evidence/three-hydroxypropionate/RXN-8965.xml",
+    "sha256": "80aeedc50b829d6b556452268c16265d38602828453e8214d7445f5071c4f9d2",
+    "left": [
+      "CPD-627"
+    ],
+    "right": [
+      "CPD-14205",
+      "WATER"
+    ],
+    "reaction_direction": "RIGHT-TO-LEFT"
+  },
+  "external_author_builder": {
+    "path": "/private/tmp/pathwaymech-next-206-build-glyoxylate.py",
+    "before_sha256": "82e4d96e359338a8d2533789cc10e57b0c69984ac3c33a2d8d5e36290e0d9c94",
+    "after_sha256": "93dd602d85b826b096c7861cd21304cff7a550888ff2124bebc74527feabfcea",
+    "change": "Explicit native-ID cases for RXN0-5055 versus RXN-8965; unadjudicated no-xref objects raise rather than inheriting carboxyl-transfer prose. Builder was corrected, not rerun wholesale."
+  },
+  "checks_status": "passed",
+  "limits": [
+    "No identifiers, chemical edges, reaction directions or protein assignments changed.",
+    "Parent owns shared rendering, whole-corpus gates and history; independent successor is separate."
+  ],
+  "sealed_at": "2026-10-11T10:21:18.387430+00:00",
+  "author_replay": {
+    "session_id": 64581,
+    "exit_code": 0,
+    "validation_path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-validation.json",
+    "validation_sha256": "c8cc9a6954eae5a67bff171e0e895f44a892c18fb14e4e56f3a46350be6b37b8",
+    "log_sha256": "8991ca6ebe7b1794e5a16d43c9a897a3ae961bda5bae8ca088b5182d8b1d628c",
+    "native_assertion_guard": {
+      "native_hydration": "RXN-8965 right-to-left CPD-14205 + WATER -> CPD-627",
+      "distinct_transfer": "RXN0-5055 retains its separately sourced carrier-transfer assertion",
+      "archived_wrong_assertion_rejected": true
+    },
+    "all_prior_chemical_balances_and_net_unchanged": true,
+    "KGX_node_bytes_unchanged": true,
+    "counts": {
+      "nodes": 62,
+      "edges": 107,
+      "evidence": 184,
+      "files": [
+        {
+          "path": "/private/tmp/pathwaymech-next-206-glyoxylate-kgx/nodes.tsv",
+          "sha256": "2da5584fee5c366dfe33642f7693de8413fab7e5751b2859fc0d035ce3338ece"
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-206-glyoxylate-kgx/edges.tsv",
+          "sha256": "5f60740439f5a212217468d861ead6b5e7723345e0409f332d04b3fcff506601"
+        }
+      ]
+    }
+  },
+  "bounded_external_builder_branch_execution": {
+    "RXN0-5055": {
+      "reference_id": "MetaCyc:RXN0-5055",
+      "source_assertion": "The native carboxyl-transfer equation transfers a carboxyl group from protein-bound carboxybiotin to acetyl-CoA. Current Rhea retains generic whole protein carrier states.",
+      "source_locator": "Reaction[@detail=\"full\"]/left; right"
+    },
+    "RXN-8965": {
+      "reference_id": "MetaCyc:RXN-8965",
+      "source_assertion": "The native equation stores CPD-627 on the left and CPD-14205 plus WATER on the right, with RIGHT-TO-LEFT physiological direction, supporting mesaconyl-C4-CoA hydration to (S)-citramalyl-CoA.",
+      "source_locator": "Reaction[@detail=\"full\"]/left; right; reaction-direction"
+    },
+    "UNADJUDICATED": "rejected"
+  },
+  "owned_hygiene": {
+    "ruff": [
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "research/pathway_additions/2026-10-11-next-206/glyoxylate-replay.py",
+          "research/pathway_additions/2026-10-11-next-206/glyoxylate-stereochemistry-replay.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "format",
+          "--check",
+          "research/pathway_additions/2026-10-11-next-206/glyoxylate-replay.py",
+          "research/pathway_additions/2026-10-11-next-206/glyoxylate-stereochemistry-replay.py"
+        ],
+        "exit_code": 0,
+        "stdout": "2 files already formatted\n",
+        "stderr": ""
+      }
+    ],
+    "untracked_inclusive_whitespace_errors": [],
+    "metadata_sensitive_keys": []
+  },
+  "changed_owned_files": [
+    {
+      "path": "data/pathways/glyoxylate-assimilation.yaml",
+      "sha256": "218feaba4c438ac1f7dff5765e5993153040fa1b0cc80b135440ad4ece8622ea"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-authority-delta.json",
+      "sha256": "c8f051cbf06afcf9bdcbfa448e34a2ecf44e7c5ec21d855fa67ae68c5c9aa7d0"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-curation.md",
+      "sha256": "272cceb693d56e83dd18afa3c57f98276d2ac5d3bda21395266897c57a5d07c5"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-identifiers.json",
+      "sha256": "9de07bfc21509777cbc0eb16f0b8b7b4a3d1c3ae072aff638dc4176b4236fc9f"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-native-coverage.json",
+      "sha256": "e25a1470c7d1c74130ebf89bce400d9fcc000fa4db7e160fe5a921ecdb7f064b"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-protein-projection.json",
+      "sha256": "88e7cb0fd37a1b18c90d4404e5e26e41e6cfa90515d87bfc91d87192ed6567e6"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-replay.py",
+      "sha256": "bbda9a149444bc53174d729d203224f2b1295db521094f9a7b1cc9357b6d7ce6"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-source-manifest.json",
+      "sha256": "4b6c02f96cbcdbc42eeec05b594866ea2c614dbbba1cc22b314d1c67de3150e6"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-source-projection.json",
+      "sha256": "c9072417f1fba857afe574fc8fc26bfdd17c492cf89e197239c6faac0a86562d"
+    },
+    {
+      "path": "research/pathway_additions/2026-10-11-next-206/glyoxylate-validation.json",
+      "sha256": "c8cc9a6954eae5a67bff171e0e895f44a892c18fb14e4e56f3a46350be6b37b8"
+    }
+  ]
+}
