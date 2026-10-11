@@ -1,0 +1,297 @@
+"""Narrow formatting/lineage controls; reuse unchanged prior guard evidence."""
+
+import argparse
+import ast
+from copy import deepcopy
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--binding-manifest", type=Path, required=True)
+parser.add_argument("--binding-sha256", required=True)
+parser.add_argument("--output-dir", type=Path, required=True)
+args = parser.parse_args()
+ROOT = Path(__file__).resolve().parent
+PRIOR = Path("/private/tmp/pathwaymech-ed-integrated-replay-preparation-20261011")
+OUT = args.output_dir.absolute()
+OUT.mkdir(exist_ok=False)
+spec = importlib.util.spec_from_file_location("formatting_driver", ROOT / "integration-replay.py")
+d = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(d)
+results = []
+
+
+def write(name, document):
+    with (OUT / name).open("x") as stream:
+        json.dump(document, stream, indent=2)
+        stream.write("\n")
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def reject(name, function, message):
+    try:
+        function()
+    except d.IntegrityError as error:
+        d.require(message in str(error), "Unexpected rejection: " + str(error))
+        results.append({"name": name, "passed": True, "actual_rejection": str(error)})
+    else:
+        raise RuntimeError("Guard accepted mutation: " + name)
+
+
+def entry(path, role):
+    return {
+        "path": str(path),
+        "resolved_path": str(path.resolve()),
+        "sha256": sha(path),
+        "role": role,
+    }
+
+
+try:
+    # The 42-case prior run is reused only for AST-identical guard functions.
+    old_path = PRIOR / "integration-replay.py"
+    new_path = ROOT / "integration-replay.py"
+    d.require(
+        sha(old_path) == "a60587397a1f2b38dba30cfe8df0c69c621554424d1d5ceb9cfc308e01b75f8d",
+        "Prior driver changed",
+    )
+    old = ast.parse(old_path.read_bytes())
+    new = ast.parse(new_path.read_bytes())
+    old_functions = {node.name: node for node in old.body if isinstance(node, ast.FunctionDef)}
+    new_functions = {node.name: node for node in new.body if isinstance(node, ast.FunctionDef)}
+    reused = []
+    for name, node in old_functions.items():
+        if name not in {"main", "check_contract"}:
+            expected = ast.dump(node, include_attributes=False)
+            d.require(
+                expected == ast.dump(new_functions[name], include_attributes=False),
+                "Existing guard logic changed: " + name,
+            )
+            reused.append({"function": name, "ast_sha256": d.digest(expected.encode())})
+    old_contract = old_functions["check_contract"]
+    new_prefix = deepcopy(new_functions["check_contract"])
+    new_prefix.body = new_prefix.body[: len(old_contract.body)]
+    d.require(
+        ast.dump(old_contract, include_attributes=False)
+        == ast.dump(new_prefix, include_attributes=False),
+        "Existing contract changed beyond appended lineage guards",
+    )
+
+    class NormalizeSuccessorReporting(ast.NodeTransformer):
+        def visit_Assign(self, node):
+            if any(
+                isinstance(target, ast.Name) and target.id == "formatting_evidence"
+                for target in node.targets
+            ):
+                return None
+            return self.generic_visit(node)
+
+        def visit_Dict(self, node):
+            pairs = [
+                (key, value)
+                for key, value in zip(node.keys, node.values, strict=True)
+                if not (
+                    isinstance(key, ast.Constant)
+                    and key.value
+                    in {"original_helper_sha256", "formatting_successor", "formatting_evidence"}
+                )
+            ]
+            node.keys = [key for key, _ in pairs]
+            node.values = [value for _, value in pairs]
+            return self.generic_visit(node)
+
+        def visit_Constant(self, node):
+            if isinstance(node.value, str):
+                node.value = node.value.replace(
+                    "AST-equivalent formatting successor checks the original ED source/proposal",
+                    "Unchanged child checks its original ED source/proposal",
+                )
+            return node
+
+    normalized_main = NormalizeSuccessorReporting().visit(deepcopy(new_functions["main"]))
+    d.require(
+        ast.dump(normalized_main, include_attributes=False)
+        == ast.dump(old_functions["main"], include_attributes=False),
+        "Main orchestration changed beyond added formatting check/reporting",
+    )
+    prior_receipt = PRIOR / "controls-attempt-2/results.json"
+    d.require(
+        sha(prior_receipt) == "f1c6811503a2d00f0cc31e26185cb1216826f8aff1f953856554fa6c8e7f61ca",
+        "Prior controls changed",
+    )
+    results.append(
+        {
+            "name": "prior-guard-and-orchestration-reuse-proved",
+            "passed": True,
+            "unchanged_functions": reused,
+            "contract_prefix_identical": True,
+            "main_identical_after_removing_new_lineage_check_and_reporting": True,
+            "prior_controls": {
+                "path": str(prior_receipt),
+                "sha256": sha(prior_receipt),
+                "cases_reused_not_rerun": 42,
+            },
+        }
+    )
+    document, own = d.capture_manifest(args.binding_manifest, args.binding_sha256)
+    repo, helper = Path(document["repo"]["path"]), Path(document["helper"])
+    d.check_contract(document, repo, helper)
+    proof = d.check_formatting_lineage(document, helper)
+    original, successor = d.ORIGINAL_HELPER.read_bytes(), helper.read_bytes()
+    results.append(
+        {
+            "name": "actual-original-archive-active-helper-disposition-bindings-and-AST",
+            "passed": True,
+            "proof": proof,
+            "original_sha256": d.digest(original),
+            "active_sha256": d.digest(successor),
+            "lineage": document["formatting_successor"],
+        }
+    )
+    reject(
+        "extra-blank-line",
+        lambda: d.formatting_relation(original, successor + b"\n"),
+        "differs beyond the single blank separator",
+    )
+    reject(
+        "extra-comment-even-with-same-AST",
+        lambda: d.formatting_relation(original, successor + b"# extra comment\n"),
+        "differs beyond the single blank separator",
+    )
+    reject(
+        "semantic-helper-edit",
+        lambda: d.formatting_relation(
+            original, successor.replace(b"len(nodes) == 26", b"len(nodes) == 27")
+        ),
+        "differs beyond the single blank separator",
+    )
+    reject(
+        "wrong-original-anchor",
+        lambda: d.formatting_relation(
+            original.replace(b"from lxml import etree, html  # noqa: E402", b"import lxml"),
+            successor,
+        ),
+        "Original formatting anchor differs",
+    )
+    for name, mutate, message in [
+        (
+            "original-helper-unbound",
+            lambda x: x.update(
+                files=[v for v in x["files"] if v["path"] != str(d.ORIGINAL_HELPER)]
+            ),
+            "Original helper is not bound",
+        ),
+        (
+            "archived-original-unbound",
+            lambda x: x.update(
+                files=[
+                    v
+                    for v in x["files"]
+                    if v["path"] != x["formatting_successor"]["original_archive"]["path"]
+                ]
+            ),
+            "Archived original helper is not bound",
+        ),
+        (
+            "old-helper-digest-as-active",
+            lambda x: next(v for v in x["files"] if v["path"] == str(helper)).update(
+                sha256=d.ORIGINAL_HELPER_SHA
+            ),
+            "Accepted helper digest differs",
+        ),
+        (
+            "wrong-formatting-disposition-digest",
+            lambda x: x["formatting_successor"]["disposition"].update(sha256="0" * 64),
+            "Formatting disposition is not bound",
+        ),
+        (
+            "wrong-original-lineage-path",
+            lambda x: x["formatting_successor"]["original_helper"].update(
+                path=str(OUT / "other-original.py")
+            ),
+            "Original helper lineage differs",
+        ),
+    ]:
+        mutated = deepcopy(document)
+        mutate(mutated)
+        reject(name, lambda mutated=mutated: d.check_contract(mutated, repo, helper), message)
+    # Narrow runtime identity check through the actual new lineage guard.
+    a, b, alias = OUT / "archive-a.txt", OUT / "archive-b.txt", OUT / "archive-alias.txt"
+    a.write_bytes(original)
+    b.write_bytes(original)
+    alias.symlink_to(a)
+    aliased = deepcopy(document)
+    aliased["formatting_successor"]["original_archive"] = {
+        "path": str(alias),
+        "sha256": d.ORIGINAL_HELPER_SHA,
+    }
+    aliased["files"].append(entry(alias, "formal"))
+    d.check_contract(aliased, repo, helper)
+    d.check_formatting_lineage(aliased, helper)
+    alias.unlink()
+    alias.symlink_to(b)
+    reject(
+        "same-byte-original-archive-retarget",
+        lambda: d.check_formatting_lineage(aliased, helper),
+        "Resolved input identity changed",
+    )
+    fixture_proof = OUT / "disposition-fixture.json"
+    fixture_proof.write_bytes(
+        Path(document["formatting_successor"]["disposition"]["path"]).read_bytes()
+    )
+    mutated = deepcopy(document)
+    mutated["formatting_successor"]["disposition"] = {
+        "path": str(fixture_proof),
+        "sha256": sha(fixture_proof),
+    }
+    mutated["files"].append(entry(fixture_proof, "integration_proof"))
+    d.check_contract(mutated, repo, helper)
+    d.check_formatting_lineage(mutated, helper)
+    fixture_proof.write_bytes(fixture_proof.read_bytes() + b" ")
+    reject(
+        "formatting-disposition-bytes-changed",
+        lambda: d.check_formatting_lineage(mutated, helper),
+        "Input digest changed",
+    )
+    # Recheck immutable small owners after controls; no source/database replay.
+    d.check_entry(own)
+    d.check_formatting_lineage(document, helper)
+    write(
+        "results.json",
+        {
+            "status": "passed_narrow_formatting_successor_controls",
+            "cases": results,
+            "count": len(results),
+            "driver": {"path": str(new_path), "sha256": sha(new_path)},
+            "controls": {
+                "path": str(Path(__file__).resolve()),
+                "sha256": sha(Path(__file__).resolve()),
+            },
+            "scope": "Prior 42 controls reused with explicit AST-identical guard/orchestration proof. Only new formatting lineage and byte/identity checks executed against small owners and narrow external fixtures. No original helper, corpus gate, or whole source/database replay ran; no maintained writes.",
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "status": "passed_narrow_formatting_successor_controls",
+                "cases": len(results),
+                "receipt": str(OUT / "results.json"),
+                "sha256": sha(OUT / "results.json"),
+            }
+        )
+    )
+except Exception as error:
+    write(
+        "failure.json",
+        {
+            "status": "failed_narrow_formatting_control_attempt",
+            "error": repr(error),
+            "completed_cases": results,
+        },
+    )
+    raise

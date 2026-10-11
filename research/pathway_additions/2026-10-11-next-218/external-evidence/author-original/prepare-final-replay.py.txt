@@ -1,0 +1,46 @@
+from pathlib import Path
+p=Path('ed-replay.py');s=p.read_text()
+s=s.replace('import argparse\n','import argparse\nfrom dataclasses import asdict\n')
+s=s.replace('from dataclasses import asdict\n\ncontext =', 'context =')
+for x in ['import yaml','from lxml import etree, html','from pathwaymech.kgx import kgx_edges, kgx_nodes, write_kgx','from pathwaymech.schema import validate_record','from pathwaymech.strict import strict_errors','from kg_microbe_sources.imodulondb import ImodulonDBClient']:
+ s=s.replace(x+'\n',x+'  # noqa: E402\n')
+s=s.replace('normal = lambda s: re.sub(r"/p[+-]?\\d+", "", s)','def normal(s):\n    return re.sub(r"/p[+-]?\\d+", "", s)')
+s=s.replace('for kid, b in facts["kegg_bridges"].items():','for b in facts["kegg_bridges"].values():')
+s=s.replace('program = "from rdkit import Chem\\nimport json,sys\\nprint(json.dumps({p:Chem.MolToInchi(Chem.MolFromMolFile(p,removeHs=False)) for p in sys.argv[1:]}))"','program = (\n    "from rdkit import Chem\\nimport json,sys\\n"\n    "print(json.dumps({p:Chem.MolToInchi(Chem.MolFromMolFile(p,removeHs=False)) "\n    "for p in sys.argv[1:]}))"\n)')
+s=s.replace('"No maintained integration, generated pages, full-corpus gates or independent scientific approval."','"No maintained integration, generated pages, full-corpus gates "\n        "or independent scientific approval."')
+s=s.replace('assert [asdict(x) for x in client.organism_datasets()] == context["datasets"]','def serialized(value):\n    return json.loads(json.dumps(value))\n\n\nassert serialized([asdict(x) for x in client.organism_datasets()]) == context["datasets"]')
+s=s.replace('assert asdict(client.search("e_coli", "precise_mg1655", query)) == result','assert serialized(asdict(client.search("e_coli", "precise_mg1655", query))) == result')
+s=s.replace('assert asdict(client.gene("e_coli", "precise_mg1655", gene)) == result','assert serialized(asdict(client.gene("e_coli", "precise_mg1655", gene))) == result')
+s=s.replace('assert asdict(client.imodulon_genes("e_coli", "precise_mg1655", int(component))) == result','assert serialized(\n        asdict(client.imodulon_genes("e_coli", "precise_mg1655", int(component)))\n    ) == result')
+s=s.replace('D / "ed-authority-proposal.json",','D / "ed-authority-proposal.json",\n    D / "ed-identifiers.json",\n    D / "ed-coverage.json",\n    D / "ed-curation.md",\n    D / "ed-dedup.json",')
+insert='''# Narrow front-matter metadata, never a descendant article-title from a cited paper.
+for refid, path in source_paths.items():
+    if not refid.startswith("PMID:"):
+        continue
+    b = original(path)
+    if path.endswith(".xml"):
+        t = etree.fromstring(b)
+        titles = t.xpath("/article/front/article-meta/title-group/article-title")
+        pmids = t.xpath('/article/front/article-meta/article-id[@pub-id-type="pmid"]/text()')
+    else:
+        t = html.fromstring(b)
+        titles = t.xpath("//h1")
+        pmids = t.xpath('//meta[@name="citation_pmid"]/@content')
+    assert len(titles) == 1 and pmids == [refid.split(":")[1]]
+    # HTML/JATS inline tags may create or omit whitespace around punctuation.
+    original_title = "".join(titles[0].itertext())
+    assert re.sub(r"\\s", "", original_title) == re.sub(r"\\s", "", refs[refid]["title"])
+coverage = readj(D / "ed-coverage.json")
+assert coverage["record_sha256"] == manifest["record_sha256"]
+assert [x["edge"] for x in coverage["graph_to_source"]] == [
+    e["id"] for e in r["mechanistic_edges"]
+]
+for projected, edge in zip(coverage["graph_to_source"], r["mechanistic_edges"], strict=True):
+    assert (projected["subject"], projected["predicate"], projected["object"]) == (
+        edge["subject"], edge["predicate"], edge["object"]
+    )
+    assert projected["references"] == [e["reference_id"] for e in edge["evidence"]]
+    assert projected["locators"] == [e["source_locator"] for e in edge["evidence"]]
+'''
+s=s.replace('# Current issuing authority terms and unchanged canonical source parser.',insert+'\n# Current issuing authority terms and unchanged canonical source parser.')
+Path('ed-replay-final.py').write_text(s)

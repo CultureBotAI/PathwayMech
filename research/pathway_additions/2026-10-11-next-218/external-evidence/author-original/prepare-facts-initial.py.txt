@@ -1,0 +1,59 @@
+from pathlib import Path
+import hashlib,json,sqlite3,subprocess,re,gzip,importlib.util
+from lxml import etree,html
+ROOT=Path(__file__).parent;PRE=Path('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011');NORM=Path('/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011');REPO=Path('/private/tmp/pathwaymech-next-216-20261011');CACHE=Path('/private/tmp/pathwaymech-curation-authorities')
+sha=lambda p:hashlib.file_digest(Path(p).open('rb'),'sha256').hexdigest()
+def fields(p):
+ d={}
+ for l in p.read_text().splitlines():
+  if l=='///':break
+  k=l[:12].strip()
+  if k:key=k;d[key]=[]
+  d[key].append(l[12:].strip())
+ return {k:'\n'.join(v) for k,v in d.items()}
+chem_map={'C01172':'58247','C01236':'57955','C00345':'58759','C04442':'57569','C00118':'59776','C00022':'15361','C00001':'15377','C00080':'15378','C00003':'57540','C00004':'57945','C00005':'57783','C00006':'58349'}
+paths={k:ROOT/'raw'/f'{k}.mol' for k in chem_map};paths['C01172']=NORM/'originals/C01172.mol'
+prog='from rdkit import Chem\nimport json,sys\nprint(json.dumps({p:Chem.MolToInchi(Chem.MolFromMolFile(p,removeHs=False)) for p in sys.argv[1:]}))'
+p=subprocess.run(['/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python','-c',prog,*map(str,paths.values())],capture_output=True,text=True,check=True);mol=json.loads(p.stdout)
+db=CACHE/'chebi.db';dh=sha(db);terms={}
+with sqlite3.connect(f'file:{db}?mode=ro',uri=True) as c:
+ for n in set(chem_map.values())|{'49883','17719','61548','58225'}:
+  ident='CHEBI:'+n;terms[ident]=[dict(predicate=a,value=b,object=d) for a,b,d in c.execute('SELECT predicate,value,object FROM statements WHERE subject=?',(ident,))]
+def get(i,k):return next(x['value'] or x['object'] for x in terms[i] if x['predicate']==k)
+bridges={}
+for kid,cid in chem_map.items():
+ ki=mol[str(paths[kid])];ci=get('CHEBI:'+cid,'chemrof:inchi_string');norm=lambda s:re.sub(r'/p[+-]?\d+','',s)
+ assert norm(ki)==norm(ci),(kid,ki,ci)
+ bridges[kid]=dict(selected_id='CHEBI:'+cid,kegg_mol=str(paths[kid]),mol_sha256=sha(paths[kid]),mol_inchi=ki,selected_inchi=ci,exact_inchi=ki==ci,disposition='exact structure including protonation' if ki==ci else 'same connectivity/stereochemistry after explicit acid-base normalization; not exact protonation identity')
+rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';rh='http://rdf.rhea-db.org/';g={}
+with gzip.open(CACHE/'rhea.rdf.gz','rb') as stream:
+ for _,el in etree.iterparse(stream,events=('end',),tag=rdf+'Description'):
+  uri=el.get(rdf+'about')
+  if uri:
+   node=g.setdefault(uri,{})
+   for child in el:
+    pred=etree.QName(child).localname;val=child.get(rdf+'resource') or (child.text or '').strip()
+    if val not in node.setdefault(pred,[]):node[pred].append(val)
+  el.clear()
+  while el.getprevious() is not None:del el.getparent()[0]
+rheas={}
+for mas,rid,rev,kegg in [('12556','12557','12559','R02035'),('17277','17278','17280','R02036'),('17089','17090','17092','R05605')]:
+ assert rh+rid in g[rh+mas]['directionalReaction'] and rh+rev in g[rh+mas]['bidirectionalReaction']
+ k=fields(ROOT/'raw'/f'{kegg}.txt');assert rev in k['DBLINKS']
+ sides=[]
+ for pred,sign in [('substrates',-1),('products',1)]:
+  su=g[rh+rid][pred][0]
+  for p,parts in g[su].items():
+   if re.fullmatch(r'contains\d+',p):
+    for part in parts:
+     cu=g[part]['compound'][0];comp=g[cu]
+     sides.append(dict(side=pred,side_uri=su,participant_uri=part,compound_uri=cu,id=comp['accession'][0],coefficient=int(p[8:]),sign=sign,formula=comp['formula'][0],charge=comp['charge'][0]))
+ rheas['RHEA:'+rid]=dict(master=mas,bidirectional=rev,source_kegg=kegg,original_kegg=k,sides=sides,label=g[rh+rid]['equation'][0])
+# Canonical source parser and issuing label verification.
+spec=importlib.util.spec_from_file_location('builder',REPO/'scripts/build_source_identifier_snapshot.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+source_terms=[]
+for kind,p in [('kegg-flatfile',PRE/'raw/M00008.txt'),('kegg-flatfile',NORM/'originals/R02736.txt'),('kegg-flatfile',NORM/'originals/R10907.txt'),('metacyc-html',ROOT/'raw/KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX.html')]:
+ source_terms.extend([dict(term=t,path=str(p),sha256=sha(p),kind=kind) for t in m.source_terms(kind,p)])
+out=dict(chebi_database=dict(path=str(db),sha256=dh),chebi_terms=terms,kegg_bridges=bridges,rhea_source=dict(path=str(CACHE/'rhea.rdf.gz'),sha256=sha(CACHE/'rhea.rdf.gz')),rhea=rheas,canonical_source_terms=source_terms)
+with (ROOT/'chemical-source-facts.json').open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps(dict(bridges=len(bridges),rhea_sides=sum(len(x['sides']) for x in rheas.values()),source_terms=source_terms)))

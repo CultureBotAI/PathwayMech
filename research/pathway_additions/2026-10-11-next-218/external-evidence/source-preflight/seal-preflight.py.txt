@@ -1,0 +1,126 @@
+"""Seal an external discovery handoff, not a maintained record or scientific approval."""
+import collections
+import csv
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+from lxml import etree, html
+
+ROOT = Path(__file__).parent
+RAW = ROOT / 'raw'
+REPO = Path('/private/tmp/pathwaymech-next-216-20261011')
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def save(name, obj):
+    with (ROOT / name).open('x') as f:
+        json.dump(obj, f, indent=2)
+        f.write('\n')
+
+started = datetime.now(timezone.utc).isoformat()
+sources = []
+for acquisition in sorted(ROOT.glob('acquisition-*.json')):
+    for row in json.loads(acquisition.read_text()):
+        assert sha(row['path']) == row['sha256']
+        row = dict(row)
+        row['acquisition_receipt'] = str(acquisition)
+        row['accepted_body'] = row['status'] == 200
+        if row['name'].endswith('.pdf') or row['name'].startswith('rhea-'):
+            row['accepted_body'] = False
+            row['disposition'] = 'Rejected as requested PDF/RDF: response is HTML/access failure, not the requested source format.'
+        elif row['name'] == 'PMC276539.xml':
+            row['disposition'] = 'Rejected fullTextXML HTTP500 JSON error; no full-text claim.'
+        elif row['name'] in ['PMC276539.html', 'PMC206259.html']:
+            row['disposition'] = 'Original article landing HTML supplies abstract/metadata and scan links; no complete scanned primary PDF was retrieved.'
+        elif row['name'] == 'P00350.json':
+            row['disposition'] = 'Inspected contextual gnd protein from existing PPP record; excluded from ED route. Zwf is P0AC53, not P00350.'
+        else:
+            row['disposition'] = 'Accepted original response at the stated URL; evidence tier and inspected scope remain assertion-specific.'
+        sources.append(row)
+dram = Path('/private/tmp/pathwaymech-next-evidence/dram/module_step_form.tsv')
+assert sha(dram) == '55a803dcd7fa10ed05403b36c3aa89b19f007c3601dc60cb703c38828e89a4d9'
+dram_rows = [dict(x, physical_line=i) for i, x in enumerate(csv.DictReader(dram.open(), delimiter='\t'), 2) if x['module'] == 'M00008']
+assert len(dram_rows) == 5
+source_context = {
+    'dram': {'path': str(dram), 'sha256': sha(dram), 'commit': 'fe61d759303f30db058d5d505c448b28e41b03f1', 'url': 'https://raw.githubusercontent.com/BortonWrightonLabs/DRAM/fe61d759303f30db058d5d505c448b28e41b03f1/data/module_step_form.tsv', 'scope': 'KEGG-derived annotation support; not independent experimental evidence or a source of inferred reaction order.'},
+    'sql': {'go': '/private/tmp/pathwaymech-curation-authorities/go.db', 'chebi': '/private/tmp/pathwaymech-curation-authorities/chebi.db', 'scope': 'Read-only queries of pinned issuing-authority cache; selected projections retained. Whole SQL DBs were not rehashed in this bounded preflight.'},
+}
+save('source-manifest.json', {'observed_at': started, 'original_responses': sources, 'existing_originals': source_context})
+
+native = etree.parse(str(RAW/'ENTNER-DOUDOROFF-PWY.xml')).find('Pathway')
+assert native.get('frameid') == 'ENTNER-DOUDOROFF-PWY'
+assert native.findtext('common-name') == 'Entner-Doudoroff shunt'
+members = native.xpath('reaction-list/Reaction/@frameid')
+assert members == ['PGLUCONDEHYDRAT-RXN', 'KDPGALDOL-RXN']
+assert not native.xpath('reaction-list/Pathway')
+assert native.xpath('reaction-ordering/Reaction/@frameid') == ['KDPGALDOL-RXN']
+assert native.xpath('reaction-ordering/predecessor-reactions/Reaction/@frameid') == ['PGLUCONDEHYDRAT-RXN']
+native_rxns = []
+for rxn in members:
+    obj = etree.parse(str(RAW/(rxn+'.xml'))).find('Reaction')
+    assert obj.findtext('reaction-direction') == 'PHYSIOL-LEFT-TO-RIGHT'
+    native_rxns.append({'id': 'MetaCyc:'+rxn, 'left': obj.xpath('left/Compound/@frameid'), 'right': obj.xpath('right/Compound/@frameid'), 'direction': obj.findtext('reaction-direction'), 'native_rhea_crossrefs': obj.xpath("dblink[dblink-db='RHEA']/dblink-oid/text()")})
+kegg = (RAW/'M00008.txt').read_text()
+assert kegg.startswith('ENTRY       M00008')
+assert 'DEFINITION  K00036 (K01057,K07404) K01690 K01625' in kegg
+assert 'NAME        Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate' in kegg
+go = json.loads((ROOT/'go-scope.json').read_text())
+assert ['owl:deprecated', None, 'true'] in go['GO:0009255']
+assert len([x for x in go['GO:0061678'] if x[0] == 'oio:hasDbXref']) == 4
+rh = json.loads((ROOT/'rhea-equations-v2.json').read_text())
+assert len(rh['sides']) == 15 and len(rh['balances']) == 4
+assert all(all(v == 0 for v in b['residual'].values()) for b in rh['balances'])
+assert rh['net'] == {'CHEBI:61548': -1, 'CHEBI:58349': -1, 'CHEBI:57783': 1, 'CHEBI:15378': 2, 'CHEBI:59776': 1, 'CHEBI:15361': 1}
+projection = {
+    'recommended_candidate': 'KEGG:M00008',
+    'label': 'Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate',
+    'status': 'Feasible complete-route lead for separate curation, not authored or approved.',
+    'full_boundary': 'Four transformations from glucose 6-phosphate to D-glyceraldehyde 3-phosphate and pyruvate: oxidation, lactone hydrolysis, dehydration, aldol cleavage. Import, gluconate kinase, downstream GAP glycolysis and fermentation are outside this exact module.',
+    'kegg_definition': 'K00036 (K01057,K07404) K01690 K01625',
+    'kegg_reaction_leads': ['R02736/R10907 alternative source activities', 'R02035', 'R02036', 'R05605'],
+    'rhea_candidate_directions': ['RHEA:15842', 'RHEA:12557', 'RHEA:17278', 'RHEA:17090'],
+    'mapping_limit': 'The selected current E. coli Zwf annotation/Rhea15842 uses generic D-glucose 6-phosphate, whereas KEGG R02736 lead names beta-D-glucose 6-phosphate. Do not assert an exact compound mapping without separately checking original KEGG C01172/R02736/R10907 and the relevant ChEBI structures. This preflight verifies route boundary and a coherent enzyme-supported generic equation projection, not exact cross-source equivalence.',
+    'native_comparison': {'id': 'MetaCyc:ENTNER-DOUDOROFF-PWY', 'xml_version': '27.0', 'label': native.findtext('common-name'), 'members': members, 'reactions': native_rxns, 'disposition': 'Complete independently named two-step shunt, not an incomplete copy of M00008; usable alternative identity only if this narrower native boundary is explicitly selected. It is not an exactMatch to the four-step module.'},
+    'go_disposition': 'GO0061678 is active but intentionally spans phosphorylative and nonphosphorylative variants; GO0009255 is obsolete. Prefer exact KEGG or exact native scope, not an obsolete or overbroad GO identity.',
+    'brenda_disposition': 'Prior canary is a broad 15-reaction map with unresolved assertion-specific protein context; retain only as discovery support, not native route definition or duplicated maintained pathway.',
+    'dram_rows': dram_rows,
+    'protein_leads': [
+        {'id': 'UniProtKB:P0AC53', 'gene': 'zwf', 'locus': 'b1852', 'taxon': 'NCBITaxon:83333', 'length': 491, 'activity_scope': 'Current catalytic annotation ECO0000255/HAMAP; PMID1704005 abstract/metadata retained, scanned full paper not inspected.'},
+        {'id': 'UniProtKB:P52697', 'gene': 'pgl', 'locus': 'b0767', 'taxon': 'NCBITaxon:83333', 'length': 331, 'activity_scope': 'PMID15576773 directly identifies ybhE/pgl with deletion/complementation and extract assay; multiple constructed MG1655 derivatives, not purified kinetics.'},
+        {'id': 'UniProtKB:P0ADF6', 'gene': 'edd', 'locus': 'b1851', 'taxon': 'NCBITaxon:83333', 'length': 603, 'activity_scope': 'PMID17962400 explicitly K-12 genomic edd, recombinant BL21(DE3) lysate; PMID17102132 MG1655-derived LC106 lysate.'},
+        {'id': 'UniProtKB:P0A955', 'gene': 'eda', 'locus': 'b1850', 'taxon': 'NCBITaxon:83333', 'length': 213, 'activity_scope': 'Direct published E. coli recombinant assays/structures; exact source donor strain must not be inferred from BL21 host or current database K-12 grouping.'},
+    ],
+}
+for p in projection['protein_leads']:
+    j = json.loads((RAW/(p['id'].split(':')[1]+'.json')).read_text())
+    assert j['primaryAccession'] == p['id'].split(':')[1]
+    assert j['organism']['taxonId'] == 83333 and j['sequence']['length'] == p['length']
+    assert any(p['locus'] == n['value'] for g in j['genes'] for n in g.get('orderedLocusNames',[]))
+save('source-projection.json', projection)
+
+claims = [
+    ('PMC532434','//section[@id="sec15"]/p[1]', 'Direct Pgl extract activity loss and plasmid complementation; assay expressly not fully quantitative.'),
+    ('PMC532434','//section[@id="sec4"]/p[1]', 'Recombineering initially in DY378, mutations moved into MG1655; donor/recipient scope explicit.'),
+    ('PMC2211689','//section[@id="sec10"]/p[1]', 'Edd ORF PCR-amplified from E. coli K-12 genomic DNA.'),
+    ('PMC2211689','//section[@id="sec10"]/p[2]', 'pET-PGDH expressed in BL21(DE3); medium supplementation is not direct proof of obligatory Mn binding.'),
+    ('PMC2211689','//section[@id="sec10"]/p[3]', 'Edd lysate, residual Eda inactivation and coupled Edd/Eda/LDH activity assay; no purified Edd claim.'),
+    ('PMC2211689','//section[@id="sec11"]/p[1]', 'KDPG cleavage kinetics measured by LDH-coupled pyruvate production; NADH belongs to the reporter assay, not the Eda reaction.'),
+    ('PMC31111','//section[@id="sec2"]/p[1]', 'E. coli eda cloned in pKK-223 and recombinant enzyme purified; donor strain not established in this paragraph.'),
+    ('PMC5136138','//*[@id="P9"]', 'Edd activity assayed in gluconate-grown lysates by coupled pyruvate reporting.'),
+    ('PMC5136138','//*[@id="P30"]', 'Edd loses activity upon peroxide treatment and recovers with iron/DTT; observed EPR signal in the same paragraph belongs to overproduced fumarase A, not Edd.'),
+    ('PMC545716','//section[@id="sec21"]/p[1]', 'Results show reduced Eda expression in csrA mutants, supporting indirect positive regulation despite the negative-control heading.'),
+    ('PMC545716','//section[@id="sec22"]/p[1]', 'Discussion concludes indirect positive CsrA action, and negative GntR/KdgR/PhoB control under their specified conditions.'),
+]
+rows = []
+for pmc, selector, assertion in claims:
+    t = html.parse(str(RAW/(pmc+'.html')))
+    nodes = t.xpath(selector)
+    assert len(nodes) == 1, (pmc, selector, len(nodes))
+    text = ' '.join(' '.join(nodes[0].itertext()).split())
+    rows.append({'source': str(RAW/(pmc+'.html')), 'source_sha256': sha(RAW/(pmc+'.html')), 'selector': selector, 'selected_text_sha256': hashlib.sha256(text.encode()).hexdigest(), 'assertion': assertion})
+save('primary-scope-ledger.json', rows)
+save('preflight-replay.json', {'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat(), 'status': 'passed_bounded_discovery_checks', 'original_responses_rehashed': len(sources), 'accepted_responses': sum(x['accepted_body'] for x in sources), 'native_members_verified': 2, 'module_positions_verified': 4, 'dram_rows_verified': 5, 'rhea_sides_verified': 15, 'balanced_equations': 4, 'source_selectors_verified': len(rows), 'protein_identity_bodies_verified': 4, 'limits': 'No maintained YAML, graph export, whole-corpus gate or formal scientific approval. Full primary source access is not the same as full scientific curation.'})
+print(json.dumps({'status':'passed_bounded_discovery_checks','source_responses':len(sources),'primary_locators':len(rows),'projection_sha256':sha(ROOT/'source-projection.json')}))

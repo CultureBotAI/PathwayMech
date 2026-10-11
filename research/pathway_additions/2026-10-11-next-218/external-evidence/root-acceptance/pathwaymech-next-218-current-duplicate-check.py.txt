@@ -1,0 +1,24 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import subprocess,json,hashlib
+R=Path('/private/tmp/pathwaymech-next-218-20261011');O=Path('/private/tmp/pathwaymech-next-218-current-dedup');O.mkdir(exist_ok=False)
+terms=['KEGG:M00008','Entner-Doudoroff pathway','Entner–Doudoroff pathway','entner-doudoroff-pathway','MetaCyc:ENTNER-DOUDOROFF-PWY','PMID:22519976','10.1111/j.1742-4658.2012.08610.x']
+rows=[]
+for i,t in enumerate(terms):
+ cmd=['rg','-uu','--hidden','--follow','--json','-i','-F',t,'.','-g','!.git','-g','!.venv','-g','!__pycache__','-g','!node_modules']
+ p=subprocess.run(cmd,cwd=R,capture_output=True);assert p.returncode in [0,1];assert not p.stderr
+ f=O/f'{i:02}.jsonl';f.write_bytes(p.stdout);hits=[]
+ for line in p.stdout.splitlines():
+  obj=json.loads(line)
+  if obj['type']=='match':
+   d=obj['data'];hits.append({'path':d['path']['text'],'line':d['line_number'],'text':d['lines']['text'].strip()})
+ rows.append({'term':t,'command':cmd,'exit_code':p.returncode,'output':str(f),'sha256':hashlib.sha256(p.stdout).hexdigest(),'matches':hits})
+maintained=[]
+for p in (R/'data/pathways').glob('*.yaml'):
+ s=p.read_text()
+ if 'id: KEGG:M00008\n' in s:maintained.append(str(p))
+assert not maintained
+out={'at':datetime.now(timezone.utc).isoformat(),'base':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'ignored_hidden_followed':True,'excluded':['Git metadata','.venv','__pycache__','node_modules'],'queries':rows,'maintained_exact_id_matches':maintained,'limits':['Text scan does not unpack compressed archives.','Prior author and independent review supply wider reaction/accession/synonym duplicate dispositions. Root must interpret current retained mentions before adoption.']}
+(O/'receipt.json').write_text(json.dumps(out,indent=2)+'\n')
+for r in rows:
+ print(json.dumps({'term':r['term'],'count':len(r['matches']),'hits':[{'path':x['path'],'line':x['line'],'text':x['text'][:500]} for x in r['matches']]}))

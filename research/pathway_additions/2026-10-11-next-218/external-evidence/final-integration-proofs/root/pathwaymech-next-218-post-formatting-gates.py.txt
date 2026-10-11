@@ -1,0 +1,24 @@
+from pathlib import Path
+from datetime import datetime,timezone
+from concurrent.futures import ThreadPoolExecutor
+import subprocess,os,json,hashlib,sys
+R=Path('/private/tmp/pathwaymech-next-218-20261011');O=Path('/private/tmp/pathwaymech-next-218-post-formatting-gates');assert not O.exists();O.mkdir()
+env=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+lineage=Path('/private/tmp/pathwaymech-next-218-helper-formatting-adoption.json');v=json.loads(lineage.read_text());assert v['status']=='formatting_successor_adopted_original_preserved' and v['ast_identical_ignoring_source_locations']
+prior=json.loads(Path('/private/tmp/pathwaymech-next-218-final-gate-receipts.json').read_text());assert len(prior)==7 and {x['name'] for x in prior if x['exit_code']}=={'lint'}
+for row in prior:assert sha(row['log'])==row['log_sha256']
+old=json.loads(Path('/private/tmp/pathwaymech-next-218-final-gate-inputs.json').read_text());helper='research/pathway_additions/2026-10-11-next-218/ed-replay-final.py'
+for rel,h in old.items():assert sha(R/rel)==(v['successor_sha256'] if rel==helper else h),rel
+bound={rel:sha(R/rel) for rel in old};(O/'inputs.json').write_text(json.dumps(bound,indent=2)+'\n')
+def run(item):
+ name,cmd=item;log=O/(name+'.log');begin=datetime.now(timezone.utc).isoformat()
+ with log.open('x') as f:p=subprocess.run(cmd,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+ row={'name':name,'command':cmd,'started_at':begin,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':p.returncode,'log':str(log),'log_sha256':sha(log)};print(json.dumps(row),flush=True);return row
+checks=[run(('render',['just','render-pages']))]
+if checks[0]['exit_code']:raise SystemExit(checks[0]['exit_code'])
+with ThreadPoolExecutor(max_workers=3) as pool:checks+=list(pool.map(run,[('validate',['just','validate']),('lint',['just','lint']),('diff-tracked',['git','diff','--check'])]))
+for rel,h in bound.items():assert sha(R/rel)==h,rel
+r={'status':'passed' if all(x['exit_code']==0 for x in checks) else 'failed','current_checks':checks,'reused_unchanged_checks':[x for x in prior if x['name'] in ['test','identifiers','kgx']],'reuse_basis':'All original runtime, scripts, tests, policy, authority and record inputs remain byte-identical. Active helper differs by exactly one blank line with identical executable AST; original full test suite, identifier gate and KGX terminal passes remain valid. Current render, full validation including new history, lint and tracked whitespace rerun. Complete staged whitespace check remains pending.','initial_receipts_sha256':sha('/private/tmp/pathwaymech-next-218-final-gate-receipts.json'),'formatting_lineage_sha256':sha(lineage),'bound_inputs':len(bound),'environment':{k:env[k] for k in ['PYTHONPATH','UV_NO_SYNC','UV_CACHE_DIR']}}
+with (O/'receipt.json').open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+print(json.dumps({'status':r['status'],'receipt':str(O/'receipt.json'),'sha256':sha(O/'receipt.json')}),flush=True);sys.exit(0 if r['status']=='passed' else 1)

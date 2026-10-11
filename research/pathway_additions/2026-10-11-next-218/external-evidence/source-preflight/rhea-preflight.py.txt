@@ -1,0 +1,126 @@
+import collections,csv,gzip,hashlib,json,re,sqlite3
+from pathlib import Path
+from datetime import datetime,timezone
+from lxml import etree as ET
+CACHE=Path('/private/tmp/pathwaymech-curation-authorities')
+ROOT=Path('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011')
+RH='http://rdf.rhea-db.org/'
+RDF='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+SELECTED=['15842','12557','17278','17090']
+def rhea_extract():
+    directions = {}
+    for line in (CACHE / "rhea-directions.tsv").read_text().splitlines()[1:]:
+        cells = line.split("\t")
+        if set(cells) & set(SELECTED):
+            directions[cells[0]] = dict(zip(["master", "lr", "rl", "bi"], cells, strict=True))
+    assert len(directions) == 4
+    numbers = {v for d in directions.values() for v in d.values()}
+    nodes, compounds = {}, {}
+    with gzip.open(CACHE / "rhea.rdf.gz", "rb") as stream:
+        for _, element in ET.iterparse(stream, events=("end",), tag=RDF + "Description"):
+            uri = element.get(RDF + "about", "")
+            name = uri.rsplit("/", 1)[-1]
+            chosen = name.split("_", 1)[0] in numbers or (
+                name.startswith("Participant_") and name.split("_")[1] in numbers
+            )
+            dest = nodes if chosen else compounds if name.startswith("Compound_") else None
+            if dest is not None:
+                for child in element:
+                    key = ET.QName(child).localname
+                    value = child.get(RDF + "resource") or (child.text or "").strip()
+                    values = dest.setdefault(uri, {}).setdefault(key, [])
+                    if value not in values:
+                        values.append(value)
+            element.clear()
+            while element.getprevious() is not None:
+                del element.getparent()[0]
+    while True:
+        needed = {
+            v
+            for n in nodes.values()
+            for vs in n.values()
+            for v in vs
+            if v in compounds and v not in nodes
+        }
+        if not needed:
+            break
+        nodes.update({uri: compounds[uri] for uri in needed})
+    sides, balances, terms = [], [], {}
+    net = collections.Counter()
+    with sqlite3.connect(f"file:{CACHE}/chebi.db?mode=ro", uri=True) as db:
+        for rid in SELECTED:
+            balance = collections.Counter()
+            for role in ["substrates", "products"]:
+                side = nodes[RH + rid][role][0]
+                for predicate, participants in nodes[side].items():
+                    if not re.fullmatch(r"contains\d+", predicate):
+                        continue
+                    coefficient = int(predicate[8:])
+                    sign = -1 if role == "substrates" else 1
+                    for participant in participants:
+                        compound = nodes[participant]["compound"][0]
+                        cp = nodes[compound]
+                        cid = cp["accession"][0].replace("GENERIC:", "RHEA-COMP:")
+                        chemistry = nodes[cp["reactivePart"][0]] if "reactivePart" in cp else cp
+                        chebi = chemistry["chebi"][0].rsplit("/", 1)[-1].replace("_", ":")
+                        values = {
+                            a: b if b is not None else c
+                            for a, b, c in db.execute(
+                                "select predicate,value,object from statements where subject=?",
+                                (chebi,),
+                            )
+                        }
+                        terms[chebi] = values
+                        assert values.get("owl:deprecated") not in ["true", True]
+                        assert (
+                            values["chemrof:generalized_empirical_formula"]
+                            == chemistry["formula"][0]
+                        )
+                        assert values["chemrof:charge"] == chemistry["charge"][0]
+                        formula = chemistry["formula"][0]
+                        atoms = re.findall(r"([A-Z][a-z]?)(\d*)", formula)
+                        assert "".join(a + b for a, b in atoms) == formula
+                        for atom, count in atoms:
+                            balance[atom] += sign * coefficient * int(count or 1)
+                        balance["charge"] += sign * coefficient * int(chemistry["charge"][0])
+                        net[cid] += sign * coefficient
+                        sides.append(
+                            {
+                                "reaction": rid,
+                                "role": role,
+                                "side": side,
+                                "predicate": predicate,
+                                "participant": participant,
+                                "compound": compound,
+                                "id": cid,
+                                "coefficient": coefficient,
+                                "formula": formula,
+                                "charge": chemistry["charge"][0],
+                                "chemistry_scope": "reactive residue; unchanged protein scaffold"
+                                if "reactivePart" in cp
+                                else "source chemical/formula class",
+                            }
+                        )
+            assert all(v == 0 for v in balance.values()), (rid, balance)
+            balances.append({"reaction": rid, "residual": dict(balance), "status": "passed"})
+    return {
+        "directions": directions,
+        "nodes": nodes,
+        "sides": sides,
+        "balances": balances,
+        "terms": terms,
+        "net_once_hydration": {k: v for k, v in net.items() if v},
+        "net_limit": "One hydration is the listed reaction count; two turnovers express both"
+        " inorganic-carbon inputs as CO2. Generic quinone redox and carrier cancellation are"
+        " class/scaffold accounting, not a measured physiological carrier identification.",
+    }
+
+
+start=datetime.now(timezone.utc).isoformat()
+j=rhea_extract()
+j['started_at']=start
+j['finished_at']=datetime.now(timezone.utc).isoformat()
+j['scope']='Prospective equation extraction and formula/charge balance only; no maintained record, protein proof or independent approval.'
+j['originals']=[{'path':str(CACHE/x),'sha256':hashlib.sha256((CACHE/x).read_bytes()).hexdigest()} for x in ['rhea.rdf.gz','rhea-directions.tsv']]
+with (ROOT/'rhea-equations.json').open('x') as h:json.dump(j,h,indent=2)
+print(json.dumps({'sides':len(j['sides']),'balances':j['balances'],'net':j.get('net'),'finished_at':j['finished_at']}))

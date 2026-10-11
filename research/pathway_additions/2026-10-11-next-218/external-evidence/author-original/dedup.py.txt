@@ -1,0 +1,21 @@
+import json,subprocess,hashlib
+from pathlib import Path
+from datetime import UTC,datetime
+import yaml
+R=Path(__file__).parent
+roots=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),Path('/private/tmp/pathwaymech-next-216-20261011')]
+pattern=r'M00008|Entner.?Doudoroff|ENTNER-DOUDOROFF-PWY|R02736|R10907|R02035|R02036|R05605|P0AC53|P52697|P0ADF6|P0A955|22519976|15576773|11274385'
+result=[]
+for n,root in enumerate(roots):
+ cmd=['rg','-uu','--follow','-i','--json','--glob','!.git/**','--glob','!.venv/**',pattern,'.']
+ p=subprocess.run(cmd,cwd=root,capture_output=True);assert p.returncode in [0,1],p.stderr
+ out=R/f'dedup-{n}.jsonl';out.write_bytes(p.stdout)
+ hits=[json.loads(l)['data'] for l in p.stdout.splitlines() if json.loads(l)['type']=='match'];paths=sorted({h['path']['text'] for h in hits})
+ records=[]
+ for path in (root/'data/pathways').glob('*.yaml'):
+  doc=yaml.safe_load(path.read_text());nodes={x['id'] for section in ['participants','reactions'] for x in doc.get(section,[])}
+  if doc['id']=='KEGG:M00008' or 'entner' in doc.get('label','').lower() or nodes&{'KEGG:R02736','KEGG:R10907','RHEA:12557','RHEA:17278','RHEA:17090','UniProtKB:P0AC53','UniProtKB:P52697','UniProtKB:P0ADF6','UniProtKB:P0A955'}:
+   records.append(dict(path=str(path),id=doc['id'],label=doc['label'],matching_nodes=sorted(nodes&{'KEGG:R02736','KEGG:R10907','RHEA:12557','RHEA:17278','RHEA:17090','UniProtKB:P0AC53','UniProtKB:P52697','UniProtKB:P0ADF6','UniProtKB:P0A955'})))
+ result.append(dict(root=str(root),head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),command=cmd,exit=p.returncode,log=dict(path=str(out),sha256=hashlib.sha256(p.stdout).hexdigest()),matching_paths=paths,matching_records=records,total_records=len(list((root/'data/pathways').glob('*.yaml')))))
+(R/'draft/ed-dedup.json').write_text(json.dumps(dict(at=datetime.now(UTC).isoformat(),scope='Ignored and hidden paths included, symlinks followed; only .git internals and environment excluded. Compressed archives not unpacked by this textual search; prior source inventories separately inspected.',pattern=pattern,roots=result),indent=2)+'\n')
+print(json.dumps([dict(root=x['root'],paths=len(x['matching_paths']),records=x['matching_records']) for x in result],indent=2))

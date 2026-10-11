@@ -1,0 +1,9 @@
+# ED generated artifact audit
+
+The static programmatic audit passed against actual merged Myx baseline `721755c9b4af76d32d2b1f232571bbfeab232441` and frozen ED target `548eba1d…`. It checked all 37 edges and 92 evidence blocks, 26 record-local KGX nodes and 25 SVG nodes. The taxon is retained in scope and KGX while absent from the edge-endpoint SVG.
+
+All source assertions, locators, reference metadata and declared reaction directions are preserved. Both NADP and NAD first-position alternatives remain parallel within the complete four-position module. SVG anchors, node categories, edge endpoints, arrowheads, unique paths and bounds pass. The actual downloadable TSV pair equals the separately completed canonical CLI export; its manifest hashes/counts and the site pathway-index JSON, browse cards and index totals are consistent with 219 records.
+
+All 972 baseline record/history/review/page files, 10416 baseline KGX edges, 6883 prior node contexts and 218 prior browse/index entries remain unchanged. Three aggregate node display names change through the existing first-record naming rule: CHEBI:57955, CHEBI:58759 and RHEA:12557. Every prior label survives in its original record context; all other baseline row fields are unchanged. The initial audit's over-strict name-equality assertion and failed receipt remain preserved, followed by the explicit deterministic-name check.
+
+No browser interaction or new independent scientific approval is claimed. The auditor previously contributed ED preflight, authority selection and copy planning; root and the separate scientific reviewer accepted those preparations independently. This check addresses generated artifact correspondence only. Render and standalone KGX terminal success are bound to actual root receipts; no full-suite pass or publication status is inferred. No maintained files were edited.

@@ -1,0 +1,72 @@
+{
+  "status": "bounded_followup_completed_for_independent_adjudication",
+  "at": "2026-10-11T16:21:06.072778+00:00",
+  "candidate": "KEGG:M00008",
+  "execution": {
+    "acquisition": {
+      "session": 61224,
+      "exit_code": 0,
+      "terminal_chunk": "41f665"
+    },
+    "structure_check": {
+      "session": 42009,
+      "exit_code": 0,
+      "terminal_chunk": "8d094c"
+    }
+  },
+  "proofs": [
+    {
+      "path": "/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011/acquisition.json",
+      "sha256": "dbb1d5455d80294befc2ec4af3b539088d8fa578d3fdd99f5848f6f52452c2cc"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011/structure-equation-check.json",
+      "sha256": "7beabf584dea006e24a7674d0b5eb37c3b03ee8b04cb83f66cfac7d8915c0b06"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-entner-doudoroff-root-normalization-fetch-20261011.py",
+      "sha256": "de7a3be80e08da5dd1e7081d845aaa065651cd96dbf3a2df1eb1ee6c97cba652"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-entner-doudoroff-root-normalization-check-20261011.py",
+      "sha256": "8e807dd2fc002fb81c050c36263aea55508a3235f58d1d819fd3cda076202b2e"
+    }
+  ],
+  "decisions": [
+    "KEGG C01172 and neutral CHEBI17719 have identical full Standard InChI. CHEBI58247 preserves that beta stereochemistry after explicit phosphate deprotonation; it is not exact protonation identity to the neutral KEGG compound.",
+    "Rhea15842 substrate CHEBI61548 leaves the anomer unspecified. It cannot be asserted as an exact stereochemical equivalent to the KEGG beta-specific substrate or used as sole evidence for that specificity.",
+    "R10907 also has beta-specific C01172 and changes the nicotinamide cofactor to NAD. It does not resolve the generic-versus-beta mapping question and must not introduce NAD use into the selected E. coli NADP route without separate support.",
+    "R00835 is the separate generic NADP activity in KEGG, with C00092. KEGG lists R02736 as a narrower case in its reaction hierarchy. Keeping a native beta-specific R02736 step with explicitly source-scoped evidence is a possible complete M00008 representation; later independent adjudication must choose the final chemistry and enzyme assertion scope.",
+    "CHEBI58225 is the alpha anomer and is explicitly rejected as a beta identity."
+  ],
+  "web_inspection": [
+    {
+      "url": "https://www.kegg.jp/entry/R02736",
+      "scope": "Specific beta/NADP reaction and generic-parent hierarchy"
+    },
+    {
+      "url": "https://www.kegg.jp/entry/R10907",
+      "scope": "Specific beta/NAD alternative, not generic glucose-phosphate alternative"
+    },
+    {
+      "url": "https://www.kegg.jp/entry/C01172",
+      "scope": "Beta compound issuing entry"
+    },
+    {
+      "url": "https://www.kegg.jp/entry/R00835",
+      "scope": "Generic NADP equation and Rhea15844 link"
+    },
+    {
+      "url": "https://www.kegg.jp/entry/M00008",
+      "scope": "Exact complete four-position definition; currentmodulelistsR02736/R10907 orthologyalternatives"
+    }
+  ],
+  "pending": [
+    "Independent complete-route normalization decision and source/construct/cofactor qualification before authoring."
+  ],
+  "limits": [
+    "No new pathway record or canonical scientific approval.",
+    "No exclusive E. coli anomer specificity inferred from structure comparison alone.",
+    "No exact equivalence of neutral and deprotonated forms, specific and generic anomers, or NADP and NAD activity."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "status": "external_preparation_gap_corrected_before_binding_seal_or_full_replay",
+  "finding_origin": "Bounded read-only collaborator review; no exhaustive independent approval is claimed.",
+  "finding": "The unchanged ED helper launches its nested RDKit interpreter with -c and no -P. The first wrapper draft restricted only its outer child command, so a repository-cwd Python module could shadow a nested dependency without belonging to a bound src inventory.",
+  "original_helper_unchanged": "f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e",
+  "preserved_before": {
+    "driver": "integration-replay.py.before-safe-path.txt",
+    "driver_sha256": "130566b640191e12d66ca8a2f083105d1eebf823ae034882cf4d2357bee4f36c",
+    "controls": "boundary-controls.py.before-safe-path.txt",
+    "controls_sha256": "ff3422b13ff096366bdb08038489716d01b62ccb4e480e42b99e48ce75b8f3a5",
+    "receipt": "controls-attempt-1/results.json",
+    "receipt_sha256": "7945bbb0f72d99ce0ae2da846023a1304e60dbc4bfedf24f0ec247e71dd81024",
+    "actual_terminal": {"chunk": "a0f3d2", "exit_code": 0, "cases": 40}
+  },
+  "successor": {
+    "change": "The actual shared child_environment now forces PYTHONSAFEPATH=1, inherited by the unchanged nested RDKit child; it also records the setting in the integration receipt.",
+    "driver": "integration-replay.py",
+    "driver_sha256": "a60587397a1f2b38dba30cfe8df0c69c621554424d1d5ceb9cfc308e01b75f8d",
+    "controls": "boundary-controls.py",
+    "controls_sha256": "566f428ff79f3cbef472b67c28958308856815f8959ac0d8c206af4f8bb0c678",
+    "receipt": "controls-attempt-2/results.json",
+    "receipt_sha256": "f1c6811503a2d00f0cc31e26185cb1216826f8aff1f953856554fa6c8e7f61ca",
+    "actual_terminal": {"chunk": "286a60", "exit_code": 0, "cases": 42},
+    "nested_control": "The declared RDKit virtualenv interpreter with exactly -c loaded EVIL from the isolated cwd in the baseline and GOOD from the fixture src under the actual guarded environment. The original helper was not executed or edited.",
+    "fatal_lint_terminal": {"chunk": "c80b84", "exit_code": 0}
+  },
+  "limits": [
+    "Narrow fixture controls do not constitute full source replay or scientific approval.",
+    "Two unsuccessful apply_patch context matches caused no file change; corrected patches were then applied. No failed control run occurred.",
+    "No maintained edits, source acquisition, source-helper mutation, or full project gate execution occurred."
+  ]
+}

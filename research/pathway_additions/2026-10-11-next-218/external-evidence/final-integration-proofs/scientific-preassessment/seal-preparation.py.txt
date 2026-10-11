@@ -1,0 +1,76 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import yaml
+
+O = Path('/private/tmp/pathwaymech-next-218-independent-scientific-review')
+R = Path('/private/tmp/pathwaymech-next-218-20261011')
+OLD = Path('/private/tmp/pathwaymech-ed-whole-record-review-20261011')
+
+def info(p):
+    p = Path(p)
+    return {'path': str(p), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest(), 'bytes': p.stat().st_size}
+
+target = R / 'data/pathways/entner-doudoroff-pathway.yaml'
+assert info(target)['sha256'] == '548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af'
+record = yaml.safe_load(target.read_text())
+old = json.loads((OLD / 'whole-record-review.json').read_text())
+audit = json.loads((O / 'original-evidence-audit.json').read_text())
+authority = json.loads((O / 'current-authority-audit.json').read_text())
+assert len(record['mechanistic_edges']) == 37 and len(audit['evidence_selections']) == 92
+domains = [dict(x) for x in old['assessments']]
+for d in domains:
+    d['current_reassessment'] = 'Reassessed against the complete unchanged maintained target and freshly verified original evidence selections; earlier whole-source/chemistry proof is explicitly attributed to this same independent reviewer, not a second independent reviewer.'
+    if d['id'] == 'validation_and_authority':
+        d['scope'] = 'Current production authority preservation independently rechecked against actual721755 merge. Four new native bodies, four reused UniProt batch selections, 21 original SQL terms and all old authority entries/metadata checked. New terms are six source and three ontology identifiers, including reference-only CHEBI17719. Rhea139 authority remains distinct from Rhea142 scientific RDF. Current integrated helper/runtime replay and terminal corpus gates remain pending.'
+    if d['id'] == 'replay_guard':
+        d['scope'] = 'Preserved external full positive26000/0 and exact final-guard controls2710/0 remain historical evidence for helperf67. They cover18formal inputs,16prior proofs and original-source checks, not the entire imported runtime closure. Formatting-only successor and broader current wrapper require separate acceptance. No current integration approval is implied.'
+edge_assessments = []
+for edge in record['mechanistic_edges']:
+    edge_assessments.append({'id': edge['id'], 'subject': edge['subject'], 'predicate': edge['predicate'], 'object': edge['object'], 'evidence_count': len(edge.get('evidence', [])), 'references': sorted({e['reference_id'] for e in edge.get('evidence', [])}), 'result': 'scientifically_supported_with_recorded_source_scope_limits', 'basis': 'Current complete edge wording and each nearest source assertion/locator independently reassessed; exact original selections are recorded in original-evidence-audit.json.'})
+result = {
+    'kind': 'external_current_preassessment_not_canonical',
+    'at': datetime.now(timezone.utc).isoformat(),
+    'status': 'scientific_preparation_complete_current_integrated_acceptance_pending',
+    'provisional_scientific_verdict': 'pass_with_limitations',
+    'scientific_review_final': False,
+    'reviewer': '/root/ed_whole_record_review',
+    'independence': 'Reviewer authored no target, scientific helper, production authority update, integration wrapper, history or generated page. Reviewer performed the earlier external ED scientific review and reuses its exact proofs with attribution. Root and other agents prepared/accepted integration; graph auditor previously contributed ED preflight/authority preparations and its graph report is structural evidence only.',
+    'target': info(target),
+    'actual_base': '721755c9b4af76d32d2b1f232571bbfeab232441',
+    'counts': {'native_reactions': len(record['reactions']), 'positions': 4, 'participants': len(record['participants']), 'taxa': len(record['taxa']), 'edges': len(edge_assessments), 'evidence_occurrences': len(audit['evidence_selections']), 'references': len(record['references']), 'fresh_original_bodies': len(audit['source_checks']), 'fresh_prior_proofs': len(audit['prior_proofs']), 'fresh_primary_selections': len(audit['primary_original_selections']), 'fresh_selected_chemical_taxon_compartment_SQL_rows': len(audit['issuing_sql_labels']), 'fresh_authority_SQL_terms': len(authority['selected_ontology_rows'])},
+    'domains': domains,
+    'edge_assessments': edge_assessments,
+    'current_findings': [],
+    'issues_created': [],
+    'current_executions': [
+        {'command': 'PYTHONPATH=src /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python /private/tmp/pathwaymech-next-218-independent-scientific-review/fresh-original-evidence-audit.py', 'exit_code': 0, 'terminal_chunk': '5902a4', 'result': info(O / 'original-evidence-audit.json')},
+        {'command': 'PYTHONPATH=src /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python /private/tmp/pathwaymech-next-218-independent-scientific-review/current-authority-audit.py', 'exit_code': 0, 'terminal_chunk': 'ea4258', 'result': info(O / 'current-authority-audit.json')}
+    ],
+    'historical_evidence': [info(OLD / name) for name in ['handoff.json', 'whole-record-review.json', 'positive-replay.json', 'independent-chemistry.json', 'guard-controls.json', 'web-primary-observations.json']],
+    'limits': [
+        'Not canonical inspection, not final current review, and not approval to publish. Await parent final freeze then actual inspect/validate/save/check.',
+        'Current corpus tests, formatting-only helper successor, integrated source/runtime/authority wrapper and root adoption are pending; no test pass or full integration pass asserted here.',
+        'Fresh selected source/SQL checks do not constitute a new whole20GB source replay. Earlier reviewer source and chemistry proofs bind the unchanged target; current root/driver whole-source checks must be attributed.',
+        '2012 official full article was personally inspected in the earlier external review, including Table1/Discussion/Purification. It remains web-only with no local full-article digest; local403response is not article evidence. 2016 original article and workbook were freshly checked locally.',
+        'Native beta chemistry does not prove experimental exclusive anomer use; NAD capacity/preference does not establish equal in-vivo ED donor flux.',
+        'Current protein identity and donor assignments do not establish equality to historical/tagged constructs; Edd cluster occupancy is inference; reporter NADH is excluded from Eda reaction.',
+        'CsrA original heading/current annotation conflict is preserved. Original Results/Figure7/Discussion support positive indirect effects; no direct regulatory edge is exported.',
+        'iModulonDB original response/adaptor evidence supplies computational transcriptomic context only, not causal pathway or regulation proof.',
+        'Ignored/hidden-inclusive root current dedup retains broad BRENDA canary/source-history context and distinct sulfoED record; no source exhaustion or BRENDA importer completion is claimed.',
+        'Graph receipt19946/0 is attributed structural/static evidence. No reviewer browser interaction or deployed visual inspection is claimed.'
+    ],
+    'maintained_writes': []
+}
+p = O / 'preassessment.json'
+with p.open('x') as f:
+    json.dump(result, f, indent=2)
+    f.write('\n')
+files = [info(O / name) for name in ['preassessment.json', 'original-evidence-audit.json', 'current-authority-audit.json', 'fresh-original-evidence-audit.py', 'current-authority-audit.py', 'audit-script-lineage.json', 'seal-preparation.py']]
+handoff = {'at': datetime.now(timezone.utc).isoformat(), 'status': result['status'], 'target': result['target'], 'files': files, 'no_maintained_writes': True, 'canonical_pending_parent_final_freeze': True}
+p = O / 'preassessment-handoff.json'
+with p.open('x') as f:
+    json.dump(handoff, f, indent=2)
+    f.write('\n')
+print(json.dumps({'handoff': info(p), 'preassessment': info(O / 'preassessment.json'), 'counts': result['counts']}))

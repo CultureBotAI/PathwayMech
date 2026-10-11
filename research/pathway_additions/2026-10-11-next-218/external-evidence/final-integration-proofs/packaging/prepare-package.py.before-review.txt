@@ -1,0 +1,311 @@
+"""Prepare external, lossless proof bytes and a collision-free maintained copy plan.
+
+This script never adopts files or imports repository code. It does not open the
+large source/database paths named inside scientific binding manifests.
+"""
+
+import argparse
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import stat
+
+
+HERE = Path(__file__).absolute().parent
+REPO = Path('/private/tmp/pathwaymech-next-218-20261011')
+DOSSIER = REPO / 'research/pathway_additions/2026-10-11-next-218'
+DEST = DOSSIER.relative_to(REPO) / 'external-evidence/final-integration-proofs'
+MAX_BYTES = 24 * 1024 * 1024
+ROOT = Path('/private/tmp')
+SCOPES = {
+    'preparation-original': ROOT / 'pathwaymech-ed-integrated-replay-preparation-20261011',
+    'preparation-formatting-successor': ROOT / 'pathwaymech-ed-integrated-replay-formatting-successor-20261011',
+    'graph-audit': ROOT / 'pathwaymech-next-218-graph-audit',
+    'scientific-preassessment': ROOT / 'pathwaymech-next-218-independent-scientific-review',
+    'post-formatting-gates': ROOT / 'pathwaymech-next-218-post-formatting-gates',
+}
+SEALS = {
+    SCOPES['preparation-original'] / 'completion.json': '7264b2f2898fcbd41e49e60e134dc11caf4e19be2170cc0a0ac737f9665a61d4',
+    SCOPES['preparation-formatting-successor'] / 'completion.json': '8d0b33adb715c2c28b72ad1a2aaaff42e6ad1810c6f84ea12aa652af90bec6cd',
+    SCOPES['graph-audit'] / 'completion.json': 'f54cd9fcdb5eb86be7c8f76bb66dfdc1e6b02241121f2dec290cdfb9e21e42a9',
+    SCOPES['scientific-preassessment'] / 'preassessment-handoff.json': '7e7aaeb52bfe985af0b2a4599b26b0109b06adb258113531ec5d48c0510bf22a',
+    SCOPES['post-formatting-gates'] / 'receipt.json': 'baf05edb0fbaaba290e8119d36ea54d81cad041f2c8187088588ad80c77e1627',
+    ROOT / 'pathwaymech-next-218-integrated-replay-root-acceptance.json': '508fa90157eee4d27e24f256be74a8b43ea716e2c34d4d102dbf5403595bb886',
+    ROOT / 'pathwaymech-next-218-current-gates-root-adoption.json': '965055f84b01272e00629521610521c91a9bd8551e093f49efae014b29801753',
+    ROOT / 'pathwaymech-next-218-graph-root-adoption.json': 'affb37c255d61609c87f364c7bef01ac7a6149963e148e3d1f98a75ce6cf06b1',
+}
+ROOT_FILES = [
+    'integrated-replay-root-acceptance.json', 'execute-integrated-replay.py',
+    'current-gates-root-adoption.json', 'graph-root-adoption.json',
+    'post-formatting-gates.py', 'helper-formatting-adoption.json',
+    'full-gates-initial-terminal.json', 'final-gate-receipts.json',
+    'final-gate-inputs.json', 'final-gates-successor.py',
+    'final-test.log', 'final-identifiers.log', 'final-kgx.log',
+    'final-render.log', 'final-validate.log', 'final-lint.log',
+    'final-diff-tracked.log', 'merged-baseline-bridge.json',
+    'dossier-adoption.json', 'core-adoption.json', 'authority-root-review.json',
+]
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def raw(path):
+    require(path.stat().st_size <= MAX_BYTES, f'Proof size boundary: {path}')
+    return path.read_bytes()
+
+
+def dump(value):
+    return (json.dumps(value, indent=2, ensure_ascii=True) + '\n').encode()
+
+
+def write(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('xb') as handle:
+        handle.write(data)
+    path.chmod(0o644)
+
+
+def observe(path, logical):
+    s = path.lstat()
+    row = {'source': str(path), 'logical_path': logical,
+           'source_mode': format(stat.S_IMODE(s.st_mode), '04o')}
+    if path.is_symlink():
+        target = os.readlink(path)
+        resolved = path.resolve(strict=False)
+        row.update(kind='symlink', link_target=target,
+                   link_text_sha256=sha(os.fsencode(target)),
+                   resolved_path=str(resolved), target_exists=path.exists())
+        if path.exists():
+            require(path.is_file(), f'Only file-symlink controls expected: {path}')
+            body = raw(path)
+            row.update(target_sha256=sha(body), target_bytes=len(body))
+    elif path.is_dir():
+        row.update(kind='directory')
+    else:
+        require(stat.S_ISREG(s.st_mode), f'Unsupported source kind: {path}')
+        data = raw(path)
+        row.update(kind='file', source_sha256=sha(data), source_bytes=len(data),
+                   resolved_path=str(path.resolve()))
+    return row
+
+
+def tree(base, logical):
+    # pathlib iteration includes ignored, hidden and __pycache__ files. Do not
+    # follow symlink directories or exclude any fixture extension.
+    rows = [observe(base, logical)]
+    def descend(folder):
+        for p in sorted(folder.iterdir()):
+            rows.append(observe(p, str(Path(logical) / p.relative_to(base))))
+            if p.is_dir() and not p.is_symlink():
+                descend(p)
+    descend(base)
+    return rows
+
+
+def checks():
+    for path, expected in SEALS.items():
+        require(sha(raw(path)) == expected, f'Seal changed: {path}')
+    active = DOSSIER / 'ed-replay-final.py'
+    require(sha(raw(active)) == '3a9dd4147891e12af58bcffba333e94053c908c814184fe49b151d6c8e2ade74', 'Active helper changed')
+    for group in ['preparation-original', 'preparation-formatting-successor']:
+        value = json.loads(raw(SCOPES[group] / 'proof-artifacts.json'))
+        for row in value['artifacts']:
+            if 'sha256' in row:
+                require(sha(raw(Path(row['path']))) == row['sha256'], f'Preparation artifact changed: {row}')
+    for group, name in [('graph-audit', 'completion.json'), ('scientific-preassessment', 'preassessment-handoff.json')]:
+        for row in json.loads(raw(SCOPES[group] / name))['files']:
+            require(sha(raw(Path(row['path']))) == row['sha256'], f'Sealed artifact changed: {row}')
+
+
+def decode_wrapper(value):
+    if not isinstance(value, dict) or not {'encoding', 'original_sha256', 'original_bytes', 'content'} <= value.keys():
+        return None
+    if value['encoding'] == 'utf-8':
+        data = value['content'].encode('utf-8')
+    elif value['encoding'] == 'base64':
+        data = base64.b64decode(value['content'], validate=True)
+    else:
+        return None
+    require(len(data) == value['original_bytes'] and sha(data) == value['original_sha256'], 'Existing lossless wrapper invalid')
+    return data
+
+
+def unsafe_whitespace(data):
+    return bool(re.search(rb'[ \t]+\r?$', data, re.M) or re.search(rb'^ +\t', data, re.M) or data.endswith(b'\n\n'))
+
+
+def encode_file(row):
+    data = raw(Path(row['source']))
+    require(sha(data) == row['source_sha256'], f'Source changed: {row["source"]}')
+    # A literal __pycache__ directory would remain gitignored even after a
+    # binary fixture is encoded. Original identities remain in the map.
+    path = Path(*('captured-pycache' if p == '__pycache__' else p
+                  for p in Path(row['logical_path']).parts))
+    if path.suffix == '.py':
+        path = Path(str(path) + '.txt')
+    try:
+        text = data.decode('utf-8')
+        binary = '\0' in text
+    except UnicodeDecodeError:
+        text, binary = None, True
+    fixture = any(part.startswith('controls-attempt-') for part in path.parts) and path.name != 'results.json'
+    encode = binary or fixture or path.suffix in {'.yaml', '.yml', '.tsv', '.log', '.stdout', '.stderr'} or unsafe_whitespace(data)
+    if encode:
+        encoding = 'base64' if binary else 'utf-8'
+        content = base64.b64encode(data).decode('ascii') if binary else text
+        value = {'format': 'lossless-immutable-evidence-v1', 'encoding': encoding,
+                 'original_sha256': sha(data), 'original_bytes': len(data), 'content': content}
+        require(decode_wrapper(value) == data, 'Roundtrip failed')
+        return Path(str(path) + '.bytes.json'), dump(value), 'lossless_' + encoding
+    return path, data, 'exact_bytes_inert_python' if path.name.endswith('.py.txt') else 'exact_bytes'
+
+
+def capture():
+    checks()
+    rows = []
+    for group, base in SCOPES.items():
+        rows.extend(tree(base, group))
+    for name in ROOT_FILES:
+        path = ROOT / ('pathwaymech-next-218-' + name)
+        rows.append(observe(path, 'root/' + path.name))
+    for path, logical in [
+        (ROOT / 'pathwaymech-entner-doudoroff-author-20261011/ed-replay-final.py', 'formatting-lineage/ed-replay-final-original.py'),
+        (DOSSIER / 'external-evidence/helper-formatting-successor/ed-replay-final-original.py.txt', 'formatting-lineage/ed-replay-final-original.py.txt'),
+    ]:
+        rows.append(observe(path, logical))
+    result = {'status': 'static_inputs_captured_positive_execution_pending',
+              'completeness': 'Filesystem traversal includes ignored, hidden, binary cache and symlink fixtures; no source-body manifest closure traversed.',
+              'seals': [{'path': str(p), 'sha256': h} for p, h in SEALS.items()],
+              'scope_roots': {k: str(v) for k, v in SCOPES.items()},
+              'scientific_scope': 'Only preliminary assessment, not canonical review. Two supporting extracts outside the seven-file preassessment handoff are captured without retroactive seal claims.',
+              'entries': rows}
+    write(HERE / 'static-inputs.json', dump(result))
+    print(json.dumps({'status': result['status'], 'entries': len(rows), 'sha256': sha(raw(HERE / 'static-inputs.json'))}))
+
+
+def seal(terminal_path):
+    checks()
+    static = json.loads(raw(HERE / 'static-inputs.json'))
+    rows = static['entries']
+    for row in rows:
+        require(observe(Path(row['source']), row['logical_path']) == row, f'Captured source changed: {row["source"]}')
+    for group, base in SCOPES.items():
+        captured = [r for r in rows if r['logical_path'] == group or r['logical_path'].startswith(group + '/')]
+        require(tree(base, group) == captured, f'Captured tree changed: {base}')
+    terminal = json.loads(raw(terminal_path))
+    require(terminal['session'] == 38656 and terminal['exit_code'] == 0 and terminal['terminal_chunk'], 'Actual root positive terminal required')
+    execution = ROOT / 'pathwaymech-next-218-integrated-replay-execution'
+    completed = json.loads(raw(execution / 'completion.json'))
+    require(completed['exit_code'] == 0, 'Root runner did not succeed')
+    require(sha(raw(Path(completed['console_log']))) == completed['console_sha256'], 'Root console changed')
+    require(completed['root_acceptance_sha256'] == SEALS[ROOT / 'pathwaymech-next-218-integrated-replay-root-acceptance.json'], 'Root acceptance mismatch')
+    positive = ROOT / 'pathwaymech-ed-integrated-replay-positive-20261011'
+    outcome = json.loads(raw(positive / 'integration-replay.json'))
+    require(outcome['status'] == 'passed_current_integrated_replay_not_independent_scientific_approval', 'Positive replay receipt missing')
+    rows += tree(execution, 'execution') + tree(positive, 'positive')
+    for p, logical in [(terminal_path, 'root/actual-positive-terminal.json'), (Path(__file__).absolute(), 'packaging/prepare-package.py'), (HERE / 'static-inputs.json', 'packaging/static-inputs.json')]:
+        rows.append(observe(p, logical))
+    # Existing maintained evidence is indexed by raw and decoded bytes. Only
+    # inert evidence files can supply aliases; active maintained helper cannot.
+    existing = {}
+    for p in sorted((DOSSIER / 'external-evidence').rglob('*')):
+        if not p.is_file() or p.is_symlink() or p.suffix == '.py':
+            continue
+        data = raw(p)
+        info = {'destination': str(p.relative_to(REPO)), 'destination_sha256': sha(data),
+                'destination_bytes': len(data), 'destination_mode': format(stat.S_IMODE(p.stat().st_mode), '04o'),
+                'representation': 'exact_bytes', 'alias_scope': 'existing_maintained_evidence'}
+        existing.setdefault(sha(data), []).append(info)
+        if p.suffix == '.json':
+            try:
+                decoded = decode_wrapper(json.loads(data))
+            except (ValueError, UnicodeDecodeError):
+                decoded = None
+            if decoded is not None:
+                existing.setdefault(sha(decoded), []).append(dict(info, representation='existing_lossless_wrapper'))
+    copies, mappings, directories = [], [], []
+    output = HERE / 'packaged'
+    require(not output.exists(), 'Packaging output already exists')
+    for row in rows:
+        if row['kind'] == 'directory':
+            directories.append(row)
+            continue
+        if row['kind'] == 'symlink':
+            relative = Path(row['logical_path'] + '.symlink.json')
+            data = dump({'format': 'immutable-symlink-observation-v1', **row,
+                         'limits': 'Link is observed, not recreated. Historical retarget outcome is attested by the separate control receipt.'})
+            rep = 'symlink_observation'
+        else:
+            relative, data, rep = encode_file(row)
+            candidates = existing.get(row['source_sha256'], [])
+            # Unsafe fixtures must resolve to a lossless wrapper, not to a raw
+            # active-looking file that merely happens to have identical bytes.
+            aliases = [c for c in candidates if not rep.startswith('lossless_') or 'lossless' in c['representation']]
+            if aliases:
+                mappings.append({**row, **aliases[0], 'action': 'alias'})
+                continue
+        destination = str(DEST / relative)
+        require(not (REPO / destination).exists(), f'Maintained destination collision: {destination}')
+        staged = output / relative
+        write(staged, data)
+        item = {'source': str(staged), 'destination': destination, 'sha256': sha(data),
+                'bytes': len(data), 'source_mode': '0644', 'destination_mode': '0644', 'git_mode': '100644'}
+        copies.append(item)
+        info = {'destination': destination, 'destination_sha256': sha(data),
+                'destination_bytes': len(data), 'destination_mode': '0644',
+                'representation': rep, 'alias_scope': 'new_package'}
+        mappings.append({**row, **info, 'action': 'copy', 'packaged_source': str(staged)})
+        if row['kind'] == 'file':
+            existing.setdefault(row['source_sha256'], []).append(info)
+    require(len({r['destination'] for r in copies}) == len(copies), 'Duplicate destinations')
+    for row in rows:
+        require(observe(Path(row['source']), row['logical_path']) == row, f'Final source changed: {row["source"]}')
+    checks()
+    plan = {'status': 'external_copy_plan_no_adoption_performed', 'destination_root': str(DEST),
+            'source_to_destination': mappings, 'directory_observations': directories, 'copies': copies,
+            'actual_root_positive_terminal': terminal, 'active_helper_sha256': '3a9dd4147891e12af58bcffba333e94053c908c814184fe49b151d6c8e2ade74',
+            'limits': ['All original sources and whole databases remain external; this packaging operation does not rehash those bodies.',
+                       'Scientific PRE-assessment is not a saved canonical scientific review.',
+                       'No browser inspection, PR approval, publication, or maintained adoption is asserted.',
+                       'Archived Python is inert; path-specific execution identities remain those in the exact original binding manifests.',
+                       'Directory and symlink fixture identities are observations, not instructions to recreate maintained filesystem objects.'],
+            'support_adoption': [{'source': str(HERE / 'copy-plan.json'), 'destination': str(DEST / 'copy-plan.json'), 'mode': '0644'},
+                                 {'source': str(HERE / 'handoff.json'), 'destination': str(DEST / 'handoff.json'), 'mode': '0644'}]}
+    write(HERE / 'copy-plan.json', dump(plan))
+    summary = {'status': 'sealed_external_proof_packaging_plan_ready_for_root_review',
+               'copy_plan': {'path': str(HERE / 'copy-plan.json'), 'sha256': sha(raw(HERE / 'copy-plan.json'))},
+               'source_files_and_symlinks': len(mappings), 'directory_observations': len(directories),
+               'new_copies': len(copies), 'aliases': sum(r['action'] == 'alias' for r in mappings),
+               'lossless_mappings': sum('lossless' in r['representation'] for r in mappings),
+               'symlink_observations': sum(r['kind'] == 'symlink' for r in mappings),
+               'binary_pyc_sources': [r for r in mappings if r['source'].endswith('.pyc')],
+               'actual_root_positive_terminal': terminal, 'maintained_writes': [],
+               'scientific_approval': False}
+    write(HERE / 'handoff.json', dump(summary))
+    print(json.dumps({'status': summary['status'], 'copies': len(copies), 'aliases': summary['aliases'], 'handoff_sha256': sha(raw(HERE / 'handoff.json'))}))
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mode', choices=['capture', 'seal'])
+    parser.add_argument('--terminal-receipt', type=Path)
+    args = parser.parse_args()
+    if args.mode == 'capture':
+        capture()
+    else:
+        require(args.terminal_receipt is not None, 'Terminal receipt required')
+        seal(args.terminal_receipt)
+
+
+if __name__ == '__main__':
+    main()

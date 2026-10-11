@@ -1,0 +1,278 @@
+"""Prepare reviewable expected bindings; never runs the scientific source replay."""
+
+import argparse
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--dossier-adoption-sha256", required=True)
+parser.add_argument("--formatting-disposition", type=Path, required=True)
+parser.add_argument("--formatting-disposition-sha256", required=True)
+parser.add_argument("--original-helper-archive", type=Path, required=True)
+parser.add_argument("--baseline-bridge", type=Path)
+parser.add_argument("--baseline-bridge-sha256")
+args = parser.parse_args()
+ROOT = Path(__file__).resolve().parent
+REPO = Path("/private/tmp/pathwaymech-next-218-20261011")
+HELPER = REPO / "research/pathway_additions/2026-10-11-next-218/ed-replay-final.py"
+OUTPUT = ROOT / "expected-bindings.json"
+RDKIT = Path(
+    "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python"
+)
+spec = importlib.util.spec_from_file_location("integration_driver", ROOT / "integration-replay.py")
+driver = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(driver)
+driver.require(
+    not OUTPUT.exists(), "Expected manifest already exists; preserve it and prepare a successor"
+)
+files = {}
+deferred_sources = []
+
+
+def add(path, role, expected=None, defer=False):
+    path = driver.absolute(path)
+    driver.require(path.is_file(), "Missing binding input: " + str(path))
+    if defer:
+        driver.require(expected is not None, "Deferred source needs accepted digest")
+        actual = expected
+        deferred_sources.append(str(path))
+    else:
+        actual = driver.file_hash(path)
+        driver.require(
+            expected is None or actual == expected, "Accepted input changed: " + str(path)
+        )
+    entry = {
+        "path": str(path),
+        "resolved_path": str(path.resolve(strict=True)),
+        "sha256": actual,
+        "role": role,
+    }
+    if str(path) in files:
+        driver.require(files[str(path)]["sha256"] == actual, "Conflicting expected digest")
+    else:
+        files[str(path)] = entry
+
+
+inventories = []
+for root, role in [
+    (REPO / "src", "runtime"),
+    (REPO / "scripts", "runtime"),
+    (REPO / "data/pathways", "record"),
+    (driver.ADAPTER_ROOT, "runtime"),
+]:
+    paths = driver.inventory(root)
+    inventories.append({"root": str(root), "paths": paths})
+    for path in paths:
+        add(path, role)
+for relative in sorted(driver.REQUIRED):
+    role = (
+        "authority"
+        if relative.startswith("data/identifier_authorities/")
+        else "policy"
+        if relative == "conf/identifier_policy.yaml"
+        else "formal"
+    )
+    add(REPO / relative, role)
+add(REPO / driver.TARGET, "record", driver.TARGET_SHA)
+add(HELPER, "formal", driver.HELPER_SHA)
+add(driver.ORIGINAL_HELPER, "formal", driver.ORIGINAL_HELPER_SHA)
+add(args.original_helper_archive, "formal", driver.ORIGINAL_HELPER_SHA)
+add(ROOT / "integration-replay.py", "runtime")
+add(Path(__file__), "formal")
+for relative, expected in driver.ADJACENT.items():
+    add(HELPER.parent / relative, "formal", expected)
+for relative, expected in {
+    "conf/identifier_sources.json": "b1db9a993b090bb090f89e5d08be2e3532434492b96660557a8a44ddfdd2094a",
+    "data/identifier_authorities/ontology.json": "b88634735c0026d6e685fe963c990c0ff1cfaf3dd2a035b5c8bafcf573fa7437",
+    "data/identifier_authorities/sources.json": "36833d3ad51399f277ef6b0367dd9f4d71dd5d12894f47d61bc0d7b81daaffab",
+}.items():
+    driver.require(
+        files[str(REPO / relative)]["sha256"] == expected, "Root accepted production input changed"
+    )
+
+source = driver.read_json((HELPER.parent / "draft/ed-source-manifest.json").read_bytes())
+for key, role in [
+    ("bodies", "source"),
+    ("issuing_databases", "source"),
+    ("prior_proof_inputs", "prior_proof"),
+]:
+    for item in source[key]:
+        add(item["path"], role, item["sha256"], defer=True)
+proposal = driver.read_json((HELPER.parent / "draft/ed-authority-proposal.json").read_bytes())
+for item in proposal["source_inputs"] + proposal["verified_existing_source_inputs"]:
+    add(item["original_path"], "source", item["manifest_entry"]["sha256"], defer=True)
+chemical = driver.read_json((HELPER.parent / "draft/ed-chemical-identities.json").read_bytes())
+for item in [chemical["chebi_database"], chemical["rhea_source"]] + proposal[
+    "extra_ontology_originals"
+]:
+    add(item["path"], "source", item["sha256"], defer=True)
+for item in chemical["kegg_bridges"].values():
+    add(item["kegg_mol"], "source", item["mol_sha256"], defer=True)
+for item in driver.read_json((HELPER.parent / "imod/manifest.json").read_bytes()):
+    add(item["path"], "source", item["sha256"], defer=True)
+add(driver.ADAPTER_ROOT / "imodulondb.py", "runtime", driver.ADAPTER_SHA)
+
+proofs = {
+    "/private/tmp/pathwaymech-ed-authority-selection-20261011/handoff.json": "8a36895fdd1e8e1587870c77a9f914877b6b48e9a9b7268f1f91bcf0e51d9a0e",
+    "/private/tmp/pathwaymech-ed-authority-selection-20261011/selected-successor/selection.json": "732749701f8feef98a8afc40ba7bb9027fb452f54afc55de7e232ada82a3fae2",
+    "/private/tmp/pathwaymech-ed-authority-selection-20261011/existing-batch-reuse-disposition.json": "bfcd4b24e1dae066fc466b8bf434c1481a3204cee71d17e04a976f89aee4baf8",
+    "/private/tmp/pathwaymech-next-218-authority-root-review.json": "7ae58b591bd3b71a9238ffa5f967beb361e0209ab9b49beb72764ba79baad576",
+    "/private/tmp/pathwaymech-next-218-core-adoption.json": "07bf9a2a0140bda8f610d788da6f12def052c11c669409e39c7ec3942eab1d43",
+    "/private/tmp/pathwaymech-entner-doudoroff-author-20261011/handoff.json": "530a760e2bd5fdddab2dcaf372a140f1928b98db1c45b42bb124b97bcdb068f2",
+    "/private/tmp/pathwaymech-ed-whole-record-review-20261011/handoff.json": "0ee3b8928116ee1281858b5b3342002242addf42f50447494ddac14a5c99be26",
+    str(HELPER.parent / "dossier-adoption.json"): args.dossier_adoption_sha256,
+}
+driver.require(
+    bool(args.baseline_bridge) == bool(args.baseline_bridge_sha256),
+    "Baseline bridge path and digest must be provided together",
+)
+if args.baseline_bridge:
+    proofs[str(driver.absolute(args.baseline_bridge))] = args.baseline_bridge_sha256
+proofs[str(driver.absolute(args.formatting_disposition))] = args.formatting_disposition_sha256
+proofs["/private/tmp/pathwaymech-ed-integrated-replay-preparation-20261011/completion.json"] = (
+    "7264b2f2898fcbd41e49e60e134dc11caf4e19be2170cc0a0ac737f9665a61d4"
+)
+proofs[
+    "/private/tmp/pathwaymech-ed-integrated-replay-preparation-20261011/controls-attempt-2/results.json"
+] = "f1c6811503a2d00f0cc31e26185cb1216826f8aff1f953856554fa6c8e7f61ca"
+for path, expected in proofs.items():
+    add(path, "integration_proof", expected)
+
+
+# Root acceptance supplies a distinct production authority selection. Capture its
+# inputs without rewriting original scientific versions or re-running its builder.
+def accepted_proof(path):
+    raw = Path(path).read_bytes()
+    driver.require(
+        driver.digest(raw) == proofs[path], "Root/selection proof changed before parsing"
+    )
+    return driver.read_json(raw)
+
+
+review = accepted_proof("/private/tmp/pathwaymech-next-218-authority-root-review.json")
+core = accepted_proof("/private/tmp/pathwaymech-next-218-core-adoption.json")
+selection = accepted_proof(
+    "/private/tmp/pathwaymech-ed-authority-selection-20261011/selected-successor/selection.json"
+)
+production_sources = {}
+for item in review["database_checks"] + core["cache_sources"]:
+    production_sources[item["path"]] = {"path": item["path"], "sha256": item["sha256"]}
+for item in selection["reused_inputs"]:
+    if "selected_existing_body" in item:
+        production_sources[item["selected_existing_body"]] = {
+            "path": item["selected_existing_body"],
+            "sha256": item["existing_entry_preserved"]["sha256"],
+        }
+for item in production_sources.values():
+    add(item["path"], "source", item["sha256"], defer=True)
+
+# Stdlib-only subprocess reports environment identity and distribution metadata.
+# It imports no pathwaymech, YAML, LinkML, lxml, or RDKIT implementation.
+probe = """import importlib.metadata as m,json,sys
+from pathlib import Path
+distributions=[];metadata=[]
+for d in m.distributions():
+    distributions.append({"name":d.metadata.get("Name"),"version":d.version})
+    for f in d.files or []:
+        p=Path(d.locate_file(f))
+        if any(x.endswith((".dist-info",".egg-info")) for x in p.parts) and p.is_file():
+            metadata.append(str(p.absolute()))
+for site in sys.path:
+    p=Path(site)
+    if p.is_dir() and p.name in ("site-packages","dist-packages"):
+        metadata.extend(str(x.absolute()) for x in p.glob("*.pth") if x.is_file())
+v=Path(sys.prefix)/"pyvenv.cfg"
+if v.is_file():metadata.append(str(v.absolute()))
+print(json.dumps({"executable":sys.executable,"version":sys.version,"prefix":sys.prefix,"base_prefix":sys.base_prefix,"sys_path":sys.path,"distributions":sorted(distributions,key=lambda x:(x["name"] or "",x["version"])),"metadata_files":sorted(set(metadata))}))
+"""
+env = dict(
+    os.environ, PYTHONPATH=str(REPO / "src"), PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1"
+)
+env.pop("PYTHONOPTIMIZE", None)
+env.pop("PYTHONHOME", None)
+provenance = []
+for name, executable in [("python", Path(sys.executable)), ("rdkit_python", RDKIT)]:
+    process = subprocess.run(
+        [str(executable), "-B", "-P", "-c", probe],
+        env=env,
+        cwd=REPO,
+        capture_output=True,
+        check=True,
+    )
+    value = driver.read_json(process.stdout)
+    driver.require(value["executable"] == str(executable), "Environment probe changed executable")
+    add(
+        executable,
+        "environment",
+        "ad67715379ea955de1a1f4405673acd056097a261eccdf86f1f220ccd1fdfd98"
+        if name == "rdkit_python"
+        else None,
+    )
+    for path in value["metadata_files"]:
+        add(path, "environment")
+    provenance.append((name, value))
+
+document = {
+    "format": "ed-integration-bindings-v1",
+    "prepared_at": driver.now(),
+    "manifest_identity": {"path": str(OUTPUT), "resolved_path": str(OUTPUT.resolve())},
+    "repo": {"path": str(REPO), "resolved_path": str(REPO.resolve())},
+    "helper": str(HELPER),
+    "formatting_successor": {
+        "original_helper": {
+            "path": str(driver.ORIGINAL_HELPER),
+            "sha256": driver.ORIGINAL_HELPER_SHA,
+        },
+        "original_archive": {
+            "path": str(driver.absolute(args.original_helper_archive)),
+            "sha256": driver.ORIGINAL_HELPER_SHA,
+        },
+        "active_helper": {"path": str(HELPER), "sha256": driver.HELPER_SHA},
+        "disposition": {
+            "path": str(driver.absolute(args.formatting_disposition)),
+            "sha256": args.formatting_disposition_sha256,
+        },
+    },
+    "files": [files[key] for key in sorted(files)],
+    "inventories": inventories,
+    "integration_proofs": sorted(proofs),
+    "production_authority_sources": [production_sources[key] for key in sorted(production_sources)],
+    "source_scope": {
+        "original_science": "94 bodies; three whole SQL databases and complete Rhea142 RDF; 16 original prior proofs",
+        "production_authorities": "Root-reviewed four SQL databases (including Rhea139 SQL), four newly adopted source-cache bodies and preserved 2026_03 UniProt batch; separate from original proposal semantics",
+    },
+    "protected_roots": [
+        str(REPO),
+        str(HELPER.parent),
+        "/private/tmp/pathwaymech-entner-doudoroff-author-20261011",
+        "/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011",
+        "/private/tmp/pathwaymech-ed-authority-selection-20261011",
+        str(driver.ADAPTER_ROOT),
+    ],
+    "preparation_scope": "Current formal inputs were hashed. Original source/proof expected digests are copied from accepted immutable manifests; full source hashes must be checked by the approved actual replay. No scientific replay or maintained write performed.",
+    "deferred_source_digest_paths": sorted(set(deferred_sources)),
+    **dict(provenance),
+}
+driver.check_contract(document, REPO, HELPER)
+driver.check_source_coverage(document, HELPER)
+driver.check_formatting_lineage(document, HELPER)
+driver.check_inventories(inventories, document["files"])
+with OUTPUT.open("x") as stream:
+    json.dump(document, stream, indent=2)
+    stream.write("\n")
+print(
+    json.dumps(
+        {
+            "status": "prepared_expected_bindings_for_root_review_only",
+            "path": str(OUTPUT),
+            "sha256": driver.file_hash(OUTPUT),
+            "bindings": len(files),
+            "source_hashes_deferred": len(set(deferred_sources)),
+            "metadata_provenance_not_package_implementation_attestation": True,
+        }
+    )
+)

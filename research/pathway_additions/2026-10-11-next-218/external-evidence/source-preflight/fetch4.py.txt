@@ -1,0 +1,9 @@
+exec(open('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011/fetch.py').read().split('with concurrent.futures.ThreadPoolExecutor')[0])
+ITEMS = [(x+'.json', 'https://rest.uniprot.org/uniprotkb/'+x+'.json') for x in ['P00350','P52697']]
+ITEMS += [('rhea-'+x+'.rdf', 'https://www.rhea-db.org/rhea/'+x+'/rdf') for x in ['15841','12556','17277','17089']]
+ITEMS += [('enzyme-primary-metadata.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:17102132%20OR%20EXT_ID:1846355%20OR%20EXT_ID:11342129%20OR%20EXT_ID:11274385%20OR%20EXT_ID:17962400&format=json&resultType=core')]
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+    rows = list(pool.map(fetch, ITEMS))
+with (ROOT / 'acquisition-4.json').open('x') as f:
+    json.dump(rows, f, indent=2)
+print(json.dumps(rows, indent=2))

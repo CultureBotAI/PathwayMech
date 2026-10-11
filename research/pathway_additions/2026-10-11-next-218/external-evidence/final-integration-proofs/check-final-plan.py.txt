@@ -1,0 +1,80 @@
+"""Read-only small-proof verification after packaging; no adoption or replay."""
+import base64
+import hashlib
+import json
+from pathlib import Path
+import stat
+import subprocess
+
+HERE = Path(__file__).absolute().parent
+REPO = Path('/private/tmp/pathwaymech-next-218-20261011')
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+def require(ok, reason):
+    if not ok:
+        raise RuntimeError(reason)
+def write(path, value):
+    with path.open('x') as handle:
+        json.dump(value, handle, indent=2)
+        handle.write('\n')
+plan = json.loads((HERE / 'copy-plan.json').read_text())
+handoff = json.loads((HERE / 'handoff.json').read_text())
+require(sha((HERE / 'copy-plan.json').read_bytes()) == handoff['copy_plan']['sha256'], 'Copy plan seal')
+copies = {r['destination']: r for r in plan['copies']}
+for row in plan['copies']:
+    p = Path(row['source'])
+    require(not p.is_symlink() and sha(p.read_bytes()) == row['sha256'], 'Copy bytes or kind')
+    require(format(stat.S_IMODE(p.stat().st_mode), '04o') == row['source_mode'] == row['destination_mode'] == '0644', 'Copy mode')
+    require(not (REPO / row['destination']).exists(), 'Maintained collision')
+    require(Path(row['destination']).suffix not in {'.py', '.pyc', '.yaml', '.yml'}, 'Active-looking archive')
+pyc, recovered = [], 0
+for row in plan['source_to_destination']:
+    p = Path(copies[row['destination']]['source']) if row['destination'] in copies else REPO / row['destination']
+    raw = p.read_bytes()
+    require(sha(raw) == row['destination_sha256'], 'Destination mismatch')
+    if row['kind'] == 'symlink':
+        v = json.loads(raw)
+        require(v['link_target'] == row['link_target'] and v['resolved_path'] == row['resolved_path'], 'Link observation mismatch')
+        continue
+    if 'lossless' in row['representation']:
+        v = json.loads(raw)
+        decoded = v['content'].encode('utf-8') if v['encoding'] == 'utf-8' else base64.b64decode(v['content'], validate=True)
+    else:
+        decoded = raw
+    require(sha(decoded) == row['source_sha256'] and len(decoded) == row['source_bytes'], 'Recovery mismatch')
+    recovered += 1
+    if row['source'].endswith('.pyc'):
+        require(v['encoding'] == 'base64' and '__pycache__' not in Path(row['destination']).parts, 'Binary cache format or ignore hazard')
+        pyc.append({'source': row['source'], 'source_sha256': row['source_sha256'], 'destination': row['destination'], 'recovered': True})
+support = [HERE / 'copy-plan.json', HERE / 'handoff.json', Path(__file__).absolute()]
+files = [Path(r['source']) for r in plan['copies']] + support
+whitespace = []
+for p in files:
+    r = subprocess.run(['git', 'diff', '--no-index', '--check', '--', '/dev/null', str(p)], capture_output=True)
+    require(r.returncode in {0, 1} and not r.stdout and not r.stderr, f'Whitespace failed: {p}')
+    whitespace.append({'path': str(p), 'exit_code': r.returncode, 'stdout_bytes': 0, 'stderr_bytes': 0})
+destinations = list(copies) + [str(Path(plan['destination_root']) / p.name) for p in support]
+ignored = subprocess.run(['git', 'check-ignore', '--no-index', '--stdin', '-z'], cwd=REPO,
+                         input=('\0'.join(destinations) + '\0').encode(), capture_output=True)
+require(ignored.returncode == 1 and not ignored.stdout and not ignored.stderr, 'Ignored archive destination')
+report = {'status': 'passed_final_small_proof_copy_and_recovery_checks',
+          'copy_plan_sha256': sha((HERE / 'copy-plan.json').read_bytes()),
+          'handoff_sha256': sha((HERE / 'handoff.json').read_bytes()),
+          'new_copies_verified': len(copies), 'source_bytes_recovered': recovered,
+          'symlink_observations': handoff['symlink_observations'],
+          'binary_pyc_sources': pyc, 'whitespace_checks': whitespace,
+          'ignored_archive_paths': [], 'gitignore_exit_code': 1,
+          'limitations': ['git no-index reports 1 for a clean changed file; this gate requires empty diagnostic streams. Root complete staged gate remains separate.',
+                          'No maintained adoption, source/database replay, canonical scientific review, or browser interaction is asserted.']}
+write(HERE / 'final-checks.json', report)
+support_files = support + [HERE / 'final-checks.json']
+support_map = {'status': 'supplemental_exact_byte_copy_plan', 'copies': []}
+for p in support_files:
+    suffix = p.name + '.txt' if p.suffix == '.py' else p.name
+    support_map['copies'].append({'source': str(p), 'destination': str(Path(plan['destination_root']) / suffix),
+                                 'sha256': sha(p.read_bytes()), 'bytes': p.stat().st_size,
+                                 'source_mode': format(stat.S_IMODE(p.stat().st_mode), '04o'),
+                                 'destination_mode': '0644', 'git_mode': '100644'})
+write(HERE / 'support-copy-plan.json', support_map)
+print(json.dumps({'status': report['status'], 'new_copies': len(copies), 'recovered': recovered,
+                  'whitespace_checked': len(whitespace), 'support_copy_plan_sha256': sha((HERE / 'support-copy-plan.json').read_bytes())}))

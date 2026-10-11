@@ -1,0 +1,43 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import base64,hashlib,json,os,subprocess
+R=Path('/private/tmp/pathwaymech-next-218-20261011');D=Path('research/pathway_additions/2026-10-11-next-218');P=Path('/private/tmp/pathwaymech-ed-copy-plan-20261011');out=Path('/private/tmp/pathwaymech-next-218-dossier-adoption.json');assert __debug__ and not out.exists()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def digest(b):return hashlib.sha256(b).hexdigest()
+hp=P/'handoff.json';assert sha(hp)=='6e1af6dc984ec19185457a5295aeebafe7ae02c9cc37b905d164a2f77ac805bd';h=json.loads(hp.read_text());assert sha(h['copy_plan']['path'])==h['copy_plan']['sha256']=='b7c6082c2450e9232b478424de9a640a12b2c5004d807ae573414a9a0778d566';assert sha(h['validation']['path'])==h['validation']['sha256'];p=json.loads(Path(h['copy_plan']['path']).read_text())
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()==h['prospective_base']['commit']
+for row in p['protected_existing']:assert sha(R/row['destination'])==sha(row['path'])==row['sha256']
+for row in p['input_bindings']:assert sha(row['path'])==row['sha256'] and str(Path(row['path']).resolve())==row['resolved_path'],row['path']
+entries=p['copy_entries']+h['packaging_support_entries']+[{'path':str(hp),'sha256':sha(hp),'copy_source':str(hp),'destination':str(D/'external-evidence/packaging/handoff.json'),'destination_sha256':sha(hp),'mode':'exact_bytes'}]
+prepared={};decoded={};identities={}
+def decode(raw,mode):
+ if mode=='exact_bytes':return raw
+ assert mode=='lossless_json_wrapper';v=json.loads(raw);b=v['content'].encode() if v['encoding']=='utf-8' else base64.b64decode(v['content'],validate=True)
+ assert v['encoding'] in ['utf-8','base64'] and digest(b)==v['original_sha256'] and len(b)==v['original_bytes'];return b
+for row in entries:
+ rel=Path(row['destination']);assert not rel.is_absolute() and '..' not in rel.parts and rel.is_relative_to(D) and rel!=D/'README.md';assert str(rel) not in prepared and not os.path.lexists(R/rel)
+ src=Path(row['path']);copy=Path(row['copy_source']);original=src.read_bytes();raw=copy.read_bytes();assert digest(original)==row['sha256'] and digest(raw)==row['destination_sha256'] and decode(raw,row['mode'])==original
+ if row.get('resolved_path'):assert str(src.resolve())==row['resolved_path']
+ if rel.suffix=='.py':assert rel==D/'ed-replay-final.py' and digest(raw)=='f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e'
+ prepared[str(rel)]=raw;decoded[str(rel)]=original;identities[str(src)]=(str(src.resolve()),digest(original));identities[str(copy)]=(str(copy.resolve()),digest(raw))
+for group in ['exact_byte_aliases','formal_input_resolution','fixture_resolution']:
+ for row in p[group]:
+  assert sha(row['path'])==row['sha256'],(group,row['path'])
+  dest=row.get('destination')
+  if dest:
+   b=decoded[dest] if dest in decoded else (R/dest).read_bytes();assert digest(b)==row['sha256']
+  else:
+   assert row['disposition'] in ['retained-external','external-original-body-alias']
+   for original in row.get('original_paths',[]):assert sha(original)==row['sha256']
+for row in p['symlink_observations']:
+ src=Path(row['path']);assert src.is_symlink() and os.readlink(src)==row['target'] and str(src.resolve())==row['resolved_path']
+ if row.get('sha256'):assert sha(src)==row['sha256']
+for row in p['replay_contract']['relative_input_dependencies']:assert digest(prepared[row['destination']])==row['sha256']
+for path,(resolved,expected) in identities.items():assert str(Path(path).resolve())==resolved and sha(path)==expected
+for rel,raw in prepared.items():
+ dest=R/rel;dest.parent.mkdir(parents=True,exist_ok=True)
+ with dest.open('xb') as f:f.write(raw)
+ assert sha(dest)==digest(raw)
+r={'status':'reviewed_copy_plan_adopted_exactly','at':datetime.now(timezone.utc).isoformat(),'handoff_sha256':sha(hp),'plan_sha256':h['copy_plan']['sha256'],'copies':len(entries),'aliases':len(p['exact_byte_aliases']),'formal_resolutions':len(p['formal_input_resolution']),'fixture_resolutions':len(p['fixture_resolution']),'symlink_observations':len(p['symlink_observations']),'input_bindings_freshly_rechecked':len(p['input_bindings']),'root_checks':'Root read packaging scope/dependencies/limits, freshly rehashed all758 source bindings, decoded each wrapper against original bytes, resolved259aliases/252formalreferences/276fixturefiles, checked1148external symlink observations, exclusively copied258files and rehashed every destination. Existing target/authorities/top-level README preserved.','files':[{'path':rel,'sha256':digest(b)} for rel,b in sorted(prepared.items())],'limits':['No source scientific replay or whole-database rehash solely for packaging.','Original absolute sources/proofs, adapter and declared virtualenv remain required.','Current integrated replay, full corpus gates and canonical scientific review remain required.']}
+with out.open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+(R/D/'dossier-adoption.json').write_bytes(out.read_bytes());(R/D/'adopt-dossier.py.txt').write_bytes(Path(__file__).read_bytes());print(json.dumps({'status':r['status'],'copies':len(entries),'sha256':sha(out)}))

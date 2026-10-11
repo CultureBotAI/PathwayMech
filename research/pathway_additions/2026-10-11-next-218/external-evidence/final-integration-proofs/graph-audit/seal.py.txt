@@ -1,0 +1,42 @@
+"""Seal observed ED static graph comparison; does not perform repository writes."""
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib,json
+O=Path(__file__).absolute().parent;R=Path('/private/tmp/pathwaymech-next-218-20261011')
+def h(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def write(p,v):
+ with p.open('x') as f:json.dump(v,f,indent=2);f.write('\n')
+audit=O/'graph-audit-successor.json';d=json.loads(audit.read_text());assert d['status']=='passed'
+assert d['totals']=={'record_local_named_nodes':26,'distinct_target_KGX_nodes':26,'SVG_nodes_across_pages':25,'target_edges':37,'target_evidence_blocks':92}
+root_receipt=Path('/private/tmp/pathwaymech-next-218-kgx-child-observation.json');rr=json.loads(root_receipt.read_text());local=json.loads((O/'terminal-render-kgx.json').read_text());kgx=next(x for x in local if x['name']=='kgx')
+for key in ['name','command','finished_at','exit_code','log','log_sha256']:assert rr[key]==kgx[key]
+assert h(rr['log'])==rr['log_sha256']
+for rec in d['records']:
+ assert h(R/rec['record'])==rec['record_sha256']
+ assert h(R/rec['page'])==rec['svg_audit']['sha256']
+for name,expected in d['KGX']['files'].items():assert h(R/'pages/downloads'/name)==expected
+for name,expected in d['aggregation_artifacts'].items():assert h(R/'pages'/name)==expected
+assert h(d['execution']['gate_receipt'])==d['execution']['gate_receipt_sha256']
+assert h(d['execution']['render']['log'])==d['execution']['render']['log_sha256']
+cp=O/'root-kgx-child-observation.json'
+with cp.open('xb') as f:f.write(root_receipt.read_bytes())
+b=d['baseline_preservation'];t=d['totals']
+summary=f'''# ED generated artifact audit
+
+The static programmatic audit passed against actual merged Myx baseline `{d['baseline_preservation']['base']}` and frozen ED target `548eba1d…`. It checked all {t['target_edges']} edges and {t['target_evidence_blocks']} evidence blocks, {t['distinct_target_KGX_nodes']} record-local KGX nodes and {t['SVG_nodes_across_pages']} SVG nodes. The taxon is retained in scope and KGX while absent from the edge-endpoint SVG.
+
+All source assertions, locators, reference metadata and declared reaction directions are preserved. Both NADP and NAD first-position alternatives remain parallel within the complete four-position module. SVG anchors, node categories, edge endpoints, arrowheads, unique paths and bounds pass. The actual downloadable TSV pair equals the separately completed canonical CLI export; its manifest hashes/counts and the site pathway-index JSON, browse cards and index totals are consistent with 219 records.
+
+All {b['immutable_record_history_review_page_files']} baseline record/history/review/page files, {b['unchanged_exported_edges']} baseline KGX edges, {b['unchanged_record_scoped_node_contexts']} prior node contexts and 218 prior browse/index entries remain unchanged. Three aggregate node display names change through the existing first-record naming rule: CHEBI:57955, CHEBI:58759 and RHEA:12557. Every prior label survives in its original record context; all other baseline row fields are unchanged. The initial audit's over-strict name-equality assertion and failed receipt remain preserved, followed by the explicit deterministic-name check.
+
+No browser interaction or new independent scientific approval is claimed. The auditor previously contributed ED preflight, authority selection and copy planning; root and the separate scientific reviewer accepted those preparations independently. This check addresses generated artifact correspondence only. Render and standalone KGX terminal success are bound to actual root receipts; no full-suite pass or publication status is inferred. No maintained files were edited.
+'''
+with (O/'summary.md').open('x') as f:f.write(summary)
+files=[]
+for p in sorted(O.iterdir()):
+ if p.is_file() and p.name!='completion.json':files.append({'path':str(p),'sha256':h(p),'bytes':p.stat().st_size})
+completion={'sealed_at':datetime.now(UTC).isoformat(),'status':'passed_static_programmatic_graph_and_kgx_audit','report':{'path':str(audit),'sha256':h(audit)},'summary':{'path':str(O/'summary.md'),'sha256':h(O/'summary.md')},'actual_execution':{'session':19946,'exit_code':0,'terminal_chunk':'e8d27e','log':str(O/'graph-audit-successor.log'),'log_sha256':h(O/'graph-audit-successor.log')},'initial_execution':{'session':47354,'exit_code':1,'terminal_chunk':'abcb9f','reason':'Over-strict aggregate display-name equality; old record-scoped labels were not lost. See preserved source observation and harness correction.'},'root_kgx_child':{'path':str(cp),'sha256':h(cp),'driver_session':rr['driver_session'],'observation_chunk':rr['observation_chunk']},'totals':t,'preservation_summary':{k:v for k,v in b.items() if k!='paths'},'exact_KGX_ID_set_delta':d['exact_KGX_ID_set_delta'],'files':files,'limits':d['limits'],'contribution_disclosure':d['reviewer_role'],'maintained_writes':[]}
+assert completion['actual_execution']['terminal_chunk']!='REPLACE_AFTER_OBSERVATION'
+write(O/'completion.json',completion)
+print(json.dumps({'status':completion['status'],'report_sha256':h(audit),'completion_sha256':h(O/'completion.json'),'totals':t},indent=2))

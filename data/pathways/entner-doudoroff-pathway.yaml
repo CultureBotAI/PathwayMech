@@ -1,0 +1,1082 @@
+id: KEGG:M00008
+label: Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate
+description: 'Complete phosphorylative Entner–Doudoroff module from beta-D-glucose 6-phosphate to D-glyceraldehyde
+  3-phosphate and pyruvate, scoped to current E. coli K-12 proteins with experiment-specific strain and
+  construct limits. Five reaction objects cover four sequential positions: alternative NADP- and NAD-dependent
+  oxidations converge on lactone hydrolysis, dehydration and aldol cleavage. The beta identity is the
+  native KEGG convention, not experimentally proven exclusive anomer use. First-step charged forms are
+  explicit acid-base normalizations, and the two donor branches are never summed or assumed to carry equal
+  in vivo flux. R10907 is listed by M00008 even though its inverse MODULE field omits M00008. Edd historical
+  sequence and inferred iron-sulfur details remain qualified; Eda has source-supported homotrimer assembly.
+  The CsrA Results/Fig.7 and Discussion report indirect positive expression effects, despite a negative
+  section heading/current UniProt statement; no direct inhibition edge is inferred. Cofactor assays do
+  not make Mg/Mn obligatory bound cofactors or LDH reporter NADH an Eda reactant. Uptake, precursor phosphorylation,
+  downstream lower glycolysis, ATP production and other Eda substrate activities are outside this exact
+  boundary.'
+pathway_type: central-carbon-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57569
+  label: 2-dehydro-3-deoxy-6-phosphonato-D-gluconate(3-)
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:57955
+  label: 6-O-phosphonato-D-glucono-1,5-lactone(2-)
+  category: small_molecule
+- id: CHEBI:58247
+  label: beta-D-glucose 6-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:58759
+  label: 6-phosphonatooxy-D-gluconate
+  category: small_molecule
+- id: CHEBI:59776
+  label: D-glyceraldehyde 3-phosphate(2-)
+  category: small_molecule
+- id: UniProtKB:P0AC53
+  label: Glucose-6-phosphate 1-dehydrogenase
+  category: protein
+- id: UniProtKB:P52697
+  label: 6-phosphogluconolactonase
+  category: protein
+- id: UniProtKB:P0ADF6
+  label: Phosphogluconate dehydratase
+  category: protein
+- id: UniProtKB:P0A955
+  label: KHG/KDPG aldolase
+  category: protein
+- id: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+  label: KHG/KDPG aldolase
+  category: complex
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: KEGG:R02736
+  label: beta-D-glucose-6-phosphate:NADP+ 1-oxoreductase
+  direction: reversible
+- id: KEGG:R10907
+  label: beta-D-glucose-6-phosphate:NAD+ 1-oxidoreductase
+  direction: reversible
+- id: RHEA:12557
+  label: 6-phospho-D-glucono-1,5-lactone + H2O => 6-phospho-D-gluconate + H(+)
+  direction: left_to_right
+- id: RHEA:17278
+  label: 6-phospho-D-gluconate => 2-dehydro-3-deoxy-6-phospho-D-gluconate + H2O
+  direction: left_to_right
+- id: RHEA:17090
+  label: 2-dehydro-3-deoxy-6-phospho-D-gluconate => D-glyceraldehyde 3-phosphate + pyruvate
+  direction: left_to_right
+mechanistic_edges:
+- id: ed-edge-001
+  subject: KEGG:R02736
+  predicate: part_of
+  object: KEGG:M00008
+  description: Full native module member. Alternative first-position cofactor activity; do not add its
+    flux to the other alternative.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The module has four sequential positions and explicitly includes R02736 at position
+      1. R02736 and R10907 are alternatives at the first position, not serial reactions.
+    source_locator: ENTRY; NAME; DEFINITION; ORTHOLOGY
+- id: ed-edge-002
+  subject: KEGG:R10907
+  predicate: part_of
+  object: KEGG:M00008
+  description: Full native module member. Alternative first-position cofactor activity; do not add its
+    flux to the other alternative.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The module has four sequential positions and explicitly includes R10907 at position
+      1. R02736 and R10907 are alternatives at the first position, not serial reactions.
+    source_locator: ENTRY; NAME; DEFINITION; ORTHOLOGY
+  - reference_id: KEGG:R10907
+    source_assertion: The reaction lists M00004 and M00006 in its MODULE field, but not M00008; this inverse-membership
+      inconsistency is retained. M00008 itself explicitly lists R10907.
+    source_locator: MODULE
+- id: ed-edge-003
+  subject: RHEA:12557
+  predicate: part_of
+  object: KEGG:M00008
+  description: Full native module member. No uptake, ATP-generating lower glycolysis or narrower two-step
+    shunt substitution.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The module has four sequential positions and explicitly includes R02035 at position
+      2. R02736 and R10907 are alternatives at the first position, not serial reactions.
+    source_locator: ENTRY; NAME; DEFINITION; ORTHOLOGY
+  - reference_id: KEGG:R02035
+    source_assertion: The native equation has the selected transformation and a cross-reference to bidirectional
+      Rhea 12559; it does not itself specify the directed identifier.
+    source_locator: EQUATION; DBLINKS
+  - reference_id: RHEA:12557
+    source_assertion: Rhea master 12556 links bidirectional 12559 and directional 12557; the selected
+      substrates/products orient catabolic module flow.
+    source_locator: http://rdf.rhea-db.org/12556 rh:bidirectionalReaction, rh:directionalReaction; RHEA:12557
+      rh:substrates, rh:products
+- id: ed-edge-004
+  subject: RHEA:17278
+  predicate: part_of
+  object: KEGG:M00008
+  description: Full native module member. No uptake, ATP-generating lower glycolysis or narrower two-step
+    shunt substitution.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The module has four sequential positions and explicitly includes R02036 at position
+      3. R02736 and R10907 are alternatives at the first position, not serial reactions.
+    source_locator: ENTRY; NAME; DEFINITION; ORTHOLOGY
+  - reference_id: KEGG:R02036
+    source_assertion: The native equation has the selected transformation and a cross-reference to bidirectional
+      Rhea 17280; it does not itself specify the directed identifier.
+    source_locator: EQUATION; DBLINKS
+  - reference_id: RHEA:17278
+    source_assertion: Rhea master 17277 links bidirectional 17280 and directional 17278; the selected
+      substrates/products orient catabolic module flow.
+    source_locator: http://rdf.rhea-db.org/17277 rh:bidirectionalReaction, rh:directionalReaction; RHEA:17278
+      rh:substrates, rh:products
+- id: ed-edge-005
+  subject: RHEA:17090
+  predicate: part_of
+  object: KEGG:M00008
+  description: Full native module member. No uptake, ATP-generating lower glycolysis or narrower two-step
+    shunt substitution.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The module has four sequential positions and explicitly includes R05605 at position
+      4. R02736 and R10907 are alternatives at the first position, not serial reactions.
+    source_locator: ENTRY; NAME; DEFINITION; ORTHOLOGY
+  - reference_id: KEGG:R05605
+    source_assertion: The native equation has the selected transformation and a cross-reference to bidirectional
+      Rhea 17092; it does not itself specify the directed identifier.
+    source_locator: EQUATION; DBLINKS
+  - reference_id: RHEA:17090
+    source_assertion: Rhea master 17089 links bidirectional 17092 and directional 17090; the selected
+      substrates/products orient catabolic module flow.
+    source_locator: http://rdf.rhea-db.org/17089 rh:bidirectionalReaction, rh:directionalReaction; RHEA:17090
+      rh:substrates, rh:products
+- id: ed-edge-006
+  subject: CHEBI:58349
+  predicate: consumes
+  object: KEGG:R02736
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R02736
+    source_assertion: The original beta-specific equation is C01172 + C00006 <=> C01236 + C00005 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C00006
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:58349
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:58349; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-007
+  subject: KEGG:R02736
+  predicate: produces
+  object: CHEBI:57955
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - &id001
+    reference_id: KEGG:R02736
+    source_assertion: The original beta-specific equation is C01172 + C00006 <=> C01236 + C00005 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - &id002
+    reference_id: KEGG:C01236
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - &id003
+    reference_id: CHEBI:57955
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:57955; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-008
+  subject: KEGG:R02736
+  predicate: produces
+  object: CHEBI:57783
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R02736
+    source_assertion: The original beta-specific equation is C01172 + C00006 <=> C01236 + C00005 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C00005
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:57783
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:57783; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-009
+  subject: KEGG:R02736
+  predicate: produces
+  object: CHEBI:15378
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R02736
+    source_assertion: The original beta-specific equation is C01172 + C00006 <=> C01236 + C00005 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C00080
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:15378
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:15378; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-010
+  subject: CHEBI:58247
+  predicate: consumes
+  object: KEGG:R02736
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R02736
+    source_assertion: The original beta-specific equation is C01172 + C00006 <=> C01236 + C00005 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C01172
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:58247
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:58247; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-011
+  subject: KEGG:R10907
+  predicate: produces
+  object: CHEBI:57955
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - &id005
+    reference_id: KEGG:R10907
+    source_assertion: The original beta-specific equation is C01172 + C00003 <=> C01236 + C00004 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - &id006
+    reference_id: KEGG:C01236
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - &id007
+    reference_id: CHEBI:57955
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:57955; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-012
+  subject: KEGG:R10907
+  predicate: produces
+  object: CHEBI:15378
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R10907
+    source_assertion: The original beta-specific equation is C01172 + C00003 <=> C01236 + C00004 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C00080
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:15378
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:15378; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-013
+  subject: CHEBI:58247
+  predicate: consumes
+  object: KEGG:R10907
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R10907
+    source_assertion: The original beta-specific equation is C01172 + C00003 <=> C01236 + C00004 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C01172
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:58247
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:58247; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-014
+  subject: CHEBI:57540
+  predicate: consumes
+  object: KEGG:R10907
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R10907
+    source_assertion: The original beta-specific equation is C01172 + C00003 <=> C01236 + C00004 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C00003
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:57540
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:57540; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-015
+  subject: KEGG:R10907
+  predicate: produces
+  object: CHEBI:57945
+  description: 'Coefficient: 1. This is one alternative source-specific beta-anomer equation, normalized
+    to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  evidence:
+  - reference_id: KEGG:R10907
+    source_assertion: The original beta-specific equation is C01172 + C00003 <=> C01236 + C00004 + C00080.
+      Forward module use is selected; the native equation is reversible.
+    source_locator: EQUATION; DEFINITION
+  - reference_id: KEGG:C00004
+    source_assertion: The original compound entry and its ATOM/BOND fields fix the native chemical identity.
+      The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base
+      normalization; no neutral/charged exactMatch is asserted.
+    source_locator: ENTRY; NAME; FORMULA; ATOM; BOND
+  - reference_id: CHEBI:57945
+    source_assertion: The issuing structure, formula and charge specify the selected normalized reaction
+      participant. Its protonation is compared with the original KEGG structure; coefficients balance
+      this complete charged equation.
+    source_locator: statements subject=CHEBI:57945; chemrof:inchi_string, chemrof:generalized_empirical_formula,
+      chemrof:charge
+- id: ed-edge-016
+  subject: CHEBI:57955
+  predicate: consumes
+  object: RHEA:12557
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - &id004
+    reference_id: RHEA:12557
+    source_assertion: The original directional substrates chain contains CHEBI:57955 with coefficient
+      1. The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:12557 rh:substrates -> http://rdf.rhea-db.org/12556_L rh:contains1 -> http://rdf.rhea-db.org/Participant_12556_compound_3399
+      rh:compound -> http://rdf.rhea-db.org/Compound_3399 rh:accession/formula/charge
+- id: ed-edge-017
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:12557
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - reference_id: RHEA:12557
+    source_assertion: The original directional substrates chain contains CHEBI:15377 with coefficient
+      1. The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:12557 rh:substrates -> http://rdf.rhea-db.org/12556_L rh:contains1 -> http://rdf.rhea-db.org/Participant_12556_compound_1283
+      rh:compound -> http://rdf.rhea-db.org/Compound_1283 rh:accession/formula/charge
+- id: ed-edge-018
+  subject: RHEA:12557
+  predicate: produces
+  object: CHEBI:58759
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - &id008
+    reference_id: RHEA:12557
+    source_assertion: The original directional products chain contains CHEBI:58759 with coefficient 1.
+      The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:12557 rh:products -> http://rdf.rhea-db.org/12556_R rh:contains1 -> http://rdf.rhea-db.org/Participant_12556_compound_4577
+      rh:compound -> http://rdf.rhea-db.org/Compound_4577 rh:accession/formula/charge
+- id: ed-edge-019
+  subject: RHEA:12557
+  predicate: produces
+  object: CHEBI:15378
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - reference_id: RHEA:12557
+    source_assertion: The original directional products chain contains CHEBI:15378 with coefficient 1.
+      The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:12557 rh:products -> http://rdf.rhea-db.org/12556_R rh:contains1 -> http://rdf.rhea-db.org/Participant_12556_compound_3249
+      rh:compound -> http://rdf.rhea-db.org/Compound_3249 rh:accession/formula/charge
+- id: ed-edge-020
+  subject: CHEBI:58759
+  predicate: consumes
+  object: RHEA:17278
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - &id009
+    reference_id: RHEA:17278
+    source_assertion: The original directional substrates chain contains CHEBI:58759 with coefficient
+      1. The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:17278 rh:substrates -> http://rdf.rhea-db.org/17277_L rh:contains1 -> http://rdf.rhea-db.org/Participant_17277_compound_4577
+      rh:compound -> http://rdf.rhea-db.org/Compound_4577 rh:accession/formula/charge
+- id: ed-edge-021
+  subject: RHEA:17278
+  predicate: produces
+  object: CHEBI:57569
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - &id010
+    reference_id: RHEA:17278
+    source_assertion: The original directional products chain contains CHEBI:57569 with coefficient 1.
+      The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:17278 rh:products -> http://rdf.rhea-db.org/17277_R rh:contains1 -> http://rdf.rhea-db.org/Participant_17277_compound_5038
+      rh:compound -> http://rdf.rhea-db.org/Compound_5038 rh:accession/formula/charge
+- id: ed-edge-022
+  subject: RHEA:17278
+  predicate: produces
+  object: CHEBI:15377
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - reference_id: RHEA:17278
+    source_assertion: The original directional products chain contains CHEBI:15377 with coefficient 1.
+      The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:17278 rh:products -> http://rdf.rhea-db.org/17277_R rh:contains1 -> http://rdf.rhea-db.org/Participant_17277_compound_1283
+      rh:compound -> http://rdf.rhea-db.org/Compound_1283 rh:accession/formula/charge
+- id: ed-edge-023
+  subject: CHEBI:57569
+  predicate: consumes
+  object: RHEA:17090
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - &id011
+    reference_id: RHEA:17090
+    source_assertion: The original directional substrates chain contains CHEBI:57569 with coefficient
+      1. The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:17090 rh:substrates -> http://rdf.rhea-db.org/17089_L rh:contains1 -> http://rdf.rhea-db.org/Participant_17089_compound_5038
+      rh:compound -> http://rdf.rhea-db.org/Compound_5038 rh:accession/formula/charge
+- id: ed-edge-024
+  subject: RHEA:17090
+  predicate: produces
+  object: CHEBI:59776
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - reference_id: RHEA:17090
+    source_assertion: The original directional products chain contains CHEBI:59776 with coefficient 1.
+      The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:17090 rh:products -> http://rdf.rhea-db.org/17089_R rh:contains1 -> http://rdf.rhea-db.org/Participant_17089_compound_6062
+      rh:compound -> http://rdf.rhea-db.org/Compound_6062 rh:accession/formula/charge
+- id: ed-edge-025
+  subject: RHEA:17090
+  predicate: produces
+  object: CHEBI:15361
+  description: 'Coefficient: 1. Exact directed Rhea participant in the complete module.'
+  evidence:
+  - reference_id: RHEA:17090
+    source_assertion: The original directional products chain contains CHEBI:15361 with coefficient 1.
+      The formula and charge belong to the linked native compound, not an inferred label mapping.
+    source_locator: RHEA:17090 rh:products -> http://rdf.rhea-db.org/17089_R rh:contains1 -> http://rdf.rhea-db.org/Participant_17089_compound_3719
+      rh:compound -> http://rdf.rhea-db.org/Compound_3719 rh:accession/formula/charge
+- id: ed-edge-026
+  subject: UniProtKB:P0AC53
+  predicate: enables
+  object: KEGG:R02736
+  description: Qualified current Zwf gene-product/activity attribution; both cofactor capacities are supported
+    for modified E. coli preparations. Source beta specificity is curated, not experimentally exclusive.
+    No isolated monomer sufficiency, exact historical construct equality or measured NAD-dependent in
+    vivo ED flux is asserted.
+  evidence:
+  - reference_id: UniProtKB:P0AC53
+    source_assertion: The K-12 zwf/b1852 entry has 491 residues and a generic glucose-6-phosphate/NADP
+      catalytic annotation (ECO:0000255/HAMAP). This is not independent proof of exclusive beta use or
+      of the NAD alternative.
+    source_locator: /primaryAccession; /genes; /organism; /sequence; /comments/2
+  - reference_id: PMID:22519976
+    source_assertion: The purified modified E. coli preparation oxidized glucose 6-phosphate with NADP
+      and with NAD, with markedly different affinities. The thrombin-cleaved construct retains twelve
+      extra N-terminal residues. No exclusive-anomer assay or in vivo ED donor partition is established.
+    source_locator: 'Results: NADP and NAD as co-substrates, Table 1; Experimental procedures: Purification;
+      Discussion, paragraph on twelve extra N-terminal residues'
+  - reference_id: PMID:27010804
+    source_assertion: The 2016 study retains a wild-type dual-cofactor comparator and engineered mutants.
+      Its TEV construct is expected to retain Gly-His. These are preparation-specific observations, not
+      exact equality to the current native sequence.
+    source_locator: //sec[@id="sec005"]/p | //table-wrap[@id="pone.0152403.t001"]
+  - reference_id: DOI:10.1371/journal.pone.0152403.s002
+    source_assertion: S1 Table identifies Escherichia coli P0AC53 among sequences analyzed. This is an
+      accession bridge for sequence analysis, not a complete kinetic construct sequence proof.
+    source_locator: xl/worksheets/sheet1.xml row 9, decoded with xl/sharedStrings.xml
+  - reference_id: KEGG:R02736
+    source_assertion: KEGG supplies the beta-specific reaction convention. Applying the enzyme activity
+      to this exact anomer-specific source equation is a qualified annotation-level inference, not direct
+      exclusive-anomer characterization.
+    source_locator: DEFINITION; EQUATION
+- id: ed-edge-027
+  subject: UniProtKB:P0AC53
+  predicate: enables
+  object: KEGG:R10907
+  description: Qualified current Zwf gene-product/activity attribution; both cofactor capacities are supported
+    for modified E. coli preparations. Source beta specificity is curated, not experimentally exclusive.
+    No isolated monomer sufficiency, exact historical construct equality or measured NAD-dependent in
+    vivo ED flux is asserted.
+  evidence:
+  - reference_id: UniProtKB:P0AC53
+    source_assertion: The K-12 zwf/b1852 entry has 491 residues and a generic glucose-6-phosphate/NADP
+      catalytic annotation (ECO:0000255/HAMAP). This is not independent proof of exclusive beta use or
+      of the NAD alternative.
+    source_locator: /primaryAccession; /genes; /organism; /sequence; /comments/2
+  - reference_id: PMID:22519976
+    source_assertion: The purified modified E. coli preparation oxidized glucose 6-phosphate with NADP
+      and with NAD, with markedly different affinities. The thrombin-cleaved construct retains twelve
+      extra N-terminal residues. No exclusive-anomer assay or in vivo ED donor partition is established.
+    source_locator: 'Results: NADP and NAD as co-substrates, Table 1; Experimental procedures: Purification;
+      Discussion, paragraph on twelve extra N-terminal residues'
+  - reference_id: PMID:27010804
+    source_assertion: The 2016 study retains a wild-type dual-cofactor comparator and engineered mutants.
+      Its TEV construct is expected to retain Gly-His. These are preparation-specific observations, not
+      exact equality to the current native sequence.
+    source_locator: //sec[@id="sec005"]/p | //table-wrap[@id="pone.0152403.t001"]
+  - reference_id: DOI:10.1371/journal.pone.0152403.s002
+    source_assertion: S1 Table identifies Escherichia coli P0AC53 among sequences analyzed. This is an
+      accession bridge for sequence analysis, not a complete kinetic construct sequence proof.
+    source_locator: xl/worksheets/sheet1.xml row 9, decoded with xl/sharedStrings.xml
+  - reference_id: KEGG:R10907
+    source_assertion: KEGG supplies the beta-specific reaction convention. Applying the enzyme activity
+      to this exact anomer-specific source equation is a qualified annotation-level inference, not direct
+      exclusive-anomer characterization.
+    source_locator: DEFINITION; EQUATION
+- id: ed-edge-028
+  subject: UniProtKB:P52697
+  predicate: enables
+  object: RHEA:12557
+  description: K-12 Pgl activity supported by deletion/complementation and cell-extract assays; no purified-enzyme
+    assembly or bound metal requirement is inferred.
+  evidence:
+  - reference_id: UniProtKB:P52697
+    source_assertion: The K-12 pgl/ybhE product is annotated with Rhea12556 hydrolysis using ECO:0000269/PMID15576773;
+      the current native sequence is 331 residues.
+    source_locator: /primaryAccession; /genes; /organism; /sequence; /comments/0; /comments/1
+  - reference_id: PMID:15576773
+    source_assertion: Mutations made in DY378 were moved to MG1655. Loss of pgl removed extract lactonase
+      activity, and plasmid complementation restored it; the assay was explicitly not fully quantitative.
+    source_locator: //section[@id="sec4"]/p[1] | //section[@id="sec15"]/p[1]
+- id: ed-edge-029
+  subject: UniProtKB:P0ADF6
+  predicate: enables
+  object: RHEA:17278
+  description: Current Edd gene-product/activity relation with historical 603/602-residue conflict retained.
+    Coupled lysate activity does not identify a purified assembly or make assay Mn/Mg obligatory cofactors.
+  evidence:
+  - reference_id: UniProtKB:P0ADF6
+    source_assertion: The K-12 edd/b1851 entry annotates Rhea17277 activity with HAMAP and experimental
+      citations. Its current 603-residue sequence has PLR at 252–254, versus historical AC; exact old
+      construct equality is not established.
+    source_locator: /primaryAccession; /genes; /organism; /sequence; /comments/1; /features/3
+  - reference_id: PMID:17962400
+    source_assertion: The edd ORF was amplified from K-12 DNA and expressed in BL21(DE3); active lysates
+      were used. Mn supplementation during expression is not proof of an obligatory bound Mn cofactor.
+    source_locator: //section[@id="sec10"]/p[position()>=1 and position()<=3]
+- id: ed-edge-030
+  subject: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+  predicate: catalyzes
+  object: RHEA:17090
+  description: Source-verified Eda homotrimer cleaves KDPG. Other Eda substrate activities, coupled LDH/NADH
+    reporting, and engineered-substrate specificity are outside this equation.
+  evidence:
+  - reference_id: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+    source_assertion: The native KHG/KDPG aldolase complex catalyzes KDPGALDOL-RXN via KDPGALDOL-ENZRXN.
+      The same source also describes additional reactions outside this exact module.
+    source_locator: /ptools-xml/Protein/catalyzes/Enzymatic-Reaction[@frameid="KDPGALDOL-ENZRXN"]/reaction
+  - reference_id: UniProtKB:P0A955
+    source_assertion: The current Eda entry annotates KDPG cleavage to D-glyceraldehyde 3-phosphate and
+      pyruvate with experimental evidence and identifies a homotrimer.
+    source_locator: /comments/1; /comments/8
+  - reference_id: PMID:17962400
+    source_assertion: KDPG cleavage was assayed through pyruvate production using coupled lactate dehydrogenase.
+      NADH consumption belongs to that reporter and is not part of the aldolase equation.
+    source_locator: //section[@id="sec11"]/p[1]
+- id: ed-edge-031
+  subject: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+  predicate: has_part
+  object: UniProtKB:P0A955
+  description: 'Stoichiometry: 3 identical Eda subunits. Native component identity and current protein
+    annotation connect the complex; primary recombinant assembly supports trimerization without an exact
+    donor-strain/construct equality claim.'
+  evidence:
+  - reference_id: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+    source_assertion: The native complex contains three copies of KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER.
+    source_locator: /ptools-xml/Protein/component
+  - reference_id: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER
+    source_assertion: The component object explicitly unifies UniProt P0A955; the curated native species
+      is K-12 MG1655.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]; /ptools-xml/Protein/species
+  - reference_id: UniProtKB:P0A955
+    source_assertion: The current K-12 entry states Homotrimer with experimental evidence including PMID11274385.
+    source_locator: /primaryAccession; /organism; /comments/8
+  - reference_id: PMID:11274385
+    source_assertion: The recombinant E. coli enzyme has trimeric subunit assembly. The eda/pKK-223 preparation
+      is described; expression-host and SeMet preparation details do not independently establish a MG1655
+      donor strain.
+    source_locator: //section[@id="sec2"]/p[1] | //section[@id="sec5"]/p[1]
+- id: ed-edge-032
+  subject: UniProtKB:P0ADF6
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: Qualified [4Fe-4S] annotation. Activity sensitivity/reactivation supports an iron-sulfur
+    interpretation; exact cluster type and one-per-protein count retain their annotation inference tier.
+  evidence:
+  - reference_id: UniProtKB:P0ADF6
+    source_assertion: The entry assigns one [4Fe-4S] cluster using ECO:0000250, ECO:0000255 and curator
+      inference ECO:0000305. The one-cluster note is similarity/HAMAP evidence, not direct Edd cluster
+      stoichiometry measurement.
+    source_locator: /comments/2/cofactors/0; /comments/2/note
+  - reference_id: PMID:17102132
+    source_assertion: Edd lysate activity was peroxide-sensitive and recoverable with iron/DTT. The explicit
+      [3Fe-4S] EPR signal in this passage belongs to fumarase A; it is not an Edd spectrum.
+    source_locator: //*[@id="P9"] | //*[@id="P30"]
+- id: ed-edge-033
+  subject: UniProtKB:P0A955
+  predicate: located_in
+  object: GO:0005737
+  description: Annotated Eda location; this does not infer a directly measured compartment for every module
+    component.
+  evidence:
+  - reference_id: UniProtKB:P0A955
+    source_assertion: The entry assigns cytoplasm as cellular location with ECO:0000305 curator inference.
+    source_locator: /comments/10/subcellularLocations/0/location
+- id: ed-edge-034
+  subject: KEGG:R02736
+  predicate: provides_input_for
+  object: RHEA:12557
+  description: The shared CHEBI:57955 product/substrate links these positions. The two first-position
+    alternatives independently feed hydrolysis; neither precedes or feeds the other.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The native definition orders oxidation, lactone hydrolysis, dehydration and aldol
+      cleavage, with both oxidation alternatives in the same first position.
+    source_locator: DEFINITION; ORTHOLOGY
+  - *id001
+  - *id002
+  - *id003
+  - *id004
+- id: ed-edge-035
+  subject: KEGG:R10907
+  predicate: provides_input_for
+  object: RHEA:12557
+  description: The shared CHEBI:57955 product/substrate links these positions. The two first-position
+    alternatives independently feed hydrolysis; neither precedes or feeds the other.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The native definition orders oxidation, lactone hydrolysis, dehydration and aldol
+      cleavage, with both oxidation alternatives in the same first position.
+    source_locator: DEFINITION; ORTHOLOGY
+  - *id005
+  - *id006
+  - *id007
+  - *id004
+- id: ed-edge-036
+  subject: RHEA:12557
+  predicate: provides_input_for
+  object: RHEA:17278
+  description: The shared CHEBI:58759 product/substrate links these positions. The two first-position
+    alternatives independently feed hydrolysis; neither precedes or feeds the other.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The native definition orders oxidation, lactone hydrolysis, dehydration and aldol
+      cleavage, with both oxidation alternatives in the same first position.
+    source_locator: DEFINITION; ORTHOLOGY
+  - *id008
+  - *id009
+- id: ed-edge-037
+  subject: RHEA:17278
+  predicate: provides_input_for
+  object: RHEA:17090
+  description: The shared CHEBI:57569 product/substrate links these positions. The two first-position
+    alternatives independently feed hydrolysis; neither precedes or feeds the other.
+  evidence:
+  - reference_id: KEGG:M00008
+    source_assertion: The native definition orders oxidation, lactone hydrolysis, dehydration and aldol
+      cleavage, with both oxidation alternatives in the same first position.
+    source_locator: DEFINITION; ORTHOLOGY
+  - *id010
+  - *id011
+references:
+- id: KEGG:M00008
+  title: Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate
+  url: https://rest.kegg.jp/get/M00008
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 5f1362bca2e9cc0e5442e99f033836580a5ba23ba2bb80c1f3ce12721420de3a
+- id: KEGG:R02736
+  title: beta-D-glucose-6-phosphate:NADP+ 1-oxoreductase
+  url: https://rest.kegg.jp/get/R02736
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 885ed16e1be80bec5dff01f3fa12222ca605e7f86e31b37e7bd201119c021ee7
+- id: KEGG:R10907
+  title: beta-D-glucose-6-phosphate:NAD+ 1-oxidoreductase
+  url: https://rest.kegg.jp/get/R10907
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 347fb45378bd1495dcaa923861090c3f6fd4900d9bbd5fcf8f2312af881b6c00
+- id: KEGG:R02035
+  title: 6-phospho-D-glucono-1,5-lactone lactonohydrolase
+  url: https://rest.kegg.jp/get/R02035
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 9d63bcba0195877a9f28aa6a30c415aa6e2cffc388e408d819ee8ab16a9828dc
+- id: KEGG:R02036
+  title: 6-phospho-D-gluconate hydro-lyase (2-dehydro-3-deoxy-6-phospho-D-gluconate-forming)
+  url: https://rest.kegg.jp/get/R02036
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 44ee1d2eebfe070319cdf62bf1ed96632487389f7b30ab9c99068897fa525597
+- id: KEGG:R05605
+  title: 2-dehydro-3-deoxy-6-phospho-D-gluconate D-glyceraldehyde-3-phosphate-lyase (pyruvate-forming)
+  url: https://rest.kegg.jp/get/R05605
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 3bef15e6d2acf4465ed6029d50adc1c5c7511d37002e44dbaca1991a1cd52922
+- id: KEGG:C01172
+  title: beta-D-Glucose 6-phosphate
+  url: https://rest.kegg.jp/get/C01172
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 8f3a3388e745ad790e7dbb093ef03c0c1d59c5b3f95c964870fb1d5c0c2a5d0a
+- id: KEGG:C01236
+  title: 'D-Glucono-1,5-lactone 6-phosphate;
+
+    6-Phospho-D-glucono-1,5-lactone'
+  url: https://rest.kegg.jp/get/C01236
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: bbe6627658daa95e84ea241d9d38cafd5dee360294cba091bf709b323f2b574e
+- id: KEGG:C00345
+  title: 6-Phospho-D-gluconate
+  url: https://rest.kegg.jp/get/C00345
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 006690a90ba4b85d03702426d919b3ed36fe24dc32633e8a702e415c32037eea
+- id: KEGG:C04442
+  title: '2-Dehydro-3-deoxy-6-phospho-D-gluconate;
+
+    6-Phospho-2-dehydro-3-deoxy-D-gluconate;
+
+    2-Keto-3-deoxy-6-phosphogluconate;
+
+    2-Dehydro-3-deoxy-D-gluconate 6-phosphate'
+  url: https://rest.kegg.jp/get/C04442
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 1533b7d6b4f3afa2eb2995f965ce8d2a55ae124efe0c5b004027dad18417a0f0
+- id: KEGG:C00118
+  title: 'D-Glyceraldehyde 3-phosphate;
+
+    (2R)-2-Hydroxy-3-(phosphonooxy)-propanal;
+
+    Glyceraldehyde 3-phosphate'
+  url: https://rest.kegg.jp/get/C00118
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 8f700668405ffce15d67b3dcecdf6c7a7947b24e8658d7f0241f1cd2cf248fde
+- id: KEGG:C00022
+  title: 'Pyruvate;
+
+    Pyruvic acid;
+
+    2-Oxopropanoate;
+
+    2-Oxopropanoic acid;
+
+    Pyroracemic acid'
+  url: https://rest.kegg.jp/get/C00022
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 9f124574e9bb923e07908a128a749467c78df395b91f998e82d865ef6f3a291d
+- id: KEGG:C00001
+  title: 'H2O;
+
+    Water'
+  url: https://rest.kegg.jp/get/C00001
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 9b14f5f0f1660a38faa031f74d06a4b6d0d0a5ce119805833089b9d57041470a
+- id: KEGG:C00080
+  title: 'H+;
+
+    Hydron'
+  url: https://rest.kegg.jp/get/C00080
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 35296b0e31f9dc8d369626fa363da904ac94447eb6e1375ff369c402a7691b3b
+- id: KEGG:C00003
+  title: 'NAD+;
+
+    NAD;
+
+    Nicotinamide adenine dinucleotide;
+
+    DPN;
+
+    Diphosphopyridine nucleotide;
+
+    Nadide;
+
+    beta-NAD+'
+  url: https://rest.kegg.jp/get/C00003
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 91a8b43458597aafaf483b0086ada4d0d3be998237ea594bba8b0e877739bf49
+- id: KEGG:C00004
+  title: 'NADH;
+
+    DPNH;
+
+    Reduced nicotinamide adenine dinucleotide'
+  url: https://rest.kegg.jp/get/C00004
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: c3feab3217c37b5430c518de758c9cfe836bc27891d377b5934b79348f631191
+- id: KEGG:C00005
+  title: 'NADPH;
+
+    TPNH;
+
+    Reduced nicotinamide adenine dinucleotide phosphate'
+  url: https://rest.kegg.jp/get/C00005
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: 2540b7508946f4921609cc9733d9a1fd92071be0cb698df6544feaf7a1dd4149
+- id: KEGG:C00006
+  title: 'NADP+;
+
+    NADP;
+
+    Nicotinamide adenine dinucleotide phosphate;
+
+    beta-Nicotinamide adenine dinucleotide phosphate;
+
+    TPN;
+
+    Triphosphopyridine nucleotide;
+
+    beta-NADP+'
+  url: https://rest.kegg.jp/get/C00006
+  source_version: Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields
+    retained
+  source_sha256: da802f593820e0e0af19697fe2d8dd585732f78eab822fac5b24e5d62885fcaf
+- id: CHEBI:57955
+  title: 6-O-phosphonato-D-glucono-1,5-lactone(2-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:15378
+  title: hydron
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:58247
+  title: beta-D-glucose 6-phosphate(2-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:58759
+  title: 6-phosphonatooxy-D-gluconate
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:57569
+  title: 2-dehydro-3-deoxy-6-phosphonato-D-gluconate(3-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:57783
+  title: NADPH(4-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:17719
+  title: beta-D-glucose 6-phosphate
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:15361
+  title: pyruvate
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:57540
+  title: NAD(1-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:49883
+  title: tetra-mu3-sulfido-tetrairon
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:57945
+  title: NADH(2-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:61548
+  title: D-glucopyranose 6-phosphate(2-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:59776
+  title: D-glyceraldehyde 3-phosphate(2-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:15377
+  title: water
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:58349
+  title: NADP(3-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:58225
+  title: alpha-D-glucose 6-phosphate(2-)
+  url: http://purl.obolibrary.org/obo/chebi/255/chebi.owl
+  source_version: ChEBI 255; digest covers entire original uncompressed Semantic SQL database
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: RHEA:12557
+  title: 6-phospho-D-glucono-1,5-lactone + H2O => 6-phospho-D-gluconate + H(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 complete original compressed RDF; selected directional reaction and coefficient
+    predicates
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:17278
+  title: 6-phospho-D-gluconate => 2-dehydro-3-deoxy-6-phospho-D-gluconate + H2O
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 complete original compressed RDF; selected directional reaction and coefficient
+    predicates
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:17090
+  title: 2-dehydro-3-deoxy-6-phospho-D-gluconate => D-glyceraldehyde 3-phosphate + pyruvate
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 complete original compressed RDF; selected directional reaction and coefficient
+    predicates
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P0AC53
+  title: Glucose-6-phosphate 1-dehydrogenase
+  url: https://rest.uniprot.org/uniprotkb/P0AC53.json
+  source_version: Original UniProt JSON retrieved 2026-10-11; annotation evidence tiers retained
+  source_sha256: 51d2a9f8fff9414d093e4e599441732315ef8834f9177cf7f33b056bae26515c
+- id: UniProtKB:P52697
+  title: 6-phosphogluconolactonase
+  url: https://rest.uniprot.org/uniprotkb/P52697.json
+  source_version: Original UniProt JSON retrieved 2026-10-11; annotation evidence tiers retained
+  source_sha256: 62a72b476202ae4cbb6705068ce59f2d320834c106f7edb82eb9a6f97736b467
+- id: UniProtKB:P0ADF6
+  title: Phosphogluconate dehydratase
+  url: https://rest.uniprot.org/uniprotkb/P0ADF6.json
+  source_version: Original UniProt JSON retrieved 2026-10-11; annotation evidence tiers retained
+  source_sha256: f10c76ad12a1fab19ca5223419921de81eb5e02766240303d60871e084889445
+- id: UniProtKB:P0A955
+  title: KHG/KDPG aldolase
+  url: https://rest.uniprot.org/uniprotkb/P0A955.json
+  source_version: Original UniProt JSON retrieved 2026-10-11; annotation evidence tiers retained
+  source_sha256: cc0f45dac0b56856dd1ebacc77c3de6be1fd6eb55d0c706ef072a3dbfaafc62c
+- id: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+  title: MetaCyc native KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX
+  source_version: MetaCyc 27.0 XML original; source-specific curated assembly and component identity
+  source_sha256: 451e7b9849601b5ff929bc6f17df97896efe412227145057a3f6510c7a347d84
+- id: MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER
+  title: MetaCyc native KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER
+  source_version: MetaCyc 27.0 XML original; source-specific curated assembly and component identity
+  source_sha256: 38548a6f3524d4e3d2f7cc21d1b487bcf49e099b8d5680ea998a89be6ec64036
+- id: PMID:15576773
+  title: Identification of the Escherichia coli K-12 ybhE Gene as pgl, Encoding 6-Phosphogluconolactonase
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC532434/
+  source_version: Original full primary article HTML from PMC; retrieved 2026-10-11
+  source_sha256: 5ab279ed68ec09f37a713dc74f4f29f2606ca55da8c424542a70f5d1922aaeab
+- id: PMID:17962400
+  title: Mutagenesis of the phosphate-binding pocket of KDPG aldolase enhances selectivity for hydrophobic
+    substrates
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2211689/
+  source_version: Original full primary article HTML from PMC; retrieved 2026-10-11
+  source_sha256: 7deed7c767741d64c1e2826d569b3ad570a6f0f950758838678fca9268966c7f
+- id: PMID:17102132
+  title: MICROMOLAR INTRACELLULAR HYDROGEN PEROXIDE DISRUPTS METABOLISM BY DAMAGING IRON-SULFUR ENZYMES
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5136138/
+  source_version: Original full primary article HTML from PMC; retrieved 2026-10-11
+  source_sha256: e57d324fa18469cc926407fa14c681488d9acf38f0c2ba86539162da1735c075
+- id: PMID:11274385
+  title: Covalent intermediate trapped in 2-keto-3-deoxy-6- phosphogluconate (KDPG) aldolase structure
+    at 1.95-Å resolution
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC31111/
+  source_version: Original full primary article HTML from PMC; retrieved 2026-10-11
+  source_sha256: 41f5604bedb4857764f066bee775ef55f99e434a601b9d40596d9344139fa719
+- id: PMID:15659677
+  title: Multiple Regulators Control Expression of the Entner-Doudoroff Aldolase (Eda) of Escherichia
+    coli
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC545716/
+  source_version: Original full primary article HTML from PMC; retrieved 2026-10-11
+  source_sha256: b82771e913c915aa5ee899d9f3cf209a1a943dd827b5a49e53c47fcac05f015f
+- id: PMID:27010804
+  title: 'Determinants of Cofactor Specificity for the Glucose-6-Phosphate Dehydrogenase from  Escherichia
+    coli : Simulation, Kinetics and Evolutionary Studies'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4807051/fullTextXML
+  source_version: Original full 2016 primary JATS; wild-type versus engineered variant scope retained
+  source_sha256: 9435e6924beaed5f2a67c890b563663d9ebac6388265f23a66a298ccd3f05658
+- id: DOI:10.1371/journal.pone.0152403.s002
+  title: S1 Table. Accession numbers of bacterial G6PDHs
+  url: https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0152403.s002&type=supplementary
+  source_version: Original supplementary workbook; accession row establishes sequence-analysis scope only
+  source_sha256: 238d3554e2968b2251a43c3bfd5700691ae6928c2f835a112d163d49437ab1e5
+- id: PMID:22519976
+  title: The cofactor preference of glucose-6-phosphate dehydrogenase from Escherichia coli– modeling
+    the physiological production of reduced cofactors
+  url: https://febs.onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08610.x
+  source_version: Full official main article inspected through web on 2026-10-11; local HTTP403 body is
+    not full text; no local article digest claimed

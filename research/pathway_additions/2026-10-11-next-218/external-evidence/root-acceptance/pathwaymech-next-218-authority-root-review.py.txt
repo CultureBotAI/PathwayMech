@@ -1,0 +1,78 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,html,json,re,sqlite3,subprocess,yaml
+R=Path('/private/tmp/pathwaymech-next-218-20261011');D=Path('/private/tmp/pathwaymech-ed-authority-selection-20261011');out=Path('/private/tmp/pathwaymech-next-218-authority-root-review.json');assert __debug__ and not out.exists()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+hp=D/'handoff.json';assert sha(hp)=='8a36895fdd1e8e1587870c77a9f914877b6b48e9a9b7268f1f91bcf0e51d9a0e';h=json.loads(hp.read_text())
+for row in h['files']:assert sha(row['path'])==row['sha256'],row['path']
+assert sha(h['selection']['path'])==h['selection']['sha256']=='732749701f8feef98a8afc40ba7bb9027fb452f54afc55de7e232ada82a3fae2'
+s=json.loads(Path(h['selection']['path']).read_text());lock=s['preparation_baseline']
+for name,expected in {**lock['baseline_files'],**lock['runtime_files']}.items():assert sha(R/name)==expected,name
+head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip();assert head=='4362f83bea78b350129acd4183db79f07510ec7c'
+assert sha(s['target']['path'])==s['target']['sha256']=='548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af'
+r=yaml.safe_load(Path(s['target']['path']).read_text());named={r['id']}|{x['id'] for k in ['taxa','participants','reactions'] for x in r[k]};assert len(named)==26
+assert set(s['selected_source_terms'])|set(s['selected_ontology_terms'])==named|{'CHEBI:17719','CHEBI:58225','CHEBI:61548'}
+manifest=json.loads((R/'conf/identifier_sources.json').read_text());oldsrc=json.loads((R/'data/identifier_authorities/sources.json').read_text());oldont=json.loads((R/'data/identifier_authorities/ontology.json').read_text())
+facts={};versionchecks=[]
+def names(item):
+ desc=item['proteinDescription'];a=[]
+ for n in [desc.get('recommendedName',{}),*desc.get('submissionNames',[]),*desc.get('alternativeNames',[])]:
+  if n.get('fullName',{}).get('value'):a.append(n['fullName']['value'])
+  a.extend(x['value'] for x in n.get('shortNames',[]))
+ return {'label':a[0],'synonyms':sorted(set(a[1:])-{a[0]})}
+for row in s['selected_new_inputs']:
+ p=Path(row['original_path']);assert sha(p)==row['sha256'];entry=row['manifest_entry'];assert entry['sha256']==row['sha256']
+ for proof in row['acquisition_proof']:assert sha(proof['path'])==proof['sha256']
+ txt=p.read_text();ident=row['selected_ids'][0];assert len(row['selected_ids'])==1
+ if row['kind'].startswith('kegg-'):
+  fields={};key=None
+  for line in txt.splitlines():
+   if line=='///':break
+   if line[:12].strip():key=line[:12].strip();fields.setdefault(key,[])
+   if key:fields[key].append(line[12:].strip())
+  assert fields['ENTRY'][0].split()[0]==ident.split(':',1)[1]
+  label=' '.join(fields['NAME']);assert ';' not in label
+  fact={'label':label,'synonyms':[],'source':entry['key']}
+  retrieved=row['acquisition_proof'][0]['observation']['finished_at'];expected='Entry snapshot retrieved '+retrieved+'; original response has no per-entry release designation'
+  assert entry['version']==expected and not ({'VERSION','RELEASE'}&fields.keys())
+ elif row['kind']=='metacyc-html':
+  match=re.search(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'",txt);title=re.search(r'<TITLE>MetaCyc (.*?)</TITLE>',txt,re.I|re.S);assert match and title and 'MetaCyc:'+match[1]==ident
+  label=' '.join(html.unescape(re.sub('<[^>]+>','',title[1])).split());plain=' '.join(html.unescape(re.sub('<[^>]+>',' ',txt)).split())
+  assert {x.rstrip('.') for x in re.findall(r'MetaCyc version ([0-9.]+)',plain)}=={'27.0'} and {x.rstrip('.') for x in re.findall(r'Pathway Tools version ([0-9.]+)',plain)}=={'27.0'}
+  assert entry['version']=='MetaCyc 27.0; Pathway Tools 27.0; original canonical HTML retrieved 2026-10-11';fact={'label':label,'synonyms':[],'source':entry['key']}
+ else:raise AssertionError(row['kind'])
+ assert fact==s['selected_source_terms'][ident];facts[ident]=fact;versionchecks.append({'id':ident,'source_sha256':sha(p),'version':entry['version']})
+for row in s['reused_inputs']:
+ p=Path(row['original_path']);assert sha(p)==row['sha256'];fresh=json.loads(p.read_text());assert fresh['organism']['taxonId']==83333 and fresh['entryAudit']==row['version_evidence']['entryAudit'];ident='UniProtKB:'+fresh['primaryAccession'];assert row['selected_ids']==[ident]
+ entry=row['existing_entry_preserved'];assert entry in manifest;bp=Path(row['selected_existing_body']);assert sha(bp)==entry['sha256'];batch=json.loads(bp.read_text());idx=int(row['selected_existing_locator'].split('/')[2]);item=batch['results'][idx];assert item['primaryAccession']==fresh['primaryAccession'] and item['organism']['taxonId']==83333
+ assert names(item)==names(fresh);fact={**names(item),'source':entry['key']};assert fact==s['selected_source_terms'][ident];facts[ident]=fact
+ assert oldsrc['sources'][entry['key']]['version']==entry['version']=='2026_03'
+ if ident in oldsrc['terms']:assert oldsrc['terms'][ident]==fact
+ versionchecks.append({'id':ident,'authority_original_sha256':sha(bp),'batch_version_preserved':entry['version'],'fresh_scientific_body_sha256':sha(p),'fresh_entry_audit_not_transferred':fresh['entryAudit']})
+assert len(facts)==8
+ontology={};dbchecks=[]
+for c in s['ontology_checks']:
+ p=Path(c['path']);before=p.stat();digest=sha(p);assert digest==c['source_metadata']['sha256']
+ with sqlite3.connect('file:'+str(p)+'?mode=ro',uri=True) as db:
+  for ident in c['selected_rows']:
+   rows=list(db.execute('SELECT predicate,value FROM statements WHERE subject=? AND predicate IN (?,?)',(ident,'rdfs:label','oio:hasExactSynonym')));labels={v for k,v in rows if k=='rdfs:label' and v};assert len(labels)==1;label=labels.pop();owner=s['selected_ontology_terms'][ident]['source'];assert oldont['sources'][owner]==c['source_metadata'];fact={'label':label,'synonyms':sorted({v for k,v in rows if k=='oio:hasExactSynonym' and v and v!=label}),'source':owner};assert fact==s['selected_ontology_terms'][ident];ontology[ident]=fact
+ after=p.stat();assert (before.st_ino,before.st_size,before.st_mtime_ns)==(after.st_ino,after.st_size,after.st_mtime_ns);dbchecks.append({'path':str(p),'sha256':digest,'fresh_whole_database_hash':True,'selected_terms_queried':len(c['selected_rows'])});print(json.dumps({'database_checked':p.name,'selected_terms':len(c['selected_rows'])}),flush=True)
+assert len(ontology)==21
+preservation={}
+for name,selected,expectedadd in [('ontology',ontology,{'CHEBI:17719','CHEBI:58247','RHEA:17278'}),('sources',facts,{'KEGG:M00008','KEGG:R02736','KEGG:R10907','MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX','UniProtKB:P0A955','UniProtKB:P0ADF6'})]:
+ before=json.loads((R/f'data/identifier_authorities/{name}.json').read_text());actual=json.loads((D/f'canonical-dry-run-successor/{name}.json').read_text());proposed=json.loads((D/f'selected-successor/prospective-{name}.json').read_text());assert actual==proposed
+ for field in before:
+  if field in ['terms','sources']:
+   for k,v in before[field].items():assert actual[field][k]==v,(name,field,k)
+  else:assert actual[field]==before[field]
+ for k,v in selected.items():assert actual['terms'][k]==v
+ assert actual['terms'].keys()-before['terms'].keys()==expectedadd
+ preservation[name]={'before':len(before['terms']),'after':len(actual['terms']),'added':sorted(expectedadd),'all_existing_entries_metadata_preserved':True,'sha256':sha(D/f'canonical-dry-run-successor/{name}.json')}
+after=json.loads((D/'canonical-dry-run-successor/identifier_sources.json').read_text());assert after[:len(manifest)]==manifest and after[len(manifest):]==[x['manifest_entry'] for x in s['selected_new_inputs']];assert len(manifest)==568 and len(after)==572
+cr=json.loads((D/'canonical-dry-run-successor/report.json').read_text());assert sha(D/'canonical-dry-run-successor/report.json')==h['canonical_report']['sha256'];assert not cr['one_record_identifier_errors']
+for c in cr['checks']:assert c['exit_code']==0 and sha(c['log'])==c['log_sha256']
+for name,expected in {**lock['baseline_files'],**lock['runtime_files']}.items():assert sha(R/name)==expected
+result={'status':'accepted_exact_canonical_authority_artifacts_for_guarded_adoption','at':datetime.now(timezone.utc).isoformat(),'handoff_sha256':sha(hp),'selection_sha256':h['selection']['sha256'],'target_sha256':s['target']['sha256'],'committed_prospective_base':head,'baseline_hash_bridge':lock['baseline_files'],'source_terms_independently_parsed':facts,'ontology_terms_independently_queried':ontology,'version_checks':versionchecks,'database_checks':dbchecks,'preservation':preservation,'manifest':{'before':568,'after':572,'added':4,'sha256':sha(D/'canonical-dry-run-successor/identifier_sources.json')},'basis':'Root directly derived four new issuing labels/version strings and four exact reused protein labels from original batch and current full entries, streamed four whole issuing SQL databases and queried21terms, verified canonical/prospective equality and preservation of every prior entry/metadata, and verified actual canonical execution log digests.','limits':['Prospective Myx commit base; actual merge/tree bridge remains required.','Authority identity does not establish scientific mechanism; independent source review separately accepted.','Current record integration, history, replay, corpus gates and canonical scientific review remain required.']}
+with out.open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':result['status'],'sha256':sha(out),'source_terms':len(facts),'ontology_terms':len(ontology)}),flush=True)

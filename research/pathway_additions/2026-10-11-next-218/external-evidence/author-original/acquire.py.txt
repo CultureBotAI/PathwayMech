@@ -1,0 +1,43 @@
+"""Acquire additional issuing originals without changing predecessor evidence."""
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
+import hashlib
+import json
+from pathlib import Path
+import urllib.error
+import urllib.request
+
+ROOT = Path(__file__).parent
+IDS = ['R02035', 'R02036', 'R05605', 'C01236', 'C00345', 'C04442',
+       'C00118', 'C00022', 'C00001', 'C00003', 'C00004', 'C00005', 'C00006', 'C00080']
+JOBS = [(f'{i}.txt', f'https://rest.kegg.jp/get/{i}') for i in IDS]
+JOBS += [(f'{i}.mol', f'https://rest.kegg.jp/get/{i}/mol') for i in IDS if i.startswith('C')]
+MON = 'KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER'
+CPLX = 'KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX'
+JOBS += [(f'{MON}.xml', 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:' + MON),
+         (f'{CPLX}.html', 'https://bf2i-artsymbiocyc.insa-lyon.fr/compound?orgid=META&id=' + CPLX)]
+
+def fetch(job):
+    name, url = job
+    path = ROOT / 'raw' / name
+    assert not path.exists()
+    at = datetime.now(UTC).isoformat()
+    try:
+        response = urllib.request.urlopen(urllib.request.Request(url, headers={
+            'User-Agent': 'PathwayMech evidence curation'}), timeout=60)
+    except urllib.error.HTTPError as error:
+        response = error
+    body = response.read()
+    with path.open('xb') as out:
+        out.write(body)
+    return dict(path=str(path), url=url, final_url=response.url, status=response.code,
+                content_type=response.headers.get('Content-Type'), bytes=len(body),
+                sha256=hashlib.sha256(body).hexdigest(), started_at=at,
+                finished_at=datetime.now(UTC).isoformat())
+
+with ThreadPoolExecutor(max_workers=4) as pool:
+    rows = list(pool.map(fetch, JOBS))
+with (ROOT / 'acquisition.json').open('x') as out:
+    json.dump(rows, out, indent=2)
+    out.write('\n')
+print(json.dumps([dict(path=r['path'], status=r['status']) for r in rows]))

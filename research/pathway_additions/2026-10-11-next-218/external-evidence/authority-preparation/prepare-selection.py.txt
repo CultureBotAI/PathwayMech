@@ -1,0 +1,225 @@
+"""Prepare prospective ED identifier authorities from unchanged original sources."""
+
+import copy
+import hashlib
+import json
+import os
+import re
+import sqlite3
+import subprocess
+import sys
+import unicodedata
+from datetime import UTC, datetime
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-217-20261011')
+OUT = Path('/private/tmp/pathwaymech-ed-authority-selection-20261011')
+AUTHOR = Path('/private/tmp/pathwaymech-entner-doudoroff-author-20261011')
+REVIEW = Path('/private/tmp/pathwaymech-ed-whole-record-review-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities')
+TARGET_SHA = '548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af'
+
+
+def digest(p):
+    with Path(p).open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+
+def save(p, obj):
+    with p.open('x') as f:
+        json.dump(obj, f, indent=2)
+        f.write('\n')
+
+
+def main():
+    if not __debug__:
+        raise RuntimeError('Assertions required')
+    started = datetime.now(UTC).isoformat()
+    captured = {}
+
+    def capture(p, expected=None):
+        p = Path(p).absolute()
+        data = p.read_bytes()
+        sha = hashlib.sha256(data).hexdigest()
+        assert expected is None or sha == expected, ('input digest mismatch', str(p))
+        identity = (str(p.resolve(strict=True)), sha)
+        assert str(p) not in captured or captured[str(p)][:2] == identity
+        captured[str(p)] = (*identity, data)
+        return data
+
+    def recheck():
+        for p, (resolved, sha, _) in captured.items():
+            assert str(Path(p).resolve(strict=True)) == resolved and digest(p) == sha, p
+
+    capture(__file__)
+    baseline_files = {rel: digest(ROOT / rel) for rel in [
+        'conf/identifier_sources.json', 'conf/identifier_policy.yaml',
+        'conf/rhea_identifier_updates.json', 'data/identifier_authorities/ontology.json',
+        'data/identifier_authorities/sources.json',
+    ]}
+    runtime_files = {str(p.relative_to(ROOT)): digest(p) for p in sorted((ROOT / 'src/pathwaymech').rglob('*.py'))}
+    for rel in ['scripts/build_source_identifier_snapshot.py', 'scripts/build_ontology_identifier_snapshot.py']:
+        runtime_files[rel] = digest(ROOT / rel)
+    for rel, sha in {**baseline_files, **runtime_files}.items():
+        capture(ROOT / rel, sha)
+    target = AUTHOR / 'draft/entner-doudoroff-pathway.yaml'
+    target_body = capture(target, TARGET_SHA)
+    prior_proofs = [AUTHOR / 'handoff.json', REVIEW / 'handoff.json', REVIEW / 'whole-record-review.json', REVIEW / 'whole-record-review.md', REVIEW / 'authority-metadata-audit.json']
+    for p in prior_proofs:
+        capture(p)
+    author_handoff = json.loads(captured[str(AUTHOR / 'handoff.json')][2])
+    review_handoff = json.loads(captured[str(REVIEW / 'handoff.json')][2])
+    assert author_handoff['record']['sha256'] == review_handoff['target']['sha256'] == TARGET_SHA
+    for name in ['record', 'review', 'markdown']:
+        item = (author_handoff if name == 'record' else review_handoff)[name]
+        capture(item['path'], item['sha256'])
+    for item in author_handoff['owned_inputs']:
+        capture(item['path'], item['sha256'])
+    sys.path.insert(0, str(ROOT))
+    import yaml
+    from scripts import build_source_identifier_snapshot as source
+    from scripts import build_ontology_identifier_snapshot as ontology
+    recheck()
+    record = yaml.safe_load(target_body)
+    proposal = json.loads(captured[str(AUTHOR / 'draft/ed-authority-proposal.json')][2])
+    versions = json.loads(captured[str(AUTHOR / 'draft/ed-authority-version-observations.json')][2])
+    assert versions['proposal_sha256'] == digest(AUTHOR / 'draft/ed-authority-proposal.json')
+    assert proposal['record_sha256'] == TARGET_SHA
+    manifest = json.loads(captured[str(ROOT / 'conf/identifier_sources.json')][2])
+    before = {n: json.loads(captured[str(ROOT / f'data/identifier_authorities/{n}.json')][2]) for n in ['ontology', 'sources']}
+    policy = yaml.safe_load(captured[str(ROOT / 'conf/identifier_policy.yaml')][2])
+    declared = {record['id']: record['label']}
+    sections = {record['id']: 'record'}
+    for group in ['taxa', 'participants', 'reactions', 'gene_clusters']:
+        for node in record.get(group, []):
+            assert node['id'] not in declared
+            declared[node['id']] = node['label']
+            sections[node['id']] = group
+    ledger = json.loads(captured[str(AUTHOR / 'draft/ed-identifiers.json')][2])
+    assert declared == {n['id']: n['label'] for n in ledger['nodes']}
+    assert len(declared) == 26
+    labels = []
+
+    def label_check(i, term):
+        if i not in declared:
+            return
+        prefix = i.split(':')[0]
+        rules = [r for r in policy['contextual_labels'] if r['namespace'] == prefix and sections[i] in r['sections'] and record['id'].split(':')[0] in r['record_prefixes']]
+        norm = lambda s: ' '.join(unicodedata.normalize('NFKC', s).split()).casefold()
+        allowed = [term['label']] + (term['synonyms'] if policy['namespaces'][prefix]['policy'] == 'canonical_or_synonym' else [])
+        assert rules or norm(declared[i]) in {norm(s) for s in allowed}, ('label mismatch', i)
+        labels.append(dict(id=i, record_label=declared[i], authority=term, contextual_policy=rules, policy_change=False))
+
+    acquisitions = []
+    for folder in [AUTHOR, Path('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011'), Path('/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011')]:
+        for p in sorted(folder.glob('acquisition*.json')):
+            data = json.loads(capture(p))
+            def walk(v):
+                if isinstance(v, dict):
+                    if all(k in v for k in ['path', 'url', 'sha256']):
+                        acquisitions.append((p, v))
+                    for x in v.values():
+                        walk(x)
+                elif isinstance(v, list):
+                    for x in v:
+                        walk(x)
+            walk(data)
+    new, reused, selected, checks = [], [], {}, []
+    keys, paths = {e['key'] for e in manifest}, {e['path'] for e in manifest}
+    assert len(keys) == len(paths) == len(manifest)
+    for proposed in proposal['source_inputs'] + proposal['verified_existing_source_inputs']:
+        original = Path(proposed['original_path'])
+        old = proposed['manifest_entry']
+        data = capture(original, old['sha256'])
+        parsed = list(source.source_terms(old['kind'], original, url=old['url']))
+        assert len(parsed) == 1 and parsed[0][0] in declared
+        ident, label, synonyms = parsed[0]
+        assert proposed['terms'][0] == {'id': ident, 'label': label, 'synonyms': synonyms}
+        matches = [(p, a) for p, a in acquisitions if a['path'] == str(original) and a['url'] == old['url'] and a['sha256'] == old['sha256'] and a.get('status') == 200]
+        assert matches, ('missing actual acquisition receipt', ident)
+        proofs = [{'path': str(p), 'sha256': digest(p), 'observation': a} for p, a in matches]
+        version = old['version']
+        evidence = {'original_proposal_version': version}
+        if old['kind'].startswith('kegg-'):
+            version = f"Entry snapshot retrieved {matches[0][1]['finished_at']}; original response has no per-entry release designation"
+            evidence.update(ENTRY=data.decode().splitlines()[0], release_not_inferred=True)
+            license_value = 'KEGG source; license-gated inventory entry, see official KEGG terms'
+        elif old['kind'] == 'metacyc-html':
+            db = re.search(rb'MetaCyc version ([0-9]+\.[0-9]+)\.', data)
+            frontend = re.search(rb'Pathway Tools version ([0-9]+\.[0-9]+)', data)
+            assert db and frontend and db.group(1) == frontend.group(1) == b'27.0'
+            version = 'MetaCyc 27.0; Pathway Tools 27.0; original canonical HTML retrieved 2026-10-11'
+            evidence.update(database_footer=db.group(0).decode(), software_footer=frontend.group(0).decode())
+            license_value = 'MetaCyc source terms; only native identifier/name facts retained, no raw database redistributed'
+        else:
+            obj = json.loads(data); audit = obj['entryAudit']
+            assert obj['primaryAccession'] == ident.split(':')[1]
+            version = f"UniProt entry version {audit['entryVersion']}; last annotation update {audit['lastAnnotationUpdateDate']}; original retrieved 2026-10-11"
+            evidence.update(entryAudit=audit, locator='/entryAudit', release_not_inferred=True, taxon_id=obj['organism']['taxonId'], entry_type=obj['entryType'])
+            license_value = 'CC-BY-4.0'
+        common = dict(original_path=str(original), sha256=old['sha256'], bytes=len(data), kind=old['kind'], url=old['url'], acquisition_proof=proofs, version_evidence=evidence, parsed_terms=[{'id': ident, 'label': label, 'synonyms': synonyms}], selected_ids=[ident])
+        if ident in before['sources']['terms']:
+            term = before['sources']['terms'][ident]
+            entry = next(e for e in manifest if e['key'] == term['source'])
+            body = CACHE / 'sources' / entry['path']; capture(body, entry['sha256'])
+            prior_terms = list(source.source_terms(entry['kind'], body, url=entry['url']))
+            assert any(i == ident and {'label': l, 'synonyms': sorted(set(s) - {l}), 'source': entry['key']} == term for i, l, s in prior_terms)
+            assert term['label'] == label and term['synonyms'] == sorted(set(synonyms) - {label})
+            reused.append({**common, 'existing_entry_preserved': entry})
+        else:
+            key = 'ed-' + ident.replace(':', '-').lower() + '-2026-10-11'
+            rel = 'ed/' + key + original.suffix
+            assert key not in keys and rel not in paths and not any(e['url'] == old['url'] for e in manifest)
+            assert not os.path.lexists(CACHE / 'sources' / rel), ('prospective cache collision', rel)
+            entry = dict(key=key, kind=old['kind'], path=rel, url=old['url'], version=version, license=license_value, sha256=old['sha256'])
+            term = {'label': label, 'synonyms': sorted(set(synonyms) - {label}), 'source': key}
+            new.append({**common, 'manifest_entry': entry, 'prospective_cache_path': str(CACHE / 'sources' / rel), 'current_cache_state': 'absent_no_copy'})
+            keys.add(key); paths.add(rel)
+        selected[ident] = term
+        label_check(ident, term)
+        checks.append(common)
+    ont_ids = ontology.walk_identifiers(record, {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'})
+    ont_terms, ont_checks = {}, []
+    for prefix, filename in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+        ids = sorted(i for i in ont_ids if i.startswith(prefix + ':'))
+        if not ids:
+            continue
+        dbpath = CACHE / (filename + '.db')
+        owner = next(k for k in before['ontology']['sources'] if k.startswith(prefix.lower() + '-') and k != 'rhea-rdf-142')
+        with sqlite3.connect(dbpath.resolve().as_uri() + '?mode=ro', uri=True) as con:
+            terms, missing = ontology.extract_terms(con, ids, owner)
+            rows = {i: list(con.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')", (i,))) for i in ids}
+        assert not missing
+        for i, t in terms.items():
+            assert i not in before['ontology']['terms'] or before['ontology']['terms'][i] == t
+            label_check(i, t)
+        ont_terms.update(terms)
+        ont_checks.append({'path': str(dbpath), 'source_metadata': before['ontology']['sources'][owner], 'selected_rows': rows, 'whole_database_hash_status': 'Pinned metadata; actual canonical builder streams and verifies full source on dry run.'})
+    assert set(ont_terms) == ont_ids
+    assert set(declared) == set(selected) | (set(ont_terms) & set(declared))
+    missing_source = set(declared) - set(before['ontology']['terms']) - set(before['sources']['terms']) - set(ont_terms)
+    assert missing_source == {i for n in new for i in n['selected_ids']}
+    assert len(new) == 6 and set(ont_terms) - set(before['ontology']['terms']) == {'CHEBI:17719', 'CHEBI:58247', 'RHEA:17278'}
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    lock = dict(repo_root=str(ROOT), observed_head=head, observed_tree=subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip(), base_status='Prospective current Myx working-tree authorities, not a merged Myx baseline. HEAD is the prior actual Pyochelin merge.', baseline_files=baseline_files, runtime_files=runtime_files, target={'path': str(target), 'sha256': TARGET_SHA}, current_record_count=len(list((ROOT / 'data/pathways').rglob('*.yaml'))))
+    merged = copy.deepcopy(before)
+    merged['ontology']['terms'].update(ont_terms); merged['sources']['terms'].update(selected)
+    for item in new:
+        e = item['manifest_entry']; merged['sources']['sources'][e['key']] = {k: e[k] for k in ['url', 'version', 'license', 'sha256']}
+    for name in before:
+        for field in ['terms', 'sources']:
+            assert all(merged[name][field][k] == v for k,v in before[name][field].items())
+    recheck()
+    selection = dict(status='external_preparation_requires_independent_root_review', started_at=started, finished_at=datetime.now(UTC).isoformat(), preparation_baseline=lock, target=lock['target'], selected_new_inputs=new, reused_inputs=reused, original_source_checks=checks, selected_source_terms=selected, selected_ontology_terms=ont_terms, ontology_checks=ont_checks, label_policy_checks=labels, reference_only_ontology_ids=sorted(ont_ids-set(declared)), counts=dict(named_ids=len(declared), new_manifest_inputs=len(new), manifest_before=len(manifest), manifest_after=len(manifest)+len(new), ontology_before=len(before['ontology']['terms']), ontology_after=len(merged['ontology']['terms']), source_before=len(before['sources']['terms']), source_after=len(merged['sources']['terms'])), captured_inputs=[dict(path=p,resolved_path=v[0],sha256=v[1]) for p,v in captured.items()], limits=['Preparation only, no scientific approval or maintained integration.', 'Current Myx working authority hashes bound; actual eventual commit/merged baseline still requires a bridge.', 'No policy, source-label exception, record or shared cache mutation; no new acquisition.', 'Original ED author and external review handoffs preserved.'])
+    selected_dir = OUT / 'selected'; selected_dir.mkdir(exist_ok=False)
+    save(OUT / 'baseline-lock.json', lock)
+    save(selected_dir / 'selection.json', selection)
+    save(selected_dir / 'proposed-manifest-additions.json', [n['manifest_entry'] for n in new])
+    save(selected_dir / 'prospective-identifier-sources.json', manifest + [n['manifest_entry'] for n in new])
+    for name in merged:
+        save(selected_dir / ('prospective-' + name + '.json'), merged[name])
+    print(json.dumps({'selection_sha256': digest(selected_dir / 'selection.json'), 'counts': selection['counts'], 'head': head}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,33 @@
+import ast,hashlib,json,pathlib,shutil,types,datetime,subprocess,sys
+D=pathlib.Path(__file__).resolve().parent;S=pathlib.Path('/private/tmp/pathwaymech-entner-doudoroff-author-20261011');helper=S/'ed-replay-final.py';raw=helper.read_bytes();h=hashlib.sha256(raw).hexdigest();assert h=='f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e'
+tree=ast.parse(raw);starts=[i for i,n in enumerate(tree.body) if isinstance(n,ast.For) and ast.unparse(n.target)=='(p, rp)' and ast.unparse(n.iter)=='identities'];assert len(starts)==1
+start=starts[0];tail=tree.body[start:start+3];assert isinstance(tail[1],ast.For) and isinstance(tail[2],ast.With);code=compile(ast.Module(body=tail,type_ignores=[]),str(helper),'exec');exact='\n'.join(ast.get_source_segment(raw.decode(),n) for n in tail);(D/'final-guard-exact.py.txt').write_text(exact+'\n')
+m=json.loads((S/'draft/ed-source-manifest.json').read_text());core=[S/'draft/entner-doudoroff-pathway.yaml',*[S/'draft'/x for x in ['ed-source-manifest.json','ed-source-projection.json','ed-chemical-identities.json','ed-protein-projection.json','ed-authority-proposal.json','ed-identifiers.json','ed-coverage.json','ed-curation.md','ed-dedup.json']],helper,*[pathlib.Path('/private/tmp/pathwaymech-next-216-20261011')/x for x in ['src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/kgx.py','scripts/build_source_identifier_snapshot.py']],S/'imod/context.json',S/'imod/manifest.json',pathlib.Path('/private/tmp/claw-published-duf-offline-20261007/src/kg_microbe_sources/imodulondb.py')]
+def sha(p):return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+root=D/'guard-fixtures';root.mkdir(exist_ok=False);out=[]
+for case in ['clean_control','late_formal_bytes','late_prior_proof_bytes','formal_same_bytes_symlink_retarget','proof_same_bytes_symlink_retarget','late_output_collision']:
+ c=root/case;c.mkdir(); ids=[];captured={};proofs=[]
+ for i,p in enumerate(core):
+  q=c/f'formal-{i}.txt';q.write_bytes(p.read_bytes());ids.append((q,q.resolve()));captured[str(q.resolve())]=q.read_bytes()
+ for i,row in enumerate(m['prior_proof_inputs']):
+  q=c/f'proof-{i}.txt';q.write_bytes(pathlib.Path(row['path']).read_bytes());assert sha(q)==row['sha256'];proofs.append((q,q.resolve(),row['sha256']))
+ a=types.SimpleNamespace(output=c/'result.json');result={'status':'guard_only_control_not_full_source_replay','helper_sha256':h};sentinel=b'pre-existing output sentinel\n'
+ if case=='late_formal_bytes':ids[0][0].write_bytes(ids[0][0].read_bytes()+b'\n')
+ if case=='late_prior_proof_bytes':proofs[0][0].write_bytes(proofs[0][0].read_bytes()+b'\n')
+ if 'same_bytes_symlink' in case:
+  collection=ids if case.startswith('formal') else proofs;q=collection[0][0];old=c/'original.txt';new=c/'same-bytes-new.txt';b=q.read_bytes();q.rename(old);new.write_bytes(b);q.symlink_to(old);collection[0]=(q,old.resolve()) if case.startswith('formal') else (q,old.resolve(),sha(old))
+  if case.startswith('formal'):captured[str(old.resolve())]=b
+  q.unlink();q.symlink_to(new)
+ if case=='late_output_collision':a.output.write_bytes(sentinel)
+ error=None
+ try:exec(code,{'identities':ids,'captured':captured,'proofs':proofs,'sha':sha,'a':a,'json':json,'result':result})
+ except (AssertionError,FileExistsError) as e:error=type(e).__name__+': '+str(e)
+ assert (error is None)==(case=='clean_control'),(case,error)
+ if case=='late_output_collision':assert a.output.read_bytes()==sentinel
+ elif case!='clean_control':assert not a.output.exists()
+ out.append({'case':case,'scope':'Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.','rejected':error is not None,'error':error,'success_output_exists':a.output.exists(),'sentinel_unchanged':a.output.read_bytes()==sentinel if case=='late_output_collision' else None})
+# Actual helper CLI rejects an existing output before source hashing.
+c=root/'startup-collision';c.mkdir();output=c/'result.json';output.write_bytes(b'startup sentinel\n');cmd=[sys.executable,str(helper),'--record',str(core[0]),'--repo','/private/tmp/pathwaymech-next-216-20261011','--output',str(output)];r=subprocess.run(cmd,capture_output=True,text=True);assert r.returncode!=0 and output.read_bytes()==b'startup sentinel\n';(c/'stderr.txt').write_text(r.stderr);out.append({'case':'actual_cli_existing_output','command':cmd,'returncode':r.returncode,'rejected':True,'sentinel_unchanged':True})
+# Real helper copy rejects a changed predecessor proof before source parsing or imports.
+c=root/'startup-proof';c.mkdir();shutil.copytree(S/'draft',c/'draft');shutil.copytree(S/'imod',c/'imod');(c/'ed-replay-final.py').write_bytes(raw);mm=json.loads((c/'draft/ed-source-manifest.json').read_text());proof=c/'prior-proof.txt';proof.write_bytes(pathlib.Path(mm['prior_proof_inputs'][0]['path']).read_bytes()+b'\n');mm['prior_proof_inputs'][0]['path']=str(proof);(c/'draft/ed-source-manifest.json').write_text(json.dumps(mm,indent=2)+'\n');output=c/'result.json';cmd=[sys.executable,str(c/'ed-replay-final.py'),'--record',str(c/'draft/entner-doudoroff-pathway.yaml'),'--repo','/private/tmp/pathwaymech-next-216-20261011','--output',str(output)];r=subprocess.run(cmd,capture_output=True,text=True);assert r.returncode!=0 and not output.exists() and str(proof) in r.stderr;(c/'stderr.txt').write_text(r.stderr);out.append({'case':'actual_cli_changed_prior_proof_before_import','command':cmd,'returncode':r.returncode,'rejected':True,'success_output_exists':False})
+res={'at':datetime.datetime.now(datetime.UTC).isoformat(),'helper_sha256':h,'guard_source_sha256':sha(D/'final-guard-exact.py.txt'),'formal_input_count':len(core),'prior_proof_count':len(m['prior_proof_inputs']),'controls':out,'limitations':['Final guard controls deliberately execute exact extracted statements instead of rereading 20 GB of issuing databases for each case. Their clean control is not a scientific pass.','Whole runtime import closure and all source path identities are not claimed bound by this external author helper. Maintained integration needs a broader binding wrapper and canonical gates.']};(D/'guard-controls.json').write_text(json.dumps(res,indent=2)+'\n');print(json.dumps({'controls':len(out),'sha256':sha(D/'guard-controls.json')}))

@@ -1,0 +1,113 @@
+"""Author full M00008 from original module, reactions, structures and qualified proteins."""
+from pathlib import Path
+from datetime import UTC,datetime
+import hashlib,json,re,sqlite3
+from lxml import etree,html
+import yaml
+ROOT=Path(__file__).parent;D=ROOT/'draft';PRE=Path('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011');ADJ=Path('/private/tmp/pathwaymech-entner-doudoroff-independent-adjudication-20261011');NORM=Path('/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011');REPO=Path('/private/tmp/pathwaymech-next-216-20261011')
+sha=lambda p:hashlib.file_digest(Path(p).open('rb'),'sha256').hexdigest()
+facts=json.loads((ROOT/'chemical-source-facts.json').read_text()); prior=json.loads((ADJ/'original-source-check.json').read_text());eq=prior['prospective_five_equations'];CHEBI=facts['chebi_terms'];refs={};source_refs={};anchors=[]
+def value(cid,p):return next(x['value'] or x['object'] for x in CHEBI[cid] if x['predicate']==p)
+def fields(p):
+ d={}
+ for l in p.read_text().splitlines():
+  if l=='///':break
+  if l[:12].strip():k=l[:12].strip();d[k]=[]
+  d[k].append(l[12:].strip())
+ return {k:'\n'.join(v) for k,v in d.items()}
+def ref(i,p,url,title,version):
+ row=dict(id=i,title=title,url=url,source_version=version)
+ if p is not None:row['source_sha256']=sha(p);source_refs[i]=str(p)
+ refs[i]=row;return i
+def evidence(i,text,loc):
+ assert 0<len(text)<=400,(len(text),text)
+ return dict(reference_id=i,source_assertion=text,source_locator=loc)
+def primary(i,p,selector,text):
+ tree=etree.parse(str(p)) if p.suffix=='.xml' else html.parse(str(p));nodes=tree.xpath(selector);assert nodes,selector
+ selected=[' '.join(' '.join(n.itertext()).split()) for n in nodes]
+ anchors.append(dict(reference_id=i,path=str(p),sha256=sha(p),selector=selector,texts=selected,selected_text_sha256=hashlib.sha256('\n'.join(selected).encode()).hexdigest(),assertion=text))
+ return evidence(i,text,selector)
+def kref(r):
+ p=(PRE/'raw/M00008.txt' if r=='M00008' else (NORM/'originals'/f'{r}.txt' if r in ['R02736','R10907','C01172'] else ROOT/'raw'/f'{r}.txt'))
+ return ref('KEGG:'+r,p,'https://rest.kegg.jp/get/'+r,fields(p).get('NAME',r),'Original KEGG REST flat file retrieved 2026-10-11; native ENTRY and complete fields retained')
+kref('M00008')
+for x in ['R02736','R10907','R02035','R02036','R05605',*facts['kegg_bridges']]:kref(x)
+for cid in CHEBI:
+ ref(cid,Path(facts['chebi_database']['path']),'http://purl.obolibrary.org/obo/chebi/255/chebi.owl',value(cid,'rdfs:label'),'ChEBI 255; digest covers entire original uncompressed Semantic SQL database')
+for rid,row in facts['rhea'].items():ref(rid,Path(facts['rhea_source']['path']),'https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz',row['label'],'Rhea 142 complete original compressed RDF; selected directional reaction and coefficient predicates')
+UP={}
+for acc in ['P0AC53','P52697','P0ADF6','P0A955']:
+ p=PRE/'raw'/f'{acc}.json';u=json.loads(p.read_text());assert u['primaryAccession']==acc;UP[acc]=u
+ ref('UniProtKB:'+acc,p,'https://rest.uniprot.org/uniprotkb/'+acc+'.json',u['proteinDescription']['recommendedName']['fullName']['value'],'Original UniProt JSON retrieved 2026-10-11; annotation evidence tiers retained')
+CPLX='KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX';MON='KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER'
+for frame,p in [(CPLX,PRE/'raw'/f'{CPLX}.xml'),(MON,ROOT/'raw'/f'{MON}.xml')]:
+ ref('MetaCyc:'+frame,p,'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,'MetaCyc native '+frame,'MetaCyc 27.0 XML original; source-specific curated assembly and component identity')
+for pmc,pmid in [('PMC532434','15576773'),('PMC2211689','17962400'),('PMC5136138','17102132'),('PMC31111','11274385'),('PMC545716','15659677')]:
+ p=PRE/'raw'/f'{pmc}.html';t=html.parse(str(p));title=' '.join(t.xpath('//hgroup/h1')[0].text_content().split())
+ ref('PMID:'+pmid,p,f'https://pmc.ncbi.nlm.nih.gov/articles/{pmc}/',title,'Original full primary article HTML from PMC; retrieved 2026-10-11')
+p2016=ADJ/'originals/PMC4807051.xml';t=etree.parse(str(p2016));pmid=t.findtext('.//article-id[@pub-id-type="pmid"]');assert pmid
+ref('PMID:'+pmid,p2016,'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4807051/fullTextXML',' '.join(t.find('.//article-title').itertext()),'Original full 2016 primary JATS; wild-type versus engineered variant scope retained')
+ref('DOI:10.1371/journal.pone.0152403.s002',ADJ/'originals/pone0152403-s002.xlsx','https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0152403.s002&type=supplementary','S1 Table. Accession numbers of bacterial G6PDHs','Original supplementary workbook; accession row establishes sequence-analysis scope only')
+ref('PMID:22519976',None,'https://febs.onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08610.x','The cofactor preference of glucose-6-phosphate dehydrogenase from Escherichia coli– modeling the physiological production of reduced cofactors','Full official main article inspected through web on 2026-10-11; local HTTP403 body is not full text; no local article digest claimed')
+# The canonical GO and taxon labels are separately issuing-ontology verified during replay.
+ontology=json.loads((REPO/'data/identifier_authorities/ontology.json').read_text())['terms']
+print('ONTOLOGY',ontology['GO:0005737'],ontology['NCBITaxon:83333'])
+E=[]
+def add(s,p,o,ev,d):E.append(dict(id=f'ed-edge-{len(E)+1:03d}',subject=s,predicate=p,object=o,description=d,evidence=ev))
+positions={'KEGG:R02736':0,'KEGG:R10907':0,'RHEA:12557':1,'RHEA:17278':2,'RHEA:17090':3};native={'KEGG:R02736':'R02736','KEGG:R10907':'R10907','RHEA:12557':'R02035','RHEA:17278':'R02036','RHEA:17090':'R05605'}
+for rid,pos in positions.items():
+ ev=[evidence('KEGG:M00008',f'The module has four sequential positions and explicitly includes {native[rid]} at position {pos+1}. R02736 and R10907 are alternatives at the first position, not serial reactions.','ENTRY; NAME; DEFINITION; ORTHOLOGY')]
+ if rid=='KEGG:R10907':ev.append(evidence('KEGG:R10907','The reaction lists M00004 and M00006 in its MODULE field, but not M00008; this inverse-membership inconsistency is retained. M00008 itself explicitly lists R10907.','MODULE'))
+ if rid.startswith('RHEA:'):
+  rr=facts['rhea'][rid];ev += [evidence('KEGG:'+native[rid],f'The native equation has the selected transformation and a cross-reference to bidirectional Rhea {rr["bidirectional"]}; it does not itself specify the directed identifier.','EQUATION; DBLINKS'),evidence(rid,f'Rhea master {rr["master"]} links bidirectional {rr["bidirectional"]} and directional {rid.split(":")[1]}; the selected substrates/products orient catabolic module flow.',f'http://rdf.rhea-db.org/{rr["master"]} rh:bidirectionalReaction, rh:directionalReaction; {rid} rh:substrates, rh:products')]
+ add(rid,'part_of','KEGG:M00008',ev,'Full native module member. '+('Alternative first-position cofactor activity; do not add its flux to the other alternative.' if pos==0 else 'No uptake, ATP-generating lower glycolysis or narrower two-step shunt substitution.'))
+side_projection=[]
+for rid,sto in eq.items():
+ for cid,coef in sto.items():
+  role='substrates' if coef<0 else 'products';pred='consumes' if coef<0 else 'produces';ev=[]
+  if rid.startswith('KEGG:'):
+   kr=rid.split(':')[1];ev.append(evidence(rid,'The original beta-specific equation is '+fields(NORM/'originals'/f'{kr}.txt')['EQUATION']+'. Forward module use is selected; the native equation is reversible.','EQUATION; DEFINITION'))
+   k=next(k for k,b in facts['kegg_bridges'].items() if b['selected_id']==cid)
+   ev.append(evidence('KEGG:'+k,'The original compound entry and its ATOM/BOND fields fix the native chemical identity. The selected charged ChEBI form preserves connectivity and stereochemistry with explicit acid-base normalization; no neutral/charged exactMatch is asserted.','ENTRY; NAME; FORMULA; ATOM; BOND'))
+   ev.append(evidence(cid,'The issuing structure, formula and charge specify the selected normalized reaction participant. Its protonation is compared with the original KEGG structure; coefficients balance this complete charged equation.',f'statements subject={cid}; chemrof:inchi_string, chemrof:generalized_empirical_formula, chemrof:charge'))
+  else:
+   row=next(x for x in facts['rhea'][rid]['sides'] if x['id']==cid and x['side']==role)
+   ev.append(evidence(rid,f'The original directional {role} chain contains {cid} with coefficient {abs(coef)}. The formula and charge belong to the linked native compound, not an inferred label mapping.',f'{rid} rh:{role} -> {row["side_uri"]} rh:contains{abs(coef)} -> {row["participant_uri"]} rh:compound -> {row["compound_uri"]} rh:accession/formula/charge'))
+  desc=f'Coefficient: {abs(coef)}. '
+  if rid.startswith('KEGG:'):desc+='This is one alternative source-specific beta-anomer equation, normalized to charged participants; exclusive beta enzyme specificity and equal in vivo donor flux are not claimed.'
+  else:desc+='Exact directed Rhea participant in the complete module.'
+  s,o=(cid,rid) if coef<0 else (rid,cid)
+  add(s,pred,o,ev,desc);side_projection.append(dict(edge_id=E[-1]['id'],reaction=rid,participant=cid,sign=-1 if coef<0 else 1,coefficient=abs(coef)))
+# Separate catalytic-source inference from exact KEGG stereochemical convention.
+for rid in ['KEGG:R02736','KEGG:R10907']:
+ ev=[evidence('UniProtKB:P0AC53','The K-12 zwf/b1852 entry has 491 residues and a generic glucose-6-phosphate/NADP catalytic annotation (ECO:0000255/HAMAP). This is not independent proof of exclusive beta use or of the NAD alternative.','/primaryAccession; /genes; /organism; /sequence; /comments/2'),evidence('PMID:22519976','The purified modified E. coli preparation oxidized glucose 6-phosphate with NADP and with NAD, with markedly different affinities. The thrombin-cleaved construct retains twelve extra N-terminal residues. No exclusive-anomer assay or in vivo ED donor partition is established.','Results: NADP and NAD as co-substrates, Table 1; Experimental procedures: Purification; Discussion, paragraph on twelve extra N-terminal residues'),primary('PMID:'+pmid,p2016,'//sec[@id="sec005"]/p | //table-wrap[@id="pone.0152403.t001"]','The 2016 study retains a wild-type dual-cofactor comparator and engineered mutants. Its TEV construct is expected to retain Gly-His. These are preparation-specific observations, not exact equality to the current native sequence.'),evidence('DOI:10.1371/journal.pone.0152403.s002','S1 Table identifies Escherichia coli P0AC53 among sequences analyzed. This is an accession bridge for sequence analysis, not a complete kinetic construct sequence proof.','xl/worksheets/sheet1.xml row 9, decoded with xl/sharedStrings.xml'),evidence(rid,'KEGG supplies the beta-specific reaction convention. Applying the enzyme activity to this exact anomer-specific source equation is a qualified annotation-level inference, not direct exclusive-anomer characterization.','DEFINITION; EQUATION')]
+ add('UniProtKB:P0AC53','enables',rid,ev,'Qualified current Zwf gene-product/activity attribution; both cofactor capacities are supported for modified E. coli preparations. Source beta specificity is curated, not experimentally exclusive. No isolated monomer sufficiency, exact historical construct equality or measured NAD-dependent in vivo ED flux is asserted.')
+ev=[evidence('UniProtKB:P52697','The K-12 pgl/ybhE product is annotated with Rhea12556 hydrolysis using ECO:0000269/PMID15576773; the current native sequence is 331 residues.','/primaryAccession; /genes; /organism; /sequence; /comments/0; /comments/1'),primary('PMID:15576773',PRE/'raw/PMC532434.html','//section[@id="sec4"]/p[1] | //section[@id="sec15"]/p[1]','Mutations made in DY378 were moved to MG1655. Loss of pgl removed extract lactonase activity, and plasmid complementation restored it; the assay was explicitly not fully quantitative.')]
+add('UniProtKB:P52697','enables','RHEA:12557',ev,'K-12 Pgl activity supported by deletion/complementation and cell-extract assays; no purified-enzyme assembly or bound metal requirement is inferred.')
+ev=[evidence('UniProtKB:P0ADF6','The K-12 edd/b1851 entry annotates Rhea17277 activity with HAMAP and experimental citations. Its current 603-residue sequence has PLR at 252–254, versus historical AC; exact old construct equality is not established.','/primaryAccession; /genes; /organism; /sequence; /comments/1; /features/3'),primary('PMID:17962400',PRE/'raw/PMC2211689.html','//section[@id="sec10"]/p[position()>=1 and position()<=3]','The edd ORF was amplified from K-12 DNA and expressed in BL21(DE3); active lysates were used. Mn supplementation during expression is not proof of an obligatory bound Mn cofactor.')]
+add('UniProtKB:P0ADF6','enables','RHEA:17278',ev,'Current Edd gene-product/activity relation with historical 603/602-residue conflict retained. Coupled lysate activity does not identify a purified assembly or make assay Mn/Mg obligatory cofactors.')
+ev=[evidence('MetaCyc:'+CPLX,'The native KHG/KDPG aldolase complex catalyzes KDPGALDOL-RXN via KDPGALDOL-ENZRXN. The same source also describes additional reactions outside this exact module.','/ptools-xml/Protein/catalyzes/Enzymatic-Reaction[@frameid="KDPGALDOL-ENZRXN"]/reaction'),evidence('UniProtKB:P0A955','The current Eda entry annotates KDPG cleavage to D-glyceraldehyde 3-phosphate and pyruvate with experimental evidence and identifies a homotrimer.','/comments/1; /comments/8'),primary('PMID:17962400',PRE/'raw/PMC2211689.html','//section[@id="sec11"]/p[1]','KDPG cleavage was assayed through pyruvate production using coupled lactate dehydrogenase. NADH consumption belongs to that reporter and is not part of the aldolase equation.')]
+add('MetaCyc:'+CPLX,'catalyzes','RHEA:17090',ev,'Source-verified Eda homotrimer cleaves KDPG. Other Eda substrate activities, coupled LDH/NADH reporting, and engineered-substrate specificity are outside this equation.')
+ev=[evidence('MetaCyc:'+CPLX,'The native complex contains three copies of KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER.','/ptools-xml/Protein/component'),evidence('MetaCyc:'+MON,'The component object explicitly unifies UniProt P0A955; the curated native species is K-12 MG1655.','/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]; /ptools-xml/Protein/species'),evidence('UniProtKB:P0A955','The current K-12 entry states Homotrimer with experimental evidence including PMID11274385.','/primaryAccession; /organism; /comments/8'),primary('PMID:11274385',PRE/'raw/PMC31111.html','//section[@id="sec2"]/p[1] | //section[@id="sec5"]/p[1]','The recombinant E. coli enzyme has trimeric subunit assembly. The eda/pKK-223 preparation is described; expression-host and SeMet preparation details do not independently establish a MG1655 donor strain.')]
+add('MetaCyc:'+CPLX,'has_part','UniProtKB:P0A955',ev,'Stoichiometry: 3 identical Eda subunits. Native component identity and current protein annotation connect the complex; primary recombinant assembly supports trimerization without an exact donor-strain/construct equality claim.')
+ev=[evidence('UniProtKB:P0ADF6','The entry assigns one [4Fe-4S] cluster using ECO:0000250, ECO:0000255 and curator inference ECO:0000305. The one-cluster note is similarity/HAMAP evidence, not direct Edd cluster stoichiometry measurement.','/comments/2/cofactors/0; /comments/2/note'),primary('PMID:17102132',PRE/'raw/PMC5136138.html','//*[@id="P9"] | //*[@id="P30"]','Edd lysate activity was peroxide-sensitive and recoverable with iron/DTT. The explicit [3Fe-4S] EPR signal in this passage belongs to fumarase A; it is not an Edd spectrum.')]
+add('UniProtKB:P0ADF6','has_cofactor','CHEBI:49883',ev,'Qualified [4Fe-4S] annotation. Activity sensitivity/reactivation supports an iron-sulfur interpretation; exact cluster type and one-per-protein count retain their annotation inference tier.')
+add('UniProtKB:P0A955','located_in','GO:0005737',[evidence('UniProtKB:P0A955','The entry assigns cytoplasm as cellular location with ECO:0000305 curator inference.','/comments/10/subcellularLocations/0/location')],'Annotated Eda location; this does not infer a directly measured compartment for every module component.')
+for up,down,bridge in [('KEGG:R02736','RHEA:12557','CHEBI:57955'),('KEGG:R10907','RHEA:12557','CHEBI:57955'),('RHEA:12557','RHEA:17278','CHEBI:58759'),('RHEA:17278','RHEA:17090','CHEBI:57569')]:
+ a=next(e for e in E if e['subject']==up and e['predicate']=='produces' and e['object']==bridge);b=next(e for e in E if e['subject']==bridge and e['predicate']=='consumes' and e['object']==down)
+ add(up,'provides_input_for',down,[evidence('KEGG:M00008','The native definition orders oxidation, lactone hydrolysis, dehydration and aldol cleavage, with both oxidation alternatives in the same first position.','DEFINITION; ORTHOLOGY'),*a['evidence'],*b['evidence']],f'The shared {bridge} product/substrate links these positions. The two first-position alternatives independently feed hydrolysis; neither precedes or feeds the other.')
+selected_chem=set(x for s in eq.values() for x in s)|{'CHEBI:49883'}
+participants=[dict(id=i,label=value(i,'rdfs:label'),category='cofactor' if i=='CHEBI:49883' else 'small_molecule') for i in sorted(selected_chem)]
+participants += [dict(id='UniProtKB:'+a,label=u['proteinDescription']['recommendedName']['fullName']['value'],category='protein') for a,u in UP.items()]
+participants += [dict(id='MetaCyc:'+CPLX,label='KHG/KDPG aldolase',category='complex'),dict(id='GO:0005737',label=ontology['GO:0005737']['label'],category='cellular_component')]
+labels={row['term'][0]:row['term'][1] for row in facts['canonical_source_terms']}
+reactions=[dict(id=rid,label=labels[rid] if rid in labels else facts['rhea'][rid]['label'],direction='reversible' if rid.startswith('KEGG:') else 'left_to_right') for rid in eq]
+record=dict(id='KEGG:M00008',label=labels['KEGG:M00008'],description='Complete phosphorylative Entner–Doudoroff module from beta-D-glucose 6-phosphate to D-glyceraldehyde 3-phosphate and pyruvate, scoped to current E. coli K-12 proteins with experiment-specific strain and construct limits. Five reaction objects cover four sequential positions: alternative NADP- and NAD-dependent oxidations converge on lactone hydrolysis, dehydration and aldol cleavage. The beta identity is the native KEGG convention, not experimentally proven exclusive anomer use. First-step charged forms are explicit acid-base normalizations, and the two donor branches are never summed or assumed to carry equal in vivo flux. R10907 is listed by M00008 even though its inverse MODULE field omits M00008. Edd historical sequence and inferred iron-sulfur details remain qualified; Eda has source-supported homotrimer assembly. The CsrA Results/Fig.7 and Discussion report indirect positive expression effects, despite a negative section heading/current UniProt statement; no direct inhibition edge is inferred. Cofactor assays do not make Mg/Mn obligatory bound cofactors or LDH reporter NADH an Eda reactant. Uptake, precursor phosphorylation, downstream lower glycolysis, ATP production and other Eda substrate activities are outside this exact boundary.',pathway_type='central-carbon-catabolism',taxa=[dict(id='NCBITaxon:83333',label=ontology['NCBITaxon:83333']['label'])],participants=participants,reactions=reactions,mechanistic_edges=E,references=list(refs.values()))
+# Standalone context evidence is retained in the source projection, not attached to unrelated edges.
+reg=[primary('PMID:15659677',PRE/'raw/PMC545716.html','//section[@id="sec21"]/h3 | //section[@id="sec21"]/p[1] | //section[@id="sec22"]/p[1]','The heading says negative control but Results/Fig.7 and Discussion describe generally positive indirect CsrA effects on eda expression; no direct catalytic inhibition is established.')]
+target=D/'entner-doudoroff-pathway.yaml';target.write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+projection=dict(at=datetime.now(UTC).isoformat(),record_sha256=sha(target),native_boundary=dict(module='KEGG:M00008',positions=positions,native_reactions=native,definition=fields(PRE/'raw/M00008.txt')['DEFINITION']),equations=eq,side_projection=side_projection,rhea=facts['rhea'],kegg_bridges=facts['kegg_bridges'],references_to_original_paths=source_refs,primary_anchors=anchors,context_only=reg,counts=dict(reactions=len(reactions),participants=len(participants),edges=len(E),evidence=sum(len(x['evidence']) for x in E),references=len(refs)),limits=['2012 primary main text independently web-inspected but no original full local bytes; all 2012 full-byte replay claims excluded.','Native KEGG first-step beta identity and generic current UniProt catalytic annotation are not exact stereochemical equivalence.','2016 S1Table P0AC53 is sequence-analysis identity, not experimental construct equality.','Two donor branches are separate complete nets, not simultaneous stoichiometric sum.'])
+(D/'ed-source-projection.json').write_text(json.dumps(projection,indent=2)+'\n')
+(D/'ed-chemical-identities.json').write_text(json.dumps(facts,indent=2)+'\n')
+(D/'ed-protein-projection.json').write_text(json.dumps({a:dict(primaryAccession=u['primaryAccession'],organism=u['organism'],genes=u['genes'],sequence=u['sequence'],sequence_sha256=hashlib.sha256(u['sequence']['value'].encode()).hexdigest(),comments=u['comments'],conflicts=[x for x in u['features'] if x['type']=='Sequence conflict']) for a,u in UP.items()},indent=2)+'\n')
+print(json.dumps(dict(target_sha256=sha(target),counts=projection['counts'],pmid2016=pmid)))

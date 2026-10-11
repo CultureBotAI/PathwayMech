@@ -1,0 +1,27 @@
+from pathlib import Path
+from datetime import datetime,timezone
+from concurrent.futures import ThreadPoolExecutor
+import subprocess,os,json,hashlib,sys
+root=Path('/private/tmp/pathwaymech-next-218-20261011');env=dict(os.environ,UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',UV_NO_SYNC='1',PYTHONPATH=str(root/'src'))
+receipt=Path('/private/tmp/pathwaymech-next-218-final-gate-receipts.json');assert not receipt.exists()
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()=='721755c9b4af76d32d2b1f232571bbfeab232441'
+assert subprocess.check_output(['git','branch','--show-current'],cwd=root,text=True).strip()=='feat/pathway-next-218-20261011'
+assert list((root/'history/records/entner-doudoroff-pathway').glob('*.yaml'))
+assert list((root/'history/infrastructure/entner-doudoroff-authority-and-replay-evidence').glob('*.yaml'))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+bound={str(p.relative_to(root)):sha(p) for directory in ['src','scripts','tests','conf','data/pathways','data/identifier_authorities','templates'] for p in (root/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ['.pyc']}
+bound['research/pathway_additions/2026-10-11-next-218/ed-replay-final.py']=sha(root/'research/pathway_additions/2026-10-11-next-218/ed-replay-final.py')
+Path('/private/tmp/pathwaymech-next-218-final-gate-inputs.json').write_text(json.dumps(bound,indent=2)+'\n')
+def run(item):
+ name,cmd=item;log=Path('/private/tmp/pathwaymech-next-218-final-'+name+'.log');start=datetime.now(timezone.utc).isoformat()
+ with log.open('x') as f:p=subprocess.run(cmd,cwd=root,env=env,stdout=f,stderr=subprocess.STDOUT)
+ out={'name':name,'command':cmd,'environment':{k:env[k] for k in ('PYTHONPATH','UV_NO_SYNC','UV_CACHE_DIR')},'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':p.returncode,'log':str(log),'log_sha256':sha(log)}
+ print(json.dumps(out),flush=True);return out
+checks=[run(('render',['just','render-pages']))];receipt.write_text(json.dumps(checks,indent=2)+'\n')
+if checks[0]['exit_code']:sys.exit(checks[0]['exit_code'])
+commands=[('validate',['just','validate']),('test',['just','test']),('lint',['just','lint']),('identifiers',['just','check-identifiers']),('kgx',['just','kgx-export','--output-dir','/private/tmp/pathwaymech-next-218-final-kgx']),('diff-tracked',['git','diff','--check'])]
+with ThreadPoolExecutor(max_workers=3) as pool:checks+=list(pool.map(run,commands))
+receipt.write_text(json.dumps(checks,indent=2)+'\n')
+for rel,expected in bound.items():assert sha(root/rel)==expected,rel
+print(json.dumps({'bound_inputs_rechecked':len(bound),'all_checks_passed':all(x['exit_code']==0 for x in checks),'whitespace_scope':'Tracked diff only here; complete staged check still required.'}),flush=True)
+sys.exit(0 if all(x['exit_code']==0 for x in checks) else 1)

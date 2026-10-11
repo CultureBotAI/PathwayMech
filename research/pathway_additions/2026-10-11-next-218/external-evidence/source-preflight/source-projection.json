@@ -1,0 +1,158 @@
+{
+  "recommended_candidate": "KEGG:M00008",
+  "label": "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate",
+  "status": "Feasible complete-route lead for separate curation, not authored or approved.",
+  "full_boundary": "Four transformations from glucose 6-phosphate to D-glyceraldehyde 3-phosphate and pyruvate: oxidation, lactone hydrolysis, dehydration, aldol cleavage. Import, gluconate kinase, downstream GAP glycolysis and fermentation are outside this exact module.",
+  "kegg_definition": "K00036 (K01057,K07404) K01690 K01625",
+  "kegg_reaction_leads": [
+    "R02736/R10907 alternative source activities",
+    "R02035",
+    "R02036",
+    "R05605"
+  ],
+  "rhea_candidate_directions": [
+    "RHEA:15842",
+    "RHEA:12557",
+    "RHEA:17278",
+    "RHEA:17090"
+  ],
+  "mapping_limit": "The selected current E. coli Zwf annotation/Rhea15842 uses generic D-glucose 6-phosphate, whereas KEGG R02736 lead names beta-D-glucose 6-phosphate. Do not assert an exact compound mapping without separately checking original KEGG C01172/R02736/R10907 and the relevant ChEBI structures. This preflight verifies route boundary and a coherent enzyme-supported generic equation projection, not exact cross-source equivalence.",
+  "native_comparison": {
+    "id": "MetaCyc:ENTNER-DOUDOROFF-PWY",
+    "xml_version": "27.0",
+    "label": "Entner-Doudoroff shunt",
+    "members": [
+      "PGLUCONDEHYDRAT-RXN",
+      "KDPGALDOL-RXN"
+    ],
+    "reactions": [
+      {
+        "id": "MetaCyc:PGLUCONDEHYDRAT-RXN",
+        "left": [
+          "CPD-2961"
+        ],
+        "right": [
+          "2-KETO-3-DEOXY-6-P-GLUCONATE",
+          "WATER"
+        ],
+        "direction": "PHYSIOL-LEFT-TO-RIGHT",
+        "native_rhea_crossrefs": [
+          "17278"
+        ]
+      },
+      {
+        "id": "MetaCyc:KDPGALDOL-RXN",
+        "left": [
+          "2-KETO-3-DEOXY-6-P-GLUCONATE"
+        ],
+        "right": [
+          "GAP",
+          "PYRUVATE"
+        ],
+        "direction": "PHYSIOL-LEFT-TO-RIGHT",
+        "native_rhea_crossrefs": [
+          "17090"
+        ]
+      }
+    ],
+    "disposition": "Complete independently named two-step shunt, not an incomplete copy of M00008; usable alternative identity only if this narrower native boundary is explicitly selected. It is not an exactMatch to the four-step module."
+  },
+  "go_disposition": "GO0061678 is active but intentionally spans phosphorylative and nonphosphorylative variants; GO0009255 is obsolete. Prefer exact KEGG or exact native scope, not an obsolete or overbroad GO identity.",
+  "brenda_disposition": "Prior canary is a broad 15-reaction map with unresolved assertion-specific protein context; retain only as discovery support, not native route definition or duplicated maintained pathway.",
+  "dram_rows": [
+    {
+      "gene": "glucose-6-phosphate 1-dehydrogenase [EC:1.1.1.49 1.1.1.363] [RN:R02736 R10907]",
+      "ko": "K00036",
+      "module": "M00008",
+      "module_name": "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate",
+      "path": "0,0",
+      "product_ids": "C01236",
+      "product_names": "D-Glucono-1,5-lactone 6-phosphate",
+      "substrate_ids": "C01172",
+      "substrate_names": "beta-D-Glucose 6-phosphate",
+      "physical_line": 92
+    },
+    {
+      "gene": "6-phosphogluconolactonase [EC:3.1.1.31] [RN:R02035]",
+      "ko": "K01057",
+      "module": "M00008",
+      "module_name": "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate",
+      "path": "1,0",
+      "product_ids": "C00345",
+      "product_names": "6-Phospho-D-gluconate",
+      "substrate_ids": "C01236",
+      "substrate_names": "D-Glucono-1,5-lactone 6-phosphate",
+      "physical_line": 93
+    },
+    {
+      "gene": "6-phosphogluconolactonase [EC:3.1.1.31] [RN:R02035]",
+      "ko": "K07404",
+      "module": "M00008",
+      "module_name": "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate",
+      "path": "1,1",
+      "product_ids": "C00345",
+      "product_names": "6-Phospho-D-gluconate",
+      "substrate_ids": "C01236",
+      "substrate_names": "D-Glucono-1,5-lactone 6-phosphate",
+      "physical_line": 94
+    },
+    {
+      "gene": "phosphogluconate dehydratase [EC:4.2.1.12] [RN:R02036]",
+      "ko": "K01690",
+      "module": "M00008",
+      "module_name": "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate",
+      "path": "2,0",
+      "product_ids": "C04442",
+      "product_names": "2-Dehydro-3-deoxy-6-phospho-D-gluconate",
+      "substrate_ids": "C00345",
+      "substrate_names": "6-Phospho-D-gluconate",
+      "physical_line": 95
+    },
+    {
+      "gene": "2-dehydro-3-deoxyphosphogluconate aldolase [EC:4.1.2.14] [RN:R05605]",
+      "ko": "K01625",
+      "module": "M00008",
+      "module_name": "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate",
+      "path": "3,0",
+      "product_ids": "C00118,C00022",
+      "product_names": "D-Glyceraldehyde 3-phosphate,Pyruvate",
+      "substrate_ids": "C04442",
+      "substrate_names": "2-Dehydro-3-deoxy-6-phospho-D-gluconate",
+      "physical_line": 96
+    }
+  ],
+  "protein_leads": [
+    {
+      "id": "UniProtKB:P0AC53",
+      "gene": "zwf",
+      "locus": "b1852",
+      "taxon": "NCBITaxon:83333",
+      "length": 491,
+      "activity_scope": "Current catalytic annotation ECO0000255/HAMAP; PMID1704005 abstract/metadata retained, scanned full paper not inspected."
+    },
+    {
+      "id": "UniProtKB:P52697",
+      "gene": "pgl",
+      "locus": "b0767",
+      "taxon": "NCBITaxon:83333",
+      "length": 331,
+      "activity_scope": "PMID15576773 directly identifies ybhE/pgl with deletion/complementation and extract assay; multiple constructed MG1655 derivatives, not purified kinetics."
+    },
+    {
+      "id": "UniProtKB:P0ADF6",
+      "gene": "edd",
+      "locus": "b1851",
+      "taxon": "NCBITaxon:83333",
+      "length": 603,
+      "activity_scope": "PMID17962400 explicitly K-12 genomic edd, recombinant BL21(DE3) lysate; PMID17102132 MG1655-derived LC106 lysate."
+    },
+    {
+      "id": "UniProtKB:P0A955",
+      "gene": "eda",
+      "locus": "b1850",
+      "taxon": "NCBITaxon:83333",
+      "length": 213,
+      "activity_scope": "Direct published E. coli recombinant assays/structures; exact source donor strain must not be inferred from BL21 host or current database K-12 grouping."
+    }
+  ]
+}

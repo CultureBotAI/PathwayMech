@@ -1,0 +1,76 @@
+"""Prepare original-source manifest, authority proposal and bounded identity ledger."""
+from pathlib import Path
+from datetime import UTC,datetime
+import hashlib,json,importlib.util,sqlite3
+import yaml
+ROOT=Path(__file__).parent;D=ROOT/'draft';PRE=Path('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011');ADJ=Path('/private/tmp/pathwaymech-entner-doudoroff-independent-adjudication-20261011');NORM=Path('/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011');REPO=Path('/private/tmp/pathwaymech-next-216-20261011');CACHE=Path('/private/tmp/pathwaymech-curation-authorities')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def dump(p,v):
+ with p.open('x') as f:json.dump(v,f,indent=2);f.write('\n')
+target=D/'entner-doudoroff-pathway.yaml';r=yaml.safe_load(target.read_text());proj=json.loads((D/'ed-source-projection.json').read_text());facts=json.loads((D/'ed-chemical-identities.json').read_text())
+# Accurate locator correction during unsealed author preparation, not a review disposition.
+old=target.read_bytes();changes=[]
+for edge in r['mechanistic_edges']:
+ for ev in edge['evidence']:
+  if ev['reference_id']=='PMID:22519976':
+   prior=ev['source_locator'];ev['source_locator']='Results: NADP and NAD as co-substrates, Table 1; Experimental procedures: Purification; Discussion, paragraph on twelve extra N-terminal residues'
+   if ev['source_locator']!=prior:changes.append(dict(edge=edge['id'],before=prior,after=ev['source_locator']))
+if changes:
+ (ROOT/'unsealed-initial-draft.yaml.txt').write_bytes(old);target.write_text(yaml.safe_dump(r,sort_keys=False,allow_unicode=True,width=100));proj['record_sha256']=sha(target);(D/'ed-source-projection.json').write_text(json.dumps(proj,indent=2)+'\n');dump(ROOT/'pre-freeze-locator-preparation.json',dict(before_sha256=hashlib.sha256(old).hexdigest(),after_sha256=sha(target),changes=changes,scope='Correct exact official-web heading before author freeze; no scientific assertion change.'))
+allb=json.loads((PRE/'source-manifest.json').read_text())['original_responses']
+acqs=[NORM/'acquisition.json',ROOT/'acquisition.json',ROOT/'imod/manifest.json',ADJ/'acquisition-network.json',ADJ/'acquisition-extra.json',ADJ/'acquisition-figure.json']
+failed=[]
+for p in acqs:
+ rows=json.loads(p.read_text());rows=rows if isinstance(rows,list) else rows.get('responses',[rows])
+ for row in rows:
+  if 'path' not in row:failed.append(dict(acquisition=str(p),response=row));continue
+  q=dict(row);q['acquisition_receipt']=str(p);q['accepted_body']=q.get('status')==200;allb.append(q)
+by={}
+for row in allb:
+ assert sha(row['path'])==row['sha256'],row['path'];key=row['path']
+ if key in by:assert by[key]['sha256']==row['sha256']
+ else:by[key]=row
+proof_paths=[PRE/'handoff.json',ADJ/'handoff.json',ADJ/'decision.json',ADJ/'original-source-check.json',ADJ/'source-observations.json',Path('/private/tmp/pathwaymech-entner-doudoroff-root-authoring-acceptance-20261011.json'),NORM/'completion.json',ROOT/'chemical-source-facts.json',ROOT/'imod/context.json',ROOT/'imod/manifest.json',ROOT/'imod/runner-availability.json',*acqs]
+proofs=[dict(path=str(p),sha256=sha(p)) for p in dict.fromkeys(proof_paths)]
+databases=[dict(path=facts['chebi_database']['path'],sha256=facts['chebi_database']['sha256'],scope='ChEBI255 original complete semantic SQL'),dict(path=facts['rhea_source']['path'],sha256=facts['rhea_source']['sha256'],scope='Rhea142 original complete compressed RDF')]
+# Canonical-label SQL for additional ontology terms, preserving snapshot conventions.
+extra=[]
+for dbname,cid in [('go.db','GO:0005737'),('ncbitaxon.db','NCBITaxon:83333')]:
+ p=CACHE/dbname
+ with sqlite3.connect(f'file:{p}?mode=ro',uri=True) as db:
+  rows=[dict(predicate=a,value=b,object=c) for a,b,c in db.execute('SELECT predicate,value,object FROM statements WHERE subject=?',(cid,))]
+ label=next(x['value'] for x in rows if x['predicate']=='rdfs:label')
+ node=next(n for sec in ['taxa','participants'] for n in r[sec] if n['id']==cid);assert node['label']==label
+ extra.append(dict(id=cid,label=label,rows=rows,path=str(p),sha256=sha(p)))
+ databases.append(dict(path=str(p),sha256=extra[-1]['sha256'],scope='Complete original issuing semantic SQL; selected label rows separately retained'))
+dump(D/'ed-source-manifest.json',dict(at=datetime.now(UTC).isoformat(),record_sha256=sha(target),references=r['references'],bodies=list(by.values()),issuing_databases=databases,prior_proof_inputs=proofs,failed_access_without_body=failed,web_inspected_without_body=[dict(reference_id='PMID:22519976',url='https://febs.onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08610.x',scope='Official main text inspected by author and independent preflight reviewer; no retained full article bytes or full-article digest. Local HTTP403 preserved in prior acquisition error receipt.')]))
+spec=importlib.util.spec_from_file_location('source_builder',REPO/'scripts/build_source_identifier_snapshot.py');builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
+inputs=[]
+for row in facts['canonical_source_terms']:
+ p=Path(row['path']);kind=row['kind'];ident=row['term'][0]
+ url='https://rest.kegg.jp/get/'+ident.split(':')[1] if ident.startswith('KEGG:') else 'https://bf2i-artsymbiocyc.insa-lyon.fr/compound?orgid=META&id='+ident.split(':')[1]
+ terms=list(builder.source_terms(kind,p,url=url));assert terms
+ inputs.append(dict(original_path=str(p),manifest_entry=dict(source_id='ED-'+ident.replace(':','-')+'-20261011',kind=kind,path=str(p),url=url,version='Original issuing response retrieved 2026-10-11',sha256=sha(p)),terms=[dict(id=i,label=l,synonyms=s) for i,l,s in terms]))
+for acc in ['P0AC53','P52697','P0ADF6','P0A955']:
+ p=PRE/'raw'/f'{acc}.json';terms=list(builder.source_terms('uniprot',p))
+ inputs.append(dict(original_path=str(p),manifest_entry=dict(source_id='ED-UP-'+acc+'-20261011',kind='uniprot',path=str(p),url='https://rest.uniprot.org/uniprotkb/'+acc+'.json',version='Original current UniProt JSON retrieved 2026-10-11',sha256=sha(p)),terms=[dict(id=i,label=l,synonyms=s) for i,l,s in terms]))
+proposal=dict(record_sha256=sha(target),source_inputs=inputs,ontology_ids=sorted({n['id'] for sec in ['taxa','participants','reactions'] for n in r[sec] if n['id'].startswith(('CHEBI:','GO:','NCBITaxon:','RHEA:'))}),extra_ontology_originals=extra,limits=['Proposal only, root independent integration required; no shared manifest/snapshot/policy edits.','Preserve all prior terms and sources. Existing canonical labels must remain independent; no contextual-policy expansion requested.'])
+dump(D/'ed-authority-proposal.json',proposal)
+snapshot={}
+for f in ['ontology.json','sources.json']:snapshot.update(json.loads((REPO/'data/identifier_authorities'/f).read_text())['terms'])
+issued={t['id']:(t,x) for x in inputs for t in x['terms']};ledger=[]
+for section,nodes in [('record',[r]),('taxa',r['taxa']),('participants',r['participants']),('reactions',r['reactions'])]:
+ for n in nodes:
+  cid=n['id'];v=dict(id=cid,section=section,label=n['label'],baseline_authority_present=cid in snapshot)
+  if cid in issued:
+   t,x=issued[cid];assert n['label']==t['label'];v.update(issuing_label=t['label'],original_path=x['original_path'],sha256=x['manifest_entry']['sha256'],kind=x['manifest_entry']['kind'])
+  elif cid.startswith('CHEBI:'):
+   lab=next(x['value'] for x in facts['chebi_terms'][cid] if x['predicate']=='rdfs:label');assert lab==n['label'];v.update(issuing_label=lab,original_path=facts['chebi_database']['path'],sha256=facts['chebi_database']['sha256'])
+  elif cid.startswith('RHEA:'):
+   lab=facts['rhea'][cid]['label'];assert lab==n['label'];v.update(issuing_label=lab,original_path=facts['rhea_source']['path'],sha256=facts['rhea_source']['sha256'])
+  else:
+   x=next(x for x in extra if x['id']==cid);v.update(issuing_label=x['label'],original_path=x['path'],sha256=x['sha256'])
+  ledger.append(v)
+dump(D/'ed-identifiers.json',dict(record_sha256=sha(target),nodes=ledger,reference_ids=[x['id'] for x in r['references']],limits=['Named labels use independent canonical issuing labels; no inherited contextual exceptions for KEGG record.','An authority label is not experimental activity, stereochemical specificity, stoichiometry or construct evidence.']))
+print(json.dumps(dict(target=sha(target),counts=proj['counts'],bodies=len(by),source_inputs=len(inputs),named_nodes=len(ledger),missing=sum(not n['baseline_authority_present'] for n in ledger))))

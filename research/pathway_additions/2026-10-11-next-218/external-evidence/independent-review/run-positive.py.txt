@@ -1,0 +1,6 @@
+import datetime,hashlib,json,pathlib,subprocess
+p=pathlib.Path('/private/tmp/pathwaymech-ed-whole-record-review-20261011');s=pathlib.Path('/private/tmp/pathwaymech-entner-doudoroff-author-20261011')
+c=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python',str(s/'ed-replay-final.py'),'--record',str(s/'draft/entner-doudoroff-pathway.yaml'),'--repo','/private/tmp/pathwaymech-next-216-20261011','--output',str(p/'positive-replay.json')]
+t=datetime.datetime.now(datetime.UTC).isoformat()
+with (p/'positive-replay.log').open('x') as o:r=subprocess.run(c,stdout=o,stderr=subprocess.STDOUT)
+x={'command':c,'started_at':t,'finished_at':datetime.datetime.now(datetime.UTC).isoformat(),'returncode':r.returncode,'log_sha256':hashlib.sha256((p/'positive-replay.log').read_bytes()).hexdigest()};(p/'positive-execution.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x));raise SystemExit(r.returncode)
