@@ -1,0 +1,481 @@
+# Partial independent phenylethylamine review: source attribution and locator findings
+
+- Review: 20261011T035613Z-phenethylamine-initial-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T03:52:39.497712Z
+- Finished UTC: 2026-10-11T03:56:13Z
+- Reviewer: Codex independent reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+Two confirmed minor provenance findings: four reaction-role/membership edges need explicit source-separated Rhea/native bridges, and the FeaR evidence names an inaccurate Results heading. Chemistry and bounded strain/assembly conclusions inspected so far are supported; complete independent raw-side/charge replay and final shared gates remain pending.
+
+## Scope And Provenance
+
+Complete target read; bounded independent assessment of exact identity, source attribution, assembly, strain, regulatory claims and directed-reaction family bridge.
+
+Selection: Exactly the assigned maintained record at initial SHA a0cd49b90d304ab2df8bfd66e807d5b2f20d6276e407a5498cf25d5912a44b8b.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 407f1e2d992494f4a61ba336bedfc24155ea5574.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:2PHENDEG-PWY | data/pathways/phenylethylamine-degradation-i.yaml | maintained | phenylethylamine degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical pre-assessment inspect | passed | True | MetaCyc:2PHENDEG-PWY | Initial governed inspect captured unchanged target/context bytes before assessment. |
+| Whitespace diff check | passed | True | MetaCyc:2PHENDEG-PWY | Actual read-only command exited0 at initial observation. |
+| just validate | unavailable | True | MetaCyc:2PHENDEG-PWY | Final shared execution results pending at this initial observation; no passing exit claimed. |
+| just test | unavailable | True | MetaCyc:2PHENDEG-PWY | Final shared execution results pending at this initial observation; no passing exit claimed. |
+| just lint | unavailable | True | MetaCyc:2PHENDEG-PWY | Final shared execution results pending at this initial observation; no passing exit claimed. |
+
+## Scientific And Domain Assessments
+
+### Exact native complete route
+
+identity: supported. Targets: MetaCyc:2PHENDEG-PWY.
+
+Two-step amine-to-phenylacetate route is exact native identity; downstream assimilation is correctly outside this boundary.
+
+### Nearest-source attribution
+
+provenance: concern. Targets: MetaCyc:2PHENDEG-PWY.
+
+Four edges require separate exact bridge evidence; FeaR locator needs the actual Results heading.
+
+### Strain, assembly and regulation limits
+
+scope: supported. Targets: MetaCyc:2PHENDEG-PWY.
+
+Qualified FeaB enables does not assert monomer sufficiency or disputed oligomer. Nutrient-dependent transcription and strain growth variation are preserved.
+
+## Findings
+
+### f-source-bridges: Reaction-role and membership edges conflate issuing sources
+
+minor / open / confirmed; issue key: phenylethylamine-source-bridge-attribution.
+
+Edges014/015 put a Rhea master-to-directed fact under UniProt although the native comments name only masters. Edges024/025 cite only native pathway membership without the separate native reaction/Rhea crosswalk. Chemistry is supported, but exact edge-level provenance is incomplete.
+
+### f-regulation-locator: FeaR Results locator names a nonexistent heading
+
+minor / open / confirmed; issue key: phenylethylamine-feaR-results-locator.
+
+Edge027 names Results, Analysis of tynA and feaB expression. The full body has Regulation of the feaB and tynA promoters. Discussion and Fig9 support the assertion, so this is a minor locator defect, not unsupported regulation.
+
+## Recommended Actions And Acceptance Checks
+
+### action-f-source-bridges
+
+Correct the maintained edge evidence attribution or exact locator, retaining scientific scope and original source digests.
+
+- Independently compare changed evidence with exact native source objects, preserving separate UniProt/master, native reaction and Rhea-family facts.
+- Rerun author replay and generated pages, complete final native gates, then save successor review with exact initial finding lineage.
+
+### action-f-regulation-locator
+
+Correct the maintained edge evidence attribution or exact locator, retaining scientific scope and original source digests.
+
+- Independently compare changed evidence with exact native source objects, preserving separate UniProt/master, native reaction and Rhea-family facts.
+- Rerun author replay and generated pages, complete final native gates, then save successor review with exact initial finding lineage.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-target | data/pathways/phenylethylamine-degradation-i.yaml; Complete target; edges014,015,024,025,027 | refutes | Entire 27-edge record read; the four-edge source chain is incomplete and the regulatory Results heading is inaccurate. |
+| e-up-tyna | https://rest.uniprot.org/uniprotkb/P46883.json; CATALYTIC ACTIVITY comment2 / reactionCrossReferences | refutes | Exact phenylethylamine reaction comment maps master25265 and direct ECO:0000269/PMID10576737; no directed25266 physiologicalReaction is present in this comment. |
+| e-up-feab | https://rest.uniprot.org/uniprotkb/P80668.json; CATALYTIC ACTIVITY comment1 / reactionCrossReferences | refutes | FeaB comment maps master21392, not directed21393. Homodimer comment has no experimental ECO; target appropriately does not assert that stoichiometry. |
+| e-native-path | https://pathway.yeastgenome.org/getxml?META:2PHENDEG-PWY; Pathway reaction-list, reaction-ordering and reaction-layout | supports | Exact native two-member pathway includes AMINEPHEN-RXN followed by PHENDEHYD-RXN, both layoutL2R. This pathway XML does not contain their Rhea crosswalk. |
+| e-native-amine | https://pathway.yeastgenome.org/getxml?META:AMINEPHEN-RXN; Reaction / dblink[RHEA] / unification; reaction-direction | supports | Independent native reaction object explicitly maps25266 and physiological left-to-right direction. |
+| e-native-aldehyde | https://pathway.yeastgenome.org/getxml?META:PHENDEHYD-RXN; Reaction / dblink[RHEA] / unification; reaction-direction | supports | Independent native reaction object maps bidirectional21395 and says REVERSIBLE. Catabolic21393 requires the current family bridge plus native pathway layout. |
+| e-rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Description25265 directionalReaction25266; Description21392 directionalReaction21393 and bidirectionalReaction21395; directed substrates/products | supports | Independent streamed native RDF inspection confirms both exact family bridges and directions. Digest is complete compressed release142 RDF, not an issuing HTML page. |
+| e-regulation | https://pmc.ncbi.nlm.nih.gov/articles/PMC3811602/; Results heading Regulation of the feaB and tynA promoters; Discussion; Fig9; Methods | supports | The exact Results heading differs from edge027. Full body supports nutrient-dependent FeaR transcriptional regulation, MG1655 reporters and no direct aldehyde-binding demonstration. |
+| e-assembly | https://pmc.ncbi.nlm.nih.gov/articles/PMC2242541/; Results gel filtration and ultracentrifugation; Methods Expression and purification of the recombinant enzymes | supports | Full body identifies tetrameric supplied Garcia PAD construct expressed in BL21, without demonstrating identity to the target K12 allele. Retaining qualified gene-product enables is defensible. |
+| e-strain | https://pmc.ncbi.nlm.nih.gov/articles/PMC3807432/; Methods Bacterial strains; Results aerobic PEA use; Discussion final paragraph | supports | K12 W3110 derivatives show aerobic PEA growth; other stock behavior varies. Target retains this scope and does not claim every K12 derivative grows. |
+
+## Limits And Additional Notes
+
+- This is a partial scientific review; complete target was read, but final all-side/charge replay, authority recheck and shared gates are not yet complete.
+- The 1987/1997 primary sources were inspected as indexed abstracts; complete2013 and2006 primary bodies were read for the material scope claims.
+- Shared full tests are running and final validation/lint receipts were not yet available for this initial saved observation.
+- No current iModulon replay has been independently adjudicated in this partial observation.
+- No target or shared source inputs were edited by reviewer. A successor must retain these stable issue keys and exact finding lineage.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T035613Z-phenethylamine-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Partial independent phenylethylamine review: source attribution and locator
+  findings'
+started_at: '2026-10-11T03:52:39.497712Z'
+finished_at: '2026-10-11T03:56:13Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Root authored this record. Reviewer independently read the complete
+    target and raw native/UniProt/primary bodies and Rhea families, without editing
+    the target. Reviewer-authored heme deferral is outside this review.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: 'Two confirmed minor provenance findings: four reaction-role/membership edges
+  need explicit source-separated Rhea/native bridges, and the FeaR evidence names
+  an inaccurate Results heading. Chemistry and bounded strain/assembly conclusions
+  inspected so far are supported; complete independent raw-side/charge replay and
+  final shared gates remain pending.'
+source:
+  git_revision: 407f1e2d992494f4a61ba336bedfc24155ea5574
+  state: working_tree
+  inputs:
+  - path: data/pathways/phenylethylamine-degradation-i.yaml
+    sha256: a0cd49b90d304ab2df8bfd66e807d5b2f20d6276e407a5498cf25d5912a44b8b
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/phenethylamine-source-manifest.json
+    sha256: e9f85774db1f5e9cf3f863725ad789e979b3188ee4e84904bc8d5ba1e556d9e2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/phenethylamine-source-projection.json
+    sha256: 464bfb67a5b0aa125a5a493090973d9aa8fc822aed7a86746a85f34bf839b6dc
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+targets:
+- target_id: MetaCyc:2PHENDEG-PWY
+  path: data/pathways/phenylethylamine-degradation-i.yaml
+  label: phenylethylamine degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-i.yaml
+    role: maintained_record
+scope:
+  description: Complete target read; bounded independent assessment of exact identity,
+    source attribution, assembly, strain, regulatory claims and directed-reaction
+    family bridge.
+  selection: Exactly the assigned maintained record at initial SHA a0cd49b90d304ab2df8bfd66e807d5b2f20d6276e407a5498cf25d5912a44b8b.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  exclusions:
+  - target: Remaining complete raw-side/charge replay, final shared snapshots/generated
+      outputs and gates
+    reason: Not yet completed; follow-up review will assess corrected frozen surface.
+  - target: All other pathways
+    reason: Outside one-record independent scientific scope.
+checks:
+- check_id: inspect
+  name: Canonical pre-assessment inspect
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-186-phenethylamine-review-targets.yaml
+    --input src/pathwaymech/schema.py --input docs/CAUSAL_GRAPHS.md --input research/pathway_additions/2026-10-11-next-186/phenethylamine-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-186/phenethylamine-source-projection.json
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Initial governed inspect captured unchanged target/context bytes before
+    assessment.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+- check_id: diff
+  name: Whitespace diff check
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Actual read-only command exited0 at initial observation.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+- check_id: just-validate
+  name: just validate
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  status: unavailable
+  required: true
+  summary: Final shared execution results pending at this initial observation; no
+    passing exit claimed.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+- check_id: just-test
+  name: just test
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  status: unavailable
+  required: true
+  summary: Final shared execution results pending at this initial observation; no
+    passing exit claimed.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+- check_id: just-lint
+  name: just lint
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  status: unavailable
+  required: true
+  summary: Final shared execution results pending at this initial observation; no
+    passing exit claimed.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+evidence:
+- evidence_id: e-target
+  kind: record_content
+  reference: data/pathways/phenylethylamine-degradation-i.yaml
+  locator: Complete target; edges014,015,024,025,027
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: refutes
+  summary: Entire 27-edge record read; the four-edge source chain is incomplete and
+    the regulatory Results heading is inaccurate.
+  snapshot_sha256: a0cd49b90d304ab2df8bfd66e807d5b2f20d6276e407a5498cf25d5912a44b8b
+- evidence_id: e-up-tyna
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P46883.json
+  locator: CATALYTIC ACTIVITY comment2 / reactionCrossReferences
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: refutes
+  summary: Exact phenylethylamine reaction comment maps master25265 and direct ECO:0000269/PMID10576737;
+    no directed25266 physiologicalReaction is present in this comment.
+  snapshot_sha256: 79e7e4a8836d1f449023ae51cd33dd76ef74fbf710af4b3572b4f6bbbee524f9
+- evidence_id: e-up-feab
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P80668.json
+  locator: CATALYTIC ACTIVITY comment1 / reactionCrossReferences
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: refutes
+  summary: FeaB comment maps master21392, not directed21393. Homodimer comment has
+    no experimental ECO; target appropriately does not assert that stoichiometry.
+  snapshot_sha256: 19d360d722d1c91156ea361975ea9ace1f151edfb109fe06200c4b97242cf307
+- evidence_id: e-native-path
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:2PHENDEG-PWY
+  locator: Pathway reaction-list, reaction-ordering and reaction-layout
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: Exact native two-member pathway includes AMINEPHEN-RXN followed by PHENDEHYD-RXN,
+    both layoutL2R. This pathway XML does not contain their Rhea crosswalk.
+  snapshot_sha256: 43d0462352157ff9dc7ea48fffb5a4eb66135afd8b8aa421cb8de4a0f284798b
+- evidence_id: e-native-amine
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:AMINEPHEN-RXN
+  locator: Reaction / dblink[RHEA] / unification; reaction-direction
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: Independent native reaction object explicitly maps25266 and physiological
+    left-to-right direction.
+  snapshot_sha256: d53b18dff2d2dccd26ac6dd90c7b8f2b8816a49c0549bfb39b3099e3425adff2
+- evidence_id: e-native-aldehyde
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PHENDEHYD-RXN
+  locator: Reaction / dblink[RHEA] / unification; reaction-direction
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: Independent native reaction object maps bidirectional21395 and says REVERSIBLE.
+    Catabolic21393 requires the current family bridge plus native pathway layout.
+  snapshot_sha256: 6180f594e79c03d173878e114e4d2b5beeca89b859c7700844e767aaa9b1a77c
+- evidence_id: e-rhea
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Description25265 directionalReaction25266; Description21392 directionalReaction21393
+    and bidirectionalReaction21395; directed substrates/products
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: Independent streamed native RDF inspection confirms both exact family bridges
+    and directions. Digest is complete compressed release142 RDF, not an issuing HTML
+    page.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: e-regulation
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3811602/
+  locator: Results heading Regulation of the feaB and tynA promoters; Discussion;
+    Fig9; Methods
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: The exact Results heading differs from edge027. Full body supports nutrient-dependent
+    FeaR transcriptional regulation, MG1655 reporters and no direct aldehyde-binding
+    demonstration.
+  snapshot_sha256: 0533edcd01824ad3bc3e96cd6dd47ec61a2824e2d6e4fef5330a59779a37feae
+- evidence_id: e-assembly
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2242541/
+  locator: Results gel filtration and ultracentrifugation; Methods Expression and
+    purification of the recombinant enzymes
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: Full body identifies tetrameric supplied Garcia PAD construct expressed
+    in BL21, without demonstrating identity to the target K12 allele. Retaining qualified
+    gene-product enables is defensible.
+  snapshot_sha256: f750fd30aaff2fa66c55b3362f5849f22de3f1b9c1ee7be1b381dc4dd28597db
+- evidence_id: e-strain
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3807432/
+  locator: Methods Bacterial strains; Results aerobic PEA use; Discussion final paragraph
+  accessed_at: '2026-10-11T03:56:13Z'
+  support: supports
+  summary: K12 W3110 derivatives show aerobic PEA growth; other stock behavior varies.
+    Target retains this scope and does not claim every K12 derivative grows.
+  snapshot_sha256: e2e6227a743b1146c6e5474f0085f1924a779fc3d225728c51b588cdf63a0c30
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact native complete route
+  outcome: supported
+  summary: Two-step amine-to-phenylacetate route is exact native identity; downstream
+    assimilation is correctly outside this boundary.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  evidence_ids:
+  - e-native-path
+  - e-native-amine
+  - e-native-aldehyde
+- assessment_id: a-provenance
+  area: provenance
+  topic: Nearest-source attribution
+  outcome: concern
+  summary: Four edges require separate exact bridge evidence; FeaR locator needs the
+    actual Results heading.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  evidence_ids:
+  - e-target
+  - e-up-tyna
+  - e-up-feab
+  - e-rhea
+  - e-native-path
+  - e-native-amine
+  - e-native-aldehyde
+  - e-regulation
+- assessment_id: a-scope
+  area: scope
+  topic: Strain, assembly and regulation limits
+  outcome: supported
+  summary: Qualified FeaB enables does not assert monomer sufficiency or disputed
+    oligomer. Nutrient-dependent transcription and strain growth variation are preserved.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  evidence_ids:
+  - e-assembly
+  - e-strain
+  - e-regulation
+findings:
+- finding_id: f-source-bridges
+  issue_key: phenylethylamine-source-bridge-attribution
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Reaction-role and membership edges conflate issuing sources
+  description: Edges014/015 put a Rhea master-to-directed fact under UniProt although
+    the native comments name only masters. Edges024/025 cite only native pathway membership
+    without the separate native reaction/Rhea crosswalk. Chemistry is supported, but
+    exact edge-level provenance is incomplete.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  field_paths:
+  - mechanistic_edges[id=phenethylamine-edge-014]
+  - mechanistic_edges[id=phenethylamine-edge-015]
+  - mechanistic_edges[id=phenethylamine-edge-024]
+  - mechanistic_edges[id=phenethylamine-edge-025]
+  evidence_ids:
+  - e-up-tyna
+  - e-up-feab
+  - e-native-path
+  - e-native-amine
+  - e-native-aldehyde
+  - e-rhea
+  rule_id: review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md exact source attribution
+  native_severity: minor
+  normalization_reason: Bounded non-blocking provenance defect; independently inspected
+    scientific sources support the intended chemistry or regulatory claim.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-i.yaml
+    role: maintained_record
+- finding_id: f-regulation-locator
+  issue_key: phenylethylamine-feaR-results-locator
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: FeaR Results locator names a nonexistent heading
+  description: Edge027 names Results, Analysis of tynA and feaB expression. The full
+    body has Regulation of the feaB and tynA promoters. Discussion and Fig9 support
+    the assertion, so this is a minor locator defect, not unsupported regulation.
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  field_paths:
+  - mechanistic_edges[id=phenethylamine-edge-027]/evidence/source_locator
+  evidence_ids:
+  - e-regulation
+  rule_id: review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md exact source attribution
+  native_severity: minor
+  normalization_reason: Bounded non-blocking provenance defect; independently inspected
+    scientific sources support the intended chemistry or regulatory claim.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-i.yaml
+    role: maintained_record
+actions:
+- action_id: action-f-source-bridges
+  description: Correct the maintained edge evidence attribution or exact locator,
+    retaining scientific scope and original source digests.
+  finding_ids:
+  - f-source-bridges
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-i.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Independently compare changed evidence with exact native source objects, preserving
+    separate UniProt/master, native reaction and Rhea-family facts.
+  - Rerun author replay and generated pages, complete final native gates, then save
+    successor review with exact initial finding lineage.
+- action_id: action-f-regulation-locator
+  description: Correct the maintained edge evidence attribution or exact locator,
+    retaining scientific scope and original source digests.
+  finding_ids:
+  - f-regulation-locator
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-i.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Independently compare changed evidence with exact native source objects, preserving
+    separate UniProt/master, native reaction and Rhea-family facts.
+  - Rerun author replay and generated pages, complete final native gates, then save
+    successor review with exact initial finding lineage.
+limitations:
+- This is a partial scientific review; complete target was read, but final all-side/charge
+  replay, authority recheck and shared gates are not yet complete.
+- The 1987/1997 primary sources were inspected as indexed abstracts; complete2013
+  and2006 primary bodies were read for the material scope claims.
+- Shared full tests are running and final validation/lint receipts were not yet available
+  for this initial saved observation.
+- No current iModulon replay has been independently adjudicated in this partial observation.
+notes:
+- No target or shared source inputs were edited by reviewer. A successor must retain
+  these stable issue keys and exact finding lineage.
+```

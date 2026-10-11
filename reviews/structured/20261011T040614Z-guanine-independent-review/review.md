@@ -1,0 +1,1211 @@
+# Independent scientific review of guanine and guanosine salvage
+
+- Review: 20261011T040614Z-guanine-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T03:52:52Z
+- Finished UTC: 2026-10-11T04:06:14.117164Z
+- Reviewer: Codex /root/pathway_authority_cache (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+All 27 mechanistic edges and 51 evidence blocks support the complete native three-reaction guanine/guanosine salvage superpathway with explicit assembly, regulation and strain limits. Independent primary, native-object, Rhea and identity review found no actionable defect. Final full QC passes; test coverage and its stale-page rerun are preserved explicitly.
+
+## Scope And Provenance
+
+Full single maintained target:19 participants,3 reactions,27 edges,51 evidence blocks,22 references.
+
+Selection: Parent-assigned nonauthor scientific review; governed inspect preceded assessment.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 407f1e2d992494f4a61ba336bedfc24155ea5574.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6579 | data/pathways/guanine-and-guanosine-salvage.yaml | maintained | superpathway of guanine and guanosine salvage |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Governed target inspection before assessment | passed | True | MetaCyc:PWY-6579 | Initial governed inspect captured the final target SHA before scientific assessment. Scratch descriptor kind was later normalized to maintained, with unchanged identity and path. |
+| Superseded reviewer export assertion | failed | False | MetaCyc:PWY-6579 | All source hashes, native objects, Rhea sides and balances passed before a nonexistent pathwaymech_evidence column caused failure. Corrected to actual evidence column and documented predicate CURIE mapping. No target change. |
+| Independent complete source and chemistry replay | passed | True | MetaCyc:PWY-6579 | All 26 source bodies, including full ontology databases streamed in bounded chunks, and 22 reference digests match. Exact native boundary/assemblies, 13 chemical sides, 3 balances, canonical labels and actual 27-edge/51-evidence export pass. |
+| Superseded exploratory SVG selection | failed | False | MetaCyc:PWY-6579 | First selected the legend SVG; second selected only mechanism edges and omitted context edges. Corrected selection to network SVG and all data-subject edges; no target/page change. |
+| Independent published SVG/KGX check | passed | True | MetaCyc:PWY-6579 | Every target published edge row equals actual current export; all 27 SVG endpoints/evidence anchors and 24 local node contexts match. |
+| Independent baseline authority and target-name comparison | passed | True | MetaCyc:PWY-6579 | All prior terms/source metadata/manifest entries unchanged; all 24 target labels match their exact authorities. Four native HTML identities and taxon label separately verified. |
+| Canonical project runner availability | failed | False | MetaCyc:PWY-6579 | Console executable absent; unchanged canonical Python client fallback used below. |
+| Superseded adapter sandbox network attempt | failed | False | MetaCyc:PWY-6579 | Public API datasets request failed DNS resolution in sandbox before response; authorized network retry succeeded. |
+| Canonical adapter current public-source context | passed | True | MetaCyc:PWY-6579 | 28 datasets, 44 gene/alias/locus/accession queries and six component tables obtained; 51 exact response bodies retained without response headers. |
+| Unchanged canonical adapter offline replay | passed | True | MetaCyc:PWY-6579 | All 51 body hashes and exact parser outputs match. gpp only matches ppGpp regulator substrings; no candidate members in those six inspected tables. |
+| Delegated final validate | passed | True | MetaCyc:PWY-6579 | 189 native/closed-schema records, all identifier rules, 10444 evidence blocks, 277 histories and current pages pass. |
+| Delegated final lint | passed | True | MetaCyc:PWY-6579 | Final repository lint passes. |
+| Delegated final identifiers | passed | True | MetaCyc:PWY-6579 | All 189 pathway identifier/label checks pass. |
+| Delegated final kgx | passed | True | MetaCyc:PWY-6579 | Actual full-corpus CLI export completes; all target rows and published bytes verified. |
+| Delegated final diff | passed | True | MetaCyc:PWY-6579 | Tracked diff whitespace check passes. |
+| Initial delegated full test suite | failed | False | MetaCyc:PWY-6579 | 1047 passed, 3 skipped, 3 warnings; the sole failing test was committed-site freshness while final phenotype evidence/rendering changed. Retained as failed, not reported as a passing full command. Subsequent frozen full QC and exact failed-test rerun pass; no implementation or tests changed. |
+| Final rerun of the sole failed test | passed | True | MetaCyc:PWY-6579 | tests/test_render_pages.py::test_the_committed_site_is_current passed on final stable bytes: 1 passed in 47.14 seconds. Together with the other 1047 passing full-run tests, all executed cases have passing outcomes; the entire full command was not rerun. |
+| Final input reassessment and log hash check | passed | True | MetaCyc:PWY-6579 | All 37 final input hashes match. Only two shared authority snapshots changed from initial inspect; baseline values and all target identities were independently reassessed. Nine root log bodies and supporting receipt hashes match. |
+
+## Scientific And Domain Assessments
+
+### Exact complete two-branch native superpathway
+
+identity: supported. Targets: MetaCyc:PWY-6579.
+
+PWY-6579 contains PWY-6618 (direct guanosine phosphorylation) and PWY-6620 (guanosine phosphorolysis followed by guanine phosphoribosyl transfer). All three native reactions are represented; independent PathBank SMP0002086 has the same boundary. The copied adenine/adenosine/AMP native comment is rejected. Broader GO GMP salvage and the maintained purine deoxyribonucleoside-degradation record do not denote this exact route.
+
+### All directed chemical sides, stereochemistry and balances
+
+grounding: supported. Targets: MetaCyc:PWY-6579.
+
+Independent full Rhea 142 replay verifies all 13 chemical-side incidences and exact coefficient locators. Master 27710→27711 and 13233→13234 are left-to-right;25424→25426 is right-to-left. Native bidirectional 13236/25427 are explicitly bridged through their masters. ChEBI formulas and charges balance all three reactions. Alpha-D-ribose 1-phosphate and PRPP stereochemistry are retained. The two GMP-producing branches are alternatives, not one serial net.
+
+### Physical complexes and condition-specific states
+
+evidence: supported. Targets: MetaCyc:PWY-6579.
+
+Native MG1655 complexes contain two Gsk, six DeoD and four Gpt copies with exact protein crosswalks. The Gsk dimer is active in the examined inhibitor-free conditions; GDP/ppGpp and concentration influence tetramer formation. The full 2020 paper supports lower activity for the ppGpp-bound tetramer relative to its ppGpp-bound dimer, not a universal inactive tetramer. Gpt's 1983 apparent trimer conflicts with later 1997 structural/current tetramer; the selected later assembly and historical limit are explicit. DeoD hexamer is supported by the 1975 subunit/crosslinking abstract and reviewed experimental annotations.
+
+### Catalytic assignments and magnesium scope
+
+evidence: supported. Targets: MetaCyc:PWY-6579.
+
+Every complex-to-reaction assignment matches native enzyme-reaction objects and the exact current reviewed UniProt catalytic comment. Gpt's physiological orientation is explicitly an annotation/inference, not an isolated direct flux measurement. Gsk Mg dependence is supported beyond mere MgATP presence; its extra free-Mg requirement remains probable. Gpt has a structurally supported Mg site near PRPP and Asp 89, without an invented occupancy count or generalized assay-metal requirement.
+
+### GDP and ppGpp inhibition with preserved GTP conflict
+
+evidence: supported. Targets: MetaCyc:PWY-6579.
+
+The full 2020 paper reports ppGpp inhibition of guanosine and inosine kinase activities, GDP binding/inhibition, and MG1655-derived physiological effects. GDP and ppGpp inhibit the Gsk gene product without an exclusive oligomer claim. The 2000 abstract/current UniProt GTP-inhibition assertion conflicts with the 2020 result; that conflict is explicitly unresolved and the record adds no GTP-inhibition edge.
+
+### MG1655 grounding and experimental limits
+
+scope: supported. Targets: MetaCyc:PWY-6579.
+
+All three reviewed proteins are K-12(83333); they are not relabelled as direct MG1655-specific entries. Native pathway/assembly species 511145 and the full 2020 MG1655 chromosomal-strain experiments ground the bounded record. This does not establish constitutive or equal flux through both branches under all growth conditions.
+
+### Local graph, source-specific evidence and export preservation
+
+graph: supported. Targets: MetaCyc:PWY-6579.
+
+All local endpoints and references resolve. The only reaction dependency is shared guanine between phosphorolysis and phosphoribosyl transfer, not physical channeling. All 27 edges/51 evidence and descriptions are preserved by the actual exporter and final generated artifact audit. Curated assertions remain attached to their narrow source and do not present database statements as direct paper quotations.
+
+### Canonical structured expression context
+
+evidence: supported. Targets: MetaCyc:PWY-6579.
+
+The unchanged canonical iModulonDB client queried current e_coli/precise_mg 1655 gene, locus and accession keys. The gpp alias produced ppGpp regulator substring hits for six components; none of the queried target genes is a member of those inspected tables. This is bounded expression context, not negative pathway evidence or proof of catalysis. All 51 response bodies and 44 queries were replayed through the unchanged parser.
+
+### Exact source bodies, final inputs and repository gates
+
+provenance: supported. Targets: MetaCyc:PWY-6579.
+
+All 26 declared source artifacts and 22 reference body hashes were independently rechecked, including full pinned ontology databases streamed in bounded blocks. Four native canonical HTML identities and the exact taxon label were separately verified. Final shared authority inputs and actual gate receipts were reassessed before saving; mechanical reproducibility supplements the scientific assessment.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/guanine-and-guanosine-salvage.yaml; Entire YAML: 19 participants, 3 reactions, 27 edges, 51 evidence blocks, 22 references | supports | All 27 mechanistic edges and 51 evidence blocks support the complete native three-reaction guanine/guanosine salvage superpathway with explicit assembly, regulation and strain limits. Independent primary, native-object, Rhea and identity review found no actionable defect. |
+| independent-audit | research/pathway_additions/2026-10-11-next-186/guanine-independent-review-audit.json; Independent native/Rhea/primary checks, source-body hashes, full edge assessment and exact-source replay | supports | Independent source review and deterministic checks are explicitly distinguished. No current actionable finding. |
+| dedup | research/pathway_additions/2026-10-11-next-186/guanine-independent-review-audit.json; ignored_inclusive_searches; both current worktree and original Documents checkout | supports | Fresh hidden/ignored-inclusive identifier/semantic/protein/paper searches; shared DeoD deoxyribonucleoside degradation is distinct. Git metadata and installed environment excluded, not ignored curation artifacts. |
+| authority-final | research/pathway_additions/2026-10-11-next-186/authority-integration.json; Final snapshots and independent reviewer authority-recheck.json/native HTML checks | supports | All prior authority entries and metadata preserved; every target name independently matches official/native authority. |
+| generated-audit | research/pathway_additions/2026-10-11-next-186/generated-graph-kgx-audit.json; Guanine record entry; full SVG geometry/endpoints/anchors and published-versus-CLI KGX equality | supports | Root structural artifact audit and reviewer published replay preserve all 27 edges and 51 evidence blocks; browser rendering not asserted. |
+| expression-context | research/pathway_additions/2026-10-11-next-186/imodulondb-context.json; e_coli/precise_mg1655; gsk/b0477, deoD/b4384, gpt/b0238; gpp substring results and components43/53/77/90/100/104 | context_only | Current canonical client and exact 51-body offline replay provide only expression context. No negative pathway or catalytic inference. |
+| final-gates | research/pathway_additions/2026-10-11-next-186/integration-receipt.json; final_gates; additional_checks; test_disposition; independent gate-log-recheck.json | supports | Final QC/lint/identifiers/export/diff pass. Initial full tests:1 failed/1047 passed/3 skipped; exact stale-page test rerun:1 passed. Full final suite command was not rerun. Logs independently rehashed. |
+| input-recheck | /private/tmp/pathwaymech-guanine-review-20261011/input-recheck.json; Actual initial-to-final hash comparison and changed-authority reassessment | supports | Frozen target and original scientific dossiers unchanged. Two shared identity snapshots changed; all baseline facts and target labels explicitly rechecked before save. |
+| source-MetaCyc-PWY-6579 | https://pathway.yeastgenome.org/getxml?META:PWY-6579; PWY-6579.xml /ptools-xml/Pathway[@frameid="PWY-6579"]/reaction-list/Pathway[@frameid="PWY-6618"]; PWY-6579.xml /ptools-xml/Pathway[@frameid="PWY-6579"]/reaction-list/Pathway[@frameid="PWY-6620"] | supports | superpathway of guanine and guanosine salvage. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-014, gua-edge-015, gua-edge-016. |
+| source-MetaCyc-PWY-6618 | https://pathway.yeastgenome.org/getxml?META:PWY-6618; PWY-6618.xml /ptools-xml/Pathway/reaction-list/Reaction[@frameid="GUANOSINEKIN-RXN"] | supports | guanine and guanosine salvage III. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-014. |
+| source-MetaCyc-PWY-6620 | https://pathway.yeastgenome.org/getxml?META:PWY-6620; PWY-6620.xml /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN0-5199"]; PWY-6620.xml /ptools-xml/Pathway/reaction-list/Reaction[@frameid="GUANPRIBOSYLTRAN-RXN"]; PWY-6620.xml /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="GUANPRIBOSYLTRAN-RXN"]/predecessor-reactions/Reaction[@frameid="RXN0-5199"]; /reaction-layout | supports | guanine and guanosine salvage. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-015, gua-edge-016, gua-edge-025. |
+| source-MetaCyc-RXN0-5199 | https://pathway.yeastgenome.org/getxml?META:RXN0-5199; RXN0-5199.xml /ptools-xml/Reaction/(left&#124;right&#124;reaction-direction&#124;dblink[dblink-db="RHEA"]) | supports | RXN0-5199. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-015. |
+| source-MetaCyc-GUANPRIBOSYLTRAN-RXN | https://pathway.yeastgenome.org/getxml?META:GUANPRIBOSYLTRAN-RXN; GUANPRIBOSYLTRAN-RXN.xml /ptools-xml/Reaction/(left&#124;right&#124;reaction-direction&#124;dblink[dblink-db="RHEA"]) | supports | GUANPRIBOSYLTRAN-RXN. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-016. |
+| source-MetaCyc-GUANOSINEKIN-RXN | https://pathway.yeastgenome.org/getxml?META:GUANOSINEKIN-RXN; GUANOSINEKIN-RXN.xml /ptools-xml/Reaction/(left&#124;right&#124;reaction-direction&#124;dblink[dblink-db="RHEA"]) | supports | GUANOSINEKIN-RXN. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-014. |
+| source-MetaCyc-DEOD-CPLX | https://pathway.yeastgenome.org/getxml?META:DEOD-CPLX; DEOD-CPLX.xml /ptools-xml/Protein/component[Protein/@frameid="DEOD-MONOMER"]/(Protein&#124;coefficient) | supports | purine nucleoside phosphorylase. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-018. |
+| source-MetaCyc-GPT-CPLX | https://pathway.yeastgenome.org/getxml?META:GPT-CPLX; GPT-CPLX.xml /ptools-xml/Protein/component[Protein/@frameid="GPT-MONOMER"]/(Protein&#124;coefficient) | supports | xanthine-guanine phosphoribosyltransferase. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-019. |
+| source-MetaCyc-CPLX0-322 | https://pathway.yeastgenome.org/getxml?META:CPLX0-322; CPLX0-322.xml /ptools-xml/Protein/component[Protein/@frameid="GSK-MONOMER"]/(Protein&#124;coefficient) | supports | inosine/guanosine kinase. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-017. |
+| source-MetaCyc-GUANPHOSPHOR-ENZRXN | https://pathway.yeastgenome.org/getxml?META:GUANPHOSPHOR-ENZRXN; GUANPHOSPHOR-ENZRXN.xml /ptools-xml/Enzymatic-Reaction/(enzyme/Protein&#124;reaction/Reaction) | supports | guanosine phosphorylase. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-021. |
+| source-MetaCyc-GUANPRIBOSYLTRAN-ENZRXN | https://pathway.yeastgenome.org/getxml?META:GUANPRIBOSYLTRAN-ENZRXN; GUANPRIBOSYLTRAN-ENZRXN.xml /ptools-xml/Enzymatic-Reaction/(enzyme/Protein&#124;reaction/Reaction) | supports | guanine phosphoribosyltransferase. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-022. |
+| source-MetaCyc-GUANOSINEKIN-ENZRXN | https://pathway.yeastgenome.org/getxml?META:GUANOSINEKIN-ENZRXN; GUANOSINEKIN-ENZRXN.xml /ptools-xml/Enzymatic-Reaction/(enzyme/Protein&#124;reaction/Reaction) | supports | guanosine kinase. Inspected exact retained source body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-020. |
+| source-UniProtKB-P0AEW6 | https://rest.uniprot.org/uniprotkb/P0AEW6.json; uniprot-P0AEW6.json /uniProtKBCrossReferences[database="BioCyc",id="MetaCyc:GSK-MONOMER"]; /comments/8; uniprot-P0AEW6.json /comments/1/reaction; /comments/1/physiologicalReactions; uniprot-P0AEW6.json /comments/3/cofactors[cofactorCrossReference/id="CHEBI:18420"]; /comments/3/note | supports | Guanosine-inosine kinase. Inspected exact retained source body and edge-local locators. Reviewed entry version 135, sequence version 1; retrieved 2026-10-11. Used on gua-edge-017, gua-edge-020, gua-edge-023. |
+| source-UniProtKB-P0ABP8 | https://rest.uniprot.org/uniprotkb/P0ABP8.json; uniprot-P0ABP8.json /uniProtKBCrossReferences[database="BioCyc",id="MetaCyc:DEOD-MONOMER"]; /comments/10; uniprot-P0ABP8.json /comments/5/reaction; /comments/0 | supports | Purine nucleoside phosphorylase DeoD-type. Inspected exact retained source body and edge-local locators. Reviewed entry version 149, sequence version 2; retrieved 2026-10-11. Used on gua-edge-018, gua-edge-021. |
+| source-UniProtKB-P0A9M5 | https://rest.uniprot.org/uniprotkb/P0A9M5.json; uniprot-P0A9M5.json /uniProtKBCrossReferences[database="BioCyc",id="MetaCyc:GPT-MONOMER"]; /comments/9; uniprot-P0A9M5.json /comments/1/reaction; /comments/1/physiologicalReactions; uniprot-P0A9M5.json /comments/4/cofactors[cofactorCrossReference/id="CHEBI:18420"] | supports | Xanthine-guanine phosphoribosyltransferase. Inspected exact retained source body and edge-local locators. Reviewed entry version 152, sequence version 1; retrieved 2026-10-11. Used on gua-edge-019, gua-edge-022, gua-edge-024. |
+| source-PMID-10879466 | https://pubmed.ncbi.nlm.nih.gov/10879466/; Europe PMC core batch /resultList/result[id="10879466"]/abstractText; abstract only | supports | End-product regulation and kinetic mechanism of guanosine-inosine kinase from Escherichia coli.. Inspected exact retained source body and edge-local locators. Primary abstract inspected in Europe PMC core batch; digest covers full original batch JSON, not article full text. Used on gua-edge-027. |
+| source-PMID-9100006 | https://pubmed.ncbi.nlm.nih.gov/9100006/; Europe PMC core batch /resultList/result[id="9100006"]/abstractText; abstract only | supports | Crystal structure of Escherichia coli xanthine phosphoribosyltransferase.. Inspected exact retained source body and edge-local locators. Primary abstract inspected in Europe PMC core batch; digest covers full original batch JSON, not article full text. Used on gua-edge-019, gua-edge-022, gua-edge-024. |
+| source-PMID-235429 | https://pubmed.ncbi.nlm.nih.gov/235429/; Europe PMC core batch /resultList/result[id="235429"]/abstractText; abstract only | supports | Purine nucleoside phosphorylase from Escherichia coli and Salmonella typhimurium. Purification and some properties.. Inspected exact retained source body and edge-local locators. Primary abstract inspected in Europe PMC core batch; digest covers full original batch JSON, not article full text. Used on gua-edge-018. |
+| source-PMID-32857952 | https://pmc.ncbi.nlm.nih.gov/articles/PMC8362273/?pdf=0; Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization; Fig. 1D-E; Methods: SEC-MALS, DLS; Results: Gsk restructures both N- and C-termini to bind ppGpp, Fig. 2A and S2D-E; ppGpp inhibits Gsk by blocking conformational dynamics and inducing tetramerization, Fig. 3K; Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization, Fig. 1B-C and S1A; Methods: Construction of gsk(WT), ML3271 and gsk(K383A), ML3272; Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization; Fig. 1B-C,E; Methods: ITC and DLS | supports | ppGpp Coordinates Nucleotide and Amino-Acid Synthesis in E. coli During Starvation.. Inspected exact retained source body and edge-local locators. Complete primary article HTML inspected; published 2020, PMC availability 2021; retrieved 2026-10-11. Used on gua-edge-017, gua-edge-020, gua-edge-026, gua-edge-027. |
+| source-RHEA-27711 | https://www.rhea-db.org/rhea/27711; rhea.rdf.gz; rh:27711 rh:substrates &lt;http://rdf.rhea-db.org/27710_L&gt;; &lt;http://rdf.rhea-db.org/27710_L&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_27710_compound_1817&gt;; &lt;http://rdf.rhea-db.org/Participant_27710_compound_1817&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_1817&gt; / rh:chebi; rhea.rdf.gz; rh:27711 rh:substrates &lt;http://rdf.rhea-db.org/27710_L&gt;; &lt;http://rdf.rhea-db.org/27710_L&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_27710_compound_6372&gt;; &lt;http://rdf.rhea-db.org/Participant_27710_compound_6372&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_6372&gt; / rh:chebi; rhea.rdf.gz; rh:27711 rh:products &lt;http://rdf.rhea-db.org/27710_R&gt;; &lt;http://rdf.rhea-db.org/27710_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_27710_compound_3807&gt;; &lt;http://rdf.rhea-db.org/Participant_27710_compound_3807&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_3807&gt; / rh:chebi; rhea.rdf.gz; rh:27711 rh:products &lt;http://rdf.rhea-db.org/27710_R&gt;; &lt;http://rdf.rhea-db.org/27710_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_27710_compound_2710&gt;; &lt;http://rdf.rhea-db.org/Participant_27710_compound_2710&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_2710&gt; / rh:chebi; rhea.rdf.gz; rh:27711 rh:products &lt;http://rdf.rhea-db.org/27710_R&gt;; &lt;http://rdf.rhea-db.org/27710_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_27710_compound_3249&gt;; &lt;http://rdf.rhea-db.org/Participant_27710_compound_3249&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_3249&gt; / rh:chebi; rhea.rdf.gz; rh:27710 rh:directionalReaction rh:27711; rh:27710 rh:bidirectionalReaction; rh:27711 rh:substrates/rh:products/rh:equation | supports | guanosine + ATP =&gt; GMP + ADP + H(+). Inspected exact retained source body and edge-local locators. Rhea release 142; digest covers original complete RDF gzip. Used on gua-edge-001, gua-edge-002, gua-edge-003, gua-edge-004, gua-edge-005, gua-edge-014. |
+| source-RHEA-13234 | https://www.rhea-db.org/rhea/13234; rhea.rdf.gz; rh:13234 rh:substrates &lt;http://rdf.rhea-db.org/13233_L&gt;; &lt;http://rdf.rhea-db.org/13233_L&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_13233_compound_1817&gt;; &lt;http://rdf.rhea-db.org/Participant_13233_compound_1817&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_1817&gt; / rh:chebi; rhea.rdf.gz; rh:13234 rh:substrates &lt;http://rdf.rhea-db.org/13233_L&gt;; &lt;http://rdf.rhea-db.org/13233_L&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_13233_compound_5518&gt;; &lt;http://rdf.rhea-db.org/Participant_13233_compound_5518&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_5518&gt; / rh:chebi; rhea.rdf.gz; rh:13234 rh:products &lt;http://rdf.rhea-db.org/13233_R&gt;; &lt;http://rdf.rhea-db.org/13233_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_13233_compound_2276&gt;; &lt;http://rdf.rhea-db.org/Participant_13233_compound_2276&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_2276&gt; / rh:chebi; rhea.rdf.gz; rh:13234 rh:products &lt;http://rdf.rhea-db.org/13233_R&gt;; &lt;http://rdf.rhea-db.org/13233_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_13233_compound_2523&gt;; &lt;http://rdf.rhea-db.org/Participant_13233_compound_2523&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_2523&gt; / rh:chebi; rhea.rdf.gz; rh:13233 rh:directionalReaction rh:13234; rh:13233 rh:bidirectionalReaction; rh:13234 rh:substrates/rh:products/rh:equation; rhea.rdf.gz; rh:13234 rh:products rh:13233_R; rh:13233_R rh:contains rh:Participant_13233_compound_2523; rh:Compound_2523 rh:chebi | supports | guanosine + phosphate =&gt; alpha-D-ribose 1-phosphate + guanine. Inspected exact retained source body and edge-local locators. Rhea release 142; digest covers original complete RDF gzip. Used on gua-edge-006, gua-edge-007, gua-edge-008, gua-edge-009, gua-edge-015, gua-edge-025. |
+| source-RHEA-25426 | https://www.rhea-db.org/rhea/25426; rhea.rdf.gz; rh:25426 rh:substrates &lt;http://rdf.rhea-db.org/25424_R&gt;; &lt;http://rdf.rhea-db.org/25424_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_25424_compound_2523&gt;; &lt;http://rdf.rhea-db.org/Participant_25424_compound_2523&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_2523&gt; / rh:chebi; rhea.rdf.gz; rh:25426 rh:substrates &lt;http://rdf.rhea-db.org/25424_R&gt;; &lt;http://rdf.rhea-db.org/25424_R&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_25424_compound_4203&gt;; &lt;http://rdf.rhea-db.org/Participant_25424_compound_4203&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_4203&gt; / rh:chebi; rhea.rdf.gz; rh:25426 rh:products &lt;http://rdf.rhea-db.org/25424_L&gt;; &lt;http://rdf.rhea-db.org/25424_L&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_25424_compound_3807&gt;; &lt;http://rdf.rhea-db.org/Participant_25424_compound_3807&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_3807&gt; / rh:chebi; rhea.rdf.gz; rh:25426 rh:products &lt;http://rdf.rhea-db.org/25424_L&gt;; &lt;http://rdf.rhea-db.org/25424_L&gt; rh:contains1 &lt;http://rdf.rhea-db.org/Participant_25424_compound_2106&gt;; &lt;http://rdf.rhea-db.org/Participant_25424_compound_2106&gt; rh:compound &lt;http://rdf.rhea-db.org/Compound_2106&gt; / rh:chebi; rhea.rdf.gz; rh:25424 rh:directionalReaction rh:25426; rh:25424 rh:bidirectionalReaction; rh:25426 rh:substrates/rh:products/rh:equation; rhea.rdf.gz; rh:25426 rh:substrates rh:25424_R; rh:25424_R rh:contains rh:Participant_25424_compound_2523; rh:Compound_2523 rh:chebi | supports | guanine + 5-phospho-alpha-D-ribose 1-diphosphate =&gt; GMP + diphosphate. Inspected exact retained source body and edge-local locators. Rhea release 142; digest covers original complete RDF gzip. Used on gua-edge-010, gua-edge-011, gua-edge-012, gua-edge-013, gua-edge-016, gua-edge-025. |
+| historical-gpt | https://pubmed.ncbi.nlm.nih.gov/6305942/; Indexed abstract: apparent trimer by gel filtration | context_only | 1983 apparent trimer is a genuine conflicting observation, retained as historical context rather than silently overwritten by later tetramer evidence. |
+
+## Limits And Additional Notes
+
+- Primary PMID 10879466, PMID 235429 and PMID 9100006 were inspected as indexed abstracts, not claimed as full text; their cited structured experimental annotations were independently read. Historical PMID 6305942 trimer evidence is also abstract-only.
+- Gsk oligomerization depends on ligand and concentration. The represented native dimer does not assert an exclusive universal assembly, and lower tetramer activity is specifically ppGpp-bound.
+- GTP feedback inhibition remains unresolved between the 2000/current-annotation source and 2020 experiments. No GTP edge is asserted; resolving it needs comparison of assay conditions and biochemical reproduction.
+- The older Gpt apparent trimer conflicts with later structural/current tetramer. The selected tetramer is evidence-backed, but the cause of the historical discrepancy is not established.
+- The source-defined alternative salvage branches are supported; simultaneous physiological flux under arbitrary conditions was not measured by this review.
+- iModulonDB search matches and inspected component membership are expression context only. Absence of a queried gene from these particular tables does not establish absence from all modules or from the pathway.
+- The initial full test command failed solely on stale generated pages during final evidence/render changes. All other 1047 tests passed; the failed test passed on final stable pages. Full final just test was not repeated; exact-head CI remains a publication requirement.
+- No browser surface was available to root. HTML/SVG/KGX were structurally inspected; this review does not claim screenshot or interaction verification.
+- The reviewer authored the independent rhamnose record in this cohort, and performed the authorized shared iModulon adapter retrieval, but did not author or change this guanine YAML or its author scientific dossiers.
+- No substantive guanine correction or GitHub issue was required. No structured predecessor or resolved finding is fabricated.
+- A superseded reviewer export assertion used a nonexistent pathwaymech_evidence column. It was corrected to the actual evidence column and documented predicate mapping; no maintained scientific data changed.
+- Initial structured-review validation rejected missing explicit search_scope metadata; added the exact already-performed ignored-inclusive search scope and revalidated. No scientific input changed.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T040614Z-guanine-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of guanine and guanosine salvage
+started_at: '2026-10-11T03:52:52Z'
+finished_at: '2026-10-11T04:06:14.117164Z'
+reviewer:
+  identity: Codex /root/pathway_authority_cache
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author/edit guanine YAML or author scientific dossiers.
+    Authored separate rhamnose record; performed authorized shared iModulon source
+    retrieval. verify_graph_publication authored guanine; root owns integration and
+    repository gates.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: All 27 mechanistic edges and 51 evidence blocks support the complete native
+  three-reaction guanine/guanosine salvage superpathway with explicit assembly, regulation
+  and strain limits. Independent primary, native-object, Rhea and identity review
+  found no actionable defect. Final full QC passes; test coverage and its stale-page
+  rerun are preserved explicitly.
+source:
+  git_revision: 407f1e2d992494f4a61ba336bedfc24155ea5574
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: bc28f89ce9c4eacb5800b3d1dcc97e5f5a0af66df74e5fb3c98823fa42cd1fdd
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: f1497d9708ec44a0f50f4c5aca13fd78e901e972bacc24fe0beb9758e8a08e50
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 1c65fa323339295a2d51185a3f5c1e6159930489d8b8009243142f6620fbe602
+    role: context
+  - path: data/pathways/guanine-and-guanosine-salvage.yaml
+    sha256: 7133352b12d3cd8579acc128b2896b9247dd8503f06c339d2526e137eb17e58e
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/MetaCyc_PWY-6579.html
+    sha256: 86ce6e61eaf6fb64f4fbe56dc0dd90864cfccfb1a7fac23d9a6353cbf216d379
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/authority-integration.json
+    sha256: c25cb92057407745b0e97972f45027817fb0693d4b91e8ea7bef5e9e1afc2726
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/authority-source-inspection.json
+    sha256: 0ddf55d70f0f0727e8e88aeabc77939e7d61259e8f018faf70944041ee76ed5a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/baseline-preservation.json
+    sha256: 7db42e2bd2be9b043726e36b461875cc85ef3d3175eb3ef31be079c7b1c61e60
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/generated-graph-kgx-audit.json
+    sha256: 6f312e62b07e243e75fb22244063aa1465fb021293f3deb149fe314e96621129
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-curation.md
+    sha256: da0cbef607b082591ddca61c7f52de6f83f03af9e0bc3d0e6a7de2cee2d3a436
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-dedup.json
+    sha256: ac22fd3df9df7a291ebe1b2ae4401d6ba4a9a51e51f0e0fb7b839d924ae635df
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-identifiers.json
+    sha256: c2259c0dddbb90b0f83fddb3b5b2b0d2580dd2461578b1362ffe93a8c193a40b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-independent-review-audit.json
+    sha256: 066780b73728e1b367c31a862c5f2d51414d5f9efd84ebdd3ecf880a334f1dfe
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-protein-projection.json
+    sha256: 67fed9dadbb120cdec438fffa21d7c7c69cba1414fb559425e8ae1de894d49ea
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-replay.py
+    sha256: 0dd8066a8c9ff7c930d3f76479b447e0b52181222a38e436794b2e30311e707a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-source-manifest.json
+    sha256: cab8d95e8e5d5635d80849e55bd39d27056331a70a3adc8ed51e7919f5e9afad
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-source-projection.json
+    sha256: e0d2e007ee396fcf8318d40cb2670321415e11e075bc657792c0e61f796feee1
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/guanine-validation.json
+    sha256: ba4f7d976215cc58992e7816a0d162b85328ad6260d654bdd4c79a7c79af4b97
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/imodulondb-context.json
+    sha256: 72381f3f518a5c4fd20ae4a8c1305eb7444d9cb1d07de514c8b4b67dfe1f265c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/imodulondb-parser-replay.json
+    sha256: c80d1a0049bcaabff525a88dd876aa766794aa7f6500c2c74888737d573bca05
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/imodulondb-runner-availability.json
+    sha256: 38ebb9d9ebd6e2e2ff38e22449d0390987bb3f8a9d58d117e9c55244c8f8a636
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/imodulondb-source-manifest.json
+    sha256: 3c0557921cc80b248734219e18fab90801487cab44ee6107b0df3bd656dbbd94
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-186/integration-receipt.json
+    sha256: f89210d51159c95348997b664e7aedb3766dbebcf7ff10d8e68627c4ca89320a
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: e1d2f085f8e257170a434400265a400ffac07e4aa23b1b830a8fde990ba6a520
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+targets:
+- target_id: MetaCyc:PWY-6579
+  path: data/pathways/guanine-and-guanosine-salvage.yaml
+  label: superpathway of guanine and guanosine salvage
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanine-and-guanosine-salvage.yaml
+    role: maintained pathway YAML; future scientific fixes belong here
+  record_class: Pathway
+scope:
+  description: Full single maintained target:19 participants,3 reactions,27 edges,51
+    evidence blocks,22 references.
+  selection: Parent-assigned nonauthor scientific review; governed inspect preceded
+    assessment.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6579
+  exclusions:
+  - target: Other cohort and baseline pathways
+    reason: Only duplicate-boundary/shared-integration context inspected; no independent
+      scientific verdict here.
+  - target: Wet-lab reproduction and browser rendering
+    reason: Not performed; primary-source assessment and programmatic publication
+      checks only.
+checks:
+- check_id: initial-inspect
+  name: Governed target inspection before assessment
+  status: passed
+  required: true
+  summary: Initial governed inspect captured the final target SHA before scientific
+    assessment. Scratch descriptor kind was later normalized to maintained, with unchanged
+    identity and path.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - target
+  - input-recheck
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-guanine-review-20261011/targets.yaml
+    --input .claude/skills/review-yaml-record/SKILL.md --input .claude/skills/add-pathway/SKILL.md
+    --input CLAUDE.md --input justfile --input docs/CURATION.md --input docs/HARMONIZATION.md
+    --input docs/CAUSAL_GRAPHS.md --input docs/record-reviews.md --input docs/record-review-profile.md
+    --input schema/record_review.yaml --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+    --input conf/identifier_policy.yaml --input data/identifier_authorities/ontology.json
+    --input data/identifier_authorities/sources.json --input research/pathway_additions/2026-10-11-next-186/guanine-curation.md
+    --input research/pathway_additions/2026-10-11-next-186/guanine-dedup.json --input
+    research/pathway_additions/2026-10-11-next-186/guanine-identifiers.json --input
+    research/pathway_additions/2026-10-11-next-186/guanine-protein-projection.json
+    --input research/pathway_additions/2026-10-11-next-186/guanine-replay.py --input
+    research/pathway_additions/2026-10-11-next-186/guanine-source-manifest.json --input
+    research/pathway_additions/2026-10-11-next-186/guanine-source-projection.json
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: reviewer-export-initial
+  name: Superseded reviewer export assertion
+  status: failed
+  required: false
+  summary: All source hashes, native objects, Rhea sides and balances passed before
+    a nonexistent pathwaymech_evidence column caused failure. Corrected to actual
+    evidence column and documented predicate CURIE mapping. No target change.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - independent-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-guanine-review-20261011/replay.py
+    (initial scratch version)
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: independent-replay
+  name: Independent complete source and chemistry replay
+  status: passed
+  required: true
+  summary: All 26 source bodies, including full ontology databases streamed in bounded
+    chunks, and 22 reference digests match. Exact native boundary/assemblies, 13 chemical
+    sides, 3 balances, canonical labels and actual 27-edge/51-evidence export pass.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - independent-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-guanine-review-20261011/replay.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: reviewer-page-initial
+  name: Superseded exploratory SVG selection
+  status: failed
+  required: false
+  summary: First selected the legend SVG; second selected only mechanism edges and
+    omitted context edges. Corrected selection to network SVG and all data-subject
+    edges; no target/page change.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - independent-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-guanine-review-20261011/check-published.py
+    (two initial scratch versions)
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: published-check
+  name: Independent published SVG/KGX check
+  status: passed
+  required: true
+  summary: Every target published edge row equals actual current export; all 27 SVG
+    endpoints/evidence anchors and 24 local node contexts match.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - independent-audit
+  - generated-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-guanine-review-20261011/check-published.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: authority-check
+  name: Independent baseline authority and target-name comparison
+  status: passed
+  required: true
+  summary: All prior terms/source metadata/manifest entries unchanged; all 24 target
+    labels match their exact authorities. Four native HTML identities and taxon label
+    separately verified.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - authority-final
+  - independent-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-guanine-review-20261011/check-authorities.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: adapter-console
+  name: Canonical project runner availability
+  status: failed
+  required: false
+  summary: Console executable absent; unchanged canonical Python client fallback used
+    below.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - expression-context
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run --project /private/tmp/claw-published-duf-offline-20261007 kg-microbe-sources
+    imodulondb datasets
+  exit_code: 2
+  expected_exit_code: 0
+- check_id: adapter-dns
+  name: Superseded adapter sandbox network attempt
+  status: failed
+  required: false
+  summary: Public API datasets request failed DNS resolution in sandbox before response;
+    authorized network retry succeeded.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - expression-context
+  command: .venv/bin/python /private/tmp/pathwaymech-next-186-imodulondb.py
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: adapter-current
+  name: Canonical adapter current public-source context
+  status: passed
+  required: true
+  summary: 28 datasets, 44 gene/alias/locus/accession queries and six component tables
+    obtained; 51 exact response bodies retained without response headers.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - expression-context
+  command: .venv/bin/python /private/tmp/pathwaymech-next-186-imodulondb.py (authorized
+    network execution)
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: adapter-replay
+  name: Unchanged canonical adapter offline replay
+  status: passed
+  required: true
+  summary: All 51 body hashes and exact parser outputs match. gpp only matches ppGpp
+    regulator substrings; no candidate members in those six inspected tables.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - expression-context
+  command: .venv/bin/python /private/tmp/pathwaymech-next-186-imodulondb-replay.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: final-validate
+  name: Delegated final validate
+  status: passed
+  required: true
+  summary: 189 native/closed-schema records, all identifier rules, 10444 evidence
+    blocks, 277 histories and current pages pass.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: final-lint
+  name: Delegated final lint
+  status: passed
+  required: true
+  summary: Final repository lint passes.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: final-identifiers
+  name: Delegated final identifiers
+  status: passed
+  required: true
+  summary: All 189 pathway identifier/label checks pass.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: final-kgx
+  name: Delegated final kgx
+  status: passed
+  required: true
+  summary: Actual full-corpus CLI export completes; all target rows and published
+    bytes verified.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-186-kgx
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: final-diff
+  name: Delegated final diff
+  status: passed
+  required: true
+  summary: Tracked diff whitespace check passes.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: initial-full-tests
+  name: Initial delegated full test suite
+  status: failed
+  required: false
+  summary: 1047 passed, 3 skipped, 3 warnings; the sole failing test was committed-site
+    freshness while final phenotype evidence/rendering changed. Retained as failed,
+    not reported as a passing full command. Subsequent frozen full QC and exact failed-test
+    rerun pass; no implementation or tests changed.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: final-page-test
+  name: Final rerun of the sole failed test
+  status: passed
+  required: true
+  summary: 'tests/test_render_pages.py::test_the_committed_site_is_current passed
+    on final stable bytes: 1 passed in 47.14 seconds. Together with the other 1047
+    passing full-run tests, all executed cases have passing outcomes; the entire full
+    command was not rerun.'
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 .venv/bin/pytest
+    tests/test_render_pages.py::test_the_committed_site_is_current -q
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: final-inspect
+  name: Final input reassessment and log hash check
+  status: passed
+  required: true
+  summary: All 37 final input hashes match. Only two shared authority snapshots changed
+    from initial inspect; baseline values and all target identities were independently
+    reassessed. Nine root log bodies and supporting receipt hashes match.
+  target_ids:
+  - MetaCyc:PWY-6579
+  evidence_ids:
+  - input-recheck
+  - authority-final
+  - final-gates
+  command: .venv/bin/python /private/tmp/pathwaymech-guanine-review-20261011/final-inspect.py
+  exit_code: 0
+  expected_exit_code: 0
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/guanine-and-guanosine-salvage.yaml
+  locator: 'Entire YAML: 19 participants, 3 reactions, 27 edges, 51 evidence blocks,
+    22 references'
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: All 27 mechanistic edges and 51 evidence blocks support the complete native
+    three-reaction guanine/guanosine salvage superpathway with explicit assembly,
+    regulation and strain limits. Independent primary, native-object, Rhea and identity
+    review found no actionable defect.
+  snapshot_sha256: 7133352b12d3cd8579acc128b2896b9247dd8503f06c339d2526e137eb17e58e
+- evidence_id: independent-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-186/guanine-independent-review-audit.json
+  locator: Independent native/Rhea/primary checks, source-body hashes, full edge assessment
+    and exact-source replay
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Independent source review and deterministic checks are explicitly distinguished.
+    No current actionable finding.
+  snapshot_sha256: 066780b73728e1b367c31a862c5f2d51414d5f9efd84ebdd3ecf880a334f1dfe
+- evidence_id: dedup
+  kind: search
+  reference: research/pathway_additions/2026-10-11-next-186/guanine-independent-review-audit.json
+  locator: ignored_inclusive_searches; both current worktree and original Documents
+    checkout
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Fresh hidden/ignored-inclusive identifier/semantic/protein/paper searches;
+    shared DeoD deoxyribonucleoside degradation is distinct. Git metadata and installed
+    environment excluded, not ignored curation artifacts.
+  snapshot_sha256: 066780b73728e1b367c31a862c5f2d51414d5f9efd84ebdd3ecf880a334f1dfe
+  search_scope: Fresh rg --no-ignore --hidden -l -i exact pathway/native/reaction/protein/PMID
+    pattern search in the current shared worktree and original Documents checkout;
+    Git internals and installed .venv excluded. Matched source inventories, authority
+    facts, generated records and distinct purine deoxyribonucleoside degradation were
+    adjudicated. No whole-computer absence claim.
+- evidence_id: authority-final
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-186/authority-integration.json
+  locator: Final snapshots and independent reviewer authority-recheck.json/native
+    HTML checks
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: All prior authority entries and metadata preserved; every target name independently
+    matches official/native authority.
+  snapshot_sha256: c25cb92057407745b0e97972f45027817fb0693d4b91e8ea7bef5e9e1afc2726
+- evidence_id: generated-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-186/generated-graph-kgx-audit.json
+  locator: Guanine record entry; full SVG geometry/endpoints/anchors and published-versus-CLI
+    KGX equality
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Root structural artifact audit and reviewer published replay preserve all
+    27 edges and 51 evidence blocks; browser rendering not asserted.
+  snapshot_sha256: 6f312e62b07e243e75fb22244063aa1465fb021293f3deb149fe314e96621129
+- evidence_id: expression-context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-186/imodulondb-context.json
+  locator: e_coli/precise_mg1655; gsk/b0477, deoD/b4384, gpt/b0238; gpp substring
+    results and components43/53/77/90/100/104
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: context_only
+  summary: Current canonical client and exact 51-body offline replay provide only
+    expression context. No negative pathway or catalytic inference.
+  snapshot_sha256: 72381f3f518a5c4fd20ae4a8c1305eb7444d9cb1d07de514c8b4b67dfe1f265c
+- evidence_id: final-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-186/integration-receipt.json
+  locator: final_gates; additional_checks; test_disposition; independent gate-log-recheck.json
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Final QC/lint/identifiers/export/diff pass. Initial full tests:1 failed/1047
+    passed/3 skipped; exact stale-page test rerun:1 passed. Full final suite command
+    was not rerun. Logs independently rehashed.
+  snapshot_sha256: f89210d51159c95348997b664e7aedb3766dbebcf7ff10d8e68627c4ca89320a
+- evidence_id: input-recheck
+  kind: validation
+  reference: /private/tmp/pathwaymech-guanine-review-20261011/input-recheck.json
+  locator: Actual initial-to-final hash comparison and changed-authority reassessment
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Frozen target and original scientific dossiers unchanged. Two shared identity
+    snapshots changed; all baseline facts and target labels explicitly rechecked before
+    save.
+  snapshot_sha256: dcf7d87ba36201d1c0a8f4aa9dc50410927ebb7c239580607b88a22f2aea2aa1
+- evidence_id: source-MetaCyc-PWY-6579
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6579
+  locator: PWY-6579.xml /ptools-xml/Pathway[@frameid="PWY-6579"]/reaction-list/Pathway[@frameid="PWY-6618"];
+    PWY-6579.xml /ptools-xml/Pathway[@frameid="PWY-6579"]/reaction-list/Pathway[@frameid="PWY-6620"]
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: superpathway of guanine and guanosine salvage. Inspected exact retained
+    source body and edge-local locators. MetaCyc 22.5; original native XML retrieved
+    2026-10-11. Used on gua-edge-014, gua-edge-015, gua-edge-016.
+  snapshot_sha256: cc957b62f29a245019be216fd077181665fab624158aec2d55e58a0c1a453f08
+- evidence_id: source-MetaCyc-PWY-6618
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6618
+  locator: PWY-6618.xml /ptools-xml/Pathway/reaction-list/Reaction[@frameid="GUANOSINEKIN-RXN"]
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanine and guanosine salvage III. Inspected exact retained source body
+    and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11.
+    Used on gua-edge-014.
+  snapshot_sha256: 2dd46e522911b582e3c4e85c96ee6b96b3e9cd1155c2ce8def65586c950dc8de
+- evidence_id: source-MetaCyc-PWY-6620
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6620
+  locator: PWY-6620.xml /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN0-5199"];
+    PWY-6620.xml /ptools-xml/Pathway/reaction-list/Reaction[@frameid="GUANPRIBOSYLTRAN-RXN"];
+    PWY-6620.xml /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="GUANPRIBOSYLTRAN-RXN"]/predecessor-reactions/Reaction[@frameid="RXN0-5199"];
+    /reaction-layout
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanine and guanosine salvage. Inspected exact retained source body and
+    edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used
+    on gua-edge-015, gua-edge-016, gua-edge-025.
+  snapshot_sha256: 24bc00ae9624e1857880cd2b3f7e2fadfaeb237080444fdf0284a25e2b3765cf
+- evidence_id: source-MetaCyc-RXN0-5199
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN0-5199
+  locator: RXN0-5199.xml /ptools-xml/Reaction/(left|right|reaction-direction|dblink[dblink-db="RHEA"])
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: RXN0-5199. Inspected exact retained source body and edge-local locators.
+    MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-015.
+  snapshot_sha256: 56aafed7661c4bb22947e8d1c8d359d22ffff78b4904b8013f7c07092752d13c
+- evidence_id: source-MetaCyc-GUANPRIBOSYLTRAN-RXN
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GUANPRIBOSYLTRAN-RXN
+  locator: GUANPRIBOSYLTRAN-RXN.xml /ptools-xml/Reaction/(left|right|reaction-direction|dblink[dblink-db="RHEA"])
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: GUANPRIBOSYLTRAN-RXN. Inspected exact retained source body and edge-local
+    locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-016.
+  snapshot_sha256: 90c87415e5ec261fcefaedf3495d2fddcf15a5f8ae6dd2be87d26c1bd0de41cc
+- evidence_id: source-MetaCyc-GUANOSINEKIN-RXN
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GUANOSINEKIN-RXN
+  locator: GUANOSINEKIN-RXN.xml /ptools-xml/Reaction/(left|right|reaction-direction|dblink[dblink-db="RHEA"])
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: GUANOSINEKIN-RXN. Inspected exact retained source body and edge-local locators.
+    MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-014.
+  snapshot_sha256: a25dca8bdec21481c03f50fdb08a26975061d8161f482a823dcfe72d212c5c3e
+- evidence_id: source-MetaCyc-DEOD-CPLX
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:DEOD-CPLX
+  locator: DEOD-CPLX.xml /ptools-xml/Protein/component[Protein/@frameid="DEOD-MONOMER"]/(Protein|coefficient)
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: purine nucleoside phosphorylase. Inspected exact retained source body and
+    edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used
+    on gua-edge-018.
+  snapshot_sha256: f362dcc29babaf5d23e730a329a7c436a0944d811a36ad1adb8ee8569e7962e5
+- evidence_id: source-MetaCyc-GPT-CPLX
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GPT-CPLX
+  locator: GPT-CPLX.xml /ptools-xml/Protein/component[Protein/@frameid="GPT-MONOMER"]/(Protein|coefficient)
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: xanthine-guanine phosphoribosyltransferase. Inspected exact retained source
+    body and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11.
+    Used on gua-edge-019.
+  snapshot_sha256: f8fd9a52dbf13332ba46fc2db946bc066871d2e3c5466280d3856b49c7a408e9
+- evidence_id: source-MetaCyc-CPLX0-322
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:CPLX0-322
+  locator: CPLX0-322.xml /ptools-xml/Protein/component[Protein/@frameid="GSK-MONOMER"]/(Protein|coefficient)
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: inosine/guanosine kinase. Inspected exact retained source body and edge-local
+    locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-017.
+  snapshot_sha256: 5752daa595bf8fe466703c0aed615d7f78ab03897cfa2232e996cd6b1f4b163f
+- evidence_id: source-MetaCyc-GUANPHOSPHOR-ENZRXN
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GUANPHOSPHOR-ENZRXN
+  locator: GUANPHOSPHOR-ENZRXN.xml /ptools-xml/Enzymatic-Reaction/(enzyme/Protein|reaction/Reaction)
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanosine phosphorylase. Inspected exact retained source body and edge-local
+    locators. MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-021.
+  snapshot_sha256: d0e66401a7d6c02f37c8531c4a33c030348565a8dd743bdb24f3c4b0e377cbfc
+- evidence_id: source-MetaCyc-GUANPRIBOSYLTRAN-ENZRXN
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GUANPRIBOSYLTRAN-ENZRXN
+  locator: GUANPRIBOSYLTRAN-ENZRXN.xml /ptools-xml/Enzymatic-Reaction/(enzyme/Protein|reaction/Reaction)
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanine phosphoribosyltransferase. Inspected exact retained source body
+    and edge-local locators. MetaCyc 22.5; original native XML retrieved 2026-10-11.
+    Used on gua-edge-022.
+  snapshot_sha256: 42a5be5cf123bf3927b88153e62235bc07aa3014ee28478a99ed383ce8d93151
+- evidence_id: source-MetaCyc-GUANOSINEKIN-ENZRXN
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:GUANOSINEKIN-ENZRXN
+  locator: GUANOSINEKIN-ENZRXN.xml /ptools-xml/Enzymatic-Reaction/(enzyme/Protein|reaction/Reaction)
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanosine kinase. Inspected exact retained source body and edge-local locators.
+    MetaCyc 22.5; original native XML retrieved 2026-10-11. Used on gua-edge-020.
+  snapshot_sha256: 836b43df5a949351a736e501c160e9dfe7c0dd053fad0513f542909c7a3b641d
+- evidence_id: source-UniProtKB-P0AEW6
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0AEW6.json
+  locator: uniprot-P0AEW6.json /uniProtKBCrossReferences[database="BioCyc",id="MetaCyc:GSK-MONOMER"];
+    /comments/8; uniprot-P0AEW6.json /comments/1/reaction; /comments/1/physiologicalReactions;
+    uniprot-P0AEW6.json /comments/3/cofactors[cofactorCrossReference/id="CHEBI:18420"];
+    /comments/3/note
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Guanosine-inosine kinase. Inspected exact retained source body and edge-local
+    locators. Reviewed entry version 135, sequence version 1; retrieved 2026-10-11.
+    Used on gua-edge-017, gua-edge-020, gua-edge-023.
+  snapshot_sha256: b2f56a5134caa015884e5b6571e050c4b2e8f24e0e6b069bb20145a733d091a9
+- evidence_id: source-UniProtKB-P0ABP8
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0ABP8.json
+  locator: uniprot-P0ABP8.json /uniProtKBCrossReferences[database="BioCyc",id="MetaCyc:DEOD-MONOMER"];
+    /comments/10; uniprot-P0ABP8.json /comments/5/reaction; /comments/0
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Purine nucleoside phosphorylase DeoD-type. Inspected exact retained source
+    body and edge-local locators. Reviewed entry version 149, sequence version 2;
+    retrieved 2026-10-11. Used on gua-edge-018, gua-edge-021.
+  snapshot_sha256: 261a1c1e34fcc0af42d3a3b4a16c27a01ecba13eee2437d3f4d8c51e422eed02
+- evidence_id: source-UniProtKB-P0A9M5
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0A9M5.json
+  locator: uniprot-P0A9M5.json /uniProtKBCrossReferences[database="BioCyc",id="MetaCyc:GPT-MONOMER"];
+    /comments/9; uniprot-P0A9M5.json /comments/1/reaction; /comments/1/physiologicalReactions;
+    uniprot-P0A9M5.json /comments/4/cofactors[cofactorCrossReference/id="CHEBI:18420"]
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Xanthine-guanine phosphoribosyltransferase. Inspected exact retained source
+    body and edge-local locators. Reviewed entry version 152, sequence version 1;
+    retrieved 2026-10-11. Used on gua-edge-019, gua-edge-022, gua-edge-024.
+  snapshot_sha256: b0e83f13d146d4d5010d4e6c5762094d5fd99df854859c29444374513e64da01
+- evidence_id: source-PMID-10879466
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/10879466/
+  locator: Europe PMC core batch /resultList/result[id="10879466"]/abstractText; abstract
+    only
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: End-product regulation and kinetic mechanism of guanosine-inosine kinase
+    from Escherichia coli.. Inspected exact retained source body and edge-local locators.
+    Primary abstract inspected in Europe PMC core batch; digest covers full original
+    batch JSON, not article full text. Used on gua-edge-027.
+  snapshot_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+- evidence_id: source-PMID-9100006
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/9100006/
+  locator: Europe PMC core batch /resultList/result[id="9100006"]/abstractText; abstract
+    only
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Crystal structure of Escherichia coli xanthine phosphoribosyltransferase..
+    Inspected exact retained source body and edge-local locators. Primary abstract
+    inspected in Europe PMC core batch; digest covers full original batch JSON, not
+    article full text. Used on gua-edge-019, gua-edge-022, gua-edge-024.
+  snapshot_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+- evidence_id: source-PMID-235429
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/235429/
+  locator: Europe PMC core batch /resultList/result[id="235429"]/abstractText; abstract
+    only
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: Purine nucleoside phosphorylase from Escherichia coli and Salmonella typhimurium.
+    Purification and some properties.. Inspected exact retained source body and edge-local
+    locators. Primary abstract inspected in Europe PMC core batch; digest covers full
+    original batch JSON, not article full text. Used on gua-edge-018.
+  snapshot_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+- evidence_id: source-PMID-32857952
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC8362273/?pdf=0
+  locator: 'Results: ppGpp tightly binds to Gsk, inhibits its activity and induces
+    tetramerization; Fig. 1D-E; Methods: SEC-MALS, DLS; Results: Gsk restructures
+    both N- and C-termini to bind ppGpp, Fig. 2A and S2D-E; ppGpp inhibits Gsk by
+    blocking conformational dynamics and inducing tetramerization, Fig. 3K; Results:
+    ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization,
+    Fig. 1B-C and S1A; Methods: Construction of gsk(WT), ML3271 and gsk(K383A), ML3272;
+    Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization;
+    Fig. 1B-C,E; Methods: ITC and DLS'
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: ppGpp Coordinates Nucleotide and Amino-Acid Synthesis in E. coli During
+    Starvation.. Inspected exact retained source body and edge-local locators. Complete
+    primary article HTML inspected; published 2020, PMC availability 2021; retrieved
+    2026-10-11. Used on gua-edge-017, gua-edge-020, gua-edge-026, gua-edge-027.
+  snapshot_sha256: d56d5330f10f96ad3c28ecdd10d26c0a7d5a8bf22ec05bb26dae7ef0e95845db
+- evidence_id: source-RHEA-27711
+  kind: database
+  reference: https://www.rhea-db.org/rhea/27711
+  locator: rhea.rdf.gz; rh:27711 rh:substrates <http://rdf.rhea-db.org/27710_L>; <http://rdf.rhea-db.org/27710_L>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_1817>; <http://rdf.rhea-db.org/Participant_27710_compound_1817>
+    rh:compound <http://rdf.rhea-db.org/Compound_1817> / rh:chebi; rhea.rdf.gz; rh:27711
+    rh:substrates <http://rdf.rhea-db.org/27710_L>; <http://rdf.rhea-db.org/27710_L>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_6372>; <http://rdf.rhea-db.org/Participant_27710_compound_6372>
+    rh:compound <http://rdf.rhea-db.org/Compound_6372> / rh:chebi; rhea.rdf.gz; rh:27711
+    rh:products <http://rdf.rhea-db.org/27710_R>; <http://rdf.rhea-db.org/27710_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_3807>; <http://rdf.rhea-db.org/Participant_27710_compound_3807>
+    rh:compound <http://rdf.rhea-db.org/Compound_3807> / rh:chebi; rhea.rdf.gz; rh:27711
+    rh:products <http://rdf.rhea-db.org/27710_R>; <http://rdf.rhea-db.org/27710_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_2710>; <http://rdf.rhea-db.org/Participant_27710_compound_2710>
+    rh:compound <http://rdf.rhea-db.org/Compound_2710> / rh:chebi; rhea.rdf.gz; rh:27711
+    rh:products <http://rdf.rhea-db.org/27710_R>; <http://rdf.rhea-db.org/27710_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_3249>; <http://rdf.rhea-db.org/Participant_27710_compound_3249>
+    rh:compound <http://rdf.rhea-db.org/Compound_3249> / rh:chebi; rhea.rdf.gz; rh:27710
+    rh:directionalReaction rh:27711; rh:27710 rh:bidirectionalReaction; rh:27711 rh:substrates/rh:products/rh:equation
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanosine + ATP => GMP + ADP + H(+). Inspected exact retained source body
+    and edge-local locators. Rhea release 142; digest covers original complete RDF
+    gzip. Used on gua-edge-001, gua-edge-002, gua-edge-003, gua-edge-004, gua-edge-005,
+    gua-edge-014.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-RHEA-13234
+  kind: database
+  reference: https://www.rhea-db.org/rhea/13234
+  locator: rhea.rdf.gz; rh:13234 rh:substrates <http://rdf.rhea-db.org/13233_L>; <http://rdf.rhea-db.org/13233_L>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_1817>; <http://rdf.rhea-db.org/Participant_13233_compound_1817>
+    rh:compound <http://rdf.rhea-db.org/Compound_1817> / rh:chebi; rhea.rdf.gz; rh:13234
+    rh:substrates <http://rdf.rhea-db.org/13233_L>; <http://rdf.rhea-db.org/13233_L>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_5518>; <http://rdf.rhea-db.org/Participant_13233_compound_5518>
+    rh:compound <http://rdf.rhea-db.org/Compound_5518> / rh:chebi; rhea.rdf.gz; rh:13234
+    rh:products <http://rdf.rhea-db.org/13233_R>; <http://rdf.rhea-db.org/13233_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_2276>; <http://rdf.rhea-db.org/Participant_13233_compound_2276>
+    rh:compound <http://rdf.rhea-db.org/Compound_2276> / rh:chebi; rhea.rdf.gz; rh:13234
+    rh:products <http://rdf.rhea-db.org/13233_R>; <http://rdf.rhea-db.org/13233_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_2523>; <http://rdf.rhea-db.org/Participant_13233_compound_2523>
+    rh:compound <http://rdf.rhea-db.org/Compound_2523> / rh:chebi; rhea.rdf.gz; rh:13233
+    rh:directionalReaction rh:13234; rh:13233 rh:bidirectionalReaction; rh:13234 rh:substrates/rh:products/rh:equation;
+    rhea.rdf.gz; rh:13234 rh:products rh:13233_R; rh:13233_R rh:contains rh:Participant_13233_compound_2523;
+    rh:Compound_2523 rh:chebi
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanosine + phosphate => alpha-D-ribose 1-phosphate + guanine. Inspected
+    exact retained source body and edge-local locators. Rhea release 142; digest covers
+    original complete RDF gzip. Used on gua-edge-006, gua-edge-007, gua-edge-008,
+    gua-edge-009, gua-edge-015, gua-edge-025.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-RHEA-25426
+  kind: database
+  reference: https://www.rhea-db.org/rhea/25426
+  locator: rhea.rdf.gz; rh:25426 rh:substrates <http://rdf.rhea-db.org/25424_R>; <http://rdf.rhea-db.org/25424_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_2523>; <http://rdf.rhea-db.org/Participant_25424_compound_2523>
+    rh:compound <http://rdf.rhea-db.org/Compound_2523> / rh:chebi; rhea.rdf.gz; rh:25426
+    rh:substrates <http://rdf.rhea-db.org/25424_R>; <http://rdf.rhea-db.org/25424_R>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_4203>; <http://rdf.rhea-db.org/Participant_25424_compound_4203>
+    rh:compound <http://rdf.rhea-db.org/Compound_4203> / rh:chebi; rhea.rdf.gz; rh:25426
+    rh:products <http://rdf.rhea-db.org/25424_L>; <http://rdf.rhea-db.org/25424_L>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_3807>; <http://rdf.rhea-db.org/Participant_25424_compound_3807>
+    rh:compound <http://rdf.rhea-db.org/Compound_3807> / rh:chebi; rhea.rdf.gz; rh:25426
+    rh:products <http://rdf.rhea-db.org/25424_L>; <http://rdf.rhea-db.org/25424_L>
+    rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_2106>; <http://rdf.rhea-db.org/Participant_25424_compound_2106>
+    rh:compound <http://rdf.rhea-db.org/Compound_2106> / rh:chebi; rhea.rdf.gz; rh:25424
+    rh:directionalReaction rh:25426; rh:25424 rh:bidirectionalReaction; rh:25426 rh:substrates/rh:products/rh:equation;
+    rhea.rdf.gz; rh:25426 rh:substrates rh:25424_R; rh:25424_R rh:contains rh:Participant_25424_compound_2523;
+    rh:Compound_2523 rh:chebi
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: supports
+  summary: guanine + 5-phospho-alpha-D-ribose 1-diphosphate => GMP + diphosphate.
+    Inspected exact retained source body and edge-local locators. Rhea release 142;
+    digest covers original complete RDF gzip. Used on gua-edge-010, gua-edge-011,
+    gua-edge-012, gua-edge-013, gua-edge-016, gua-edge-025.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: historical-gpt
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/6305942/
+  locator: 'Indexed abstract: apparent trimer by gel filtration'
+  accessed_at: '2026-10-11T04:06:14.117164Z'
+  support: context_only
+  summary: 1983 apparent trimer is a genuine conflicting observation, retained as
+    historical context rather than silently overwritten by later tetramer evidence.
+  snapshot_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact complete two-branch native superpathway
+  outcome: supported
+  summary: PWY-6579 contains PWY-6618 (direct guanosine phosphorylation) and PWY-6620
+    (guanosine phosphorolysis followed by guanine phosphoribosyl transfer). All three
+    native reactions are represented; independent PathBank SMP0002086 has the same
+    boundary. The copied adenine/adenosine/AMP native comment is rejected. Broader
+    GO GMP salvage and the maintained purine deoxyribonucleoside-degradation record
+    do not denote this exact route.
+  evidence_ids:
+  - target
+  - independent-audit
+  - dedup
+  - source-MetaCyc-PWY-6579
+  - source-MetaCyc-PWY-6618
+  - source-MetaCyc-PWY-6620
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: chemistry
+  area: grounding
+  topic: All directed chemical sides, stereochemistry and balances
+  outcome: supported
+  summary: Independent full Rhea 142 replay verifies all 13 chemical-side incidences
+    and exact coefficient locators. Master 27710→27711 and 13233→13234 are left-to-right;25424→25426
+    is right-to-left. Native bidirectional 13236/25427 are explicitly bridged through
+    their masters. ChEBI formulas and charges balance all three reactions. Alpha-D-ribose
+    1-phosphate and PRPP stereochemistry are retained. The two GMP-producing branches
+    are alternatives, not one serial net.
+  evidence_ids:
+  - target
+  - independent-audit
+  - source-RHEA-27711
+  - source-RHEA-13234
+  - source-RHEA-25426
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: assemblies
+  area: evidence
+  topic: Physical complexes and condition-specific states
+  outcome: supported
+  summary: Native MG1655 complexes contain two Gsk, six DeoD and four Gpt copies with
+    exact protein crosswalks. The Gsk dimer is active in the examined inhibitor-free
+    conditions; GDP/ppGpp and concentration influence tetramer formation. The full
+    2020 paper supports lower activity for the ppGpp-bound tetramer relative to its
+    ppGpp-bound dimer, not a universal inactive tetramer. Gpt's 1983 apparent trimer
+    conflicts with later 1997 structural/current tetramer; the selected later assembly
+    and historical limit are explicit. DeoD hexamer is supported by the 1975 subunit/crosslinking
+    abstract and reviewed experimental annotations.
+  evidence_ids:
+  - target
+  - independent-audit
+  - source-MetaCyc-CPLX0-322
+  - source-MetaCyc-DEOD-CPLX
+  - source-MetaCyc-GPT-CPLX
+  - source-PMID-10879466
+  - source-PMID-235429
+  - source-PMID-9100006
+  - source-PMID-32857952
+  - historical-gpt
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: catalysis
+  area: evidence
+  topic: Catalytic assignments and magnesium scope
+  outcome: supported
+  summary: Every complex-to-reaction assignment matches native enzyme-reaction objects
+    and the exact current reviewed UniProt catalytic comment. Gpt's physiological
+    orientation is explicitly an annotation/inference, not an isolated direct flux
+    measurement. Gsk Mg dependence is supported beyond mere MgATP presence; its extra
+    free-Mg requirement remains probable. Gpt has a structurally supported Mg site
+    near PRPP and Asp 89, without an invented occupancy count or generalized assay-metal
+    requirement.
+  evidence_ids:
+  - target
+  - independent-audit
+  - source-UniProtKB-P0AEW6
+  - source-UniProtKB-P0ABP8
+  - source-UniProtKB-P0A9M5
+  - source-PMID-10879466
+  - source-PMID-9100006
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: regulation
+  area: evidence
+  topic: GDP and ppGpp inhibition with preserved GTP conflict
+  outcome: supported
+  summary: The full 2020 paper reports ppGpp inhibition of guanosine and inosine kinase
+    activities, GDP binding/inhibition, and MG1655-derived physiological effects.
+    GDP and ppGpp inhibit the Gsk gene product without an exclusive oligomer claim.
+    The 2000 abstract/current UniProt GTP-inhibition assertion conflicts with the
+    2020 result; that conflict is explicitly unresolved and the record adds no GTP-inhibition
+    edge.
+  evidence_ids:
+  - target
+  - source-PMID-32857952
+  - source-PMID-10879466
+  - source-UniProtKB-P0AEW6
+  - independent-audit
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: taxon
+  area: scope
+  topic: MG1655 grounding and experimental limits
+  outcome: supported
+  summary: All three reviewed proteins are K-12(83333); they are not relabelled as
+    direct MG1655-specific entries. Native pathway/assembly species 511145 and the
+    full 2020 MG1655 chromosomal-strain experiments ground the bounded record. This
+    does not establish constitutive or equal flux through both branches under all
+    growth conditions.
+  evidence_ids:
+  - target
+  - independent-audit
+  - source-PMID-32857952
+  - source-MetaCyc-CPLX0-322
+  - source-MetaCyc-DEOD-CPLX
+  - source-MetaCyc-GPT-CPLX
+  dimensions:
+  - name: taxon-and-evidence-tier
+    value: Native MG1655 annotations; reviewed K-12 proteins; MG1655-derived primary
+      physiology
+    definition: Distinct source taxon scopes jointly supporting the local MG1655 pathway
+      without changing protein-source taxon.
+    evidence_ids:
+    - target
+    - independent-audit
+    - source-PMID-32857952
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: graph
+  area: graph
+  topic: Local graph, source-specific evidence and export preservation
+  outcome: supported
+  summary: All local endpoints and references resolve. The only reaction dependency
+    is shared guanine between phosphorolysis and phosphoribosyl transfer, not physical
+    channeling. All 27 edges/51 evidence and descriptions are preserved by the actual
+    exporter and final generated artifact audit. Curated assertions remain attached
+    to their narrow source and do not present database statements as direct paper
+    quotations.
+  evidence_ids:
+  - target
+  - independent-audit
+  - generated-audit
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: expression
+  area: evidence
+  topic: Canonical structured expression context
+  outcome: supported
+  summary: The unchanged canonical iModulonDB client queried current e_coli/precise_mg
+    1655 gene, locus and accession keys. The gpp alias produced ppGpp regulator substring
+    hits for six components; none of the queried target genes is a member of those
+    inspected tables. This is bounded expression context, not negative pathway evidence
+    or proof of catalysis. All 51 response bodies and 44 queries were replayed through
+    the unchanged parser.
+  evidence_ids:
+  - expression-context
+  target_ids:
+  - MetaCyc:PWY-6579
+- assessment_id: provenance
+  area: provenance
+  topic: Exact source bodies, final inputs and repository gates
+  outcome: supported
+  summary: All 26 declared source artifacts and 22 reference body hashes were independently
+    rechecked, including full pinned ontology databases streamed in bounded blocks.
+    Four native canonical HTML identities and the exact taxon label were separately
+    verified. Final shared authority inputs and actual gate receipts were reassessed
+    before saving; mechanical reproducibility supplements the scientific assessment.
+  evidence_ids:
+  - target
+  - independent-audit
+  - authority-final
+  - input-recheck
+  - final-gates
+  target_ids:
+  - MetaCyc:PWY-6579
+findings: []
+actions: []
+limitations:
+- Primary PMID 10879466, PMID 235429 and PMID 9100006 were inspected as indexed abstracts,
+  not claimed as full text; their cited structured experimental annotations were independently
+  read. Historical PMID 6305942 trimer evidence is also abstract-only.
+- Gsk oligomerization depends on ligand and concentration. The represented native
+  dimer does not assert an exclusive universal assembly, and lower tetramer activity
+  is specifically ppGpp-bound.
+- GTP feedback inhibition remains unresolved between the 2000/current-annotation source
+  and 2020 experiments. No GTP edge is asserted; resolving it needs comparison of
+  assay conditions and biochemical reproduction.
+- The older Gpt apparent trimer conflicts with later structural/current tetramer.
+  The selected tetramer is evidence-backed, but the cause of the historical discrepancy
+  is not established.
+- The source-defined alternative salvage branches are supported; simultaneous physiological
+  flux under arbitrary conditions was not measured by this review.
+- iModulonDB search matches and inspected component membership are expression context
+  only. Absence of a queried gene from these particular tables does not establish
+  absence from all modules or from the pathway.
+- The initial full test command failed solely on stale generated pages during final
+  evidence/render changes. All other 1047 tests passed; the failed test passed on
+  final stable pages. Full final just test was not repeated; exact-head CI remains
+  a publication requirement.
+- No browser surface was available to root. HTML/SVG/KGX were structurally inspected;
+  this review does not claim screenshot or interaction verification.
+notes:
+- The reviewer authored the independent rhamnose record in this cohort, and performed
+  the authorized shared iModulon adapter retrieval, but did not author or change this
+  guanine YAML or its author scientific dossiers.
+- No substantive guanine correction or GitHub issue was required. No structured predecessor
+  or resolved finding is fabricated.
+- A superseded reviewer export assertion used a nonexistent pathwaymech_evidence column.
+  It was corrected to the actual evidence column and documented predicate mapping;
+  no maintained scientific data changed.
+- Initial structured-review validation rejected missing explicit search_scope metadata;
+  added the exact already-performed ignored-inclusive search scope and revalidated.
+  No scientific input changed.
+tags:
+- independent-scientific-review
+- purine-salvage
+- guanine
+- source-replay
+```

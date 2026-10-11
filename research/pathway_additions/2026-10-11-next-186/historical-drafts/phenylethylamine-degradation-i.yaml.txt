@@ -1,0 +1,447 @@
+id: MetaCyc:2PHENDEG-PWY
+label: phenylethylamine degradation I
+description: 'The complete two-step native pathway converts 2-phenylethylamine to phenylacetate in Escherichia
+  coli K-12. The periplasmic copper/topaquinone-containing TynA homodimer oxidatively deaminates the amine,
+  producing phenylacetaldehyde, ammonium and hydrogen peroxide; cytosolic FeaB oxidizes the aldehyde with
+  NAD+. Rhea physiological charge forms and both complete equations are retained, including two protons
+  in the FeaB product side. The aldehyde links the reactions across compartments; its transport mechanism
+  is not specified. Downstream phenylacetate assimilation and the distinct quinohemoprotein degradation-II
+  route are outside this exact native boundary. K-12 enzyme and mutant evidence is complemented by MG1655
+  transcription experiments and W3110 aerobic-growth measurements; the record does not imply expression
+  or growth in every K-12 derivative or condition. FeaB is represented by its supported gene-product/activity
+  association, without claiming an active isolated monomer or fixing the disputed oligomeric state: UniProt
+  annotates a dimer, native MetaCyc a tetramer, and the inspected 2006 tetramer experiment used a supplied
+  PadA construct whose exact equivalence to this K-12 protein was not established. The selected NAD+ route
+  does not exclude reported NADP+ turnover. FeaR regulation is transcriptional and condition dependent;
+  direct aldehyde binding to FeaR was not demonstrated in the inspected study.'
+pathway_type: aerobic-aromatic-amine-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:225237
+  label: 2-phenylethanaminium
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:16424
+  label: phenylacetaldehyde
+  category: small_molecule
+- id: CHEBI:16240
+  label: hydrogen peroxide
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:18401
+  label: phenylacetate
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:23378
+  label: copper cation
+  category: cofactor
+- id: CHEBI:29108
+  label: calcium(2+)
+  category: cofactor
+- id: CHEBI:79027
+  label: L-topaquinone(1-) residue
+  category: cofactor
+- id: UniProtKB:P46883
+  label: Primary amine oxidase
+  category: protein
+- id: UniProtKB:P80668
+  label: Phenylacetaldehyde dehydrogenase
+  category: protein
+- id: UniProtKB:Q47129
+  label: Transcriptional activator FeaR
+  category: protein
+- id: MetaCyc:AMINEOXID-CPLX
+  label: copper-containing amine oxidase
+  category: complex
+- id: GO:0042597
+  label: periplasmic space
+  category: cellular_component
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+reactions:
+- id: RHEA:25266
+  label: 2-phenylethylamine + O2 + H2O => 2-phenylacetaldehyde + H2O2 + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:21393
+  label: 2-phenylacetaldehyde + NAD(+) + H2O => 2-phenylacetate + NADH + 2 H(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: phenethylamine-edge-001
+  subject: CHEBI:225237
+  predicate: consumes
+  object: RHEA:25266
+  evidence:
+  - reference_id: RHEA:25266
+    source_assertion: The directed Rhea reaction places CHEBI:225237 on its substrates side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/25266/rh:substrates -> http://rdf.rhea-db.org/25265_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_25265_compound_4466/rh:compound -> http://rdf.rhea-db.org/Compound_4466/rh:chebi
+- id: phenethylamine-edge-002
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:25266
+  evidence:
+  - reference_id: RHEA:25266
+    source_assertion: The directed Rhea reaction places CHEBI:15379 on its substrates side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/25266/rh:substrates -> http://rdf.rhea-db.org/25265_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_25265_compound_1198/rh:compound -> http://rdf.rhea-db.org/Compound_1198/rh:chebi
+- id: phenethylamine-edge-003
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:25266
+  evidence:
+  - reference_id: RHEA:25266
+    source_assertion: The directed Rhea reaction places CHEBI:15377 on its substrates side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/25266/rh:substrates -> http://rdf.rhea-db.org/25265_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_25265_compound_1283/rh:compound -> http://rdf.rhea-db.org/Compound_1283/rh:chebi
+- id: phenethylamine-edge-004
+  subject: RHEA:25266
+  predicate: produces
+  object: CHEBI:16424
+  evidence:
+  - reference_id: RHEA:25266
+    source_assertion: The directed Rhea reaction places CHEBI:16424 on its products side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/25266/rh:products -> http://rdf.rhea-db.org/25265_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_25265_compound_2222/rh:compound -> http://rdf.rhea-db.org/Compound_2222/rh:chebi
+- id: phenethylamine-edge-005
+  subject: RHEA:25266
+  predicate: produces
+  object: CHEBI:16240
+  evidence:
+  - reference_id: RHEA:25266
+    source_assertion: The directed Rhea reaction places CHEBI:16240 on its products side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/25266/rh:products -> http://rdf.rhea-db.org/25265_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_25265_compound_3075/rh:compound -> http://rdf.rhea-db.org/Compound_3075/rh:chebi
+- id: phenethylamine-edge-006
+  subject: RHEA:25266
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:25266
+    source_assertion: The directed Rhea reaction places CHEBI:28938 on its products side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/25266/rh:products -> http://rdf.rhea-db.org/25265_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_25265_compound_1012/rh:compound -> http://rdf.rhea-db.org/Compound_1012/rh:chebi
+- id: phenethylamine-edge-007
+  subject: CHEBI:16424
+  predicate: consumes
+  object: RHEA:21393
+  evidence:
+  - reference_id: RHEA:21393
+    source_assertion: The directed Rhea reaction places CHEBI:16424 on its substrates side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21393/rh:substrates -> http://rdf.rhea-db.org/21392_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_21392_compound_2222/rh:compound -> http://rdf.rhea-db.org/Compound_2222/rh:chebi
+- id: phenethylamine-edge-008
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:21393
+  evidence:
+  - reference_id: RHEA:21393
+    source_assertion: The directed Rhea reaction places CHEBI:57540 on its substrates side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21393/rh:substrates -> http://rdf.rhea-db.org/21392_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_21392_compound_3484/rh:compound -> http://rdf.rhea-db.org/Compound_3484/rh:chebi
+- id: phenethylamine-edge-009
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:21393
+  evidence:
+  - reference_id: RHEA:21393
+    source_assertion: The directed Rhea reaction places CHEBI:15377 on its substrates side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21393/rh:substrates -> http://rdf.rhea-db.org/21392_L/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_21392_compound_1283/rh:compound -> http://rdf.rhea-db.org/Compound_1283/rh:chebi
+- id: phenethylamine-edge-010
+  subject: RHEA:21393
+  predicate: produces
+  object: CHEBI:18401
+  evidence:
+  - reference_id: RHEA:21393
+    source_assertion: The directed Rhea reaction places CHEBI:18401 on its products side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21393/rh:products -> http://rdf.rhea-db.org/21392_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_21392_compound_5243/rh:compound -> http://rdf.rhea-db.org/Compound_5243/rh:chebi
+- id: phenethylamine-edge-011
+  subject: RHEA:21393
+  predicate: produces
+  object: CHEBI:57945
+  evidence:
+  - reference_id: RHEA:21393
+    source_assertion: The directed Rhea reaction places CHEBI:57945 on its products side with coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21393/rh:products -> http://rdf.rhea-db.org/21392_R/rh:contains1
+      -> http://rdf.rhea-db.org/Participant_21392_compound_1650/rh:compound -> http://rdf.rhea-db.org/Compound_1650/rh:chebi
+- id: phenethylamine-edge-012
+  subject: RHEA:21393
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:21393
+    source_assertion: The directed Rhea reaction places CHEBI:15378 on its products side with coefficient
+      2.
+    source_locator: http://rdf.rhea-db.org/21393/rh:products -> http://rdf.rhea-db.org/21392_R/rh:contains2
+      -> http://rdf.rhea-db.org/Participant_21392_compound_3249/rh:compound -> http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: phenethylamine-edge-013
+  subject: MetaCyc:AMINEOXID-CPLX
+  predicate: has_part
+  object: UniProtKB:P46883
+  evidence:
+  - reference_id: MetaCyc:AMINEOXID-CPLX
+    source_assertion: The native TynA assembly contains two AMINEOXID-MONOMER subunits.
+    source_locator: Protein[@frameid="AMINEOXID-CPLX"]/component[Protein/@frameid="AMINEOXID-MONOMER"]/coefficient=2
+  - reference_id: MetaCyc:AMINEOXID-MONOMER
+    source_assertion: The native subunit has an explicit UniProt unification cross-reference to P46883.
+    source_locator: Protein[@frameid="AMINEOXID-MONOMER"]/dblink[dblink-db="UNIPROT" and dblink-oid="P46883"]
+  - reference_id: UniProtKB:P46883
+    source_assertion: UniProt records a homodimer, with experimental evidence codes tied to PMID10387067,10576737
+      and9048544.
+    source_locator: comments[commentType="SUBUNIT"]/texts
+- id: phenethylamine-edge-014
+  subject: MetaCyc:AMINEOXID-CPLX
+  predicate: catalyzes
+  object: RHEA:25266
+  evidence:
+  - reference_id: MetaCyc:AMINEOXID-CPLX
+    source_assertion: Native AMINEPHEN-ENZRXN links this assembly to the phenylethylamine oxidation step.
+    source_locator: Protein[@frameid="AMINEOXID-CPLX"]/catalyzes/Enzymatic-Reaction[@frameid="AMINEPHEN-ENZRXN"]/reaction
+  - reference_id: UniProtKB:P46883
+    source_assertion: The experimentally annotated catalytic activity maps phenylethylamine oxidation
+      to RHEA:25265;25266 is its forward form in Rhea142.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"]/reaction[reactionCrossReferences/id="RHEA:25265"];
+      Rhea142 directionalReaction/25266
+- id: phenethylamine-edge-015
+  subject: UniProtKB:P80668
+  predicate: enables
+  object: RHEA:21393
+  evidence:
+  - reference_id: UniProtKB:P80668
+    source_assertion: UniProt associates K-12 FeaB with phenylacetaldehyde oxidation by NAD+ in RHEA:21392;21393
+      is the forward Rhea form.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"]/reaction[reactionCrossReferences/id="RHEA:21392"];
+      Rhea142 directionalReaction/21393
+  - reference_id: PMID:9043126
+    source_assertion: The K-12 study located the PAD gene and assayed purified PAD against phenylacetaldehyde.
+    source_locator: resultList/result[id="9043126"]/abstractText
+  description: Gene-product/activity association; no isolated-monomer catalysis or fixed oligomer stoichiometry
+    is asserted. The native tetramer and UniProt dimer assignments remain explicitly discordant.
+- id: phenethylamine-edge-016
+  subject: UniProtKB:P46883
+  predicate: has_cofactor
+  object: CHEBI:23378
+  evidence:
+  - reference_id: UniProtKB:P46883
+    source_assertion: Copper binding is experimentally annotated; the entry reports one copper ion per
+      subunit.
+    source_locator: comments[commentType="COFACTOR"]/cofactors[cofactorCrossReference/id="CHEBI:23378"];
+      associated note/texts and ECO:0000269 evidence
+- id: phenethylamine-edge-017
+  subject: UniProtKB:P46883
+  predicate: has_cofactor
+  object: CHEBI:29108
+  evidence:
+  - reference_id: UniProtKB:P46883
+    source_assertion: Calcium binding is experimentally annotated; the entry reports two calcium ions
+      per subunit.
+    source_locator: comments[commentType="COFACTOR"]/cofactors[cofactorCrossReference/id="CHEBI:29108"];
+      associated note/texts and ECO:0000269 evidence
+- id: phenethylamine-edge-018
+  subject: UniProtKB:P46883
+  predicate: has_cofactor
+  object: CHEBI:79027
+  evidence:
+  - reference_id: UniProtKB:P46883
+    source_assertion: One covalently integrated topaquinone residue per subunit is experimentally annotated;
+      this is not a freely consumed small molecule.
+    source_locator: comments[commentType="COFACTOR"]/cofactors[cofactorCrossReference/id="CHEBI:79027"];
+      associated note/texts and ECO:0000269 evidence
+- id: phenethylamine-edge-019
+  subject: UniProtKB:P46883
+  predicate: located_in
+  object: GO:0042597
+  evidence:
+  - reference_id: UniProtKB:P46883
+    source_assertion: UniProt locates TynA in the periplasm.
+    source_locator: comments[commentType="SUBCELLULAR LOCATION"]/subcellularLocations/location[value="Periplasm"]
+- id: phenethylamine-edge-020
+  subject: RHEA:25266
+  predicate: occurs_in
+  object: GO:0042597
+  evidence:
+  - reference_id: PMID:23913322
+    source_assertion: The W3110 study identifies the amine oxidase reaction as periplasmic and measures
+      peroxide formation during aerobic PEA use.
+    source_locator: Introduction; Results, E.coli can utilize phenylethylamine as sole carbon or nitrogen
+      source; Fig.1
+- id: phenethylamine-edge-021
+  subject: UniProtKB:P80668
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PMID:24013633
+    source_assertion: FeaB is identified as the cytosolic NAD-linked aldehyde dehydrogenase.
+    source_locator: Introduction, first paragraph; Fig.1A
+- id: phenethylamine-edge-022
+  subject: RHEA:21393
+  predicate: occurs_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PMID:24013633
+    source_assertion: The pathway description places FeaB-mediated aldehyde oxidation in the cytosol.
+    source_locator: Introduction, first paragraph; Fig.1A
+- id: phenethylamine-edge-023
+  subject: RHEA:25266
+  predicate: provides_input_for
+  object: RHEA:21393
+  evidence:
+  - reference_id: MetaCyc:2PHENDEG-PWY
+    source_assertion: AMINEPHEN-RXN precedes PHENDEHYD-RXN through shared phenylacetaldehyde in the exact
+      two-step native pathway.
+    source_locator: Pathway[@frameid="2PHENDEG-PWY"]/reaction-ordering; reaction-layout
+  - reference_id: PMID:3309152
+    source_assertion: K-12 converts the amine through phenylacetaldehyde to phenylacetate using successive
+      oxidase and NAD-dependent dehydrogenase activities.
+    source_locator: resultList/result[id="3309152"]/abstractText
+  description: The shared aldehyde is transferred between cellular compartments; no transporter or transport
+    reaction is inferred.
+- id: phenethylamine-edge-024
+  subject: RHEA:25266
+  predicate: part_of
+  object: MetaCyc:2PHENDEG-PWY
+  evidence:
+  - reference_id: MetaCyc:2PHENDEG-PWY
+    source_assertion: The complete native reaction-list includes AMINEPHEN-RXN; its pathway layout selects
+      the left-to-right catabolic direction.
+    source_locator: Pathway[@frameid="2PHENDEG-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="AMINEPHEN-RXN"]
+- id: phenethylamine-edge-025
+  subject: RHEA:21393
+  predicate: part_of
+  object: MetaCyc:2PHENDEG-PWY
+  evidence:
+  - reference_id: MetaCyc:2PHENDEG-PWY
+    source_assertion: The complete native reaction-list includes PHENDEHYD-RXN; its pathway layout selects
+      the left-to-right catabolic direction.
+    source_locator: Pathway[@frameid="2PHENDEG-PWY"]/reaction-list; reaction-layout[Reaction/@frameid="PHENDEHYD-RXN"]
+- id: phenethylamine-edge-026
+  subject: MetaCyc:2PHENDEG-PWY
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: PMID:3309152
+    source_assertion: K-12 cultures use this amine-to-phenylacetate route; PAD-defective mutants lose
+      carbon-source utilization but retain nitrogen-source utilization.
+    source_locator: resultList/result[id="3309152"]/abstractText
+  - reference_id: PMID:9043126
+    source_assertion: The K-12 PAD, amine-oxidase and positive-regulator genes were mapped and their pathway
+      roles examined.
+    source_locator: resultList/result[id="9043126"]/abstractText
+  description: K-12 pathway context supported by specific experimental strains; this does not claim constitutive
+    activity in every K-12 derivative.
+- id: phenethylamine-edge-027
+  subject: UniProtKB:Q47129
+  predicate: regulates
+  object: MetaCyc:2PHENDEG-PWY
+  evidence:
+  - reference_id: UniProtKB:Q47129
+    source_assertion: FeaR is annotated as a positive regulator of tynA/maoA and feaB/padA expression.
+    source_locator: comments[commentType="FUNCTION"]/texts
+  - reference_id: PMID:24013633
+    source_assertion: Under carbon limitation with a pathway inducer, FeaR-dependent transcription activates
+      both tynA and feaB; nitrogen limitation induces tynA without the same feaB response.
+    source_locator: Results, Analysis of tynA and feaB expression; Discussion; Fig.9
+  description: Transcriptional regulation under tested nutrient and inducer conditions, not direct allosteric
+    activation of either enzyme.
+references:
+- id: RHEA:25266
+  title: Rhea directed reaction 25266
+  url: https://www.rhea-db.org/rhea/25266
+  source_version: Rhea142; release2026-09-02; digest covers complete native RDF gzip, selected objects
+    identified in source locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:21393
+  title: Rhea directed reaction 21393
+  url: https://www.rhea-db.org/rhea/21393
+  source_version: Rhea142; release2026-09-02; digest covers complete native RDF gzip, selected objects
+    identified in source locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P46883
+  title: 'UniProtKB P46883: Primary amine oxidase'
+  url: https://rest.uniprot.org/uniprotkb/P46883.json
+  source_version: Retrieved2026-10-11; entryVersion 206; sequenceVersion 1; annotation date 2026-06-10
+  source_sha256: 79e7e4a8836d1f449023ae51cd33dd76ef74fbf710af4b3572b4f6bbbee524f9
+- id: UniProtKB:P80668
+  title: 'UniProtKB P80668: Phenylacetaldehyde dehydrogenase'
+  url: https://rest.uniprot.org/uniprotkb/P80668.json
+  source_version: Retrieved2026-10-11; entryVersion 175; sequenceVersion 2; annotation date 2026-09-02
+  source_sha256: 19d360d722d1c91156ea361975ea9ace1f151edfb109fe06200c4b97242cf307
+- id: UniProtKB:Q47129
+  title: 'UniProtKB Q47129: Transcriptional activator FeaR'
+  url: https://rest.uniprot.org/uniprotkb/Q47129.json
+  source_version: Retrieved2026-10-11; entryVersion 165; sequenceVersion 1; annotation date 2026-09-02
+  source_sha256: 08c03accabf3884d2910efade982888bd6d072e56c285e22baf1fbad5aeb8658
+- id: MetaCyc:2PHENDEG-PWY
+  title: 'MetaCyc 2PHENDEG-PWY: phenylethylamine degradation I'
+  url: https://pathway.yeastgenome.org/getxml?META:2PHENDEG-PWY
+  source_version: MetaCyc22.5 native META frame; retrieved2026-10-11
+  source_sha256: 43d0462352157ff9dc7ea48fffb5a4eb66135afd8b8aa421cb8de4a0f284798b
+- id: MetaCyc:AMINEOXID-CPLX
+  title: 'MetaCyc AMINEOXID-CPLX: copper-containing amine oxidase'
+  url: https://pathway.yeastgenome.org/getxml?META:AMINEOXID-CPLX
+  source_version: MetaCyc22.5 native META frame; retrieved2026-10-11
+  source_sha256: 73c6c78f0646cbbf311175bf806872b91c81a661bcd3edf994642b311125e2f6
+- id: MetaCyc:AMINEOXID-MONOMER
+  title: 'MetaCyc AMINEOXID-MONOMER: copper-containing amine oxidase subunit'
+  url: https://pathway.yeastgenome.org/getxml?META:AMINEOXID-MONOMER
+  source_version: MetaCyc22.5 native META frame; retrieved2026-10-11
+  source_sha256: 95d8dc9e2e10bf78d20895004059445407059a59144c74c0b76243fec85e99ea
+- id: MetaCyc:PHENDEHYD-RXN
+  title: 'MetaCyc PHENDEHYD-RXN: phenylacetaldehyde dehydrogenase reaction'
+  url: https://pathway.yeastgenome.org/getxml?META:PHENDEHYD-RXN
+  source_version: MetaCyc22.5 native META frame; retrieved2026-10-11
+  source_sha256: 6180f594e79c03d173878e114e4d2b5beeca89b859c7700844e767aaa9b1a77c
+- id: PMID:3309152
+  title: 2-Phenylethylamine catabolism by Escherichia coli K12.
+  url: https://pubmed.ncbi.nlm.nih.gov/3309152/
+  source_version: Europe PMC core primary-article abstract record; retrieved2026-10-11; digest covers
+    complete six-result JSON response
+  source_sha256: 027066086a6672cd06876bd13421104cb6b860872ba312d8587a26916fa55a45
+- id: PMID:9043126
+  title: '2-phenylethylamine catabolism by Escherichia coli K-12: gene organization and expression.'
+  url: https://pubmed.ncbi.nlm.nih.gov/9043126/
+  source_version: Europe PMC core primary-article abstract record; retrieved2026-10-11; digest covers
+    complete six-result JSON response
+  source_sha256: 027066086a6672cd06876bd13421104cb6b860872ba312d8587a26916fa55a45
+- id: PMID:24013633
+  title: Finely Tuned Regulation of the Aromatic Amine Degradation Pathway in Escherichia coli
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3811602/
+  source_version: Complete PMC primary full-text HTML; retrieved2026-10-11
+  source_sha256: 0533edcd01824ad3bc3e96cd6dd47ec61a2824e2d6e4fef5330a59779a37feae
+- id: PMID:23913322
+  title: How Escherichia coli Tolerates Profuse Hydrogen Peroxide Formation by a Catabolic Pathway
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3807432/
+  source_version: Complete PMC primary full-text HTML; retrieved2026-10-11
+  source_sha256: e2e6227a743b1146c6e5474f0085f1924a779fc3d225728c51b588cdf63a0c30
