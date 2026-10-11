@@ -1,0 +1,19 @@
+from pathlib import Path
+import json, hashlib
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+p=Path(__file__).resolve().parent
+j=json.loads((p/'originals/PubChem-122234488-properties.json').read_text())['PropertyTable']['Properties'][0]
+query=json.loads((p/'derived-structure-query.json').read_text());print(query)
+s=query['input']
+if not s:raise ValueError('Missing query SMILES')
+m=Chem.MolFromSmiles(j['SMILES']);q=Chem.MolFromSmiles(s)
+linear='N[C@@H](CNC(=O)C[C@@](O)(CC(=O)NCCNC(=O)CCC(=O)C(=O)O)C(=O)O)C(=O)O'
+l=Chem.MolFromSmiles(linear)
+def data(x):
+ return {'canonical_isomeric_smiles':Chem.MolToSmiles(x,isomericSmiles=True),'inchi':Chem.MolToInchi(x),'inchikey':Chem.MolToInchiKey(x),'formula':rdMolDescriptors.CalcMolFormula(x),'charge':Chem.GetFormalCharge(x),'ring_count':rdMolDescriptors.CalcNumRings(x),'defined_undefined_atom_centers':Chem.FindMolChiralCenters(x,includeUnassigned=True),'heavy_atoms':x.GetNumAtoms(),'bonds':x.GetNumBonds()}
+r={'scope':'Structure transcription/authority comparison only. Primary SI drawing was visually inspected; the query is a derived research transcription, not a separately issued authority.','rdkit':rdBase.rdkitVersion,'cyclic_pubchem':data(m),'si_transcription_query':data(q),'linear_chebi_neutral_transcription':data(l),'query_exact_structure_match':Chem.MolToSmiles(q,True)==Chem.MolToSmiles(m,True),'same_formula':rdMolDescriptors.CalcMolFormula(l)==rdMolDescriptors.CalcMolFormula(m),'same_identity':Chem.MolToInchi(l)==Chem.MolToInchi(m),'source_sha256':hashlib.sha256((p/'originals/PubChem-122234488-properties.json').read_bytes()).hexdigest()}
+assert r['same_formula'] and not r['same_identity']
+assert r['cyclic_pubchem']['ring_count']==1 and r['linear_chebi_neutral_transcription']['ring_count']==0
+assert len([x for x in r['cyclic_pubchem']['defined_undefined_atom_centers'] if x[1]=='?'])==1
+(p/'structure-comparison.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

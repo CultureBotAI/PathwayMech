@@ -1,0 +1,95 @@
+"""Preserve the first successor and fix issue396's before-capture read window."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+
+root = Path('/private/tmp/pathwaymech-next-215-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-215'
+helper = dossier / 'portable-replay/staphyloferrin-b-replay.py'
+before = helper.read_text()
+assert hashlib.sha256(before.encode()).hexdigest() == '886f75acd8e70e30ebf835b89ba78f77cc614b1fe7b731f36a15a9cd71200bd3'
+
+def replace_one(text, old, new):
+    assert text.count(old) == 1, old
+    return text.replace(old, new)
+
+after = replace_one(before, '    sys.path.insert(0, str(R / "src"))\n', '''    policy = R / "conf/identifier_policy.yaml"
+    authority_policy = A / "conf/identifier_policy.yaml"
+    module_paths = {
+        name: (R / "src/pathwaymech" / (name + ".py")).resolve(strict=True)
+        for name in ["identifiers", "kgx", "schema", "strict"]
+    }
+    inputs = [
+        T, M, P, policy, authority_policy,
+        R / "src/pathwaymech/schema/pathwaymech.yaml",
+        Path(__file__).resolve(), *module_paths.values(),
+    ]
+
+    def capture_input(path):
+        initial_metadata = metadata(path)
+        value = dict(sha256=fresh_sha(path), **initial_metadata)
+        assert metadata(path) == initial_metadata, f"Input changed during capture: {path}"
+        return value
+
+    # Establish identity before imports, parsing, cached hashes or interpreter probes.
+    captured = {str(path): capture_input(path) for path in inputs}
+    sys.path.insert(0, str(R / "src"))
+''')
+after = replace_one(after, '''    for module in ["identifiers", "kgx", "schema", "strict"]:
+        assert (
+            Path(sys.modules["pathwaymech." + module].__file__).resolve().is_relative_to(R / "src")
+        )
+    policy = R / "conf/identifier_policy.yaml"
+    authority_policy = A / "conf/identifier_policy.yaml"
+''', '''    for module, expected_path in module_paths.items():
+        assert Path(sys.modules["pathwaymech." + module].__file__).resolve() == expected_path
+''')
+after = replace_one(after, '''    inputs = [
+        T,
+        M,
+        P,
+        policy,
+        authority_policy,
+        R / "src/pathwaymech/schema/pathwaymech.yaml",
+        Path(__file__).resolve(),
+        *authority_inputs.values(),
+    ]
+    for module in ["identifiers", "kgx", "schema", "strict"]:
+        inputs.append(Path(sys.modules["pathwaymech." + module].__file__).resolve())
+''', '''    # Paths are discovered from the already captured policy; snapshot their bytes
+    # before any authority validator consumes them.
+    for path in authority_inputs.values():
+        inputs.append(path)
+        captured[str(path)] = capture_input(path)
+''')
+after = replace_one(after, '    captured = {str(p): dict(sha256=fresh_sha(p), **metadata(p)) for p in inputs}\n', '''    for path in inputs:
+        assert fresh_sha(path) == captured[str(path)]["sha256"], (
+            f"Input changed during startup: {path}"
+        )
+''')
+compile(after, str(helper), 'exec')
+archive = dossier / 'portable-replay-review/root-successors'
+archive.mkdir(parents=True)
+with (archive / 'locator-only-helper.py.txt').open('x') as f:
+    f.write(before)
+helper.write_text(after)
+with (dossier / 'portable-input-capture-successor.json').open('x') as f:
+    json.dump({
+        'created_at': datetime.now(timezone.utc).isoformat(),
+        'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/396',
+        'status': 'capture_order_corrected_independent_acceptance_pending',
+        'initial_locator_helper_sha256': hashlib.sha256(before.encode()).hexdigest(),
+        'archived_initial_helper': str((archive / 'locator-only-helper.py.txt').relative_to(root)),
+        'successor_helper': str(helper.relative_to(root)),
+        'successor_helper_sha256_before_format': hashlib.sha256(after.encode()).hexdigest(),
+        'changes': [
+            'Capture target, manifest, projection, policy, helper and relevant module bytes before first reads/imports/cached digests.',
+            'Capture policy-selected authority snapshots before validation consumes them.',
+            'Reject startup changes after runtime probes and preserve fresh end-of-run hash/metadata checks.',
+            'Retain original source bodies, full scientific replay, and exclusive output creation.'
+        ],
+        'independent_acceptance': False,
+    }, f, indent=2)
+    f.write('\n')
+print(json.dumps({'helper_sha256_before_format': hashlib.sha256(after.encode()).hexdigest()}))

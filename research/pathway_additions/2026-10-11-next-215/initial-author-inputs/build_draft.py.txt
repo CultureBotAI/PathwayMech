@@ -1,0 +1,915 @@
+"Construct a complete external seven-step SB draft from inspected original sources."
+
+import hashlib
+import json
+import sqlite3
+from pathlib import Path
+
+import yaml
+from lxml import etree as E
+from lxml import html as H
+
+B = Path(__file__).resolve().parent
+D = B / "draft"
+S = Path("/private/tmp/pathwaymech-staphyloferrin-b-scout-20261011")
+A = Path("/private/tmp/pathwaymech-staphyloferrin-b-endpoint-20261011")
+C = Path("/private/tmp/pathwaymech-curation-authorities")
+
+
+def read(p):
+    return json.loads(Path(p).read_text())
+
+
+def sha(p):
+    with Path(p).open("rb") as f:
+        return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def save(n, x):
+    (D / n).write_text(json.dumps(x, indent=2) + "\n")
+
+
+chem = read(S / "chemistry-replay.json")
+boundary = read(S / "boundary-and-identifiers.json")
+sources = {}
+for x in (
+    read(S / "source-manifest.json")["attempts"]
+    + read(A / "source-manifest.json")["acquisitions"]
+    + read(B / "acquisition1.json")
+):
+    if x.get("accepted") and x.get("path"):
+        sources[Path(x["path"]).name] = x
+up = read(S / "originals/UniProt-sbn-NCTC8325.json")["results"]
+ups = {x["primaryAccession"]: x for x in up}
+upi = {x["primaryAccession"]: i for i, x in enumerate(up)}
+refs = []
+refpaths = {}
+
+
+def ref(cid, name, title, version):
+    x = sources[name]
+    assert sha(x["path"]) == x["sha256"]
+    refs.append(
+        dict(
+            id=cid,
+            title=str(title),
+            url=x["url"],
+            source_version=version,
+            source_sha256=x["sha256"],
+        )
+    )
+    refpaths[cid] = x["path"]
+
+
+for n in (
+    [
+        "ENZRXN-26580",
+        "ENZRXN-26574",
+        "ENZRXN-26576",
+        "ENZRXN-26577",
+        "PWY-8008",
+        "CPLX-9312",
+        "CPLX-9313",
+        "G1I0R-77-MONOMER",
+        "G1I0R-70-MONOMER",
+    ]
+    + [r["native"] for r in chem["reactions"]]
+    + ["CPD-21431", "CPD-21432", "CPD-21433", "CPD-12590"]
+):
+    ref(
+        "MetaCyc:" + n,
+        n + ".xml",
+        "MetaCyc " + n + " native XML object",
+        "MetaCyc 22.5; original full XML response retrieved 2026-10-11",
+    )
+for r in boundary["native_reactions"]:
+    nc = r["Newman_NCBIProtein"]
+    u = r["NCTC8325_UniProtKB"]
+    ref(
+        "NCBIProtein:" + nc,
+        "NCBI-Newman-sbn-proteins.xml",
+        "NCBI GenPept " + nc + " Newman protein identity",
+        (
+            "Original seven-protein XML batch retrieved 2026-10-11; digest co"
+            "vers complete response, not one extracted entry"
+        ),
+    )
+    ref(
+        "UniProtKB:" + u,
+        "UniProt-sbn-NCTC8325.json",
+        "UniProtKB " + u + " original NCTC 8325 entry",
+        ("UniProt 2026_03; complete original nine-entry JSON response retrieved 2026-10-11"),
+    )
+ref(
+    "KEGG:M00875",
+    "M00875.txt",
+    "KEGG M00875 staphyloferrin B biosynthesis module",
+    "Original KEGG flatfile retrieved 2026-10-11",
+)
+for r in chem["reactions"]:
+    refs.append(
+        dict(
+            id=r["direction"],
+            title=r["direction"] + " original directional reaction and side graph",
+            url="https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz",
+            source_version="Rhea 142, 2026-09-02; hash covers entire original gzip RDF",
+            source_sha256=chem["sources"][0]["sha256"],
+        )
+    )
+    refpaths[r["direction"]] = chem["sources"][0]["path"]
+refs.append(
+    dict(
+        id="CHEBI:136993",
+        title="ChEBI 255 formal chemical structures and charge states",
+        url="https://www.ebi.ac.uk/chebi/",
+        source_version=("ChEBI 255 Semantic SQL; hash covers full uncompressed original database"),
+        source_sha256=chem["sources"][1]["sha256"],
+    )
+)
+refpaths["CHEBI:136993"] = chem["sources"][1]["path"]
+for pm, file in [
+    ("29483190", "PMC5912478.html"),
+    ("26794841", "PMC5084695.xml"),
+    ("21906287", "PMC3179956.xml"),
+]:
+    p = Path(sources[file]["path"])
+    if file.endswith(".xml"):
+        title = "".join(
+            E.parse(str(p)).find("front/article-meta/title-group/article-title").itertext()
+        )
+    else:
+        title = H.parse(str(p)).xpath('//meta[@name="citation_title"]/@content')[0]
+    ref(
+        "PMID:" + pm,
+        file,
+        title,
+        ("Complete original primary article body inspected; retrieved 2026-10-11"),
+    )
+pr = read(S / "originals/primary-search.json")["resultList"]["result"]
+pm = {x.get("pmid"): x for x in pr}
+refs.append(
+    dict(
+        id="PMID:19775248",
+        title=pm["19775248"]["title"],
+        url="https://onlinelibrary.wiley.com/doi/10.1111/j.1365-2958.2009.06880.x",
+        source_version=(
+            "Complete original publisher text inspected through web access on"
+            " 2026-10-11; no locally retained full-body digest; indexed metad"
+            "ata separately retained"
+        ),
+    )
+)
+ref(
+    "PMID:24485762",
+    "primary-24485762.json",
+    read(S / "originals/primary-24485762.json")["resultList"]["result"][0]["title"],
+    (
+        "Indexed primary abstract only; journal full body not obtained; o"
+        "riginal author thesis cited separately"
+    ),
+)
+ref(
+    "PMID:26030732",
+    "primary-search.json",
+    pm["26030732"]["title"],
+    (
+        "Indexed primary abstract; complete original search JSON digest. "
+        "Official full supplement cited separately; main article not acqu"
+        "ired locally"
+    ),
+)
+ref(
+    "DOI:10.1021/jacs.5b04557.s001",
+    "ja5b04557_si_001.pdf",
+    "Supporting Information for " + pm["26030732"]["title"],
+    ("Original publisher supplement, 69 pages; S7/S38/S39/S42 inspected; exact PDF bytes"),
+)
+refs.append(
+    dict(
+        id="DOI:10.14288/1.0228113",
+        title="Siderophore-mediated iron metabolism in Staphylococcus aureus",
+        url=("https://www.collectionscanada.gc.ca/obj/thesescanada/vol2/BVAU/TC-BVAU-57023.pdf"),
+        source_version=(
+            "Kobylarz 2016 author thesis; DOI verified via DataCite. Digest c"
+            "overs exact original PDF payload at byte822 of retained library "
+            "HTTP-envelope body. Chapter4 explicitly assembled from the 2014 "
+            "manuscript; separately cited from journal article."
+        ),
+        source_sha256=sha(A / "Kobylarz2016-embedded.pdf"),
+    )
+)
+refpaths["DOI:10.14288/1.0228113"] = str(A / "Kobylarz2016-embedded.pdf")
+ref(
+    "PubChem:122234488",
+    "PubChem-122234488-properties.json",
+    (
+        "PubChem CID 122234488: neutral cyclic hemiaminal structure with "
+        "two specified and one unspecified stereocenters"
+    ),
+    (
+        "Original PubChem property response retrieved 2026-10-11; current"
+        " systematic name, not removed SB synonym; contextual identity re"
+        "ference only"
+    ),
+)
+ref(
+    "EC:6.3.2.56",
+    "IUBMB-6.3.2.56.html",
+    "IUBMB EC6.3.2.56 staphyloferrin B synthase",
+    ("Official IUBMB reaction and explicit linear-product glossary; retrieved 2026-10-11"),
+)
+conn = sqlite3.connect("file:" + str(C / "chebi.db") + "?mode=ro", uri=True)
+
+
+def label(cid):
+    return conn.execute(
+        ('select value from statements where subject=? and predicate="rdfs:label"'), (cid,)
+    ).fetchone()[0]
+
+
+parts = [
+    dict(
+        id=cid,
+        label=label(cid),
+        category=("cofactor" if cid in ["CHEBI:597326", "CHEBI:18420"] else "small_molecule"),
+    )
+    for cid in sorted(set(chem["chemicals"]) | {"CHEBI:597326", "CHEBI:18420"})
+]
+for r in boundary["native_reactions"]:
+    parts.append(
+        dict(
+            id="NCBIProtein:" + r["Newman_NCBIProtein"], label=r["Newman_locus"], category="protein"
+        )
+    )
+for u in ["Q2G1M5", "Q2G1N2"]:
+    parts.append(
+        dict(
+            id="UniProtKB:" + u,
+            label=ups[u]["proteinDescription"]["recommendedName"]["fullName"]["value"],
+            category="protein",
+        )
+    )
+for c in ["CPLX-9312", "CPLX-9313"]:
+    x = E.parse(str(S / "originals" / (c + ".xml"))).find("Protein")
+    native_label = "".join(
+        H.fromstring("<span>" + x.findtext("common-name") + "</span>").itertext()
+    )
+    parts.append(dict(id="MetaCyc:" + c, label=native_label, category="complex"))
+record = dict(
+    id="MetaCyc:PWY-8008",
+    label="staphyloferrin B biosynthesis",
+    description=(
+        "Complete seven-transformation staphyloferrin B biosynthesis: Sbn"
+        "I/A/B supply two L-2,3-diaminopropionate units, followed by SbnE"
+        "/H/F/C assembly with supplied citrate. The experimentally ground"
+        "ed implementation uses Staphylococcus aureus Newman proteins; NC"
+        "TC 8325 proteins and native SbnI/B complexes are retained separa"
+        "tely as source-defined assembly context, not renamed Newman enti"
+        "ties. The seven selected current Rhea equations specify ionic fo"
+        "rms and a formal open-chain terminal product. CHEBI:136993 is th"
+        "e linear dianion, not the cyclic hemiaminal characterized in the"
+        " 2015 original supplement. That supplement reports synthetic SB "
+        "as an equilibrating pair of hemiaminal epimers; PubChem CID 1222"
+        "34488 independently issues the neutral cyclic structure with an "
+        "unspecified additional center. No exact equivalence or linear-on"
+        "ly physiological endpoint is claimed. The observed ring-chain ch"
+        "emistry is disclosed without inventing an eighth reaction. Nativ"
+        "e citryl intermediates leave a stereocenter unspecified; current"
+        " ChEBI S-specific forms are curated conventions rather than dire"
+        "ct stereochemical measurements on every Newman intermediate. The"
+        " five-ATP-per-formal-product total is derived from twice-turning"
+        " precursor reactions and three ligations, not a measured cellula"
+        "r yield. SbnB reversibility is experimentally observed, while th"
+        "e selected direction follows biosynthetic flux. SbnI dimer/tetra"
+        "mer observations coexist with an active truncated monomer; SbnA/"
+        "H dimers and SbnC/E/F monomer-dimer mixtures do not establish un"
+        "ique assembly sufficiency. Primary engineered constructs are dis"
+        "tinguished from native sequence identities. The 2009 reconstitut"
+        "ion uses Newman coding regions and RN6390 genetic comparison; th"
+        "e 2015 biological assays use USA300 JE2. Native DAP and ACEGA pr"
+        "otonation differs from the selected Rhea forms; equations are no"
+        "t asserted to be exactly identical. Source-native proton/mass me"
+        "tadata conflicts are retained in evidence and the research dispo"
+        "sition. SbnG citrate supply, SbnD transport, iron loading, recep"
+        "tor recognition and regulation are contextual processes outside "
+        "the seven-object native boundary."
+    ),
+    pathway_type="staphyloferrin-b-biosynthesis",
+    taxa=[
+        dict(id="NCBITaxon:426430", label="Staphylococcus aureus subsp. aureus str. Newman"),
+        dict(id="NCBITaxon:93061", label="Staphylococcus aureus subsp. aureus NCTC 8325"),
+    ],
+    participants=parts,
+    reactions=[],
+    mechanistic_edges=[],
+    references=refs,
+)
+for r, n in zip(
+    chem["reactions"],
+    [
+        "SbnI free L-serine phosphorylation",
+        "SbnA ACEGA formation",
+        "SbnB oxidative ACEGA hydrolysis",
+        "SbnE citryl-DAP ligation",
+        "SbnH citryl-DAP decarboxylation",
+        "SbnF second DAP ligation",
+        ("SbnC terminal ligation under the formal open-chain product convention"),
+    ],
+    strict=True,
+):
+    record["reactions"].append(
+        dict(id=r["direction"], label=n, category="molecular_activity", direction="left_to_right")
+    )
+
+
+def ev(r, t, locator):
+    assert len(t) <= 400, (len(t), t)
+    return dict(reference_id=r, source_assertion=t, source_locator=locator)
+
+
+def edge(s, p, o, es, d=None):
+    x = dict(
+        id=f"sbn-edge-{len(record['mechanistic_edges']) + 1:03d}",
+        subject=s,
+        predicate=p,
+        object=o,
+        evidence=es,
+    )
+    if d:
+        x["description"] = d
+    record["mechanistic_edges"].append(x)
+    return x["id"]
+
+
+si = "DOI:10.1021/jacs.5b04557.s001"
+th = "DOI:10.14288/1.0228113"
+sides = []
+for r in chem["reactions"]:
+    rid = r["direction"]
+    nn = rid.split(":")[1]
+    for role, rs in r["sides"].items():
+        for t in rs:
+            es = [
+                ev(
+                    rid,
+                    (
+                        "The selected Rhea direction assigns "
+                        f"{t['id']}"
+                        " to "
+                        f"{role}"
+                        " with coefficient "
+                        f"{t['coefficient']}"
+                        "."
+                    ),
+                    (
+                        "rh:"
+                        f"{nn}"
+                        "/rh:"
+                        f"{role}"
+                        " -> "
+                        f"{t['side_uri']}"
+                        "; rh:contains"
+                        f"{t['coefficient']}"
+                        " -> "
+                        f"{t['participant_uri']}"
+                        "; rh:compound -> "
+                        f"{t['compound_uri']}"
+                        "; rh:chebi"
+                    ),
+                )
+            ]
+            desc = None
+            if t["id"] in ["CHEBI:142969", "CHEBI:142970", "CHEBI:142971"]:
+                es.append(
+                    ev(
+                        "CHEBI:136993",
+                        (
+                            "The selected ChEBI structure specifies the citryl center; this i"
+                            "s a current chemical-authority convention, not a direct stereoch"
+                            "emical assay on this Newman intermediate."
+                        ),
+                        f"Semantic SQL {t['id']}/chemrof:inchi_string; rdfs:label",
+                    )
+                )
+            if t["id"] == "CHEBI:136993":
+                desc = (
+                    "Formal open-chain dianion output of the current Rhea net equatio"
+                    "n. The primary characterized cyclic hemiaminal is a distinct con"
+                    "nectivity; no claim of a uniquely linear physiological species o"
+                    "r exact identity is made."
+                )
+                es += [
+                    ev(
+                        "CHEBI:136993",
+                        (
+                            "CHEBI:136993 has an open-chain alpha-ketoamide terminus and spec"
+                            "ified S-citrate center; it is not the cyclic hemiaminal neutral "
+                            "structure."
+                        ),
+                        "Semantic SQL CHEBI:136993/chemrof:inchi_string; chemrof:charge",
+                    ),
+                    ev(
+                        si,
+                        (
+                            "The original SB structure is cyclic; S7 describes a 1:1 epimer m"
+                            "ixture arising from equilibrating lactamization. This limits the"
+                            " interpretation of the formal linear output, rather than demonst"
+                            "rating a linear-only physiological product."
+                        ),
+                        (
+                            "S7, SB1 product-description paragraph; S38 TableS3; S39 TableS4;"
+                            " S42 FigureS2"
+                        ),
+                    ),
+                    ev(
+                        "PubChem:122234488",
+                        (
+                            "CID 122234488 independently defines a neutral cyclic hemiaminal "
+                            "with S amino-acid/S citrate centers and an unspecified additiona"
+                            "l center, a distinct structure from the formal linear dianion."
+                        ),
+                        "/PropertyTable/Properties[0]/InChI, InChIKey, IUPACName, Charge",
+                    ),
+                ]
+            s, o = (t["id"], rid) if role == "substrates" else (rid, t["id"])
+            eid = edge(s, "consumes" if role == "substrates" else "produces", o, es, desc)
+            sides.append(dict(reaction=rid, role=role, edge_id=eid, **t))
+# Each native member remains represented; exact native source and current family bridges
+# remain separate.
+np = {x["native"]: x for x in read(S / "native-reaction-projection.json")}
+for r in chem["reactions"]:
+    nr = r["native"]
+    rid = r["direction"]
+    m = r["master"].split(":")[1]
+    nn = rid.split(":")[1]
+    es = [
+        ev(
+            "MetaCyc:PWY-8008",
+            (
+                "PWY-8008 includes native reaction "
+                f"{nr}"
+                " within its seven-reaction biosynthetic definition."
+            ),
+            'Pathway[@frameid="PWY-8008"]/reaction-list/Reaction[@frameid="' + nr + '"]',
+        ),
+        ev(
+            "MetaCyc:" + nr,
+            (
+                "The native reaction is physiologically left-to-right. Its stored"
+                " molecular forms and coefficients are retained separately from t"
+                "he selected current Rhea equation."
+            ),
+            "Reaction/reaction-direction; left; right",
+        ),
+        ev(
+            rid,
+            (
+                "The original Rhea master "
+                f"{m}"
+                " explicitly lists directed reaction "
+                f"{nn}"
+                "; its selected substrates are "
+                f"{m}"
+                "_L and products "
+                f"{m}"
+                "_R."
+            ),
+            f"rh:{m}/rh:directionalReaction -> rh:{nn}; rh:{nn}/rh:substrates; rh:products",
+        ),
+    ]
+    if np[nr]["dblinks"]:
+        es.append(
+            ev(
+                "MetaCyc:" + nr,
+                ("The native RHEA dblink explicitly supplies the selected directed identifier."),
+                'Reaction/dblink[dblink-db="RHEA"]/dblink-oid',
+            )
+        )
+    detail = (
+        "Native and current equations are compared by explicit chemistry;"
+        " no unasserted native Rhea cross-reference is claimed."
+    )
+    if nr in ["RXN-18395", "RXN-19820", "RXN-19822"]:
+        detail += (
+            " Native proton bookkeeping differs; current balanced Rhea coefficients are selected."
+        )
+    if nr == "RXN-19823":
+        detail += (
+            " The stored final product is linear; cyclic primary product char"
+            "acterization is retained as a molecular-form limitation."
+        )
+    edge(rid, "part_of", record["id"], es, detail)
+# Actual Newman gene products have functional activity roles; this does not assert monomer
+# sufficiency.
+primary = {
+    "SbnI": (
+        "PMID:29483190",
+        (
+            "Purified Newman-derived SbnI phosphorylates free L-serine to OPS"
+            ". Full-length protein is predominantly dimeric; a truncated mono"
+            "mer remains catalytically active."
+        ),
+        (
+            "Results, sec4 (dimer) and sec5 (free-serine kinase); Experimenta"
+            "l procedures, sec11 (cloning)"
+        ),
+    ),
+    "SbnA": (
+        th,
+        (
+            "Newman-derived SbnA forms ACEGA from OPS and glutamate; full-len"
+            "gth coding-region origin and the measured precursor reaction are"
+            " reported."
+        ),
+        "Methods2.3.2 printed37/PDF59; Results4.2.1 printed89-92/PDF111-114",
+    ),
+    "SbnB": (
+        th,
+        (
+            "Newman-derived SbnB converts ACEGA and NAD to DAP, 2-oxoglutarat"
+            "e and NADH. The reverse reaction is also demonstrated; the chose"
+            "n direction is biosynthetic flux."
+        ),
+        ("Methods2.3.3 printed38/PDF60; Results4.2.2 printed93-94/PDF115-116; Figure4-4"),
+    ),
+    "SbnE": (
+        "PMID:19775248",
+        (
+            "Purified SbnE ligates citrate to DAP, supported by substrate ass"
+            "ays and isotope-shifted product masses. Newman coding regions we"
+            "re used; the reported free intermediates do not establish every "
+            "selected ionic or stereochemical form."
+        ),
+        (
+            "Results, SbnE citrate-desymmetrizing enzyme section; Figure7A; E"
+            "xperimental procedures, Protein overexpression and purification"
+        ),
+    ),
+    "SbnH": (
+        "PMID:19775248",
+        (
+            "Addition of SbnH converts the citryl-DAP intermediate to a decar"
+            "boxylated intermediate. The enzyme is reported as a PLP-dependen"
+            "t dimer, while no unique monomer sufficiency is established."
+        ),
+        (
+            "Results, SbnH carries out PLP-dependent decarboxylation; Figure7"
+            "B; Experimental procedures, Protein overexpression and purificat"
+            "ion"
+        ),
+    ),
+    "SbnF": (
+        "PMID:19775248",
+        (
+            "SbnF adds the second DAP unit to citryl-diaminoethane in the pro"
+            "posed assembly sequence, supported by the intermediate mass and "
+            "substrate assays. Solution monomer/dimer mixtures are reported."
+        ),
+        (
+            "Results, SbnF is necessary to form a staphyloferrin B intermedia"
+            "te; Figure7C; Experimental procedures, Protein overexpression an"
+            "d purification"
+        ),
+    ),
+    "SbnC": (
+        "PMID:19775248",
+        (
+            "SbnC is required for the final 2-oxoglutarate ligation and biolo"
+            "gically active SB assembly. The measured mass does not distingui"
+            "sh the later characterized cyclic hemiaminal from the formal lin"
+            "ear reaction convention."
+        ),
+        (
+            "Results, SbnC activates α-KG in a reaction that completes the sy"
+            "nthesis of staphyloferrin B; Figure7D; Experimental procedures, "
+            "Protein overexpression and purification"
+        ),
+    ),
+}
+for r in boundary["native_reactions"]:
+    u = r["NCTC8325_UniProtKB"]
+    n = r["Newman_NCBIProtein"]
+    rid = r["formal_Rhea_direction"]
+    ue = ups[u]
+    ci = next(i for i, c in enumerate(ue["comments"]) if c["commentType"] == "CATALYTIC ACTIVITY")
+    pmid, t, loc = primary[r["enzyme"]]
+    es = [
+        ev(pmid, t, loc),
+        ev(
+            "NCBIProtein:" + n,
+            (
+                "The original GenPept "
+                f"{n}"
+                " identifies locus "
+                f"{r['Newman_locus']}"
+                " in Newman, taxon 426430, with its native sequence."
+            ),
+            'GBSet/GBSeq[GBSeq_accession-version="' + n + '"]/GBSeq_feature-table; GBSeq_sequence',
+        ),
+        ev(
+            "UniProtKB:" + u,
+            (
+                "The NCTC 8325 entry assigns "
+                f"{r['formal_Rhea_master']}"
+                " and "
+                f"{rid}"
+                " with ECO:0000269. Its original sequence is identical to the"
+                " selected Newman native protein; experimental constructs rem"
+                "ain distinct."
+            ),
+            (
+                "/results/"
+                f"{upi[u]}"
+                "/comments/"
+                f"{ci}"
+                "/reaction; physiologicalReactions; /results/"
+                f"{upi[u]}"
+                "/sequence/value"
+            ),
+        ),
+    ]
+    if r["enzyme"] == "SbnB":
+        es.append(
+            ev(
+                th,
+                (
+                    "Newman-derived SbnB is predominantly dimeric in solution; dynami"
+                    "c scattering and MALS support the assembly. This does not change"
+                    " the separate NCTC 8325 native-complex identity."
+                ),
+                "Results 4.2.4, printed 98/PDF 120; Figure 4-7",
+            )
+        )
+    edge(
+        "NCBIProtein:" + n,
+        "enables",
+        rid,
+        es,
+        (
+            "Newman gene-product activity with exact native sequence bridge. "
+            "This functional relation does not claim an isolated monomer is s"
+            "ufficient. Full engineered construct sequence is not equated to "
+            "the unmodified genome translation."
+        ),
+    )
+# Retain source-specific NCTC8325 assemblies, with actual source components.
+for c, u, mono, rid in [
+    ("CPLX-9312", "Q2G1M5", "G1I0R-77-MONOMER", "RHEA:59113"),
+    ("CPLX-9313", "Q2G1N2", "G1I0R-70-MONOMER", "RHEA:51929"),
+]:
+    edge(
+        "UniProtKB:" + u,
+        "part_of",
+        "MetaCyc:" + c,
+        [
+            ev(
+                "MetaCyc:" + c,
+                (
+                    "The native NCTC 8325 complex contains two copies of "
+                    f"{mono}"
+                    "; this is the source-defined assembly projection."
+                ),
+                "Protein/component/Protein; component/coefficient; species/Organism",
+            ),
+            ev(
+                "MetaCyc:" + mono,
+                f"The native component explicitly cross-references UniProt {u}.",
+                'Protein/dblink[dblink-db="UNIPROT"]/dblink-oid',
+            ),
+        ],
+        (
+            "The named component and complex retain NCTC 8325 source identity"
+            "; they are not renamed Newman entities."
+        ),
+    )
+    edge(
+        "MetaCyc:" + c,
+        "catalyzes",
+        rid,
+        [
+            ev(
+                "MetaCyc:" + c,
+                (
+                    "The native complex has an enzymatic-reaction link to the represe"
+                    "nted native transformation; the Rhea reaction is selected via th"
+                    "e separately documented chemistry bridge."
+                ),
+                "Protein/catalyzes/Enzymatic-Reaction/reaction/Reaction",
+            ),
+            ev(
+                "UniProtKB:" + u,
+                (
+                    "The component entry assigns the selected reaction and a homoolig"
+                    "omeric assembly. Primary Newman experiments and exact sequence e"
+                    "quality support comparison, not a change of source strain."
+                ),
+                f"/results/{upi[u]}/comments (CATALYTIC ACTIVITY; SUBUNIT); /sequence/value",
+            ),
+        ],
+        (
+            "Curated NCTC 8325 assembly/activity assertion. SbnI oligomerizat"
+            "ion is not essential for kinase activity; SbnB solution dimer ev"
+            "idence is independently reported for Newman-derived protein."
+        ),
+    )
+# Two directly supported PLP relationships, with charge convention kept separate from
+# binding evidence.
+for n, u, pmid, t, loc in [
+    (
+        "BAF66332.1",
+        "Q2G1N3",
+        "PMID:26794841",
+        (
+            "Purified Newman-derived SbnA is a dimer with bound PLP; crystall"
+            "ographic PLP binding is reported. The selected ChEBI charge stat"
+            "e is the current chemical convention."
+        ),
+        "sec2.1 paragraph1; sec3.1 paragraphs1-2; Figure1",
+    ),
+    (
+        "BAF66339.1",
+        "Q2G1M6",
+        "PMID:19775248",
+        (
+            "SbnH is described as a PLP-dependent decarboxylase and its purif"
+            "ied yellow protein is consistent with bound PLP; the selected ch"
+            "arge state is a chemical convention."
+        ),
+        ("Results, SbnH carries out PLP-dependent decarboxylation, opening paragraph"),
+    ),
+]:
+    ci = next(i for i, c in enumerate(ups[u]["comments"]) if c["commentType"] == "COFACTOR")
+    edge(
+        "NCBIProtein:" + n,
+        "has_cofactor",
+        "CHEBI:597326",
+        [
+            ev(pmid, t, loc),
+            ev(
+                "UniProtKB:" + u,
+                (
+                    "The sequence-identical NCTC 8325 entry explicitly assigns pyrido"
+                    "xal phosphate CHEBI:597326 with ECO:0000269."
+                ),
+                f"/results/{upi[u]}/comments/{ci}/cofactors/0",
+            ),
+        ],
+    )
+# Source-specific metal assignments are qualified; complete-system omission is not
+# individual binding proof.
+for subj, native in [
+    ("MetaCyc:CPLX-9312", "ENZRXN-26580"),
+    ("NCBIProtein:BAF66336.1", "ENZRXN-26574"),
+    ("NCBIProtein:BAF66337.1", "ENZRXN-26576"),
+    ("NCBIProtein:BAF66334.1", "ENZRXN-26577"),
+]:
+    es = [
+        ev(
+            "MetaCyc:" + native,
+            (
+                "The native enzyme-activity annotation explicitly lists MG+2 as c"
+                "ofactor. This source-specific assignment does not establish a un"
+                "ique physiological metal or measured binding stoichiometry."
+            ),
+            (
+                "Enzymatic-Reaction/enzyme/Protein; reaction/Reaction; cofactor/C"
+                'ompound[@frameid="MG+2"]'
+            ),
+        )
+    ]
+    if native != "ENZRXN-26580":
+        es.append(
+            ev(
+                "PMID:19775248",
+                (
+                    "Omitting Mg2+ from the complete SbnCEFH assembly prevented the S"
+                    "B ion; this tests the reaction system, not separate metal-bindin"
+                    "g stoichiometry for each ligase."
+                ),
+                (
+                    "Results, In vitro synthesis of staphyloferrin B requires three N"
+                    "IS synthetases and a decarboxylase, Mg omission statement; Figur"
+                    "e3"
+                ),
+            )
+        )
+    edge(
+        subj,
+        "has_cofactor",
+        "CHEBI:18420",
+        es,
+        (
+            "Qualified native cofactor annotation. Newman ligase roles use ex"
+            "act sequence correspondence to the native NCTC 8325 gene product"
+            "; the complete-system Mg omission experiment does not establish "
+            "individual binding counts."
+        ),
+    )
+# Explicit intermediate-flow bridges use original reaction sides, not copied pathway prose.
+flows = [
+    (0, 1, "CHEBI:57524"),
+    (1, 2, "CHEBI:134610"),
+    (2, 3, "CHEBI:57721"),
+    (3, 4, "CHEBI:142969"),
+    (4, 5, "CHEBI:142970"),
+    (2, 5, "CHEBI:57721"),
+    (5, 6, "CHEBI:142971"),
+    (2, 6, "CHEBI:16810"),
+]
+for i, j, cid in flows:
+    a, b = chem["reactions"][i], chem["reactions"][j]
+    pa = next(x for x in a["sides"]["products"] if x["id"] == cid)
+    pb = next(x for x in b["sides"]["substrates"] if x["id"] == cid)
+    edge(
+        a["direction"],
+        "provides_input_for",
+        b["direction"],
+        [
+            ev(
+                a["direction"],
+                f"{cid} is an explicit product of the selected upstream direction.",
+                (
+                    f"{pa['side_uri']}"
+                    "/rh:contains"
+                    f"{pa['coefficient']}"
+                    " -> "
+                    f"{pa['participant_uri']}"
+                    "; rh:compound -> "
+                    f"{pa['compound_uri']}"
+                    "; rh:chebi"
+                ),
+            ),
+            ev(
+                b["direction"],
+                f"{cid} is an explicit substrate of the selected downstream direction.",
+                (
+                    f"{pb['side_uri']}"
+                    "/rh:contains"
+                    f"{pb['coefficient']}"
+                    " -> "
+                    f"{pb['participant_uri']}"
+                    "; rh:compound -> "
+                    f"{pb['compound_uri']}"
+                    "; rh:chebi"
+                ),
+            ),
+        ],
+        (
+            "Material availability in the selected network, not direct enzyme"
+            " channeling or a measured flux ratio."
+        ),
+    )
+assert len(record["references"]) == len({x["id"] for x in record["references"]})
+(D / "staphyloferrin-b-biosynthesis.yaml").write_text(
+    yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=100)
+)
+save("staphyloferrin-b-reference-paths.json", refpaths)
+save(
+    "staphyloferrin-b-source-projection.json",
+    dict(
+        target_sha256=sha(D / "staphyloferrin-b-biosynthesis.yaml"),
+        source_to_graph=[
+            dict(
+                native=r["native"],
+                reaction=r["direction"],
+                native_direction=np[r["native"]]["direction"],
+                native_sides=np[r["native"]]["sides"],
+                native_Rhea_dblinks=np[r["native"]]["dblinks"],
+            )
+            for r in chem["reactions"]
+        ],
+        chemical_sides=sides,
+        graph_to_source=record["mechanistic_edges"],
+        formal_net=boundary["formal_net_Rhea_convention"],
+        flux=boundary["flux_for_one_product"],
+        endpoint_adjudication=str(A / "completion.json"),
+        endpoint_adjudication_sha256=sha(A / "completion.json"),
+    ),
+)
+save(
+    "staphyloferrin-b-identifiers.json",
+    dict(
+        record=record["id"],
+        named_ids=[record["id"]]
+        + [x["id"] for key in ["taxa", "participants", "reactions"] for x in record[key]],
+        newman_proteins=boundary["native_reactions"],
+        named_cyclic_PubChem_node=False,
+        cyclic_PubChem_reference="PubChem:122234488",
+        scope=(
+            "Reference-only cyclic identity; no PubChem named-node authority integration requested."
+        ),
+    ),
+)
+print(
+    json.dumps(
+        dict(
+            hash=sha(D / "staphyloferrin-b-biosynthesis.yaml"),
+            participants=len(parts),
+            reactions=len(record["reactions"]),
+            edges=len(record["mechanistic_edges"]),
+            evidence=sum(len(e["evidence"]) for e in record["mechanistic_edges"]),
+            references=len(refs),
+        ),
+        indent=2,
+    )
+)

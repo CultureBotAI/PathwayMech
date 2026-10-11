@@ -1,0 +1,87 @@
+from pathlib import Path
+from datetime import UTC,datetime
+from concurrent.futures import ThreadPoolExecutor
+import ast,copy,hashlib,json,os,subprocess,time
+O=Path(__file__).parent;H=Path('/private/tmp/pathwaymech-staphyloferrin-b-portable-replay-20261011');R=Path('/private/tmp/pathwaymech-next-215-20261011');A=Path('/private/tmp/pathwaymech-staphyloferrin-b-author-20261011/authority-sandbox');D=H/'relocated-inputs';helper=H/'staphyloferrin-b-replay.py'
+S=O/'scratch';S.mkdir();(S/'inputs').mkdir();(S/'results').mkdir()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def write(p,d):
+ with p.open('x') as f:json.dump(d,f,indent=2);f.write('\n')
+def meta(p):
+ s=p.stat();return {'sha256':sha(p),'bytes':s.st_size,'mtime_ns':s.st_mtime_ns,'mode':s.st_mode}
+expected='1d5cd54c95f0116aba72de253ec421db47ec389b091ddec7269f003bd92726f2';assert sha(helper)==expected
+handoff=json.loads((H/'handoff.json').read_text());assert sha(H/'handoff.json')=='9ee5b62bdf459241162a319d0fadd1037e008042675da8c2e694b697c5a34f9d'
+seal=[]
+for row in handoff['files']:
+ p=H/row['path']
+ if row['kind']=='symlink':assert str(p.readlink())==row['target']
+ else:assert sha(p)==row['sha256'] and p.stat().st_size==row['bytes'];seal.append({'path':str(p),**meta(p)})
+write(O/'initial-handoff-rehash.json',{'checked_at':datetime.now(UTC).isoformat(),'files':seal,'symlinks_verified':sum(r['kind']=='symlink' for r in handoff['files'])})
+base=[str(R/'.venv/bin/python'),'-B',str(helper),'--repo-root',str(R),'--record',str(D/'staphyloferrin-b-biosynthesis.yaml'),'--source-manifest',str(D/'staphyloferrin-b-source-manifest.json'),'--source-projection',str(D/'staphyloferrin-b-source-projection.json'),'--authority-root',str(A),'--pdf-python','/private/tmp/pathwaymech-curation-uv-cache/archive-v0/72U0-9MM3QESIENlwcOMR/bin/python','--stereo-python','/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python']
+env={**os.environ,'PYTHONPATH':str(R/'src'),'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','UV_CACHE_DIR':'/private/tmp/pathwaymech-curation-uv-cache'}
+manifest=json.loads(Path(base[base.index('--source-manifest')+1]).read_text());proj=json.loads(Path(base[base.index('--source-projection')+1]).read_text());rows=[]
+def run(name,expect=None,changes=None,output=None,optimized=False):
+ argv=list(base)
+ for k,v in (changes or {}).items():argv[argv.index('--'+k)+1]=str(v)
+ if optimized:argv.insert(1,'-O')
+ out=output or S/'results'/(name+'.json');argv+=['--output',str(out)]
+ before=out.read_bytes() if out.exists() and out.is_file() else None
+ started=datetime.now(UTC).isoformat();result=subprocess.run(argv,cwd=R,env=env,capture_output=True,text=True,timeout=240)
+ log=O/(name+'.log');log.write_text(result.stdout+result.stderr)
+ if expect is None:
+  assert result.returncode==0,(name,result.stderr);p=json.loads(out.read_text());assert p['counts']=={'original_bodies':62,'native_members':7,'reactions':7,'sides':40,'balanced_reactions':7,'nodes':44,'edges':72,'evidence':129,'references':53};assert any('unresolved batch sequence locators' in x for x in p['limits'])
+ else:
+  assert result.returncode!=0 and expect in result.stderr,(name,result.returncode,result.stderr)
+  if before is not None:assert out.read_bytes()==before
+  else:assert not out.exists(),name
+ row={'name':name,'started_at':started,'finished_at':datetime.now(UTC).isoformat(),'argv':argv,'exit_code':result.returncode,'expected_rejection':expect,'log':str(log),'log_sha256':sha(log),'output':str(out),'sentinel_preserved':before is not None}
+ return row
+
+def controls():
+ cases=[]
+ cases.append(run('optimization-rejected','Assertions must be enabled',optimized=True))
+ sentinel=S/'results/existing.json';sentinel.write_bytes(b'EXISTING_SENTINEL\n');cases.append(run('existing-output','Output receipt must be new',output=sentinel))
+ broken=S/'results/dangling.json';broken.symlink_to(S/'missing');cases.append(run('dangling-output','Output receipt must be new',output=broken))
+ cases.append(run('companion-name-collision','Receipt and companion paths collide',output=S/'results/same.artifacts'))
+ comp=S/'results/existing-companion.artifacts';comp.mkdir();(comp/'sentinel').write_bytes(b'UNCHANGED\n');cases.append(run('existing-companion','Companion directory must be new'));assert (comp/'sentinel').read_bytes()==b'UNCHANGED\n'
+ cases.append(run('repository-output','External outputs only',output=R/'never-created-independent-sb.json'))
+ cases.append(run('authority-output','Authority tree is read-only',output=A/'never-created-independent-sb.json'))
+ cases.append(run('source-directory-output','Original input directory is read-only',output=D/'never-created-independent-sb.json'))
+ def obj(name,d):p=S/'inputs'/name;write(p,d);return p
+ p=copy.deepcopy(proj);p['target_sha256']='0'*64;cases.append(run('stale-target-binding','Stale source projection target',{'source-projection':obj('stale-proj.json',p)}))
+ p=copy.deepcopy(proj);p['graph_to_source'][0]['description']='altered';cases.append(run('stale-graph-projection','Stale graph-to-source projection',{'source-projection':obj('stale-graph.json',p)}))
+ m=copy.deepcopy(manifest);m['sources'].pop();cases.append(run('incomplete-source-set','Complete frozen 62-body source set required',{'source-manifest':obj('missing-source.json',m)}))
+ m=copy.deepcopy(manifest);m['sources'][0]['accepted']=False;cases.append(run('rejected-source','AssertionError',{'source-manifest':obj('rejected-source.json',m)}))
+ m=copy.deepcopy(manifest);m['sources'][1]=copy.deepcopy(m['sources'][0]);cases.append(run('duplicate-source','Duplicate original path',{'source-manifest':obj('duplicate-source.json',m)}))
+ m=copy.deepcopy(manifest);m['roles']['rhea']=str(helper);cases.append(run('undeclared-role','Source role/reference is outside manifest',{'source-manifest':obj('undeclared-role.json',m)}))
+ m=copy.deepcopy(manifest);key=next(iter(m['reference_original_paths']));m['reference_original_paths'][key]=str(helper);cases.append(run('undeclared-reference','Source role/reference is outside manifest',{'source-manifest':obj('undeclared-reference.json',m)}))
+ # Alter only an isolated raw-body copy while retaining the expected original digest.
+ m=copy.deepcopy(manifest);old=m['roles']['thesis_pdf'];src=Path(old);dest=S/'inputs'/src.name;dest.write_bytes(src.read_bytes()+b'INDEPENDENT_CORRUPTION\n');item=next(x for x in m['sources'] if x['path']==old);m['sources'].remove(item);item['path']=str(dest);m['sources'].insert(0,item);m['roles']['thesis_pdf']=str(dest)
+ for k,v in m['reference_original_paths'].items():
+  if v==old:m['reference_original_paths'][k]=str(dest)
+ cases.append(run('actual-body-corruption','Original-body digest mismatch',{'source-manifest':obj('corrupt-body-manifest.json',m)}))
+ write(O/'negative-controls.json',{'status':'passed','cases':cases});return cases
+
+def race():
+ out=S/'results/late-output-race.json';argv=base+['--output',str(out)];log=O/'late-output-race.log';started=datetime.now(UTC).isoformat()
+ with log.open('x') as f:
+  child=subprocess.Popen(argv,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+  marker=out.with_suffix('.artifacts')/'kgx/edges.tsv';deadline=time.monotonic()+220
+  while not marker.exists():
+   assert child.poll() is None,('race process exited early',log.read_text())
+   assert time.monotonic()<deadline,'race marker timeout'
+   time.sleep(.05)
+  with out.open('xb') as f:f.write(b'LATE_INDEPENDENT_SENTINEL\n')
+  collision_at=datetime.now(UTC).isoformat();code=child.wait(timeout=220)
+ assert code!=0 and 'FileExistsError' in log.read_text(),log.read_text();assert out.read_bytes()==b'LATE_INDEPENDENT_SENTINEL\n'
+ result={'status':'passed','started_at':started,'collision_created_at':collision_at,'finished_at':datetime.now(UTC).isoformat(),'argv':argv,'exit_code':code,'real_concurrent_output_creation':True,'marker':str(marker),'sentinel_preserved':True,'log':str(log),'log_sha256':sha(log),'scope':'Real subprocess ran past original source/chemistry/KGX work; final exclusive open rejected a concurrently created regular file.'};write(O/'race.json',result);return result
+with ThreadPoolExecutor(max_workers=3) as pool:
+ fpositive=pool.submit(run,'positive');fnegative=pool.submit(controls);frace=pool.submit(race)
+ positive=fpositive.result();negative=fnegative.result();race_result=frace.result()
+write(O/'positive-execution.json',positive)
+for x in seal:assert meta(Path(x['path']))=={k:x[k] for k in ['sha256','bytes','mtime_ns','mode']},x['path']
+# Compare preserved scientific assertions independently of the author's guard receipt.
+old=ast.parse((H/'original-replay.py.txt').read_text());new=ast.parse(helper.read_text());a=[ast.dump(n,include_attributes=False) for n in ast.walk(old) if isinstance(n,ast.Assert)];b=[ast.dump(n,include_attributes=False) for n in ast.walk(new) if isinstance(n,ast.Assert)];unchanged=sum(x in b for x in a);assert len(a)==73 and unchanged==71
+write(O/'execution.json',{'completed_at':datetime.now(UTC).isoformat(),'status':'passed_technical_controls_only','helper_sha256':expected,'positive':positive,'negative_count':len(negative),'race':race_result,'sealed_files_unchanged':len(seal),'unchanged_scientific_assertions':unchanged,'original_scientific_assertions':len(a),'known_locator_finding_still_open':True,'no_owner_mutations':True})
+print(json.dumps({'status':'passed_technical_controls_only','negative_controls':len(negative),'real_race':'rejected sentinel preserved','original_assertions_preserved':unchanged,'positive_output':positive['output']}))

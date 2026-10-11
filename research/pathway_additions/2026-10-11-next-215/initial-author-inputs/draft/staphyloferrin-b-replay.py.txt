@@ -1,0 +1,589 @@
+"Portable, source-bound external author replay; not an independent review."
+
+from __future__ import annotations
+
+import argparse
+import copy
+import csv
+import gzip
+import hashlib
+import json
+import re
+import shutil
+import sqlite3
+from collections import Counter
+from datetime import UTC, datetime
+from functools import cache
+from pathlib import Path
+
+import yaml
+from lxml import etree as ET
+from lxml import html
+
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.kgx import LOCAL_PREDICATE_CURIES, write_kgx
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+
+parser = argparse.ArgumentParser(description=__doc__)
+for name in [
+    "repo-root",
+    "record",
+    "source-manifest",
+    "source-projection",
+    "authority-root",
+    "output",
+]:
+    parser.add_argument("--" + name, required=True, type=Path)
+args = parser.parse_args()
+R, T, M, P, A, OUT = (
+    getattr(args, n.replace("-", "_")).resolve()
+    for n in [
+        "repo-root",
+        "record",
+        "source-manifest",
+        "source-projection",
+        "authority-root",
+        "output",
+    ]
+)
+if OUT.exists():
+    raise FileExistsError(OUT)
+work = OUT.with_suffix(".artifacts")
+work.mkdir(exist_ok=False, parents=True)
+started = datetime.now(UTC).isoformat()
+
+
+def read(p):
+    return json.loads(Path(p).read_text())
+
+
+@cache
+def sha(p):
+    with Path(p).open("rb") as f:
+        return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def norm(t):
+    return " ".join(t.split())
+
+
+manifest = read(M)
+for row in manifest["sources"]:
+    assert sha(row["path"]) == row["sha256"], row["path"]
+raw = yaml.safe_load(T.read_text())
+record = validate_record(raw)
+assert not strict_errors([T], R)
+proj = read(P)
+assert proj["target_sha256"] == sha(T)
+assert proj["graph_to_source"] == raw["mechanistic_edges"]
+roles = manifest["roles"]
+N = Path(roles["native_originals"])
+E = Path(roles["endpoint_originals"])
+# Parse complete original RDF, preserving separately declared master/direction and side links.
+RH = "http://rdf.rhea-db.org/"
+RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+rdf = gzip.decompress(Path(roles["rhea"]).read_bytes()).decode()
+wrapper = (
+    f'<root xmlns:rh="{RH}" xmlns:rdf="{RDF}" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">'
+)
+
+
+@cache
+def node(uri):
+    needle = f'<rdf:Description rdf:about="{uri}">'
+    start = 0
+    facts = {}
+    while (pos := rdf.find(needle, start)) >= 0:
+        end = rdf.index("</rdf:Description>", pos) + 18
+        elem = ET.fromstring((wrapper + rdf[pos:end] + "</root>").encode())[0]
+        start = end
+        for child in elem:
+            key = child.tag.split("}", 1)[1]
+            value = child.get("{" + RDF + "}resource") or child.text
+            if value not in facts.setdefault(key, []):
+                facts[key].append(value)
+    assert facts, uri
+    return facts
+
+
+sql = sqlite3.connect("file:" + roles["chebi"] + "?mode=ro", uri=True)
+
+
+@cache
+def cf(cid):
+    d = dict(
+        sql.execute(
+            ("select predicate,value from statements where subject=? and value is not null"), (cid,)
+        )
+    )
+    return {
+        k: d[k]
+        for k in [
+            "rdfs:label",
+            "chemrof:charge",
+            "chemrof:generalized_empirical_formula",
+            "chemrof:inchi_string",
+        ]
+        if k in d
+    }
+
+
+def side(uri):
+    n = node(uri)
+    out = []
+    for member in n["contains"]:
+        keys = [k for k, v in n.items() if re.fullmatch("contains[0-9]+", k) and member in v]
+        assert len(keys) == 1
+        compound = node(member)["compound"][0]
+        cid = "CHEBI:" + re.search(r"CHEBI[_:](\d+)", node(compound)["chebi"][0])[1]
+        out.append(
+            dict(
+                side_uri=uri,
+                participant_uri=member,
+                compound_uri=compound,
+                coefficient_predicate=RH + keys[0],
+                coefficient=int(keys[0][8:]),
+                id=cid,
+                facts=cf(cid),
+            )
+        )
+    return out
+
+
+pairs = [
+    ("RXN-19819", "59112", "59113"),
+    ("RXN-18395", "52384", "52385"),
+    ("RXN-18393", "51928", "51929"),
+    ("RXN-19820", "59124", "59125"),
+    ("RXN-19821", "59120", "59121"),
+    ("RXN-19822", "59128", "59129"),
+    ("RXN-19823", "59132", "59133"),
+]
+chem = {}
+net = Counter()
+for i, (native, master, direction) in enumerate(pairs):
+    m = node(RH + master)
+    r = node(RH + direction)
+    assert RH + direction in m["directionalReaction"]
+    assert r["substrates"] == [RH + master + "_L"] and r["products"] == [RH + master + "_R"]
+    ss = {s: side(r[s][0]) for s in ["substrates", "products"]}
+    vector = Counter()
+    for role, sign in [("substrates", -1), ("products", 1)]:
+        for item in ss[role]:
+            f = item["facts"]
+            formula = f["chemrof:generalized_empirical_formula"]
+            tokens = re.findall(r"([A-Z][a-z]?)(\d*)", formula)
+            assert "".join(a + b for a, b in tokens) == formula
+            for a, b in tokens:
+                vector[a] += sign * item["coefficient"] * int(b or 1)
+            vector["charge"] += sign * item["coefficient"] * int(f["chemrof:charge"])
+            net[item["id"]] += sign * item["coefficient"] * (2 if i < 3 else 1)
+    assert not {k: v for k, v in vector.items() if v}, (native, vector)
+    chem["RHEA:" + direction] = ss
+net = {k: v for k, v in net.items() if v}
+assert net == proj["formal_net"]
+assert net["CHEBI:30616"] == -5 and net["CHEBI:456216"] == 2 and net["CHEBI:456215"] == 3
+assert len(proj["chemical_sides"]) == 40
+edges = {e["id"]: e for e in raw["mechanistic_edges"]}
+for s in proj["chemical_sides"]:
+    original = next(
+        x for x in chem[s["reaction"]][s["role"]] if x["participant_uri"] == s["participant_uri"]
+    )
+    assert {k: s[k] for k in original} == original
+    edge = edges[s["edge_id"]]
+    sub, obj, pred = (
+        (s["id"], s["reaction"], "consumes")
+        if s["role"] == "substrates"
+        else (s["reaction"], s["id"], "produces")
+    )
+    assert (edge["subject"], edge["object"], edge["predicate"]) == (sub, obj, pred)
+    loc = edge["evidence"][0]["source_locator"]
+    assert all(
+        v in loc
+        for v in [
+            s["side_uri"],
+            s["participant_uri"],
+            s["compound_uri"],
+            "rh:contains" + str(s["coefficient"]),
+        ]
+    )
+    assert edge["evidence"][0]["reference_id"] == s["reaction"]
+# Both directions of the coverage ledger are bound to exact original native objects.
+native = ET.parse(str(N / "PWY-8008.xml")).find("Pathway")
+members = native.xpath("reaction-list/Reaction/@frameid")
+assert set(members) == {n for n, _, _ in pairs}
+assert len(members) == 7
+assert {r["native"] for r in proj["source_to_graph"]} == set(members)
+for row in proj["source_to_graph"]:
+    x = ET.parse(str(N / (row["native"] + ".xml"))).find("Reaction")
+    assert x.findtext("reaction-direction") == row["native_direction"] == "PHYSIOL-LEFT-TO-RIGHT"
+    sides = {
+        s: [
+            {"id": t[0].get("frameid"), "coefficient": t.findtext("coefficient") or "1"}
+            for t in x.findall(s)
+        ]
+        for s in ["left", "right"]
+    }
+    assert sides == row["native_sides"]
+    xrefs = [
+        [d.findtext("dblink-db"), d.findtext("dblink-oid")]
+        for d in x.findall("dblink")
+        if d.findtext("dblink-db") == "RHEA"
+    ]
+    assert xrefs == row["native_Rhea_dblinks"]
+    assert bool(xrefs) == (row["native"] in ["RXN-18395", "RXN-18393"])
+# Full native chemical identity replay and source-side coverage.
+chemical_map = dict(
+    SER="33384",
+    ATP="30616",
+    **{"3-P-SERINE": "57524"},
+    ADP="456216",
+    PROTON="15378",
+    GLT="29985",
+    **{"CPD-19754": "134610"},
+    Pi="43474",
+    NAD="57540",
+    WATER="15377",
+    **{"L-23-DIAMINOPROPANOATE": "57721", "2-KETOGLUTARATE": "16810"},
+    NADH="57945",
+    CIT="16947",
+    **{"CPD-21431": "142969"},
+    AMP="456215",
+    PPI="33019",
+    **{
+        "CPD-21432": "142970",
+        "CARBON-DIOXIDE": "16526",
+        "CPD-21433": "142971",
+        "CPD-12590": "136993",
+    },
+)
+chemical_bridges = []
+for frame, number in chemical_map.items():
+    original = ET.parse(str(N / (frame + ".xml"))).find("Compound")
+    ni = original.findtext("inchi")
+    ci = cf("CHEBI:" + number)["chemrof:inchi_string"]
+    if frame in ["L-23-DIAMINOPROPANOATE", "CPD-19754"]:
+        assert ni != ci and re.sub(r"/p[+-]?[0-9]+", "", ni) == re.sub(r"/p[+-]?[0-9]+", "", ci)
+        relation = "different protonation"
+    elif frame in ["CPD-21431", "CPD-21432", "CPD-21433", "CPD-12590"]:
+        assert ni != ci and ni.split("/t")[0] == ci.split("/t")[0]
+        relation = "broader native stereochemistry"
+    else:
+        assert ni == ci, frame
+        relation = "exact InChI"
+    chemical_bridges.append(dict(native=frame, selected="CHEBI:" + number, relation=relation))
+for row in proj["source_to_graph"]:
+    selected = chem[row["reaction"]]
+    for native_side, role in [("left", "substrates"), ("right", "products")]:
+        projected = {
+            "CHEBI:" + chemical_map[x["id"]]: int(x["coefficient"])
+            for x in row["native_sides"][native_side]
+        }
+        current = {x["id"]: x["coefficient"] for x in selected[role]}
+        # Native equation proton entries are explicitly different for three reactions.
+        if row["native"] in ["RXN-18395", "RXN-19820", "RXN-19822"] and role == "products":
+            projected.pop("CHEBI:15378", None)
+            current.pop("CHEBI:15378", None)
+        assert projected == current, (row["native"], role, projected, current)
+
+# Re-read exact versioned proteins, genome translations, and native strain-specific assemblies.
+proteins = {
+    x.findtext("GBSeq_accession-version"): x
+    for x in ET.parse(str(N / "NCBI-Newman-sbn-proteins.xml")).getroot()
+}
+ups = {x["primaryAccession"]: x for x in read(N / "UniProt-sbn-NCTC8325.json")["results"]}
+genome = ET.parse(str(N / "NCBI-Newman-genome.xml"))
+cds = {}
+for feat in genome.findall(".//GBFeature"):
+    q = {
+        x.findtext("GBQualifier_name"): x.findtext("GBQualifier_value")
+        for x in feat.findall("GBFeature_quals/GBQualifier")
+    }
+    if q.get("protein_id"):
+        cds[q["protein_id"]] = q
+protein_rows = []
+for ac, u, locus, rhea in [
+    ("BAF66340.1", "Q2G1M5", "NWMN_0068", "59112"),
+    ("BAF66332.1", "Q2G1N3", "NWMN_0060", "52384"),
+    ("BAF66333.1", "Q2G1N2", "NWMN_0061", "51928"),
+    ("BAF66336.1", "Q2G1M9", "NWMN_0064", "59124"),
+    ("BAF66339.1", "Q2G1M6", "NWMN_0067", "59120"),
+    ("BAF66337.1", "Q2G1M8", "NWMN_0065", "59128"),
+    ("BAF66334.1", "Q2G1N1", "NWMN_0062", "59132"),
+]:
+    p = proteins[ac]
+    up = ups[u]
+    quals = [
+        (x.findtext("GBQualifier_name"), x.findtext("GBQualifier_value"))
+        for x in p.findall(".//GBQualifier")
+    ]
+    assert all(
+        q in quals
+        for q in [("locus_tag", locus), ("strain", "Newman"), ("db_xref", "taxon:426430")]
+    )
+    seq = p.findtext("GBSeq_sequence").upper()
+    assert seq == up["sequence"]["value"] == cds[ac]["translation"]
+    assert cds[ac]["locus_tag"] == locus and up["organism"]["taxonId"] == 93061
+    act = next(c for c in up["comments"] if c["commentType"] == "CATALYTIC ACTIVITY")
+    assert {"database": "Rhea", "id": "RHEA:" + rhea} in act["reaction"]["reactionCrossReferences"]
+    assert all(e["evidenceCode"] == "ECO:0000269" for e in act["reaction"]["evidences"])
+    protein_rows.append(
+        dict(
+            newman=ac,
+            uniprot=u,
+            locus=locus,
+            length=len(seq),
+            sequence_sha256=hashlib.sha256(seq.encode()).hexdigest(),
+            native_sequence_equal=True,
+            engineered_construct_equality=False,
+        )
+    )
+for c, mono, u, rxn in [
+    ("CPLX-9312", "G1I0R-77-MONOMER", "Q2G1M5", "RXN-19819"),
+    ("CPLX-9313", "G1I0R-70-MONOMER", "Q2G1N2", "RXN-18393"),
+]:
+    x = ET.parse(str(N / (c + ".xml"))).find("Protein")
+    assert x.xpath("component/Protein/@frameid") == [mono]
+    assert x.xpath("component/coefficient/text()") == ["2"]
+    assert x.xpath("species/Organism/@frameid") == ["TAX-93061"]
+    assert x.xpath("catalyzes/Enzymatic-Reaction/reaction/Reaction/@frameid") == [rxn]
+    m = ET.parse(str(N / (mono + ".xml"))).find("Protein")
+    assert m.xpath('dblink[dblink-db="UNIPROT"]/dblink-oid/text()') == [u]
+for enzyme, native_id, rxn, u in [
+    ("CPLX-9312", "ENZRXN-26580", "RXN-19819", None),
+    ("G1I0R-73-MONOMER", "ENZRXN-26574", "RXN-19820", "Q2G1M9"),
+    ("G1I0R-74-MONOMER", "ENZRXN-26576", "RXN-19822", "Q2G1M8"),
+    ("G1I0R-71-MONOMER", "ENZRXN-26577", "RXN-19823", "Q2G1N1"),
+]:
+    x = ET.parse(str(N / (native_id + ".xml"))).find("Enzymatic-Reaction")
+    assert x.xpath("enzyme/Protein/@frameid") == [enzyme]
+    assert x.xpath("reaction/Reaction/@frameid") == [rxn]
+    assert x.xpath("cofactor/Compound/@frameid") == ["MG+2"]
+    if u:
+        m = ET.parse(str(N / (enzyme + ".xml"))).find("Protein")
+        assert m.xpath('dblink[dblink-db="UNIPROT"]/dblink-oid/text()') == [u]
+for u in ["Q2G1N3", "Q2G1M6"]:
+    c = next(c for c in ups[u]["comments"] if c["commentType"] == "COFACTOR")["cofactors"][0]
+    assert c["cofactorCrossReference"]["id"] == "CHEBI:597326"
+    assert c["evidences"][0]["evidenceCode"] == "ECO:0000269"
+# Original primary locators are independently checked without republishing methods.
+primary_checks = []
+h = html.parse(str(N / "PMC5912478.html"))
+for sel, fragments in [
+    ('//*[@id="sec4"]', ["dimer", "monomer"]),
+    ('//*[@id="sec5"]', ["serine", "ATP", "OPS"]),
+    ('//*[@id="sec11"]', ["Newman", "TTG", "ATG"]),
+]:
+    text = norm(" ".join(" ".join(x.itertext()) for x in h.xpath(sel)))
+    assert all(x.lower() in text.lower() for x in fragments), (sel, fragments)
+    primary_checks.append(
+        dict(
+            source="PMC5912478.html",
+            locator=sel,
+            text_sha256=hashlib.sha256(text.encode()).hexdigest(),
+        )
+    )
+x = ET.parse(str(N / "PMC5084695.xml"))
+for sel, fragments in [
+    ('//*[@id="sec2.1"]', ["Newman"]),
+    ('//*[@id="sec3.1"]', ["dimer", "PLP", "Lys47"]),
+]:
+    text = norm(" ".join(" ".join(e.itertext()) for e in x.xpath(sel)))
+    assert all(f.lower() in text.lower() for f in fragments), (sel, fragments)
+    primary_checks.append(
+        dict(
+            source="PMC5084695.xml",
+            locator=sel,
+            text_sha256=hashlib.sha256(text.encode()).hexdigest(),
+        )
+    )
+# Original issued cyclic structure remains distinct, and the removed synonym is not canonicalized.
+cyclic = read(E / "PubChem-122234488-properties.json")["PropertyTable"]["Properties"][0]
+assert cyclic["CID"] == 122234488 and cyclic["InChIKey"] == "QKTIWRCTWCCSTC-LHAHIAGJSA-N"
+assert cyclic["Charge"] == 0 and "/t8-,15-,16?" in cyclic["InChI"]
+assert cyclic["InChI"] != cf("CHEBI:136993")["chemrof:inchi_string"]
+assert "Removed Synonyms" in (E / "PubChem-122234488.json").read_text()
+assert cf("CHEBI:136993")["chemrof:charge"] == "-2"
+# Strict source references: original bodies and titles, with the web-only exception explicit.
+refs = {r["id"]: r for r in raw["references"]}
+for r in raw["references"]:
+    assert len(r["title"]) < 400
+    if r["id"] == "PMID:19775248":
+        assert "source_sha256" not in r and "no locally retained" in r["source_version"]
+    else:
+        assert sha(manifest["reference_original_paths"][r["id"]]) == r["source_sha256"], r["id"]
+for pmid, file in [("26794841", "PMC5084695.xml"), ("21906287", "PMC3179956.xml")]:
+    title = "".join(
+        ET.parse(str(N / file)).find("front/article-meta/title-group/article-title").itertext()
+    )
+    assert refs["PMID:" + pmid]["title"] == title
+assert refs["PMID:29483190"]["title"] == h.xpath('//meta[@name="citation_title"]/@content')[0]
+
+
+# Negative controls address scientifically material accidental changes.
+def guard(doc):
+    assert {r["id"] for r in doc["reactions"]} == set(chem)
+    assert not doc.get("source_mappings")
+    assert not any(n["id"].startswith("PubChem:") for n in doc["participants"])
+    assert "formal open-chain" in doc["description"] and "not a measured" in doc["description"]
+    for edge in doc["mechanistic_edges"]:
+        if edge["predicate"] == "has_cofactor" and edge["object"] == "CHEBI:18420":
+            assert "Qualified native" in edge["description"]
+        if edge["predicate"] == "part_of" and edge["object"] in [
+            "MetaCyc:CPLX-9312",
+            "MetaCyc:CPLX-9313",
+        ]:
+            assert edge["subject"].startswith("UniProtKB:") and "NCTC 8325" in edge["description"]
+        if (
+            edge["subject"] == "RHEA:59133"
+            and edge["predicate"] == "produces"
+            and edge["object"] == "CHEBI:136993"
+        ):
+            assert edge["description"].startswith("Formal open-chain")
+            assert "no claim of a uniquely linear physiological species" in edge["description"]
+            assert any(
+                e["reference_id"] == "DOI:10.1021/jacs.5b04557.s001" for e in edge["evidence"]
+            )
+            assert any(e["reference_id"] == "PubChem:122234488" for e in edge["evidence"])
+
+
+guard(raw)
+negative = []
+for name in [
+    "truncate_precursor",
+    "false_exact_equivalence",
+    "erase_endpoint_limit",
+    "rename_native_component",
+    "unqualified_mg",
+    "measured_atp",
+]:
+    bad = copy.deepcopy(raw)
+    if name == "truncate_precursor":
+        bad["reactions"] = bad["reactions"][1:]
+    elif name == "false_exact_equivalence":
+        bad["source_mappings"] = [
+            {
+                "subject": "CHEBI:136993",
+                "predicate": "skos:exactMatch",
+                "object": "PubChem:122234488",
+            }
+        ]
+    elif name == "erase_endpoint_limit":
+        next(
+            e
+            for e in bad["mechanistic_edges"]
+            if e["subject"] == "RHEA:59133" and e["object"] == "CHEBI:136993"
+        )["description"] = "Directly proven linear physiological product"
+    elif name == "rename_native_component":
+        next(
+            e
+            for e in bad["mechanistic_edges"]
+            if e["object"] == "MetaCyc:CPLX-9312" and e["predicate"] == "part_of"
+        )["subject"] = "NCBIProtein:BAF66340.1"
+    elif name == "unqualified_mg":
+        next(
+            e
+            for e in bad["mechanistic_edges"]
+            if e["predicate"] == "has_cofactor" and e["object"] == "CHEBI:18420"
+        )["description"] = "Essential bound metal"
+    else:
+        bad["description"] = bad["description"].replace("not a measured", "directly measured")
+    try:
+        guard(bad)
+    except AssertionError:
+        negative.append(name)
+    else:
+        raise AssertionError("Invalid mutation accepted: " + name)
+# Identifier validation uses a separate sandbox populated by canonical original-source extractors.
+assert sha(A / "conf/identifier_policy.yaml") == sha(R / "conf/identifier_policy.yaml")
+sandbox = work / "identifier-sandbox"
+(sandbox / "data/pathways").mkdir(parents=True)
+shutil.copytree(A / "data/identifier_authorities", sandbox / "data/identifier_authorities")
+shutil.copytree(A / "conf", sandbox / "conf")
+shutil.copyfile(T, sandbox / "data/pathways" / T.name)
+assert not identifier_errors(sandbox)
+nodes_file, edges_file = write_kgx([record], work / "kgx")
+with nodes_file.open() as f:
+    nodes = list(csv.DictReader(f, delimiter="\t"))
+with edges_file.open() as f:
+    exported = list(csv.DictReader(f, delimiter="\t"))
+assert len(nodes) == 44 and len(exported) == 72
+for e, out in zip(raw["mechanistic_edges"], exported, strict=True):
+    assert (out["subject"], out["predicate"], out["object"]) == (
+        e["subject"],
+        LOCAL_PREDICATE_CURIES[e["predicate"]],
+        e["object"],
+    )
+    assert json.loads(out["evidence"]) == e["evidence"]
+    assert out["description"] == e.get("description", "")
+    assert json.loads(out["reference_metadata"]) == [
+        refs[k] for k in sorted({v["reference_id"] for v in e["evidence"]})
+    ]
+result = dict(
+    started_at=started,
+    finished_at=datetime.now(UTC).isoformat(),
+    status="passed_external_author_replay",
+    target_sha256=sha(T),
+    manifest_sha256=sha(M),
+    projection_sha256=sha(P),
+    repo_root=str(R),
+    authority_root=str(A),
+    policy_sha256=sha(R / "conf/identifier_policy.yaml"),
+    counts=dict(
+        original_bodies=len(manifest["sources"]),
+        native_members=7,
+        reactions=7,
+        sides=40,
+        balanced_reactions=7,
+        nodes=len(nodes),
+        edges=len(exported),
+        evidence=sum(len(e["evidence"]) for e in raw["mechanistic_edges"]),
+        references=len(refs),
+    ),
+    protein_bridges=protein_rows,
+    native_chemical_bridges=chemical_bridges,
+    primary_locator_checks=primary_checks,
+    net_formal_coefficients=net,
+    negative_controls_rejected=negative,
+    actual_kgx=dict(
+        nodes_path=str(nodes_file),
+        nodes_sha256=sha(nodes_file),
+        edges_path=str(edges_file),
+        edges_sha256=sha(edges_file),
+    ),
+    checks=[
+        "original-body digests",
+        "full original Rhea and ChEBI chemistry",
+        "all native objects and crossrefs",
+        "native/strict schemas",
+        "exact NCBI/genome/UniProt sequence bridges and strain scope",
+        "native assemblies/cofactor assertions",
+        "primary locator/title checks",
+        "cyclic-versus-linear source identity",
+        "unchanged canonical identifier policy in external sandbox",
+        "actual KGX evidence/reference metadata equality",
+    ],
+    limits=[
+        (
+            "No full corpus gates, maintained authority integration, scientif"
+            "ic approval or deployment"
+        ),
+        ("2009 full article inspected through web only; no original local full-body hash"),
+        ("2015 main full text unavailable; original SI and abstract retain distinct scopes"),
+        ("Formal linear current-Rhea output does not assert exclusively linear physiological SB"),
+        "Five ATP is a net stoichiometric derivation, not a measured yield",
+        (
+            "Canonical source annotations and exact sequences do not equate s"
+            "train-specific complexes or engineered constructs"
+        ),
+    ],
+)
+with OUT.open("x") as f:
+    json.dump(result, f, indent=2)
+    f.write("\n")
+print(
+    json.dumps(
+        {"status": result["status"], "target_sha256": sha(T), "counts": result["counts"]}, indent=2
+    )
+)

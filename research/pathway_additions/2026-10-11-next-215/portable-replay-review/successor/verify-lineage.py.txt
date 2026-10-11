@@ -1,0 +1,13 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib,json
+O=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-215-20261011');D=R/'research/pathway_additions/2026-10-11-next-215'
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+a=json.loads((D/'initial-review-inputs/captured-inputs.json').read_text());rows=[]
+for item in a['archives']:
+ p=R/item['maintained_archive'];assert sha(p)==item['sha256'];rows.append({'path':str(p),'sha256':item['sha256']})
+assert len(rows)==38
+yp=R/'reviews/structured/20261011T144835Z-staphyloferrin-b-initial-independent-review/review.yaml';mp=yp.with_name('review.md');assert sha(yp)=='91f17d5ec7b5f24ef91d58f85e5352c7569446f34d7eacec37a931cf393a9729';assert sha(mp)=='2efab4da7e940ccc1652072731c37120f362906ea50f97f918dd22a33f9b4a2c'
+report={'status':'passed','checked_at':datetime.now(UTC).isoformat(),'original_canonical_pair_unchanged':[{'path':str(p),'sha256':sha(p)} for p in [yp,mp]],'captured_original_inputs':rows,'input_count':len(rows),'note':'All 34 formal initial inputs and 4 supplemental baseline/authority inputs remain recoverable at exact original hashes. No initial review was rewritten.'}
+with (O/'lineage-preservation.json').open('x') as f:json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps({'status':'passed','original_inputs':len(rows)}))

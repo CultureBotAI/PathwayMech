@@ -1,0 +1,180 @@
+"""Read-only independent source replay of the frozen external staphyloferrin B draft."""
+import csv
+import gzip
+import hashlib
+import json
+import re
+import sqlite3
+from collections import Counter, defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+from lxml import etree as ET
+from pathwaymech.schema import validate_record
+from pathwaymech.kgx import write_kgx, LOCAL_PREDICATE_CURIES
+
+OUT = Path(__file__).parent
+A = Path('/private/tmp/pathwaymech-staphyloferrin-b-author-20261011/draft')
+N = Path('/private/tmp/pathwaymech-staphyloferrin-b-scout-20261011/originals')
+E = Path('/private/tmp/pathwaymech-staphyloferrin-b-endpoint-20261011/originals')
+start = datetime.now(timezone.utc).isoformat()
+def read(p): return json.loads(Path(p).read_text())
+def sha(p):
+    with Path(p).open('rb') as f: return hashlib.file_digest(f, 'sha256').hexdigest()
+doc = yaml.safe_load((A/'staphyloferrin-b-biosynthesis.yaml').read_text())
+target_sha = sha(A/'staphyloferrin-b-biosynthesis.yaml')
+assert target_sha == '891ce5a5ba08bfae8fdedbd7709f14097f4bd04749c7755fce6d6a51841c840a'
+inputs = read(OUT/'inputs.json')
+for item in inputs['author_artifacts']: assert sha(item['path']) == item['sha256'], item['path']
+projection = read(A/'staphyloferrin-b-source-projection.json')
+assert projection['graph_to_source'] == doc['mechanistic_edges']
+edges = {e['id']: e for e in doc['mechanistic_edges']}
+RH = 'http://rdf.rhea-db.org/'
+RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+pairs = {'RXN-19819':'59113','RXN-18395':'52385','RXN-18393':'51929','RXN-19820':'59125','RXN-19821':'59121','RXN-19822':'59129','RXN-19823':'59133'}
+masters = {str(int(r)-1) for r in pairs.values()}
+facts = defaultdict(lambda: defaultdict(set))
+with gzip.open('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz', 'rb') as stream:
+    for _, x in ET.iterparse(stream, events=['end'], tag='{'+RDF+'}Description'):
+        uri = x.get('{'+RDF+'}about', '')
+        key = uri.removeprefix(RH)
+        selected = key in pairs.values() or key in masters or key.startswith('Compound_') or any(key.startswith(m+'_') or key.startswith('Participant_'+m+'_') for m in masters)
+        if selected:
+            for child in x:
+                v = child.get('{'+RDF+'}resource') or child.text
+                if v is not None: facts[uri][ET.QName(child).localname].add(v)
+        x.clear()
+        while x.getprevious() is not None: del x.getparent()[0]
+def one(uri, prop):
+    values = facts[uri][prop]
+    assert len(values)==1, (uri,prop,values)
+    return next(iter(values))
+sql = sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+def chemical(cid):
+    rows = dict(sql.execute('select predicate,value from statements where subject=? and value is not null',(cid,)))
+    return {k:rows[k] for k in ['rdfs:label','chemrof:generalized_empirical_formula','chemrof:charge','chemrof:inchi_string'] if k in rows}
+def vector(cid):
+    f = chemical(cid); form=f['chemrof:generalized_empirical_formula']
+    atoms=re.findall(r'([A-Z][a-z]?)(\d*)',form)
+    assert ''.join(a+b for a,b in atoms)==form
+    return {**{a:int(b or 1) for a,b in atoms},'charge':int(f['chemrof:charge'])}
+all_sides=[]; rxn_sides={}; net=Counter()
+for native, r in pairs.items():
+    direction=RH+r; master=RH+str(int(r)-1)
+    assert direction in facts[master]['directionalReaction']
+    local=Counter(); sides={}
+    for role, sign, ending in [('substrates',-1,'L'),('products',1,'R')]:
+        side=one(direction,role); assert side==master+'_'+ending
+        side_items={}
+        for participant in facts[side]['contains']:
+            coefficients=[int(k[8:]) for k,v in facts[side].items() if re.fullmatch('contains[0-9]+',k) and participant in v]
+            assert len(coefficients)==1
+            coefficient=coefficients[0]; compound=one(participant,'compound')
+            cid='CHEBI:'+re.search(r'CHEBI[_:](\d+)',one(compound,'chebi'))[1]
+            side_items[cid]=coefficient
+            triple=(cid,'consumes','RHEA:'+r) if sign==-1 else ('RHEA:'+r,'produces',cid)
+            matching=[e for e in edges.values() if (e['subject'],e['predicate'],e['object'])==triple]
+            assert len(matching)==1
+            edge=matching[0]; first=edge['evidence'][0]
+            assert first['reference_id']=='RHEA:'+r
+            assert all(s in first['source_locator'] for s in [side,participant,compound,'rh:contains'+str(coefficient)])
+            assert f'coefficient {coefficient}' in first['source_assertion']
+            for a,count in vector(cid).items(): local[a]+=sign*coefficient*count
+            net[cid]+=sign*coefficient*(2 if native in ['RXN-19819','RXN-18395','RXN-18393'] else 1)
+            all_sides.append(dict(edge=edge['id'],reaction='RHEA:'+r,role=role,id=cid,coefficient=coefficient,side=side,participant=participant,compound=compound))
+        sides[role]=side_items
+    assert not {a:n for a,n in local.items() if n}, (r,local)
+    rxn_sides['RHEA:'+r]=sides
+net={c:n for c,n in net.items() if n}
+assert net==projection['formal_net']
+assert len(all_sides)==40
+assert len([e for e in edges.values() if e['predicate'] in ['consumes','produces']])==40
+native=ET.parse(str(N/'PWY-8008.xml')).find('Pathway')
+assert set(native.xpath('reaction-list/Reaction/@frameid'))==set(pairs)
+native_rows=[]
+for n,r in pairs.items():
+    x=ET.parse(str(N/(n+'.xml'))).find('Reaction')
+    sides={s:[{'id':c[0].get('frameid'),'coefficient':c.findtext('coefficient') or '1'} for c in x.findall(s)] for s in ['left','right']}
+    row=next(p for p in projection['source_to_graph'] if p['native']==n)
+    assert row['native_sides']==sides
+    assert x.findtext('reaction-direction')==row['native_direction']=='PHYSIOL-LEFT-TO-RIGHT'
+    native_rows.append({'native':n,'reaction':'RHEA:'+r,'sides':sides})
+bridges=read(A/'staphyloferrin-b-native-chemical-bridges.json')['bridges']
+for b in bridges:
+    x=ET.parse(str(N/(b['native']+'.xml'))).find('Compound')
+    assert x.findtext('inchi')==b['native_inchi']
+    assert chemical(b['selected'])['chemrof:inchi_string']==b['current_inchi']
+    assert b['exact_equivalence_asserted']==(b['native_inchi']==b['current_inchi'])
+for e in edges.values():
+    if e['predicate']=='precedes':
+        shared=set(rxn_sides[e['subject']]['products']) & set(rxn_sides[e['object']]['substrates'])
+        assert shared
+        for v in e['evidence']:
+            assert v['reference_id'] in [e['subject'],e['object']]
+            uris=re.findall(r'http://rdf\.rhea-db\.org/[A-Za-z0-9_]+',v['source_locator'])
+            assert uris and all(u in facts for u in uris)
+up=read(N/'UniProt-sbn-NCTC8325.json')
+proteins={x.findtext('GBSeq_accession-version'):x for x in ET.parse(str(N/'NCBI-Newman-sbn-proteins.xml')).getroot()}
+genome=ET.parse(str(N/'NCBI-Newman-genome.xml'))
+translations={}
+for feature in genome.findall('.//GBFeature'):
+    qualifiers={q.findtext('GBQualifier_name'):q.findtext('GBQualifier_value') for q in feature.findall('GBFeature_quals/GBQualifier')}
+    if 'protein_id' in qualifiers: translations[qualifiers['protein_id']]=qualifiers
+identity=[]
+for e in edges.values():
+    if e['predicate']!='enables': continue
+    accession=e['subject'].split(':',1)[1]; prot=proteins[accession]
+    q=[(n.findtext('GBQualifier_name'),n.findtext('GBQualifier_value')) for n in prot.findall('.//GBQualifier')]
+    assert ('strain','Newman') in q and ('db_xref','taxon:426430') in q
+    upid=next(v['reference_id'].split(':')[1] for v in e['evidence'] if v['reference_id'].startswith('UniProtKB:'))
+    current=next(x for x in up['results'] if x['primaryAccession']==upid)
+    sequence=prot.findtext('GBSeq_sequence').upper()
+    assert sequence==translations[accession]['translation']==current['sequence']['value']
+    assert current['organism']['taxonId']==93061
+    activity=next(c for c in current['comments'] if c['commentType']=='CATALYTIC ACTIVITY')
+    assert any(p['reactionCrossReference']['id']==e['object'] and p['directionType']=='left-to-right' for p in activity['physiologicalReactions'])
+    identity.append({'edge':e['id'],'Newman':accession,'NCTC8325':upid,'length':len(sequence),'native_sequence_equal':True,'construct_identity_claim':False})
+assembly=[]
+for c,m,u,r in [('CPLX-9312','G1I0R-77-MONOMER','Q2G1M5','RXN-19819'),('CPLX-9313','G1I0R-70-MONOMER','Q2G1N2','RXN-18393')]:
+    x=ET.parse(str(N/(c+'.xml'))).find('Protein')
+    assert x.xpath('component/Protein/@frameid')==[m] and x.xpath('component/coefficient/text()')==['2']
+    assert x.xpath('species/Organism/@frameid')==['TAX-93061']
+    assert x.xpath('catalyzes/Enzymatic-Reaction/reaction/Reaction/@frameid')==[r]
+    mono=ET.parse(str(N/(m+'.xml'))).find('Protein')
+    assert mono.xpath('dblink[dblink-db="UNIPROT"]/dblink-oid/text()')==[u]
+    assembly.append({'complex':c,'subunit':m,'uniprot':u,'copies':2,'source_taxon':93061,'native_reaction':r})
+for e in edges.values():
+    if e['predicate']!='has_cofactor':continue
+    if e['object']=='CHEBI:597326':
+        v=next(v for v in e['evidence'] if v['reference_id'].startswith('UniProtKB:'))
+        cur=up
+        for part in v['source_locator'].split('/')[1:]:cur=cur[int(part)] if isinstance(cur,list) else cur[part]
+        assert cur['cofactorCrossReference']['id']==e['object']
+    else:
+        v=e['evidence'][0]; xid=v['reference_id'].split(':')[1]
+        x=ET.parse(str(N/(xid+'.xml'))).find('Enzymatic-Reaction')
+        assert x.xpath('cofactor/Compound/@frameid')==['MG+2']
+        assert e['object']=='CHEBI:18420' and 'Qualified native' in e['description']
+endpoint={'linear':chemical('CHEBI:136993'),'cyclic':read(E/'PubChem-122234488-properties.json')['PropertyTable']['Properties'][0]}
+assert endpoint['linear']['chemrof:inchi_string']!=endpoint['cyclic']['InChI']
+assert not doc.get('source_mappings')
+assert 'formal open-chain' in doc['description']
+refpaths=read(A/'staphyloferrin-b-reference-paths.json')
+manifest=read(A/'staphyloferrin-b-source-manifest.json')
+sourcehash={s['path']:s['sha256'] for s in manifest['sources']}
+for ref in doc['references']:
+    if ref['id']=='PMID:19775248':assert 'source_sha256' not in ref
+    else:assert sourcehash[manifest['reference_original_paths'][ref['id']]]==ref['source_sha256']
+kgxdir=OUT/'kgx'
+assert not kgxdir.exists()
+paths=write_kgx([validate_record(doc)],kgxdir)
+rows=list(csv.DictReader(paths[1].open(),delimiter='\t'))
+assert len(rows)==72 and sum(len(json.loads(r['evidence'])) for r in rows)==129
+for row in rows:
+    candidates=[e for e in edges.values() if (e['subject'],e['object'],LOCAL_PREDICATE_CURIES[e['predicate']])==(row['subject'],row['object'],row['predicate'])]
+    assert len(candidates)==1 and json.loads(row['evidence'])==candidates[0]['evidence']
+nodes=list(csv.DictReader(paths[0].open(),delimiter='\t'))
+result={'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'scope':'Independent read-only raw-source replay; known pointer findings remain open. No authority integration or full-gate approval.','target_sha256':target_sha,'native_members':native_rows,'chemical_sides':all_sides,'balanced_reactions':7,'formal_weighted_net':net,'native_chemical_bridges':len(bridges),'identity':identity,'assemblies':assembly,'endpoint':endpoint,'kgx':{'nodes':len(nodes),'edges':len(rows),'evidence':129,'nodes_sha256':sha(paths[0]),'edges_sha256':sha(paths[1])},'reference_digests_bound':52}
+with (OUT/'source-replay.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':'passed_source_replay_with_known_locator_finding','sides':len(all_sides),'balances':7,'identities':len(identity),'kgx':result['kgx']}))

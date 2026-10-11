@@ -1,0 +1,35 @@
+from pathlib import Path
+from datetime import UTC,datetime
+import json,hashlib,yaml
+R=Path.cwd();O=Path('/private/tmp/pathwaymech-next-215-staphyloferrin-b-initial-review');P=R/'research/pathway_additions/2026-10-11-next-215'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+inspection=json.loads((O/'inspect.json').read_text())
+for r in inspection['source']['inputs']:assert sha(R/r['path'])==r['sha256'],r['path']
+target=R/'data/pathways/staphyloferrin-b-biosynthesis.yaml'
+assert sha(target)=='891ce5a5ba08bfae8fdedbd7709f14097f4bd04749c7755fce6d6a51841c840a'
+assert target.read_bytes()==(P/'initial-author-inputs/draft/staphyloferrin-b-biosynthesis.yaml.txt').read_bytes()==Path('/private/tmp/pathwaymech-staphyloferrin-b-author-20261011/draft/staphyloferrin-b-biosynthesis.yaml').read_bytes()
+r=yaml.safe_load(target.read_text());assert r['id']=='MetaCyc:PWY-8008'
+assert (len(r['reactions']),len(r['participants']),len(r['mechanistic_edges']),sum(len(e['evidence']) for e in r['mechanistic_edges']),len(r['references']))==(7,34,72,129,53)
+f=json.loads((P/'independent-preflight/finding.json').read_text());source=Path(f['source_path']);assert sha(source)==f['source_sha256'];body=json.loads(source.read_text());assert list(body)==['results']
+rows=[]
+for x in f['affected']:
+ edge=next(e for e in r['mechanistic_edges'] if e['id']==x['edge_id']);ev=edge['evidence'][x['evidence_index']]
+ assert ev['source_locator']==x['old']
+ try:body['sequence']['value'];raise AssertionError('old root sequence unexpectedly exists')
+ except KeyError:pass
+ idx=int(x['supported_replacement'].split('/')[2]);entry=body['results'][idx];seq=entry['sequence']['value']
+ assert entry['primaryAccession']==x['source_entry'] and len(seq)==x['sequence_length'] and hashlib.sha256(seq.encode()).hexdigest()==x['sequence_sha256']
+ rows.append({'edge_id':edge['id'],'evidence':ev,'old_absolute_pointer_rejected':True,'supported_replacement':x['supported_replacement'],'entry':entry['primaryAccession'],'sequence_sha256':hashlib.sha256(seq.encode()).hexdigest()})
+mapping=json.loads((P/'initial-author-inputs/mapping.json').read_text())
+for x in mapping['inputs']:
+ p=R/x['packaged_path']
+ if 'json_locator' in x:
+  v=json.loads(p.read_text())
+  for k in x['json_locator'].strip('/').split('/'):v=v[int(k)] if isinstance(v,list) else v[k]
+  data=v.encode()
+ else:data=p.read_bytes()
+ assert hashlib.sha256(data).hexdigest()==x['original_sha256']
+root=json.loads((P/'root-copy-adoption.json').read_text())
+report={'checked_at':datetime.now(UTC).isoformat(),'status':'passed','scope':'Fresh post-inspection unchanged-target and exact-original locator verification; prior full scientific preflight carried forward, no new whole-corpus gate claim.','source':inspection['source'],'all_current_input_hashes_match':True,'initial_author_inputs_recoverable':len(mapping['inputs']),'counts':{'reactions':7,'participants':34,'edges':72,'evidence':129,'references':53},'finding':f['issue_key'],'original_batch':{'path':str(source),'sha256':sha(source)},'affected':rows,'prior_external_audit_sha256':sha(P/'independent-preflight/audit.json'),'root_source_rehash_receipt':{'path':str(P/'root-copy-adoption.json'),'sha256':sha(P/'root-copy-adoption.json')},'source_access_limits':json.loads((P/'independent-preflight/audit.json').read_text())['source_access_limits'],'no_owner_mutation':True}
+with (O/'maintained-recheck.json').open('x') as s:json.dump(report,s,indent=2);s.write('\n')
+print(json.dumps({'status':'passed','inputs':len(inspection['source']['inputs']),'archive_inputs':26,'finding_open':True,'receipt':str(O/'maintained-recheck.json'),'sha256':sha(O/'maintained-recheck.json'),'affected':rows},indent=2))

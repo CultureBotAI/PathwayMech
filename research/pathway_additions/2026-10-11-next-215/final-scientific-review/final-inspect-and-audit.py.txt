@@ -1,0 +1,55 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import os, json, hashlib, subprocess, yaml
+R=Path('/private/tmp/pathwaymech-next-215-20261011'); O=Path('/private/tmp/pathwaymech-next-215-staphyloferrin-b-final-review'); D=R/'research/pathway_additions/2026-10-11-next-215'
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def now(): return datetime.now(UTC).isoformat().replace('+00:00','Z')
+prior=R/'reviews/structured/20261011T144835Z-staphyloferrin-b-initial-independent-review/review.yaml'
+old=yaml.safe_load(prior.read_text())
+paths={x['path'] for x in old['source']['inputs']}
+paths.update([str(prior.relative_to(R)),str(prior.with_name('review.md').relative_to(R)), 'conf/identifier_sources.json','conf/identifier_policy.yaml','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json','docs/record-reviews.md','conf/record_review.yaml','schema/record_review.yaml'])
+extra=['initial-review-inputs/captured-inputs.json','portable-replay/staphyloferrin-b-source-projection.json','portable-replay/staphyloferrin-b-replay.py','portable-replay-review/initial/audit.json','portable-replay-review/successor/audit.json','portable-replay-review/successor/locator-acceptance.json','portable-replay-review/successor/attribution-addendum.json','portable-replay-review/successor/startup-races.json','portable-replay-review/successor/negative-controls.json','portable-replay-review/successor/race.json','portable-replay-review/successor/lineage-preservation.json','integrated-replay/result.json','full-gate-receipts.json','vendored-gate-receipt.json','console-transcripts.json','generated-graph-kgx-audit.json','authority-selection.json','authority-selection-independent-review.json','authority-integration.json','issue393-observation.json','issue396-observation.json','integration-receipt.json']
+seal=json.loads((D/'integration-receipt.json').read_text())
+assert sha(D/'integration-receipt.json')=='c554c7f4d314a3caacbdd6d4872fae13f94e381dd7ba24b55d1f41c1a32754b7'
+paths.update(str((D/x).relative_to(R)) for x in extra)
+paths.update(x['path'] for x in seal['proofs'])
+for p in paths: assert (R/p).is_file(),p
+cmd=[str(R/'.venv/bin/python'),'scripts/record_review.py','inspect','--targets',str(O/'targets.yaml')]
+for p in sorted(paths):
+ if p!='data/pathways/staphyloferrin-b-biosynthesis.yaml': cmd+=['--input',p]
+env=dict(os.environ,PYTHONPATH='src',UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache')
+start=now(); res=subprocess.run(cmd,cwd=R,env=env,capture_output=True)
+(O/'final-inspect.json').write_bytes(res.stdout);(O/'final-inspect.stderr.log').write_bytes(res.stderr)
+receipt={'started_at':start,'finished_at':now(),'command':cmd,'cwd':str(R),'env':{k:env[k] for k in ['PYTHONPATH','UV_NO_SYNC','UV_CACHE_DIR']},'exit_code':res.returncode,'stdout_sha256':sha(O/'final-inspect.json'),'stderr_sha256':sha(O/'final-inspect.stderr.log')}
+(O/'final-inspect-execution.json').write_text(json.dumps(receipt,indent=2)+'\n')
+assert res.returncode==0,res.stderr.decode()
+inspect=json.loads(res.stdout)
+assert inspect['source']['git_revision']=='6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa'
+for x in inspect['source']['inputs']:assert sha(R/x['path'])==x['sha256'],x
+for x in seal['proofs']:assert sha(R/x['path'])==x['sha256'],x
+# Repeat exact original-batch, two-field delta and 38-input archive checks on final inspected bytes.
+code=(O/'prepare-reassessment.py').read_text().replace("'preparation-inspect.json'","'final-inspect.json'").replace("'bounded-reassessment-preparation.json'","'final-bounded-reassessment.json'")
+code=code.replace("'bounded_correction_reverified_final_scientific_review_pending'","'bounded_correction_reverified_against_final_sealed_inputs'")
+code=code.replace("['Root complete integrated dossier signal', 'Fresh canonical inspection of final inputs', 'Actual graph audit/full-gate receipts', 'Canonical completed successor validate/save/check']","['Canonical completed successor validate/save/check']")
+exec(compile(code,str(O/'prepare-reassessment.py'),'exec'),{})
+checks=[]
+for name in ['portable-reviews-root-adoption.json','authority-evidence-root-adoption.json','integrated-replay-root-adoption.json','graph-review-root-adoption.json']:
+ obj=json.loads((D/name).read_text())
+ rows=obj.get('copied',[])
+ count=0
+ for row in rows:
+  p=row.get('path'); expected=row.get('sha256')
+  if p and expected:
+   path=Path(p); path=path if path.is_absolute() else R/path
+   assert sha(path)==expected,(name,p)
+   count+=1
+ checks.append({'receipt':name,'copied_artifacts_rehashed':count})
+gates=json.loads((D/'full-gate-receipts.json').read_text());assert len(gates)==7
+for x in gates:
+ assert x['exit_code']==0,x
+ assert sha(Path(x['log']))==x['log_sha256'],x
+assert '1256 passed, 3 skipped, 3 warnings' in Path(next(x['log'] for x in gates if x['name']=='test')).read_text()
+graph=json.loads((D/'generated-graph-kgx-audit.json').read_text())
+result={'status':'passed','started_at':start,'finished_at':now(),'target_sha256':sha(R/'data/pathways/staphyloferrin-b-biosynthesis.yaml'),'input_count':len(inspect['source']['inputs']),'canonical_inspect_exit':0,'all_final_input_hashes_rechecked':True,'seal_proofs_rehashed':len(seal['proofs']),'adoption_copy_checks':checks,'seven_actual_gate_logs_rehashed':True,'gate_exits':[x['exit_code'] for x in gates],'bounded_reassessment_sha256':sha(O/'final-bounded-reassessment.json'),'graph_sha256':sha(D/'generated-graph-kgx-audit.json'),'integration_sha256':sha(D/'integration-receipt.json'),'source_scope':'All original scientific assertions were independently inspected in the preserved preflight. Fresh final checks independently repeat the only two biological-record locator changes and rehash all current formal inputs and final coordination evidence. Coordinated complete original-source replay is supporting validation, not substituted scientific evidence. No unchanged large-source re-download or whole-suite repetition.','independence':'Biological target not authored by reviewer. Authority preparation/helper authored by reviewer, separately accepted by root; no self-approval of that implementation. Portable B helper and successors authored by other agents.'}
+(O/'final-reassessment.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'status':'passed','inputs':result['input_count'],'audit_sha256':sha(O/'final-reassessment.json'),'inspect_exit':res.returncode}))

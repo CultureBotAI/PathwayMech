@@ -1,0 +1,45 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib, json, os, subprocess, time
+import yaml
+O = Path(__file__).parent
+C = O / 'a-pre-capture-comparison'
+C.mkdir()
+I = C / 'inputs'
+I.mkdir()
+W = C / 'wrapper'
+W.mkdir()
+R = Path('/private/tmp/pathwaymech-next-214-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-214'
+H = D / 'portable-replay/staphyloferrin-a-replay.py'
+T = I / 'staphyloferrin-a-biosynthesis.yaml'
+T.write_bytes((R / 'data/pathways' / T.name).read_bytes())
+hashof = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+old = hashof(T)
+real = '/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python'
+wrapper = W / 'stereo-python'
+wrapper.write_text('#!/usr/bin/env python3\nimport os,sys,time\nfrom pathlib import Path\np=Path('+repr(str(W))+')\nif "-c" in sys.argv:\n (p/"ready").write_text("ready")\n while not (p/"release").exists():time.sleep(.05)\nos.execv('+repr(real)+',['+repr(real)+']+sys.argv[1:])\n')
+wrapper.chmod(0o755)
+out = C / 'result.json'
+argv = ['/private/tmp/pathwaymech-next-215-20261011/.venv/bin/python', '-B', str(H), '--repo-root', str(R), '--record', str(T), '--source-manifest', str(D / 'staphyloferrin-a-source-manifest.json'), '--source-projection', str(D / 'staphyloferrin-a-source-projection.json'), '--stereo-python', str(wrapper), '--output', str(out)]
+started = datetime.now(UTC).isoformat()
+log = C / 'execution.log'
+with log.open('x') as f:
+ child = subprocess.Popen(argv, cwd=R, env={**os.environ, 'PYTHONPATH':str(R/'src'), 'PYTHONDONTWRITEBYTECODE':'1'}, stdout=f, stderr=subprocess.STDOUT)
+ deadline=time.monotonic()+60
+ while not (W/'ready').exists():
+  assert child.poll() is None, log.read_text()
+  assert time.monotonic()<deadline
+  time.sleep(.05)
+ data=yaml.safe_load(T.read_text())
+ data['description'] += ' Temporary isolated pre-capture race marker.'
+ T.write_text(yaml.safe_dump(data,sort_keys=False,allow_unicode=True,width=100))
+ new=hashof(T)
+ assert old!=new
+ (W/'release').write_text('release')
+ code=child.wait(timeout=60)
+assert code!=0 and 'Stale source projection target' in log.read_text(), log.read_text()
+assert not out.exists()
+report={'status':'same_target_window_rejected','started_at':started,'finished_at':datetime.now(UTC).isoformat(),'argv':argv,'exit_code':code,'helper_path':str(H),'helper_sha256':hashof(H),'original_target_sha256':old,'changed_target_sha256':new,'log_sha256':hashof(log),'output_created':out.exists(),'assertion':'Stale source projection target','scope':'Same interpreter-probe pause and copied-target mutation as B; A captures inputs and first checks target hashes only after the probe, so rejects stale projection. Not a general proof of every input race.'}
+with (C/'probe.json').open('x') as f:json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps(report,indent=2))

@@ -1,0 +1,135 @@
+"Canonical source extraction into an external sandbox, never the maintained corpus."
+
+import hashlib
+import importlib.util
+import json
+import shutil
+import sqlite3
+from datetime import UTC, datetime
+from pathlib import Path
+
+from pathwaymech.identifiers import identifier_errors
+
+B = Path(__file__).resolve().parent
+D = B / "draft"
+R = Path("/private/tmp/pathwaymech-next-213-20261011")
+C = Path("/private/tmp/pathwaymech-curation-authorities")
+F = Path("/private/tmp/pathwaymech-staphyloferrin-b-author-20261011")
+S = B / "authority-sandbox"
+cache = S / "cache"
+cache.mkdir(parents=True, exist_ok=True)
+for name in ["data/pathways", "data/identifier_authorities", "conf"]:
+    (S / name).mkdir(parents=True, exist_ok=True)
+shutil.copyfile(
+    D / "staphyloferrin-b-biosynthesis.yaml",
+    S / ("data/pathways/staphyloferrin-b-biosynthesis.yaml"),
+)
+shutil.copyfile(R / "conf/identifier_policy.yaml", S / "conf/identifier_policy.yaml")
+
+
+def sha(p):
+    with Path(p).open("rb") as f:
+        return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def module(n, p):
+    spec = importlib.util.spec_from_file_location(n, p)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+source = module("source_builder", R / "scripts/build_source_identifier_snapshot.py")
+onto = module("ontology_builder", R / "scripts/build_ontology_identifier_snapshot.py")
+entries = []
+for i, x in enumerate(json.loads((F / "authority-inputs.json").read_text())["inputs"]):
+    p = Path(x["path"])
+    assert sha(p) == x["sha256"]
+    entries.append(
+        {
+            "key": "staphyloferrin-b-original-" + str(i),
+            "kind": x["kind"],
+            "path": p.name,
+            "url": x["url"],
+            "version": ("MetaCyc 22.5; " if x["kind"] == "metacyc-html" else "")
+            + "original response retrieved 2026-10-11",
+            "license": (
+                "Source-native database terms; public access is not redistribution clearance"
+            ),
+            "sha256": x["sha256"],
+            "raw_path": str(p),
+            "native_terms": x["identifiers"],
+        }
+    )
+    dest = cache / p.name
+    if not dest.exists():
+        dest.symlink_to(p)
+manifest = S / "source-manifest.json"
+manifest.write_text(
+    json.dumps(
+        [{k: v for k, v in e.items() if k not in {"raw_path", "native_terms"}} for e in entries],
+        indent=2,
+    )
+    + "\n"
+)
+fresh = source.build_snapshot(manifest, S / "data/pathways", cache)
+old = json.loads((R / "data/identifier_authorities/sources.json").read_text())
+old["sources"].update(fresh["sources"])
+old["terms"].update(fresh["terms"])
+(S / "data/identifier_authorities/sources.json").write_text(json.dumps(old, indent=2) + "\n")
+selected = source.corpus_ids(S / "data/pathways")
+ont = json.loads((R / "data/identifier_authorities/ontology.json").read_text())
+reports = []
+for prefix, name in [("CHEBI", "chebi"), ("RHEA", "rhea"), ("NCBITaxon", "ncbitaxon")]:
+    wanted = sorted(x for x in selected if x.startswith(prefix + ":"))
+    p = C / (name + ".db")
+    conn = sqlite3.connect("file:" + str(p) + "?mode=ro", uri=True)
+    metadata = onto.read_source(conn, p)
+    key = "staphyloferrin-b-" + prefix + "-original"
+    terms, missing = onto.extract_terms(conn, wanted, key)
+    assert not missing, missing
+    conn.close()
+    ont["sources"][key] = metadata
+    ont["terms"].update(terms)
+    reports.append(
+        {
+            "prefix": prefix,
+            "path": str(p),
+            "sha256": metadata["sha256"],
+            "selected_ids": wanted,
+            "source_metadata": metadata,
+            "canonical_original_extractor": True,
+        }
+    )
+(S / "data/identifier_authorities/ontology.json").write_text(json.dumps(ont, indent=2) + "\n")
+
+errors = identifier_errors(S)
+assert not errors, errors
+receipt = {
+    "created_at": datetime.now(UTC).isoformat(),
+    "status": "passed",
+    "scope": (
+        "Actual canonical native source/ontology extraction plus unchan"
+        "ged identifier policy against an external one-record sandbox; "
+        "no shared authority files modified"
+    ),
+    "target_sha256": sha(D / "staphyloferrin-b-biosynthesis.yaml"),
+    "source_manifest_additions": entries,
+    "ontology_inputs": reports,
+    "source_snapshot_terms": sorted(fresh["terms"]),
+    "named_ids": sorted(selected),
+    "sandbox": str(S),
+    "identifier_errors": errors,
+    "reference_code_head": __import__("subprocess")
+    .check_output(["git", "rev-parse", "HEAD"], cwd=R, text=True)
+    .strip(),
+    "policy_sha256": sha(R / "conf/identifier_policy.yaml"),
+    "root_integration_pending": True,
+}
+(D / "staphyloferrin-b-authority-proposal.json").write_text(json.dumps(receipt, indent=2) + "\n")
+print(
+    json.dumps(
+        {"status": "passed", "source_terms": len(fresh["terms"]), "named_ids": len(selected)},
+        indent=2,
+    )
+)

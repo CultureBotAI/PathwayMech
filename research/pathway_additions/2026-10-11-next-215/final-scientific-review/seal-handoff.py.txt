@@ -1,0 +1,31 @@
+from pathlib import Path
+import json,hashlib,yaml,shutil
+from datetime import datetime,UTC
+R=Path('/private/tmp/pathwaymech-next-215-20261011');O=Path('/private/tmp/pathwaymech-next-215-staphyloferrin-b-final-review')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+reviewdir=R/'reviews/structured/20261011T154105Z-staphyloferrin-b-resolved-independent-review'
+r=yaml.safe_load((reviewdir/'review.yaml').read_text())
+steps={}
+for step,session,chunk in [('validate',64616,'719eb3'),('save',81869,'dc850c'),('check',58538,'54fddc')]:
+ p=O/f'canonical-{step}-execution.json';j=json.loads(p.read_text());assert j['exit_code']==0
+ assert sha(Path(j['log']))==j['log_sha256'];j.update(actual_tool_session=session)
+ if chunk:j['observed_terminal_chunk']=chunk
+ steps[step]=j
+assert '"valid_reviews": 87' in (O/'canonical-check.log').read_text()
+inputs=[]
+for x in r['source']['inputs']:
+ src=R/x['path'];assert sha(src)==x['sha256'],x
+ dst=O/'final-inputs'/x['path'];dst.parent.mkdir(parents=True,exist_ok=True)
+ with dst.open('xb') as f:f.write(src.read_bytes())
+ inputs.append({**x,'external_archive':str(dst)})
+(O/'final-input-manifest.json').write_text(json.dumps({'captured_at':datetime.now(UTC).isoformat(),'base':r['source']['git_revision'],'inputs':inputs},indent=2)+'\n')
+logs=[]
+for p in sorted(O.glob('*.log')):
+ logs.append({'path':str(p),'sha256':sha(p),'text':p.read_text()})
+(O/'console-transcripts.json').write_text(json.dumps({'encoding':'lossless UTF-8 text JSON','logs':logs},indent=2)+'\n')
+receipts=[]
+for name in ['final-inspect.json','final-inspect-execution.json','final-bounded-reassessment.json','final-reassessment.json','final-adoption-rehash.json','final-input-manifest.json','console-transcripts.json','final-inspect-and-audit.py','build-final-review.py','run-canonical.py','seal-handoff.py']:
+ p=O/name;receipts.append({'path':str(p),'sha256':sha(p)})
+result={'status':'passed','sealed_at':datetime.now(UTC).isoformat(),'review_id':r['review_id'],'completion':r['completion'],'verdict':r['verdict'],'scientific_review':r['scientific_review'],'base':r['source']['git_revision'],'target_sha256':inputs[0]['sha256'] if inputs[0]['role']=='target' else next(x['sha256'] for x in inputs if x['role']=='target'),'review_pair':[{'path':str(p.relative_to(R)),'sha256':sha(p)} for p in [reviewdir/'review.yaml',reviewdir/'review.md']],'captured_current_inputs':len(inputs),'canonical_valid_review_count':87,'executions':steps,'supporting_artifacts':receipts,'findings':[{'finding_id':f['finding_id'],'issue_key':f['issue_key'],'status':f['status'],'previous_occurrences':f['previous_occurrences'],'external_issues':f['external_issues']} for f in r['findings']],'issue396':'Independently verified technical correction recorded in evidence-linked assessments; no fabricated structured predecessor.','maintained_writes':[str((reviewdir/x).relative_to(R)) for x in ['review.yaml','review.md']],'limits':r['limitations']}
+with (O/'workflow-receipt.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':'passed','receipt':str(O/'workflow-receipt.json'),'sha256':sha(O/'workflow-receipt.json'),'pair':result['review_pair'],'input_manifest_sha256':sha(O/'final-input-manifest.json')}))

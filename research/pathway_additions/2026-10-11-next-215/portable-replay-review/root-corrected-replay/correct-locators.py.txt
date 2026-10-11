@@ -1,0 +1,136 @@
+"""Apply the two reviewed sequence locator corrections; preserve initial evidence."""
+from pathlib import Path
+from datetime import datetime, timezone
+import copy
+import hashlib
+import json
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-215-20261011')
+dossier = root / 'research/pathway_additions/2026-10-11-next-215'
+target = root / 'data/pathways/staphyloferrin-b-biosynthesis.yaml'
+projection = dossier / 'staphyloferrin-b-source-projection.json'
+original_helper = Path('/private/tmp/pathwaymech-staphyloferrin-b-portable-replay-20261011/staphyloferrin-b-replay.py')
+
+def digest(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+def save(path, value):
+    with path.open('x') as f:
+        json.dump(value, f, indent=2)
+        f.write('\n')
+
+assert digest(target) == '891ce5a5ba08bfae8fdedbd7709f14097f4bd04749c7755fce6d6a51841c840a'
+assert digest(projection) == '425e064f6747589180cbddf36d69420c8ab44ee64efbea1e50a696771630a7ce'
+assert digest(original_helper) == '1d5cd54c95f0116aba72de253ec421db47ec389b091ddec7269f003bd92726f2'
+issue = Path('/private/tmp/pathwaymech-next-215-issue393-observation.json')
+assert digest(issue) == '686816c4200237eacb1e45c2ee08785187b314233205ad89cf853bf02a735e7f'
+assert json.loads(issue.read_text())['observed_issue']['state'] == 'OPEN'
+initial_review = root / 'reviews/structured/20261011T144835Z-staphyloferrin-b-initial-independent-review/review.yaml'
+assert digest(initial_review) == '91f17d5ec7b5f24ef91d58f85e5352c7569446f34d7eacec37a931cf393a9729'
+before = target.read_text()
+raw = yaml.safe_load(before)
+expected = copy.deepcopy(raw)
+changes = []
+after = before
+for edge, n in [('sbn-edge-056', 0), ('sbn-edge-058', 1)]:
+    old = f'/results/{n}/comments (CATALYTIC ACTIVITY; SUBUNIT); /sequence/value'
+    new = f'/results/{n}/comments (CATALYTIC ACTIVITY; SUBUNIT); /results/{n}/sequence/value'
+    assert after.count(old) == 1
+    item = next(e for e in expected['mechanistic_edges'] if e['id'] == edge)['evidence'][1]
+    assert item['source_locator'] == old
+    item['source_locator'] = new
+    after = after.replace(old, new)
+    changes.append({'edge': edge, 'field': 'evidence[1].source_locator', 'before': old, 'after': new})
+assert yaml.safe_load(after) == expected
+initial_projection = json.loads(projection.read_text())
+assert initial_projection['target_sha256'] == digest(target)
+assert initial_projection['graph_to_source'] == raw['mechanistic_edges']
+successor_projection = copy.deepcopy(initial_projection)
+successor_projection['target_sha256'] = hashlib.sha256(after.encode()).hexdigest()
+successor_projection['graph_to_source'] = expected['mechanistic_edges']
+
+guard = '''def validate_batch_sequence_locators(raw, batch):
+    """Resolve the reviewed evidence against the original accession-indexed batch."""
+    rows = []
+    edges = {edge["id"]: edge for edge in raw["mechanistic_edges"]}
+    for edge_id, index, accession, expected_length, expected_sha in [
+        ("sbn-edge-056", 0, "Q2G1M5", 254,
+         "22a7f9fafd241b687178c976b2c893df6e2a1b58524ac89e54ed17cfddbadf18"),
+        ("sbn-edge-058", 1, "Q2G1N2", 336,
+         "cebe53926a46e6a5666972d57f6b058bec942f56b5775ebfee29dec643fbc0bb"),
+    ]:
+        evidence = edges[edge_id]["evidence"][1]
+        assert evidence["reference_id"] == "UniProtKB:" + accession, "Batch evidence accession"
+        comments, pointer = evidence["source_locator"].rsplit("; ", 1)
+        assert comments == f"/results/{index}/comments (CATALYTIC ACTIVITY; SUBUNIT)", (
+            "Batch comment locator"
+        )
+        assert pointer == f"/results/{index}/sequence/value", "Batch sequence locator"
+        entry = batch["results"][index]
+        assert entry["primaryAccession"] == accession, "Batch entry accession"
+        assert entry["organism"]["taxonId"] == 93061, "Batch source strain"
+        value = batch
+        for token in pointer.lstrip("/").split("/"):
+            value = value[int(token)] if isinstance(value, list) else value[token]
+        sequence_sha = hashlib.sha256(value.encode()).hexdigest()
+        assert len(value) == expected_length and sequence_sha == expected_sha, (
+            "Batch sequence identity"
+        )
+        assert {"CATALYTIC ACTIVITY", "SUBUNIT"} <= {
+            comment["commentType"] for comment in entry["comments"]
+        }, "Batch comment evidence"
+        rows.append(dict(edge=edge_id, accession=accession, pointer=pointer,
+                         length=len(value), sequence_sha256=sequence_sha))
+    return rows
+
+
+'''
+helper = original_helper.read_text()
+anchor = 'def main(args):\n'
+assert helper.count(anchor) == 1
+helper = helper.replace(anchor, guard + anchor)
+anchor = '    ups = {x["primaryAccession"]: x for x in read(N / "UniProt-sbn-NCTC8325.json")["results"]}\n'
+assert helper.count(anchor) == 1
+helper = helper.replace(anchor, '    batch = read(N / "UniProt-sbn-NCTC8325.json")\n    batch_sequence_locators = validate_batch_sequence_locators(raw, batch)\n    ups = {x["primaryAccession"]: x for x in batch["results"]}\n')
+anchor = '        protein_bridges=protein_rows,\n'
+assert helper.count(anchor) == 1
+helper = helper.replace(anchor, anchor + '        batch_sequence_locators=batch_sequence_locators,\n')
+old = '            "Frozen target has two independently reported unresolved batch sequence locators on "\n            "edges sbn-edge-056 and sbn-edge-058; this replay does not attest their resolution.",\n'
+new = '            "Issue393 batch sequence pointers are replayed against the original accession and "\n            "sequence. Independent correction acceptance and final review remain separate gates.",\n'
+assert helper.count(old) == 1
+helper = helper.replace(old, new)
+compile(helper, '<successor-helper>', 'exec')
+
+portable = dossier / 'portable-replay'
+assert not portable.exists()
+portable.mkdir()
+with (portable / 'staphyloferrin-b-replay.py').open('x') as f:
+    f.write(helper)
+save(portable / 'staphyloferrin-b-source-projection.json', successor_projection)
+with (dossier / 'issue393-observation.json').open('xb') as f:
+    f.write(issue.read_bytes())
+with (dossier / 'initial-locator-root-verification.json').open('xb') as f:
+    f.write(Path('/private/tmp/pathwaymech-next-215-root-locator-review.json').read_bytes())
+target.write_text(after)
+assert digest(original_helper) == '1d5cd54c95f0116aba72de253ec421db47ec389b091ddec7269f003bd92726f2'
+assert digest(projection) == '425e064f6747589180cbddf36d69420c8ab44ee64efbea1e50a696771630a7ce'
+assert digest(initial_review) == '91f17d5ec7b5f24ef91d58f85e5352c7569446f34d7eacec37a931cf393a9729'
+report = {
+    'created_at': datetime.now(timezone.utc).isoformat(),
+    'status': 'two_fields_corrected_independent_acceptance_pending',
+    'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/393',
+    'initial_review': str(initial_review.relative_to(root)),
+    'finding_id': 'f-uniprot-batch-sequence-locators',
+    'initial_target_sha256': hashlib.sha256(before.encode()).hexdigest(),
+    'current_target_sha256': digest(target),
+    'changes': changes,
+    'all_other_parsed_fields_unchanged': True,
+    'frozen_original_projection': {'path': str(projection.relative_to(root)), 'sha256': digest(projection)},
+    'current_projection': {'path': str((portable / 'staphyloferrin-b-source-projection.json').relative_to(root)), 'sha256': digest(portable / 'staphyloferrin-b-source-projection.json')},
+    'initial_helper': {'path': str(original_helper), 'sha256': digest(original_helper)},
+    'successor_helper': {'path': str((portable / 'staphyloferrin-b-replay.py').relative_to(root)), 'sha256': digest(portable / 'staphyloferrin-b-replay.py')},
+    'limits': ['No claim of independent acceptance, final scientific approval, corpus integration or publication.']
+}
+save(dossier / 'locator-correction-successor.json', report)
+print(json.dumps({'status': report['status'], 'target_sha256': digest(target), 'helper_sha256': digest(portable / 'staphyloferrin-b-replay.py'), 'receipt_sha256': digest(dossier / 'locator-correction-successor.json')}))

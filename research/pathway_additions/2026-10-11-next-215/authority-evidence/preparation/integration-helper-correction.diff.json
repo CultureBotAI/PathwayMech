@@ -1,0 +1,6 @@
+{
+  "original_path": "/private/tmp/pathwaymech-next-215-authority-selection/integration-helper-correction.diff",
+  "original_sha256": "eb0dd60ed11d969c7ac7146a5c1e3651a08ea121fc39c360019ba13738470315",
+  "encoding": "lossless UTF-8 text",
+  "text": "--- initial-0d0298ff\n+++ corrected-d555221f\n@@ -30,6 +30,8 @@\n \n \n def main():\n+    if sys.flags.optimize:\n+        raise RuntimeError(\"Assertions must be enabled; python -O is unsupported\")\n     parser = argparse.ArgumentParser(description=__doc__)\n     for arg in [\"repo-root\", \"selection\", \"output-dir\"]:\n         parser.add_argument(\"--\" + arg, required=True, type=Path)\n@@ -250,7 +252,7 @@\n     sys.path.insert(0, str(root / \"src\"))\n     from pathwaymech.identifiers import identifier_errors\n \n-    errors = identifier_errors([sandbox / \"data/pathways\" / target.name], sandbox)\n+    errors = identifier_errors(sandbox)\n     assert not errors, errors\n     for rel, digest in baseline.items():\n         assert sha(root / rel) == digest\n"
+}

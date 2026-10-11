@@ -1,0 +1,71 @@
+"""Observe root gate receipts, then run the frozen external structural audit once."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import time
+
+ROOT = Path('/private/tmp/pathwaymech-next-215-20261011')
+OUT = Path('/private/tmp/pathwaymech-next-215-independent-graph-review')
+GATES = Path('/private/tmp/pathwaymech-next-215-final-gate-receipts.json')
+HELPER = OUT / 'graph-audit.py'
+EXPECTED = {'render', 'validate', 'test', 'lint', 'identifiers', 'kgx', 'diff'}
+PIN = '22599e08b17c7d6258bcdfad2969e0f1135ba0fe16a0c2e7b6db137b34db4a16'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def now():
+    return datetime.datetime.now(datetime.UTC).isoformat()
+
+
+def save(name, value):
+    with (OUT / name).open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+if sha(HELPER) != PIN:
+    raise RuntimeError('Frozen graph helper changed')
+last = None
+started = now()
+for attempt in range(61):
+    if GATES.exists():
+        raw = GATES.read_bytes()
+        try:
+            rows = json.loads(raw)
+        except json.JSONDecodeError:
+            state = {'observed_at': now(), 'state': 'receipt_write_in_progress'}
+        else:
+            state = {'observed_at': now(), 'checks': [{k: r[k] for k in ('name', 'exit_code', 'finished_at')} for r in rows]}
+            if any(r['exit_code'] != 0 for r in rows):
+                save('failed-gates-observation.json', {'started_at': started, 'observed_at': now(), 'gate_receipt': str(GATES), 'sha256': hashlib.sha256(raw).hexdigest(), 'receipt': rows})
+                raise RuntimeError('Root gate failure; no graph audit executed')
+            if len(rows) == 7 and {r['name'] for r in rows} == EXPECTED:
+                for row in rows:
+                    if sha(Path(row['log'])) != row['log_sha256']:
+                        raise RuntimeError(f"Gate log hash mismatch: {row['name']}")
+                save('observed-complete-gates.json', {'started_at': started, 'observed_at': now(), 'gate_receipt': str(GATES), 'sha256': hashlib.sha256(raw).hexdigest(), 'receipt': rows})
+                command = [str(ROOT / '.venv/bin/python'), str(HELPER), '--root', str(ROOT), '--base', '6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa', '--comparison-kgx-dir', '/private/tmp/pathwaymech-next-215-final-kgx', '--gate-receipts', str(GATES), '--receipt', str(OUT / 'graph-audit.json')]
+                launch = now()
+                print(json.dumps({'event': 'all_seven_gates_observed_successful', 'at': launch, 'command': command}), flush=True)
+                log = OUT / 'graph-audit.log'
+                with log.open('x') as stream:
+                    result = subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT)
+                execution = {'started_at': launch, 'finished_at': now(), 'command': command, 'exit_code': result.returncode, 'log': str(log), 'log_sha256': sha(log), 'helper_sha256': sha(HELPER)}
+                if (OUT / 'graph-audit.json').exists():
+                    execution['receipt_sha256'] = sha(OUT / 'graph-audit.json')
+                save('graph-execution.json', execution)
+                print(json.dumps(execution), flush=True)
+                raise SystemExit(result.returncode)
+    else:
+        state = {'observed_at': now(), 'state': 'receipt_not_written'}
+    key = json.dumps({k: v for k, v in state.items() if k != 'observed_at'}, sort_keys=True)
+    if key != last:
+        print(json.dumps(state), flush=True)
+        last = key
+    time.sleep(30)
+raise RuntimeError('Bounded monitoring deadline; no graph pass claimed')

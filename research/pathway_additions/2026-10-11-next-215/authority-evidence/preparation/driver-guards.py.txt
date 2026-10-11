@@ -1,0 +1,21 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import hashlib,json,os,subprocess
+O=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-215-20261011');H=O/'integrate-authorities.py';S=O/'selection.json'
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+base=[str(R/'.venv/bin/python'),'-B',str(H),'--repo-root',str(R),'--selection',str(S)]
+wrong=json.loads(S.read_text());wrong['target']['sha256']='0'*64
+with (O/'wrong-target-selection.json').open('x') as f:json.dump(wrong,f)
+checks=[]
+for name,extra,optimized,expected,out in [('optimized',[],True,'Assertions must be enabled',O/'guard-never-optimized'),('unaccepted-apply',['--apply'],False,'Independent root acceptance required',O/'guard-never-apply'),('existing-output',[],False,'AssertionError',O/'canonical-dry-run'),('stale-target',[],False,'AssertionError',O/'guard-never-stale')]:
+ command=list(base)
+ if optimized:command.insert(1,'-O')
+ if name=='stale-target':command[command.index('--selection')+1]=str(O/'wrong-target-selection.json')
+ before={str(p):sha(p) for p in out.rglob('*') if p.is_file() and not p.is_symlink()} if out.exists() else None
+ command+=extra+['--output-dir',str(out)];started=datetime.now(UTC).isoformat();p=subprocess.run(command,cwd=R,env={**os.environ,'PYTHONPATH':str(R/'src'),'PYTHONDONTWRITEBYTECODE':'1'},capture_output=True,text=True,check=False,timeout=60)
+ log=O/(name+'-guard.log');log.write_text(p.stdout+p.stderr);assert p.returncode!=0 and expected in p.stderr,p.stderr
+ if before is None:assert not out.exists()
+ else:assert before=={str(p):sha(p) for p in out.rglob('*') if p.is_file() and not p.is_symlink()}
+ checks.append({'name':name,'command':command,'started_at':started,'finished_at':datetime.now(UTC).isoformat(),'exit_code':p.returncode,'expected_rejection':expected,'log':str(log),'log_sha256':sha(log),'existing_outputs_unchanged':before is not None,'new_output_absent':before is None})
+with (O/'driver-guards.json').open('x') as f:json.dump({'status':'passed','helper_sha256':sha(H),'checks':checks},f,indent=2);f.write('\n')
+print(json.dumps({'status':'passed','guards':len(checks)}))

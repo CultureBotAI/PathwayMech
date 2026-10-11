@@ -1,0 +1,82 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import shutil
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-215-20261011')
+external = Path('/private/tmp/pathwaymech-next-215-staphyloferrin-b-final-review')
+dossier = root / 'research/pathway_additions/2026-10-11-next-215'
+workflow = external / 'workflow-receipt.json'
+expected_workflow = '8d8cc756fb67944a2ce317da729f02714ed4c1a1d23f86e6d11b1d0cc6799adf'
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def save(path, data):
+    with path.open('x') as stream:
+        json.dump(data, stream, indent=2)
+        stream.write('\n')
+
+assert sha(workflow) == expected_workflow
+w = json.loads(workflow.read_text())
+assert w['status'] == 'passed' and w['completion'] == 'completed'
+assert w['scientific_review'] is True and w['verdict'] == 'pass_with_limitations'
+for row in w['review_pair']:
+    assert sha(root / row['path']) == row['sha256'], row
+review_path = root / w['review_pair'][0]['path']
+r = yaml.safe_load(review_path.read_text())
+manifest = json.loads((external / 'final-input-manifest.json').read_text())
+assert len(r['source']['inputs']) == len(manifest['inputs']) == 74
+assert r['source']['inputs'] == [{k: v for k, v in row.items() if k != 'external_archive'} for row in manifest['inputs']]
+for row in manifest['inputs']:
+    assert sha(root / row['path']) == row['sha256'], row
+    assert sha(row['external_archive']) == row['sha256'], row
+assert r['source']['git_revision'] == w['base']
+assert all(f['status'] == 'resolved' for f in r['findings'])
+proofs = [dict(row) for row in w['supporting_artifacts']]
+proofs.append({'path': str(workflow), 'sha256': expected_workflow})
+for stage, execution in w['executions'].items():
+    assert execution['exit_code'] == 0 and execution['observed_terminal_chunk']
+    assert sha(execution['log']) == execution['log_sha256']
+    path = external / ('canonical-' + stage + '-execution.json')
+    assert json.loads(path.read_text()) == execution
+    proofs.append({'path': str(path), 'sha256': sha(path)})
+transcripts = json.loads((external / 'console-transcripts.json').read_text())
+for proof in proofs:
+    assert sha(proof['path']) == proof['sha256'], proof
+out = dossier / 'final-scientific-review'
+assert not out.exists()
+out.mkdir()
+copies = []
+for proof in proofs:
+    src = Path(proof['path'])
+    dest = out / (src.name + ('.txt' if src.suffix == '.py' else ''))
+    assert not dest.exists()
+    shutil.copyfile(src, dest)
+    assert sha(dest) == proof['sha256']
+    copies.append({**proof, 'maintained_path': str(dest.relative_to(root)), 'maintained_sha256': sha(dest)})
+self_path = Path(__file__)
+self_dest = out / (self_path.name + '.txt')
+shutil.copyfile(self_path, self_dest)
+copies.append({'path': str(self_path), 'sha256': sha(self_path), 'maintained_path': str(self_dest.relative_to(root)), 'maintained_sha256': sha(self_dest)})
+receipt = {
+    'status': 'accepted_completed_independent_scientific_successor',
+    'accepted_at': datetime.now(timezone.utc).isoformat(),
+    'base': w['base'], 'target_sha256': w['target_sha256'],
+    'review_yaml_sha256': w['review_pair'][0]['sha256'],
+    'review_markdown_sha256': w['review_pair'][1]['sha256'],
+    'workflow_receipt_sha256': expected_workflow,
+    'post_save_check_exit_code': w['executions']['check']['exit_code'],
+    'post_save_check_observed_terminal_chunk': w['executions']['check']['observed_terminal_chunk'],
+    'valid_reviews': w['canonical_valid_review_count'],
+    'current_and_archived_inputs_independently_rehashed': len(manifest['inputs']),
+    'copied_artifacts': copies,
+    'acceptance_basis': 'Root read the final structured assessment and source limitations, exact two-field reassessment, complete workflow and final rehash correction. Root freshly rehashed all 74 current formal inputs and their external archives, paired canonical review, every copied proof and actual canonical log. Earlier root acceptance of reviewer-prepared authority work remains separate and explicit.',
+    'limitations': w['limits'],
+    'archive_policy': 'The 74 final-input archives remain externally retained and are explicitly mapped by the copied manifest. Their current original maintained paths were freshly rehashed; no raw original source bodies were copied. Console text is retained losslessly in console-transcripts.json. Python evidence is archived with a .txt suffix.',
+    'pending': ['Remote PR adversarial review', 'CI', 'Merge and deployed-byte verification', 'Branch cleanup'],
+}
+save(dossier / 'final-scientific-review-adoption.json', receipt)
+print(json.dumps({'status': receipt['status'], 'inputs': 74, 'proof_copies': len(copies), 'receipt_sha256': sha(dossier / 'final-scientific-review-adoption.json')}))
