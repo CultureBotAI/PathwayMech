@@ -1,0 +1,24 @@
+from pathlib import Path
+from rdkit import Chem,rdBase
+import json
+D=Path(__file__).resolve().parent;d=json.loads((D/'chemistry.json').read_text());rows=[]
+for row in d['native_current_bridges']:
+ if row['native_id'] not in ['CPD-21047','CPD-12589']:continue
+ for source,key in [('native','native_inchi'),('current','current_inchi')]:
+  m=Chem.MolFromInchi(row[key]);assert m;Chem.AssignStereochemistry(m,cleanIt=True,force=True)
+  centers=Chem.FindMolChiralCenters(m,includeUnassigned=True)
+  # Ornithine alpha center has a directly attached N; citrate centers have an O.
+  orn=[idx for idx,cip in centers if any(n.GetSymbol()=='N' for n in m.GetAtomWithIdx(idx).GetNeighbors())];assert len(orn)==1
+  ci=[]
+  for idx,cip in centers:
+   if idx!=orn[0]:ci.append(dict(cip=cip,distance_to_ornithine_alpha=len(Chem.GetShortestPath(m,idx,orn[0]))-1))
+  ci.sort(key=lambda x:x['distance_to_ornithine_alpha'])
+  if len(ci)==2:
+   ci[0]['role']='N2-citryl';ci[1]['role']='N5-citryl';assert ci[0]['distance_to_ornithine_alpha']<ci[1]['distance_to_ornithine_alpha']
+  else:ci[0]['role']='N5-citryl'
+  rows.append(dict(native_id=row['native_id'],source=source,id=row['chebi_id'] if source=='current' else row['native_id'],ornithine_alpha=dict(centers)[orn[0]],citryl_centers=ci))
+assert [x['cip'] for x in rows[-1]['citryl_centers']]==['R','S']
+assert rows[1]['citryl_centers'][0]['cip']=='S'
+assert rows[0]['citryl_centers'][0]['cip']=='?'
+o=dict(status='passed',rdkit_version=rdBase.rdkitVersion,rows=rows,primary_figure='PMC2856993 Figure 2A, independently viewed: N2 citrate R; ornithine alpha R; N5 citrate S.',scope='Role-aware structure interpretation of retained issued InChIs, not fresh experimental stereochemistry. The primary ligand was ferric receptor-bound material; free product ionization is from the chemical authority.')
+(D/'stereochemistry.json').write_text(json.dumps(o,indent=2)+'\n');print(json.dumps(o,indent=2))

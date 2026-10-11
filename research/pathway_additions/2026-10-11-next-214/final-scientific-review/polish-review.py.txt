@@ -1,0 +1,51 @@
+from pathlib import Path
+import json, hashlib, datetime
+import yaml
+p=Path('/private/tmp/pathwaymech-next-214-independent-review/review.yaml')
+before=p.read_bytes()
+archive=p.with_name('review-draft-before-prose-spacing.yaml.txt')
+with archive.open('xb') as f: f.write(before)
+d=yaml.safe_load(before)
+replacements={
+'All31edges59evidence and3':'All 31 edges, 59 evidence blocks and 3',
+'all31edges59evidence':'all 31 edges and 59 evidence blocks',
+'with56explicit contexts':'with 56 explicit contexts',
+'Actual62354 terminal0':'Actual session 62354, terminal exit 0',
+'56context inputs plus exacttarget':'56 context inputs plus the exact target',
+'actualmergedbase':'actual merged base',
+'Actual22657 exit0':'Actual session 22657, exit 0',
+'session30540':'session 30540',
+'exit0':'exit 0','exit1':'exit 1','exited0':'exited 0','exited1':'exited 1',
+'lint1':'lint exit 1','terminal0':'terminal exit 0','whole-batch1':'whole-batch exit 1',
+'All22pinned':'All 22 pinned','Actual11754':'Actual session 11754',
+'all31triples59evidence':'all 31 triples and 59 evidence blocks',
+'all3 reactions,14 participants,31 edges/59 evidence and28 references':'all 3 reactions, 14 participants, 31 edges / 59 evidence blocks and 28 references',
+'all31 edges and59':'all 31 edges and 59',
+'Complete16 incidences':'All 16 incidences','at532':'at residue 532',
+'Fig2':'Figure 2','finalN2R/ornithineR/N5S':'final N2 R / ornithine R / N5 S',
+'andFigure5':'and Figure 5','Table2':'Table 2',
+';27 references':'; 27 references','andstaph_precise165':'and staph_precise165',
+'Component55':'Component 55','session22657':'session 22657',
+'integrated214':'integrated 214','override;53':'override; 53',
+'bodies,16 sides,3 balances':'bodies, 16 sides, 3 balances',
+'exact19node/31edge/59evidence':'exact 19-node / 31-edge / 59-evidence',
+'review,11':'review, 11','KEGGM00876':'KEGG:M00876',
+'inputs,7 ontology terms and4':'inputs, 7 ontology terms and 4',
+'final519/1807/2122':'final 519 / 1807 / 2122','All7 original':'All 7 original',
+'failure;1256tests passed3skipped3warnings':'failure; 1,256 tests passed, 3 skipped, 3 warnings',
+'and22 governed':'and 22 governed','passed,3skipped,3warnings':'passed, 3 skipped, 3 warnings'
+}
+keys={'summary','locator','reason','notes','limitations','independence_basis','command','scope_basis'}
+def walk(o, prose=False):
+    if isinstance(o,dict):
+        return {k:walk(v,k in keys) for k,v in o.items()}
+    if isinstance(o,list): return [walk(v,prose) for v in o]
+    if isinstance(o,str) and prose:
+        for a,b in replacements.items(): o=o.replace(a,b)
+        return o.strip()
+    return o
+d=walk(d)
+p.write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=100))
+receipt={'status':'completed','before_sha256':hashlib.sha256(before).hexdigest(),'after_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'scope':'Unsaved review draft prose spacing only; formal input attestations unchanged. Earlier attempted cosmetic Python map failed to parse before any write; canonical validation of original draft nevertheless ran and passed in session 69432, chunk d5ac2b.','time':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+p.with_name('review-prose-edit.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt))

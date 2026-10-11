@@ -1,0 +1,89 @@
+from datetime import datetime, timezone
+from pathlib import Path
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import time
+
+B=Path(__file__).resolve().parent
+P=Path('/private/tmp/pathwaymech-staphyloferrin-a-portable-replay-20261011')
+R=Path('/private/tmp/pathwaymech-next-214-20261011')
+D=R/'research/pathway_additions/2026-10-11-next-214'
+T=R/'data/pathways/staphyloferrin-a-biosynthesis.yaml'
+A=P/'prepared-current-policy-authority-v2'
+S=Path('/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3')
+def sha(p):
+    with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def save(p,x):
+    with Path(p).open('x') as f:json.dump(x,f,indent=2);f.write('\n')
+archive=B/'initial-inputs';archive.mkdir()
+paths=[P/'handoff.json',P/'staphyloferrin-a-replay.py',D/'staphyloferrin-a-source-manifest.json',D/'staphyloferrin-a-source-projection.json',T,P/'authority-preparation-v2.json',P/'README.md']
+captured=[]
+for p in paths:
+    q=archive/p.name;shutil.copy2(p,q);captured.append({'path':str(p),'archive':str(q),'sha256':sha(p)})
+save(archive/'manifest.json',captured)
+assert sha(archive/'staphyloferrin-a-replay.py')=='0b6693338ee17724c32e2d023a671f9e51bc89b3eba91f9456545b2456e95d1e'
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONPATH=str(R/'src'),UV_NO_SYNC='1')
+def setup(name):
+    d=B/name;d.mkdir()
+    for p in paths[2:5]:shutil.copy2(p,d/p.name)
+    return d
+def command(d,out):
+    return [str(R/'.venv/bin/python'),str(archive/'staphyloferrin-a-replay.py'),'--repo-root',str(R),'--record',str(d/T.name),'--source-manifest',str(d/'staphyloferrin-a-source-manifest.json'),'--source-projection',str(d/'staphyloferrin-a-source-projection.json'),'--authority-root',str(A),'--stereo-python',str(S),'--output',str(out)]
+def change(d,f,fn):
+    p=d/f;x=json.loads(p.read_text());fn(x);p.write_text(json.dumps(x))
+controls=[]
+for name in ['stale_projection','stale_manifest_optional','graph_mismatch','digest_mismatch','missing_source','existing_receipt','existing_artifacts','dangling_receipt_symlink','optimized_python','missing_rdkit','maintained_output']:
+    d=setup(name);out=d/'receipt.json';cmd=command(d,out);sentinel=None
+    if name=='stale_projection':change(d,'staphyloferrin-a-source-projection.json',lambda x:x.update(target_sha256='0'*64))
+    elif name=='stale_manifest_optional':change(d,'staphyloferrin-a-source-manifest.json',lambda x:x.update(target_sha256='0'*64))
+    elif name=='graph_mismatch':change(d,'staphyloferrin-a-source-projection.json',lambda x:x['graph_to_source'].pop())
+    elif name=='digest_mismatch':change(d,'staphyloferrin-a-source-manifest.json',lambda x:x['sources'][0].update(sha256='0'*64))
+    elif name=='missing_source':change(d,'staphyloferrin-a-source-manifest.json',lambda x:x['sources'][0].update(path=str(d/'missing-original')))
+    elif name=='existing_receipt':sentinel=b'preserve existing receipt\n';out.write_bytes(sentinel)
+    elif name=='existing_artifacts':out.with_suffix('.artifacts').mkdir();(out.with_suffix('.artifacts')/'sentinel').write_text('keep\n')
+    elif name=='dangling_receipt_symlink':out.symlink_to(d/'must-not-be-created')
+    elif name=='optimized_python':cmd.insert(1,'-O')
+    elif name=='missing_rdkit':cmd[cmd.index('--stereo-python')+1]='/usr/bin/false'
+    elif name=='maintained_output':
+        mock=d/'isolated-repo';mock.mkdir();cmd[cmd.index('--repo-root')+1]=str(mock);out=mock/'receipt.json';cmd[cmd.index('--output')+1]=str(out)
+    p=subprocess.run(cmd,cwd=B,env=env,capture_output=True,text=True)
+    (d/'console.log').write_text(p.stdout+p.stderr)
+    assert p.returncode!=0,(name,p.stdout,p.stderr)
+    if sentinel:assert out.read_bytes()==sentinel
+    elif name=='dangling_receipt_symlink':assert out.is_symlink() and not (d/'must-not-be-created').exists()
+    else:assert not out.exists()
+    if name=='maintained_output':assert 'External outputs only' in p.stderr
+    controls.append({'name':name,'exit_code':p.returncode,'command':cmd,'log':str(d/'console.log'),'log_sha256':sha(d/'console.log'),'preserved_existing_outputs':True})
+save(B/'negative-controls.json',controls)
+print('Eleven independent CLI negative controls rejected. Starting standalone source replay.',flush=True)
+full=[]
+for name in ['fresh-output','receipt-collision']:
+    d=setup(name);out=d/'receipt.json';cmd=command(d,out);started=datetime.now(timezone.utc).isoformat()
+    with (d/'console.log').open('x') as log:
+        p=subprocess.Popen(cmd,cwd=B,env=env,stdout=log,stderr=subprocess.STDOUT)
+        sentinel=None
+        if name=='receipt-collision':
+            while not out.with_suffix('.artifacts').exists():
+                if p.poll() is not None:raise RuntimeError('Replay ended before artifact reservation')
+                time.sleep(.1)
+            sentinel=b'preserve receipt created after preflight\n'
+            with out.open('xb') as f:f.write(sentinel)
+            print('Collision sentinel inserted after companion reservation.',flush=True)
+        code=p.wait()
+    result={'name':name,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'command':cmd,'exit_code':code,'log':str(d/'console.log'),'log_sha256':sha(d/'console.log'),'receipt':str(out),'receipt_sha256':sha(out)}
+    if sentinel:
+        assert code!=0 and out.read_bytes()==sentinel
+        assert 'FileExistsError' in (d/'console.log').read_text()
+        result.update(sentinel_preserved=True,exclusive_final_write_verified=True)
+    else:
+        assert code==0,(code,str(d/'console.log'))
+        receipt=json.loads(out.read_text());assert receipt['target_sha256']==sha(T)
+        result.update(counts=receipt['counts'],source_bodies=receipt['source_body_count'],actual_kgx=receipt['actual_kgx'])
+    assert all(sha(x['path'])==x['sha256'] for x in captured)
+    result['owner_inputs_unchanged']=True
+    save(d/'test-result.json',result);full.append(result)
+    print(json.dumps(result,indent=2),flush=True)
+save(B/'execution.json',{'status':'passed','negative_controls':controls,'full_runs':full,'owner_inputs_unchanged':True})

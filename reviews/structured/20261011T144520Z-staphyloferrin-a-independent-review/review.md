@@ -1,0 +1,864 @@
+# Complete staphyloferrin A independent scientific review
+
+- Review: 20261011T144520Z-staphyloferrin-a-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T14:42:25.149799Z
+- Finished UTC: 2026-10-11T14:45:20.453821Z
+- Reviewer: Codex reviewer (/root/verify_graph_publication) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete three-transformation Newman pathway is supported within explicit SfaC/cofactor inference, construct, strain and stereochemical limits. All 31 edges, 59 evidence blocks and 3 native members were assessed. No corrective scientific finding remains. Final current corpus gates pass; the initial archived-script lint exit 1 and separately passing lint successor are both retained, with no claim that the original batch exited 0.
+
+## Scope And Provenance
+
+One complete maintained staphyloferrin A pathway, exact native boundaries and all molecular/organism/evidence assertions, with current integrated artifacts.
+
+Selection: Exact targetSHA256 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42; full record and source-to-graph/reverse scope, unchanged from earlier independent external preflight.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base c8662de7809df00a192f1840b3345ca5edc9686f.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-7990 | data/pathways/staphyloferrin-a-biosynthesis.yaml | maintained | staphyloferrin A biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical final inspection | passed | True | MetaCyc:PWY-7990 | Actual session 62354, terminal exit 0/chunk153263;56 context inputs plus the exact target captured at actual merged base before final reassessment. Earlier preliminary inspection retained separately. |
+| Fresh installed original-source replay | passed | True | MetaCyc:PWY-7990 | Actual session 22657, exit 0; integrated authority bytes and science unchanged through final recheck. The command is replayed from original sources, not merely the saved projection. |
+| Coordinated final render | passed | True | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:29:51.252720+00:00 to 2026-10-11T14:30:24.036033+00:00, exit 0; exact original log and lossless transcript checked. |
+| Coordinated final validate | passed | True | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:30:24.037193+00:00 to 2026-10-11T14:32:45.696070+00:00, exit 0; exact original log and lossless transcript checked. |
+| Coordinated final test | passed | True | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:30:24.037460+00:00 to 2026-10-11T14:39:30.271939+00:00, exit 0; exact original log and lossless transcript checked. 1256 passed, 3 skipped, 3 warnings; no duplicate full-suite execution by reviewer. |
+| Historical attempted lint | failed | False | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:30:24.037619+00:00 to 2026-10-11T14:30:24.297148+00:00, exit 1; exact original log and lossless transcript checked. Historical failed lint is retained; four archived scratch scripts were repackaged byte-identically, and the separately required current lint successor passed. This is not a remaining failed current gate. |
+| Coordinated final identifiers | passed | True | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:30:24.297804+00:00 to 2026-10-11T14:30:46.029329+00:00, exit 0; exact original log and lossless transcript checked. |
+| Coordinated final kgx | passed | True | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:30:46.029915+00:00 to 2026-10-11T14:31:11.674182+00:00, exit 0; exact original log and lossless transcript checked. |
+| Coordinated final diff | passed | True | MetaCyc:PWY-7990 | Coordinated actual session 30540 item 2026-10-11T14:31:11.674610+00:00 to 2026-10-11T14:31:12.112390+00:00, exit 0; exact original log and lossless transcript checked. |
+| Current lint successor | passed | True | MetaCyc:PWY-7990 | Actual 2026-10-11T14:35:51.237634+00:00 to 2026-10-11T14:35:51.519343+00:00; terminal exit 0 and original log hash verified. Initial lint exit 1 and whole-batch exit 1 remain preserved. |
+| Governed artifact comparison | passed | True | MetaCyc:PWY-7990 | Actual 2026-10-11T14:30:00.692264+00:00 to 2026-10-11T14:30:02.779180+00:00; terminal exit 0 and original log hash verified. All 22 pinned artifacts matched. |
+| Independent SVG/KGX and baseline audit | passed | True | MetaCyc:PWY-7990 | Actual session 11754 terminal exit 0/chunkd076ee; all 31 triples and 59 evidence blocks and relevant node types/directions/geometry verified. |
+
+## Scientific And Domain Assessments
+
+### Complete native three-transformation pathway
+
+identity: supported. Targets: MetaCyc:PWY-7990.
+
+Exact PWY7990/M00876 begins supplied L-ornithine and citrate and includes racemization and both ordered ligations. Transport, iron loading, citrate production and staphyloferrinB are separate boundaries, not omitted native members.
+
+### Reaction directions, balanced sides and stereochemical specificity
+
+grounding: supported. Targets: MetaCyc:PWY-7990.
+
+All16 sides and3 equations balance using current Rhea/ChEBI forms. Native reversible racemization is distinguished from pathway flux. Native citryl forms are broader than the selected current stereo identities; no false exactMatch is asserted. The final ferric-bound product supports N2R/N5S; free intermediate and ionization remain explicit authority conventions.
+
+### Exact Newman genes versus comparison strains and constructs
+
+scope: supported. Targets: MetaCyc:PWY-7990.
+
+Versioned Newman SfaC/B/D protein identities and residue532 SfaD difference are correct. Full engineered sequences and oligomeric sufficiency are unresolved. Joint Newman ligase synthesis plus separately ordered abstract evidence supports qualified enables; SfaC is explicitly inferred.
+
+### Cofactor tiers and assembly limits
+
+evidence: supported. Targets: MetaCyc:PWY-7990.
+
+Automatic ARBA PLP evidence and curated native Mg2+ assignments retain their inference and strain-transfer limits. No direct metal exclusivity, binding count, native assembly or unsupported compartment is claimed.
+
+### Claim-specific native/primary attribution
+
+provenance: supported. Targets: MetaCyc:PWY-7990.
+
+Every edge is supported within its explicitly stated source tier and locality. Exact Rhea family/side pointers, native ordering and sequence objects retain distinct provenance. Cotton is abstract-only; web-only Beasley has no fabricated full-body hash.
+
+### Expression context remains computational and cross-strain
+
+scope: supported. Targets: MetaCyc:PWY-7990.
+
+Selected iModulon native rows are computational USA300HOU/NCTC8325 context; they do not demonstrate Newman pathway catalysis or regulator causation. The documented full-parser failure is not hidden behind scoped row inspection.
+
+### Final local integration and exact archival traceability
+
+schema: supported. Targets: MetaCyc:PWY-7990.
+
+All current corpus gates pass with the failed initial lint and its successful successor honestly separated. Actual merged baseline, current authority hashes,19node/31edge graph, complete evidence and prior corpus preservation are supported. Authority-selection acceptance comes from root, not this reviewer.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/staphyloferrin-a-biosynthesis.yaml; Complete maintained record, all 3 reactions, 14 participants, 31 edges / 59 evidence blocks and 28 references | supports | Exact complete target remains byte-identical to the independently inspected external scientific draft. |
+| preflight | research/pathway_additions/2026-10-11-next-214/independent-external-scientific-preflight.json; Full original-source and every-edge assessment; execution receipts and source limitations | supports | Independent scientific preflight covered all 31 edges and 59 evidence blocks, exact protein sequences, native/current structures and source boundaries; it was preparation, not prior canonical approval. |
+| native | research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-projection.json; source_to_graph, native sides/orderings, chemical_sides, net and graph_to_source | supports | Original PWY7990/M00876 boundary contains racemization plus two ordered citrate ligations. All 16 incidences and Rhea families support three balanced reactions; native and current stereo scope remain distinct. |
+| proteins | research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-protein-projection.json; Newman GenPept versions, NCTC8325 current entries, exact sequence comparisons and locus assignments | supports | BAF68351.1 and BAF68352.1 equal their comparison sequences; BAF68354.1 differs at residue 532. Genomic products and strain identities are not engineered construct equivalences. |
+| primary-2010 | PMID:20147287; Original PMC2856993 sec5/p2;sec7;sec18/p2;Figure2A-C | supports | Re-inspected original text identifies Newman SfaB/D recombinant preparation and joint product synthesis. Re-viewed original Figure 2 supports final N2 R / ornithine R / N5 S for ferric receptor-bound product, not a free intermediate or ionization measurement. |
+| primary-2009-cotton | PMID:19138128; Original EuropePMC core resultList.result[0].abstractText; indexed abstract only | supports | The independently inspected abstract supplies ordered delta-amine SfaD and alpha-amine SfaB ligations. Full Cotton methods and exact engineered construct sequences are not claimed. |
+| primary-2009-beasley | https://onlinelibrary.wiley.com/doi/10.1111/j.1365-2958.2009.06698.x; Original publisher Results/Table 2 and Figure 5; web-only full text inspected during independent preflight | supports | Newman locus/whole-product support and inferred SfaC assignment are retained. No local full-body digest is fabricated, and no fresh network retrieval is claimed in final reassessment. |
+| source-provenance | research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-manifest.json; Original body URLs, acquisition timestamps, hash scopes, rejected attempts and web_only | supports | Fifty-three original bodies are retained and rehashed; 27 references are locally hash-bound and the Beasley web-only reference deliberately has no local full-body hash. |
+| context | research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-imodulondb-context.json; staph_precise108/component8 and staph_precise165/component55 scoped native table rows | supports | Cross-strain computational context is kept separate from Newman catalysis or regulation. Component 55 full canonical parser failure on unrelated null metadata remains explicit; native-row parity is not a full adapter pass. |
+| fresh-replay | research/pathway_additions/2026-10-11-next-214/independent-integrated-replay-execution.json; Actual session 22657 terminal exit 0/chunk921dd8; before/after hashes; actual repository authority root | supports | Fresh installed helper replay used the actual integrated 214 snapshots without a sandbox override; 53 bodies, 16 sides, 3 balances and exact 19-node / 31-edge / 59-evidence export passed with all inputs unchanged. |
+| portable | research/pathway_additions/2026-10-11-next-214/portable-replay-review/independent-audit.json; Independent technical scope review, 11 rejected controls, collision regression and full fresh replay | supports | This reviewer did not implement the helper. Earlier independent technical probes establish stale-target and no-overwrite behavior; no unnecessary repeat of those controls is claimed. |
+| authority-independent | research/pathway_additions/2026-10-11-next-214/authority-selection-independent-review.json; Root independent original HTML/NCBI XML and ontology extraction/rehashed selection | supports | This reviewer authored selection preparation and does not self-approve it. Root independently re-extracted exact original identities and labels, including excluding unused reference-only KEGG:M00876 manifest input. |
+| authority-integration | research/pathway_additions/2026-10-11-next-214/authority-integration.json; Actual canonical builder outputs, added terms and exact baseline preservation | supports | Two original inputs, 7 ontology terms and 4 source terms added; final 519 / 1807 / 2122 counts. Prior terms, source ownership and metadata are preserved; no namespace/policy waiver. |
+| integration | research/pathway_additions/2026-10-11-next-214/integration-receipt.json; All 7 original gate items;lint_successor;vendored; exact logs and current generated hashes | supports | Full batch exited 1 solely retained historical archive lint failure; 1,256 tests passed, 3 skipped, 3 warnings. Separate lint successor passed after byte-identical archive packaging. All current required gates and 22 governed artifacts passed. |
+| graph | research/pathway_additions/2026-10-11-next-214/generated-graph-kgx-audit.json; Actual independent11754 terminal exit 0;SVG/KGX metadata/geometry and214baseline preservation | supports | All19nodes31edges59evidence preserved;939 prior blobs,10144 prior exported edges and6739 node contexts unchanged. Programmatic inspection only, no browser claim. |
+| packaging | research/pathway_additions/2026-10-11-next-214/archive-packaging-independent-audit.json; Four source/archive equality checks and ignored+hidden+follow consumer search | supports | Four archived .py scripts were renamed to byte-identical .py.txt; original sources and historical receipts remain intact. Active portable replay has no renamed-path dependency; the initial lint failure remains preserved. |
+| base | research/pathway_additions/2026-10-11-next-214/merged-baseline-independent-recheck.json; Actual c8662de7 versus reviewed9b0a whole-tree equality;75prepared hashes with archival successor map | supports | Both Git trees equal3c7137b0fbe9b7dbb4be6625a7ee942a40f8dbf8. All75preparation paths recovered; root original GitHub merge observation remains separately retained, not claimed newly fetched here. |
+
+## Limits And Additional Notes
+
+- SfaC catalytic activity and its automatic PLP assignment remain inferred; no isolated Newman racemase/cofactor experiment was inspected.
+- Newman ligase coding-region provenance is supported, but complete engineered construct sequences and native biological assemblies are unresolved.
+- Cotton2009 source was inspected as an indexed abstract only. Beasley2009 original publisher text was web-inspected earlier with no local original-body hash; no fresh retrieval is claimed.
+- Ferric receptor-bound product structure supports final stereochemistry, not an experimental free-intermediate configuration or free-ion protonation measurement. Current chemical-authority conventions are explicit.
+- Native curated Mg2+ annotations do not establish unique physiological metal specificity or binding stoichiometry.
+- iModulon context belongs to other strain backgrounds; one full canonical table parser fails on unrelated null metadata, and bounded native-row inspection is not a successful full-table replay.
+- Whole batch30540 exited 1 solely initial archived-script lint. Current lint success is the separate successor after lossless packaging; historical failures remain unchanged.
+- Programmatic page/graph inspection does not establish browser rendering or interaction behavior.
+- This completed canonical observation is local scientific review, not PR, merge or live-publication approval.
+- No record, source, page, authority or history edit by this review. Saver adds only a new immutable review pair; no record REVIEW history will be appended after rendering.
+- Preliminary inspect was captured on the reviewed tree-equivalent head; final inspect captures actual mergedbase c8662de7 and57current formal inputs. Existing source inputs were rechecked rather than silently refreshed.
+- Prior external preflight and portable technical failure attempts remain preserved. The source reread initially used a system interpreter without lxml, then succeeded with the repository virtualenv; no product defect.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T144520Z-staphyloferrin-a-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Complete staphyloferrin A independent scientific review
+started_at: '2026-10-11T14:42:25.149799Z'
+finished_at: '2026-10-11T14:45:20.453821Z'
+reviewer:
+  identity: Codex reviewer (/root/verify_graph_publication)
+  kind: agent
+  independence: independent
+  independence_basis: Did not author the staphyloferrin A record, original source
+    projections or portable helper. Independently inspected complete original-source
+    science, sequence and stereo scope, then reassessed unchanged maintained bytes
+    and actual integrated replay. Authored the separate external authority-selection
+    preparation; its implementation is not self-approved, and the independently re-extracted
+    root acceptance is explicitly cited. Programmatic graph and archival audits are
+    separate from the scientific evidence.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete three-transformation Newman pathway is supported within explicit
+  SfaC/cofactor inference, construct, strain and stereochemical limits. All 31 edges,
+  59 evidence blocks and 3 native members were assessed. No corrective scientific
+  finding remains. Final current corpus gates pass; the initial archived-script lint
+  exit 1 and separately passing lint successor are both retained, with no claim that
+  the original batch exited 0.
+source:
+  git_revision: c8662de7809df00a192f1840b3345ca5edc9686f
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: 20e6c584796085fa8e9813e8398f68424b2da65732bfa51148f2559ddf016881
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 81b51c1be2bce6fd03f22551bf39e712acfbb127880f5f926a46e1f533029f2d
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 9c2bc86a161d6ebf26a204ba19fb5091a6a516cd19124ea8aaabe5d6ddd5b0b5
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 470e9fa95af95ef4eaf96890f14791fb2e1b905c1f15c5968003b6fa8221cae7
+    role: context
+  - path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+    sha256: 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 401147d9499c526bba7f1785fa99bf3f9e7aa531d10ecc21b53221d7912fe590
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 54e89427e4f58301e4953081bca0673afba01e65a75c16e332702546041b1357
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 54c886791884a886abaa998ff2f03535436634988a8874b8dd2a0f7055d3d9c5
+    role: context
+  - path: pages/records/MetaCyc_PWY-7990.html
+    sha256: 60ed1a3ea2c32e49d021ec960724a600ed8deae85bab4d1eb6d71f48ffa26a1c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/README.md
+    sha256: 9898c924f5fee4130a6a4bc15e6a713cc674af8f8dbf42ddf320f5500be83f0f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/archive-packaging-independent-audit.json
+    sha256: e7b9159b31862ada1bc16662437cb18b4eea34f5b349955d3ee28a44d8a8fb13
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/archive-packaging-independent-consumer-search.json
+    sha256: 649588d2a5d9273f31d1f298dbfab8f75f448ac46e09185b162b2f4b4f7ff11d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/archive-packaging-initial-lint-console.json
+    sha256: be10f27184ecf35a8a53469a3816885a01d3e0ba7506a5ef3858c85d19a5a194
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/archive-packaging-successor.json
+    sha256: 02f5c490c96c77ac1fa2cbafd7b2613d9ee764e07fc9db99435cea3a50dcf206
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/author-copy-receipt.json
+    sha256: 5d05db112494dff549cbdc7017e940f8096ed8402c0df16c09c9e80766846e7a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/author-handoff.json
+    sha256: a090a2663698ba823fe65e84898760804b515a0013a87bfc8a96b4fd0053fc4e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/authority-integration.json
+    sha256: 062abe1c5a389bdb174a9739b80e8764d87fc045abd0556520203bab31ff2bd8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/authority-selection-independent-review.json
+    sha256: be574ad2379663995471710fa5215fcb18991776cd94c27ce3ca233ef429e084
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/authority-selection.json
+    sha256: 87c5f833c4e4bd9a5d031e016faa25a92b040e9b15c83638d98ab53b3f7faa44
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/cohort-records.json
+    sha256: 89a5fe9775ee46fe229b3114386e17ca808af246f288371516443ebac1ca79ea
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/console-transcripts.json
+    sha256: 255d9fc165f100bdbb128e0be4b8cb030fc917b2fedbb2d0275eb6816e7a115c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/full-gate-receipts.json
+    sha256: 5568987e2e851f8b5c1d147194c4027a52413aaa0da6f298e01280192b49b2bb
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/generated-graph-kgx-audit.json
+    sha256: 7f6b38e26cde1f094bf8fcfd2f79d223ac52f200eef480d8ab84ca18f7a1b1ee
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/graph-audit-execution.json
+    sha256: 3ce87a15926bb73aa1bf03dd4826f3ed6031be8bff263a648cff2f6931464c46
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-external-scientific-preflight.json
+    sha256: c97011042f167d68294f9ff2d2387ed34b4b74ca882852089cc53e44c2e87403
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-external-scientific-preflight.md
+    sha256: 2e02a83631571055541ea2f5223baac531ac68af8d9e9fe9a6387531d3ce9971
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-integrated-replay-adoption.json
+    sha256: d399cee996736cd2196c8e07e77144a6633b31cc3c77e0c0e7b10a5038416776
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-integrated-replay-console.json
+    sha256: 65327b4752de3d6d4875bc5f7f3a69d432b1e706d3451bc99afcd688227ad1a0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-integrated-replay-execution.json
+    sha256: 517f27f66ceb2ebdfdf340e3e47158aa4e740aa643de716fac8036f09f503efc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-integrated-replay.json
+    sha256: d865a166b2db115c273e469cc9792233a4a06dc16a4702b839130a840c8b4f95
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/independent-scientific-preparation-audit.json
+    sha256: 6f033046983d763c2d6b37a47781ba6a65a2c2ce6e7d031f3f468f5a753cdc28
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/integration-receipt.json
+    sha256: 2caeaf1d77af5f21438c1785960807293047d19c8daa5b49d75f17a3e1fc0ced
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/lint-successor-console.json
+    sha256: a988d7e5b727c26ef834ddd1ab86b7d3a7e204dc74c034323003aa2f117d0c8c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/lint-successor.json
+    sha256: 2faffa8c661573a994522e7fdb6bfb36e8fb70d6eccc7c581145a0044c180b28
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/merged-baseline-equivalence.json
+    sha256: 4077e363dbce309fd06f50669034b9f9cd6504663c893e709a70e51038fd3f0d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/merged-baseline-independent-recheck.json
+    sha256: 8e97dbc96fb6b98d8fb5f39f6a734adcd0de18ecec5a21d4a040be206abf68d1
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/portable-replay-adoption.json
+    sha256: 5d3cd803301df294c16cc44417c439f6fa9207627ead8675ad09eb0da20b17a5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/portable-replay-review/author-handoff.json
+    sha256: 2a01c30e309e408a19eca0be73aeae3d2cdf99208e0da895c5e96049852de5a5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/portable-replay-review/independent-audit.json
+    sha256: 4ffe89c4781206ca1c876b26a7c5356f0cda5614d3f12a4885d343a6f406960e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/portable-replay-review/independent-audit.md
+    sha256: d7019650a9f14c3d6c84f81cf9fb57c9a9746300915316548723dcfbe5b99f90
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/portable-replay/staphyloferrin-a-replay.py
+    sha256: 0b6693338ee17724c32e2d023a671f9e51bc89b3eba91f9456545b2456e95d1e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/preintegration-dedup.json
+    sha256: 4869dd6809d5ebe11843f47404284f4e24dedad774c51e0d38a37790e73755a6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/reviewed-petrobactin-baseline-transition.json
+    sha256: bfb8457982b718d037693f84ca506da8528b0a5b4ffd092393235d723bc296a8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-authority-proposal.json
+    sha256: 31d35d9ae37afb53fdda71d2b9c9e4c31733dfd7683d2781ca411f23aab24a77
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-curation.md
+    sha256: 21f3bff779c6f5f0a20673774149d9c792768b53483082935ea4a4f7f92822c7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-dedup.json
+    sha256: 346f47eeebc08580efca2ada53c3376a17442fd4c0f17d7497ead228a8e3d849
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-identifiers.json
+    sha256: 9321d7d395a999177607faae28268c79a95d77a8b2cfde18751de687cca2de16
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-imodulondb-context.json
+    sha256: 73ccdf04fb2344073671150993f6628cc1d3c18aa63663c90780f925f0f4056c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-protein-projection.json
+    sha256: 1f94b0ccd3ae5f2ac48f3393547e4eefe27b8648c01fb745d5d6d89c50e5ceca
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-manifest.json
+    sha256: 5af14632d5511e1a10eef93b096211190ebc62ddbf42241f182992b7a43f5324
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-projection.json
+    sha256: ff9dc766c8efee82cdad18f1acfd2c996e2c31bd6db7a343df1a92d1199c4fd8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-validation.json
+    sha256: dcef6bdb82f0f6d524822b4194f30a8fd3db97a669cced47997245ae0a9e5ed8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-214/vendored-gate-receipt.json
+    sha256: 53052e8e33073d4e40ef1dbf239bd74fedc64a04be8e6a9b4f0f9ad32721745a
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: e81f95da70943090d470b1837d248fec2a592c5f4b53fc6587bc4214adbf35f3
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 5e4a0bcb5b4901b603e9e0e89ce8b2172efbd8fcbe5e68cac7283555c6a1c056
+    role: context
+scope:
+  description: One complete maintained staphyloferrin A pathway, exact native boundaries
+    and all molecular/organism/evidence assertions, with current integrated artifacts.
+  selection: Exact targetSHA256 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42;
+    full record and source-to-graph/reverse scope, unchanged from earlier independent
+    external preflight.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-7990
+  exclusions:
+  - target: Independent self-approval of authority-selection implementation
+    reason: Reviewer authored that preparation; separate root original-source extraction/review
+      supplies independent acceptance.
+  - target: Transport, ferric loading/uptake, citrate production and staphyloferrin
+      B
+    reason: Outside exact native three-step biosynthetic definition.
+  - target: Remote PR/merge/live publication and browser interaction
+    reason: Subsequent publication workflow; only local programmatic generated artifacts
+      assessed.
+targets:
+- target_id: MetaCyc:PWY-7990
+  path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+  label: staphyloferrin A biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+    role: maintained_record
+checks:
+- check_id: inspect
+  name: Canonical final inspection
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-214-independent-review/final-targets.yaml with 56
+    explicit contexts
+  summary: Actual session 62354, terminal exit 0/chunk153263;56 context inputs plus
+    the exact target captured at actual merged base before final reassessment. Earlier
+    preliminary inspection retained separately.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - target
+  - base
+- check_id: source-replay
+  name: Fresh installed original-source replay
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python research/pathway_additions/2026-10-11-next-214/portable-replay/staphyloferrin-a-replay.py
+    --repo-root /private/tmp/pathwaymech-next-214-20261011 --record data/pathways/staphyloferrin-a-biosynthesis.yaml
+    --source-manifest research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-manifest.json
+    --source-projection research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-projection.json
+    --stereo-python /private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python3
+    --output /private/tmp/pathwaymech-next-214-independent-review/installed-replay.json
+  summary: Actual session 22657, exit 0; integrated authority bytes and science unchanged
+    through final recheck. The command is replayed from original sources, not merely
+    the saved projection.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - fresh-replay
+  - source-provenance
+- check_id: final-render
+  name: Coordinated final render
+  status: passed
+  required: true
+  exit_code: 0
+  command: just render-pages
+  summary: Coordinated actual session 30540 item 2026-10-11T14:29:51.252720+00:00
+    to 2026-10-11T14:30:24.036033+00:00, exit 0; exact original log and lossless transcript
+    checked.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: final-validate
+  name: Coordinated final validate
+  status: passed
+  required: true
+  exit_code: 0
+  command: just validate
+  summary: Coordinated actual session 30540 item 2026-10-11T14:30:24.037193+00:00
+    to 2026-10-11T14:32:45.696070+00:00, exit 0; exact original log and lossless transcript
+    checked.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: final-test
+  name: Coordinated final test
+  status: passed
+  required: true
+  exit_code: 0
+  command: just test
+  summary: Coordinated actual session 30540 item 2026-10-11T14:30:24.037460+00:00
+    to 2026-10-11T14:39:30.271939+00:00, exit 0; exact original log and lossless transcript
+    checked. 1256 passed, 3 skipped, 3 warnings; no duplicate full-suite execution
+    by reviewer.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: initial-lint
+  name: Historical attempted lint
+  status: failed
+  required: false
+  exit_code: 1
+  command: just lint
+  summary: Coordinated actual session 30540 item 2026-10-11T14:30:24.037619+00:00
+    to 2026-10-11T14:30:24.297148+00:00, exit 1; exact original log and lossless transcript
+    checked. Historical failed lint is retained; four archived scratch scripts were
+    repackaged byte-identically, and the separately required current lint successor
+    passed. This is not a remaining failed current gate.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+  - packaging
+- check_id: final-identifiers
+  name: Coordinated final identifiers
+  status: passed
+  required: true
+  exit_code: 0
+  command: just check-identifiers
+  summary: Coordinated actual session 30540 item 2026-10-11T14:30:24.297804+00:00
+    to 2026-10-11T14:30:46.029329+00:00, exit 0; exact original log and lossless transcript
+    checked.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: final-kgx
+  name: Coordinated final kgx
+  status: passed
+  required: true
+  exit_code: 0
+  command: just kgx-export --output-dir /private/tmp/pathwaymech-next-214-final-kgx
+  summary: Coordinated actual session 30540 item 2026-10-11T14:30:46.029915+00:00
+    to 2026-10-11T14:31:11.674182+00:00, exit 0; exact original log and lossless transcript
+    checked.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: final-diff
+  name: Coordinated final diff
+  status: passed
+  required: true
+  exit_code: 0
+  command: git diff --check
+  summary: Coordinated actual session 30540 item 2026-10-11T14:31:11.674610+00:00
+    to 2026-10-11T14:31:12.112390+00:00, exit 0; exact original log and lossless transcript
+    checked.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: final-lint
+  name: Current lint successor
+  status: passed
+  required: true
+  exit_code: 0
+  command: just lint
+  summary: Actual 2026-10-11T14:35:51.237634+00:00 to 2026-10-11T14:35:51.519343+00:00;
+    terminal exit 0 and original log hash verified. Initial lint exit 1 and whole-batch
+    exit 1 remain preserved.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+  - packaging
+- check_id: vendored
+  name: Governed artifact comparison
+  status: passed
+  required: true
+  exit_code: 0
+  command: just vendored-check
+  summary: Actual 2026-10-11T14:30:00.692264+00:00 to 2026-10-11T14:30:02.779180+00:00;
+    terminal exit 0 and original log hash verified. All 22 pinned artifacts matched.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+- check_id: graph
+  name: Independent SVG/KGX and baseline audit
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-214-independent-review/graph-audit-final.py
+    --base c8662de7809df00a192f1840b3345ca5edc9686f --comparison-kgx-dir /private/tmp/pathwaymech-next-214-final-kgx
+    --gate-receipts /private/tmp/pathwaymech-next-214-kgx-observed-receipt.json --receipt
+    /private/tmp/pathwaymech-next-214-independent-review/graph-audit.json
+  summary: Actual session 11754 terminal exit 0/chunkd076ee; all 31 triples and 59
+    evidence blocks and relevant node types/directions/geometry verified.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - graph
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/staphyloferrin-a-biosynthesis.yaml
+  locator: Complete maintained record, all 3 reactions, 14 participants, 31 edges
+    / 59 evidence blocks and 28 references
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Exact complete target remains byte-identical to the independently inspected
+    external scientific draft.
+  snapshot_sha256: 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42
+- evidence_id: preflight
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/independent-external-scientific-preflight.json
+  locator: Full original-source and every-edge assessment; execution receipts and
+    source limitations
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Independent scientific preflight covered all 31 edges and 59 evidence blocks,
+    exact protein sequences, native/current structures and source boundaries; it was
+    preparation, not prior canonical approval.
+  snapshot_sha256: c97011042f167d68294f9ff2d2387ed34b4b74ca882852089cc53e44c2e87403
+- evidence_id: native
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-projection.json
+  locator: source_to_graph, native sides/orderings, chemical_sides, net and graph_to_source
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Original PWY7990/M00876 boundary contains racemization plus two ordered
+    citrate ligations. All 16 incidences and Rhea families support three balanced
+    reactions; native and current stereo scope remain distinct.
+  snapshot_sha256: ff9dc766c8efee82cdad18f1acfd2c996e2c31bd6db7a343df1a92d1199c4fd8
+- evidence_id: proteins
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-protein-projection.json
+  locator: Newman GenPept versions, NCTC8325 current entries, exact sequence comparisons
+    and locus assignments
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: BAF68351.1 and BAF68352.1 equal their comparison sequences; BAF68354.1
+    differs at residue 532. Genomic products and strain identities are not engineered
+    construct equivalences.
+  snapshot_sha256: 1f94b0ccd3ae5f2ac48f3393547e4eefe27b8648c01fb745d5d6d89c50e5ceca
+- evidence_id: primary-2010
+  kind: primary_source
+  reference: PMID:20147287
+  locator: Original PMC2856993 sec5/p2;sec7;sec18/p2;Figure2A-C
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Re-inspected original text identifies Newman SfaB/D recombinant preparation
+    and joint product synthesis. Re-viewed original Figure 2 supports final N2 R /
+    ornithine R / N5 S for ferric receptor-bound product, not a free intermediate
+    or ionization measurement.
+  snapshot_sha256: 277bab7964e89219a7ddadc88fa289c48583a69b1d57f189960691c8184b353e
+- evidence_id: primary-2009-cotton
+  kind: primary_source
+  reference: PMID:19138128
+  locator: Original EuropePMC core resultList.result[0].abstractText; indexed abstract
+    only
+  accessed_at: '2026-10-11T13:40:20.770301Z'
+  support: supports
+  summary: The independently inspected abstract supplies ordered delta-amine SfaD
+    and alpha-amine SfaB ligations. Full Cotton methods and exact engineered construct
+    sequences are not claimed.
+  snapshot_sha256: e5b698d300fb2e11e542599924d67fdf37a1e9e3dced460a480128bbe39b38a3
+- evidence_id: primary-2009-beasley
+  kind: primary_source
+  reference: https://onlinelibrary.wiley.com/doi/10.1111/j.1365-2958.2009.06698.x
+  locator: Original publisher Results/Table 2 and Figure 5; web-only full text inspected
+    during independent preflight
+  accessed_at: '2026-10-11T13:40:20.770301Z'
+  support: supports
+  summary: Newman locus/whole-product support and inferred SfaC assignment are retained.
+    No local full-body digest is fabricated, and no fresh network retrieval is claimed
+    in final reassessment.
+- evidence_id: source-provenance
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-source-manifest.json
+  locator: Original body URLs, acquisition timestamps, hash scopes, rejected attempts
+    and web_only
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Fifty-three original bodies are retained and rehashed; 27 references are
+    locally hash-bound and the Beasley web-only reference deliberately has no local
+    full-body hash.
+  snapshot_sha256: 5af14632d5511e1a10eef93b096211190ebc62ddbf42241f182992b7a43f5324
+- evidence_id: context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-214/staphyloferrin-a-imodulondb-context.json
+  locator: staph_precise108/component8 and staph_precise165/component55 scoped native
+    table rows
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Cross-strain computational context is kept separate from Newman catalysis
+    or regulation. Component 55 full canonical parser failure on unrelated null metadata
+    remains explicit; native-row parity is not a full adapter pass.
+  snapshot_sha256: 73ccdf04fb2344073671150993f6628cc1d3c18aa63663c90780f925f0f4056c
+- evidence_id: fresh-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/independent-integrated-replay-execution.json
+  locator: Actual session 22657 terminal exit 0/chunk921dd8; before/after hashes;
+    actual repository authority root
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Fresh installed helper replay used the actual integrated 214 snapshots
+    without a sandbox override; 53 bodies, 16 sides, 3 balances and exact 19-node
+    / 31-edge / 59-evidence export passed with all inputs unchanged.
+  snapshot_sha256: 517f27f66ceb2ebdfdf340e3e47158aa4e740aa643de716fac8036f09f503efc
+- evidence_id: portable
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/portable-replay-review/independent-audit.json
+  locator: Independent technical scope review, 11 rejected controls, collision regression
+    and full fresh replay
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: This reviewer did not implement the helper. Earlier independent technical
+    probes establish stale-target and no-overwrite behavior; no unnecessary repeat
+    of those controls is claimed.
+  snapshot_sha256: 4ffe89c4781206ca1c876b26a7c5356f0cda5614d3f12a4885d343a6f406960e
+- evidence_id: authority-independent
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-214/authority-selection-independent-review.json
+  locator: Root independent original HTML/NCBI XML and ontology extraction/rehashed
+    selection
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: This reviewer authored selection preparation and does not self-approve
+    it. Root independently re-extracted exact original identities and labels, including
+    excluding unused reference-only KEGG:M00876 manifest input.
+  snapshot_sha256: be574ad2379663995471710fa5215fcb18991776cd94c27ce3ca233ef429e084
+- evidence_id: authority-integration
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/authority-integration.json
+  locator: Actual canonical builder outputs, added terms and exact baseline preservation
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Two original inputs, 7 ontology terms and 4 source terms added; final 519
+    / 1807 / 2122 counts. Prior terms, source ownership and metadata are preserved;
+    no namespace/policy waiver.
+  snapshot_sha256: 062abe1c5a389bdb174a9739b80e8764d87fc045abd0556520203bab31ff2bd8
+- evidence_id: integration
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/integration-receipt.json
+  locator: All 7 original gate items;lint_successor;vendored; exact logs and current
+    generated hashes
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Full batch exited 1 solely retained historical archive lint failure; 1,256
+    tests passed, 3 skipped, 3 warnings. Separate lint successor passed after byte-identical
+    archive packaging. All current required gates and 22 governed artifacts passed.
+  snapshot_sha256: 2caeaf1d77af5f21438c1785960807293047d19c8daa5b49d75f17a3e1fc0ced
+- evidence_id: graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/generated-graph-kgx-audit.json
+  locator: Actual independent11754 terminal exit 0;SVG/KGX metadata/geometry and214baseline
+    preservation
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: All19nodes31edges59evidence preserved;939 prior blobs,10144 prior exported
+    edges and6739 node contexts unchanged. Programmatic inspection only, no browser
+    claim.
+  snapshot_sha256: 7f6b38e26cde1f094bf8fcfd2f79d223ac52f200eef480d8ab84ca18f7a1b1ee
+- evidence_id: packaging
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/archive-packaging-independent-audit.json
+  locator: Four source/archive equality checks and ignored+hidden+follow consumer
+    search
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Four archived .py scripts were renamed to byte-identical .py.txt; original
+    sources and historical receipts remain intact. Active portable replay has no renamed-path
+    dependency; the initial lint failure remains preserved.
+  snapshot_sha256: e7b9159b31862ada1bc16662437cb18b4eea34f5b349955d3ee28a44d8a8fb13
+- evidence_id: base
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-214/merged-baseline-independent-recheck.json
+  locator: Actual c8662de7 versus reviewed9b0a whole-tree equality;75prepared hashes
+    with archival successor map
+  accessed_at: '2026-10-11T14:45:20.453821Z'
+  support: supports
+  summary: Both Git trees equal3c7137b0fbe9b7dbb4be6625a7ee942a40f8dbf8. All75preparation
+    paths recovered; root original GitHub merge observation remains separately retained,
+    not claimed newly fetched here.
+  snapshot_sha256: 8e97dbc96fb6b98d8fb5f39f6a734adcd0de18ecec5a21d4a040be206abf68d1
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete native three-transformation pathway
+  outcome: supported
+  summary: Exact PWY7990/M00876 begins supplied L-ornithine and citrate and includes
+    racemization and both ordered ligations. Transport, iron loading, citrate production
+    and staphyloferrinB are separate boundaries, not omitted native members.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - target
+  - native
+  - preflight
+- assessment_id: chemistry
+  area: grounding
+  topic: Reaction directions, balanced sides and stereochemical specificity
+  outcome: supported
+  summary: All16 sides and3 equations balance using current Rhea/ChEBI forms. Native
+    reversible racemization is distinguished from pathway flux. Native citryl forms
+    are broader than the selected current stereo identities; no false exactMatch is
+    asserted. The final ferric-bound product supports N2R/N5S; free intermediate and
+    ionization remain explicit authority conventions.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - native
+  - primary-2010
+  - fresh-replay
+- assessment_id: proteins
+  area: scope
+  topic: Exact Newman genes versus comparison strains and constructs
+  outcome: supported
+  summary: Versioned Newman SfaC/B/D protein identities and residue532 SfaD difference
+    are correct. Full engineered sequences and oligomeric sufficiency are unresolved.
+    Joint Newman ligase synthesis plus separately ordered abstract evidence supports
+    qualified enables; SfaC is explicitly inferred.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - proteins
+  - primary-2010
+  - primary-2009-cotton
+  - primary-2009-beasley
+- assessment_id: cofactors
+  area: evidence
+  topic: Cofactor tiers and assembly limits
+  outcome: supported
+  summary: Automatic ARBA PLP evidence and curated native Mg2+ assignments retain
+    their inference and strain-transfer limits. No direct metal exclusivity, binding
+    count, native assembly or unsupported compartment is claimed.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - preflight
+  - source-provenance
+  - fresh-replay
+- assessment_id: locality
+  area: provenance
+  topic: Claim-specific native/primary attribution
+  outcome: supported
+  summary: Every edge is supported within its explicitly stated source tier and locality.
+    Exact Rhea family/side pointers, native ordering and sequence objects retain distinct
+    provenance. Cotton is abstract-only; web-only Beasley has no fabricated full-body
+    hash.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - preflight
+  - native
+  - source-provenance
+  - primary-2009-cotton
+  - primary-2009-beasley
+- assessment_id: context
+  area: scope
+  topic: Expression context remains computational and cross-strain
+  outcome: supported
+  summary: Selected iModulon native rows are computational USA300HOU/NCTC8325 context;
+    they do not demonstrate Newman pathway catalysis or regulator causation. The documented
+    full-parser failure is not hidden behind scoped row inspection.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - context
+- assessment_id: integration
+  area: schema
+  topic: Final local integration and exact archival traceability
+  outcome: supported
+  summary: All current corpus gates pass with the failed initial lint and its successful
+    successor honestly separated. Actual merged baseline, current authority hashes,19node/31edge
+    graph, complete evidence and prior corpus preservation are supported. Authority-selection
+    acceptance comes from root, not this reviewer.
+  target_ids:
+  - MetaCyc:PWY-7990
+  evidence_ids:
+  - integration
+  - graph
+  - base
+  - packaging
+  - authority-independent
+  - authority-integration
+  - portable
+findings: []
+actions: []
+limitations:
+- SfaC catalytic activity and its automatic PLP assignment remain inferred; no isolated
+  Newman racemase/cofactor experiment was inspected.
+- Newman ligase coding-region provenance is supported, but complete engineered construct
+  sequences and native biological assemblies are unresolved.
+- Cotton2009 source was inspected as an indexed abstract only. Beasley2009 original
+  publisher text was web-inspected earlier with no local original-body hash; no fresh
+  retrieval is claimed.
+- Ferric receptor-bound product structure supports final stereochemistry, not an experimental
+  free-intermediate configuration or free-ion protonation measurement. Current chemical-authority
+  conventions are explicit.
+- Native curated Mg2+ annotations do not establish unique physiological metal specificity
+  or binding stoichiometry.
+- iModulon context belongs to other strain backgrounds; one full canonical table parser
+  fails on unrelated null metadata, and bounded native-row inspection is not a successful
+  full-table replay.
+- Whole batch30540 exited 1 solely initial archived-script lint. Current lint success
+  is the separate successor after lossless packaging; historical failures remain unchanged.
+- Programmatic page/graph inspection does not establish browser rendering or interaction
+  behavior.
+- This completed canonical observation is local scientific review, not PR, merge or
+  live-publication approval.
+notes:
+- No record, source, page, authority or history edit by this review. Saver adds only
+  a new immutable review pair; no record REVIEW history will be appended after rendering.
+- Preliminary inspect was captured on the reviewed tree-equivalent head; final inspect
+  captures actual mergedbase c8662de7 and57current formal inputs. Existing source
+  inputs were rechecked rather than silently refreshed.
+- Prior external preflight and portable technical failure attempts remain preserved.
+  The source reread initially used a system interpreter without lxml, then succeeded
+  with the repository virtualenv; no product defect.
+```
