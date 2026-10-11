@@ -1,0 +1,1400 @@
+# Independent scientific review of the complete Calvin-Benson-Bassham cycle
+
+- Review: 20261011T203913Z-calvin-cycle-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T20:31:09.599648Z
+- Finished UTC: 2026-10-11T20:39:13.736884Z
+- Reviewer: Codex /root/pathway_authority_cache (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete 13-member CALVIN-PWY record is supported within its explicit native, current-annotation and experimental scopes. Full independent original-source review and verified narrow corrections are reused with exact maintained-byte inspection. External issues 413 and 414 are scientifically/technically addressed; no unresolved finding remains in this record scope. Current maintained full gates pass; neither replay nor integration checks replace scientific evidence.
+
+## Scope And Provenance
+
+Complete maintained record scientific review with original-source assessment, exact external correction reassessment and current authority/graph/gate integration checks.
+
+Selection: Exactly data/pathways/calvin-cycle.yaml / MetaCyc:CALVIN-PWY, full native 13-member pathway.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 32e97a948fc8e691692d5f105047a9f68b641a6f.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:CALVIN-PWY | data/pathways/calvin-cycle.yaml | maintained | Calvin-Benson-Bassham cycle |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical maintained inspection | passed | True | MetaCyc:CALVIN-PWY | Actual initial inspection at20:31:09Z and final expanded capture; exact input hashes rechecked. Intermediate71-input capture is preserved if later packaging-specific capture supersedes it. |
+| Render | passed | True | MetaCyc:CALVIN-PWY | Root actual child exit0, inspected exact retained log and receipt; maintained221-record corpus. |
+| Validate | passed | True | MetaCyc:CALVIN-PWY | Root actual child exit0, inspected exact retained log and receipt; maintained221-record corpus. |
+| Test | passed | True | MetaCyc:CALVIN-PWY | Root actual child exit0, inspected exact retained log and receipt; maintained221-record corpus.1256 passed, 3 skipped, 3 warnings in 426.49 seconds; no duplicate full test run by reviewer. |
+| Lint | passed | True | MetaCyc:CALVIN-PWY | Root actual child exit0, inspected exact retained log and receipt; maintained221-record corpus. |
+| Kgx | passed | True | MetaCyc:CALVIN-PWY | Root actual child exit0, inspected exact retained log and receipt; maintained221-record corpus. |
+| Whitespace | passed | True | MetaCyc:CALVIN-PWY | Root actual child exit0, inspected exact retained log and receipt; maintained221-record corpus. |
+| Governed artifacts | passed | True | MetaCyc:CALVIN-PWY | Root actual session 99154 terminal0;22 governed artifacts match pinned revision. |
+| Independent maintained byte/source/authority preservation | passed | True | MetaCyc:CALVIN-PWY | Actual bounded check afc09e exit0 verifies exact target and selected source copies, unchanged prior authority entries and generated hashes. |
+| Independent full corrected source replay | passed | True | MetaCyc:CALVIN-PWY | Actual reviewer 3280 terminal0. Complete original chemistry/identity/source/schema/KGX replay; full source execution occurs externally, on unchanged exact target/helper/runtime, not as a claimed maintained-authority test. |
+| Exact former late-manifest false-PASS regression | passed | True | MetaCyc:CALVIN-PWY | Actual reviewer 80373 terminal1 for the expected named final checkpoint error, no success output. Original false PASS is preserved. |
+| Static SVG/KGX/corpus preservation | passed | True | MetaCyc:CALVIN-PWY | Root SVG audit and independent peer integration inspection bind actual generated page, prior 220 records, 10528 prior edges and 3711 prior node contexts; no browser interaction. |
+| Final packaging-specific canonical inspection | passed | True | MetaCyc:CALVIN-PWY | Actual final 72-input inspect passes; all 70 unaffected prior captures unchanged. Omitted raw log is explicitly superseded by exact lossless envelope and correction ledger. |
+| Current staged whitespace after lossless packaging | passed | True | MetaCyc:CALVIN-PWY | Independent git diff --cached --check exit0 after envelope; original exit2 retained in correction ledger. |
+
+## Scientific And Domain Assessments
+
+### Exact native pathway and full boundary
+
+identity: supported. Targets: MetaCyc:CALVIN-PWY.
+
+CALVIN-PWY denotes the complete 13-member cycle. Both transketolase and aldolase activities and both bifunctional phosphatase transformations remain. Plant-oriented GO:0019253 is not asserted equivalent or turned into a new taxon restriction; light reactions, uptake, photorespiration and biomass are outside this source-defined boundary.
+
+### Complete directions, chemical forms and formal weighted net
+
+grounding: supported. Targets: MetaCyc:CALVIN-PWY.
+
+The prior independent original RDF/XML/SQL assessment and current exact-byte comparison retain 48 sides, 21 displayed chemical forms and 13 balanced reactions. Rhea family orientation is distinguished from represented cycle polarity. Three CO2, nine ATP and six NADPH per net glyceraldehyde 3-phosphate are formal stoichiometric weights, not measured flux.
+
+Formal weighted net: 3 CO2 + 9 ATP + 6 NADPH + 5 H2O → glyceraldehyde 3-phosphate + 9 ADP + 8 phosphate + 6 NADP + 3 H+. Reverse family orientations retained for RHEA:13679, RHEA:27628, RHEA:14731 and RHEA:10298. All 13 biological transformations remain.
+
+### Native chemical classes and displayed refinements
+
+representation: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Native ribose 5-phosphate and sedoheptulose 7-phosphate classes are broader than the displayed molecular structures. Current charged Rhea forms are explicit refinements; no whole-class exactMatch is asserted.
+
+### Taxon, accession and construct distinctions
+
+scope: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Parent PCC 6803, current Kazusa and experimental GT scopes remain separate. The native TPIASYN reciprocal link to a mouse 21-residue Q95554 fragment is rejected; Q59994 uses its own inferred activity. Native TKTASYN is not equated with P73282. Historical 388-residue phosphatase and current 345-residue protein are not made identical.
+
+### Native assemblies and experimental preparation limits
+
+quantity: supported. Targets: MetaCyc:CALVIN-PWY.
+
+The graph retains eight Rubisco small chains plus four large-chain dimers. The 3RPL engineered 344-residue core bridge is separate from full native/culture identity. Aldolase peptide and partial-purification limits, ligand-dependent phosphatase assemblies and RPE crystallographic asymmetric-unit observation remain explicit.
+
+### Edge-local source coverage
+
+evidence: supported. Targets: MetaCyc:CALVIN-PWY.
+
+All 118 edges and 216 evidence blocks retain the exact independently assessed source assertions and nearest locators. Native structured statements are not relabelled as paper quotations. Complete source-to-graph and reverse coverage includes both alternate enzymes and repeated functional transformations.
+
+### Cofactor inference and assay scope
+
+scope: supported. Targets: MetaCyc:CALVIN-PWY.
+
+HAMAP, similarity, ARBA/RuleBase and PIRSR evidence remains identified. Metal alternatives are not simultaneous obligatory occupancy. CoCl2 aldolase assays do not establish physiological zinc; magnesium/manganese/DTT assay conditions do not establish an exclusive native metal choice.
+
+### Conditional regulation and compartment claims
+
+scope: supported. Targets: MetaCyc:CALVIN-PWY.
+
+CP12 GT complementation supports conditional pathway-level genetic/physiological regulation, not purified inhibition, a counted ternary complex or Kazusa culture identity. AMP FBP-assay potency is distinguished from native bifunctional inhibition. Rubisco fractionation supports carboxysome association without placing the entire cycle there.
+
+### Primary access and expression context limits
+
+provenance: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Two original primary articles were independently inspected through full-text web renderings without local full-text digests; Gap2 and RPE primary access is abstract limited. These limits are preserved. iModulonDB inventory applicability is bounded and is not evidence of biological absence or mechanism.
+
+### Production authorities and native source versions
+
+nomenclature: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Current authority integration adds ten original source inputs, 22 source terms and 12 ontology terms under unchanged policy. All prior manifest entries, source terms, ontology terms and metadata are preserved. XML META PGDB 27.0 is distinguished from HTML Pathway Tools frontend scope; scientific Rhea 142 remains separate from pinned production Rhea 139 plus existing updates.
+
+### Historical external locator finding #413
+
+provenance: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Stable external key calvin-aldolase-primary-page-locators is addressed: the only two target changes replace supplementary p.328 by p.327 for the printed apparent-mass/peptide paragraphs on edges 085 and 086. The exact primary page observation and current maintained locators agree. This external observation is not a canonical previous_occurrence.
+
+### Historical external replay binding finding #414
+
+provenance: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Stable external key calvin-replay-final-formal-binding-window is addressed in corrected helper a59bc5fa. Independent full unchanged replay passes; the identical late-final-go.db manifest mutation now fails specifically at the final short-input checkpoint with no success receipt. Original false PASS and fixtures remain immutable. External deterministic replay does not replace scientific or maintained validation.
+
+### Immutable source/review lineage and packaging scope
+
+provenance: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Selected maintained copies match their immutable external originals; broad article extracts, full source projection and actual probe fixtures remain external. Archived helper is inert text with pinned external dependencies, not a portable production interface. Historical reversed Rubisco prose, stale 104 count versus authoritative 105 sources, self-log inventory attempt and their explicit corrections remain preserved without rewriting prior observations. Lossless JSON envelope decodes exactly to all original bytes, including whitespace-only line 101. Original failed staged check and historical acceptance map remain explicitly preserved. No scientific, runtime or gate-result change; no test rerun.
+
+### Generated graph and corpus preservation
+
+graph: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Root static graph and separate integration reviewer receipts bind the actual current page and exports: 65 SVG nodes, 118 edges, 216 evidence blocks and 67 KGX record contexts. Two nonincident taxa remain in component tables/KGX. All 220 prior records/pages, 10,528 prior edges and 3,711 prior node contexts are preserved. This is programmatic evidence, not browser interaction.
+
+### Current maintained validation and governed output
+
+schema: supported. Targets: MetaCyc:CALVIN-PWY.
+
+Actual complete maintained gates and final source capture passed. Root pipeline 4559 exited 0, with 1256 tests passed, 3 skipped and 3 warnings; closed-schema/identifier/evidence/history/current-page validation, lint, render, KGX and whitespace checks passed. Dedicated vendored check passed 22 artifacts. These are separately attributed deterministic checks, not substitutes for original-source assessment.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-target | data/pathways/calvin-cycle.yaml; Entire file; all 13 reactions, 51 participants, 118 mechanistic edges, 216 evidence blocks, 106 references and 2 taxa | supports | Entire maintained YAML read after inspection; exact byte equality with independently accepted corrected target e5b770e6. No source or mechanism claim is inferred from this equality alone. |
+| e-original-review | research/pathway_additions/2026-10-11-next-220/initial-review/review.json; assessments, findings, source_preparation, checks and preservation | supports | This reviewer previously independently inspected original native XML, Rhea RDF and chemical issuing sources, primary originals and every edge-local assertion. The complete external initial review is reused transparently, including its two supported findings. It is not a canonical predecessor. |
+| e-original-md | research/pathway_additions/2026-10-11-next-220/initial-review/review.md; Complete independent scientific assessment | supports | Preserves original source/strain/construct/cofactor/assembly and access limits, together with actual reproduced helper defect; no projection is substituted for original evidence. |
+| e-successor | research/pathway_additions/2026-10-11-next-220/successor-review/review.json; Complete corrected scientific and technical reassessment; exact current target/helper; dispositions | supports | Independent correction assessment verifies exact two-locator target delta, unchanged full biology, original preservation and specific final-checkpoint correction. No fabricated canonical lineage. |
+| e-chemistry | research/pathway_additions/2026-10-11-next-220/chemistry-projection.json; All 13 native-member/Rhea correspondences, 48 sides, 21 displayed forms and weighted net | supports | Selected facts preserve original body locators and reactive chemistry. Independently checked originals support all 13 atom/charge balances and cycle net; formal balance does not prove flux. |
+| e-proteins | research/pathway_additions/2026-10-11-next-220/protein-projection.json; All selected proteins, native component bridges and source-limited constructs | supports | Current entry identity, inference tiers, six native bridges, nested Rubisco hierarchy, historical/engineered sequence distinctions and rejected wrong TPI link remain explicit. |
+| e-source | research/pathway_additions/2026-10-11-next-220/source-projection-compact.json; All 118 graph-to-source edge entries and exact source locators | supports | Compact selected facts exactly match current graph evidence. Native assertions retain their own object and evidence tier; broad full-source prose stays external. |
+| e-coverage | research/pathway_additions/2026-10-11-next-220/coverage.json; Full native source-to-graph and graph-to-source ledgers | supports | All 13 native transformations and repeated enzyme functions remain; full branch/regeneration scope is not truncated. |
+| e-access | research/pathway_additions/2026-10-11-next-220/source-manifest.json; 105 original-body rows; primary/source access limits and runtime/source provenance | supports | Retained originals and access limitations are explicit. Two primary full-text observations are web-only; Gap2 and RPE primary scope is abstract limited. The iMod inventory limits applicability without implying biological absence. |
+| e-curation | research/pathway_additions/2026-10-11-next-220/curation.md; Complete biological and provenance decision ledger | supports | Current curation preserves class refinements, construct limits, physiological versus formal statements and corrected native Rubisco hierarchy. |
+| e-locator | research/pathway_additions/2026-10-11-next-220/initial-review/aldolase-locator-finding.json; PMID:12668779 printed p.327 Purification section and apparent-mass/N-terminal paragraphs; edges 085 and 086 evidence[2] | supports | Independent original full-paper observation showed both supporting paragraphs before the p.328 header. Current supplementary locators correctly say p.327; no local full-text digest is invented for that original. |
+| e-delta | research/pathway_additions/2026-10-11-next-220/successor-review/delta-audit.json; Complete original-to-corrected YAML and formal metadata comparison | supports | Only edges 085 and 086 evidence[2] supplementary printed-page locators change; record identity, reactions, sides, proteins, descriptions, assertions and remaining evidence remain unchanged. |
+| e-old-binding | research/pathway_additions/2026-10-11-next-220/initial-review/binding-finding.json; Actual late-final-go.db manifest mutation, old helper 16824bb and false-success receipt | supports | Original major technical finding remains immutable. The old helper accepted a manifest changed after its earlier check; this observation is distinct from supported biological content. |
+| e-positive | research/pathway_additions/2026-10-11-next-220/successor-review/positive-validation.json; Independent corrected full positive; 13/48/13 and 67 nodes/118 edges/216 evidence; final checkpoint | supports | Actual reviewer session 3280 exit0; original sources/runtime streamed and all 12 scientific controls passed. External source replay is not a maintained production-authority gate. |
+| e-late | research/pathway_additions/2026-10-11-next-220/successor-review/late-manifest-rejection.json; Same actual final-go.db phase mutation; helper a59bc5fa; error/success_exists | supports | Actual independent session 80373 exit1 specifically reports Final short-input checkpoint changed for source-manifest.json, with no success output. This tests the demonstrated window, not arbitrary malicious concurrent filesystem activity. |
+| e-replay-execution | research/pathway_additions/2026-10-11-next-220/successor-review/execution.json; Actual sessions3280/80373, exit codes, timestamps and receipt hashes | supports | Independent exact positive and defect-specific rejection observed to terminal; author additional controls are separately attributed. |
+| e-author-controls | research/pathway_additions/2026-10-11-next-220/author-correction/handoff-successor.json; Final235-artifact seal; author execution and five final-phase controls | supports | Author full positive and source/prior/runtime/concurrent-output checks inspected as author executions. Initial shadowing, existing-output refusal, strict runtime-harness expectation and self-log inventory failures remain preserved rather than recast as passes. |
+| e-authority | research/pathway_additions/2026-10-11-next-220/authorities/root-acceptance.json; Original source-specific label/version checks, complete canonical build, baseline preservation | supports | Root independently accepted unchanged canonical authority outputs. Reviewer rechecked current baseline term/metadata preservation and ten exact newly adopted original hashes without restreaming whole databases. |
+| e-authority-counts | research/pathway_additions/2026-10-11-next-220/authorities/final-output-reconciliation.json; 597→607 input sources;1846→1858 ontology;2212→2234 source terms | supports | All prior metadata and terms preserved; ten originals add22 source and 12 ontology terms. Scientific Rhea142 sources and production pinned Rhea139 plus existing updates remain separate. |
+| e-adoption | research/pathway_additions/2026-10-11-next-220/record-integration.json; selected_copies and separate maintained target adoption | supports | 35 selected-copy rows plus the separate target copy are exact; root source acceptance and original evidence exclusions remain explicit. Earlier pending status is historical. |
+| e-peer | research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.json; Complete independent integration assessment and preserved baseline contexts | supports | Separately attributed peer audit verifies current exact packaging and generated corpus preservation. It is not a substitute for this scientific source assessment or final remote-head review. |
+| e-graph | research/pathway_additions/2026-10-11-next-220/validation/graph-audit.json; Actual SVG nodes/edges/evidence/component geometry and current-page hash | supports | Root programmatic audit verifies65 displayed endpoint nodes, 118 edges and 216 evidence anchors. The two nonincident taxa remain table/KGX contexts; no browser interaction claimed. |
+| e-gates | research/pathway_additions/2026-10-11-next-220/validation/acceptance.json; All six actual gate commands, terminal pipeline 4559 exit0, test counts and standalone KGX parity | supports | Full maintained221-record gates pass:1,256 tests,3 skips,3 warnings. Validate includes closed schema, identifier/label policies, history,14,479 evidence blocks and current generated pages. Reviewer inspected actual retained logs and rehashed receipt/log copies. |
+| e-vendored | research/pathway_additions/2026-10-11-next-220/validation/vendored-check.json; Actual just vendored-check; session 99154 exit0;22 governed artifacts | supports | Dedicated actual receipt supports governed artifact match; it is not inferred from the separate six-command gate receipt. |
+| e-readme | research/pathway_additions/2026-10-11-next-220/README.md; Integration status and explicit scientific/access/replay limits | supports | Reviewer compared complete current README with retained precommit README; only integration-status paragraph changed to actual passed gate results, graph/KGX parity and subsequent review/publication state. |
+| e-history | history/records/calvin-cycle/2026-10-11T202413Z-codex-9e3ce6.yaml; Single creation history with current target digest and source scope | supports | Native history is independently owned, validated by full corpus gates and unchanged during review. This review creates no scientific status or history event. |
+| e-inspect | /private/tmp/pathwaymech-next-220-canonical-scientific-review/inspection-final-receipt.json; Actual canonical inspect command, initial 54 unchanged hashes and explicit added final inputs | supports | Final maintained input capture extends initial preassessment honestly. Later packaging-specific inspection, if supplied, supersedes this intermediate capture without erasing it. |
+| e-maintained-check | /private/tmp/pathwaymech-next-220-canonical-scientific-review/maintained-check.json; Exact maintained target, compact evidence, selected source copies, unchanged baseline authorities and graph hashes | supports | Independent bounded maintained check actualafc09e exit0. One earlier exploratory list/dict assumption failure is preserved; actual final check reads real manifest list. No full corpus rerun or whole DB rehash is claimed. |
+| e-log-envelope | research/pathway_additions/2026-10-11-next-220/validation/gates/test-log.json; text decoded as UTF-8; decoded_sha256 and decoded_bytes | supports | Complete actual pytest log decodes byte-for-byte to original eeaf6f76:1,256 passed,3 skipped,3 warnings. The whitespace-only line is preserved rather than edited. |
+| e-log-correction | research/pathway_additions/2026-10-11-next-220/validation/log-packaging-correction.json; failed_check, historical_acceptance, original, successor, verification | supports | Append-only packaging correction retains prior git diff --cached --check exit2 and original-copy observation; current envelope removes repository whitespace failure without altering original evidence. |
+| e-packaged-inspect | /private/tmp/pathwaymech-next-220-canonical-scientific-review/inspection-packaged-receipt.json; Actual final 72-input inspection, prior 70 unchanged, exact decoded 8,956 bytes and current staged whitespace check | supports | Reviewer independently verified packaging-only delta and fresh final maintained source capture; earlier71-input receipt remains historical. |
+
+## Limits And Additional Notes
+
+- Several protein functions, assemblies and cofactors remain native curated or explicitly inferred annotations rather than new experiments on the current exact Kazusa sequence.
+- Parent PCC 6803, Kazusa and GT cultures and historical/engineered constructs are not equivalent by name alone.
+- Two primary full-text observations are web-only and not locally byte-replayable; Gap2 and RPE access is abstract limited.
+- Formal chemical/net balance does not establish culture flux, exclusive physiological metals or invariant assembly.
+- The full source replay was performed externally on pinned originals/runtime; archived helper copies are not presented as portable maintained execution.
+- Static SVG/KGX checks are programmatic; no browser interaction is claimed. Full shared gate execution is explicitly attributed to root and was not duplicated here.
+- External original and successor reviews are historical evidence, not canonical saved reviews. Stable external keys calvin-aldolase-primary-page-locators (#413) and calvin-replay-final-formal-binding-window (#414) are explicitly assessed as corrected; no previous_occurrences are fabricated.
+- Current maintained review reuses exact unchanged original scientific assessment. It does not attribute root or peer integration executions to the scientific reviewer.
+- The complete source manifest and final replay contain 105 original bodies; historical correction summary 104 is a documented stale count, not missing evidence. Whole article bodies and extensive selected paragraphs remain external.
+- Thirty-five selected-copy rows are distinct from separate target adoption; broader peer packaging counts reflect its different scope.
+- Canonical validate/save and append-only review check will run after authoring this immutable observation; their terminal receipts are retained externally and are not preclaimed here.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T203913Z-calvin-cycle-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of the complete Calvin-Benson-Bassham cycle
+started_at: '2026-10-11T20:31:09.599648Z'
+finished_at: '2026-10-11T20:39:13.736884Z'
+reviewer:
+  identity: Codex /root/pathway_authority_cache
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer authored neither maintained record, source-replay correction,
+    authority selection, packaging, history nor generated outputs. Earlier independent
+    source preparation supplied bounded RPE, historical construct and Rubisco hierarchy
+    observations; this contribution is disclosed. The complete external scientific
+    review and corrected source-specific reassessment are reused with exact preserved
+    hashes, supplemented by current maintained-input inspection.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete 13-member CALVIN-PWY record is supported within its explicit
+  native, current-annotation and experimental scopes. Full independent original-source
+  review and verified narrow corrections are reused with exact maintained-byte inspection.
+  External issues 413 and 414 are scientifically/technically addressed; no unresolved
+  finding remains in this record scope. Current maintained full gates pass; neither
+  replay nor integration checks replace scientific evidence.
+source:
+  git_revision: 32e97a948fc8e691692d5f105047a9f68b641a6f
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: 20e6c584796085fa8e9813e8398f68424b2da65732bfa51148f2559ddf016881
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: a350b5fe4ddfdd91deaaa205c7842998eec8e29e0369d40543d555eb4e359095
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 8c8f9339b432a9daa19f528ed17b1d8817cb3429e9ac202a27d483d9ee866347
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 1bc902c562bf328ee7b81b862326849c6f4c9700538ff45759d3dc14ebcca0de
+    role: context
+  - path: data/pathways/calvin-cycle.yaml
+    sha256: e5b770e60e481068b847e7dfe60b3f85681e36f25952f2c4308f82b0133d05a9
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: history/records/calvin-cycle/2026-10-11T202413Z-codex-9e3ce6.yaml
+    sha256: 168d43f4eea02caa7951e963459baa663d21c914b915bf3acada8297c9f3ee9b
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 2e601e449753a0186177b512557827cbef79fab3528082b719fb5f85ced2346e
+    role: context
+  - path: pages/records/MetaCyc_CALVIN-PWY.html
+    sha256: ed50c35ce9e41db750f7a882d3245cf09676b72666e8379baeec586dafac2cf9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/README.md
+    sha256: af8612800334b5e52257dd3502e9561e809b64c2a955a48ca5a908e0cfe8e5e0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/author-correction/calvin-replay.py.txt
+    sha256: a59bc5faef537706abe4c26c8d27d713b4b8a0bb736083565e48fd84f6c0858e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/author-correction/correction.json
+    sha256: 1007f8712d282ec622d3cb95b5ae0ea9190a5990b2d676c5e4b379aaa99f3c94
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/author-correction/execution.json
+    sha256: 83448a4359f3a152b1d7d32d4201e1215f6c378fade55ac46b9fb95c673fe58a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/author-correction/handoff-successor.json
+    sha256: f44fd06316b7429b5c07127193a24b65163ea590fbb6e34de97b6ce2bff34c9c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/author-correction/packaging-seal-correction.json
+    sha256: 85065a7bb40f63145284653bee7f5f5ee1225d85fc9876abd0171318868bd866
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/author-correction/validation-final.json
+    sha256: 248420cabc5a59cfe5b2e891712b6fa7684ec86f47e8405846857bc21604b8a7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authorities/canonical-report.json
+    sha256: 39e267f8356e784ccb6d64c81c5e9e08e8b0fc8f189c5d72e5dceccd38302033
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authorities/correction-binding.json
+    sha256: a03ed7a73d1c8291138f8e0e45708318c1ca09e3541237f9ca37ce9d4bfaf44f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authorities/final-assessment.md
+    sha256: d2852d0fd48d66a01be13c0e29d0cd74aee2552b50c9c75e441326714cadbf1a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authorities/final-output-reconciliation.json
+    sha256: 86fd9e6c9aabf948b33a8da2a90fbfbc54c5e72dbe6b4f0e642ec1e0b9961b0e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authorities/root-acceptance.json
+    sha256: 62f4baedfa8eb04d16a10625e27c707a934229f2a6951d84cb6338bff199c2b2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authority-integration.json
+    sha256: 517f754b60d01314eb2ba130e8781d0ce126201f2d494bce6cccbb2bacf810e5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/authority-proposal.json
+    sha256: 340ff29e987b4836a44209ea8a92b93cac3566ee885eb1278d7c281d45f1ef2f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/chemistry-projection.json
+    sha256: f8e3cf18dc9e9edf4d8e67bfb86449e268ba6060296e2fc684accc461c55e7dd
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/coverage.json
+    sha256: 966b533dd1f767ef901c92709f300f8d5db9b77a47530d30fe9a1a85b759ab6b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/curation.md
+    sha256: 5ce70200975f2d0b856d0eba0d35731c1dc3b7a0f7cc4b7f88a4f1ccc4a08c04
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/identifiers.json
+    sha256: b959f22136941b86711962f922a35432051d86f67cde05a861ce4f64124f024e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-preservation.json
+    sha256: d586ba3963b26b255fb7f61c3ad6b07ecc898cd13c149dca3d96e956a8693d82
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/aldolase-locator-finding.json
+    sha256: af1b04f72642b16abe454d9302ba4e29640bf7892b86b73cce0c06ac550a1240
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/binding-finding.json
+    sha256: cc5d806cd23b91914e096aa4829e213e2435f1553c70b297dba312c3dd562771
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/false-success.json
+    sha256: 1ad1785a0a24f6e65802e0903dd116e2454630ee85e5182ca7f34431a5cac43a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/handoff.json
+    sha256: 7b27d78307efd1f9520e4110bbe0c369e600d4eec6712d3771ce285a84b8dd22
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/late-manifest-reproduction.json
+    sha256: 0bd01df39170d619d0ef39bcb20410877a0c709b3ec81afdfed3dce1175a451f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/review.json
+    sha256: a3cf907831459796777915264d81b020a1ae0255cfbebb83f5f4c9104a6eafa3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/initial-review/review.md
+    sha256: 0ae32d59768c5835dad90d7af87ea070b4cdaf5a8226ec130c69ebc6808fd6c6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/integration-review/README-at-precommit.md.txt
+    sha256: c643013b18a635ef063ea31c4f545b683317446d2b6b6b0ee11c12147437bd52
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/integration-review/integration-check-successor.json
+    sha256: c1b7342c6a4747038e936c97abda04ea1aaa9a15ca6614f8a1e59953582724b7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/integration-review/node-category-check.json
+    sha256: fd0acb577ddca7c645ac73dd833d0dc4651bc1c1d10eb706a35494dbe92d62c2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.json
+    sha256: 950f926e212d045f3e63bed52b845f3950c8c9e9c062908560787120a9e6df77
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.md
+    sha256: a45df7ce2bec34f9c05108e5f430f8f8b6b9a16219386e8b705c35532a95dc2c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/integration-review/review-harness-corrections.json
+    sha256: e275a19e783f9799e8a2b4e288f12183cb6593ff52bce5fe62fb6177954fd246
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/protein-projection.json
+    sha256: fb41e0fc248bba536b2a64c9fea5609b6af17ad63d9e19439d45e0bbb17c3952
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/record-integration.json
+    sha256: eb1574d87aea2e4041699105a6d30252a95d9bc04be92cae33e83816422c77aa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/source-manifest.json
+    sha256: 42d3e0df6e43baed8fe280c3c77606875b5d5bcc557b3f55e1a716b629ff58e9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/source-projection-compact.json
+    sha256: 0cf95819f56df325b701c627fe34202163591ce64865eaf0f4b68bd04a7221cf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/delta-audit.json
+    sha256: 082504fd6713febe5deb4c6136c35f5ae721bb03364af9316d9b17b91d0c0304
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/execution.json
+    sha256: 6b15cf0445d927061b3f5f7c6b59920afe24a8b37c3a4e2395f55464802edadb
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/handoff.json
+    sha256: 5759b78307d4b9b313005b0f8d948416df0cd084cbf5c08b966eced7a7e2f64d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/late-manifest-rejection.json
+    sha256: 33b7de63b415b10b115409e18ce2fd4f36e61f576ac6ca722d2f9250e2c91f64
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/positive-validation.json
+    sha256: 5e846527a0e0e679fa3995e5a80741fd300ce8218156eab68b882f4fd293e3b7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/review.json
+    sha256: 61468ebd2c3bcaa3961427f4d89be808aa9060c75073e6d23f3994ca6b757a24
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/successor-review/review.md
+    sha256: 972637bc9ab58f9069b995d1e4d03adb2544abd9dc70dec4eb61d508fc69f440
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/acceptance.json
+    sha256: f29a71940f7c08c5bdb7553c88bb24ee4ddeb48ac52895b490c5cca315d4a31b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/execution.json
+    sha256: f8c16d1f8c681b3b114faa50435b3db1cdc42ee3f45716f9dd363de6c3188856
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/kgx-receipt.json
+    sha256: 928fb1e823e9578963b7378d28dcc343b6c24016e914308474ae0900fe588455
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/kgx.log
+    sha256: 8768fff7e0844146f9874e9f25797b21cacfb06256320f116711056f9edf87b4
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/lint-receipt.json
+    sha256: 8f8ddd5b2037d96a6bc1c7c0ca8b5bf25fbec11cf8356f447bdf9e5e563c0be2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/lint.log
+    sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/render-receipt.json
+    sha256: 079735b87f982cf18c0a114f609080613eb2599f0fc5e04fa3b22273d08a50a5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/render.log
+    sha256: c5d31694611cceb686fa67974c6a579608632e03026188617d1e97dbeec1de76
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/test-log.json
+    sha256: e32c0ea8622f07a68c4814e7776b57616ec565418a36b4c402a2505b0a6e9bc7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/test-receipt.json
+    sha256: a6e2375fea63cbcc927a537130e3f161f07dc909df1bceed9c4272413642d98e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/validate-receipt.json
+    sha256: cd280b67664480246d09b803c708580ea8ffb3aa0feec1d8cb2bc458d3e66b75
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/validate.log
+    sha256: 47d9d1a1f4fc9ca3ab7f11d19d53a462f4650a3f50da8b42447c6bf4c59dec37
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/whitespace-receipt.json
+    sha256: b3e38d86761b037ee921cdf5a080f407ee3223f346a8c5cfec4c014ebfb169c3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/gates/whitespace.log
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/graph-audit.json
+    sha256: 3c4d3935872ef5197ee508da38d30a9eeea8155ff8ba4e01d22db15f0e15f7fa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/log-packaging-correction.json
+    sha256: e2c555de2ff97955923cf49781e83349b0bf75b0d714b7eb5d29eb93b0788773
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/run-gates.py.txt
+    sha256: 6f07470bcddf13a63d971828d63795605a589f11df12be5d9b1e05eaa5ae7293
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-220/validation/vendored-check.json
+    sha256: 5acc325cf8dd80321cdee5cda32b152f1d932d7546b044da0ce38046263fc26e
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: e81f95da70943090d470b1837d248fec2a592c5f4b53fc6587bc4214adbf35f3
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 5e4a0bcb5b4901b603e9e0e89ce8b2172efbd8fcbe5e68cac7283555c6a1c056
+    role: context
+scope:
+  description: Complete maintained record scientific review with original-source assessment,
+    exact external correction reassessment and current authority/graph/gate integration
+    checks.
+  selection: Exactly data/pathways/calvin-cycle.yaml / MetaCyc:CALVIN-PWY, full native
+    13-member pathway.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:CALVIN-PWY
+  exclusions:
+  - target: Remaining 220 maintained pathways
+    reason: Only preservation and shared full-corpus validation assessed; no new whole
+      scientific review of those records.
+  - target: Remote PR/deployment and general replay concurrency security
+    reason: Not yet published; no claim of remote verification or protection against
+      arbitrary malicious filesystem mutation.
+targets:
+- target_id: MetaCyc:CALVIN-PWY
+  path: data/pathways/calvin-cycle.yaml
+  label: Calvin-Benson-Bassham cycle
+  kind: maintained
+  record_class: PathwayRecord
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/calvin-cycle.yaml
+    role: maintained scientific record
+checks:
+- check_id: c-inspect
+  name: Canonical maintained inspection
+  status: passed
+  required: true
+  summary: Actual initial inspection at20:31:09Z and final expanded capture; exact
+    input hashes rechecked. Intermediate71-input capture is preserved if later packaging-specific
+    capture supersedes it.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-inspect
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/record_review.py
+    inspect --targets /private/tmp/pathwaymech-next-220-canonical-scientific-review/targets.yaml
+    --input conf/identifier_policy.yaml --input conf/identifier_sources.json --input
+    data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/record-review-profile.md --input history/records/calvin-cycle/2026-10-11T202413Z-codex-9e3ce6.yaml
+    --input pages/downloads/manifest.json --input pages/records/MetaCyc_CALVIN-PWY.html
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/calvin-replay.py.txt
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/correction.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/execution.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/handoff-successor.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/packaging-seal-correction.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/validation-final.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/canonical-report.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/correction-binding.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/final-assessment.md
+    --input research/pathway_additions/2026-10-11-next-220/authorities/final-output-reconciliation.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/root-acceptance.json
+    --input research/pathway_additions/2026-10-11-next-220/authority-integration.json
+    --input research/pathway_additions/2026-10-11-next-220/authority-proposal.json
+    --input research/pathway_additions/2026-10-11-next-220/chemistry-projection.json
+    --input research/pathway_additions/2026-10-11-next-220/coverage.json --input research/pathway_additions/2026-10-11-next-220/curation.md
+    --input research/pathway_additions/2026-10-11-next-220/identifiers.json --input
+    research/pathway_additions/2026-10-11-next-220/initial-preservation.json --input
+    research/pathway_additions/2026-10-11-next-220/initial-review/aldolase-locator-finding.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/binding-finding.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/false-success.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/handoff.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/late-manifest-reproduction.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/review.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/review.md
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/integration-check-successor.json
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/node-category-check.json
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.json
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.md
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/review-harness-corrections.json
+    --input research/pathway_additions/2026-10-11-next-220/protein-projection.json
+    --input research/pathway_additions/2026-10-11-next-220/record-integration.json
+    --input research/pathway_additions/2026-10-11-next-220/source-manifest.json --input
+    research/pathway_additions/2026-10-11-next-220/source-projection-compact.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/delta-audit.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/execution.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/handoff.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/late-manifest-rejection.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/positive-validation.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/review.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/review.md
+    --input research/pathway_additions/2026-10-11-next-220/validation/graph-audit.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/vendored-check.json
+    --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+    --input research/pathway_additions/2026-10-11-next-220/README.md --input research/pathway_additions/2026-10-11-next-220/integration-review/README-at-precommit.md.txt
+    --input research/pathway_additions/2026-10-11-next-220/validation/acceptance.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/run-gates.py.txt
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/execution.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/kgx-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/kgx.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/lint-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/lint.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/render-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/render.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/test-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/test.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/validate-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/validate.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/whitespace-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/whitespace.log
+  exit_code: 0
+- check_id: c-render
+  name: Render
+  status: passed
+  required: true
+  summary: Root actual child exit0, inspected exact retained log and receipt; maintained221-record
+    corpus.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  command: just render-pages
+  exit_code: 0
+- check_id: c-validate
+  name: Validate
+  status: passed
+  required: true
+  summary: Root actual child exit0, inspected exact retained log and receipt; maintained221-record
+    corpus.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  command: just validate
+  exit_code: 0
+- check_id: c-test
+  name: Test
+  status: passed
+  required: true
+  summary: Root actual child exit0, inspected exact retained log and receipt; maintained221-record
+    corpus.1256 passed, 3 skipped, 3 warnings in 426.49 seconds; no duplicate full
+    test run by reviewer.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  command: just test
+  exit_code: 0
+- check_id: c-lint
+  name: Lint
+  status: passed
+  required: true
+  summary: Root actual child exit0, inspected exact retained log and receipt; maintained221-record
+    corpus.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  command: just lint
+  exit_code: 0
+- check_id: c-kgx
+  name: Kgx
+  status: passed
+  required: true
+  summary: Root actual child exit0, inspected exact retained log and receipt; maintained221-record
+    corpus.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  command: just kgx-export --output-dir /private/tmp/pathwaymech-calvin-integration-20261011/gates/kgx
+  exit_code: 0
+- check_id: c-whitespace
+  name: Whitespace
+  status: passed
+  required: true
+  summary: Root actual child exit0, inspected exact retained log and receipt; maintained221-record
+    corpus.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  command: git diff --check
+  exit_code: 0
+- check_id: c-vendored
+  name: Governed artifacts
+  status: passed
+  required: true
+  summary: Root actual session 99154 terminal0;22 governed artifacts match pinned
+    revision.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-vendored
+  command: just vendored-check
+  exit_code: 0
+- check_id: c-maintained
+  name: Independent maintained byte/source/authority preservation
+  status: passed
+  required: true
+  summary: Actual bounded check afc09e exit0 verifies exact target and selected source
+    copies, unchanged prior authority entries and generated hashes.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-maintained-check
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-220-canonical-scientific-review/check-maintained.py
+  exit_code: 0
+- check_id: c-external-positive
+  name: Independent full corrected source replay
+  status: passed
+  required: true
+  summary: Actual reviewer 3280 terminal0. Complete original chemistry/identity/source/schema/KGX
+    replay; full source execution occurs externally, on unchanged exact target/helper/runtime,
+    not as a claimed maintained-authority test.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-positive
+  - e-replay-execution
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-correction/run-binding-probe.py
+    positive
+  exit_code: 0
+- check_id: c-external-late
+  name: Exact former late-manifest false-PASS regression
+  status: passed
+  required: true
+  summary: Actual reviewer 80373 terminal1 for the expected named final checkpoint
+    error, no success output. Original false PASS is preserved.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-late
+  - e-replay-execution
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-correction/run-binding-probe.py
+    late_manifest
+  exit_code: 1
+  expected_exit_code: 1
+- check_id: c-static
+  name: Static SVG/KGX/corpus preservation
+  status: passed
+  required: true
+  summary: Root SVG audit and independent peer integration inspection bind actual
+    generated page, prior 220 records, 10528 prior edges and 3711 prior node contexts;
+    no browser interaction.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-graph
+  - e-peer
+- check_id: c-packaged-inspect
+  name: Final packaging-specific canonical inspection
+  status: passed
+  required: true
+  summary: Actual final 72-input inspect passes; all 70 unaffected prior captures
+    unchanged. Omitted raw log is explicitly superseded by exact lossless envelope
+    and correction ledger.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/record_review.py
+    inspect --targets /private/tmp/pathwaymech-next-220-canonical-scientific-review/targets.yaml
+    --input conf/identifier_policy.yaml --input conf/identifier_sources.json --input
+    data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/record-review-profile.md --input history/records/calvin-cycle/2026-10-11T202413Z-codex-9e3ce6.yaml
+    --input pages/downloads/manifest.json --input pages/records/MetaCyc_CALVIN-PWY.html
+    --input research/pathway_additions/2026-10-11-next-220/README.md --input research/pathway_additions/2026-10-11-next-220/author-correction/calvin-replay.py.txt
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/correction.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/execution.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/handoff-successor.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/packaging-seal-correction.json
+    --input research/pathway_additions/2026-10-11-next-220/author-correction/validation-final.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/canonical-report.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/correction-binding.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/final-assessment.md
+    --input research/pathway_additions/2026-10-11-next-220/authorities/final-output-reconciliation.json
+    --input research/pathway_additions/2026-10-11-next-220/authorities/root-acceptance.json
+    --input research/pathway_additions/2026-10-11-next-220/authority-integration.json
+    --input research/pathway_additions/2026-10-11-next-220/authority-proposal.json
+    --input research/pathway_additions/2026-10-11-next-220/chemistry-projection.json
+    --input research/pathway_additions/2026-10-11-next-220/coverage.json --input research/pathway_additions/2026-10-11-next-220/curation.md
+    --input research/pathway_additions/2026-10-11-next-220/identifiers.json --input
+    research/pathway_additions/2026-10-11-next-220/initial-preservation.json --input
+    research/pathway_additions/2026-10-11-next-220/initial-review/aldolase-locator-finding.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/binding-finding.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/false-success.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/handoff.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/late-manifest-reproduction.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/review.json
+    --input research/pathway_additions/2026-10-11-next-220/initial-review/review.md
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/README-at-precommit.md.txt
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/integration-check-successor.json
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/node-category-check.json
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.json
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.md
+    --input research/pathway_additions/2026-10-11-next-220/integration-review/review-harness-corrections.json
+    --input research/pathway_additions/2026-10-11-next-220/protein-projection.json
+    --input research/pathway_additions/2026-10-11-next-220/record-integration.json
+    --input research/pathway_additions/2026-10-11-next-220/source-manifest.json --input
+    research/pathway_additions/2026-10-11-next-220/source-projection-compact.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/delta-audit.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/execution.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/handoff.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/late-manifest-rejection.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/positive-validation.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/review.json
+    --input research/pathway_additions/2026-10-11-next-220/successor-review/review.md
+    --input research/pathway_additions/2026-10-11-next-220/validation/acceptance.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/execution.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/kgx-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/kgx.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/lint-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/lint.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/render-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/render.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/test-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/validate-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/validate.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/whitespace-receipt.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/whitespace.log
+    --input research/pathway_additions/2026-10-11-next-220/validation/graph-audit.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/run-gates.py.txt
+    --input research/pathway_additions/2026-10-11-next-220/validation/vendored-check.json
+    --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+    --input research/pathway_additions/2026-10-11-next-220/validation/log-packaging-correction.json
+    --input research/pathway_additions/2026-10-11-next-220/validation/gates/test-log.json
+  exit_code: 0
+  evidence_ids:
+  - e-packaged-inspect
+  - e-log-correction
+- check_id: c-staged-whitespace
+  name: Current staged whitespace after lossless packaging
+  status: passed
+  required: true
+  summary: Independent git diff --cached --check exit0 after envelope; original exit2
+    retained in correction ledger.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  command: git diff --cached --check
+  exit_code: 0
+  evidence_ids:
+  - e-packaged-inspect
+  - e-log-correction
+evidence:
+- evidence_id: e-target
+  kind: record_content
+  reference: data/pathways/calvin-cycle.yaml
+  locator: Entire file; all 13 reactions, 51 participants, 118 mechanistic edges,
+    216 evidence blocks, 106 references and 2 taxa
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Entire maintained YAML read after inspection; exact byte equality with
+    independently accepted corrected target e5b770e6. No source or mechanism claim
+    is inferred from this equality alone.
+  snapshot_sha256: e5b770e60e481068b847e7dfe60b3f85681e36f25952f2c4308f82b0133d05a9
+- evidence_id: e-original-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-220/initial-review/review.json
+  locator: assessments, findings, source_preparation, checks and preservation
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: This reviewer previously independently inspected original native XML, Rhea
+    RDF and chemical issuing sources, primary originals and every edge-local assertion.
+    The complete external initial review is reused transparently, including its two
+    supported findings. It is not a canonical predecessor.
+  snapshot_sha256: a3cf907831459796777915264d81b020a1ae0255cfbebb83f5f4c9104a6eafa3
+- evidence_id: e-original-md
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-220/initial-review/review.md
+  locator: Complete independent scientific assessment
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Preserves original source/strain/construct/cofactor/assembly and access
+    limits, together with actual reproduced helper defect; no projection is substituted
+    for original evidence.
+  snapshot_sha256: 0ae32d59768c5835dad90d7af87ea070b4cdaf5a8226ec130c69ebc6808fd6c6
+- evidence_id: e-successor
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-220/successor-review/review.json
+  locator: Complete corrected scientific and technical reassessment; exact current
+    target/helper; dispositions
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Independent correction assessment verifies exact two-locator target delta,
+    unchanged full biology, original preservation and specific final-checkpoint correction.
+    No fabricated canonical lineage.
+  snapshot_sha256: 61468ebd2c3bcaa3961427f4d89be808aa9060c75073e6d23f3994ca6b757a24
+- evidence_id: e-chemistry
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-220/chemistry-projection.json
+  locator: All 13 native-member/Rhea correspondences, 48 sides, 21 displayed forms
+    and weighted net
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Selected facts preserve original body locators and reactive chemistry.
+    Independently checked originals support all 13 atom/charge balances and cycle
+    net; formal balance does not prove flux.
+  snapshot_sha256: f8e3cf18dc9e9edf4d8e67bfb86449e268ba6060296e2fc684accc461c55e7dd
+- evidence_id: e-proteins
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-220/protein-projection.json
+  locator: All selected proteins, native component bridges and source-limited constructs
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Current entry identity, inference tiers, six native bridges, nested Rubisco
+    hierarchy, historical/engineered sequence distinctions and rejected wrong TPI
+    link remain explicit.
+  snapshot_sha256: fb41e0fc248bba536b2a64c9fea5609b6af17ad63d9e19439d45e0bbb17c3952
+- evidence_id: e-source
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-220/source-projection-compact.json
+  locator: All 118 graph-to-source edge entries and exact source locators
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Compact selected facts exactly match current graph evidence. Native assertions
+    retain their own object and evidence tier; broad full-source prose stays external.
+  snapshot_sha256: 0cf95819f56df325b701c627fe34202163591ce64865eaf0f4b68bd04a7221cf
+- evidence_id: e-coverage
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-220/coverage.json
+  locator: Full native source-to-graph and graph-to-source ledgers
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: All 13 native transformations and repeated enzyme functions remain; full
+    branch/regeneration scope is not truncated.
+  snapshot_sha256: 966b533dd1f767ef901c92709f300f8d5db9b77a47530d30fe9a1a85b759ab6b
+- evidence_id: e-access
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/source-manifest.json
+  locator: 105 original-body rows; primary/source access limits and runtime/source
+    provenance
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Retained originals and access limitations are explicit. Two primary full-text
+    observations are web-only; Gap2 and RPE primary scope is abstract limited. The
+    iMod inventory limits applicability without implying biological absence.
+  snapshot_sha256: 42d3e0df6e43baed8fe280c3c77606875b5d5bcc557b3f55e1a716b629ff58e9
+- evidence_id: e-curation
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-220/curation.md
+  locator: Complete biological and provenance decision ledger
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Current curation preserves class refinements, construct limits, physiological
+    versus formal statements and corrected native Rubisco hierarchy.
+  snapshot_sha256: 5ce70200975f2d0b856d0eba0d35731c1dc3b7a0f7cc4b7f88a4f1ccc4a08c04
+- evidence_id: e-locator
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-220/initial-review/aldolase-locator-finding.json
+  locator: PMID:12668779 printed p.327 Purification section and apparent-mass/N-terminal
+    paragraphs; edges 085 and 086 evidence[2]
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Independent original full-paper observation showed both supporting paragraphs
+    before the p.328 header. Current supplementary locators correctly say p.327; no
+    local full-text digest is invented for that original.
+  snapshot_sha256: af1b04f72642b16abe454d9302ba4e29640bf7892b86b73cce0c06ac550a1240
+- evidence_id: e-delta
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/successor-review/delta-audit.json
+  locator: Complete original-to-corrected YAML and formal metadata comparison
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Only edges 085 and 086 evidence[2] supplementary printed-page locators
+    change; record identity, reactions, sides, proteins, descriptions, assertions
+    and remaining evidence remain unchanged.
+  snapshot_sha256: 082504fd6713febe5deb4c6136c35f5ae721bb03364af9316d9b17b91d0c0304
+- evidence_id: e-old-binding
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-220/initial-review/binding-finding.json
+  locator: Actual late-final-go.db manifest mutation, old helper 16824bb and false-success
+    receipt
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Original major technical finding remains immutable. The old helper accepted
+    a manifest changed after its earlier check; this observation is distinct from
+    supported biological content.
+  snapshot_sha256: cc5d806cd23b91914e096aa4829e213e2435f1553c70b297dba312c3dd562771
+- evidence_id: e-positive
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/successor-review/positive-validation.json
+  locator: Independent corrected full positive; 13/48/13 and 67 nodes/118 edges/216
+    evidence; final checkpoint
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Actual reviewer session 3280 exit0; original sources/runtime streamed and
+    all 12 scientific controls passed. External source replay is not a maintained
+    production-authority gate.
+  snapshot_sha256: 5e846527a0e0e679fa3995e5a80741fd300ce8218156eab68b882f4fd293e3b7
+- evidence_id: e-late
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/successor-review/late-manifest-rejection.json
+  locator: Same actual final-go.db phase mutation; helper a59bc5fa; error/success_exists
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Actual independent session 80373 exit1 specifically reports Final short-input
+    checkpoint changed for source-manifest.json, with no success output. This tests
+    the demonstrated window, not arbitrary malicious concurrent filesystem activity.
+  snapshot_sha256: 33b7de63b415b10b115409e18ce2fd4f36e61f576ac6ca722d2f9250e2c91f64
+- evidence_id: e-replay-execution
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/successor-review/execution.json
+  locator: Actual sessions3280/80373, exit codes, timestamps and receipt hashes
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Independent exact positive and defect-specific rejection observed to terminal;
+    author additional controls are separately attributed.
+  snapshot_sha256: 6b15cf0445d927061b3f5f7c6b59920afe24a8b37c3a4e2395f55464802edadb
+- evidence_id: e-author-controls
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/author-correction/handoff-successor.json
+  locator: Final235-artifact seal; author execution and five final-phase controls
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Author full positive and source/prior/runtime/concurrent-output checks
+    inspected as author executions. Initial shadowing, existing-output refusal, strict
+    runtime-harness expectation and self-log inventory failures remain preserved rather
+    than recast as passes.
+  snapshot_sha256: f44fd06316b7429b5c07127193a24b65163ea590fbb6e34de97b6ce2bff34c9c
+- evidence_id: e-authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-220/authorities/root-acceptance.json
+  locator: Original source-specific label/version checks, complete canonical build,
+    baseline preservation
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Root independently accepted unchanged canonical authority outputs. Reviewer
+    rechecked current baseline term/metadata preservation and ten exact newly adopted
+    original hashes without restreaming whole databases.
+  snapshot_sha256: 62f4baedfa8eb04d16a10625e27c707a934229f2a6951d84cb6338bff199c2b2
+- evidence_id: e-authority-counts
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-220/authorities/final-output-reconciliation.json
+  locator: 597→607 input sources;1846→1858 ontology;2212→2234 source terms
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: All prior metadata and terms preserved; ten originals add22 source and
+    12 ontology terms. Scientific Rhea142 sources and production pinned Rhea139 plus
+    existing updates remain separate.
+  snapshot_sha256: 86fd9e6c9aabf948b33a8da2a90fbfbc54c5e72dbe6b4f0e642ec1e0b9961b0e
+- evidence_id: e-adoption
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/record-integration.json
+  locator: selected_copies and separate maintained target adoption
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: 35 selected-copy rows plus the separate target copy are exact; root source
+    acceptance and original evidence exclusions remain explicit. Earlier pending status
+    is historical.
+  snapshot_sha256: eb1574d87aea2e4041699105a6d30252a95d9bc04be92cae33e83816422c77aa
+- evidence_id: e-peer
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-11-next-220/integration-review/precommit-review.json
+  locator: Complete independent integration assessment and preserved baseline contexts
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Separately attributed peer audit verifies current exact packaging and generated
+    corpus preservation. It is not a substitute for this scientific source assessment
+    or final remote-head review.
+  snapshot_sha256: 950f926e212d045f3e63bed52b845f3950c8c9e9c062908560787120a9e6df77
+- evidence_id: e-graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/validation/graph-audit.json
+  locator: Actual SVG nodes/edges/evidence/component geometry and current-page hash
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Root programmatic audit verifies65 displayed endpoint nodes, 118 edges
+    and 216 evidence anchors. The two nonincident taxa remain table/KGX contexts;
+    no browser interaction claimed.
+  snapshot_sha256: 3c4d3935872ef5197ee508da38d30a9eeea8155ff8ba4e01d22db15f0e15f7fa
+- evidence_id: e-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/validation/acceptance.json
+  locator: All six actual gate commands, terminal pipeline 4559 exit0, test counts
+    and standalone KGX parity
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Full maintained221-record gates pass:1,256 tests,3 skips,3 warnings. Validate
+    includes closed schema, identifier/label policies, history,14,479 evidence blocks
+    and current generated pages. Reviewer inspected actual retained logs and rehashed
+    receipt/log copies.
+  snapshot_sha256: f29a71940f7c08c5bdb7553c88bb24ee4ddeb48ac52895b490c5cca315d4a31b
+- evidence_id: e-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/validation/vendored-check.json
+  locator: Actual just vendored-check; session 99154 exit0;22 governed artifacts
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Dedicated actual receipt supports governed artifact match; it is not inferred
+    from the separate six-command gate receipt.
+  snapshot_sha256: 5acc325cf8dd80321cdee5cda32b152f1d932d7546b044da0ce38046263fc26e
+- evidence_id: e-readme
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-220/README.md
+  locator: Integration status and explicit scientific/access/replay limits
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Reviewer compared complete current README with retained precommit README;
+    only integration-status paragraph changed to actual passed gate results, graph/KGX
+    parity and subsequent review/publication state.
+  snapshot_sha256: af8612800334b5e52257dd3502e9561e809b64c2a955a48ca5a908e0cfe8e5e0
+- evidence_id: e-history
+  kind: record_content
+  reference: history/records/calvin-cycle/2026-10-11T202413Z-codex-9e3ce6.yaml
+  locator: Single creation history with current target digest and source scope
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Native history is independently owned, validated by full corpus gates and
+    unchanged during review. This review creates no scientific status or history event.
+  snapshot_sha256: 168d43f4eea02caa7951e963459baa663d21c914b915bf3acada8297c9f3ee9b
+- evidence_id: e-inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-220-canonical-scientific-review/inspection-final-receipt.json
+  locator: Actual canonical inspect command, initial 54 unchanged hashes and explicit
+    added final inputs
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Final maintained input capture extends initial preassessment honestly.
+    Later packaging-specific inspection, if supplied, supersedes this intermediate
+    capture without erasing it.
+  snapshot_sha256: 8da7d083b85463b7d3488defcfd6566b3d0734c3c6a966ffff1d1fc8f0b476fb
+- evidence_id: e-maintained-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-220-canonical-scientific-review/maintained-check.json
+  locator: Exact maintained target, compact evidence, selected source copies, unchanged
+    baseline authorities and graph hashes
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Independent bounded maintained check actualafc09e exit0. One earlier exploratory
+    list/dict assumption failure is preserved; actual final check reads real manifest
+    list. No full corpus rerun or whole DB rehash is claimed.
+  snapshot_sha256: 45568736cda2de553038f8dbc83cadf7ea973a58494138c119555a4fb2308a64
+- evidence_id: e-log-envelope
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/validation/gates/test-log.json
+  locator: text decoded as UTF-8; decoded_sha256 and decoded_bytes
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Complete actual pytest log decodes byte-for-byte to original eeaf6f76:1,256
+    passed,3 skipped,3 warnings. The whitespace-only line is preserved rather than
+    edited.
+  snapshot_sha256: e32c0ea8622f07a68c4814e7776b57616ec565418a36b4c402a2505b0a6e9bc7
+- evidence_id: e-log-correction
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-220/validation/log-packaging-correction.json
+  locator: failed_check, historical_acceptance, original, successor, verification
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Append-only packaging correction retains prior git diff --cached --check
+    exit2 and original-copy observation; current envelope removes repository whitespace
+    failure without altering original evidence.
+  snapshot_sha256: e2c555de2ff97955923cf49781e83349b0bf75b0d714b7eb5d29eb93b0788773
+- evidence_id: e-packaged-inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-220-canonical-scientific-review/inspection-packaged-receipt.json
+  locator: Actual final 72-input inspection, prior 70 unchanged, exact decoded 8,956
+    bytes and current staged whitespace check
+  accessed_at: '2026-10-11T20:38:49.469722Z'
+  support: supports
+  summary: Reviewer independently verified packaging-only delta and fresh final maintained
+    source capture; earlier71-input receipt remains historical.
+  snapshot_sha256: fd1e64cc490d3fe135eb6f29144de3ff2afe5f0ea0f277eb8e430d7d89b57d59
+assessments:
+- assessment_id: a-identity
+  area: identity
+  topic: Exact native pathway and full boundary
+  outcome: supported
+  summary: CALVIN-PWY denotes the complete 13-member cycle. Both transketolase and
+    aldolase activities and both bifunctional phosphatase transformations remain.
+    Plant-oriented GO:0019253 is not asserted equivalent or turned into a new taxon
+    restriction; light reactions, uptake, photorespiration and biomass are outside
+    this source-defined boundary.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-target
+  - e-original-review
+  - e-coverage
+- assessment_id: a-chemistry
+  area: grounding
+  topic: Complete directions, chemical forms and formal weighted net
+  outcome: supported
+  summary: The prior independent original RDF/XML/SQL assessment and current exact-byte
+    comparison retain 48 sides, 21 displayed chemical forms and 13 balanced reactions.
+    Rhea family orientation is distinguished from represented cycle polarity. Three
+    CO2, nine ATP and six NADPH per net glyceraldehyde 3-phosphate are formal stoichiometric
+    weights, not measured flux.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-chemistry
+  - e-positive
+  details: 'Formal weighted net: 3 CO2 + 9 ATP + 6 NADPH + 5 H2O → glyceraldehyde
+    3-phosphate + 9 ADP + 8 phosphate + 6 NADP + 3 H+. Reverse family orientations
+    retained for RHEA:13679, RHEA:27628, RHEA:14731 and RHEA:10298. All 13 biological
+    transformations remain.'
+- assessment_id: a-classes
+  area: representation
+  topic: Native chemical classes and displayed refinements
+  outcome: supported
+  summary: Native ribose 5-phosphate and sedoheptulose 7-phosphate classes are broader
+    than the displayed molecular structures. Current charged Rhea forms are explicit
+    refinements; no whole-class exactMatch is asserted.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-source
+  - e-chemistry
+  - e-curation
+- assessment_id: a-proteins
+  area: scope
+  topic: Taxon, accession and construct distinctions
+  outcome: supported
+  summary: Parent PCC 6803, current Kazusa and experimental GT scopes remain separate.
+    The native TPIASYN reciprocal link to a mouse 21-residue Q95554 fragment is rejected;
+    Q59994 uses its own inferred activity. Native TKTASYN is not equated with P73282.
+    Historical 388-residue phosphatase and current 345-residue protein are not made
+    identical.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-proteins
+  - e-curation
+  dimensions:
+  - name: taxon-scope
+    value: PCC 6803 parent NCBITaxon:1148; Kazusa NCBITaxon:1111708; GT experimental
+      culture
+    definition: Related source contexts retained without full strain or construct
+      equivalence.
+    evidence_ids:
+    - e-proteins
+    - e-original-review
+- assessment_id: a-assemblies
+  area: quantity
+  topic: Native assemblies and experimental preparation limits
+  outcome: supported
+  summary: The graph retains eight Rubisco small chains plus four large-chain dimers.
+    The 3RPL engineered 344-residue core bridge is separate from full native/culture
+    identity. Aldolase peptide and partial-purification limits, ligand-dependent phosphatase
+    assemblies and RPE crystallographic asymmetric-unit observation remain explicit.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-proteins
+  - e-locator
+- assessment_id: a-evidence
+  area: evidence
+  topic: Edge-local source coverage
+  outcome: supported
+  summary: All 118 edges and 216 evidence blocks retain the exact independently assessed
+    source assertions and nearest locators. Native structured statements are not relabelled
+    as paper quotations. Complete source-to-graph and reverse coverage includes both
+    alternate enzymes and repeated functional transformations.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-source
+  - e-target
+  dimensions:
+  - name: evidence-tiers
+    value: Original primary full text or abstract; native curated assertions; HAMAP/similarity/ARBA/RuleBase/PIRSR
+      annotations
+    definition: Source assertions retain their actual tier and nearest locator; databases
+      are not presented as paper quotations.
+    evidence_ids:
+    - e-source
+    - e-proteins
+    - e-original-review
+- assessment_id: a-cofactors
+  area: scope
+  topic: Cofactor inference and assay scope
+  outcome: supported
+  summary: HAMAP, similarity, ARBA/RuleBase and PIRSR evidence remains identified.
+    Metal alternatives are not simultaneous obligatory occupancy. CoCl2 aldolase assays
+    do not establish physiological zinc; magnesium/manganese/DTT assay conditions
+    do not establish an exclusive native metal choice.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-proteins
+  - e-source
+- assessment_id: a-regulation
+  area: scope
+  topic: Conditional regulation and compartment claims
+  outcome: supported
+  summary: CP12 GT complementation supports conditional pathway-level genetic/physiological
+    regulation, not purified inhibition, a counted ternary complex or Kazusa culture
+    identity. AMP FBP-assay potency is distinguished from native bifunctional inhibition.
+    Rubisco fractionation supports carboxysome association without placing the entire
+    cycle there.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-source
+  - e-curation
+- assessment_id: a-access
+  area: provenance
+  topic: Primary access and expression context limits
+  outcome: supported
+  summary: Two original primary articles were independently inspected through full-text
+    web renderings without local full-text digests; Gap2 and RPE primary access is
+    abstract limited. These limits are preserved. iModulonDB inventory applicability
+    is bounded and is not evidence of biological absence or mechanism.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-original-review
+  - e-access
+- assessment_id: a-authorities
+  area: nomenclature
+  topic: Production authorities and native source versions
+  outcome: supported
+  summary: Current authority integration adds ten original source inputs, 22 source
+    terms and 12 ontology terms under unchanged policy. All prior manifest entries,
+    source terms, ontology terms and metadata are preserved. XML META PGDB 27.0 is
+    distinguished from HTML Pathway Tools frontend scope; scientific Rhea 142 remains
+    separate from pinned production Rhea 139 plus existing updates.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-authority
+  - e-authority-counts
+  - e-maintained-check
+- assessment_id: a-external413
+  area: provenance
+  topic: 'Historical external locator finding #413'
+  outcome: supported
+  summary: 'Stable external key calvin-aldolase-primary-page-locators is addressed:
+    the only two target changes replace supplementary p.328 by p.327 for the printed
+    apparent-mass/peptide paragraphs on edges 085 and 086. The exact primary page
+    observation and current maintained locators agree. This external observation is
+    not a canonical previous_occurrence.'
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-locator
+  - e-delta
+  - e-successor
+  - e-target
+- assessment_id: a-external414
+  area: provenance
+  topic: 'Historical external replay binding finding #414'
+  outcome: supported
+  summary: Stable external key calvin-replay-final-formal-binding-window is addressed
+    in corrected helper a59bc5fa. Independent full unchanged replay passes; the identical
+    late-final-go.db manifest mutation now fails specifically at the final short-input
+    checkpoint with no success receipt. Original false PASS and fixtures remain immutable.
+    External deterministic replay does not replace scientific or maintained validation.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-old-binding
+  - e-late
+  - e-positive
+  - e-replay-execution
+  - e-author-controls
+- assessment_id: a-packaging
+  area: provenance
+  topic: Immutable source/review lineage and packaging scope
+  outcome: supported
+  summary: Selected maintained copies match their immutable external originals; broad
+    article extracts, full source projection and actual probe fixtures remain external.
+    Archived helper is inert text with pinned external dependencies, not a portable
+    production interface. Historical reversed Rubisco prose, stale 104 count versus
+    authoritative 105 sources, self-log inventory attempt and their explicit corrections
+    remain preserved without rewriting prior observations. Lossless JSON envelope
+    decodes exactly to all original bytes, including whitespace-only line 101. Original
+    failed staged check and historical acceptance map remain explicitly preserved.
+    No scientific, runtime or gate-result change; no test rerun.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-adoption
+  - e-successor
+  - e-peer
+  - e-access
+  - e-log-envelope
+  - e-log-correction
+  - e-packaged-inspect
+- assessment_id: a-graph
+  area: graph
+  topic: Generated graph and corpus preservation
+  outcome: supported
+  summary: 'Root static graph and separate integration reviewer receipts bind the
+    actual current page and exports: 65 SVG nodes, 118 edges, 216 evidence blocks
+    and 67 KGX record contexts. Two nonincident taxa remain in component tables/KGX.
+    All 220 prior records/pages, 10,528 prior edges and 3,711 prior node contexts
+    are preserved. This is programmatic evidence, not browser interaction.'
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-graph
+  - e-peer
+  - e-gates
+- assessment_id: a-gates
+  area: schema
+  topic: Current maintained validation and governed output
+  outcome: supported
+  summary: Actual complete maintained gates and final source capture passed. Root
+    pipeline 4559 exited 0, with 1256 tests passed, 3 skipped and 3 warnings; closed-schema/identifier/evidence/history/current-page
+    validation, lint, render, KGX and whitespace checks passed. Dedicated vendored
+    check passed 22 artifacts. These are separately attributed deterministic checks,
+    not substitutes for original-source assessment.
+  target_ids:
+  - MetaCyc:CALVIN-PWY
+  evidence_ids:
+  - e-gates
+  - e-vendored
+  - e-inspect
+  - e-readme
+  - e-packaged-inspect
+findings: []
+actions: []
+limitations:
+- Several protein functions, assemblies and cofactors remain native curated or explicitly
+  inferred annotations rather than new experiments on the current exact Kazusa sequence.
+- Parent PCC 6803, Kazusa and GT cultures and historical/engineered constructs are
+  not equivalent by name alone.
+- Two primary full-text observations are web-only and not locally byte-replayable;
+  Gap2 and RPE access is abstract limited.
+- Formal chemical/net balance does not establish culture flux, exclusive physiological
+  metals or invariant assembly.
+- The full source replay was performed externally on pinned originals/runtime; archived
+  helper copies are not presented as portable maintained execution.
+- Static SVG/KGX checks are programmatic; no browser interaction is claimed. Full
+  shared gate execution is explicitly attributed to root and was not duplicated here.
+notes:
+- External original and successor reviews are historical evidence, not canonical saved
+  reviews. Stable external keys calvin-aldolase-primary-page-locators (#413) and calvin-replay-final-formal-binding-window
+  (#414) are explicitly assessed as corrected; no previous_occurrences are fabricated.
+- Current maintained review reuses exact unchanged original scientific assessment.
+  It does not attribute root or peer integration executions to the scientific reviewer.
+- The complete source manifest and final replay contain 105 original bodies; historical
+  correction summary 104 is a documented stale count, not missing evidence. Whole
+  article bodies and extensive selected paragraphs remain external.
+- Thirty-five selected-copy rows are distinct from separate target adoption; broader
+  peer packaging counts reflect its different scope.
+- Canonical validate/save and append-only review check will run after authoring this
+  immutable observation; their terminal receipts are retained externally and are not
+  preclaimed here.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/413
+- https://github.com/CultureBotAI/PathwayMech/issues/414
+tags:
+- scientific-review
+- calvin-cycle
+- complete-native-boundary
+- source-scope
+```

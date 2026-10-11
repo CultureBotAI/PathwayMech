@@ -1,0 +1,32 @@
+"""Run the documented curation gates after the completed Calvin integration."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-220-20261011')
+OUT = Path('/private/tmp/pathwaymech-calvin-integration-20261011/gates')
+OUT.mkdir(exist_ok=False)
+env = dict(os.environ, UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache', PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=str(ROOT / 'src'))
+checks = []
+commands = [('render', ['just', 'render-pages']), ('validate', ['just', 'validate']), ('test', ['just', 'test']), ('lint', ['just', 'lint']), ('kgx', ['just', 'kgx-export', '--output-dir', str(OUT / 'kgx')]), ('whitespace', ['git', 'diff', '--check'])]
+for name, command in commands:
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    log = OUT / (name + '.log')
+    with log.open('x') as stream:
+        result = subprocess.run(command, cwd=ROOT, env=env, stdout=stream, stderr=subprocess.STDOUT)
+    check = dict(name=name, command=command, started_at=started, finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat(), exit_code=result.returncode, log=str(log), log_sha256=hashlib.sha256(log.read_bytes()).hexdigest())
+    checks.append(check)
+    with (OUT / (name + '-receipt.json')).open('x') as stream:
+        json.dump(check, stream, indent=2)
+        stream.write('\n')
+    print(json.dumps(check), flush=True)
+    if result.returncode:
+        print(log.read_text()[-5000:], flush=True)
+        break
+with (OUT / 'execution.json').open('x') as stream:
+    json.dump(dict(checks=checks, all_requested_ran=len(checks)==len(commands), all_passed=len(checks)==len(commands) and all(c['exit_code']==0 for c in checks)), stream, indent=2)
+    stream.write('\n')
+raise SystemExit(0 if len(checks)==len(commands) and all(c['exit_code']==0 for c in checks) else 1)

@@ -1,0 +1,47 @@
+{
+  "issue_key": "calvin-replay-final-formal-binding-window",
+  "severity": "major",
+  "status": "open",
+  "owner": {
+    "path": "/private/tmp/pathwaymech-calvin-cycle-author-20261011/calvin-replay-successor.py",
+    "sha256": "16824bb61827aa491ce835a6c4f2da5f32b8c54384affa280bf43143a3c9421c"
+  },
+  "target_sha256": "60c08ccc64220cb52647a3c4a74c1e1adffc6be1410f570f71573d14bc38d015",
+  "location": "calvin-replay-successor.py final states loop followed by result construction and exclusive receipt creation",
+  "summary": "A formal manifest can change after its entry is checked while subsequent whole-database hashes are still running, and the unchanged helper reports success with the stale formal digest.",
+  "reproduction": {
+    "script": "/private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-initial/run-binding-probe.py",
+    "script_sha256": "890f67745784ebf8b238e16337d707481ed5f5bcf3ceecde68fb88ea59e7d9e6",
+    "mutation_receipt": "/private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-initial/probe-late_manifest/probe-receipt.json",
+    "receipt_sha256": "0bd01df39170d619d0ef39bcb20410877a0c709b3ec81afdfed3dce1175a451f",
+    "success_path": "/private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-initial/probe-late_manifest/success.json",
+    "success_sha256": "1ad1785a0a24f6e65802e0903dd116e2454630ee85e5182ca7f34431a5cac43a",
+    "actual_session": 66776,
+    "terminal_chunk": "6cc2cb",
+    "actual_exit_code": 0,
+    "mutation": {
+      "at": "actual final sha(go.db), after formal manifest entry was already rechecked",
+      "path": "/private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-initial/probe-late_manifest/source-manifest.json",
+      "before": "455e8fab282f97456ccbe10ae677924777f899c78a6d9f1c2fa0bec54ad62db9",
+      "after": "f0d45dd87fdc00d34e3db396716e9929a6a742c9f29008d32abab0f2fe08329c",
+      "invalid_record_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "at_utc": "2026-10-11T20:00:47.212185+00:00"
+    },
+    "captured_manifest_sha256": "455e8fab282f97456ccbe10ae677924777f899c78a6d9f1c2fa0bec54ad62db9"
+  },
+  "positive_control": {
+    "receipt": "/private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-initial/probe-positive/probe-receipt.json",
+    "sha256": "343b36480bfab24dcf1ef3c7819fdc7e952de955b96706e09afa8e549de03ce8",
+    "actual_session": 80195,
+    "terminal_chunk": "e06175",
+    "actual_exit_code": 0
+  },
+  "scope": "Only isolated reviewer fixture bytes were changed. The helper is byte-identical; fixture changes before startup are access-alias relocations, with exact original source/runtime data. All scientific source assertions, equations and target remain unchanged. Actual full chemistry/schema/KGX stages ran in both cases.",
+  "acceptance_criteria": [
+    "Preserve initial helper, target, handoff, false-PASS receipt and isolated fixture bytes unchanged.",
+    "Recheck all short formal, prior-proof, runtime and retained source inputs using fresh resolved-path and digest reads after all slow whole-database scans and report preparation, immediately before exclusive receipt creation. Keep whole original database hashes; do not remove scientific or prior-proof checks.",
+    "Repeat the exact late-manifest mutation at the final database-hash phase and require nonzero exit with no success receipt.",
+    "Run a separate unchanged full replay and retain exact original source, all 13 members/48 sides/13 balances/118 edges/216 evidence parity; recheck other input classes and exclusive-output preservation.",
+    "Retain external-only/author-replay scope; no maintained corpus or independent scientific approval can be inferred from deterministic replay."
+  ]
+}

@@ -1,0 +1,833 @@
+"""Original-source author replay of the complete CALVIN-PWY draft.
+
+This does not approve the record or run maintained corpus gates. All declared
+inputs are pinned before imports and freshly checked before exclusive success.
+"""
+
+import argparse
+import csv
+import dataclasses
+import gzip
+import hashlib
+import importlib.util
+import io
+import json
+import re
+import sqlite3
+import sys
+import zipfile
+from collections import Counter
+from copy import deepcopy
+from datetime import UTC, datetime
+from pathlib import Path
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open("rb") as f:
+        for b in iter(lambda: f.read(4 * 1024 * 1024), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def snap(path):
+    p = Path(path).absolute()
+    return str(p.resolve(strict=True)), sha(p)
+
+
+def digest(value):
+    return hashlib.sha256(value).hexdigest()
+
+
+p = argparse.ArgumentParser()
+p.add_argument("--record", type=Path, required=True)
+p.add_argument("--repo", type=Path, required=True)
+p.add_argument("--output", type=Path, required=True)
+a = p.parse_args()
+started = datetime.now(UTC).isoformat()
+R = Path(__file__).absolute().parent
+assert not a.output.exists(), "Refuse existing success receipt"
+core = [
+    a.record,
+    R / "source-manifest.json",
+    R / "source-projection.json",
+    R / "chemistry-projection.json",
+    R / "protein-projection.json",
+    R / "source-projection-compact.json",
+    R / "coverage.json",
+    R / "authority-proposal.json",
+    Path(__file__),
+]
+states = {}
+raw = {}
+for f in core:
+    states[str(f.absolute())] = snap(f)
+    raw[str(f.absolute())] = f.read_bytes()
+    assert digest(raw[str(f.absolute())]) == states[str(f.absolute())][1]
+
+
+def j(path):
+    return json.loads(raw[str(Path(path).absolute())])
+
+
+m = j(R / "source-manifest.json")
+# --repo must select exactly the declared replay implementation, not an unchecked sibling.
+required_runtime = [
+    "src/pathwaymech/schema.py",
+    "src/pathwaymech/schema/pathwaymech.yaml",
+    "src/pathwaymech/kgx.py",
+    "src/pathwaymech/strict.py",
+    "scripts/build_source_identifier_snapshot.py",
+]
+runtime_by_resolved = {row["resolved_path"]: row for row in m["runtime_inputs"]}
+for relative in required_runtime:
+    expected = str((a.repo / relative).resolve(strict=True))
+    assert expected in runtime_by_resolved, "Unbound runtime repository: " + relative
+
+for row in m["bodies"] + m["prior_proof_inputs"] + m["issuing_databases"] + m["runtime_inputs"]:
+    f = Path(row["path"]).absolute()
+    current = snap(f)
+    assert current == (row["resolved_path"], row["sha256"]), str(f)
+    if str(f) in states:
+        assert states[str(f)] == current
+    states[str(f)] = current
+    if f.stat().st_size < 100_000_000:
+        raw[str(f)] = f.read_bytes()
+        assert digest(raw[str(f)]) == current[1]
+for f, s in states.items():
+    assert snap(f) == s, "Startup input changed: " + f
+print("Captured original, formal, prior-proof and runtime inputs", len(states), flush=True)
+sys.path.insert(0, str(a.repo / "src"))
+import yaml  # noqa: E402
+from lxml import etree  # noqa: E402
+from pathwaymech.kgx import (  # noqa: E402
+    EXPLICIT_CATEGORIES,
+    LOCAL_PREDICATE_CURIES,
+    kgx_edges,
+    kgx_nodes,
+    write_kgx,
+)
+from pathwaymech.schema import validate_record  # noqa: E402
+from pathwaymech.strict import strict_errors  # noqa: E402
+
+for module_name, relative in [
+    ("pathwaymech.schema", "src/pathwaymech/schema.py"),
+    ("pathwaymech.kgx", "src/pathwaymech/kgx.py"),
+    ("pathwaymech.strict", "src/pathwaymech/strict.py"),
+]:
+    assert Path(sys.modules[module_name].__file__).resolve() == (a.repo / relative).resolve()
+
+
+record = yaml.safe_load(raw[str(a.record.absolute())])
+projection = j(R / "source-projection.json")
+compact = j(R / "source-projection-compact.json")
+expected_compact = deepcopy(projection)
+for probe in expected_compact["evidence_probes"]:
+    probe.pop("selected_value", None)
+assert all(compact[k] == v for k, v in expected_compact.items())
+assert compact["external_full_projection"] == dict(
+    path=str(R / "source-projection.json"), sha256=states[str(R / "source-projection.json")][1]
+)
+cp = j(R / "chemistry-projection.json")
+chem = cp["preflight"]
+proteins = j(R / "protein-projection.json")
+coverage = j(R / "coverage.json")
+authority = j(R / "authority-proposal.json")
+assert (
+    digest(raw[str(a.record.absolute())])
+    == m["record_sha256"]
+    == projection["record_sha256"]
+    == coverage["record_sha256"]
+    == authority["record_sha256"]
+)
+assert record["references"] == m["references"] == projection["references"]
+refpaths = projection["reference_paths"]
+for ref in record["references"]:
+    if "source_sha256" in ref:
+        assert states[refpaths[ref["id"]]][1] == ref["source_sha256"]
+    else:
+        assert ref["id"] in ["PMID:12668779", "PMID:24286336"]
+        assert "No full-text byte hash" in ref["source_version"]
+
+
+def xml(path):
+    return etree.fromstring(raw[str(Path(path).absolute())])
+
+
+def native(fid):
+    return xml(refpaths["MetaCyc:" + fid]).xpath("./*[@frameid=$fid]", fid=fid)[0]
+
+
+pathway = native("CALVIN-PWY")
+members = pathway.xpath("reaction-list/Reaction/@frameid")
+assert members == list(chem["members"]) and len(set(members)) == 13
+assert not pathway.xpath("reaction-list/Pathway")
+assert "TAX-1148" in pathway.xpath("species/Organism/@frameid")
+layouts = {
+    x.find("Reaction").get("frameid"): x.findtext("direction")
+    for x in pathway.findall("reaction-layout")
+}
+RDF = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+RH = "http://rdf.rhea-db.org/"
+g = {}
+uris = set(chem["objects"]) | {r["master"] for r in cp["bridges"].values()}
+with gzip.GzipFile(fileobj=io.BytesIO(raw[chem["source"]["path"]])) as f:
+    for _, node in etree.iterparse(f, events=("end",), tag=RDF + "Description"):
+        uri = node.get(RDF + "about")
+        if uri in uris:
+            obj = g.setdefault(uri, {})
+            for c in node:
+                key = etree.QName(c).localname
+                value = c.get(RDF + "resource") or (c.text or "").strip()
+                if value not in obj.setdefault(key, []):
+                    obj[key].append(value)
+        node.clear()
+        while node.getprevious() is not None:
+            del node.getparent()[0]
+assert {u: g[u] for u in chem["objects"]} == chem["objects"]
+
+
+def side(uri):
+    result = []
+    for key, values in g[uri].items():
+        if not re.fullmatch("contains[0-9]+", key):
+            continue
+        for part in values:
+            c = g[g[part]["compound"][0]]
+            result.append(
+                dict(
+                    id=c["accession"][0],
+                    coefficient=int(key[8:]),
+                    formula=c["formula"][0],
+                    charge=int(c["charge"][0]),
+                    label=c["name"][0],
+                )
+            )
+    return result
+
+
+def balance(rows):
+    atoms = Counter()
+    charge = 0
+    for row in rows:
+        assert re.fullmatch(r"(?:[A-Z][a-z]?[0-9]*)+", row["formula"])
+        for element, count in re.findall(r"([A-Z][a-z]?)([0-9]*)", row["formula"]):
+            atoms[element] += int(count or 1) * row["coefficient"]
+        charge += row["coefficient"] * row["charge"]
+    return dict(atoms), charge
+
+
+cross_path = "/private/tmp/pathwaymech-calvin-cycle-preflight-20261011/chemical-crosswalk.json"
+cross = j(cross_path)
+chemical_map = {}
+with sqlite3.connect("file:" + cross["source_sql"] + "?mode=ro", uri=True) as db:
+    db.row_factory = sqlite3.Row
+    for cid, expected in projection["chemical_sql_rows"].items():
+        rows = [dict(r) for r in db.execute("SELECT * FROM statements WHERE subject=?", (cid,))]
+        assert rows == expected, cid
+    for fid, row in cross["native_crosswalk"].items():
+        obj = xml(row["source"]).find("Compound")
+        cid = row["matched_represented_structure"]
+        expected = db.execute(
+            "SELECT value FROM statements WHERE subject=? AND predicate=?",
+            (cid, "chemrof:inchi_string"),
+        ).fetchone()[0]
+        assert obj.findtext("inchi") == row["inchi"] == expected, fid
+        assert (obj.get("class") == "true") == row["class"]
+        chemical_map[fid] = cid
+assert len(chemical_map) == 21
+assert cross["native_crosswalk"]["RIBOSE-5P"]["class"]
+assert "furanose" in cross["native_crosswalk"]["RIBOSE-5P"]["comment"]
+assert cross["native_crosswalk"]["D-SEDOHEPTULOSE-7-P"]["class"]
+net = Counter()
+equations = {}
+side_count = 0
+for fid, saved in chem["members"].items():
+    rid = saved["current_direction"]
+    u = RH + rid.split(":")[1]
+    master = cp["bridges"][rid]["master"]
+    assert g[master] == cp["bridges"][rid]["object"]
+    assert u in g[master]["directionalReaction"]
+    for xref in saved["native_rhea_xrefs"]:
+        assert RH + xref in g[master].get("bidirectionalReaction", []) + g[master].get(
+            "directionalReaction", []
+        ) + [master]
+    assert g[u]["status"] == [RH + "Approved"] and RH + "DirectionalReaction" in g[u]["subClassOf"]
+    left, right = side(g[u]["substrates"][0]), side(g[u]["products"][0])
+    assert left == saved["current_left"] and right == saved["current_right"]
+    assert balance(left) == balance(right)
+    obj = native(fid)
+    native_sides = {}
+    for key in ["left", "right"]:
+        counts = Counter()
+        for n in obj.findall(key):
+            counts[chemical_map[n.find("Compound").get("frameid")]] += int(
+                n.findtext("coefficient", "1")
+            )
+        native_sides[key] = counts
+    lk, rk = ("left", "right") if layouts[fid] == "L2R" else ("right", "left")
+    assert native_sides[lk] == Counter({x["id"]: x["coefficient"] for x in left})
+    assert native_sides[rk] == Counter({x["id"]: x["coefficient"] for x in right})
+    assert layouts[fid] == saved["pathway_direction"]
+    weights = {
+        "RHEA:23126": 3,
+        "RHEA:19366": 3,
+        "RHEA:14802": 6,
+        "RHEA:10298": 6,
+        "RHEA:18586": 2,
+        "RHEA:13679": 2,
+    }
+    weight = weights.get(rid, 1)
+    assert weight == saved["cycle_multiplicity"]
+    for sign, rows in [(-1, left), (1, right)]:
+        side_count += len(rows)
+        for r in rows:
+            net[r["id"]] += sign * r["coefficient"] * weight
+    equations[rid] = (left, right)
+net = {k: v for k, v in net.items() if v}
+expected_net = {
+    "CHEBI:16526": -3,
+    "CHEBI:30616": -9,
+    "CHEBI:57783": -6,
+    "CHEBI:15377": -5,
+    "CHEBI:15378": 3,
+    "CHEBI:456216": 9,
+    "CHEBI:43474": 8,
+    "CHEBI:58349": 6,
+    "CHEBI:59776": 1,
+}
+assert net == expected_net and side_count == 48
+
+
+def pointer(value, path):
+    for key in path.strip("/").split("/"):
+        value = (
+            value[int(key)]
+            if isinstance(value, list)
+            else value[key.replace("~1", "/").replace("~0", "~")]
+        )
+    return value
+
+
+def verify_probes(proj):
+    for row in proj["evidence_probes"]:
+        assert row["path"] == refpaths[row["evidence"]["reference_id"]]
+        if row["kind"] == "json_pointer":
+            selected = pointer(j(row["path"]), row["selector"])
+        else:
+            obj = etree.HTML(raw[row["path"]]) if row["kind"] == "html_xpath" else xml(row["path"])
+            vals = obj.xpath(row["selector"])
+            assert vals, row
+            selected = [
+                etree.tostring(n, method="c14n").decode()
+                if isinstance(n, etree._Element)
+                else str(n)
+                for n in vals
+            ]
+        assert selected == row["selected_value"]
+        assert digest(json.dumps(selected, sort_keys=True).encode()) == row["selected_value_sha256"]
+
+
+verify_probes(projection)
+
+up = {}
+for path in {x["source"] for x in proteins["proteins"].values()}:
+    for row in j(path)["results"]:
+        up[row["primaryAccession"]] = row
+for acc, row in proteins["proteins"].items():
+    for k in [
+        "primaryAccession",
+        "entryType",
+        "entryAudit",
+        "organism",
+        "genes",
+        "sequence",
+        "comments",
+    ]:
+        assert row[k] == up[acc].get(k, []), (acc, k)
+    assert len(row["sequence"]["value"]) == row["sequence"]["length"]
+    assert row["organism"]["taxonId"] == 1111708
+assert len(up) == 14
+
+components = [
+    ("CPLX-105", "MONOMER-751", "P54206", 8),
+    ("CPLX-7223", "MONOMER-750", "P54205", 2),
+    ("CPLX-162", "FBPSBP-MONOMER", "P73922", 4),
+    ("CPLX-143", "FBPSYN-MONOMER", "P74324", 4),
+    ("CPLX-9465", "FBAASYN-MONOMER", "Q55664", 8),
+    ("CPLX-9466", "FBABSYN-MONOMER", "P74309", 2),
+]
+for comp, sub, acc, n in components:
+    obj = native(comp)
+    selected = obj.xpath("component[Protein/@frameid=$sub]", sub=sub)
+    assert len(selected) == 1 and int(selected[0].findtext("coefficient", "1")) == n
+    assert acc in native(sub).xpath('dblink[dblink-db="UNIPROT"]/dblink-oid/text()')
+assert native("CPLX-105").xpath('component[Protein/@frameid="CPLX-7223"]/coefficient/text()') == [
+    "4"
+]
+assert up["Q55664"]["sequence"]["value"].startswith("MALVPMRLLL")
+assert up["P74309"]["sequence"]["value"][1:11] == "MTLEPNQEQL"
+assert native("TPIASYN-MONOMER").xpath('dblink[dblink-db="UNIPROT"]/dblink-oid/text()') == [
+    "Q95554"
+]
+bad_tpi = j(refpaths["UniProtKB:Q95554"])
+assert bad_tpi["organism"]["taxonId"] == 10090 and bad_tpi["sequence"]["length"] == 21
+assert any(
+    r["database"] == "BioCyc" and r["id"] == "MetaCyc:TPIASYN-MONOMER"
+    for r in bad_tpi["uniProtKBCrossReferences"]
+)
+assert not native("TKTASYN-MONOMER").xpath('dblink[dblink-db="UNIPROT"]')
+for n in ["ENZRXN-167", "ENZRXN-168"]:
+    assert not native(n).xpath("evidence | citation | citation/Publication")
+
+rcsb = j(refpaths["DOI:10.2210/pdb3RPL/pdb"])
+sequence = rcsb["entity_poly"]["pdbx_seq_one_letter_code_can"]
+core = up["P73922"]["sequence"]["value"][1:]
+assert sequence == "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGSV" + core
+assert len(core) == 344 and len(sequence) == 379
+assert rcsb["entity_poly"]["rcsb_mutation_count"] == 0
+assert any(x.get("ncbi_taxonomy_id") == 1148 for x in rcsb["rcsb_entity_source_organism"])
+cpseq = proteins["cp12_transcription"]
+codons = {
+    "TTT": "F",
+    "TTC": "F",
+    "TTA": "L",
+    "TTG": "L",
+    "CTT": "L",
+    "CTC": "L",
+    "CTA": "L",
+    "CTG": "L",
+    "ATT": "I",
+    "ATC": "I",
+    "ATA": "I",
+    "ATG": "M",
+    "GTT": "V",
+    "GTC": "V",
+    "GTA": "V",
+    "GTG": "V",
+    "TCT": "S",
+    "TCC": "S",
+    "TCA": "S",
+    "TCG": "S",
+    "CCT": "P",
+    "CCC": "P",
+    "CCA": "P",
+    "CCG": "P",
+    "ACT": "T",
+    "ACC": "T",
+    "ACA": "T",
+    "ACG": "T",
+    "GCT": "A",
+    "GCC": "A",
+    "GCA": "A",
+    "GCG": "A",
+    "TAT": "Y",
+    "TAC": "Y",
+    "TAA": "*",
+    "TAG": "*",
+    "CAT": "H",
+    "CAC": "H",
+    "CAA": "Q",
+    "CAG": "Q",
+    "AAT": "N",
+    "AAC": "N",
+    "AAA": "K",
+    "AAG": "K",
+    "GAT": "D",
+    "GAC": "D",
+    "GAA": "E",
+    "GAG": "E",
+    "TGT": "C",
+    "TGC": "C",
+    "TGA": "*",
+    "TGG": "W",
+    "CGT": "R",
+    "CGC": "R",
+    "CGA": "R",
+    "CGG": "R",
+    "AGT": "S",
+    "AGC": "S",
+    "AGA": "R",
+    "AGG": "R",
+    "GGT": "G",
+    "GGC": "G",
+    "GGA": "G",
+    "GGG": "G",
+}
+
+
+def verify_cp12(protein_projection):
+    transcription = protein_projection["cp12_transcription"]
+    original = j(
+        "/private/tmp/pathwaymech-calvin-cp12-bridge-20261011/figure-S2-transcription.json"
+    )
+    assert transcription == original
+    dna = transcription["dna_with_stop"]
+    translated = "".join(codons[dna[i : i + 3]] for i in range(0, len(dna), 3))
+    assert len(dna) == 225 and translated == up["P73654"]["sequence"]["value"] + "*"
+
+
+verify_cp12(proteins)
+with zipfile.ZipFile(io.BytesIO(raw[str(R / "raw/CP12-oa-EuropePMC.xml")])) as z:
+    member = next(n for n in z.namelist() if n.endswith("DataSheet_1.pdf"))
+    assert z.read(member) == raw[refpaths["DOI:10.3389/fpls.2022.1028794"]]
+assert raw[refpaths["DOI:10.3389/fpls.2022.1028794"]].startswith(b"%PDF-")
+
+
+def verify_record(doc):
+    assert doc["id"] == "MetaCyc:CALVIN-PWY"
+    assert not doc.get("source_mappings"), "No class-wide equivalence may be invented"
+    rx = {n["id"]: n for n in doc["reactions"]}
+    assert set(rx) == set(equations) and len(rx) == 13
+    ee = doc["mechanistic_edges"]
+    assert {
+        e["subject"] for e in ee if e["predicate"] == "part_of" and e["object"] == doc["id"]
+    } == set(rx)
+    for rid, (left, right) in equations.items():
+        u = RH + rid.split(":")[1]
+        assert rx[rid]["label"] == g[u]["equation"][0]
+        direction = "left_to_right" if g[u]["substrates"][0].endswith("_L") else "right_to_left"
+        assert rx[rid]["direction"] == direction
+        for pred, rows in [("consumes", left), ("produces", right)]:
+            actual = {}
+            for e in ee:
+                if e["predicate"] == pred and rid in [e["subject"], e["object"]]:
+                    cid = e["subject"] if pred == "consumes" else e["object"]
+                    assert cid not in actual
+                    actual[cid] = int(re.match(r"Coefficient (\d+)\b", e["description"]).group(1))
+                    assert any(x["reference_id"] == rid for x in e["evidence"])
+            assert actual == {x["id"]: x["coefficient"] for x in rows}
+    for e in ee:
+        if e["predicate"] == "catalyzes":
+            nrefs = [
+                x["reference_id"]
+                for x in e["evidence"]
+                if x["reference_id"].startswith("MetaCyc:ENZRXN-")
+            ]
+            assert len(nrefs) == 1
+            enzyme = native(nrefs[0].split(":")[1])
+            assert enzyme.xpath("enzyme/Protein/@frameid") == [e["subject"].split(":")[1]]
+            assert enzyme.xpath("reaction/Reaction/@frameid") == [
+                cp["bridges"][e["object"]]["native"]
+            ]
+        elif e["predicate"] == "has_cofactor":
+            acc = e["subject"].split(":")[1]
+            supporting = [
+                x
+                for c in up[acc]["comments"]
+                if c["commentType"] == "COFACTOR"
+                for x in c["cofactors"]
+                if x["cofactorCrossReference"]["id"] == e["object"]
+            ]
+            assert supporting
+        elif e["predicate"] == "enables":
+            acc = e["subject"].split(":")[1]
+            master = "RHEA:" + cp["bridges"][e["object"]]["master"].split("/")[-1]
+            assert any(
+                x["database"] == "Rhea" and x["id"] == master
+                for c in up[acc]["comments"]
+                if c["commentType"] == "CATALYTIC ACTIVITY"
+                for x in c["reaction"]["reactionCrossReferences"]
+            )
+        elif e["predicate"] == "provides_input_for":
+            assert {r["id"] for r in equations[e["subject"]][1]} & {
+                r["id"] for r in equations[e["object"]][0]
+            }
+    for comp, _sub, acc, n in components:
+        found = [
+            e
+            for e in ee
+            if (e["subject"], e["predicate"], e["object"])
+            == ("MetaCyc:" + comp, "has_part", "UniProtKB:" + acc)
+        ]
+        assert len(found) == 1 and f"Native coefficient {n};" in found[0]["description"]
+    assert not any(
+        e["subject"] == "MetaCyc:CPLX-142" or e["object"] == "UniProtKB:Q95554" for e in ee
+    )
+    for complex_id in ["CPLX-9465", "CPLX-9466"]:
+        assert {
+            e["object"]
+            for e in ee
+            if e["subject"] == "MetaCyc:" + complex_id and e["predicate"] == "catalyzes"
+        } == {"RHEA:14731", "RHEA:30168"}
+    assert {
+        e["object"]
+        for e in ee
+        if e["subject"] == "MetaCyc:TKTASYN-MONOMER" and e["predicate"] == "catalyzes"
+    } == {"RHEA:10509", "RHEA:27628"}
+    assert {
+        e["object"]
+        for e in ee
+        if e["subject"] == "MetaCyc:CPLX-162" and e["predicate"] == "catalyzes"
+    } == {"RHEA:11065", "RHEA:17462"}
+    assert {
+        e["object"]
+        for e in ee
+        if e["subject"] == "MetaCyc:CPLX-143" and e["predicate"] == "catalyzes"
+    } == {"RHEA:11065"}
+    assert [(e["predicate"], e["object"]) for e in ee if e["subject"] == "UniProtKB:P73654"] == [
+        ("regulates", "MetaCyc:CALVIN-PWY")
+    ]
+    cpedge = next(e for e in ee if e["subject"] == "UniProtKB:P73654")
+    assert "system-level" in cpedge["description"] and "pooled NAD(P)H" in cpedge["description"]
+    return validate_record(doc)
+
+
+validated = verify_record(record)
+assert projection["edges"] == record["mechanistic_edges"]
+assert len(coverage["source_to_graph"]) == 13
+assert len(coverage["graph_to_source"]) == len(record["mechanistic_edges"])
+negative = []
+for name in [
+    "omit_sbp_aldolase",
+    "reverse_epimerase",
+    "wrong_rubisco_coefficient",
+    "generic_class_exactmatch",
+    "lose_second_aldolase_activity",
+    "swap_native_transketolase_refs",
+    "transfer_wrong_tpi_complex",
+    "direct_cp12_inhibits",
+]:
+    mutant = deepcopy(record)
+    if name == "omit_sbp_aldolase":
+        mutant["reactions"] = [r for r in mutant["reactions"] if r["id"] != "RHEA:30168"]
+    elif name == "reverse_epimerase":
+        next(r for r in mutant["reactions"] if r["id"] == "RHEA:13679")["direction"] = (
+            "left_to_right"
+        )
+    elif name == "wrong_rubisco_coefficient":
+        e = next(
+            e
+            for e in mutant["mechanistic_edges"]
+            if e["subject"] == "RHEA:23126"
+            and e["predicate"] == "produces"
+            and e["object"] == "CHEBI:58272"
+        )
+        e["description"] = e["description"].replace("Coefficient 2", "Coefficient 1")
+    elif name == "generic_class_exactmatch":
+        mutant["source_mappings"] = [
+            dict(
+                subject_id="MetaCyc:RIBOSE-5P",
+                predicate_id="skos:exactMatch",
+                object_id="CHEBI:58273",
+            )
+        ]
+    elif name == "lose_second_aldolase_activity":
+        mutant["mechanistic_edges"] = [
+            e
+            for e in mutant["mechanistic_edges"]
+            if not (
+                e["subject"] == "MetaCyc:CPLX-9466"
+                and e["predicate"] == "catalyzes"
+                and e["object"] == "RHEA:30168"
+            )
+        ]
+    elif name == "swap_native_transketolase_refs":
+        for e in mutant["mechanistic_edges"]:
+            if e["subject"] == "MetaCyc:TKTASYN-MONOMER" and e["predicate"] == "catalyzes":
+                for ev in e["evidence"]:
+                    if ev["reference_id"] == "MetaCyc:ENZRXN-167":
+                        ev["reference_id"] = "MetaCyc:ENZRXN-168"
+                    elif ev["reference_id"] == "MetaCyc:ENZRXN-168":
+                        ev["reference_id"] = "MetaCyc:ENZRXN-167"
+    elif name == "transfer_wrong_tpi_complex":
+        mutant["mechanistic_edges"].append(
+            dict(subject="MetaCyc:CPLX-142", predicate="has_part", object="UniProtKB:Q59994")
+        )
+    else:
+        next(e for e in mutant["mechanistic_edges"] if e["subject"] == "UniProtKB:P73654")[
+            "predicate"
+        ] = "inhibits"
+    try:
+        verify_record(mutant)
+    except (AssertionError, KeyError, AttributeError, ValueError):
+        negative.append(dict(case=name, rejected=True))
+    else:
+        raise AssertionError("Accepted negative " + name)
+bad = deepcopy(proteins)
+bad["cp12_transcription"]["dna_with_stop"] = "GTG" + bad["cp12_transcription"]["dna_with_stop"][3:]
+try:
+    verify_cp12(bad)
+except AssertionError:
+    negative.append(dict(case="wrong_cp12_full_construct_sequence", rejected=True))
+else:
+    raise AssertionError("Accepted wrong CP12 sequence")
+bad = deepcopy(projection)
+bad["evidence_probes"][0]["selector"] = "/ptools-xml/Pathway/not-a-field"
+try:
+    verify_probes(bad)
+except AssertionError:
+    negative.append(dict(case="nonexistent_original_locator", rejected=True))
+else:
+    raise AssertionError("Accepted missing selector")
+
+# Original labels, native authority parsing, taxon identity and expression context.
+spec = importlib.util.spec_from_file_location(
+    "builder", a.repo / "scripts/build_source_identifier_snapshot.py"
+)
+builder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(builder)
+assert (
+    Path(builder.__file__).resolve()
+    == (a.repo / "scripts/build_source_identifier_snapshot.py").resolve()
+)
+named = {n["id"]: n for n in [record] + record["participants"] + record["reactions"]}
+for row in authority["proposed_inputs"]:
+    path = row["original_path"]
+    terms = (
+        list(builder.metacyc_terms(raw[path].decode()))
+        if row["manifest_entry"]["kind"] == "metacyc-html"
+        else list(builder.uniprot_terms(j(path)))
+    )
+    for selected in row["terms"]:
+        term = next(t for t in terms if t[0] == selected["id"])
+        assert named[term[0]]["label"] in [term[1], *term[2]]
+taxa = xml(R / "raw/taxonomy.xml").findall("Taxon")
+assert {t.findtext("TaxId"): t.findtext("ScientificName") for t in taxa} == {
+    n["id"].split(":")[1]: n["label"] for n in record["taxa"]
+}
+imod = j("/private/tmp/pathwaymech-calvin-cycle-preflight-20261011/imodulondb/context.json")
+adapter = Path(imod["adapter"]["path"])
+assert sha(adapter) == imod["adapter"]["sha256"]
+adapter_state = states[str(adapter)]
+assert snap(adapter) == adapter_state
+sys.path.insert(0, str(adapter.parent.parent))
+from kg_microbe_sources.imodulondb import ImodulonDBClient  # noqa: E402
+
+im_manifest = j("/private/tmp/pathwaymech-calvin-cycle-preflight-20261011/imodulondb/manifest.json")
+bodies = {r["url"]: j(r["path"]) for r in im_manifest}
+client = ImodulonDBClient(transport=lambda url: bodies[url])
+inventory = json.loads(json.dumps([dataclasses.asdict(x) for x in client.organism_datasets()]))
+assert inventory == imod["datasets"] and len(inventory) == 20
+assert not any("synechocystis" in json.dumps(r).lower() for r in inventory)
+assert strict_errors([a.record], a.repo) == []
+nodes = kgx_nodes([validated])
+ee = kgx_edges([validated])
+assert len(ee) == len(record["mechanistic_edges"])
+evidence_count = sum(len(json.loads(e.evidence)) for e in ee)
+refs = {r["id"]: r for r in record["references"]}
+for exported, original in zip(ee, record["mechanistic_edges"], strict=True):
+    assert (exported.subject, exported.predicate, exported.object) == (
+        original["subject"],
+        LOCAL_PREDICATE_CURIES[original["predicate"]],
+        original["object"],
+    )
+    assert exported.description == original.get("description", "")
+    assert json.loads(exported.evidence) == original["evidence"]
+    reference_ids = sorted({ev["reference_id"] for ev in original["evidence"]})
+    assert exported.source_records == "|".join(reference_ids)
+    assert json.loads(exported.reference_metadata) == [refs[rid] for rid in reference_ids]
+byid = {n.id: n for n in nodes}
+assert set(byid) == set(named) | {n["id"] for n in record["taxa"]}
+for item in record["participants"] + record["reactions"]:
+    exported = byid[item["id"]]
+    assert exported.name == item["label"] and exported.direction == item.get("direction", "")
+    if item.get("category"):
+        assert exported.category == EXPLICIT_CATEGORIES[item["category"]]
+    assert json.loads(exported.source_contexts) == [
+        dict(
+            record_id=record["id"],
+            collection="reactions" if item in record["reactions"] else "participants",
+            **item,
+        )
+    ]
+assert evidence_count == sum(len(e["evidence"]) for e in record["mechanistic_edges"])
+selector_keys = {
+    json.dumps(row["evidence"], sort_keys=True) for row in projection["evidence_probes"]
+}
+evidence_methods = Counter()
+for edge in record["mechanistic_edges"]:
+    for evidence in edge["evidence"]:
+        reference = evidence["reference_id"]
+        if json.dumps(evidence, sort_keys=True) in selector_keys:
+            method = "original_exact_selector_and_span_digest"
+        elif reference.startswith("RHEA:"):
+            assert reference in equations
+            assert RH + reference.split(":")[1] in evidence["source_locator"] or (
+                cp["bridges"][reference]["master"] in evidence["source_locator"]
+            )
+            method = "original_rdf_direction_and_complete_side_replay"
+        elif reference in {"PMID:12668779", "PMID:24286336"}:
+            assert "source_sha256" not in refs[reference]
+            assert evidence["source_locator"]
+            method = "human_original_web_fulltext_inspection_no_local_byte_replay"
+        elif reference == "CHEBI:456215":
+            assert reference in projection["chemical_sql_rows"]
+            method = "issuing_semanticsql_exact_fields"
+        else:
+            assert reference == "DOI:10.3389/fpls.2022.1028794"
+            assert "Figure S2A" in evidence["source_locator"]
+            method = "original_zip_pdf_member_and_visual_transcription_sequence_replay"
+        evidence_methods[method] += 1
+assert sum(evidence_methods.values()) == evidence_count
+
+outdir = a.output.with_suffix(".kgx")
+outdir.mkdir(exist_ok=False)
+write_kgx([validated], outdir)
+for filename, values in [("nodes.tsv", nodes), ("edges.tsv", ee)]:
+    with (outdir / filename).open(newline="") as handle:
+        actual_rows = list(csv.DictReader(handle, delimiter="\t"))
+    assert actual_rows == [dataclasses.asdict(value) for value in values], filename
+
+for f, s in states.items():
+    assert snap(f) == s, "Input changed during replay: " + f
+assert snap(adapter) == adapter_state
+result = dict(
+    status="passed_external_author_replay_not_independent_approval",
+    started_at=started,
+    finished_at=datetime.now(UTC).isoformat(),
+    record_sha256=m["record_sha256"],
+    captured_inputs=[dict(path=f, resolved_path=s[0], sha256=s[1]) for f, s in states.items()],
+    originals=len(m["bodies"]),
+    native_members=members,
+    reaction_count=13,
+    rhea_sides=side_count,
+    balanced_reactions=13,
+    displayed_structures=21,
+    weighted_net=net,
+    whole_class_exact_matches=0,
+    protein_entries=len(up),
+    native_component_bridges=len(components),
+    evidence_selector_probes=len(projection["evidence_probes"]),
+    all_edge_evidence_parity=True,
+    written_tsv_full_field_parity=True,
+    imported_runtime_paths_bound=True,
+    exact_probe_reference_paths_bound=True,
+    evidence_replay_methods=dict(evidence_methods),
+    all_reference_metadata_parity=True,
+    compact_projection_exact=True,
+    negative_controls=negative,
+    schema="native and closed LinkML passed",
+    kgx=dict(
+        nodes=len(nodes),
+        edges=len(ee),
+        evidence=evidence_count,
+        files=[dict(path=str(f), sha256=sha(f)) for f in sorted(outdir.iterdir())],
+    ),
+    imodulondb=dict(
+        original_bodies=len(im_manifest),
+        organisms=len(inventory),
+        applicable_dataset=False,
+        biological_absence_inferred=False,
+    ),
+    source_limits=m["full_source_bytes_replay_limit"],
+    output_creation=(
+        "exclusive x mode after fresh uncached original/formal/prior-proof/runtime "
+        "path and digest checks"
+    ),
+)
+with a.output.open("x") as f:
+    json.dump(result, f, indent=2)
+    f.write("\n")
+print(
+    json.dumps(
+        dict(
+            status=result["status"],
+            receipt=str(a.output),
+            sha256=sha(a.output),
+            kgx=result["kgx"],
+            negative_controls=len(negative),
+        )
+    ),
+    flush=True,
+)
