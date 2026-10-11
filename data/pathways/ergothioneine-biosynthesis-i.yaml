@@ -1,0 +1,998 @@
+id: MetaCyc:PWY-7255
+label: ergothioneine biosynthesis I (bacteria)
+description: 'The complete seven-member native pathway combines gamma-glutamylcysteine synthesis, histidine
+  trimethylation, oxygen-dependent C-S coupling, deglutamylation, PLP-dependent cleavage, generic reduction
+  and thiol-thione equilibration. The five named gene products are current Mycolicibacterium smegmatis
+  mc(2)155 proteins; EgtA activity is inferred by similarity, and the early B/C/D reconstitution used
+  DSM43465/ATCC607. Later EgtC and EgtE studies directly identify mc(2)155 constructs. Functional enables
+  assertions retain EgtC tetramer and EgtE homodimer contexts without inventing complex identifiers or
+  monomer sufficiency. Current Rhea defines the first five equations; the terminal native equations retain
+  neutral ergothioneine thiol and thione as separate states. Current Rhea reduction instead uses protonated
+  ergothioneine and an added proton and is not substituted into the neutral tautomer sequence. The AH2/A
+  pair remains generic: DTT-supported experiments do not identify the physiological reductant. Sulfoxide
+  sulfur stereochemistry remains unspecified in the selected authoritative chemical classes, not a claim
+  that every stereoisomer is accepted. Fungal bypasses, disproportionation side products, transport, antioxidant
+  outcomes and precursor biosynthesis are outside this complete native boundary. The 2018 purified EgtD
+  product-inhibition observation (DOI:10.1021/acschembio.8b00127.s001) is retained as DSM43465/ATCC607-derived
+  engineered-preparation context only; it is not transferred to the exact mc(2)155 protein.'
+pathway_type: ergothioneine-biosynthesis
+taxa:
+- id: NCBITaxon:246196
+  label: Mycolicibacterium smegmatis MC2 155
+participants:
+- id: CHEBI:13193
+  label: hydrogen acceptor
+  category: chemical_entity
+- id: CHEBI:136834
+  label: 2-sulfenohercynine
+  category: small_molecule
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:15781
+  label: N(alpha),N(alpha),N(alpha)-trimethyl-L-histidine
+  category: small_molecule
+- id: CHEBI:17499
+  label: hydrogen donor
+  category: chemical_entity
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
+- id: CHEBI:29985
+  label: L-glutamate(1-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:35235
+  label: L-cysteine zwitterion
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:4828
+  label: ergothioneine
+  category: small_molecule
+- id: CHEBI:57595
+  label: L-histidine zwitterion
+  category: small_molecule
+- id: CHEBI:57856
+  label: S-adenosyl-L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:58173
+  label: L-gamma-glutamyl-L-cysteinate(1-)
+  category: small_molecule
+- id: CHEBI:597326
+  label: pyridoxal 5'-phosphate(2-)
+  category: cofactor
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:82703
+  label: N(alpha)-(L-gamma-glutamyl)-hercynyl-L-cysteine sulfoxide(1-)
+  category: small_molecule
+- id: CHEBI:82706
+  label: hercynylcysteine sulfoxide zwitterion
+  category: small_molecule
+- id: CHEBI:82707
+  label: ergothioneine thione form
+  category: small_molecule
+- id: UniProtKB:A0R5N1
+  label: Glutamate--cysteine ligase EgtA
+  category: protein
+- id: UniProtKB:A0R5M8
+  label: Histidine N-alpha-methyltransferase
+  category: protein
+- id: UniProtKB:A0R5N0
+  label: Hercynine oxygenase
+  category: protein
+- id: UniProtKB:A0R5M9
+  label: Gamma-glutamyl-hercynylcysteine sulfoxide hydrolase
+  category: protein
+- id: UniProtKB:A0R5M7
+  label: Hercynylcysteine sulfoxide lyase
+  category: protein
+reactions:
+- id: RHEA:13286
+  label: L-cysteine + L-glutamate + ATP => gamma-L-glutamyl-L-cysteine + ADP + phosphate + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:38472
+  label: L-histidine + 3 S-adenosyl-L-methionine => hercynine + 3 S-adenosyl-L-homocysteine + 3 H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:42673
+  label: gamma-L-glutamyl-L-cysteine + hercynine + O2 => gamma-L-glutamyl-hercynylcysteine S-oxide + H2O
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:42685
+  label: gamma-L-glutamyl-hercynylcysteine S-oxide + H2O => S-(hercyn-2-yl)-L-cysteine S-oxide + L-glutamate
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:52781
+  label: S-(hercyn-2-yl)-L-cysteine S-oxide + H2O => 2-sulfenohercynine + pyruvate + NH4(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN-18089
+  label: 2-(hydroxysulfanyl)hercynine + a reduced electron acceptor -> ergothioneine + an oxidized electron
+    acceptor + H2O
+  direction: left_to_right
+- id: MetaCyc:RXN-15804
+  label: ergothioneine (thione form) ergothioneine
+  direction: reversible
+mechanistic_edges:
+- id: ergothioneine-edge-001
+  subject: CHEBI:35235
+  predicate: consumes
+  object: RHEA:13286
+  evidence:
+  - reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:35235 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_2467'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_2467)
+- id: ergothioneine-edge-002
+  subject: CHEBI:29985
+  predicate: consumes
+  object: RHEA:13286
+  evidence:
+  - reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:29985 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_2079'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_2079)
+- id: ergothioneine-edge-003
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:13286
+  evidence:
+  - reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:30616 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_6372'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_6372)
+- id: ergothioneine-edge-004
+  subject: RHEA:13286
+  predicate: produces
+  object: CHEBI:58173
+  evidence:
+  - &id001
+    reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:58173 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_1121'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1121)
+- id: ergothioneine-edge-005
+  subject: RHEA:13286
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:456216 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_2710'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_2710)
+- id: ergothioneine-edge-006
+  subject: RHEA:13286
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:43474 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_5518'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_5518)
+- id: ergothioneine-edge-007
+  subject: RHEA:13286
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:13286
+    source_assertion: RHEA:13286 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13285_compound_3249'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: ergothioneine-edge-008
+  subject: CHEBI:57595
+  predicate: consumes
+  object: RHEA:38472
+  evidence:
+  - reference_id: RHEA:38472
+    source_assertion: RHEA:38472 assigns CHEBI:57595 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/38472']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/38471_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_38471_compound_3613'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3613)
+- id: ergothioneine-edge-009
+  subject: CHEBI:59789
+  predicate: consumes
+  object: RHEA:38472
+  evidence:
+  - reference_id: RHEA:38472
+    source_assertion: RHEA:38472 assigns CHEBI:59789 to its substrates with coefficient 3.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/38472']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/38471_L']/rh:contains3[@rdf:resource='http://rdf.rhea-db.org/Participant_38471_compound_6127'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_6127)
+  description: Stoichiometric coefficient 3.
+- id: ergothioneine-edge-010
+  subject: RHEA:38472
+  predicate: produces
+  object: CHEBI:15781
+  evidence:
+  - &id003
+    reference_id: RHEA:38472
+    source_assertion: RHEA:38472 assigns CHEBI:15781 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/38472']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/38471_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_38471_compound_4809'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_4809)
+- id: ergothioneine-edge-011
+  subject: RHEA:38472
+  predicate: produces
+  object: CHEBI:57856
+  evidence:
+  - reference_id: RHEA:38472
+    source_assertion: RHEA:38472 assigns CHEBI:57856 to its products with coefficient 3.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/38472']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/38471_R']/rh:contains3[@rdf:resource='http://rdf.rhea-db.org/Participant_38471_compound_4281'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_4281)
+  description: Stoichiometric coefficient 3.
+- id: ergothioneine-edge-012
+  subject: RHEA:38472
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:38472
+    source_assertion: RHEA:38472 assigns CHEBI:15378 to its products with coefficient 3.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/38472']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/38471_R']/rh:contains3[@rdf:resource='http://rdf.rhea-db.org/Participant_38471_compound_3249'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+  description: Stoichiometric coefficient 3.
+- id: ergothioneine-edge-013
+  subject: CHEBI:58173
+  predicate: consumes
+  object: RHEA:42673
+  evidence:
+  - &id002
+    reference_id: RHEA:42673
+    source_assertion: RHEA:42673 assigns CHEBI:58173 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42673']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42672_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42672_compound_1121'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1121)
+- id: ergothioneine-edge-014
+  subject: CHEBI:15781
+  predicate: consumes
+  object: RHEA:42673
+  evidence:
+  - &id004
+    reference_id: RHEA:42673
+    source_assertion: RHEA:42673 assigns CHEBI:15781 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42673']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42672_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42672_compound_4809'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_4809)
+- id: ergothioneine-edge-015
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:42673
+  evidence:
+  - reference_id: RHEA:42673
+    source_assertion: RHEA:42673 assigns CHEBI:15379 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42673']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42672_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42672_compound_1198'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1198)
+- id: ergothioneine-edge-016
+  subject: RHEA:42673
+  predicate: produces
+  object: CHEBI:82703
+  evidence:
+  - &id005
+    reference_id: RHEA:42673
+    source_assertion: RHEA:42673 assigns CHEBI:82703 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42673']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42672_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42672_compound_10177'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_10177)
+- id: ergothioneine-edge-017
+  subject: RHEA:42673
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:42673
+    source_assertion: RHEA:42673 assigns CHEBI:15377 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42673']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42672_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42672_compound_1283'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: ergothioneine-edge-018
+  subject: CHEBI:82703
+  predicate: consumes
+  object: RHEA:42685
+  evidence:
+  - &id006
+    reference_id: RHEA:42685
+    source_assertion: RHEA:42685 assigns CHEBI:82703 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42685']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42684_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42684_compound_10177'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_10177)
+- id: ergothioneine-edge-019
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:42685
+  evidence:
+  - reference_id: RHEA:42685
+    source_assertion: RHEA:42685 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42685']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42684_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42684_compound_1283'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: ergothioneine-edge-020
+  subject: RHEA:42685
+  predicate: produces
+  object: CHEBI:82706
+  evidence:
+  - &id007
+    reference_id: RHEA:42685
+    source_assertion: RHEA:42685 assigns CHEBI:82706 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42685']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42684_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42684_compound_10178'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_10178)
+- id: ergothioneine-edge-021
+  subject: RHEA:42685
+  predicate: produces
+  object: CHEBI:29985
+  evidence:
+  - reference_id: RHEA:42685
+    source_assertion: RHEA:42685 assigns CHEBI:29985 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42685']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/42684_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_42684_compound_2079'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_2079)
+- id: ergothioneine-edge-022
+  subject: CHEBI:82706
+  predicate: consumes
+  object: RHEA:52781
+  evidence:
+  - &id008
+    reference_id: RHEA:52781
+    source_assertion: RHEA:52781 assigns CHEBI:82706 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52781']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/52780_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_52780_compound_10178'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_10178)
+- id: ergothioneine-edge-023
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:52781
+  evidence:
+  - reference_id: RHEA:52781
+    source_assertion: RHEA:52781 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52781']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/52780_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_52780_compound_1283'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1283)
+- id: ergothioneine-edge-024
+  subject: RHEA:52781
+  predicate: produces
+  object: CHEBI:136834
+  evidence:
+  - &id009
+    reference_id: RHEA:52781
+    source_assertion: RHEA:52781 assigns CHEBI:136834 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52781']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/52780_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_52780_compound_13362'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_13362)
+- id: ergothioneine-edge-025
+  subject: RHEA:52781
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:52781
+    source_assertion: RHEA:52781 assigns CHEBI:15361 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52781']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/52780_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_52780_compound_3719'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3719)
+- id: ergothioneine-edge-026
+  subject: RHEA:52781
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:52781
+    source_assertion: RHEA:52781 assigns CHEBI:28938 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52781']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/52780_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_52780_compound_1012'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1012)
+- id: ergothioneine-edge-027
+  subject: CHEBI:136834
+  predicate: consumes
+  object: MetaCyc:RXN-18089
+  evidence:
+  - &id010
+    reference_id: MetaCyc:RXN-18089
+    source_assertion: The native left side contains CPD-19388 with implicit coefficient 1. The selected
+      equation retains native neutral ergothioneine and no added proton.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-18089']/left/Compound[@frameid='CPD-19388']; /reaction-direction
+  - &id011
+    reference_id: MetaCyc:CPD-19388
+    source_assertion: The sulfenic-acid compound has a CHEBI:136834 unification cross-reference.
+    source_locator: /ptools-xml/Compound/dblink[dblink-db='CHEBI']/dblink-oid
+- id: ergothioneine-edge-028
+  subject: CHEBI:17499
+  predicate: consumes
+  object: MetaCyc:RXN-18089
+  evidence:
+  - reference_id: MetaCyc:RXN-18089
+    source_assertion: The native left side contains Donor-H2 with implicit coefficient 1. The selected
+      equation retains native neutral ergothioneine and no added proton.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-18089']/left/Compound[@frameid='Donor-H2']; /reaction-direction
+  - reference_id: MetaCyc:Donor-H2
+    source_assertion: The native class links CHEBI:17499 and explicitly denotes unknown acceptors transferring
+      two electrons and two protons; its reduced form supplies hydrogen in this reaction.
+    source_locator: /ptools-xml/Compound/dblink[dblink-db='CHEBI']; /ptools-xml/Compound/comment, final
+      paragraph
+- id: ergothioneine-edge-029
+  subject: MetaCyc:RXN-18089
+  predicate: produces
+  object: CHEBI:4828
+  evidence:
+  - &id012
+    reference_id: MetaCyc:RXN-18089
+    source_assertion: The native right side contains Ergothioneine with implicit coefficient 1. The selected
+      equation retains native neutral ergothioneine and no added proton.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-18089']/right/Compound[@frameid='Ergothioneine'];
+      /reaction-direction
+  - &id013
+    reference_id: MetaCyc:Ergothioneine
+    source_assertion: The native neutral ergothioneine structure has a single C-S bond and a CHEBI:4828
+      cross-reference.
+    source_locator: /ptools-xml/Compound/cml/molecule[@formalCharge='0']/bondArray; /ptools-xml/Compound/dblink[dblink-db='CHEBI']
+- id: ergothioneine-edge-030
+  subject: MetaCyc:RXN-18089
+  predicate: produces
+  object: CHEBI:13193
+  evidence:
+  - reference_id: MetaCyc:RXN-18089
+    source_assertion: The native right side contains Acceptor with implicit coefficient 1. The selected
+      equation retains native neutral ergothioneine and no added proton.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-18089']/right/Compound[@frameid='Acceptor']; /reaction-direction
+  - reference_id: MetaCyc:Acceptor
+    source_assertion: The native oxidized acceptor class is explicitly for unknown acceptors transferring
+      two electrons and two protons; its CHEBI:15339 cross-reference is broader than a formula-bearing
+      hydrogen acceptor.
+    source_locator: /ptools-xml/Compound/comment, final paragraph; /ptools-xml/Compound/dblink[dblink-db='CHEBI']
+  - reference_id: CHEBI:13193
+    source_assertion: CHEBI:13193 is the charge-zero formula-A hydrogen acceptor. It provides the formula-bearing
+      generic oxidized partner, without choosing a physiological donor.
+    source_locator: SemanticSQL statements subject CHEBI:13193; rdfs:label, IAO:0000115, chemrof:generalized_empirical_formula,
+      chemrof:charge
+  - reference_id: RHEA:52785
+    source_assertion: The independently curated reduction uses CHEBI:17499 as donor and CHEBI:13193 as
+      oxidized partner. Its proton and cationic product convention differs from the selected neutral native
+      equation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52785']/rh:substrates and rh:products;
+      participant rh:compound/rh:chebi
+- id: ergothioneine-edge-031
+  subject: MetaCyc:RXN-18089
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: MetaCyc:RXN-18089
+    source_assertion: The native right side contains WATER with implicit coefficient 1. The selected equation
+      retains native neutral ergothioneine and no added proton.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-18089']/right/Compound[@frameid='WATER']; /reaction-direction
+- id: ergothioneine-edge-032
+  subject: CHEBI:4828
+  predicate: consumes
+  object: MetaCyc:RXN-15804
+  evidence:
+  - &id014
+    reference_id: MetaCyc:RXN-15804
+    source_assertion: The native right side contains Ergothioneine with implicit coefficient 1. The pathway
+      uses this reversible reaction toward the thione form.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-15804']/right/Compound[@frameid='Ergothioneine'];
+      /reaction-direction
+  - &id015
+    reference_id: MetaCyc:Ergothioneine
+    source_assertion: The native neutral ergothioneine structure has a single C-S bond and a CHEBI:4828
+      cross-reference.
+    source_locator: /ptools-xml/Compound/cml/molecule[@formalCharge='0']/bondArray; /ptools-xml/Compound/dblink[dblink-db='CHEBI']
+- id: ergothioneine-edge-033
+  subject: MetaCyc:RXN-15804
+  predicate: produces
+  object: CHEBI:82707
+  evidence:
+  - reference_id: MetaCyc:RXN-15804
+    source_assertion: The native left side contains Ergothioneine-Thione with implicit coefficient 1.
+      The pathway uses this reversible reaction toward the thione form.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-15804']/left/Compound[@frameid='Ergothioneine-Thione'];
+      /reaction-direction
+  - reference_id: MetaCyc:Ergothioneine-Thione
+    source_assertion: The native neutral thione has a double bond between sulfur atom15 and carbon atom9.
+      A separate thiol frame participates on the other side.
+    source_locator: /ptools-xml/Compound/cml/molecule[@formalCharge='0']/bondArray/bond[@atomRefs='Ergothioneine-Thione-atom9
+      Ergothioneine-Thione-atom15']
+  - reference_id: CHEBI:82707
+    source_assertion: CHEBI:82707 specifies neutral ergothioneine thione, formula C9H15N3O2S and a C=S
+      SMILES. Its tautomer-normalized standard InChI alone does not distinguish it from thiol CHEBI:4828.
+    source_locator: SemanticSQL statements subject CHEBI:82707; IAO:0000115, chemrof:charge, chemrof:generalized_empirical_formula,
+      chemrof:smiles_string, chemrof:inchi_string
+- id: ergothioneine-edge-034
+  subject: RHEA:13286
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes GLUTCYSLIG-RXN.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='GLUTCYSLIG-RXN']
+  - reference_id: MetaCyc:GLUTCYSLIG-RXN
+    source_assertion: The native reaction has Rhea cross-reference 13286.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  - reference_id: RHEA:13286
+    source_assertion: Rhea master 13285 supplies the selected left-to-right reaction RHEA:13286; all chemical
+      sides are taken from that directed record.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13285']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/13286']/rh:substrates and rh:products
+- id: ergothioneine-edge-035
+  subject: RHEA:38472
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes RXN-14431.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='RXN-14431']
+  - reference_id: MetaCyc:RXN-14431
+    source_assertion: The native reaction has Rhea cross-reference 38472.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  - reference_id: RHEA:38472
+    source_assertion: Rhea master 38471 supplies the selected left-to-right reaction RHEA:38472; all chemical
+      sides are taken from that directed record.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/38471']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/38472']/rh:substrates and rh:products
+- id: ergothioneine-edge-036
+  subject: RHEA:42673
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes RXN-14430.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='RXN-14430']
+  - reference_id: MetaCyc:RXN-14430
+    source_assertion: The native reaction has Rhea cross-reference 42673.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  - reference_id: RHEA:42673
+    source_assertion: Rhea master 42672 supplies the selected left-to-right reaction RHEA:42673; all chemical
+      sides are taken from that directed record.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42672']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/42673']/rh:substrates and rh:products
+- id: ergothioneine-edge-037
+  subject: RHEA:42685
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes RXN-14429.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='RXN-14429']
+  - reference_id: MetaCyc:RXN-14429
+    source_assertion: The native reaction has Rhea cross-reference 42685.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  - reference_id: RHEA:42685
+    source_assertion: Rhea master 42684 supplies the selected left-to-right reaction RHEA:42685; all chemical
+      sides are taken from that directed record.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/42684']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/42685']/rh:substrates and rh:products
+- id: ergothioneine-edge-038
+  subject: RHEA:52781
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes RXN-18088.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='RXN-18088']
+  - reference_id: MetaCyc:RXN-18088
+    source_assertion: The native reaction has Rhea cross-reference 52781.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  - reference_id: RHEA:52781
+    source_assertion: Rhea master 52780 supplies the selected left-to-right reaction RHEA:52781; all chemical
+      sides are taken from that directed record.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/52780']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/52781']/rh:substrates and rh:products
+- id: ergothioneine-edge-039
+  subject: MetaCyc:RXN-18089
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes RXN-18089.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='RXN-18089']
+  - reference_id: MetaCyc:RXN-18089
+    source_assertion: The native reaction is annotated spontaneous; its direction is PHYSIOL-LEFT-TO-RIGHT.
+    source_locator: /ptools-xml/Reaction/spontaneous; /ptools-xml/Reaction/reaction-direction
+  - reference_id: PMID:26149121
+    source_assertion: With DTT, ergothioneine was the only detected sulfur-containing product of EgtE
+      turnover; without reductant, ergothioneine and sulfinic-acid side product appeared. Potential physiological
+      thiols are suggestions, not identified physiological donors.
+    source_locator: /article/body/sec[@id='sec1']/p[3]; /article/body/sec[@id='sec1']/p[5]; Figure 4
+- id: ergothioneine-edge-040
+  subject: MetaCyc:RXN-15804
+  predicate: part_of
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: The complete pathway reaction-list includes RXN-15804.
+    source_locator: /ptools-xml/Pathway[@frameid='PWY-7255']/reaction-list/Reaction[@frameid='RXN-15804']
+  - reference_id: MetaCyc:RXN-15804
+    source_assertion: The native reaction is annotated spontaneous; its direction is REVERSIBLE.
+    source_locator: /ptools-xml/Reaction/spontaneous; /ptools-xml/Reaction/reaction-direction
+- id: ergothioneine-edge-041
+  subject: UniProtKB:A0R5N1
+  predicate: enables
+  object: RHEA:13286
+  evidence:
+  - reference_id: UniProtKB:A0R5N1
+    source_assertion: The current entry annotates L-cysteine + L-glutamate + ATP = gamma-L-glutamyl-L-cysteine
+      + ADP + phosphate + H(+) with ECO:0000250.
+    source_locator: /comments/1/reaction
+  description: EgtA glutamate-cysteine ligase activity is annotated by similarity (ECO:0000250 from P9WPK7),
+    not a direct assay of this mc(2)155 protein.
+- id: ergothioneine-edge-042
+  subject: UniProtKB:A0R5M8
+  predicate: enables
+  object: RHEA:38472
+  evidence:
+  - reference_id: UniProtKB:A0R5M8
+    source_assertion: The current entry annotates L-histidine + 3 S-adenosyl-L-methionine = hercynine
+      + 3 S-adenosyl-L-homocysteine + 3 H(+) with ECO:0000269. Its complete current sequence begins MTLSLANY.
+    source_locator: /comments/1/reaction; /sequence/value
+  - reference_id: DOI:10.1021/ja101721e.s001
+    source_assertion: The cloned egtB/C/D genes were amplified from M. smegmatis DSM43465 and expressed
+      in E. coli BL21; the selected sections report the relevant reconstituted activity.
+    source_locator: S2-S4, Cloning pS2; Production of EgtB, EgtC and EgtD; EgtD activity
+  - reference_id: PMID:24817736
+    source_assertion: The DSM43465/ATCC607 EgtD construct eluted as a monomer by preparative and analytical
+      size-exclusion chromatography; crystal asymmetric-unit multiplicity is not the solution oligomer.
+      The Methods give the tagged construct sequence with a MALSLANY protein start.
+    source_locator: HTML section id='sec2.1', paragraphs 1-2; section id='sec3', paragraph 1
+  description: EgtD transfers three SAM methyl groups to histidine; the current entry annotates this activity
+    with ECO:0000269. Primary 2010 and 2014 preparations used DSM43465/ATCC607, not mc(2)155. The earlier
+    engineered preparation differs at residue 2 from the current sequence (A versus T). No functional
+    consequence of this residue difference is inferred.
+- id: ergothioneine-edge-043
+  subject: UniProtKB:A0R5N0
+  predicate: enables
+  object: RHEA:42673
+  evidence:
+  - reference_id: UniProtKB:A0R5N0
+    source_assertion: The current entry annotates gamma-L-glutamyl-L-cysteine + hercynine + O2 = gamma-L-glutamyl-hercynylcysteine
+      S-oxide + H2O with ECO:0000269.
+    source_locator: /comments/1/reaction
+  - reference_id: DOI:10.1021/ja101721e.s001
+    source_assertion: The cloned egtB/C/D genes were amplified from M. smegmatis DSM43465 and expressed
+      in E. coli BL21; the selected sections report the relevant reconstituted activity.
+    source_locator: S2-S3 and S5-S9, Cloning pS2; EgtB reaction/product and metal/substrate tests
+  description: EgtB oxidative C-S coupling is annotated with ECO:0000269. The 2010 enzyme preparation
+    used DSM43465; the 2015 structural co-citation studies M. thermoresistibile. Neither establishes a
+    mc(2)155 solution assembly.
+- id: ergothioneine-edge-044
+  subject: UniProtKB:A0R5M9
+  predicate: enables
+  object: RHEA:42685
+  evidence:
+  - reference_id: UniProtKB:A0R5M9
+    source_assertion: The current entry annotates gamma-L-glutamyl-hercynylcysteine S-oxide + H2O = S-(hercyn-2-yl)-L-cysteine
+      S-oxide + L-glutamate with ECO:0000269.
+    source_locator: /comments/1/reaction
+  - reference_id: DOI:10.1021/ja101721e.s001
+    source_assertion: The cloned egtB/C/D genes were amplified from M. smegmatis DSM43465 and expressed
+      in E. coli BL21; the selected sections report the relevant reconstituted activity.
+    source_locator: S2-S3 and S10, Cloning pS2; combined enzymatic ergothioneine synthesis
+  - reference_id: PMID:26079795
+    source_assertion: The authors cloned A0R5M9/MSMEG_6248 from mc(2)155/ATCC700084 and report a tetramer
+      supported by PISA and analytical size-exclusion chromatography. Their substrate-bound structure
+      used a C2A variant.
+    source_locator: Accepted manuscript PDF p2, Results and Discussion / Overall structure; pp5-6, Experimental
+      Section / Protein production
+  description: EgtC hydrolyses the gamma-glutamyl moiety (ECO:0000269). Functional enables retains its
+    experimentally supported tetramer assembly context; it does not assert isolated-monomer sufficiency.
+- id: ergothioneine-edge-045
+  subject: UniProtKB:A0R5M7
+  predicate: enables
+  object: RHEA:52781
+  evidence:
+  - reference_id: UniProtKB:A0R5M7
+    source_assertion: The current entry annotates S-(hercyn-2-yl)-L-cysteine S-oxide + H2O = 2-sulfenohercynine
+      + pyruvate + NH4(+) with ECO:0000269.
+    source_locator: /comments/2/reaction
+  - reference_id: PMID:26149121
+    source_assertion: The purified PLP enzyme converted the sulfoxide to a trapped sulfenic-acid intermediate;
+      DTT yielded ergothioneine with pyruvate and ammonia. The particular physiological reductant was
+      not established.
+    source_locator: /article/body/sec[@id='sec1']/p[position()>=3 and position()<=8]; Figures 4-6
+  - reference_id: PMID:38072054
+    source_assertion: The full A0R5M7/MSMEG_6246 coding region came from mc2155. Crystal and solution
+      chromatography support a homodimer; the substrate pocket includes residues from the neighboring
+      monomer.
+    source_locator: /article/body/sec[@id='sec3']/sec[@id='sec3.2']/p[1]; /article/body/sec[@id='sec1']/sec[@id='sec1.1']/p[2];
+      sec[@id='sec1.2']/p[1]
+  description: EgtE cleavage produces sulfenohercynine, pyruvate and ammonium (ECO:0000269). Functional
+    enables retains the solution-supported homodimer; subsequent reduction is not assigned as a separate
+    EgtE catalytic reaction.
+- id: ergothioneine-edge-046
+  subject: UniProtKB:A0R5N0
+  predicate: has_cofactor
+  object: CHEBI:29033
+  evidence:
+  - reference_id: UniProtKB:A0R5N0
+    source_assertion: Fe(2+) is annotated as EgtB cofactor with ECO:0000269 evidence.
+    source_locator: /comments/2/cofactors/0
+  - reference_id: DOI:10.1021/ja101721e.s001
+    source_assertion: Chelex treatment reduced activity of the DSM43465 EgtB preparation; FeSO4 restored
+      sulfoxide formation, unlike the tested Zn, Cu or Mn conditions.
+    source_locator: S7, Figure S6 and paragraph describing metal depletion/reconstitution
+- id: ergothioneine-edge-047
+  subject: UniProtKB:A0R5M7
+  predicate: has_cofactor
+  object: CHEBI:597326
+  evidence:
+  - reference_id: UniProtKB:A0R5M7
+    source_assertion: Pyridoxal 5'-phosphate is annotated as EgtE cofactor with ECO:0000269.
+    source_locator: /comments/3/cofactors/0
+  - reference_id: PMID:26149121
+    source_assertion: Purified EgtE displayed a PLP-associated 420 nm absorbance and contained approximately
+      0.8 mol PLP per mol enzyme monomer.
+    source_locator: /article/body/sec[@id='sec1']/p[1]
+- id: ergothioneine-edge-049
+  subject: UniProtKB:A0R5M8
+  predicate: enables
+  object: MetaCyc:PWY-7255
+  evidence:
+  - reference_id: PMID:23629716
+    source_assertion: M. smegmatis mc2155 lacking egtD lost detectable ergothioneine synthesis; complementation
+      restored production. This establishes pathway physiology, not direct validation of all seven individual
+      reaction states.
+    source_locator: HTML section id='sec5', paragraph 1; section id='sec12', paragraph 1; Table 3
+- id: ergothioneine-edge-050
+  subject: RHEA:13286
+  predicate: provides_input_for
+  object: RHEA:42673
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: Native reaction ordering and layout connect GLUTCYSLIG-RXN to RXN-14430.
+    source_locator: /ptools-xml/Pathway/reaction-ordering; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='GLUTCYSLIG-RXN'
+      or Reaction/@frameid='RXN-14430']
+  - *id001
+  - *id002
+  description: 'Shared chemical: CHEBI:58173.'
+- id: ergothioneine-edge-051
+  subject: RHEA:38472
+  predicate: provides_input_for
+  object: RHEA:42673
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: Native reaction ordering and layout connect RXN-14431 to RXN-14430.
+    source_locator: /ptools-xml/Pathway/reaction-ordering; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-14431'
+      or Reaction/@frameid='RXN-14430']
+  - *id003
+  - *id004
+  description: 'Shared chemical: CHEBI:15781.'
+- id: ergothioneine-edge-052
+  subject: RHEA:42673
+  predicate: provides_input_for
+  object: RHEA:42685
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: Native reaction ordering and layout connect RXN-14430 to RXN-14429.
+    source_locator: /ptools-xml/Pathway/reaction-ordering; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-14430'
+      or Reaction/@frameid='RXN-14429']
+  - *id005
+  - *id006
+  description: 'Shared chemical: CHEBI:82703.'
+- id: ergothioneine-edge-053
+  subject: RHEA:42685
+  predicate: provides_input_for
+  object: RHEA:52781
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: Native reaction ordering and layout connect RXN-14429 to RXN-18088.
+    source_locator: /ptools-xml/Pathway/reaction-ordering; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-14429'
+      or Reaction/@frameid='RXN-18088']
+  - *id007
+  - *id008
+  description: 'Shared chemical: CHEBI:82706.'
+- id: ergothioneine-edge-054
+  subject: RHEA:52781
+  predicate: provides_input_for
+  object: MetaCyc:RXN-18089
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: Native reaction ordering and layout connect RXN-18088 to RXN-18089.
+    source_locator: /ptools-xml/Pathway/reaction-ordering; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-18088'
+      or Reaction/@frameid='RXN-18089']
+  - *id009
+  - *id010
+  - *id011
+  description: 'Shared chemical: CHEBI:136834.'
+- id: ergothioneine-edge-055
+  subject: MetaCyc:RXN-18089
+  predicate: provides_input_for
+  object: MetaCyc:RXN-15804
+  evidence:
+  - reference_id: MetaCyc:PWY-7255
+    source_assertion: Native reaction ordering and layout connect RXN-18089 to RXN-15804.
+    source_locator: /ptools-xml/Pathway/reaction-ordering; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-18089'
+      or Reaction/@frameid='RXN-15804']
+  - *id012
+  - *id013
+  - *id014
+  - *id015
+  description: 'Shared chemical: CHEBI:4828.'
+references:
+- id: MetaCyc:PWY-7255
+  title: ergothioneine biosynthesis I (bacteria)
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-7255
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 28518a958f37dfa2424c77b5c08db6eb9057e7a26cb61448f4dcbb513ddaf617
+- id: MetaCyc:GLUTCYSLIG-RXN
+  title: GLUTCYSLIG-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:GLUTCYSLIG-RXN
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: c57a9f06d250ae4aa8c5ce8b5ec13fab90da166ee59f2c37e8480a36c5a91189
+- id: MetaCyc:RXN-14431
+  title: RXN-14431
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-14431
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 1a696dc9fa34c88b82b7635f828492e8f199f39f458649ec464a8ae1117a3c22
+- id: MetaCyc:RXN-14430
+  title: RXN-14430
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-14430
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 16e76411719bb56fbdfabbffcc317fee6e835f9ea526e1457145b3f928e71396
+- id: MetaCyc:RXN-14429
+  title: RXN-14429
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-14429
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 4d52bf1364015a361c22bc43e5aa4f70d3170afa69a6d6a162dc2858396678fd
+- id: MetaCyc:RXN-18088
+  title: RXN-18088
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-18088
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 2a5bc026bc472317241f6a6f10a5bd282f317e61af485341e699418202e0a11f
+- id: MetaCyc:RXN-18089
+  title: RXN-18089
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-18089
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 1a10cac0c8ba6442c8d774ebc7e7704d5310552770fef3922ca64f564e7ee061
+- id: MetaCyc:RXN-15804
+  title: RXN-15804
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-15804
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 04281e86c417dd871224bf7445d3d8f4486ed8e690070ba5a623aadedd1bc8f1
+- id: MetaCyc:CPD-19388
+  title: 2-(hydroxysulfanyl)hercynine
+  url: https://pathway.yeastgenome.org/getxml?META:CPD-19388
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: b77e9432355e64fda01dd4a13d385433c7572d6777b44c9a626ae047e42f898d
+- id: MetaCyc:Ergothioneine
+  title: ergothioneine
+  url: https://pathway.yeastgenome.org/getxml?META:Ergothioneine
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 574bb36f17a191e57b5018d08daa5bf24f7ce36a006ea660d63cfd0076eb2b81
+- id: MetaCyc:Ergothioneine-Thione
+  title: ergothioneine (thione form)
+  url: https://pathway.yeastgenome.org/getxml?META:Ergothioneine-Thione
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: 80824fe40d995355b3eadc8aea033e6fbb20af43346f04c8a24ac2e83589de97
+- id: MetaCyc:Donor-H2
+  title: a reduced electron acceptor
+  url: https://pathway.yeastgenome.org/getxml?META:Donor-H2
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: a2cad5be6b6ec96bc2fabaa2d1d7fbcf0ef6549b846dce6870dd0879ac2e7bb9
+- id: MetaCyc:Acceptor
+  title: an oxidized electron acceptor
+  url: https://pathway.yeastgenome.org/getxml?META:Acceptor
+  source_version: MetaCyc 22.5 public mirror; complete original XML response retrieved 2026-10-11
+  source_sha256: ec1f3b9cc8b8fcc9615706ab317adc59d9117883ce6631a30b8c795f4a3fe19f
+- id: UniProtKB:A0R5N1
+  title: Glutamate--cysteine ligase EgtA
+  url: https://rest.uniprot.org/uniprotkb/A0R5N1.json
+  source_version: Complete current original JSON retrieved 2026-10-11; entry version 108, annotation date
+    2026-06-10; release headers not retained
+  source_sha256: d7d0af18a716c43b351213c0b2ad1acada0272ec3661bb1b11ca0c86d424363f
+- id: UniProtKB:A0R5M8
+  title: Histidine N-alpha-methyltransferase
+  url: https://rest.uniprot.org/uniprotkb/A0R5M8.json
+  source_version: Complete current original JSON retrieved 2026-10-11; entry version 114, annotation date
+    2026-09-02; release headers not retained
+  source_sha256: 053a1ac9c0b259119666e87d925bfc1fe763220660d2d1549cd78b0d66e9b2ac
+- id: UniProtKB:A0R5N0
+  title: Hercynine oxygenase
+  url: https://rest.uniprot.org/uniprotkb/A0R5N0.json
+  source_version: Complete current original JSON retrieved 2026-10-11; entry version 112, annotation date
+    2026-09-02; release headers not retained
+  source_sha256: f97375c162840574c6f33175194749477b3e83d2710bb6e06cf1334491c5fac6
+- id: UniProtKB:A0R5M9
+  title: Gamma-glutamyl-hercynylcysteine sulfoxide hydrolase
+  url: https://rest.uniprot.org/uniprotkb/A0R5M9.json
+  source_version: Complete current original JSON retrieved 2026-10-11; entry version 103, annotation date
+    2026-06-10; release headers not retained
+  source_sha256: 8ff51001db45c43c402528f31fd4188f7a1af9bedacf28d104ced68e7424ae98
+- id: UniProtKB:A0R5M7
+  title: Hercynylcysteine sulfoxide lyase
+  url: https://rest.uniprot.org/uniprotkb/A0R5M7.json
+  source_version: Complete current original JSON retrieved 2026-10-11; entry version 111, annotation date
+    2026-09-02; release headers not retained
+  source_sha256: 46f0cb1228117778bb4ee9e883495e5bb39cc9837016ebf3973dd953d5796d3a
+- id: RHEA:13286
+  title: Rhea 142 directed reaction 13286 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:38472
+  title: Rhea 142 directed reaction 38472 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:42673
+  title: Rhea 142 directed reaction 42673 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:42685
+  title: Rhea 142 directed reaction 42685 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:52781
+  title: Rhea 142 directed reaction 52781 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:52785
+  title: Rhea 142 directed reaction 52785 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: CHEBI:4828
+  title: ergothioneine
+  url: https://www.ebi.ac.uk/chebi/CHEBI:4828
+  source_version: ChEBI 255; source_sha256 covers complete pinned original SemanticSQL database, not the
+    linked HTML page; subject-specific fields inspected
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:82707
+  title: ergothioneine thione form
+  url: https://www.ebi.ac.uk/chebi/CHEBI:82707
+  source_version: ChEBI 255; source_sha256 covers complete pinned original SemanticSQL database, not the
+    linked HTML page; subject-specific fields inspected
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:13193
+  title: hydrogen acceptor
+  url: https://www.ebi.ac.uk/chebi/CHEBI:13193
+  source_version: ChEBI 255; source_sha256 covers complete pinned original SemanticSQL database, not the
+    linked HTML page; subject-specific fields inspected
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: CHEBI:17499
+  title: hydrogen donor
+  url: https://www.ebi.ac.uk/chebi/CHEBI:17499
+  source_version: ChEBI 255; source_sha256 covers complete pinned original SemanticSQL database, not the
+    linked HTML page; subject-specific fields inspected
+  source_sha256: 26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f
+- id: DOI:10.1021/ja101721e.s001
+  title: 'In vitro reconstitution of mycobacterial ergothioneine biosynthesis: Supporting Information'
+  url: https://ndownloader.figshare.com/files/4462969
+  source_version: Original 17-page ACS supplementary PDF; DOI association verified in original Figshare
+    article 2768629
+  source_sha256: 8865d33ccc48125663acdcf27c5af5e10f1eead72258d95b5270c5e08ad18847
+- id: PMID:26149121
+  title: 'Mechanistic studies of a novel C-S lyase in ergothioneine biosynthesis: the involvement of a
+    sulfenic acid intermediate'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4493562/fullTextXML
+  source_version: Complete original 2015 JATS XML; byte-identical copy of source acquired 2026-10-11T07:45:43.069019+00:00
+  source_sha256: 5567e312f5e3fef6298af1b64dfc37ae9675ac8a9f003dcfd898f096d616b125
+- id: PMID:38072054
+  title: Structure of mycobacterial ergothioneine-biosynthesis C-S lyase EgtE
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10805701/fullTextXML
+  source_version: Complete original JATS XML; article published 2023, collection 2024; retrieved 2026-10-11
+  source_sha256: d9c105c4d6b82abfba24f236558d6cd1719ae8cb1b5e7657acc2cf88864583ad
+- id: PMID:26079795
+  title: Structure of the ergothioneine-biosynthetic amidohydrolase EgtC
+  url: https://edoc.unibas.ch/server/api/core/bitstreams/44f1dafa-678e-46a7-9af2-115c7131537b/content
+  source_version: Complete 9-page accepted author manuscript; manuscript PDF, not typeset version of record;
+    retrieved 2026-10-11
+  source_sha256: 6e7a43aa9e761c39b86386355b6ca1e2b2005ba9674ad41b280265fe1aea344e
+- id: PMID:24817736
+  title: Crystallization and preliminary X-ray analysis of the ergothioneine-biosynthetic methyltransferase
+    EgtD
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4014345/
+  source_version: Complete original 2014 PMC HTML response; retrieved 2026-10-11
+  source_sha256: 89ced1b7b2b1aad3ace06e7d0656d79285140ac46293e03f78f19a2a5f4701dd
+- id: PMID:23629716
+  title: Ergothioneine is a secreted antioxidant in Mycobacterium smegmatis
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3697313/
+  source_version: Complete original 2013 PMC HTML response; retrieved 2026-10-11
+  source_sha256: 6551e9000cd0f815c48f5d55f827aae32a05094f92c2ebdaecbee94f59c12e61
+- id: DOI:10.1021/acschembio.8b00127.s001
+  title: 'Inhibition and regulation of the ergothioneine biosynthetic methyltransferase EgtD: Supporting
+    information'
+  url: https://ndownloader.figshare.com/files/11095580
+  source_version: Complete original 25-page ACS supplementary PDF; DOI association verified in Figshare
+    article 6144188; retrieved 2026-10-11
+  source_sha256: 20e0596c264994c847c2e19c11896a0d014081454b55cd555d5c58eb24060b64

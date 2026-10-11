@@ -1,0 +1,364 @@
+id: https://w3id.org/culturebotai/pathwaymech
+name: pathwaymech
+title: PathwayMech pathway mechanism records
+description: >-
+  One record per pathway: its taxa, participants and reactions as CURIE nodes,
+  and the causal edges between them, each backed by traceable evidence from a
+  reference declared in the same record. This schema states the structure,
+  closed, so an undeclared key is an error. What LinkML cannot state stays in
+  src/pathwaymech/schema.py: that edge endpoints resolve to the record, its
+  taxa, participants or reactions; that consumes/produces edges have
+  participant/reaction endpoints in the proper direction; that evidence cites
+  a declared reference; that evidence quotes are human-readable instead of raw
+  provider XML; and that pathway ids are unique across the corpus. An explicit
+  null is an error wherever it appears (the gate generates JSON Schema without
+  nulls): omit an optional key rather than setting it to null.
+license: BSD-3-Clause
+version: 0.1.0
+prefixes:
+  linkml: https://w3id.org/linkml/
+  pathwaymech: https://w3id.org/culturebotai/pathwaymech/
+  semapv: https://w3id.org/semapv/vocab/
+  skos: http://www.w3.org/2004/02/skos/core#
+default_prefix: pathwaymech
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  PathwayRecord:
+    tree_root: true
+    description: One curated pathway mechanism, one file under data/pathways/.
+    attributes:
+      id:
+        identifier: true
+        required: true
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+        description: The pathway's CURIE, e.g. MetaCyc:PWY-5097.
+      label:
+        required: true
+        pattern: "\\S"
+      description:
+        required: true
+        pattern: "\\S"
+      pathway_type:
+        required: true
+        pattern: "\\S"
+        description: Free-text pathway category, e.g. amino-acid-biosynthesis.
+      taxa:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: NamedNode
+      participants:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: NamedNode
+      reactions:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: NamedNode
+      mechanistic_edges:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: MechanisticEdge
+      gene_clusters:
+        multivalued: true
+        inlined_as_list: true
+        range: GeneCluster
+      source_mappings:
+        description: >-
+          Source xrefs retained at import time when a provider-local accession
+          is normalized into the final CURIE stored on a pathway node.
+        multivalued: true
+        inlined_as_list: true
+        range: SourceMapping
+      references:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        range: Reference
+      curation_history:
+        description: >-
+          Append-only audit trail of curator actions on this record. Optional.
+          CurationEvent has the same shape as TaxonMech's; what every Mech
+          shares is the timestamp's year guard.
+        multivalued: true
+        inlined_as_list: true
+        range: CurationEvent
+
+  NamedNode:
+    description: A taxon, participant or reaction, named by CURIE.
+    attributes:
+      id:
+        required: true
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+      label:
+        required: true
+        pattern: "\\S"
+      category:
+        range: NodeCategoryEnum
+        description: Source-supported biological kind or explicitly demonstrated cofactor role.
+      direction:
+        range: ReactionDirectionEnum
+        description: Direction asserted by the reaction source; permitted on reactions only.
+
+  GeneCluster:
+    description: >-
+      A biosynthetic gene cluster accession, with provider-local genes, loci,
+      product names and biosynthetic classes that do not have to be reaction
+      graph nodes.
+    attributes:
+      id:
+        required: true
+        pattern: "^MIBiG:\\S+(?![\\s\\S])"
+      label:
+        required: true
+        pattern: "\\S"
+      products:
+        multivalued: true
+        pattern: "\\S"
+      biosynthetic_classes:
+        multivalued: true
+        pattern: "\\S"
+      genes:
+        multivalued: true
+        inlined_as_list: true
+        range: ClusterGene
+      loci:
+        multivalued: true
+        inlined_as_list: true
+        range: GenomicLocus
+
+  ClusterGene:
+    description: A provider-local gene or protein accession in a biosynthetic gene cluster.
+    attributes:
+      id:
+        required: true
+        pattern: "\\S"
+      label:
+        pattern: "\\S"
+
+  GenomicLocus:
+    description: A GenBank-style sequence accession and optional region coordinates.
+    attributes:
+      accession:
+        required: true
+        pattern: "\\S"
+      start:
+        range: integer
+        minimum_value: 1
+      end:
+        range: integer
+        minimum_value: 1
+
+  SourceMapping:
+    description: >-
+      An SSSOM-ready exact mapping from an original source accession to the
+      normalized CURIE retained in the PathwayRecord.
+    attributes:
+      subject_id:
+        required: true
+        pattern: "^[^:\\s]+:\\S+(?![\\s\\S])"
+      subject_label:
+        required: true
+        pattern: "\\S"
+      predicate_id:
+        required: true
+        pattern: "^skos:exactMatch$"
+      object_id:
+        required: true
+        pattern: "^[^:\\s]+:\\S+(?![\\s\\S])"
+      object_label:
+        required: true
+        pattern: "\\S"
+      mapping_justification:
+        required: true
+        pattern: "^semapv:\\S+(?![\\s\\S])"
+      confidence:
+        required: true
+        pattern: "^(0(\\.[0-9]+)?|1(\\.0+)?)(?![\\s\\S])"
+      source_pathway_id:
+        required: true
+        pattern: "^[^:\\s]+:\\S+(?![\\s\\S])"
+      source_element_id:
+        required: true
+        pattern: "\\S"
+
+  MechanisticEdge:
+    description: >-
+      A directed causal or mechanistic claim between two nodes of the same
+      record, with at least one quotation or located structured-source assertion.
+    attributes:
+      id:
+        required: true
+        pattern: "\\S"
+      subject:
+        required: true
+        description: A node id in this record (checked in src/pathwaymech/schema.py).
+      predicate:
+        required: true
+        range: EdgePredicateEnum
+      object:
+        required: true
+        description: A node id in this record (checked in src/pathwaymech/schema.py).
+      description:
+        description: Optional prose about the edge.
+      evidence:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+        range: EvidenceItem
+
+  EvidenceItem:
+    attributes:
+      reference_id:
+        required: true
+        description: The id of a reference declared in this record.
+      quote:
+        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
+        description: >-
+          A verbatim excerpt of at most 400 characters. The pattern ends in
+          (?![\s\S]) rather than $, which in Python's re also matches before a
+          final newline and so admitted 401.
+      source_assertion:
+        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
+        description: >-
+          Faithful human-readable rendering of an inspected structured source
+          statement, not a quotation or a claim to have read its cited paper.
+      source_locator:
+        pattern: "\\S"
+        description: Exact source object, triple, XML path, or JSON path supporting the assertion.
+    exactly_one_of:
+      - slot_conditions:
+          quote:
+            required: true
+        none_of:
+          - slot_conditions:
+              source_assertion:
+                required: true
+      - slot_conditions:
+          source_assertion:
+            required: true
+          source_locator:
+            required: true
+        none_of:
+          - slot_conditions:
+              quote:
+                required: true
+
+  Reference:
+    description: A source cited by evidence; needs a title or a citation.
+    attributes:
+      id:
+        required: true
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways):\\S+(?![\\s\\S])"
+      title:
+        pattern: "\\S"
+      citation:
+        pattern: "\\S"
+      url:
+        pattern: "^https?://[^\\s]+(?![\\s\\S])"
+      source_version:
+        pattern: "\\S"
+      source_sha256:
+        pattern: "^[0-9a-f]{64}(?![\\s\\S])"
+    any_of:
+      - slot_conditions:
+          title:
+            required: true
+      - slot_conditions:
+          citation:
+            required: true
+
+  CurationEvent:
+    description: A timestamped curator action on a PathwayRecord.
+    attributes:
+      timestamp:
+        range: datetime
+        required: true
+        # Deterministic year guard, shared across the Mech repos: rejects the
+        # 2206-for-2026 class of typo without consulting the wall clock.
+        pattern: "^20[0-9]{2}-"
+        description: >-
+          When the action happened: an RFC 3339 date-time with a timezone, such
+          as '2026-09-28T12:00:00Z' (a date alone, a time without an offset,
+          or a leap second is rejected). Quote it in YAML: an unquoted timestamp loads as a
+          datetime object, not a string.
+      curator:
+        range: string
+      action:
+        range: string
+      changes:
+        range: string
+      llm_assisted:
+        range: boolean
+
+enums:
+  ReactionDirectionEnum:
+    permissible_values:
+      left_to_right:
+      right_to_left:
+      reversible:
+  NodeCategoryEnum:
+    permissible_values:
+      chemical_entity:
+        description: A chemical entity or generic chemical class whose supported scope does not establish a narrower molecular kind.
+      small_molecule:
+      lipid:
+      polymer:
+        description: A chemical polymer, including a polymer class with variable chain length.
+      protein:
+      gene:
+      dna:
+      rna:
+      cofactor:
+      complex:
+      cellular_component:
+      molecular_activity:
+      biological_process:
+  EdgePredicateEnum:
+    permissible_values:
+      activates:
+        description: The subject increases the activity of the object.
+      catalyzes:
+        description: The subject (an enzyme or gene product) catalyzes the object reaction.
+      consumes:
+        description: The subject participant is consumed by the object reaction or pathway.
+      enables:
+        description: The subject enables the object (a function or reaction) to occur.
+      inhibits:
+        description: The subject decreases the activity of the object.
+      precedes:
+        description: The subject step happens before the object step.
+      produces:
+        description: The subject reaction or pathway produces the object participant.
+      regulates:
+        description: The subject regulates the object, with direction unstated.
+      causally_upstream_of:
+        description: The subject activity causally influences the object activity without asserting regulation or its sign.
+      has_input:
+        description: The subject activity has the object participant as an input, without asserting chemical consumption.
+      has_output:
+        description: The subject activity has the object participant as an output.
+      occurs_in:
+        description: The subject activity occurs in the object cellular component.
+      located_in:
+        description: The subject physical entity is located in the object cellular component.
+      part_of:
+        description: The subject activity, process, or physical entity is part of the object of a compatible kind.
+      has_part:
+        description: The subject has the object as a component; inverse of part_of.
+      provides_input_for:
+        description: The subject activity directly provides material input for the object activity.
+      has_cofactor:
+        description: >-
+          The subject enzyme or complex uses the object cofactor as stated by the
+          source. Alternative cofactors and evidence limitations belong in the
+          edge description or located source assertion; this does not assert all
+          alternatives are required together. An explicitly typed subject must
+          be a protein or complex.
