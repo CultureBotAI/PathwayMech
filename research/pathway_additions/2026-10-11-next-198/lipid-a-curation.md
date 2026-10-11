@@ -1,0 +1,55 @@
+# Complete L-Ara4N-modified lipid A route
+
+Target: `data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml`, SHA256 `6c9f87fc7a7b6ae411092a5e34330df52f18bb574a09b25eae79fc48182d3955`.
+The exact native identity is **MetaCyc:PWY0-1338, polymyxin resistance**. Its six chemical reactions define a complete aminoarabinose modification route; the phenotype title does not justify adding unrelated resistance mechanisms. The record contains 31 participants, 6 reactions, 50 edges, 98 evidence blocks and 34 references. This is an author curation dossier, not an independent scientific review.
+
+## Boundary and novelty
+
+The exact native list starts with UDP-glucuronate, includes ArnA oxidative decarboxylation, ArnB transamination, ArnA formylation, ArnC donor-lipid synthesis, ArnD deformylation and ArnT transfer, and ends with bis-aminoarabinose-modified Kdo2-lipid A. It includes the complete source-defined biosynthetic route and its carrier recycling. UDP-glucuronate synthesis by Ugd and assembly of the Kdo2-lipid A acceptor are upstream inputs, not silently omitted native members. GO:1901760 is broader and GO:0036108 ends at the lipid-linked precursor; neither is a narrower exact substitute for this named native pathway.
+
+Both PathBank leads, SMP0002065/PW002052.owl (E. coli) and SMP0122234/PW123542.owl (P. aeruginosa), contain six biochemical reactions. All native left/right occurrences, controllers, steps, complex components and object classes are retained in the source projection. The E. coli entry has no controller for deformylation. The Pseudomonas counterparts A6V1P0, Q02R24, A6V1P2 and A6V1N8 are inspected leads, not substituted for experimentally scoped E. coli proteins.
+
+The hidden- and ignored-inclusive searches in both the new worktree and original Documents checkout are recorded in [lipid-a-dedup.json](lipid-a-dedup.json), including exact commands, outputs and hashes. They find prior inventories and an ignored SEED subsystem option, not a maintained duplicate. The closest maintained lipid-IVA biosynthesis record ends upstream of this route and has no Arn reaction. This is a bounded novelty conclusion, not a claim that the pathway is absent from all external resources.
+
+## Exact chemistry
+
+| Native reaction | Current directed Rhea | Role and orientation |
+| --- | --- | --- |
+| RXN0-1861 | 24703 | NAD-dependent oxidative decarboxylation; left to right |
+| RXN0-1863 | 24712 | Reversible ArnB transamination selected right to left for biosynthesis; native bidirectional cross-reference 24713 explicitly bridged through master 24710 |
+| RXN0-1862 | 24707 | N10-formyl-THF-dependent sugar formylation; left to right |
+| RXN0-3521 | 27723 | Formamidoarabinose transfer to undecaprenyl monophosphate; left to right |
+| RXN0-5409 | 27735 | Deformylation with water, releasing formate; left to right |
+| RXN0-2001 | 35372 | Two donor transfers to Kdo2-lipid A, returning two undecaprenyl monophosphates; left to right |
+
+The original official Rhea 142 RDF and directions table supply every chemical side, coefficient, proton and reaction orientation. Current ChEBI 255 supplies exact names, formulas, charges and active identity. The replay independently extracts the RDF again, compares all 26 side occurrences, balances each reaction and the complete route with two copies of the first five reactions per final two-transfer net reaction, and verifies actual exported evidence. No side is inferred from pathway order.
+
+Native PathBank has material errors: reaction 3356 carries a formyltransferase label despite dehydrogenase chemistry; reaction 5994 has unbalanced 2:1 coefficients; donor PW_C042606 lacks an external chemical xref and copies its formamido precursor formula; the final reaction returns diphosphate instead of monophosphate. These assertions are rejected explicitly. The current independently resolved donor is CHEBI:60463 (C60H100NO7P, neutral zwitterion); its identity also has original E. coli donor NMR support (PMID:11535605, inspected abstract). The final Rhea equation uses two donors and Kdo2-lipid A(6−), yielding the bis-modified product(2−). It is a net reaction, not an assertion of one elementary double-transfer event or of uniform modification in every cell.
+
+MetaCyc's native folate entries are classes; the current Rhea formyl-transfer equation uses explicit charged monoglutamate forms. The mapping does not declare a chemical class exactly identical to one member. Current ChEBI stereochemistry and charge are retained; no acid/anion or phosphate/diphosphate substitution is made by label similarity.
+
+## Enzymes, assemblies and primary evidence
+
+The native ArnA hexamer CPLX0-7718 contains six P77398 subunits and catalyzes both ArnA reactions. Full original E. coli crystallographic evidence supports a dimer of trimers (PMID:15939024, PMC2997725 P8/P10), while the inspected 2019 abstract reports both hexameric and tetrameric architectures (PMID:31344437). Active isolated domains in the full 2005 primary study (PMID:15807526, PMC2583347 P14–P19) show that this graph must not imply that the hexamer is the only possible oligomer or mandatory for isolated-domain activity. ATP in the crystal is a NAD-binding mimic, not a pathway substrate. NAD is consumed and reduced; there is no invented permanently bound NAD or ATP cofactor.
+
+ArnB P77690 is represented as a functional gene-product role, preserving the homodimer annotation's ECO:0000250 transfer from Salmonella. The inspected E. coli primary abstract (PMID:12704196) directly supports PLP, cytoplasmic location, reversible transamination, NMR product assignment and a biosynthetic equilibrium constant near 0.1. Biosynthetic direction does not establish irreversibility. The PLP cofactor relation has edge-local primary support.
+
+ArnC P77757 carries current experimentally annotated catalytic evidence, with the inspected original 2005 abstract specifically distinguishing utilization of the formylated sugar nucleotide (PMID:15695810). The full 2025 structural paper studies Salmonella Typhimurium ArnC expressed in E. coli C43; expression host is not enzyme origin. Its tetramer and Mn-containing preparation are not transferred to E. coli ArnC. The 2023 donor-synthesis method likewise uses Salmonella ArnC in MnCl2. No fixed E. coli ArnC oligomer or physiological metal is asserted.
+
+The older native deformylation reaction RXN0-5409 is explicitly hypothetical, and current UniProt still uses probable/function-transfer wording. The full 2023 original paper (PMID:37782650, PMC10914315) supplies later evidence: an E. coli K-12-derived MST100 pmrAc arnD disruption accumulates the formylated donor (P10/P21, Figure 1D), while purified **Salmonella** ArnD catalyzes deformylation (P13/P28–P30, Figure 5A). EDTA inhibition and Mn/Co response establish metal dependence of those purified Salmonella assays. They do not fix the E. coli physiological metal, which remains unasserted. The graph attaches E. coli P76472 as a qualified functional role with both sources and their distinct organism scopes.
+
+ArnT P76473 has the source-defined Kdo2-lipid A role through native reaction membership and reviewed source links. PMID:11535604's inspected primary abstract distinguishes two additions to Kdo-bearing lipid-A precursors from one addition to lipid IVA lacking Kdo. Current UniProt's one-transfer lipid-IVA catalytic text is explicitly an alternative substrate reaction, not offered as proof of the complete Kdo2 equation. The original full 2007 paper provides E. coli deletion evidence; the 2001 PDF request failed and is not described as inspected full text.
+
+ArnE Q47377 and ArnF P76474 are retained as two qualified `enables` roles on the whole pathway. Original E. coli deletion, complementation and membrane-impermeable/permeable probe experiments support joint transport-associated function (PMID:17928292, PMC2613183 P34–P40). Residual modification and roughly four- to fivefold differences remain in the source. The native CPLX0-7720 heterodimer is explicitly proposed; the paper calls for purification/reconstitution and does not establish energy coupling. Accordingly, no fixed ArnEF physical complex or invented leaflet-specific chemical identifiers appear. The donor-to-ArnT material-flow edge separately cites this required transport context and does not mean direct substrate channeling or individual subunit sufficiency.
+
+## Scope and excluded assertions
+
+Taxon scope is E. coli K-12, with each primary strain/construct retained at its nearest evidence block. Native MG1655 identity, W3110-derived DY330/MST100 experiments, overproduced proteins and purified Salmonella constructs are not collapsed into one experiment. The record does not claim constitutive polymyxin resistance of every K-12 strain, reconstruct PhoPQ/BasR regulation, transfer findings to all Gram-negative species, or infer physiological flux from an assay alone. No unrelated protein, regulator or antibiotic interaction is added simply because it appears in a paper.
+
+The shared [iModulonDB context](imodulondb-context.json) contains component 68 expression-context rows for arnA/arnB/arnC. Those data are computational context, not direct catalytic or regulatory proof. Search results and unreturned rows do not establish exhaustive module membership or biological absence. Root's unchanged-client offline parser replay is separately labeled; it is not an independent scientific review of this record.
+
+## Provenance and reproduction
+
+[Source manifest](lipid-a-source-manifest.json), [source projection and dispositions](lipid-a-source-projection.json), [protein projection](lipid-a-protein-projection.json), [complete identifier ledger](lipid-a-identifiers.json), and [authority delta](lipid-a-authority-delta.json) bind exact original bytes, issuing URLs and hash scopes. Primary abstracts use the full eight-PMID response digest with an exact result-ID locator; this digest is not represented as a full-text article hash. Rhea digests cover compressed official RDF and plain TSV separately. Original bodies remain external under `/private/tmp/pathwaymech-next-198-evidence/lipid-a`. Failed DNS, XML endpoint and PDF attempts are retained as availability limits; no credentials or session headers are maintained.
+
+Run the bounded author replay from the worktree with `PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/python research/pathway_additions/2026-10-11-next-198/lipid-a-replay.py`. [Validation receipt](lipid-a-validation.json) records the actual terminal result. The explicit `PYTHONPATH` selects this worktree rather than the reused environment's earlier editable source path. The replay checks native and closed schemas, all original body digests, source locators, six full chemical equations, coefficients, atom/charge balances, assembly/organism limits, all graph nodes and all 98 exported evidence blocks. Root runs the separate shared corpus gates and independent reviewers assess the science; their results are not preclaimed here.

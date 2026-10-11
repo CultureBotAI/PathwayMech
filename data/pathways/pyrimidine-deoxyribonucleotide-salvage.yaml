@@ -1,0 +1,853 @@
+id: GO:0010139
+label: pyrimidine deoxyribonucleotide salvage
+description: This complete five-reaction Escherichia coli implementation converts 2'-deoxycytidine through
+  2'-deoxyuridine to dUMP, or uses deoxyuridine-derived 2-deoxy-alpha-D-ribose 1-phosphate to salvage
+  thymine through thymidine to dTMP. Cdd deaminates deoxycytidine, the reversible DeoA phosphorolyses
+  supply or consume the sugar phosphate, and Tdk phosphorylates deoxyuridine or thymidine. The selected
+  biochemical boundary matches the five-reaction native EcoCyc pathway; NupC/NupG uptake is incoming context
+  and subsequent nucleotide phosphorylation is outside it. MG1655 is the native protein-annotation scope;
+  primary K-12 mutant studies and E. coli B enzyme studies do not establish constitutive wild-type MG1655
+  flux. Tdk is represented by its source-defined multimeric assembly without fixing its stoichiometry
+  across conditions. This GO process implementation is not asserted equivalent to the differently composed
+  MetaCyc PWY-7199 pathway.
+pathway_type: pyrimidine-deoxyribonucleotide-salvage
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:15698
+  label: 2'-deoxycytidine
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16450
+  label: 2'-deoxyuridine
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57259
+  label: 2-deoxy-alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:17568
+  label: uracil
+  category: small_molecule
+- id: CHEBI:17821
+  label: thymine
+  category: small_molecule
+- id: CHEBI:17748
+  label: thymidine
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:246422
+  label: dUMP(2-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:63528
+  label: dTMP(2-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P0ABF6
+  label: Cytidine deaminase
+  category: protein
+- id: UniProtKB:P07650
+  label: Thymidine phosphorylase
+  category: protein
+- id: UniProtKB:P23331
+  label: Thymidine kinase
+  category: protein
+- id: MetaCyc:CYTIDEAM-CPLX
+  label: cytidine/deoxycytidine deaminase
+  category: complex
+- id: MetaCyc:DEOA-CPLX
+  label: thymidine phosphorylase / uracil phosphorylase
+  category: complex
+- id: MetaCyc:CPLX0-8261
+  label: thymidine kinase / deoxyuridine kinase
+  category: complex
+reactions:
+- id: RHEA:13434
+  label: 2'-deoxycytidine + H2O + H(+) => 2'-deoxyuridine + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:22825
+  label: 2'-deoxyuridine + phosphate => 2-deoxy-alpha-D-ribose 1-phosphate + uracil
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16039
+  label: 2-deoxy-alpha-D-ribose 1-phosphate + thymine => thymidine + phosphate
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:28207
+  label: 2'-deoxyuridine + ATP => dUMP + ADP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:19130
+  label: thymidine + ATP => dTMP + ADP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: deoxysalvage-edge-001
+  subject: CHEBI:15698
+  predicate: consumes
+  object: RHEA:13434
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea 13434 assigns CHEBI:15698 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_5580'];
+      http://rdf.rhea-db.org/Participant_13433_compound_5580/rh:compound; http://rdf.rhea-db.org/Compound_5580/rh:chebi
+- id: deoxysalvage-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:13434
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea 13434 assigns CHEBI:15377 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_1283'];
+      http://rdf.rhea-db.org/Participant_13433_compound_1283/rh:compound; http://rdf.rhea-db.org/Compound_1283/rh:chebi
+- id: deoxysalvage-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:13434
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea 13434 assigns CHEBI:15378 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_3249'];
+      http://rdf.rhea-db.org/Participant_13433_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: deoxysalvage-edge-004
+  subject: RHEA:13434
+  predicate: produces
+  object: CHEBI:16450
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea 13434 assigns CHEBI:16450 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_5154'];
+      http://rdf.rhea-db.org/Participant_13433_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+- id: deoxysalvage-edge-005
+  subject: RHEA:13434
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea 13434 assigns CHEBI:28938 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_1012'];
+      http://rdf.rhea-db.org/Participant_13433_compound_1012/rh:compound; http://rdf.rhea-db.org/Compound_1012/rh:chebi
+- id: deoxysalvage-edge-006
+  subject: CHEBI:16450
+  predicate: consumes
+  object: RHEA:22825
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea 22825 assigns CHEBI:16450 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_5154'];
+      http://rdf.rhea-db.org/Participant_22824_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+- id: deoxysalvage-edge-007
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:22825
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea 22825 assigns CHEBI:43474 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_5518'];
+      http://rdf.rhea-db.org/Participant_22824_compound_5518/rh:compound; http://rdf.rhea-db.org/Compound_5518/rh:chebi
+- id: deoxysalvage-edge-008
+  subject: RHEA:22825
+  predicate: produces
+  object: CHEBI:57259
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea 22825 assigns CHEBI:57259 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_3098'];
+      http://rdf.rhea-db.org/Participant_22824_compound_3098/rh:compound; http://rdf.rhea-db.org/Compound_3098/rh:chebi
+- id: deoxysalvage-edge-009
+  subject: RHEA:22825
+  predicate: produces
+  object: CHEBI:17568
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea 22825 assigns CHEBI:17568 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_4063'];
+      http://rdf.rhea-db.org/Participant_22824_compound_4063/rh:compound; http://rdf.rhea-db.org/Compound_4063/rh:chebi
+- id: deoxysalvage-edge-010
+  subject: CHEBI:57259
+  predicate: consumes
+  object: RHEA:16039
+  evidence:
+  - reference_id: RHEA:16039
+    source_assertion: Rhea 16039 assigns CHEBI:57259 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_3098'];
+      http://rdf.rhea-db.org/Participant_16037_compound_3098/rh:compound; http://rdf.rhea-db.org/Compound_3098/rh:chebi
+- id: deoxysalvage-edge-011
+  subject: CHEBI:17821
+  predicate: consumes
+  object: RHEA:16039
+  evidence:
+  - reference_id: RHEA:16039
+    source_assertion: Rhea 16039 assigns CHEBI:17821 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_2794'];
+      http://rdf.rhea-db.org/Participant_16037_compound_2794/rh:compound; http://rdf.rhea-db.org/Compound_2794/rh:chebi
+- id: deoxysalvage-edge-012
+  subject: RHEA:16039
+  predicate: produces
+  object: CHEBI:17748
+  evidence:
+  - reference_id: RHEA:16039
+    source_assertion: Rhea 16039 assigns CHEBI:17748 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_4636'];
+      http://rdf.rhea-db.org/Participant_16037_compound_4636/rh:compound; http://rdf.rhea-db.org/Compound_4636/rh:chebi
+- id: deoxysalvage-edge-013
+  subject: RHEA:16039
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:16039
+    source_assertion: Rhea 16039 assigns CHEBI:43474 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_5518'];
+      http://rdf.rhea-db.org/Participant_16037_compound_5518/rh:compound; http://rdf.rhea-db.org/Compound_5518/rh:chebi
+- id: deoxysalvage-edge-014
+  subject: CHEBI:16450
+  predicate: consumes
+  object: RHEA:28207
+  evidence:
+  - reference_id: RHEA:28207
+    source_assertion: Rhea 28207 assigns CHEBI:16450 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28206_compound_5154'];
+      http://rdf.rhea-db.org/Participant_28206_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+- id: deoxysalvage-edge-015
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:28207
+  evidence:
+  - reference_id: RHEA:28207
+    source_assertion: Rhea 28207 assigns CHEBI:30616 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28206_compound_6372'];
+      http://rdf.rhea-db.org/Participant_28206_compound_6372/rh:compound; http://rdf.rhea-db.org/Compound_6372/rh:chebi
+- id: deoxysalvage-edge-016
+  subject: RHEA:28207
+  predicate: produces
+  object: CHEBI:246422
+  evidence:
+  - reference_id: RHEA:28207
+    source_assertion: Rhea 28207 assigns CHEBI:246422 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28206_compound_4655'];
+      http://rdf.rhea-db.org/Participant_28206_compound_4655/rh:compound; http://rdf.rhea-db.org/Compound_4655/rh:chebi
+- id: deoxysalvage-edge-017
+  subject: RHEA:28207
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:28207
+    source_assertion: Rhea 28207 assigns CHEBI:456216 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28206_compound_2710'];
+      http://rdf.rhea-db.org/Participant_28206_compound_2710/rh:compound; http://rdf.rhea-db.org/Compound_2710/rh:chebi
+- id: deoxysalvage-edge-018
+  subject: RHEA:28207
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:28207
+    source_assertion: Rhea 28207 assigns CHEBI:15378 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28206_compound_3249'];
+      http://rdf.rhea-db.org/Participant_28206_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: deoxysalvage-edge-019
+  subject: CHEBI:17748
+  predicate: consumes
+  object: RHEA:19130
+  evidence:
+  - reference_id: RHEA:19130
+    source_assertion: Rhea 19130 assigns CHEBI:17748 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_19129_compound_4636'];
+      http://rdf.rhea-db.org/Participant_19129_compound_4636/rh:compound; http://rdf.rhea-db.org/Compound_4636/rh:chebi
+- id: deoxysalvage-edge-020
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:19130
+  evidence:
+  - reference_id: RHEA:19130
+    source_assertion: Rhea 19130 assigns CHEBI:30616 to substrates with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_19129_compound_6372'];
+      http://rdf.rhea-db.org/Participant_19129_compound_6372/rh:compound; http://rdf.rhea-db.org/Compound_6372/rh:chebi
+- id: deoxysalvage-edge-021
+  subject: RHEA:19130
+  predicate: produces
+  object: CHEBI:63528
+  evidence:
+  - reference_id: RHEA:19130
+    source_assertion: Rhea 19130 assigns CHEBI:63528 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_19129_compound_5064'];
+      http://rdf.rhea-db.org/Participant_19129_compound_5064/rh:compound; http://rdf.rhea-db.org/Compound_5064/rh:chebi
+- id: deoxysalvage-edge-022
+  subject: RHEA:19130
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:19130
+    source_assertion: Rhea 19130 assigns CHEBI:456216 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_19129_compound_2710'];
+      http://rdf.rhea-db.org/Participant_19129_compound_2710/rh:compound; http://rdf.rhea-db.org/Compound_2710/rh:chebi
+- id: deoxysalvage-edge-023
+  subject: RHEA:19130
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:19130
+    source_assertion: Rhea 19130 assigns CHEBI:15378 to products with coefficient 1; this is the exact
+      charge and stereochemical species in the native RDF.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_19129_compound_3249'];
+      http://rdf.rhea-db.org/Participant_19129_compound_3249/rh:compound; http://rdf.rhea-db.org/Compound_3249/rh:chebi
+- id: deoxysalvage-edge-024
+  subject: UniProtKB:P0ABF6
+  predicate: part_of
+  object: MetaCyc:CYTIDEAM-CPLX
+  evidence:
+  - reference_id: MetaCyc:CYTIDEAM-CPLX
+    source_assertion: The native complex contains two copies of CYTIDEAM-MONOMER.
+    source_locator: Protein[@frameid='CYTIDEAM-CPLX']/component/Protein; component/coefficient
+  - reference_id: MetaCyc:CYTIDEAM-MONOMER
+    source_assertion: The native component has a UNIPROT unification cross-reference to P0ABF6.
+    source_locator: Protein[@frameid='CYTIDEAM-MONOMER']/dblink[dblink-db='UNIPROT'][dblink-relationship='unification']/dblink-oid
+  - reference_id: PMID:8289286
+    source_assertion: The primary abstract reports an E. coli cytidine deaminase alpha2 dimer with active
+      sites formed across its subunit interface.
+    source_locator: Europe PMC /resultList/result/0/abstractText; primary abstract only
+  description: Homodimer membership; catalysis is assigned to the assembly.
+- id: deoxysalvage-edge-025
+  subject: UniProtKB:P07650
+  predicate: part_of
+  object: MetaCyc:DEOA-CPLX
+  evidence:
+  - reference_id: MetaCyc:DEOA-CPLX
+    source_assertion: The native complex contains two copies of DEOA-MONOMER.
+    source_locator: Protein[@frameid='DEOA-CPLX']/component/Protein; component/coefficient
+  - reference_id: MetaCyc:DEOA-MONOMER
+    source_assertion: The native component has a UNIPROT unification cross-reference to P07650.
+    source_locator: Protein[@frameid='DEOA-MONOMER']/dblink[dblink-db='UNIPROT'][dblink-relationship='unification']/dblink-oid
+  - reference_id: PMID:2199449
+    source_assertion: The primary abstract reports an E. coli thymidine phosphorylase crystal dimer and
+      the deoA-derived sequence.
+    source_locator: Europe PMC /resultList/result/0/abstractText; primary abstract only
+  description: Homodimer membership; catalysis is assigned to the assembly.
+- id: deoxysalvage-edge-026
+  subject: UniProtKB:P23331
+  predicate: part_of
+  object: MetaCyc:CPLX0-8261
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8261
+    source_assertion: The native assembly contains TDK-MONOMER and reports an 82 kDa K-12 enzyme from
+      crude-extract gel filtration; its comment distinguishes ligand-dependent dimerization studies of
+      the E. coli B enzyme.
+    source_locator: Protein[@frameid='CPLX0-8261']/component/Protein; molecular-weight-exp; comment paragraphs
+      2-3
+  - reference_id: MetaCyc:TDK-MONOMER
+    source_assertion: The native component has a UNIPROT unification cross-reference to P23331.
+    source_locator: Protein[@frameid='TDK-MONOMER']/dblink[dblink-db='UNIPROT'][dblink-relationship='unification']/dblink-oid
+  - reference_id: UniProtKB:P23331
+    source_assertion: Reviewed UniProt annotates a homotetramer by HAMAP MF_00124 (ECO:0000255); this
+      is an inference rather than a condition-resolved native assembly measurement.
+    source_locator: /comments/3/texts/0/value; /comments/3/texts/0/evidences
+  - reference_id: PMID:2041474
+    source_assertion: The primary abstract reports W3110 tdk complementation of TK-deficient KY895 and
+      gel-filtration evidence for a multimeric active enzyme; the abstract does not specify a subunit
+      count.
+    source_locator: Europe PMC /resultList/result/0/abstractText; truncated primary abstract only
+  description: Component membership only. The graph does not fix a tetramer or transfer E. coli B ligand-dependent
+    dimerization to all K-12 conditions.
+- id: deoxysalvage-edge-027
+  subject: MetaCyc:CYTIDEAM-CPLX
+  predicate: catalyzes
+  object: RHEA:13434
+  evidence:
+  - reference_id: MetaCyc:CYTIDEAM-CPLX
+    source_assertion: The native CYTIDEAM-CPLX catalyzes annotation links CYTIDEAM-ENZRXN to CYTIDEAM-RXN.
+    source_locator: Protein[@frameid='CYTIDEAM-CPLX']/catalyzes/Enzymatic-Reaction[@frameid='CYTIDEAM-ENZRXN']/reaction/Reaction[@frameid='CYTIDEAM-RXN']
+  - reference_id: MetaCyc:CYTIDEAM-RXN
+    source_assertion: The native reaction has an explicit RHEA:13434 unification cross-reference; its
+      own left/right compounds are retained separately from the selected Rhea direction.
+    source_locator: Reaction[@frameid='CYTIDEAM-RXN']/dblink[dblink-db='RHEA']/dblink-oid; left; right
+  - reference_id: RHEA:13434
+    source_assertion: Rhea master 13433 explicitly lists directional member 13434; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/13434'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:4202859
+    source_assertion: Partially purified cytidine deaminase from E. coli Y-70-272 deaminates deoxycytidine;
+      this strain-specific enzyme assay supports the activity, not MG1655 wild-type salvage flux.
+    source_locator: Full primary PDF pp.797-798 Materials and Methods/Strains of bacteria and Enzyme assay;
+      p.802 Substrate specificity and Table VI
+  description: Native enzyme annotation is distinguished from the strain and access limits of inspected
+    primary evidence.
+- id: deoxysalvage-edge-028
+  subject: MetaCyc:DEOA-CPLX
+  predicate: catalyzes
+  object: RHEA:22825
+  evidence:
+  - reference_id: MetaCyc:DEOA-CPLX
+    source_assertion: The native DEOA-CPLX catalyzes annotation links URA-PHOSPH-ENZRXN to URA-PHOSPH-RXN.
+    source_locator: Protein[@frameid='DEOA-CPLX']/catalyzes/Enzymatic-Reaction[@frameid='URA-PHOSPH-ENZRXN']/reaction/Reaction[@frameid='URA-PHOSPH-RXN']
+  - reference_id: MetaCyc:URA-PHOSPH-RXN
+    source_assertion: The native reaction has an explicit RHEA:22827 unification cross-reference; its
+      own left/right compounds are retained separately from the selected Rhea direction.
+    source_locator: Reaction[@frameid='URA-PHOSPH-RXN']/dblink[dblink-db='RHEA']/dblink-oid; left; right
+  - reference_id: RHEA:22825
+    source_assertion: Rhea master 22824 explicitly lists directional member 22825; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/22825'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rh:products; rh:equation
+  - reference_id: UniProtKB:P07650
+    source_assertion: Reviewed DeoA catalyzes reversible pyrimidine nucleoside phosphorolysis for degradation
+      or rescue of pyrimidine bases; the graph selects deoxyuridine cleavage and thymidine synthesis in
+      this salvage route.
+    source_locator: /comments/0/texts/0/value; /comments/1/reaction; /comments/2/texts
+  description: Selected salvage direction; reversible DeoA chemistry does not imply constitutive net flux.
+- id: deoxysalvage-edge-029
+  subject: MetaCyc:DEOA-CPLX
+  predicate: catalyzes
+  object: RHEA:16039
+  evidence:
+  - reference_id: MetaCyc:DEOA-CPLX
+    source_assertion: The native DEOA-CPLX catalyzes annotation links THYM-PHOSPH-ENZRXN to THYM-PHOSPH-RXN.
+    source_locator: Protein[@frameid='DEOA-CPLX']/catalyzes/Enzymatic-Reaction[@frameid='THYM-PHOSPH-ENZRXN']/reaction/Reaction[@frameid='THYM-PHOSPH-RXN']
+  - reference_id: MetaCyc:THYM-PHOSPH-RXN
+    source_assertion: The native reaction has an explicit RHEA:16040 unification cross-reference; its
+      own left/right compounds are retained separately from the selected Rhea direction.
+    source_locator: Reaction[@frameid='THYM-PHOSPH-RXN']/dblink[dblink-db='RHEA']/dblink-oid; left; right
+  - reference_id: RHEA:16039
+    source_assertion: Rhea master 16037 explicitly lists directional member 16039; its substrates, products
+      and equation specify the selected right-to-left transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/16039'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:substrates; rh:products; rh:equation
+  - reference_id: UniProtKB:P07650
+    source_assertion: Reviewed DeoA catalyzes reversible pyrimidine nucleoside phosphorolysis for degradation
+      or rescue of pyrimidine bases; the graph selects deoxyuridine cleavage and thymidine synthesis in
+      this salvage route.
+    source_locator: /comments/0/texts/0/value; /comments/1/reaction; /comments/2/texts
+  description: Selected salvage direction; reversible DeoA chemistry does not imply constitutive net flux.
+- id: deoxysalvage-edge-030
+  subject: MetaCyc:CPLX0-8261
+  predicate: catalyzes
+  object: RHEA:28207
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8261
+    source_assertion: The native CPLX0-8261 catalyzes annotation links DURIDKI-ENZRXN to DURIDKI-RXN.
+    source_locator: Protein[@frameid='CPLX0-8261']/catalyzes/Enzymatic-Reaction[@frameid='DURIDKI-ENZRXN']/reaction/Reaction[@frameid='DURIDKI-RXN']
+  - reference_id: MetaCyc:DURIDKI-RXN
+    source_assertion: The native reaction has an explicit RHEA:28207 unification cross-reference; its
+      own left/right compounds are retained separately from the selected Rhea direction.
+    source_locator: Reaction[@frameid='DURIDKI-RXN']/dblink[dblink-db='RHEA']/dblink-oid; left; right
+  - reference_id: RHEA:28207
+    source_assertion: Rhea master 28206 explicitly lists directional member 28207; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/28207'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:substrates; rh:products; rh:equation
+  - reference_id: MetaCyc:DURIDKI-ENZRXN
+    source_assertion: The native deoxyuridine kinase assignment is physiologically left-to-right and carries
+      an unpurified-protein assay evidence code linked to Hiraga 1967. This is inspected database annotation,
+      not direct inspection of that paper.
+    source_locator: Enzymatic-Reaction[@frameid='DURIDKI-ENZRXN']/enzyme; reaction; reaction-direction;
+      evidence
+  - reference_id: UniProtKB:P23331
+    source_assertion: Reviewed UniProt states that Tdk phosphorylates both thymidine and deoxyuridine.
+    source_locator: /comments/0/texts/0/value
+  - reference_id: PMID:17827303
+    source_assertion: The introduction describes deoxycytidine deamination followed by thymidine-kinase
+      conversion of deoxyuridine to dUMP; Table 1 identifies the studied strains as K-12 derivatives.
+    source_locator: Full PMC2168750 HTML Introduction paragraph beginning "Escherichia coli has three
+      known routes"; Table 1 footnote a
+  description: Native enzyme annotation is distinguished from the strain and access limits of inspected
+    primary evidence.
+- id: deoxysalvage-edge-031
+  subject: MetaCyc:CPLX0-8261
+  predicate: catalyzes
+  object: RHEA:19130
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8261
+    source_assertion: The native CPLX0-8261 catalyzes annotation links THYKI-ENZRXN to THYKI-RXN.
+    source_locator: Protein[@frameid='CPLX0-8261']/catalyzes/Enzymatic-Reaction[@frameid='THYKI-ENZRXN']/reaction/Reaction[@frameid='THYKI-RXN']
+  - reference_id: MetaCyc:THYKI-RXN
+    source_assertion: The native reaction has an explicit RHEA:19130 unification cross-reference; its
+      own left/right compounds are retained separately from the selected Rhea direction.
+    source_locator: Reaction[@frameid='THYKI-RXN']/dblink[dblink-db='RHEA']/dblink-oid; left; right
+  - reference_id: RHEA:19130
+    source_assertion: Rhea master 19129 explicitly lists directional member 19130; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/19130'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:2041474
+    source_assertion: W3110 DNA carrying tdk confers thymidine kinase activity on TK-deficient KY895 in
+      the reported genetic complementation assay.
+    source_locator: Europe PMC /resultList/result/0/abstractText; primary abstract only
+  description: Native enzyme annotation is distinguished from the strain and access limits of inspected
+    primary evidence.
+- id: deoxysalvage-edge-032
+  subject: MetaCyc:CYTIDEAM-CPLX
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P0ABF6
+    source_assertion: Cdd has Zn(2+) cofactor CHEBI:29105 with experimental ECO:0000269 evidence; the
+      note states one zinc per subunit.
+    source_locator: /comments/3/cofactors; /comments/3/note/texts
+  - reference_id: PMID:8289286
+    source_assertion: The primary abstract identifies zinc-binding pockets in the cytidine deaminase dimer
+      and the metal-ligand coordination at its active sites.
+    source_locator: Europe PMC /resultList/result/0/abstractText; primary abstract only
+  description: Bound catalytic zinc is distinct from inhibition by excess externally supplied zinc in
+    older assays.
+- id: deoxysalvage-edge-033
+  subject: RHEA:13434
+  predicate: part_of
+  object: GO:0010139
+  evidence:
+  - reference_id: PathBank:SMP0002073
+    source_assertion: The named native salvage map explicitly contains biochemical reaction 6014, whose
+      written conversion is retained in this five-reaction biochemical implementation.
+    source_locator: Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002073']/bp:pathwayComponent[@rdf:resource='#Reactions/6014'];
+      BiochemicalReaction[@rdf:ID='Reactions/6014']/bp:left; bp:right; bp:conversionDirection
+  - reference_id: GO:0010139
+    source_assertion: GO defines recovery of pyrimidine bases or deoxyribonucleotides from nucleotide
+      breakdown back to pyrimidine deoxyribonucleotides; this graph represents one complete E. coli biochemical
+      implementation.
+    source_locator: QuickGO /results/0/id; /results/0/name; /results/0/definition/text
+  - reference_id: RHEA:13434
+    source_assertion: Rhea master 13433 explicitly lists directional member 13434; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/13434'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rh:products; rh:equation
+  description: The source map also includes four incoming NupC/NupG transport objects, dispositioned separately.
+    No equivalence to the differently composed MetaCyc PWY-7199 is asserted.
+- id: deoxysalvage-edge-034
+  subject: RHEA:22825
+  predicate: part_of
+  object: GO:0010139
+  evidence:
+  - reference_id: PathBank:SMP0002073
+    source_assertion: The named native salvage map explicitly contains biochemical reaction 6018, whose
+      written conversion is retained in this five-reaction biochemical implementation.
+    source_locator: Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002073']/bp:pathwayComponent[@rdf:resource='#Reactions/6018'];
+      BiochemicalReaction[@rdf:ID='Reactions/6018']/bp:left; bp:right; bp:conversionDirection
+  - reference_id: GO:0010139
+    source_assertion: GO defines recovery of pyrimidine bases or deoxyribonucleotides from nucleotide
+      breakdown back to pyrimidine deoxyribonucleotides; this graph represents one complete E. coli biochemical
+      implementation.
+    source_locator: QuickGO /results/0/id; /results/0/name; /results/0/definition/text
+  - reference_id: RHEA:22825
+    source_assertion: Rhea master 22824 explicitly lists directional member 22825; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/22825'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rh:products; rh:equation
+  description: The source map also includes four incoming NupC/NupG transport objects, dispositioned separately.
+    No equivalence to the differently composed MetaCyc PWY-7199 is asserted.
+- id: deoxysalvage-edge-035
+  subject: RHEA:16039
+  predicate: part_of
+  object: GO:0010139
+  evidence:
+  - reference_id: PathBank:SMP0002073
+    source_assertion: The named native salvage map explicitly contains biochemical reaction 6019, whose
+      written conversion is retained in this five-reaction biochemical implementation.
+    source_locator: Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002073']/bp:pathwayComponent[@rdf:resource='#Reactions/6019'];
+      BiochemicalReaction[@rdf:ID='Reactions/6019']/bp:left; bp:right; bp:conversionDirection
+  - reference_id: GO:0010139
+    source_assertion: GO defines recovery of pyrimidine bases or deoxyribonucleotides from nucleotide
+      breakdown back to pyrimidine deoxyribonucleotides; this graph represents one complete E. coli biochemical
+      implementation.
+    source_locator: QuickGO /results/0/id; /results/0/name; /results/0/definition/text
+  - reference_id: RHEA:16039
+    source_assertion: Rhea master 16037 explicitly lists directional member 16039; its substrates, products
+      and equation specify the selected right-to-left transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/16039'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:substrates; rh:products; rh:equation
+  description: The source map also includes four incoming NupC/NupG transport objects, dispositioned separately.
+    No equivalence to the differently composed MetaCyc PWY-7199 is asserted.
+- id: deoxysalvage-edge-036
+  subject: RHEA:28207
+  predicate: part_of
+  object: GO:0010139
+  evidence:
+  - reference_id: PathBank:SMP0002073
+    source_assertion: The named native salvage map explicitly contains biochemical reaction 6015, whose
+      written conversion is retained in this five-reaction biochemical implementation.
+    source_locator: Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002073']/bp:pathwayComponent[@rdf:resource='#Reactions/6015'];
+      BiochemicalReaction[@rdf:ID='Reactions/6015']/bp:left; bp:right; bp:conversionDirection
+  - reference_id: GO:0010139
+    source_assertion: GO defines recovery of pyrimidine bases or deoxyribonucleotides from nucleotide
+      breakdown back to pyrimidine deoxyribonucleotides; this graph represents one complete E. coli biochemical
+      implementation.
+    source_locator: QuickGO /results/0/id; /results/0/name; /results/0/definition/text
+  - reference_id: RHEA:28207
+    source_assertion: Rhea master 28206 explicitly lists directional member 28207; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/28207'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:substrates; rh:products; rh:equation
+  description: The source map also includes four incoming NupC/NupG transport objects, dispositioned separately.
+    No equivalence to the differently composed MetaCyc PWY-7199 is asserted.
+- id: deoxysalvage-edge-037
+  subject: RHEA:19130
+  predicate: part_of
+  object: GO:0010139
+  evidence:
+  - reference_id: PathBank:SMP0002073
+    source_assertion: The named native salvage map explicitly contains biochemical reaction 6021, whose
+      written conversion is retained in this five-reaction biochemical implementation.
+    source_locator: Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002073']/bp:pathwayComponent[@rdf:resource='#Reactions/6021'];
+      BiochemicalReaction[@rdf:ID='Reactions/6021']/bp:left; bp:right; bp:conversionDirection
+  - reference_id: GO:0010139
+    source_assertion: GO defines recovery of pyrimidine bases or deoxyribonucleotides from nucleotide
+      breakdown back to pyrimidine deoxyribonucleotides; this graph represents one complete E. coli biochemical
+      implementation.
+    source_locator: QuickGO /results/0/id; /results/0/name; /results/0/definition/text
+  - reference_id: RHEA:19130
+    source_assertion: Rhea master 19129 explicitly lists directional member 19130; its substrates, products
+      and equation specify the selected left-to-right transformation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129']/rh:directionalReaction[@rdf:resource='http://rdf.rhea-db.org/19130'];
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:substrates; rh:products; rh:equation
+  description: The source map also includes four incoming NupC/NupG transport objects, dispositioned separately.
+    No equivalence to the differently composed MetaCyc PWY-7199 is asserted.
+- id: deoxysalvage-edge-038
+  subject: RHEA:13434
+  predicate: provides_input_for
+  object: RHEA:22825
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: The exact directed reaction 13434 produces CHEBI:16450, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_5154'];
+      http://rdf.rhea-db.org/Participant_13433_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+  - reference_id: RHEA:22825
+    source_assertion: The exact directed reaction 22825 consumes CHEBI:16450, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_5154'];
+      http://rdf.rhea-db.org/Participant_22824_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+  description: Inferred material continuity from separately inspected product and substrate identities,
+    consistent with native EcoCyc ordering; no channeling or obligatory wild-type flux claim.
+- id: deoxysalvage-edge-039
+  subject: RHEA:13434
+  predicate: provides_input_for
+  object: RHEA:28207
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: The exact directed reaction 13434 produces CHEBI:16450, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_5154'];
+      http://rdf.rhea-db.org/Participant_13433_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+  - reference_id: RHEA:28207
+    source_assertion: The exact directed reaction 28207 consumes CHEBI:16450, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28207']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28206_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28206_compound_5154'];
+      http://rdf.rhea-db.org/Participant_28206_compound_5154/rh:compound; http://rdf.rhea-db.org/Compound_5154/rh:chebi
+  description: Inferred material continuity from separately inspected product and substrate identities,
+    consistent with native EcoCyc ordering; no channeling or obligatory wild-type flux claim.
+- id: deoxysalvage-edge-040
+  subject: RHEA:22825
+  predicate: provides_input_for
+  object: RHEA:16039
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: The exact directed reaction 22825 produces CHEBI:57259, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_3098'];
+      http://rdf.rhea-db.org/Participant_22824_compound_3098/rh:compound; http://rdf.rhea-db.org/Compound_3098/rh:chebi
+  - reference_id: RHEA:16039
+    source_assertion: The exact directed reaction 16039 consumes CHEBI:57259, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_3098'];
+      http://rdf.rhea-db.org/Participant_16037_compound_3098/rh:compound; http://rdf.rhea-db.org/Compound_3098/rh:chebi
+  description: Inferred material continuity from separately inspected product and substrate identities,
+    consistent with native EcoCyc ordering; no channeling or obligatory wild-type flux claim.
+- id: deoxysalvage-edge-041
+  subject: RHEA:16039
+  predicate: provides_input_for
+  object: RHEA:19130
+  evidence:
+  - reference_id: RHEA:16039
+    source_assertion: The exact directed reaction 16039 produces CHEBI:17748, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16039']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_4636'];
+      http://rdf.rhea-db.org/Participant_16037_compound_4636/rh:compound; http://rdf.rhea-db.org/Compound_4636/rh:chebi
+  - reference_id: RHEA:19130
+    source_assertion: The exact directed reaction 19130 consumes CHEBI:17748, the shared intermediate
+      linking these two selected transformations.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/19130']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/19129_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_19129_compound_4636'];
+      http://rdf.rhea-db.org/Participant_19129_compound_4636/rh:compound; http://rdf.rhea-db.org/Compound_4636/rh:chebi
+  description: Inferred material continuity from separately inspected product and substrate identities,
+    consistent with native EcoCyc ordering; no channeling or obligatory wild-type flux claim.
+references:
+- id: RHEA:13434
+  title: Rhea exact directed reaction 13434
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:22825
+  title: Rhea exact directed reaction 22825
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:16039
+  title: Rhea exact directed reaction 16039
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28207
+  title: Rhea exact directed reaction 28207
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:19130
+  title: Rhea exact directed reaction 19130
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:CYTIDEAM-CPLX
+  title: MetaCyc native CYTIDEAM-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM-CPLX
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: b79b75fba322f3718df4000f496c415ee25e3965f9848d13cb1b110437ac5dce
+- id: MetaCyc:CYTIDEAM-MONOMER
+  title: MetaCyc native CYTIDEAM-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 135aeade3641f73a1b1d7f4330f4f127facc3822af12e1a5dbc509db9f6836f6
+- id: PMID:8289286
+  title: 'Cytidine deaminase. The 2.3 A crystal structure of an enzyme: transition-state analog complex.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:8289286%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract inspected; no full-text claim
+  source_sha256: 7070f1230543d24d3d26a7e26f40d157a88b1696f3d1e2271fadb6b823883b8e
+- id: MetaCyc:DEOA-CPLX
+  title: MetaCyc native DEOA-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:DEOA-CPLX
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 1b414dc3564b266b9e990fd5ae7486e6dbb8cca4e857045320da94e2627028c2
+- id: MetaCyc:DEOA-MONOMER
+  title: MetaCyc native DEOA-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:DEOA-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: fc030ffa47776b04f607f4b26cc1197fd2e2a3223c70c5e759275b251d35bfd6
+- id: PMID:2199449
+  title: Three-dimensional structure of thymidine phosphorylase from Escherichia coli at 2.8 A resolution.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:2199449%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract inspected; no full-text claim
+  source_sha256: 1bed3f0ec9b3f64ba5e9b1fcc5a543aeaffcca7cc476c31f8f090388a5f1050d
+- id: MetaCyc:CPLX0-8261
+  title: MetaCyc native CPLX0-8261
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-8261
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 6a1631bda03bca1deb7fa838d9801e2982c9c1dfd5c4e61e3e98ba6008c2e76d
+- id: MetaCyc:TDK-MONOMER
+  title: MetaCyc native TDK-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:TDK-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 6c0c23e3d8fcb68fcea08f7fc2324c57e256edc037269c920ad5c92e3b515442
+- id: UniProtKB:P23331
+  title: Reviewed UniProtKB P23331
+  url: https://rest.uniprot.org/uniprotkb/P23331.json
+  source_version: UniProt 2026_03; original response release header and entry audit retained
+  source_sha256: a23c1c91bbaf4a3fdffe58d088fd72116f6034a88b252722a14f092841be8043
+- id: PMID:2041474
+  title: Nucleotide sequence of the Escherichia coli thymidine kinase gene provides evidence for conservation
+    of functional domains and quaternary structure.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:2041474%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract inspected; no full-text claim
+  source_sha256: 07076064f64cb10166fcf31bfa5c7ba39e18f3090d88a234772b305b1d915de6
+- id: MetaCyc:CYTIDEAM-RXN
+  title: MetaCyc native CYTIDEAM-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 7897d52befade144490b11bcb4a988ef0ae6c399aaac366cb0df8ba47906e425
+- id: PMID:4202859
+  title: The purification and properties of cytidine deaminase from Escherichia coli.
+  url: https://www.jstage.jst.go.jp/article/biochemistry1922/74/4/74_4_797/_pdf
+  source_version: 1973 primary full text, pp.797-803
+  source_sha256: d094077fc2c51687a68d397866a9bc3f54aff1c42ea120a602b9b1dcb0f7aed4
+- id: MetaCyc:URA-PHOSPH-RXN
+  title: MetaCyc native URA-PHOSPH-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:URA-PHOSPH-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: f30864c9da2d9dbef16400db8f9faa248955cdb76bb11267e98a982400215ff8
+- id: UniProtKB:P07650
+  title: Reviewed UniProtKB P07650
+  url: https://rest.uniprot.org/uniprotkb/P07650.json
+  source_version: UniProt 2026_03; original response release header and entry audit retained
+  source_sha256: 6457feb8ab1f827190467c8c6bc37cc1a397f101f6dbda9e7ae0e2aa81bc1c1c
+- id: MetaCyc:THYM-PHOSPH-RXN
+  title: MetaCyc native THYM-PHOSPH-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:THYM-PHOSPH-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 204139aae73f875ab995c9c129397b011527eafe9d26aeb542e2d584809be854
+- id: MetaCyc:DURIDKI-RXN
+  title: MetaCyc native DURIDKI-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DURIDKI-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 80d79cfa953867f840ba3cd7149de21d0cd0092181871a73dbb289dce991720a
+- id: MetaCyc:DURIDKI-ENZRXN
+  title: MetaCyc native DURIDKI-ENZRXN
+  url: https://pathway.yeastgenome.org/getxml?META:DURIDKI-ENZRXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 3e3af6fa14d5169fe19bbc533b51805110881b403213bfab069636570aa0a7fc
+- id: PMID:17827303
+  title: The Deoxycytidine Pathway for Thymidylate Synthesis in Escherichia coli
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2168750/
+  source_version: 2007 primary full text; mutant and K-12 strain scope retained
+  source_sha256: 0638bb23989b09ca9057114d65e818c8848547e268d2181a69eea7efa68d424f
+- id: MetaCyc:THYKI-RXN
+  title: MetaCyc native THYKI-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:THYKI-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: b8c44bfd705b0a0cc5043cadedbfdfd1b6dbb9b96eff981705395a5868494d86
+- id: UniProtKB:P0ABF6
+  title: Reviewed UniProtKB P0ABF6
+  url: https://rest.uniprot.org/uniprotkb/P0ABF6.json
+  source_version: UniProt 2026_03; original response release header and entry audit retained
+  source_sha256: ecffd6fea9810f3756dfa4dd7c17be85954ab1f19b73ad98660394b2c20a0637
+- id: PathBank:SMP0002073
+  title: Salvage Pathways of Pyrimidine Deoxyribonucleotides
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: Frozen PathBank BioPAX member PW002061.owl; member SHA scope
+  source_sha256: 835dd682abc9a03bf79a4f33e415e16d23c2316b16adfc7a1aa5ba5eddffc510
+- id: GO:0010139
+  title: Gene Ontology pyrimidine deoxyribonucleotide salvage
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0010139
+  source_version: QuickGO original GO term response retrieved 2026-10-11
+  source_sha256: a1afd3e7b820bdff7d5de2b5e96933a60cbd63f6474a1bda13cb98bb4c7fd58e
+curation_history:
+- timestamp: '2026-10-11T07:08:03Z'
+  curator: Codex
+  action: add-pathway
+  changes: Curated the complete five-reaction E. coli salvage implementation after hidden/ignored-inclusive
+    semantic deduplication; retained native pathway identity mismatch, four uptake-context dispositions,
+    exact Rhea direction families and Tdk assembly/primary-strain limits.
+  llm_assisted: true

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import sqlite3
@@ -127,3 +128,65 @@ def test_missing_corpus_or_zero_identifier_selection_cannot_publish(
 
     assert build(authority, corpus, output) == 1
     assert not output.exists()
+
+
+@pytest.mark.parametrize("defect", [None, "hash", "missing", "duplicate", "accession",
+                                  "status", "equation", "class", "unselected"])
+def test_rhea_correction_uses_original_rdf_and_fails_closed(
+    tmp_path: Path, authority: Path, defect: str | None,
+) -> None:
+    corpus = tmp_path / "corpus"
+    write_record(corpus, "record.yaml", "GO:0008150", "biological_process")
+    write_record(corpus, "reaction.yaml", "RHEA:27983", "made-up equation")
+    # The database deliberately carries the obsolete equation. It must not
+    # remain as a synonym when the current native authority corrects it.
+    with sqlite3.connect(authority) as connection:
+        connection.execute("INSERT INTO statements VALUES (?, ?, ?, ?)",
+                           ("RHEA:27983", "rdfs:label", None, "obsolete equation"))
+    accession = "RHEA:99999" if defect == "accession" else "RHEA:27983"
+    status = "Obsolete" if defect == "status" else "Approved"
+    kind = "Compound" if defect == "class" else "DirectionalReaction"
+    equation = "different" if defect == "equation" else "2 ATP =&gt; 2 AMP"
+    obj = f'''<rdf:Description rdf:about="http://rdf.rhea-db.org/27983">
+      <rdfs:subClassOf rdf:resource="http://rdf.rhea-db.org/{kind}"/>
+      <rh:id>27983</rh:id><rh:accession>{accession}</rh:accession>
+      <rdfs:label>2 ATP =&gt; 2 AMP</rdfs:label><rh:equation>{equation}</rh:equation>
+      <rh:status rdf:resource="http://rdf.rhea-db.org/{status}"/>
+    </rdf:Description>'''
+    if defect == "missing":
+        obj = ""
+    if defect == "duplicate":
+        obj += obj
+    xml = f'''<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xmlns:rh="http://rdf.rhea-db.org/">{obj}</rdf:RDF>'''
+    artifact = tmp_path / "rhea.rdf.gz"
+    artifact.write_bytes(gzip.compress(xml.encode()))
+    sha = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    manifest = tmp_path / "updates.json"
+    manifest.write_text(json.dumps({
+        "key": "rhea-rdf-142", "path": artifact.name,
+        "url": "https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz",
+        "version": "142", "license": "CC-BY-4.0",
+        "sha256": "0" * 64 if defect == "hash" else sha,
+        "ids": ["RHEA:99999" if defect == "unselected" else "RHEA:27983"],
+    }))
+    output = tmp_path / "snapshot.json"
+    output.write_text("previous reviewed snapshot\n")
+    result = main([
+        "--source", f"GO={authority}", "--source", f"RHEA={authority}",
+        "--corpus", str(corpus), "--output", str(output),
+        "--rhea-updates", str(manifest), "--cache-dir", str(tmp_path),
+    ])
+    if defect:
+        assert result == 1
+        assert output.read_text() == "previous reviewed snapshot\n"
+    else:
+        assert result == 0
+        snapshot = json.loads(output.read_text())
+        assert snapshot["terms"]["RHEA:27983"] == {
+            "label": "2 ATP => 2 AMP", "synonyms": [], "source": "rhea-rdf-142",
+        }
+        assert snapshot["terms"]["GO:0008150"]["label"] == "biological_process"
+        assert snapshot["sources"]["rhea-rdf-142"]["sha256"] == sha
+        assert snapshot["sources"]["rhea-rdf-142"]["sha256_scope"] == "complete_original_gzip_rdf"

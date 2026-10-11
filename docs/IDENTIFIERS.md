@@ -63,6 +63,17 @@ contextual slot. It cannot satisfy canonical-label verification even if the
 strings happen to match. This records the evidence boundary for native IDs
 whose independently available source supplies membership but no canonical name.
 
+The ontology builder also accepts `--rhea-updates conf/rhea_identifier_updates.json
+--cache-dir <original-source-cache>`. This explicit manifest selects equations
+whose current Rhea release corrects the older Semantic SQL source. It contains
+identifiers and source provenance only. The builder hashes the complete original
+gzip RDF and requires matching native URI, accession, numeric ID, approved reaction
+class/status, and agreeing equation and label. Missing, duplicate or inconsistent
+objects fail before the snapshot is written. Updated terms cite that RDF source;
+obsolete equations are not retained as synonyms. Other terms continue to use
+their pinned sources. The current selection adds two preQ₀ reactions absent from
+the prior corpus; the cohort audit verifies that all earlier terms are unchanged.
+
 The `pathbank-biopax` source kind reads one native PathBank BioPAX Level 3
 pathway per artifact. Its linked SMPDB unification accession establishes the
 `PathBank:SMP...` identity; an identifiers.org SMPDB pathway URI must agree.
@@ -144,6 +155,7 @@ namespace even when the current corpus has no GO named nodes:
 uv run python scripts/build_ontology_identifier_snapshot.py \
   --source GO=/path/to/go.db --source CHEBI=/path/to/chebi.db \
   --source NCBITaxon=/path/to/ncbitaxon.db --source RHEA=/path/to/rhea.db \
+  --rhea-updates conf/rhea_identifier_updates.json --cache-dir /path/to/source-cache \
   --corpus data/pathways \
   --include-id GO:0008150 --include-id GO:0006096 --include-id GO:0005975 \
   --output data/identifier_authorities/ontology.json

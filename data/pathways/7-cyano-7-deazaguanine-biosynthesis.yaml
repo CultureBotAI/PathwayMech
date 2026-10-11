@@ -1,0 +1,857 @@
+id: GO:0097288
+label: 7-cyano-7-deazaguanine biosynthetic process
+description: 'The complete four-transformation route from GTP to preQ0 in Escherichia coli K-12, independently
+  defined by MetaCyc PWY-6703. FolE and QueD form dihydroneopterin triphosphate and carboxytetrahydropterin,
+  QueE contracts the ring to carboxydeazaguanine, and QueC forms the nitrile. Current Rhea chemistry assigns
+  two ATP-to-AMP activations to the QueC net step, superseding the obsolete one-ATP/ADP accounting in
+  the retained native releases. The net QueE reaction regenerates SAM; radical activation and its physiological
+  electron donor are not additional stoichiometric transformations here. Direct E. coli FolE/QueD assays,
+  mixed-species pathway reconstruction, E. coli genetics and inferred K-12 QueE/QueC activities are distinguished.
+  The native QueD hexamer represents a crystallographic assembly; reviewed solution trimers and dodecamers
+  remain an unresolved assembly difference. The pathway ends at free preQ0: its reduction to preQ1, tRNA
+  incorporation, queuosine maturation, transport and antibiotic branches are separate processes. Anaerobic
+  purified-enzyme assay conditions protect oxygen-sensitive intermediates and clusters and do not establish
+  that the cellular pathway operates only anaerobically.'
+pathway_type: deazapurine-biosynthesis
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:37565
+  label: GTP(4-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:58462
+  label: 7,8-dihydroneopterin 3'-triphosphate(4-)
+  category: small_molecule
+- id: CHEBI:15740
+  label: formate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:61032
+  label: 5,6,7,8-tetrahydropterin-6-carboxylate
+  category: small_molecule
+- id: CHEBI:18036
+  label: triphosphate(5-)
+  category: small_molecule
+- id: CHEBI:15343
+  label: acetaldehyde
+  category: small_molecule
+- id: CHEBI:61036
+  label: 7-carboxylato-7-deazaguanine
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:45075
+  label: 7-cyano-7-deazaguanine
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: UniProtKB:P0A6T5
+  label: GTP cyclohydrolase 1
+  category: protein
+- id: UniProtKB:P65870
+  label: 6-carboxy-5,6,7,8-tetrahydropterin synthase
+  category: protein
+- id: UniProtKB:P64554
+  label: 7-carboxy-7-deazaguanine synthase
+  category: protein
+- id: UniProtKB:P77756
+  label: 7-cyano-7-deazaguanine synthase
+  category: protein
+- id: MetaCyc:FOLE-CPLX
+  label: GTP cyclohydrolase 1
+  category: complex
+- id: MetaCyc:CPLX0-8123
+  label: 6-carboxy-5,6,7,8-tetrahydropterin synthase
+  category: complex
+reactions:
+- id: RHEA:17474
+  label: GTP + H2O => 7,8-dihydroneopterin 3'-triphosphate + formate + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:27967
+  label: 7,8-dihydroneopterin 3'-triphosphate + H2O => 6-carboxy-5,6,7,8-tetrahydropterin + triphosphate
+    + acetaldehyde + 2 H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:27975
+  label: 6-carboxy-5,6,7,8-tetrahydropterin + H(+) => 7-carboxy-7-carbaguanine + NH4(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:27983
+  label: 7-carboxy-7-carbaguanine + NH4(+) + 2 ATP => 7-cyano-7-carbaguanine + 2 AMP + 2 diphosphate +
+    2 H(+)
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: preq0-edge-001
+  subject: CHEBI:37565
+  predicate: consumes
+  object: RHEA:17474
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:17473
+    source_assertion: RHEA:17474 substrates side 17473_L has coefficient 1 for Participant_17473_compound_6355;
+      its compound accession is CHEBI:37565.
+    source_locator: http://rdf.rhea-db.org/17474 rh:substrates; http://rdf.rhea-db.org/17473_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17473_compound_6355; rh:compound http://rdf.rhea-db.org/Compound_6355;
+      rh:accession
+- id: preq0-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17474
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:17473
+    source_assertion: RHEA:17474 substrates side 17473_L has coefficient 1 for Participant_17473_compound_1283;
+      its compound accession is CHEBI:15377.
+    source_locator: http://rdf.rhea-db.org/17474 rh:substrates; http://rdf.rhea-db.org/17473_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17473_compound_1283; rh:compound http://rdf.rhea-db.org/Compound_1283;
+      rh:accession
+- id: preq0-edge-003
+  subject: RHEA:17474
+  predicate: produces
+  object: CHEBI:58462
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:17473
+    source_assertion: RHEA:17474 products side 17473_R has coefficient 1 for Participant_17473_compound_2443;
+      its compound accession is CHEBI:58462.
+    source_locator: http://rdf.rhea-db.org/17474 rh:products; http://rdf.rhea-db.org/17473_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17473_compound_2443; rh:compound http://rdf.rhea-db.org/Compound_2443;
+      rh:accession
+- id: preq0-edge-004
+  subject: RHEA:17474
+  predicate: produces
+  object: CHEBI:15740
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:17473
+    source_assertion: RHEA:17474 products side 17473_R has coefficient 1 for Participant_17473_compound_3001;
+      its compound accession is CHEBI:15740.
+    source_locator: http://rdf.rhea-db.org/17474 rh:products; http://rdf.rhea-db.org/17473_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17473_compound_3001; rh:compound http://rdf.rhea-db.org/Compound_3001;
+      rh:accession
+- id: preq0-edge-005
+  subject: RHEA:17474
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:17473
+    source_assertion: RHEA:17474 products side 17473_R has coefficient 1 for Participant_17473_compound_3249;
+      its compound accession is CHEBI:15378.
+    source_locator: http://rdf.rhea-db.org/17474 rh:products; http://rdf.rhea-db.org/17473_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17473_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249;
+      rh:accession
+- id: preq0-edge-006
+  subject: CHEBI:58462
+  predicate: consumes
+  object: RHEA:27967
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 substrates side 27966_L has coefficient 1 for Participant_27966_compound_2443;
+      its compound accession is CHEBI:58462.
+    source_locator: http://rdf.rhea-db.org/27967 rh:substrates; http://rdf.rhea-db.org/27966_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_2443; rh:compound http://rdf.rhea-db.org/Compound_2443;
+      rh:accession
+- id: preq0-edge-007
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:27967
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 substrates side 27966_L has coefficient 1 for Participant_27966_compound_1283;
+      its compound accession is CHEBI:15377.
+    source_locator: http://rdf.rhea-db.org/27967 rh:substrates; http://rdf.rhea-db.org/27966_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_1283; rh:compound http://rdf.rhea-db.org/Compound_1283;
+      rh:accession
+- id: preq0-edge-008
+  subject: RHEA:27967
+  predicate: produces
+  object: CHEBI:61032
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 products side 27966_R has coefficient 1 for Participant_27966_compound_6305;
+      its compound accession is CHEBI:61032.
+    source_locator: http://rdf.rhea-db.org/27967 rh:products; http://rdf.rhea-db.org/27966_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_6305; rh:compound http://rdf.rhea-db.org/Compound_6305;
+      rh:accession
+- id: preq0-edge-009
+  subject: RHEA:27967
+  predicate: produces
+  object: CHEBI:18036
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 products side 27966_R has coefficient 1 for Participant_27966_compound_5288;
+      its compound accession is CHEBI:18036.
+    source_locator: http://rdf.rhea-db.org/27967 rh:products; http://rdf.rhea-db.org/27966_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_5288; rh:compound http://rdf.rhea-db.org/Compound_5288;
+      rh:accession
+- id: preq0-edge-010
+  subject: RHEA:27967
+  predicate: produces
+  object: CHEBI:15343
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 products side 27966_R has coefficient 1 for Participant_27966_compound_3952;
+      its compound accession is CHEBI:15343.
+    source_locator: http://rdf.rhea-db.org/27967 rh:products; http://rdf.rhea-db.org/27966_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_3952; rh:compound http://rdf.rhea-db.org/Compound_3952;
+      rh:accession
+- id: preq0-edge-011
+  subject: RHEA:27967
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 2 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 products side 27966_R has coefficient 2 for Participant_27966_compound_3249;
+      its compound accession is CHEBI:15378.
+    source_locator: http://rdf.rhea-db.org/27967 rh:products; http://rdf.rhea-db.org/27966_R rh:contains2
+      http://rdf.rhea-db.org/Participant_27966_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249;
+      rh:accession
+- id: preq0-edge-012
+  subject: CHEBI:61032
+  predicate: consumes
+  object: RHEA:27975
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27974
+    source_assertion: RHEA:27975 substrates side 27974_L has coefficient 1 for Participant_27974_compound_6305;
+      its compound accession is CHEBI:61032.
+    source_locator: http://rdf.rhea-db.org/27975 rh:substrates; http://rdf.rhea-db.org/27974_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27974_compound_6305; rh:compound http://rdf.rhea-db.org/Compound_6305;
+      rh:accession
+- id: preq0-edge-013
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27975
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27974
+    source_assertion: RHEA:27975 substrates side 27974_L has coefficient 1 for Participant_27974_compound_3249;
+      its compound accession is CHEBI:15378.
+    source_locator: http://rdf.rhea-db.org/27975 rh:substrates; http://rdf.rhea-db.org/27974_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27974_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249;
+      rh:accession
+- id: preq0-edge-014
+  subject: RHEA:27975
+  predicate: produces
+  object: CHEBI:61036
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27974
+    source_assertion: RHEA:27975 products side 27974_R has coefficient 1 for Participant_27974_compound_6307;
+      its compound accession is CHEBI:61036.
+    source_locator: http://rdf.rhea-db.org/27975 rh:products; http://rdf.rhea-db.org/27974_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27974_compound_6307; rh:compound http://rdf.rhea-db.org/Compound_6307;
+      rh:accession
+- id: preq0-edge-015
+  subject: RHEA:27975
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained.
+  evidence:
+  - reference_id: RHEA:27974
+    source_assertion: RHEA:27975 products side 27974_R has coefficient 1 for Participant_27974_compound_1012;
+      its compound accession is CHEBI:28938.
+    source_locator: http://rdf.rhea-db.org/27975 rh:products; http://rdf.rhea-db.org/27974_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27974_compound_1012; rh:compound http://rdf.rhea-db.org/Compound_1012;
+      rh:accession
+- id: preq0-edge-016
+  subject: CHEBI:61036
+  predicate: consumes
+  object: RHEA:27983
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 substrates side 27982_L has coefficient 1 for Participant_27982_compound_6307;
+      its compound accession is CHEBI:61036.
+    source_locator: http://rdf.rhea-db.org/27983 rh:substrates; http://rdf.rhea-db.org/27982_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27982_compound_6307; rh:compound http://rdf.rhea-db.org/Compound_6307;
+      rh:accession
+- id: preq0-edge-017
+  subject: CHEBI:28938
+  predicate: consumes
+  object: RHEA:27983
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 substrates side 27982_L has coefficient 1 for Participant_27982_compound_1012;
+      its compound accession is CHEBI:28938.
+    source_locator: http://rdf.rhea-db.org/27983 rh:substrates; http://rdf.rhea-db.org/27982_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27982_compound_1012; rh:compound http://rdf.rhea-db.org/Compound_1012;
+      rh:accession
+- id: preq0-edge-018
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:27983
+  description: Coefficient 2 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 substrates side 27982_L has coefficient 2 for Participant_27982_compound_6372;
+      its compound accession is CHEBI:30616.
+    source_locator: http://rdf.rhea-db.org/27983 rh:substrates; http://rdf.rhea-db.org/27982_L rh:contains2
+      http://rdf.rhea-db.org/Participant_27982_compound_6372; rh:compound http://rdf.rhea-db.org/Compound_6372;
+      rh:accession
+- id: preq0-edge-019
+  subject: RHEA:27983
+  predicate: produces
+  object: CHEBI:45075
+  description: Coefficient 1 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 products side 27982_R has coefficient 1 for Participant_27982_compound_5843;
+      its compound accession is CHEBI:45075.
+    source_locator: http://rdf.rhea-db.org/27983 rh:products; http://rdf.rhea-db.org/27982_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27982_compound_5843; rh:compound http://rdf.rhea-db.org/Compound_5843;
+      rh:accession
+- id: preq0-edge-020
+  subject: RHEA:27983
+  predicate: produces
+  object: CHEBI:456215
+  description: Coefficient 2 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 products side 27982_R has coefficient 2 for Participant_27982_compound_2590;
+      its compound accession is CHEBI:456215.
+    source_locator: http://rdf.rhea-db.org/27983 rh:products; http://rdf.rhea-db.org/27982_R rh:contains2
+      http://rdf.rhea-db.org/Participant_27982_compound_2590; rh:compound http://rdf.rhea-db.org/Compound_2590;
+      rh:accession
+- id: preq0-edge-021
+  subject: RHEA:27983
+  predicate: produces
+  object: CHEBI:33019
+  description: Coefficient 2 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 products side 27982_R has coefficient 2 for Participant_27982_compound_2106;
+      its compound accession is CHEBI:33019.
+    source_locator: http://rdf.rhea-db.org/27983 rh:products; http://rdf.rhea-db.org/27982_R rh:contains2
+      http://rdf.rhea-db.org/Participant_27982_compound_2106; rh:compound http://rdf.rhea-db.org/Compound_2106;
+      rh:accession
+- id: preq0-edge-022
+  subject: RHEA:27983
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 2 in the selected Rhea 142 biosynthetic direction; the exact charge form is
+    retained. The current two-ATP net equation supersedes the obsolete one-ATP/ADP equation in MetaCyc
+    22.5 and PathBank; no component reactions are double counted.
+  evidence:
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 products side 27982_R has coefficient 2 for Participant_27982_compound_3249;
+      its compound accession is CHEBI:15378.
+    source_locator: http://rdf.rhea-db.org/27983 rh:products; http://rdf.rhea-db.org/27982_R rh:contains2
+      http://rdf.rhea-db.org/Participant_27982_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249;
+      rh:accession
+- id: preq0-edge-023
+  subject: UniProtKB:P0A6T5
+  predicate: part_of
+  object: MetaCyc:FOLE-CPLX
+  description: FolE is a subunit of the independently identified native homodecamer; ten polypeptides
+    form the assembly.
+  evidence:
+  - reference_id: MetaCyc:FOLE-CPLX
+    source_assertion: FOLE-CPLX contains ten copies of GTP-CYCLOHYDRO-I-MONOMER.
+    source_locator: Protein[@frameid="FOLE-CPLX"]/component/Protein; component/coefficient
+  - reference_id: UniProtKB:P0A6T5
+    source_assertion: The reviewed entry explicitly cross-references MetaCyc:GTP-CYCLOHYDRO-I-MONOMER
+      and annotates a toroid-shaped homodecamer, with ECO:0000269 citations.
+    source_locator: uniProtKBCrossReferences[database="BioCyc"]; comments[3]
+- id: preq0-edge-024
+  subject: UniProtKB:P65870
+  predicate: part_of
+  object: MetaCyc:CPLX0-8123
+  description: The selected native QueD assembly contains six subunits and corresponds to the crystallographic
+    hexamer. Reviewed UniProt also reports trimers and dodecamers in solution; this edge does not assert
+    a unique assembly under all conditions.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8123
+    source_assertion: CPLX0-8123 contains six copies of G7431-MONOMER and describes a hexamer of interacting
+      trimers.
+    source_locator: Protein[@frameid="CPLX0-8123"]/component; comment
+  - reference_id: MetaCyc:G7431-MONOMER
+    source_assertion: G7431-MONOMER has an explicit UNIPROT unification cross-reference to P65870.
+    source_locator: Protein[@frameid="G7431-MONOMER"]/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:P65870
+    source_assertion: The reviewed entry reports homotrimers and homododecamers in solution (PMID:24816091),
+      and six active sites at trimer interfaces in the crystal homohexamer (PMID:24990950); both are ECO:0000269
+      statements.
+    source_locator: comments[7]; comments[8]
+- id: preq0-edge-025
+  subject: MetaCyc:FOLE-CPLX
+  predicate: catalyzes
+  object: RHEA:17474
+  description: The FolE assembly provides the first transformation shared with folate and other pterin
+    pathways.
+  evidence:
+  - reference_id: MetaCyc:FOLE-CPLX
+    source_assertion: FOLE-CPLX catalyzes GTP-CYCLOHYDRO-I-RXN through GTP-CYCLOHYDRO-I-ENZRXN.
+    source_locator: Protein/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P0A6T5
+    source_assertion: The reviewed catalytic activity names RHEA:17473, GTP hydrolysis to dihydroneopterin
+      triphosphate, formate and H+.
+    source_locator: comments[0]/reaction
+  - reference_id: PMID:19231875
+    source_assertion: Recombinant E. coli FolE generated dihydroneopterin triphosphate quantitatively
+      from GTP for the QueD assays.
+    source_locator: PMC3227869 BioC passage[5]; Figure 2A and caption passage[17]
+- id: preq0-edge-026
+  subject: MetaCyc:CPLX0-8123
+  predicate: catalyzes
+  object: RHEA:27967
+  description: QueD forms carboxytetrahydropterin, not the mammalian pyruvoyltetrahydropterin product.
+    The native crystallographic assembly is retained without excluding other solution assemblies.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8123
+    source_assertion: CPLX0-8123 catalyzes RXN0-5507 through ENZRXN0-6612.
+    source_locator: Protein/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P65870
+    source_assertion: The RHEA:27966 catalytic activity has ECO:0000269 support from PMID:19231875 and
+      PMID:24990950; physiological direction RHEA:27967 is ECO:0000305.
+    source_locator: comments[1]/reaction; comments[1]/physiologicalReactions
+  - reference_id: PMID:19231875
+    source_assertion: E. coli QueD forms CPH4 from H2NTP; isotope-resolved mass spectra, fragmentation
+      and co-elution with chemically reduced carboxypterin establish product identity.
+    source_locator: PMC3227869 BioC passages[5-8]; Figure 2D
+- id: preq0-edge-027
+  subject: UniProtKB:P64554
+  predicate: enables
+  object: RHEA:27975
+  description: E. coli QueE is assigned this catalytic role by reviewed HAMAP inference, not by transferring
+    a purified Bacillus experiment to E. coli. UniProt infers a homodimer; no monomer sufficiency is asserted.
+    The net reaction does not consume SAM, which is regenerated in the mechanistically characterized Bacillus
+    enzyme.
+  evidence:
+  - reference_id: UniProtKB:P64554
+    source_assertion: The reviewed QueE entry assigns RHEA:27974 and a homodimer with ECO:0000255 HAMAP-Rule
+      MF_00917 evidence.
+    source_locator: comments[1]/reaction; comments[6]
+  - reference_id: PMID:19354300
+    source_assertion: B. subtilis QueE converted CPH4 to CDG in the mixed-species reconstruction; the
+      cloned and assayed QueE was Bacillus, not the E. coli expression host.
+    source_locator: PMC2693876 BioC passages[9-14], [34-36]; Figure 2
+  - reference_id: PMID:23194065
+    source_assertion: For B. subtilis QueE, product formed in 15-fold excess over supplied SAM, demonstrating
+      regeneration of the cofactor rather than stoichiometric consumption.
+    source_locator: PMC4022186 BioC passage[58]; Figure 3e
+- id: preq0-edge-028
+  subject: UniProtKB:P77756
+  predicate: enables
+  object: RHEA:27983
+  description: The E. coli QueC gene product is assigned the current two-ATP nitrile-forming net activity
+    by reviewed HAMAP inference. Genetic complementation supports its upstream role; it does not independently
+    measure the exact stoichiometry or establish monomer sufficiency. The two-adenylation mechanism was
+    experimentally resolved for Streptomyces ToyM.
+  evidence:
+  - reference_id: UniProtKB:P77756
+    source_assertion: The current reviewed net RHEA:27982 reaction and physiological RHEA:27983 direction
+      consume two ATP and yield two AMP plus two diphosphate, assigned with ECO:0000255 HAMAP-Rule MF_01633.
+    source_locator: comments[1]/reaction; comments[1]/physiologicalReactions
+  - reference_id: PMID:16199558
+    source_assertion: Plasmid-borne queC restored Q modification in E. coli B105; mutant analyses place
+      QueC before preQ0, providing genetic evidence rather than a purified E. coli enzyme assay.
+    source_locator: Europe PMC resultList/result[0]/abstractText
+  - reference_id: PMID:26228534
+    source_assertion: Streptomyces rimosus ToyM activates CDG and the amide intermediate through two ATP-dependent
+      half-reactions; AMP and pyrophosphate are produced with both substrates.
+    source_locator: PMC4767005 BioC passages[3], [5-9]; Figures 3-5
+- id: preq0-edge-029
+  subject: UniProtKB:P0A6T5
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: The FolE protein binds catalytically active zinc; binding-site annotation is not evidence
+    for additional free divalent-metal cofactors.
+  evidence:
+  - reference_id: UniProtKB:P0A6T5
+    source_assertion: The entry annotates zinc-binding sites at residues 111, 114 and 182 with explicit
+      ChEBI:29105 ligand cross-references.
+    source_locator: features[2]; features[3]; features[4]
+  - reference_id: MetaCyc:FOLE-CPLX
+    source_assertion: The native enzyme comment identifies a catalytically active zinc ion; cited residue
+      numbering differs by one from the current UniProt sequence.
+    source_locator: Protein[@frameid="FOLE-CPLX"]/comment, paragraph on catalytic zinc
+- id: preq0-edge-030
+  subject: UniProtKB:P65870
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: QueD binds one zinc ion per subunit; the directly measured stoichiometry is approximately
+    one equivalent, rather than proof of one invariant oligomeric state.
+  evidence:
+  - reference_id: UniProtKB:P65870
+    source_assertion: QueD binds one zinc per subunit, with ECO:0000269 support from PMID:19231875, PMID:24816091
+      and PMID:24990950.
+    source_locator: comments[4]/cofactors; comments[4]/note
+  - reference_id: PMID:19231875
+    quote: revealed the presence of 1.1 equivalents of Zn per monomer.
+    source_locator: PMC3227869 BioC passage[9]
+- id: preq0-edge-031
+  subject: UniProtKB:P64554
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: The E. coli QueE cofactor assignment is explicitly automatic HAMAP inference; direct mechanistic
+    cofactor measurements were made on B. subtilis QueE.
+  evidence:
+  - reference_id: UniProtKB:P64554
+    source_assertion: 'QueE is annotated with one [4Fe-4S] cluster coordinated by three cysteines and
+      exchangeable SAM; ECO:0000255 HAMAP-Rule MF_00917. '
+    source_locator: comments[2]/cofactors; comments[2]/note
+  - reference_id: PMID:23194065
+    source_assertion: B. subtilis QueE is a homodimer with a [4Fe-4S] cluster per monomer, magnesium dependence
+      and a SAM cofactor regenerated through multiple turnovers.
+    source_locator: PMC4022186 BioC passage[1]; passages[47], [58], [68]
+- id: preq0-edge-032
+  subject: UniProtKB:P64554
+  predicate: has_cofactor
+  object: CHEBI:59789
+  description: The E. coli QueE cofactor assignment is explicitly automatic HAMAP inference; direct mechanistic
+    cofactor measurements were made on B. subtilis QueE. SAM is catalytic and regenerated in that experiment,
+    so it is not a net substrate or product.
+  evidence:
+  - reference_id: UniProtKB:P64554
+    source_assertion: 'QueE is annotated with one S-adenosyl-L-methionine per subunit; ECO:0000255 HAMAP-Rule
+      MF_00917. '
+    source_locator: comments[3]/cofactors; comments[3]/note
+  - reference_id: PMID:23194065
+    source_assertion: B. subtilis QueE is a homodimer with a [4Fe-4S] cluster per monomer, magnesium dependence
+      and a SAM cofactor regenerated through multiple turnovers.
+    source_locator: PMC4022186 BioC passage[1]; passages[47], [58], [68]
+- id: preq0-edge-033
+  subject: UniProtKB:P64554
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: The E. coli QueE cofactor assignment is explicitly automatic HAMAP inference; direct mechanistic
+    cofactor measurements were made on B. subtilis QueE.
+  evidence:
+  - reference_id: UniProtKB:P64554
+    source_assertion: 'QueE is annotated with Mg(2+) as a cofactor; ECO:0000255 HAMAP-Rule MF_00917. '
+    source_locator: comments[4]/cofactors
+  - reference_id: PMID:23194065
+    source_assertion: B. subtilis QueE is a homodimer with a [4Fe-4S] cluster per monomer, magnesium dependence
+      and a SAM cofactor regenerated through multiple turnovers.
+    source_locator: PMC4022186 BioC passage[1]; passages[47], [58], [68]
+- id: preq0-edge-034
+  subject: UniProtKB:P77756
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: QueC zinc binding is a reviewed HAMAP inference for E. coli; the inspected primary zinc
+    measurements concern B. subtilis QueC and S. rimosus ToyM.
+  evidence:
+  - reference_id: UniProtKB:P77756
+    source_assertion: The current entry assigns one zinc per subunit with ECO:0000255 HAMAP-Rule MF_01633.
+    source_locator: comments[6]/cofactors; comments[6]/note
+  - reference_id: PMID:19354300
+    source_assertion: ICP-OES measured 0.88 zinc equivalents per monomer for B. subtilis QueC and 0.80
+      for S. rimosus ToyM.
+    source_locator: PMC2693876 BioC passage[38]
+- id: preq0-edge-035
+  subject: RHEA:17474
+  predicate: part_of
+  object: GO:0097288
+  description: This is one complete native transformation in the exact PreQ0-forming process.
+  evidence:
+  - reference_id: MetaCyc:PWY-6703
+    source_assertion: PWY-6703 explicitly lists GTP-CYCLOHYDRO-I-RXN among its four reaction members.
+    source_locator: Pathway[@frameid="PWY-6703"]/reaction-list
+  - reference_id: MetaCyc:GTP-CYCLOHYDRO-I-RXN
+    source_assertion: The native reaction explicitly cross-references Rhea 17473; its source direction
+      is LEFT-TO-RIGHT.
+    source_locator: Reaction[@frameid="GTP-CYCLOHYDRO-I-RXN"]/dblink[dblink-db="RHEA"]; reaction-direction
+  - reference_id: RHEA:17473
+    source_assertion: Master RHEA:17473 declares RHEA:17474 as a directional reaction; the selected full
+      RDF equation is the source for its chemistry.
+    source_locator: http://rdf.rhea-db.org/17473 rh:directionalReaction; http://rdf.rhea-db.org/17474
+      rh:substrates; rh:products
+  - reference_id: GO:0097288
+    source_assertion: GO:0097288 denotes reactions and pathways forming 7-cyano-7-deazaguanine (preQ0),
+      matching the endpoint of the full four-step native route.
+    source_locator: results[0]/definition/text
+- id: preq0-edge-036
+  subject: RHEA:27967
+  predicate: part_of
+  object: GO:0097288
+  description: This is one complete native transformation in the exact PreQ0-forming process.
+  evidence:
+  - reference_id: MetaCyc:PWY-6703
+    source_assertion: PWY-6703 explicitly lists RXN0-5507 among its four reaction members.
+    source_locator: Pathway[@frameid="PWY-6703"]/reaction-list
+  - reference_id: MetaCyc:RXN0-5507
+    source_assertion: The native reaction explicitly cross-references Rhea 27967; its source direction
+      is LEFT-TO-RIGHT.
+    source_locator: Reaction[@frameid="RXN0-5507"]/dblink[dblink-db="RHEA"]; reaction-direction
+  - reference_id: RHEA:27966
+    source_assertion: Master RHEA:27966 declares RHEA:27967 as a directional reaction; the selected full
+      RDF equation is the source for its chemistry.
+    source_locator: http://rdf.rhea-db.org/27966 rh:directionalReaction; http://rdf.rhea-db.org/27967
+      rh:substrates; rh:products
+- id: preq0-edge-037
+  subject: RHEA:27975
+  predicate: part_of
+  object: GO:0097288
+  description: This is one complete native transformation in the exact PreQ0-forming process.
+  evidence:
+  - reference_id: MetaCyc:PWY-6703
+    source_assertion: PWY-6703 explicitly lists RXN0-6575 among its four reaction members.
+    source_locator: Pathway[@frameid="PWY-6703"]/reaction-list
+  - reference_id: MetaCyc:RXN0-6575
+    source_assertion: The native reaction explicitly cross-references Rhea 27975; its source direction
+      is LEFT-TO-RIGHT.
+    source_locator: Reaction[@frameid="RXN0-6575"]/dblink[dblink-db="RHEA"]; reaction-direction
+  - reference_id: RHEA:27974
+    source_assertion: Master RHEA:27974 declares RHEA:27975 as a directional reaction; the selected full
+      RDF equation is the source for its chemistry.
+    source_locator: http://rdf.rhea-db.org/27974 rh:directionalReaction; http://rdf.rhea-db.org/27975
+      rh:substrates; rh:products
+- id: preq0-edge-038
+  subject: RHEA:27983
+  predicate: part_of
+  object: GO:0097288
+  description: This is one complete native transformation in the exact PreQ0-forming process. The preserved
+    native cross-reference identifies the updated reaction, but MetaCyc 22.5 retains an obsolete one-ATP/ADP
+    equation; current Rhea 142 supplies the chemistry.
+  evidence:
+  - reference_id: MetaCyc:PWY-6703
+    source_assertion: PWY-6703 explicitly lists RXN-12093 among its four reaction members.
+    source_locator: Pathway[@frameid="PWY-6703"]/reaction-list
+  - reference_id: MetaCyc:RXN-12093
+    source_assertion: The native reaction explicitly cross-references Rhea 27983; its source direction
+      is PHYSIOL-LEFT-TO-RIGHT.
+    source_locator: Reaction[@frameid="RXN-12093"]/dblink[dblink-db="RHEA"]; reaction-direction
+  - reference_id: RHEA:27982
+    source_assertion: Master RHEA:27982 declares RHEA:27983 as a directional reaction; the selected full
+      RDF equation is the source for its chemistry. The current equation has two ATP, two AMP and two
+      diphosphate.
+    source_locator: http://rdf.rhea-db.org/27982 rh:directionalReaction; http://rdf.rhea-db.org/27983
+      rh:substrates; rh:products
+- id: preq0-edge-039
+  subject: RHEA:17474
+  predicate: provides_input_for
+  object: RHEA:27967
+  description: The exact charged intermediate connects the two selected biosynthetic reactions; there
+    is no additional net or decomposition reaction.
+  evidence:
+  - reference_id: RHEA:17473
+    source_assertion: RHEA:17474 produces CHEBI:58462.
+    source_locator: http://rdf.rhea-db.org/17474 rh:products; http://rdf.rhea-db.org/17473_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17473_compound_2443; rh:compound http://rdf.rhea-db.org/Compound_2443;
+      rh:accession
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 consumes CHEBI:58462.
+    source_locator: http://rdf.rhea-db.org/27967 rh:substrates; http://rdf.rhea-db.org/27966_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_2443; rh:compound http://rdf.rhea-db.org/Compound_2443;
+      rh:accession
+- id: preq0-edge-040
+  subject: RHEA:27967
+  predicate: provides_input_for
+  object: RHEA:27975
+  description: The exact charged intermediate connects the two selected biosynthetic reactions; there
+    is no additional net or decomposition reaction.
+  evidence:
+  - reference_id: RHEA:27966
+    source_assertion: RHEA:27967 produces CHEBI:61032.
+    source_locator: http://rdf.rhea-db.org/27967 rh:products; http://rdf.rhea-db.org/27966_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27966_compound_6305; rh:compound http://rdf.rhea-db.org/Compound_6305;
+      rh:accession
+  - reference_id: RHEA:27974
+    source_assertion: RHEA:27975 consumes CHEBI:61032.
+    source_locator: http://rdf.rhea-db.org/27975 rh:substrates; http://rdf.rhea-db.org/27974_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27974_compound_6305; rh:compound http://rdf.rhea-db.org/Compound_6305;
+      rh:accession
+- id: preq0-edge-041
+  subject: RHEA:27975
+  predicate: provides_input_for
+  object: RHEA:27983
+  description: The exact charged intermediate connects the two selected biosynthetic reactions; there
+    is no additional net or decomposition reaction.
+  evidence:
+  - reference_id: RHEA:27974
+    source_assertion: RHEA:27975 produces CHEBI:61036.
+    source_locator: http://rdf.rhea-db.org/27975 rh:products; http://rdf.rhea-db.org/27974_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27974_compound_6307; rh:compound http://rdf.rhea-db.org/Compound_6307;
+      rh:accession
+  - reference_id: RHEA:27982
+    source_assertion: RHEA:27983 consumes CHEBI:61036.
+    source_locator: http://rdf.rhea-db.org/27983 rh:substrates; http://rdf.rhea-db.org/27982_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27982_compound_6307; rh:compound http://rdf.rhea-db.org/Compound_6307;
+      rh:accession
+references:
+- id: MetaCyc:PWY-6703
+  title: MetaCyc PWY-6703 original native object
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-6703
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 6ceddf0ef319853b2f7cbb8deebdb06f0f643fb6d256d79ce2cddb108d019db7
+- id: MetaCyc:GTP-CYCLOHYDRO-I-RXN
+  title: MetaCyc GTP-CYCLOHYDRO-I-RXN original native object
+  url: https://pathway.yeastgenome.org/getxml?META:GTP-CYCLOHYDRO-I-RXN
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: d845a7ac9a12492f42c17057a4344c552edfb3bf9ad3ab76cf60871ce61962b6
+- id: MetaCyc:RXN0-5507
+  title: MetaCyc RXN0-5507 original native object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5507
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 973708d043c60f9865f826381fd6f6f52f0a8a2a8915795967baaa5473ef1d30
+- id: MetaCyc:RXN0-6575
+  title: MetaCyc RXN0-6575 original native object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-6575
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 5386b26f34432163fcb28832ff0d7311280a9b43a942c00e65a343a0d684e3e3
+- id: MetaCyc:RXN-12093
+  title: MetaCyc RXN-12093 original native object
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-12093
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 2a03b391731384e57ecc86d7e18425ff61df5067f5ff62be4d6ec48c4a04f3da
+- id: MetaCyc:FOLE-CPLX
+  title: MetaCyc FOLE-CPLX original native object
+  url: https://pathway.yeastgenome.org/getxml?META:FOLE-CPLX
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 02a1387ca3463fcdc819710574fdcfaba6688579873fd069a9c172e1333320e8
+- id: MetaCyc:CPLX0-8123
+  title: MetaCyc CPLX0-8123 original native object
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-8123
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 1331fe09318ec0cb5c1d7ec77dc9b00a635e09b621db870ae9925860bd2d490d
+- id: MetaCyc:G7431-MONOMER
+  title: MetaCyc G7431-MONOMER original native object
+  url: https://pathway.yeastgenome.org/getxml?META:G7431-MONOMER
+  source_version: MetaCyc 22.5; retrieved 2026-10-11; digest covers complete XML response body
+  source_sha256: 5bffad8d7e788211298f4dacc95d4a281528184cdeeea03fe3735a31d539a5f4
+- id: GO:0097288
+  title: Gene Ontology exact PreQ0 biosynthetic process definition
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:0097288
+  source_version: QuickGO response retrieved 2026-10-11; digest covers complete JSON body
+  source_sha256: dd854ba91ee0b6c5333f1b6308be951f93f88ce83b1de7d8cc343cde9f3baa4e
+- id: UniProtKB:P0A6T5
+  title: GTP cyclohydrolase 1 — reviewed E. coli K-12 entry
+  url: https://rest.uniprot.org/uniprotkb/P0A6T5.json
+  source_version: UniProt 2026_03; released 2026-09-02; retrieved 2026-10-11; digest covers complete entry
+    JSON body
+  source_sha256: c81d6948a4c2f1043c216c6ff6de92554b2910ffd116c82ba6a1b9eec7ee7918
+- id: UniProtKB:P65870
+  title: 6-carboxy-5,6,7,8-tetrahydropterin synthase — reviewed E. coli K-12 entry
+  url: https://rest.uniprot.org/uniprotkb/P65870.json
+  source_version: UniProt 2026_03; released 2026-09-02; retrieved 2026-10-11; digest covers complete entry
+    JSON body
+  source_sha256: 82ac75c023f2037278a76412a91af77d18a1a2d6abe621da46ec66b6d285dd97
+- id: UniProtKB:P64554
+  title: 7-carboxy-7-deazaguanine synthase — reviewed E. coli K-12 entry
+  url: https://rest.uniprot.org/uniprotkb/P64554.json
+  source_version: UniProt 2026_03; released 2026-09-02; retrieved 2026-10-11; digest covers complete entry
+    JSON body
+  source_sha256: 923379bf5a0a87d75e5e6be7bcf1a56996706bc8f2bad136a6d00ea77afcc40d
+- id: UniProtKB:P77756
+  title: 7-cyano-7-deazaguanine synthase — reviewed E. coli K-12 entry
+  url: https://rest.uniprot.org/uniprotkb/P77756.json
+  source_version: UniProt 2026_03; released 2026-09-02; retrieved 2026-10-11; digest covers complete entry
+    JSON body
+  source_sha256: fced63b09d5a921edf102d8d98ade7f46e962b5bf3299fdd29935e3161653b02
+- id: RHEA:17473
+  title: Rhea 17473 original reaction family and exact directed chemistry
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; 2026-09-02; digest covers complete compressed RDF archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27966
+  title: Rhea 27966 original reaction family and exact directed chemistry
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; 2026-09-02; digest covers complete compressed RDF archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27974
+  title: Rhea 27974 original reaction family and exact directed chemistry
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; 2026-09-02; digest covers complete compressed RDF archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27982
+  title: Rhea 27982 original reaction family and exact directed chemistry
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; 2026-09-02; digest covers complete compressed RDF archive
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:19354300
+  title: 'The deazapurine biosynthetic pathway revealed: in vitro enzymatic synthesis of PreQ(0) from
+    guanosine 5''-triphosphate in four steps.'
+  url: https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC2693876/unicode
+  source_version: Primary full manuscript, NCBI BioC; retrieved 2026-10-11; digest covers complete XML
+    body
+  source_sha256: 96518ba9383486651b318b6e4097995880dbee1ec47b68d2c40e7ec69367e9fd
+- id: PMID:19231875
+  title: Escherichia coli QueD is a 6-carboxy-5,6,7,8-tetrahydropterin synthase.
+  url: https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC3227869/unicode
+  source_version: Primary full manuscript, NCBI BioC; retrieved 2026-10-11; digest covers complete XML
+    body
+  source_sha256: 663cf3fe09cb4c85cedefde4f2dd34daacacae1fe4f0e8dff5a240a2d7a9c1b1
+- id: PMID:26228534
+  title: A Single Enzyme Transforms a Carboxylic Acid into a Nitrile through an Amide Intermediate.
+  url: https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC4767005/unicode
+  source_version: Primary full manuscript, NCBI BioC; retrieved 2026-10-11; digest covers complete XML
+    body
+  source_sha256: 139b2847d21fd6929d4b5ed0db69ed2a8204c899c6a4e6ac54c0f1791d6995f2
+- id: PMID:23194065
+  title: Spectroscopic, steady-state kinetic, and mechanistic characterization of the radical SAM enzyme
+    QueE, which catalyzes a complex cyclization reaction in the biosynthesis of 7-deazapurines.
+  url: https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC4022186/unicode
+  source_version: Primary full manuscript, NCBI BioC; retrieved 2026-10-11; digest covers complete XML
+    body
+  source_sha256: be5556c14ac6a44d5d16707cd10986e87fdf2310207ca4c91cf5aba6b6d223e9
+- id: PMID:16199558
+  title: Genetic analysis identifies a function for the queC (ybaX) gene product at an initial step in
+    the queuosine biosynthetic pathway in Escherichia coli.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:16199558%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Europe PMC indexed primary abstract and metadata only; retrieved 2026-10-11; digest
+    covers complete JSON response
+  source_sha256: eb3c33d8e5cace384e83ca5723f231d8802b60bc9abfcbb82cc26552a0bc2c26
