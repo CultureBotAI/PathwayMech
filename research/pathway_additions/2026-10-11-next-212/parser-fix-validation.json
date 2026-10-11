@@ -1,0 +1,123 @@
+{
+  "status": "fixed_pending_independent_reassessment",
+  "sealed_at": "2026-10-11T12:56:27.159690+00:00",
+  "role": "Implementation author; not independent approval",
+  "repository": "CultureBotAI/PathwayMech",
+  "base": "58bf19dcff135ef3b381350b96cae4b4dcb9c769",
+  "issues": [
+    {
+      "number": 384,
+      "url": "https://github.com/CultureBotAI/PathwayMech/issues/384",
+      "finding_key": "metacyc-quoted-brace-encoding-guard"
+    },
+    {
+      "number": 385,
+      "url": "https://github.com/CultureBotAI/PathwayMech/issues/385",
+      "finding_key": "metanetx-incomplete-visible-identity-row"
+    }
+  ],
+  "duplicate_search": {
+    "command": "gh issue list --repo CultureBotAI/PathwayMech --state all --limit 1000 --json number,title,state,body,url",
+    "actual_session": 5205,
+    "exit_code": 0,
+    "issue_count": 162,
+    "all_returned_titles_bodies_searched": true,
+    "matching_existing_issues": [],
+    "snapshot_path": "/private/tmp/pathwaymech-next-212-parser-issues-before.json",
+    "snapshot_sha256": "558b1f914d75b635275e58769a4574529dc6054b74af91318965278ffe0fc65e",
+    "note": "Initial sandbox network request failed; authorized read-only network retry succeeded before issue creation."
+  },
+  "initial_independent_audit": {
+    "path": "research/pathway_additions/2026-10-11-next-212/parser-independent-initial-audit.json",
+    "sha256": "e09d2aa15572e12add33c26b3e2440f3a44aec81533736d75a70a1b50b93281b"
+  },
+  "changed_owner_files": [
+    {
+      "path": "scripts/build_source_identifier_snapshot.py",
+      "before_sha256": "d5e04e80cb11485cc5162b8e19246bb977fd3a406b7d720f4fdb0e2af700f65b",
+      "after_sha256": "85ab26899899d4446cf7f071e878b3ef9b4c2751e81aa183c3135282a6366ca9"
+    },
+    {
+      "path": "tests/test_metacyc_authority_encoding.py",
+      "before_sha256": "800431dd53fd0bba1dd222f8e1ff6463c9749a39573f8bf98fcee08b2be0adec",
+      "after_sha256": "f731963704cf6e2678a6633283d75894814c7fa8ab0355784171b0e7d9287b25"
+    },
+    {
+      "path": "tests/test_metanetx_identifier_authority.py",
+      "before_sha256": "5c5038008fe0cf3a16b10ef175919d33fc41da62e22aa89e04d012639ba49f83",
+      "after_sha256": "5b9fb904436d8a4d887bd3ebb76be52820ab4086c66e380dc607de0174c70eac"
+    }
+  ],
+  "changes": [
+    "MetaCyc metadata extent now tracks balanced braces, both quoted-string styles and escapes. Unfinished metadata and unsupported comments/regex/template delimiters reject conservatively before term emission; unrelated prose remains losslessly tolerated.",
+    "MetaNetX rejects pending row or cell states alongside pending script/heading state before evaluating and emitting identity.",
+    "Regressions cover quoted braces, escaped quotes/backslashes, nested metadata, invalid bytes after quoted braces, unfinished metadata, unfinished conflicting rows/cells, complete unrelated tables and atomic preservation of prior output."
+  ],
+  "checks": [
+    {
+      "name": "Initial focused regressions",
+      "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/pytest tests/test_metacyc_authority_encoding.py tests/test_metanetx_identifier_authority.py -q",
+      "exit_code": 1,
+      "log": "research/pathway_additions/2026-10-11-next-212/parser-fix-checks/targeted-tests.log",
+      "log_sha256": "eb8ac6d92f1773ad138945f178ece7c5bd8a65356edd83589d3f158b3341fe71",
+      "session": 49647,
+      "result": "100 passed, 2 failed in 3.45s; both failures were overly specific expected error-message text for rejected incomplete metadata. Test expectations were corrected without weakening required rejection."
+    },
+    {
+      "name": "Final focused joint tests",
+      "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/pytest tests/test_metacyc_authority_encoding.py tests/test_metanetx_identifier_authority.py tests/test_identifier_snapshot_builders.py tests/test_linkml_schema.py tests/test_kgx_export.py -q",
+      "exit_code": 0,
+      "log": "research/pathway_additions/2026-10-11-next-212/parser-fix-checks/final-focused-tests.log",
+      "log_sha256": "2f4fbd8277b54c4d1e30521c056a72f7bdcd52871f9e2abe1a74c927e4324e83",
+      "session": 98767,
+      "result": "265 passed in 51.98s"
+    },
+    {
+      "name": "Full repository lint",
+      "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just lint",
+      "exit_code": 0,
+      "log": "research/pathway_additions/2026-10-11-next-212/parser-fix-checks/final-repository-lint.log",
+      "log_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41",
+      "result": "All checks passed"
+    },
+    {
+      "name": "Tracked diff whitespace",
+      "command": "git diff --check",
+      "exit_code": 0,
+      "log": "research/pathway_additions/2026-10-11-next-212/parser-fix-checks/final-diff-check.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Authentic source preservation and original independent negative probes",
+      "command": "PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/python /private/tmp/pathwaymech-next-212-parser-fixes/authentic-replay.py",
+      "exit_code": 0,
+      "log": "research/pathway_additions/2026-10-11-next-212/parser-fix-checks/authentic-replay.log",
+      "log_sha256": "2febb1ab32fab5c0b9739abbd81e4957885e48d2e29ab1771fb2c845cc0a7e26",
+      "result": "263 current MetaCyc HTML bodies plus one MetaNetX body retain all 264 selected authority term objects/source metadata; all 14 independent negative probes reject."
+    }
+  ],
+  "authentic_replay": {
+    "path": "research/pathway_additions/2026-10-11-next-212/parser-fix-authentic-replay.json",
+    "sha256": "e626c0d694fcef300409619b4de7b23f66618a8c59731eaf4c90d026179e2cca",
+    "script_path": "/private/tmp/pathwaymech-next-212-parser-fixes/authentic-replay.py",
+    "script_sha256": "a5fe34feeabed026a90daaeeece0186df8b84fe141ed20d3822bc2e49c18f20f"
+  },
+  "incremental_patch": {
+    "path": "/private/tmp/pathwaymech-next-212-parser-fixes/incremental-fixes.patch",
+    "sha256": "2ee0b8cc2487b5198baefda32348c48e54f23014071237899d7f1da21d7c7a35"
+  },
+  "preservation": {
+    "all_18_non_target_initial_scientific_inputs_unchanged": true,
+    "six_locator_acceptance_unchanged": true,
+    "current_bacillibactin_record_sha256": "aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa",
+    "canonical_review_pair_unchanged": true,
+    "source_manifest_and_authority_outputs_unchanged": true,
+    "source_replay_details": "research/pathway_additions/2026-10-11-next-212/parser-fix-authentic-replay.json"
+  },
+  "limitations": [
+    "No whole-corpus test suite or scientific re-review was claimed or duplicated.",
+    "Prior parser/scientific observations and raw source bytes remain immutable.",
+    "Code reviewer must independently reassess the fixes before publication; these are author execution receipts.",
+    "No commits, merges, branch cleanup, native history or generated page changes were made by this task."
+  ]
+}

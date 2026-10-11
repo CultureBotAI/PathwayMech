@@ -93,6 +93,7 @@ _PREFIX_CATEGORIES = {
     "UniProtKB": "biolink:GeneOrGeneProduct",
     "WikiPathways": "biolink:BiochemicalReaction",
     "gomodel": "biolink:BiochemicalReaction",
+    "metanetx.chemical": "biolink:ChemicalEntity",
 }
 _SPACE = re.compile(r"[\t\r\n]+")
 _UNSAFE_EDGE_ID = re.compile(r"[^A-Za-z0-9._-]+")

@@ -56,6 +56,15 @@ Each snapshot contains:
 - `terms`: a mapping from exact CURIE to authority label, synonyms, and a
   source key from `sources`.
 
+For `metacyc-html`, original bytes are hashed without rewriting or transcoding.
+The parser uses UTF-8 with lossless `surrogateescape` to tolerate invalid bytes
+only outside the native identity and title fields. Every native object metadata
+and title field must itself be valid UTF-8 before any term is emitted, including
+title markup that will later be removed. There is no Latin-1/Windows-code-page
+guess, replacement-character repair, or ignored-byte decoding. This source kind
+emits the native canonical title and no synonyms; unrelated page prose is not an
+authority label. Other source kinds retain their existing decoders.
+
 A term with `label_kind: source_context` is an identifier assertion in an
 independent source's cross-reference or local graph, not a canonical name
 assertion by the target namespace. Such a term can only satisfy an explicitly
@@ -213,3 +222,36 @@ The native checker is deliberately separate from the shared vendored
 `scripts/validate_id_label_correspondence.py`. That utility supports advisory
 and optional-target workflows which do not provide this gate's strict coverage
 contract. Its governed files remain byte-identical to the pinned claw revision.
+
+## Native MetaNetX chemical authority
+
+The `metanetx.chemical` namespace preserves MetaNetX's own issued spelling.
+`metanetx-chemical-html` accepts only a production
+`https://www.metanetx.org/chem_info/MNXM<digits>` original, bound to the manifest
+SHA-256. It requires one native `MolecularEntity` JSON-LD object whose identifier,
+`@id`, URL and name agree with the request and visible MNX_ID/H1. Missing,
+duplicate, unresolved or conflicting identities/names fail before output is
+written. Beta endpoints, account/error pages and other MNX entry classes do not
+establish this authority.
+
+Only the native canonical name is admitted. `alternateName`, `sameAs` and
+upstream reference labels do not become accepted synonyms, mappings or other
+namespaces' authority terms. No contextual-label exception is granted; an
+unselected or unknown MNXM entry remains unresolved. The schema admits the
+namespace, while the source parser and identifier gate establish exact identity.
+Integrate this policy with an independently built native snapshot and its source
+manifest; a configured namespace with no authority terms remains an error, even
+when no current record uses it. The empty-namespace guard is not relaxed.
+
+A production entry can describe a generic chemical class or carrier state, not
+necessarily a small molecule. Its default KGX category is `biolink:ChemicalEntity`;
+more specific participant categories require separate source evidence. The
+canonical name does not establish reaction membership, protein sequence, charge
+normalization or equivalence to a historical MetaCyc/ModelSEED entry. Inspect
+original structures separately, retaining conflicts rather than relabeling them.
+
+For production-page acquisition, record the entry bytes, URL and retrieval time,
+and retain the original [MNXref release documentation](https://www.metanetx.org/mnxdoc/mnxref.html)
+with its own digest when assigning the observed release. This records a production
+observation; it does not claim acquisition of a versioned bulk dump. Upstream
+licenses still apply as described by the issuing source.

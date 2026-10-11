@@ -5,7 +5,7 @@ The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html and
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
-kegg-reaction-flatfile and kegg-compound-flatfile. Source files are
+kegg-reaction-flatfile, kegg-compound-flatfile and metanetx-chemical-html. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -20,6 +20,7 @@ import re
 import tarfile
 from collections.abc import Iterator
 from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 from urllib.parse import urldefrag, urljoin
@@ -30,7 +31,7 @@ import yaml
 SOURCE_NAMESPACES = frozenset(
     {
         "EC", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD", "UniProtKB",
-        "WikiPathways", "gomodel", "RHEA-COMP", "KEGG",
+        "WikiPathways", "gomodel", "RHEA-COMP", "KEGG", "metanetx.chemical",
     }
 )
 
@@ -274,8 +275,53 @@ def pathbank_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[s
         yield identifier + "/" + native, names[0], names[1:]
 
 
+def _metacyc_metadata_fields(text: str) -> Iterator[str]:
+    """Bound native object literals without interpreting JavaScript values."""
+    for match in re.finditer(r"typeObjectPage\s*=\s*\{", text):
+        depth = 1
+        quote = None
+        escaped = False
+        for index in range(match.end(), len(text)):
+            char = text[index]
+            if quote is not None:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = None
+            elif char in {"'", '"'}:
+                quote = char
+            elif char in {"/", "`"}:
+                # Native metadata uses strings and simple values. Do not guess
+                # the extent of comments, regex literals or template strings.
+                raise ValueError("MetaCyc native metadata uses an unsupported literal")
+            elif char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    yield text[match.start():index + 1]
+                    break
+        else:
+            raise ValueError("MetaCyc source has unfinished native metadata")
+
+
 def metacyc_terms(text: str) -> Iterator[tuple[str, str, list[str]]]:
     """Read native ID and native title from a public Pathway Tools object page."""
+    # A few native UTF-8-declared pages contain stray bytes in unrelated prose.
+    # source_terms preserves those bytes as surrogates rather than guessing an
+    # encoding. None may enter an issuing identity or title, even in markup that
+    # would later be stripped. Check all such fields before emitting any term.
+    fields = [
+        *_metacyc_metadata_fields(text),
+        *re.findall(r"<TITLE\b[^>]*>.*?(?:</TITLE\s*>|$)", text, re.DOTALL | re.IGNORECASE),
+    ]
+    for field in fields:
+        try:
+            field.encode("utf-8", errors="strict")
+        except UnicodeEncodeError as error:
+            raise ValueError("MetaCyc native identity/title contains undecodable bytes") from error
     identity = re.search(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'", text)
     title = re.search(r"<TITLE>MetaCyc (.*?)</TITLE>", text, re.DOTALL | re.IGNORECASE)
     if identity is None or title is None:
@@ -338,6 +384,121 @@ KEGG_SOURCE_TYPES = {
     "kegg-reaction-flatfile": ("R", "Reaction"),
     "kegg-compound-flatfile": ("C", "Compound"),
 }
+
+
+class _MetaNetXPage(HTMLParser):
+    """Read native identity surfaces without executing page scripts."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.jsonld: list[str] = []
+        self.headings: list[str] = []
+        self.rows: list[list[str]] = []
+        self._script: list[str] | None = None
+        self._heading: list[str] | None = None
+        self._rows: list[list[str]] = []
+        self._cells: list[tuple[list[str], list[str]]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "script" and dict(attrs).get("type") == "application/ld+json":
+            self._script = []
+        elif tag == "h1":
+            if self._heading is not None:
+                raise ValueError("MetaNetX source has nested identity headings")
+            self._heading = []
+        elif tag == "tr":
+            self._rows.append([])
+        elif tag == "td" and self._rows:
+            self._cells.append((self._rows[-1], []))
+
+    def handle_data(self, data: str) -> None:
+        if self._script is not None:
+            self._script.append(data)
+            return
+        if self._heading is not None:
+            self._heading.append(data)
+        if self._cells:
+            self._cells[-1][1].append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "script" and self._script is not None:
+            self.jsonld.append("".join(self._script))
+            self._script = None
+        elif tag == "h1" and self._heading is not None:
+            self.headings.append(" ".join("".join(self._heading).split()))
+            self._heading = None
+        elif tag == "td" and self._cells:
+            row, parts = self._cells.pop()
+            row.append(" ".join("".join(parts).split()))
+        elif tag == "tr" and self._rows:
+            self.rows.append(self._rows.pop())
+
+
+def _unique_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"MetaNetX JSON-LD has duplicate key: {key}")
+        result[key] = value
+    return result
+
+
+def metanetx_chemical_terms(text: str, url: str) -> list[tuple[str, str, list[str]]]:
+    """Verify one production MNXM entry; xrefs and aliases are not authorities.
+
+    The JSON-LD identity must agree with its URL and the visible native ID/name.
+    A native chemical class may describe an entire generic carrier; admitting its
+    name does not establish cross-database structure equivalence or a sequence.
+    """
+    request = re.fullmatch(r"https://www\.metanetx\.org/chem_info/(MNXM[0-9]+)", url)
+    if not request:
+        raise ValueError("MetaNetX chemical source requires an official production MNXM URL")
+    page = _MetaNetXPage()
+    page.feed(text)
+    page.close()
+    if (page._script is not None or page._heading is not None
+            or page._rows or page._cells):
+        raise ValueError("MetaNetX source has an unfinished identity surface")
+
+    entities: list[dict[str, Any]] = []
+
+    def collect(value: Any) -> None:
+        if isinstance(value, dict):
+            kind = value.get("@type")
+            if kind == "MolecularEntity" or isinstance(kind, list) and "MolecularEntity" in kind:
+                entities.append(value)
+            for child in value.values():
+                collect(child)
+        elif isinstance(value, list):
+            for child in value:
+                collect(child)
+
+    for body in page.jsonld:
+        try:
+            collect(json.loads(body, object_pairs_hook=_unique_json_keys))
+        except json.JSONDecodeError as error:
+            raise ValueError("MetaNetX source has malformed JSON-LD") from error
+    if len(entities) != 1:
+        raise ValueError("MetaNetX source requires exactly one MolecularEntity")
+    entity = entities[0]
+    identifier = "metanetx.chemical:" + request[1]
+    if (entity.get("@context") != "https://schema.org"
+            or entity.get("@type") != "MolecularEntity"
+            or entity.get("identifier") != identifier
+            or entity.get("@id") != url or entity.get("url") != url):
+        raise ValueError("MetaNetX JSON-LD identity, class and production URL must agree")
+    label = entity.get("name")
+    if (not isinstance(label, str) or not label.strip()
+            or label.strip() in {request[1], identifier}
+            or label.strip().casefold().startswith(("error", "unknown", "not found"))):
+        raise ValueError("MetaNetX source lacks a resolved native name")
+    label = " ".join(label.split())
+    visible_ids = [row[1:] for row in page.rows if row and row[0] == "MNX_ID"]
+    # The production row also includes an image cell; its text is not identity.
+    if (len(visible_ids) != 1 or not visible_ids[0] or visible_ids[0][0] != request[1]
+            or page.headings != [label]):
+        raise ValueError("MetaNetX visible native ID/name and JSON-LD must agree")
+    return [(identifier, label, [])]
 
 
 def kegg_terms(text: str, kind: str, url: str) -> list[tuple[str, str, list[str]]]:
@@ -438,9 +599,11 @@ def source_terms(
     elif kind == "rhea-components-rdf-gz":
         yield from rhea_component_terms(path)
     elif kind == "metacyc-html":
-        yield from metacyc_terms(path.read_text(encoding="utf-8"))
+        yield from metacyc_terms(path.read_bytes().decode("utf-8", errors="surrogateescape"))
     elif kind in KEGG_SOURCE_TYPES:
         yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
+    elif kind == "metanetx-chemical-html":
+        yield from metanetx_chemical_terms(path.read_text(encoding="utf-8"), url or "")
     elif kind == "ncbi-protein-xml":
         for protein in ElementTree.parse(path).getroot().findall("GBSeq"):
             accession = protein.findtext("GBSeq_accession-version")
@@ -464,6 +627,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     sources: dict[str, Any] = {}
     source_keys: set[str] = set()
     kegg_assertions: dict[str, tuple[str, tuple[str, ...]]] = {}
+    metanetx_assertions: dict[str, str] = {}
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
@@ -485,6 +649,13 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
         for identifier, label, synonyms in source_terms(entry["kind"], path, url=entry["url"]):
+            if (identifier.startswith("metanetx.chemical:")
+                    and entry["kind"] != "metanetx-chemical-html"):
+                raise ValueError("MetaNetX chemical identifiers require native chemical HTML")
+            if entry["kind"] == "metanetx-chemical-html":
+                if identifier in metanetx_assertions and metanetx_assertions[identifier] != label:
+                    raise ValueError(f"conflicting MetaNetX native names for {identifier}")
+                metanetx_assertions[identifier] = label
             if entry["kind"] in KEGG_SOURCE_TYPES:
                 assertion = (label, tuple(sorted(set(synonyms))))
                 if identifier in kegg_assertions and kegg_assertions[identifier] != assertion:
