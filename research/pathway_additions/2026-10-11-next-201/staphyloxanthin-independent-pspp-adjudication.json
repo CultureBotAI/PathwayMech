@@ -1,0 +1,104 @@
+{
+  "observed_at": "2026-10-11T08:19:48.740790+00:00",
+  "reviewer": "/root/pathway_authority_cache",
+  "scope": "Read-only independent chemical grounding assistance; no maintained graph or source edits.",
+  "inputs": [
+    {
+      "path": "/private/tmp/pathwaymech-next-201-evidence/staphyloxanthin/CPD-465.xml",
+      "sha256": "22784d5ba1b08158c62545a70d2e989712619a4c53afaf9afa8229d62d9daf77",
+      "hash_scope": "complete original file bytes"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-201-evidence/staphyloxanthin/pspp/rcsb-PS7.json",
+      "sha256": "0961774ec4001bbe97120efaeef75c25bd91eb11026612596848b95df2a002c5",
+      "hash_scope": "complete original file bytes"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-201-evidence/staphyloxanthin/pspp/rcsb-3NPR.json",
+      "sha256": "969e99d2a27aa9bd4fa259d9334fcc90cb63a18daa6b95699827a544030647fe",
+      "hash_scope": "complete original file bytes"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-201-evidence/staphyloxanthin/pspp/rcsb-3NPR-polymer1.json",
+      "sha256": "bdbd44ca35e958be0541af0cdf0029c115efe4876ecd11d908e9c2bfbd07e95b",
+      "hash_scope": "complete original file bytes"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-201-staph-review/pspp/lin2010.pdf",
+      "sha256": "b4f365b783627f3b01e617ce92d8b971f24c1005623d919ce3fccd5d465916d6",
+      "hash_scope": "complete original file bytes"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-201-staph-review/pspp/lin2010-si.pdf",
+      "sha256": "22a1d6f95d141893fe3da8b7d9cf814066239bfea076915d929ce1c61914e1c7",
+      "hash_scope": "complete original file bytes"
+    }
+  ],
+  "chebi_query": {
+    "database": "/private/tmp/pathwaymech-curation-authorities/chebi.db",
+    "mode": "read-only",
+    "release": "ChEBI 255",
+    "sql": "SELECT value FROM statements WHERE subject = CHEBI:57310 AND predicate = chemrof:inchi_string",
+    "result": "InChI=1S/C30H52O7P2/c1-23(2)13-9-15-25(5)17-11-18-27(7)21-28-29(22-36-39(34,35)37-38(31,32)33)30(28,8)20-12-19-26(6)16-10-14-24(3)4/h13-14,17,19,21,28-29H,9-12,15-16,18,20,22H2,1-8H3,(H,34,35)(H2,31,32,33)/p-3/b25-17+,26-19+,27-21+/t28-,29-,30-/m0/s1",
+    "limitation": "Selected original database row queried here. Full database was previously hashed by cohort integration; no new whole-database hash is claimed by this narrow check."
+  },
+  "structures": {
+    "MetaCyc:CPD-465": "InChI=1S/C30H52O7P2/c1-23(2)13-9-15-25(5)17-11-18-27(7)21-28-29(22-36-39(34,35)37-38(31,32)33)30(28,8)20-12-19-26(6)16-10-14-24(3)4/h13-14,17,19,21,28-29H,9-12,15-16,18,20,22H2,1-8H3,(H,34,35)(H2,31,32,33)/p-3/b25-17+,26-19+,27-21+/t28-,29-,30+/m0/s1",
+    "CHEBI:57310": "InChI=1S/C30H52O7P2/c1-23(2)13-9-15-25(5)17-11-18-27(7)21-28-29(22-36-39(34,35)37-38(31,32)33)30(28,8)20-12-19-26(6)16-10-14-24(3)4/h13-14,17,19,21,28-29H,9-12,15-16,18,20,22H2,1-8H3,(H,34,35)(H2,31,32,33)/p-3/b25-17+,26-19+,27-21+/t28-,29-,30-/m0/s1",
+    "RCSB:PS7": "InChI=1S/C30H52O7P2/c1-23(2)13-9-15-25(5)17-11-18-27(7)21-28-29(22-36-39(34,35)37-38(31,32)33)30(28,8)20-12-19-26(6)16-10-14-24(3)4/h13-14,17,19,21,28-29H,9-12,15-16,18,20,22H2,1-8H3,(H,34,35)(H2,31,32,33)/b25-17+,26-19+,27-21+/t28-,29-,30-/m1/s1"
+  },
+  "exact_comparison": {
+    "chebi_vs_ps7": "Identical standard InChI after removing the protonation layer and changing /m0 to /m1; /t28-,29-,30- and /s1 are unchanged.",
+    "native_vs_chebi": "Same standard InChI except the parity sign of canonical tetrahedral center 30 differs."
+  },
+  "interpretation": {
+    "authority_url": "https://www.inchi-trust.org/technical-faq/",
+    "authority_locators": [
+      "8.3",
+      "8.5"
+    ],
+    "method": "Official InChI stereochemical layer semantics, not conversion of +/- signs to CIP R/S names.",
+    "finding": "The ChEBI and PS7 encodings are mirror-related at their fixed absolute tetrahedral configurations; protonation does not explain the distinction. Native CPD-465 is also not an identical stereochemical encoding.",
+    "not_claimed": [
+      "Which source structure is the chemically correct physiological PSPP",
+      "That either a common name or the RRR synonym resolves the disagreement",
+      "That a ligand dictionary entry alone proves the Newman-produced intermediate absolute configuration"
+    ]
+  },
+  "primary_assessment": [
+    {
+      "source": "PMID:21098670",
+      "locator": "Main paper, printed p.21342 (PDF page 6), Methods",
+      "assessment": "The PSPP substrate was synthesized using human squalene synthase, purified by C8 chromatography and assessed by LC-MS/MS. CrtM crystals were supplied with PSPP. This experimental provenance is not direct isolation and absolute stereochemical analysis of Newman-produced PSPP."
+    },
+    {
+      "source": "PMID:21098670",
+      "locator": "Main paper, printed pp.21338-21339; Figure 2; supporting Figure S2 and Table S1",
+      "assessment": "Mutant and wild-type structures support PSPP binding and the two-half-reaction mechanism. The reported similarity of ligand poses does not reconcile the conflicting external InChI encodings."
+    },
+    {
+      "source": "PMID:21098670",
+      "locator": "Supporting Information page 1, Expression and X-ray Crystallography",
+      "assessment": "CrtM was expressed in E. coli BL21 and structures were modeled/refined with molecular replacement and ligand-modeling tools. BL21 is the expression host, not the natural pathway taxon."
+    }
+  ],
+  "strain_scope": {
+    "entry": "3NPR",
+    "protein_accession": "A9JQL9",
+    "native_source": "Staphylococcus aureus subsp. aureus A017934/97",
+    "ncbi_taxon": 585147,
+    "mutation_count": 0,
+    "limitation": "This source is distinct from the Newman strain target; a separate exact bridge is required for Newman-specific assertions."
+  },
+  "disposition": "The unresolved exact chemical grounding conflict is supported. Retain whole-route research and source-specific structures; do not silently substitute PS7 or CPD-465, and do not treat reaction balance or matching names as stereochemical validation.",
+  "reproduction": {
+    "command": ".venv/bin/python /private/tmp/pathwaymech-next-201-pspp-independent/adjudicate.py",
+    "expected_exit": 0,
+    "independent_pdf_extraction_session": 33143,
+    "independent_pdf_extraction_exit": 0,
+    "visual_inspection": [
+      "Main paper Figure 1 and Figure 2 on PDF page 2",
+      "Supporting Figure S1 and Figure S2 on PDF page 2"
+    ]
+  }
+}

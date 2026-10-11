@@ -1,0 +1,508 @@
+# Partial independent aromatic pathway review: primary evidence and locators
+
+- Review: 20261011T080752Z-aromatic-initial-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T08:00:44Z
+- Finished UTC: 2026-10-11T08:07:52Z
+- Reviewer: Codex independent reviewer (/root/verify_graph_publication) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+Complete eight-step two-branch identity and existing chemistry are supported. One major evidence-update finding requires direct 2020 MhpA characterization to replace inference-only framing; one grouped minor finding corrects HcaB paragraph and Mhp Table 2 locators. Shared full gates remain in progress; this is not a final scientific pass.
+
+## Scope And Provenance
+
+One full record read and original-source scientific assessment with independent native/Rhea/KGX replay; final integration gates and successor recheck remain pending.
+
+Selection: Exact PWY0-1277 target at cfe58d61ae9a0474bf876032e227621e0a89fcd42a3488fd3e7b43b224bc06de
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9e936b267374181f7f87402045777534d2f17508.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY0-1277 | data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml | maintained | 3-phenylpropanoate and 3-(3-hydroxyphenyl)propanoate degradation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical pre-assessment and expanded input inspection | passed | True | MetaCyc:PWY0-1277 | Initial inspect before judgement and expanded stable target/dossier capture both exit 0; target bytes unchanged. |
+| Original native/Rhea/chemical/protein/KGX replay | passed | True | MetaCyc:PWY0-1277 | Reviewer execution 62459 exit 0;39 exact original Rhea sides/eight balances,complete native eight-member union,seven component declarations,current protein pointers and 79-edge/161-evidence actual KGX parity. Primary locator findings retained separately. |
+| Coordinated validate | unavailable | True | MetaCyc:PWY0-1277 | Coordinated root gates in progress; final terminal receipts not inspected at this partial observation. |
+| Coordinated test | unavailable | True | MetaCyc:PWY0-1277 | Coordinated root gates in progress; final terminal receipts not inspected at this partial observation. |
+| Coordinated lint | unavailable | True | MetaCyc:PWY0-1277 | Coordinated root gates remain pending independent receipt inspection. Root reported an initial lint failure; this check is not attested as passing here. |
+| Whitespace check | passed | True | MetaCyc:PWY0-1277 | Actual read-only command exited0. |
+
+## Scientific And Domain Assessments
+
+### Complete native two-branch boundary
+
+identity: supported. Targets: MetaCyc:PWY0-1277.
+
+Full eight-member route, terminal acetyl-CoA and exact K-12 scope retained.
+
+### Source-isomer and direction scope
+
+grounding: supported. Targets: MetaCyc:PWY0-1277.
+
+Current Rhea 39 sides/eight balances and explicit61449/66887 and60088/60087 distinctions are supported.
+
+### Primary characterization and source currency
+
+evidence: concern. Targets: MetaCyc:PWY0-1277.
+
+MhpA evidence framing omits direct 2019/2020 characterization; downstream sources remain appropriately qualified.
+
+### Primary citation locations
+
+provenance: concern. Targets: MetaCyc:PWY0-1277.
+
+Two bounded wrong locations require correction; assertions remain supported.
+
+## Findings
+
+### f-primary-locators: Two primary citations point to inaccurate paragraph/page locations
+
+minor / open / confirmed; issue key: aromatic-hca-and-mhp-primary-locators.
+
+Edge041 PMID9603882 quote is in second Regulation paragraph, not final. Edge079 PMID9098055 Table 2 is printed p. 2577, not 2578; supporting deletion Results is p. 2578. Correct exact locators without changing supported science.
+
+### f-mhpa-direct-characterization: MhpA evidence framing omits direct W3110 biochemical characterization
+
+major / open / confirmed; issue key: aromatic-mhpa-missing-direct-characterization.
+
+Description,edge042,edge058 and dossier frame MhpA and FAD as genetic/homology or similarity evidence. PMID31811039 directly establishes W3110 gene function,purified hydroxylation,NADH/NADPH activity,bound FAD and apparent polymeric assembly. Retain old source assertions as dated source facts,add direct evidence and qualify unresolved polymer stoichiometry. No reaction change or invented complex is requested.
+
+## Recommended Actions And Acceptance Checks
+
+### correct-locators
+
+Correct exact two locators to observed original paragraph and printed page, preserving assertions.
+
+- Archive all initial reviewed inputs before mutation.
+- Compare corrected record and edge-local evidence with original sources; repeat relevant source/KGX replay.
+- Inspect final shared gates and save successor with exact previous occurrence and explicit disposition.
+
+### update-mhpa
+
+Add independently inspected direct MhpA primary evidence, strain/construct scope,NAD(P)H alternatives,FAD and qualified apparent polymer; revise outdated limitations and author dossiers.
+
+- Archive all initial reviewed inputs before mutation.
+- Compare corrected record and edge-local evidence with original sources; repeat relevant source/KGX replay.
+- Inspect final shared gates and save successor with exact previous occurrence and explicit disposition.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| native | MetaCyc PWY0-1277,HCAMHPDEG-PWY,PWY-5162 original XML; reaction-list,sub-pathways,reaction-ordering,comments | supports | Parent explicitly has eight steps and two complete modules; extra RXN7282 is order-only. Native ordering and current chemistry are correctly separate. |
+| replay | research/pathway_additions/2026-10-11-next-201/aromatic-independent-review-audit.json; reaction_side_checks,eight_balances,assembly_checks,source_hashes,kgx | supports | Independent source replay confirms current chemistry, eight balances, exact source-issued directions, compound isomer conflict and protein/complex scope. |
+| hca | PMID:9603882 / PMC107259; Results and Discussion, Regulation of the hca cluster, second paragraph beginning To study the regulation | supports | HcaB quote is exact but source locator incorrectly calls this the final paragraph. The last paragraph concerns transporters. |
+| mhp1997 | PMID:9098055 / PMC179006; Original PDF Figure 1 p. 2574; Table 2 p. 2577; Identification of mhpR Results p. 2578 | supports | Exact retained PDF independently re-extracted and pages visually inspected. Table 2 is p. 2577; deletion-background narrative is p. 2578. |
+| mhpa2020 | PMID:31811039 / DOI:10.1128/AEM.02385-19 / PMC6997738; Results: mhpA is vital; Overexpression and purification; MhpA catalyzes hydroxylation; Biochemical properties; Table 2; Methods protein expression/FAD HPLC | supports | Direct W3110 deletion/complementation and purified His-tagged MhpA assays confirm hydroxylation, NADH/NADPH use and tightly bound 0.81 mol FAD/mol protein. SEC yields apparent 669 kDa polymer; fixed stoichiometry unestablished. Paper BAA13052 maps to current P77397 via EMBL D86239. This updates old genetic/similarity-only framing. |
+| downstream | PMID:9758851 full PMC106610;8399388/9315862/9492273/20053352/16782065/23237860/18286376 abstracts; Full 1998 main body/conclusion; exact original abstractText fields | supports | Downstream activities, inferred 4S configuration, class-I metal independence, MhpB4/MhpC2/MhpD5 and low-pH 60-mer limits, MhpE-F association and active monomeric MhpF, HcaC cluster are supported within stated access/scope. |
+
+## Limits And Additional Notes
+
+- Initial observation is partial; final shared tests and integration receipts are unavailable at this save.
+- Several MhpB/C/D/F and HcaC studies were inspected as complete indexed primary abstracts only, with no full-text claim.
+- Current native/UniProt source annotations can lag direct literature; MhpA is a confirmed example requiring curation.
+- Raw ChEBI/taxon full-body checks are delegated to root canonical authority integration; independent review queried exact original rows and rehashed other retained bodies.
+- No browser visual QA is claimed. Primary PDF pages were rendered locally for source inspection, separate from product-page QA.
+- Canonical inspect before assessment captured cfe58d61. Expanded inspect includes actually read authored dossiers and independent audit, with record unchanged.
+- Original inputs copied externally under /private/tmp/pathwaymech-aromatic-review/initial-inputs before author mutation; author/root will retain exact historical bytes in maintained archive.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T080752Z-aromatic-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Partial independent aromatic pathway review: primary evidence and locators'
+started_at: '2026-10-11T08:00:44Z'
+finished_at: '2026-10-11T08:07:52Z'
+reviewer:
+  identity: Codex independent reviewer (/root/verify_graph_publication)
+  kind: agent
+  independence: independent
+  independence_basis: Did not author aromatic record or author dossiers. Authored
+    separate staphyloxanthin record excluded from this judgement. Independently read
+    complete target, original native/protein/Rhea/primary sources and parsed original
+    chemistry.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: Complete eight-step two-branch identity and existing chemistry are supported.
+  One major evidence-update finding requires direct 2020 MhpA characterization to
+  replace inference-only framing; one grouped minor finding corrects HcaB paragraph
+  and Mhp Table 2 locators. Shared full gates remain in progress; this is not a final
+  scientific pass.
+source:
+  git_revision: 9e936b267374181f7f87402045777534d2f17508
+  state: working_tree
+  inputs:
+  - path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    sha256: cfe58d61ae9a0474bf876032e227621e0a89fcd42a3488fd3e7b43b224bc06de
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-authority-inputs.json
+    sha256: 1458a277100aa9b63225e1ad8597824946b31f4b7eb9dc437692f526f2769195
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-curation.md
+    sha256: ede42c871bcfedf06f9261a6862595bf33a747d6a484a20ea3c9664fee55ef48
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-dedup.json
+    sha256: 6b92301a010b8790423a81c71060272352a90800cb69883c6952950ea231a498
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-identifiers.json
+    sha256: b63f9ca9bc29bd4eac0ea0f317161020a4020500c0cf909da251db1447680e84
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-independent-review-audit.json
+    sha256: 93ebb7272da0d308460ae00b808076fd0c3de5ccbd3cf7fd156259de46cb4c59
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-replay.py
+    sha256: 52da7798249659977f33b4ef702417dd513f5adeb247836a453b68451bee2cff
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-source-manifest.json
+    sha256: 5097601fce3b21a06770a0370e08fa560cd9b7f2271d0888162a44ebc879afd4
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-source-projection.json
+    sha256: c896a0a582458862e76245a52ef31e0856711d42d5ca92a482dea1f2977f0154
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/aromatic-validation.json
+    sha256: ca232bc7cd843ea0203ee1ec91762a2cd53dbfb0d3aaed9f0b0cd9ca1814ae3d
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+targets:
+- target_id: MetaCyc:PWY0-1277
+  path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+  label: 3-phenylpropanoate and 3-(3-hydroxyphenyl)propanoate degradation
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    role: maintained pathway record
+scope:
+  description: One full record read and original-source scientific assessment with
+    independent native/Rhea/KGX replay; final integration gates and successor recheck
+    remain pending.
+  selection: Exact PWY0-1277 target at cfe58d61ae9a0474bf876032e227621e0a89fcd42a3488fd3e7b43b224bc06de
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY0-1277
+  exclusions:
+  - target: Other cohort records and corpus science
+    reason: Outside this single-record independent assessment.
+  - target: Final coordinated corpus gates and final corrected generated pages
+    reason: Still pending; retained as unavailable rather than claimed passing.
+checks:
+- check_id: inspect
+  name: Canonical pre-assessment and expanded input inspection
+  command: PYTHONPATH=src UV_NO_SYNC=1 .venv/bin/python scripts/record_review.py inspect
+    --targets /private/tmp/pathwaymech-aromatic-review-targets.yaml --input research/pathway_additions/2026-10-11-next-201/aromatic-authority-inputs.json
+    --input research/pathway_additions/2026-10-11-next-201/aromatic-curation.md --input
+    research/pathway_additions/2026-10-11-next-201/aromatic-dedup.json --input research/pathway_additions/2026-10-11-next-201/aromatic-identifiers.json
+    --input research/pathway_additions/2026-10-11-next-201/aromatic-independent-review-audit.json
+    --input research/pathway_additions/2026-10-11-next-201/aromatic-replay.py --input
+    research/pathway_additions/2026-10-11-next-201/aromatic-source-manifest.json --input
+    research/pathway_additions/2026-10-11-next-201/aromatic-source-projection.json
+    --input research/pathway_additions/2026-10-11-next-201/aromatic-validation.json
+    --input docs/CURATION.md --input docs/HARMONIZATION.md --input docs/CAUSAL_GRAPHS.md
+    --input src/pathwaymech/schema.py
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Initial inspect before judgement and expanded stable target/dossier capture
+    both exit 0; target bytes unchanged.
+  target_ids:
+  - MetaCyc:PWY0-1277
+- check_id: independent-replay
+  name: Original native/Rhea/chemical/protein/KGX replay
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-aromatic-independent-check.py
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Reviewer execution 62459 exit 0;39 exact original Rhea sides/eight balances,complete
+    native eight-member union,seven component declarations,current protein pointers
+    and 79-edge/161-evidence actual KGX parity. Primary locator findings retained
+    separately.
+  target_ids:
+  - MetaCyc:PWY0-1277
+- check_id: root-validate
+  name: Coordinated validate
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just validate
+  status: unavailable
+  required: true
+  summary: Coordinated root gates in progress; final terminal receipts not inspected
+    at this partial observation.
+  target_ids:
+  - MetaCyc:PWY0-1277
+- check_id: root-test
+  name: Coordinated test
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just test
+  status: unavailable
+  required: true
+  summary: Coordinated root gates in progress; final terminal receipts not inspected
+    at this partial observation.
+  target_ids:
+  - MetaCyc:PWY0-1277
+- check_id: root-lint
+  name: Coordinated lint
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just lint
+  status: unavailable
+  required: true
+  summary: Coordinated root gates remain pending independent receipt inspection. Root
+    reported an initial lint failure; this check is not attested as passing here.
+  target_ids:
+  - MetaCyc:PWY0-1277
+- check_id: diff
+  name: Whitespace check
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Actual read-only command exited0.
+  target_ids:
+  - MetaCyc:PWY0-1277
+evidence:
+- evidence_id: native
+  kind: database
+  reference: MetaCyc PWY0-1277,HCAMHPDEG-PWY,PWY-5162 original XML
+  locator: reaction-list,sub-pathways,reaction-ordering,comments
+  accessed_at: '2026-10-11T08:07:52Z'
+  support: supports
+  summary: Parent explicitly has eight steps and two complete modules; extra RXN7282
+    is order-only. Native ordering and current chemistry are correctly separate.
+- evidence_id: replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/aromatic-independent-review-audit.json
+  locator: reaction_side_checks,eight_balances,assembly_checks,source_hashes,kgx
+  accessed_at: '2026-10-11T08:07:52Z'
+  support: supports
+  summary: Independent source replay confirms current chemistry, eight balances, exact
+    source-issued directions, compound isomer conflict and protein/complex scope.
+- evidence_id: hca
+  kind: primary_source
+  reference: PMID:9603882 / PMC107259
+  locator: Results and Discussion, Regulation of the hca cluster, second paragraph
+    beginning To study the regulation
+  accessed_at: '2026-10-11T08:07:52Z'
+  support: supports
+  summary: HcaB quote is exact but source locator incorrectly calls this the final
+    paragraph. The last paragraph concerns transporters.
+  snapshot_sha256: 77422a1136f6f1891af5f8464bf04eb263715f8e39b0eecbd6f59fd912bc0b53
+- evidence_id: mhp1997
+  kind: primary_source
+  reference: PMID:9098055 / PMC179006
+  locator: Original PDF Figure 1 p. 2574; Table 2 p. 2577; Identification of mhpR
+    Results p. 2578
+  accessed_at: '2026-10-11T08:07:52Z'
+  support: supports
+  summary: Exact retained PDF independently re-extracted and pages visually inspected.
+    Table 2 is p. 2577; deletion-background narrative is p. 2578.
+  snapshot_sha256: d3d0addea29699950c3fbaaa608787101e2bd48acb450aa1b58093d67574c49b
+- evidence_id: mhpa2020
+  kind: primary_source
+  reference: PMID:31811039 / DOI:10.1128/AEM.02385-19 / PMC6997738
+  locator: 'Results: mhpA is vital; Overexpression and purification; MhpA catalyzes
+    hydroxylation; Biochemical properties; Table 2; Methods protein expression/FAD
+    HPLC'
+  accessed_at: '2026-10-11T08:07:52Z'
+  support: supports
+  summary: Direct W3110 deletion/complementation and purified His-tagged MhpA assays
+    confirm hydroxylation, NADH/NADPH use and tightly bound 0.81 mol FAD/mol protein.
+    SEC yields apparent 669 kDa polymer; fixed stoichiometry unestablished. Paper
+    BAA13052 maps to current P77397 via EMBL D86239. This updates old genetic/similarity-only
+    framing.
+  snapshot_sha256: f580c01b6ef803b4d27e8832e74117624c7b831e106a121447f3b037c9f0cc38
+- evidence_id: downstream
+  kind: primary_source
+  reference: PMID:9758851 full PMC106610;8399388/9315862/9492273/20053352/16782065/23237860/18286376
+    abstracts
+  locator: Full 1998 main body/conclusion; exact original abstractText fields
+  accessed_at: '2026-10-11T08:07:52Z'
+  support: supports
+  summary: Downstream activities, inferred 4S configuration, class-I metal independence,
+    MhpB4/MhpC2/MhpD5 and low-pH 60-mer limits, MhpE-F association and active monomeric
+    MhpF, HcaC cluster are supported within stated access/scope.
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete native two-branch boundary
+  outcome: supported
+  summary: Full eight-member route, terminal acetyl-CoA and exact K-12 scope retained.
+  target_ids:
+  - MetaCyc:PWY0-1277
+  evidence_ids:
+  - native
+  - replay
+- assessment_id: chemistry
+  area: grounding
+  topic: Source-isomer and direction scope
+  outcome: supported
+  summary: Current Rhea 39 sides/eight balances and explicit61449/66887 and60088/60087
+    distinctions are supported.
+  target_ids:
+  - MetaCyc:PWY0-1277
+  evidence_ids:
+  - replay
+- assessment_id: mechanism
+  area: evidence
+  topic: Primary characterization and source currency
+  outcome: concern
+  summary: MhpA evidence framing omits direct 2019/2020 characterization; downstream
+    sources remain appropriately qualified.
+  target_ids:
+  - MetaCyc:PWY0-1277
+  evidence_ids:
+  - mhpa2020
+  - downstream
+- assessment_id: locators
+  area: provenance
+  topic: Primary citation locations
+  outcome: concern
+  summary: Two bounded wrong locations require correction; assertions remain supported.
+  target_ids:
+  - MetaCyc:PWY0-1277
+  evidence_ids:
+  - hca
+  - mhp1997
+findings:
+- finding_id: f-primary-locators
+  issue_key: aromatic-hca-and-mhp-primary-locators
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Two primary citations point to inaccurate paragraph/page locations
+  description: Edge041 PMID9603882 quote is in second Regulation paragraph, not final.
+    Edge079 PMID9098055 Table 2 is printed p. 2577, not 2578; supporting deletion
+    Results is p. 2578. Correct exact locators without changing supported science.
+  target_ids:
+  - MetaCyc:PWY0-1277
+  field_paths:
+  - mechanistic_edges[id=aromatic-edge-041]/evidence[reference_id=PMID:9603882]/source_locator
+  - mechanistic_edges[id=aromatic-edge-079]/evidence[reference_id=PMID:9098055]/source_locator
+  evidence_ids:
+  - hca
+  - mhp1997
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    role: maintained pathway record
+  rule_id: review-yaml-record exact nearest source locators
+  native_severity: minor
+  normalization_reason: Supported assertions with bounded incorrect provenance anchors.
+- finding_id: f-mhpa-direct-characterization
+  issue_key: aromatic-mhpa-missing-direct-characterization
+  category: evidence
+  severity: major
+  status: open
+  certainty: confirmed
+  title: MhpA evidence framing omits direct W3110 biochemical characterization
+  description: Description,edge042,edge058 and dossier frame MhpA and FAD as genetic/homology
+    or similarity evidence. PMID31811039 directly establishes W3110 gene function,purified
+    hydroxylation,NADH/NADPH activity,bound FAD and apparent polymeric assembly. Retain
+    old source assertions as dated source facts,add direct evidence and qualify unresolved
+    polymer stoichiometry. No reaction change or invented complex is requested.
+  target_ids:
+  - MetaCyc:PWY0-1277
+  field_paths:
+  - description
+  - mechanistic_edges[id=aromatic-edge-042]
+  - mechanistic_edges[id=aromatic-edge-058]
+  - references
+  evidence_ids:
+  - mhpa2020
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    role: maintained pathway record
+  rule_id: review-yaml-record material evidence,species and assembly scope; add-pathway
+    primary-source currency
+  native_severity: major
+  normalization_reason: Material evidence-tier/cofactor/assembly underassessment,
+    rather than merely a missing optional citation; the chemistry itself remains supported.
+actions:
+- action_id: correct-locators
+  description: Correct exact two locators to observed original paragraph and printed
+    page, preserving assertions.
+  finding_ids:
+  - f-primary-locators
+  target_ids:
+  - MetaCyc:PWY0-1277
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Archive all initial reviewed inputs before mutation.
+  - Compare corrected record and edge-local evidence with original sources; repeat
+    relevant source/KGX replay.
+  - Inspect final shared gates and save successor with exact previous occurrence and
+    explicit disposition.
+- action_id: update-mhpa
+  description: Add independently inspected direct MhpA primary evidence, strain/construct
+    scope,NAD(P)H alternatives,FAD and qualified apparent polymer; revise outdated
+    limitations and author dossiers.
+  finding_ids:
+  - f-mhpa-direct-characterization
+  target_ids:
+  - MetaCyc:PWY0-1277
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Archive all initial reviewed inputs before mutation.
+  - Compare corrected record and edge-local evidence with original sources; repeat
+    relevant source/KGX replay.
+  - Inspect final shared gates and save successor with exact previous occurrence and
+    explicit disposition.
+limitations:
+- Initial observation is partial; final shared tests and integration receipts are
+  unavailable at this save.
+- Several MhpB/C/D/F and HcaC studies were inspected as complete indexed primary abstracts
+  only, with no full-text claim.
+- Current native/UniProt source annotations can lag direct literature; MhpA is a confirmed
+  example requiring curation.
+- Raw ChEBI/taxon full-body checks are delegated to root canonical authority integration;
+  independent review queried exact original rows and rehashed other retained bodies.
+- No browser visual QA is claimed. Primary PDF pages were rendered locally for source
+  inspection, separate from product-page QA.
+notes:
+- Canonical inspect before assessment captured cfe58d61. Expanded inspect includes
+  actually read authored dossiers and independent audit, with record unchanged.
+- Original inputs copied externally under /private/tmp/pathwaymech-aromatic-review/initial-inputs
+  before author mutation; author/root will retain exact historical bytes in maintained
+  archive.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/365
+- https://github.com/CultureBotAI/PathwayMech/issues/367
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC6997738/
+```

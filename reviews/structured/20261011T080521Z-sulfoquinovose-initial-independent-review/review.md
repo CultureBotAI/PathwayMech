@@ -1,0 +1,314 @@
+# Initial independent sulfoquinovose review: SR derepression locator
+
+- Review: 20261011T080521Z-sulfoquinovose-initial-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T08:03:20Z
+- Finished UTC: 2026-10-11T08:05:21Z
+- Reviewer: Codex independent reviewer (/root/pathway_authority_cache) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+One minor source-locator defect: the SR derepression assertion includes gel-shift evidence in paragraph 1, but its XPath selects only paragraphs 2–3. The scientific assertion is supported. This initial immutable observation precedes the authorized correction; full original-RDF replay and final coordinated gates remain pending.
+
+## Scope And Provenance
+
+One complete target read with source-focused scientific review; this partial record preserves the confirmed original locator finding before correction.
+
+Selection: Exact frozen MetaCyc:PWY-7446 target at ddf84c0b9f8ac95d1f5285f22c229770b754e4290998924f92bedbcec497d394
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9e936b267374181f7f87402045777534d2f17508.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-7446 | data/pathways/sulfoquinovose-degradation-i.yaml | maintained | sulfoquinovose degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical pre-assessment inspection | passed | True | MetaCyc:PWY-7446 | Actual canonical inspect captured original frozen target and current shared authority/schema bytes before assessment. |
+| Read-only whitespace check | passed | True | MetaCyc:PWY-7446 | Actual command exited zero during this independent review. |
+| just validate | unavailable | True | MetaCyc:PWY-7446 | Coordinated final receipt not yet inspected. Root reports validate/test pending; an initial helper-formatting lint failure was corrected, but this partial observation does not claim a completed final gate. |
+| just test | unavailable | True | MetaCyc:PWY-7446 | Coordinated final receipt not yet inspected. Root reports validate/test pending; an initial helper-formatting lint failure was corrected, but this partial observation does not claim a completed final gate. |
+| just lint | unavailable | True | MetaCyc:PWY-7446 | Coordinated final receipt not yet inspected. Root reports validate/test pending; an initial helper-formatting lint failure was corrected, but this partial observation does not claim a completed final gate. |
+
+## Scientific And Domain Assessments
+
+### Exact primary paragraph coverage of SR derepression
+
+provenance: concern. Targets: MetaCyc:PWY-7446.
+
+Include paragraph 1 in the source selector; no enzyme activity, chemical identity or regulatory-effect change is required.
+
+### Complete native four-step sulfo-EMP scope
+
+identity: supported. Targets: MetaCyc:PWY-7446.
+
+Native membership and original experimental route agree on free SQ through DHAP plus organic-sulfur DHPS. Adjacent glycoside, mutarotase and mineralization processes are explicitly outside this complete route.
+
+## Findings
+
+### f-sr-derepression-locator: SR gel-shift result is excluded by the cited paragraph selector
+
+minor / open / confirmed; issue key: sulfoquinovose-sr-derepression-paragraph-locator.
+
+sulfoquinovose-edge-032 evidence[0] combines SR gel-shift, weaker derepression and AFM results. The cited sec2.2/p2–3 selector omits paragraph 1 where the gel-shift result is reported. Paragraph2 gives thermal unfolding and paragraph3 AFM. Select p1–3 or separate the supported clauses; retain the scientific assertion and its in vitro scope.
+
+## Recommended Actions And Acceptance Checks
+
+### correct-sr-locator
+
+After preserving the original reviewed inputs, include sec2.2 paragraph 1 in edge032 source_locator and matching projected evidence; update the source-specific replay and generate final outputs.
+
+- Resolve the corrected XPath against original PMC8006165 JATS and confirm paragraph 1 gel-shift, paragraph2 thermal unfolding and paragraph3 AFM.
+- Confirm the correction does not change chemistry or the conditional regulatory assertion; run source replay and actual final coordinated gates.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-target | data/pathways/sulfoquinovose-degradation-i.yaml; sulfoquinovose-edge-032/evidence[0]/source_locator | refutes | The source assertion includes gel-shift and AFM experiments, but its paragraph selector includes only 2 and 3. |
+| e-primary | https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8006165/fullTextXML; //sec[@id="sec2.2"]/p[1], p[2], p[3] | supports | Original JATS paragraph 1 reports SR gel-shift dissociation and weaker action than SQ; paragraph2 gives thermal unfolding; paragraph3 reports AFM. Including paragraphs1–3 accurately retrieves the combined assertion. |
+| e-boundary | https://kops.uni-konstanz.de/bitstream/123456789/26077/2/Denger_260772.pdf; Original full PDF, printed pp.114–116, Figures2–3; Methods | supports | Independently extracted and rendered original PDF confirms the four-enzyme route, K-12 strain distinctions and coupled reconstitution. Current 2021 JATS and 2020 original Figure1A were also inspected for the described activity and stereochemical limitations. |
+
+## Limits And Additional Notes
+
+- Partial observation; complete independent original-RDF/body replay and final coordinated gate attestations remain pending.
+- Current direct experimental claims, source-defined assemblies, E. coli versus Salmonella assay conflict, relative nomenclature and nucleotide-associated Mg limitations were inspected and will be finalized in the successor.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T080521Z-sulfoquinovose-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Initial independent sulfoquinovose review: SR derepression locator'
+started_at: '2026-10-11T08:03:20Z'
+finished_at: '2026-10-11T08:05:21Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_authority_cache)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author this target or its dossiers. Authored the separate
+    aromatic pathway in this cohort, excluded from this review. Read complete SQ target
+    and original primary/native/UniProt sources independently.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: 'One minor source-locator defect: the SR derepression assertion includes
+  gel-shift evidence in paragraph 1, but its XPath selects only paragraphs 2–3. The
+  scientific assertion is supported. This initial immutable observation precedes the
+  authorized correction; full original-RDF replay and final coordinated gates remain
+  pending.'
+source:
+  git_revision: 9e936b267374181f7f87402045777534d2f17508
+  state: working_tree
+  inputs:
+  - path: data/identifier_authorities/ontology.json
+    sha256: cd16025aa5ad10c17a847e7aa30555b21e33557a45a2f87596dbaa94a9fe86b3
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 4f492b22382e8687da13b29c7535d69ea76bd910841f25a4b5b5edf540fafd5c
+    role: context
+  - path: data/pathways/sulfoquinovose-degradation-i.yaml
+    sha256: ddf84c0b9f8ac95d1f5285f22c229770b754e4290998924f92bedbcec497d394
+    role: target
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+targets:
+- target_id: MetaCyc:PWY-7446
+  path: data/pathways/sulfoquinovose-degradation-i.yaml
+  label: sulfoquinovose degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained record
+scope:
+  description: One complete target read with source-focused scientific review; this
+    partial record preserves the confirmed original locator finding before correction.
+  selection: Exact frozen MetaCyc:PWY-7446 target at ddf84c0b9f8ac95d1f5285f22c229770b754e4290998924f92bedbcec497d394
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-7446
+  exclusions:
+  - target: Other cohort records and final gate attestation
+    reason: Different scientific ownership or not yet completed.
+checks:
+- check_id: inspect
+  name: Canonical pre-assessment inspection
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-201-sq-review-targets.yaml --input src/pathwaymech/schema.py
+    --input data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual canonical inspect captured original frozen target and current shared
+    authority/schema bytes before assessment.
+- check_id: diff
+  name: Read-only whitespace check
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual command exited zero during this independent review.
+- check_id: just-validate
+  name: just validate
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just validate
+  status: unavailable
+  required: true
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Coordinated final receipt not yet inspected. Root reports validate/test
+    pending; an initial helper-formatting lint failure was corrected, but this partial
+    observation does not claim a completed final gate.
+- check_id: just-test
+  name: just test
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just test
+  status: unavailable
+  required: true
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Coordinated final receipt not yet inspected. Root reports validate/test
+    pending; an initial helper-formatting lint failure was corrected, but this partial
+    observation does not claim a completed final gate.
+- check_id: just-lint
+  name: just lint
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just lint
+  status: unavailable
+  required: true
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Coordinated final receipt not yet inspected. Root reports validate/test
+    pending; an initial helper-formatting lint failure was corrected, but this partial
+    observation does not claim a completed final gate.
+evidence:
+- evidence_id: e-target
+  kind: record_content
+  reference: data/pathways/sulfoquinovose-degradation-i.yaml
+  locator: sulfoquinovose-edge-032/evidence[0]/source_locator
+  accessed_at: '2026-10-11T08:05:21Z'
+  support: refutes
+  summary: The source assertion includes gel-shift and AFM experiments, but its paragraph
+    selector includes only 2 and 3.
+  snapshot_sha256: ddf84c0b9f8ac95d1f5285f22c229770b754e4290998924f92bedbcec497d394
+- evidence_id: e-primary
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8006165/fullTextXML
+  locator: //sec[@id="sec2.2"]/p[1], p[2], p[3]
+  accessed_at: '2026-10-11T08:05:21Z'
+  support: supports
+  summary: Original JATS paragraph 1 reports SR gel-shift dissociation and weaker
+    action than SQ; paragraph2 gives thermal unfolding; paragraph3 reports AFM. Including
+    paragraphs1–3 accurately retrieves the combined assertion.
+  snapshot_sha256: b94d347820a23930dbde3ada5f6f2805d56a42e6ae3e3d580611ab93e5a53c05
+- evidence_id: e-boundary
+  kind: primary_source
+  reference: https://kops.uni-konstanz.de/bitstream/123456789/26077/2/Denger_260772.pdf
+  locator: Original full PDF, printed pp.114–116, Figures2–3; Methods
+  accessed_at: '2026-10-11T08:05:21Z'
+  support: supports
+  summary: Independently extracted and rendered original PDF confirms the four-enzyme
+    route, K-12 strain distinctions and coupled reconstitution. Current 2021 JATS
+    and 2020 original Figure1A were also inspected for the described activity and
+    stereochemical limitations.
+  snapshot_sha256: e3c80fff89a548b26f8de5578e100c17c995e098243256d5f3d96058809aa61d
+assessments:
+- assessment_id: a-locator
+  area: provenance
+  topic: Exact primary paragraph coverage of SR derepression
+  outcome: concern
+  summary: Include paragraph 1 in the source selector; no enzyme activity, chemical
+    identity or regulatory-effect change is required.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - e-target
+  - e-primary
+- assessment_id: a-boundary
+  area: identity
+  topic: Complete native four-step sulfo-EMP scope
+  outcome: supported
+  summary: Native membership and original experimental route agree on free SQ through
+    DHAP plus organic-sulfur DHPS. Adjacent glycoside, mutarotase and mineralization
+    processes are explicitly outside this complete route.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - e-boundary
+findings:
+- finding_id: f-sr-derepression-locator
+  issue_key: sulfoquinovose-sr-derepression-paragraph-locator
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: SR gel-shift result is excluded by the cited paragraph selector
+  description: sulfoquinovose-edge-032 evidence[0] combines SR gel-shift, weaker derepression
+    and AFM results. The cited sec2.2/p2–3 selector omits paragraph 1 where the gel-shift
+    result is reported. Paragraph2 gives thermal unfolding and paragraph3 AFM. Select
+    p1–3 or separate the supported clauses; retain the scientific assertion and its
+    in vitro scope.
+  target_ids:
+  - MetaCyc:PWY-7446
+  field_paths:
+  - mechanistic_edges[id=sulfoquinovose-edge-032]/evidence[0]/source_locator
+  evidence_ids:
+  - e-target
+  - e-primary
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway record
+  rule_id: review-yaml-record precise native source locators
+  native_severity: minor
+  normalization_reason: Bounded retrieval/provenance omission; the original inspected
+    article supports the complete assertion.
+actions:
+- action_id: correct-sr-locator
+  description: After preserving the original reviewed inputs, include sec2.2 paragraph
+    1 in edge032 source_locator and matching projected evidence; update the source-specific
+    replay and generate final outputs.
+  finding_ids:
+  - f-sr-derepression-locator
+  target_ids:
+  - MetaCyc:PWY-7446
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Resolve the corrected XPath against original PMC8006165 JATS and confirm paragraph
+    1 gel-shift, paragraph2 thermal unfolding and paragraph3 AFM.
+  - Confirm the correction does not change chemistry or the conditional regulatory
+    assertion; run source replay and actual final coordinated gates.
+limitations:
+- Partial observation; complete independent original-RDF/body replay and final coordinated
+  gate attestations remain pending.
+- Current direct experimental claims, source-defined assemblies, E. coli versus Salmonella
+  assay conflict, relative nomenclature and nucleotide-associated Mg limitations were
+  inspected and will be finalized in the successor.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/366
+```

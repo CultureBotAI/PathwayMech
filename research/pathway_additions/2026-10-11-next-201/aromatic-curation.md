@@ -1,0 +1,75 @@
+# Complete phenylpropanoate and hydroxyphenylpropanoate degradation
+
+The selected record is the complete native **MetaCyc:PWY0-1277**, not the wider collection of reactions drawn on either PathBank discovery map. It contains both entry branches, convergence at dihydroxyphenylpropanoate, ring cleavage, succinate release and the entire terminal module through pyruvate and acetyl-CoA. All eight native transformations are retained. The organism scope is **Escherichia coli K-12**, with experiments in different K-12 derivatives distinguished from MG1655 database annotations and recombinant expression hosts.
+
+## Identity, novelty and exact boundary
+
+The parent XML lists HCAMHPDEG-PWY and PWY-5162. The first has five reactions and the second three. Their union defines the eight members below. An order-only RXN-7282 pointer in the parent is not a member of either enumerated module and does not create a ninth transformation. The independently retrieved native HTML establishes the exact parent identity and canonical title. GO:0019380 and GO:0019622 each describe only one entry branch; GO:0046271 is broader. None replaces the exact whole native pathway.
+
+Before writing the record, identity, label, source-map, reaction, protein and publication searches used `rg -uu` in the current worktree and original Documents checkout. Hidden and ignored files were included; only Git administration and the Python runtime were excluded. No equivalent maintained record was found among the 201 baseline records. Prior hits are lexical inventory leads and four cross-Mech protein annotations, not a prior scientific rejection or a duplicate pathway. Commands, roots, all matching outputs and digests are retained in aromatic-dedup.json.
+
+| Native reaction | Selected directed Rhea | Role |
+| --- | --- | --- |
+| HCAMULTI-RXN | 20358 | Hca-system net phenylpropanoate dioxygenation |
+| PHENPRODIOLDEHYDROG-RXN | 25063 | HcaB dihydrodiol dehydrogenation |
+| MHPHYDROXY-RXN | 24786 | MhpA separate hydroxyphenylpropanoate entry |
+| 1.13.11.16-RXN | 23841 | MhpB ring cleavage |
+| MHPCHYDROL-RXN | 34188 | MhpC hydrolysis, releasing succinate |
+| 2-OXOPENT-4-ENOATE-HYDRATASE-RXN | 22582 | MhpD dienol hydration, right-to-left relative to the master |
+| MHPELY-RXN | 22625 | MhpE aldol cleavage to pyruvate and acetaldehyde |
+| ACETALD-DEHYDROG-RXN | 23289 | MhpF acylating acetaldehyde oxidation |
+
+Every native reaction has a membership edge. Every current Rhea substrate and product is retained, including NAD/NADH, oxygen, water, hydrons and CoA. Seven material handoffs connect the full branched network. Each handoff cites native ordering separately from the two exact Rhea chemical-side assertions. The native MhpC reaction has no Rhea cross-reference; current reviewed UniProt and independently matched compound structures provide its explicit bridge. Three native bidirectional identifiers are bridged through the actual master `bidirectionalReaction` and `directionalReaction` predicates, not mislabeled as directed nodes.
+
+## Chemistry and source discrepancies
+
+All eight current Rhea 142 equations are independently source-issued and atom/charge balanced. Their 39 side entries use coefficient one. The author replay merges repeated RDF subject descriptions and checks each directed side, coefficient predicate, participant, compound and ChEBI accession against the compressed original, then independently sums ChEBI 255 formulas and charges.
+
+The original XML for CPD-157 names the (2Z,4E) compound and encodes the exact InChI of CHEBI:66887. Its separate CHEBI:61449 cross-reference is stale: that ChEBI entity is the opposite (2E,4Z) isomer. The record rejects the cross-reference and retains the independently consistent native structure, current reviewed UniProt equation and current Rhea chemistry. No equation is rewritten to manufacture agreement.
+
+The native cis-dihydrodiol cross-references absolute-isomer CHEBI:60088, whereas current Rhea uses its relative-cis parent CHEBI:60087. ChEBI explicitly declares the subclass relationship. Identical serialized InChI strings are not used to erase that ontology distinction. The graph retains the broader, source-issued relative-cis participant and explicitly explains the narrower native annotation.
+
+For the MhpD/MhpE handoff, current Rhea and native structures use the S hydroxyketopentanoate. The inspected 1998 K-12 aldolase paper establishes activity on one enantiomer but calls its 4S configuration presumptive, based on preceding hydratase stereoselectivity. The record does not upgrade that experiment to a direct absolute-configuration measurement. Earlier crude-extract reports of both enantiomers remain a source-method difference, plausibly involving other activities but not resolved here.
+
+The selected MhpD direction consumes the dienol and water. The old source-map decomposition through a free keto tautomer is not added alongside that current net transformation. The 1998 purified hydratase abstract identifies the dienol substrate and an active-site tautomerization mechanism. This excludes double counting rather than removing a native pathway member.
+
+## Proteins, assemblies and evidence strength
+
+Current full reviewed UniProt entries independently identify all eleven K-12 proteins. Original native monomer XML supplies exact accession crosswalks for the named assemblies; a name resemblance is insufficient. The five native issuing HTML bodies establish the parent pathway and four complex identifiers independently of the maintained YAML.
+
+* The Hca system is a **putative** four-component assembly: HcaE/P0ABR5, HcaF/Q47140, HcaC/P0ABW0 and HcaD/P77650. Native component declarations have no coefficients. The 1998 full primary article supports mutant complementation and resting-cell conversion, while assigning component functions by homology. The graph uses `enables`, preserves the putative canonical name and does not infer a 1:1:1:1 or purified stable assembly.
+* HcaB/P0CI31 is assigned by current annotation, genetics and similarity. The cited 1998 full article explicitly states that HcaB activity itself was not demonstrated. Its `enables` edge preserves this limitation rather than converting the current ECO annotation into an isolated-enzyme assay.
+* MhpA/P77397 now has direct genetic and purified-enzyme support from PMID 31811039 (2020; online 2019). W3110 deletion abolishes 3HPP growth but leaves DHPP growth, and complementation restores 3HPP utilization. The W3110-derived C-terminal His-tagged protein expressed in Rosetta(DE3)pLysS converts 3HPP to DHPP, established by HPLC and LC-MS. Both NADH and NADPH support activity; the selected source-issued Rhea equation uses NADH, without implying donor exclusivity or adding a duplicate ninth native transformation. The approximate 61-kDa polypeptide and apparent 669-kDa SEC mass support a likely polymer, not a fixed subunit count. Its `enables` edge does not assert monomer sufficiency. The MetaCyc 22.5 statement that the enzyme was uncharacterized is retained only as a historical source fact. The paper BAA13052 accession is explicitly bridged to UniProt P77397 through EMBL D86239 / ProteinId BAA13052.1.
+* MhpB/P0ABR9 is a homotetramer. The inspected primary abstract reports purified enzyme, 36-kDa subunits, an apparent 134-kDa native mass and Fe(II)-dependent reactivation. The original native four-subunit complex is the catalyst.
+* MhpC/P77044 is a homodimer. Purified-enzyme and structure abstracts support the dimer; the former reports no cofactor requirement in its assay. The canonical native complex name also mentions the triene substrate, but the selected graph activity is the dienol-to-succinate reaction only.
+* MhpD/P77608 is a homopentamer, independently supported by the 2010 primary abstract as well as native component coefficient five. The same abstract describes low-pH phosphate/sulfate-induced 60-subunit cages. This does not establish a constitutive pathway cage, and no cage node is invented.
+* MhpE/P51020 has class-I aldolase evidence from partially purified W3110 protein. The full paper reports no divalent-metal dependence; the Pseudomonas class-II metal requirement is not transferred. MhpF/P77580 supports MhpE folding and association, but the abstract does not resolve fixed stoichiometry. Therefore no stable MhpEF complex identifier or monomer-sufficiency claim is invented for MhpE.
+* MhpF catalysis is supported separately: the 2013 primary abstract reports active monomer and other active oligomeric states, with catalytic properties independent of oligomerization. CoA is a stoichiometric substrate, not a newly inferred free metal cofactor.
+
+Cofactor assertions retain their exact evidence tiers: HcaE cluster and unspecified iron cation are ECO:0000305 inference; HcaD FAD has no explicit per-assertion experimental code. The current MhpA FAD annotation is ECO:0000250 similarity, but the independently inspected 2020 full paper supplies direct evidence: HPLC at 445 nm confirmed authentic FAD retention time and 0.81 mol FAD/mol purified protein. The graph preserves these distinct evidence tiers and the preparation-specific approximately equimolar measurement. Recombinant K-12 HcaC Rieske-cluster spectroscopy is directly supported by the inspected 2008 abstract, despite BL21/Tuner expression hosts. MhpB Fe(II) and MhpD optimum Mn(II) have purified-enzyme evidence. No other metal or prosthetic group is inferred from an assay ingredient. Only the two explicit MhpC/MhpD cytoplasm GO annotations are retained; location is not propagated to the entire pathway.
+
+## Primary access and biological scope
+
+The complete 1983 and 1986 scanned primary PDFs and 1997 mhp cluster PDF were retrieved from Europe PMC. The 1983 pathway figure and 1997 full MhpA-F figure were visually inspected, alongside independently extracted text. Full 1998 Hca and MhpE articles and the 2020 MhpA paper were inspected in original PMC HTML. The later MhpA source was found during independent review and corrected the initial outdated evidence assessment under issue #367. The external pypdfium2 runtime rendered the retained original PDFs; these reading aids are not independent sources or repository dependencies.
+
+Other cited primary bodies are indexed abstracts only, including MhpB purification, MhpC purification/structure, MhpD mechanism and cage assembly, HcaC spectroscopy, MhpEF coupled expression and MhpF oligomeric activity. Publisher/BioC failures are retained and do not become full-text claims. Some BioC endpoints returned an HTTP-200 error body; those bodies were explicitly rejected. The source manifest distinguishes accepted full text, abstract-only evidence, native curation and current structured annotation.
+
+The taxon is K-12, not a claim of uniform MG1655 or every-isolate physiology. Native objects are annotated to MG1655; original experiments include W3110, DH5alpha, other K-12 derivatives and complemented deletion strains. The 1997 paper's MC4100 deletion background must not be described as an unmodified strain with intact mhp catabolism. Recombinant Salmonella results and BL21 expression hosts do not create new route taxa. Molecular oxygen in both entry chemistry and ring cleavage establishes the aerobic chemical requirement; no claim is made about all environmental growth conditions.
+
+## Complete source-map dispositions and exclusions
+
+Both original PathBank members, PW001890/SMP0001904 and PW002035/SMP0002049, were re-extracted from the freshly SHA-verified frozen archive. Their complete subject inventories, all 28 biochemical reaction objects and source controllers/components are preserved in aromatic-source-projection.json. These maps combine saturated and unsaturated branches, free tautomerization, extra pyruvate assimilation and several incorrect equations/labels. They are discovery sources, not exact definitions of this native pathway and not claimed as wholly ingested.
+
+The projection assigns each biochemical reaction its own disposition. In particular, reaction 5161 produces water from the old keto substrate and is replaced by independently issued dienol hydration; 5945/5946 mix incompatible side-chain unsaturation and are rejected as exact mappings. The cinnamate/hydroxycinnamate and fumarate-producing branches remain outside PWY0-1277. The complete Hca net reaction already accounts for reducing power, so the HcaD ferredoxin half-reaction is not an extra pathway step. Uptake, generic regulation, acetolactate synthesis and low-pH assembly chemistry are also outside this exact boundary.
+
+## Expression context, validation and remaining limits
+
+Root's fresh unchanged-client iModulonDB queries include the Hca and Mhp genes, aliases and aromatic terms. The current e_coli/precise_mg1655 search found no module-name hits. This is bounded discovery context, not evidence of absent gene membership, absent expression, catalysis or regulation. The source manifest, retained response bodies and offline parser replay are separate shared cohort receipts.
+
+The author replay checks original-source hashes, all native members, 39 exact current reaction sides, eight formula/charge balances, 17 native compound structures with explicit non-equivalence decisions, eleven protein identities, all seven component declarations, source-specific limitations, literal quotes, native/closed schemas and actual KGX evidence/description parity. Failed draft helper attempts remain in the external log history and do not count as successful checks. Final command/result and hashes are in aromatic-validation.json. Shared corpus gates and independent scientific review are delegated to root and a separate reviewer; this author replay is not that independent review.
+
+Remaining limitations are the inferred Hca/HcaB activities and selected Hca cofactors, unresolved physical Hca, MhpA polymer and MhpEF stoichiometry, the explicitly inferred S configuration in the older aldolase experiment, variable K-12 strain physiology, and abstract-only access for several mechanistic papers. None is hidden by merging sources or dropping part of the eight-step pathway.
+
+## Saved review corrections
+
+The immutable initial review `20261011T080752Z-aromatic-initial-independent-review` preserves the original findings. Root archived all fourteen inspected inputs before the correction. [Issue #365](https://github.com/CultureBotAI/PathwayMech/issues/365) corrects the HcaB quote to the second Regulation paragraph and the Mhp cluster Table 2 to printed page 2577; the associated deletion Results remain page 2578. [Issue #367](https://github.com/CultureBotAI/PathwayMech/issues/367) adds direct MhpA characterization, donor and assembly limits as described above. The complete eight-reaction boundary, named nodes and chemical equations remain unchanged. The exact old/new hashes, evidence additions and focused replay results are retained in aromatic-review-fixes.json.

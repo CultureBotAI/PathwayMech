@@ -1,0 +1,438 @@
+# Provenance-only resolution of staphyloxanthin native-class locators
+
+- Review: 20261011T082923Z-staphyloxanthin-locator-resolution
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T08:21:37.180776Z
+- Finished UTC: 2026-10-11T08:29:23.017433Z
+- Reviewer: Codex independent reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+Issue368 is resolved only for the two independently verified native-class source locators on the unchanged withheld research draft. This is a completed provenance-only observation, not scientific approval. Scientific issue369 remains open and the candidate is excluded from maintained publication.
+
+## Scope And Provenance
+
+Bounded reconciliation of issue368 only: original native generic-class fields, exact two-locator diff, retained draft identity and saved finding lineage.
+
+Selection: Both selected predecessor YAML/Markdown pairs were read; source target retains the same pathway target_id after relocation to withheld research.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9e936b267374181f7f87402045777534d2f17508.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5875 | research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml | source | staphyloxanthin biosynthesis — withheld research draft |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical current withheld-draft inspection | passed | True | MetaCyc:PWY-5875 | Retained d7590ac5 draft and exact previous observations captured with original target_id. |
+| Independent exact source/parsed-diff/KGX replay | passed | True | MetaCyc:PWY-5875 | Original XML lacks inchi; exactly two such locator fragments removed. Actual export preserves all remaining nodes, edges, evidence, reference metadata and contexts. Relocated draft is byte-identical to replayed input. |
+| Canonical saved-review integrity check | passed | True | MetaCyc:PWY-5875 | Actual session88854 completed with58valid reviews; exact issue368 predecessor IDs and target retention checked. |
+| Coordinated final render | passed | False | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash c004bcc607460307ec186f40467ded3ea258233c2df8b3f78f0faaddf999a65c. Final two-record publication cohort has 203 maintained records; retained research is not published pathway chemistry. |
+| Coordinated final validate | passed | True | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash 207a30b626c0feac88fc4259b96fc5dcf7c3171f8c330eec663dfc8b048a191e. Final two-record publication cohort has 203 maintained records; retained research is not published pathway chemistry. |
+| Coordinated final test | passed | True | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash 4043febe46319036c303ac4f4207b4bc0e9536bf1d71336e3deda64a64226ade. 1059 passed, 3 skipped, 3 warnings in 343.94s (0:05:43) |
+| Coordinated final lint | passed | True | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41. Final two-record publication cohort has 203 maintained records; retained research is not published pathway chemistry. |
+| Coordinated final identifiers | passed | False | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash f0a8cf8e02bd0800b27b87bfc6bdc1239395b260d53e3d2a67228c30b73e61f1. Final two-record publication cohort has 203 maintained records; retained research is not published pathway chemistry. |
+| Coordinated final kgx | passed | False | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash 70e1a5d19f99ad0c70c0411691e02ff6e456a187efd5f1a608359eb4f7a21a1e. Final two-record publication cohort has 203 maintained records; retained research is not published pathway chemistry. |
+| Coordinated final diff | passed | True | MetaCyc:PWY-5875 | Terminal result independently confirmed from exact log hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. Final two-record publication cohort has 203 maintained records; retained research is not published pathway chemistry. |
+
+## Scientific And Domain Assessments
+
+### Available native-class fields and exact locator correction
+
+provenance: supported. Targets: MetaCyc:PWY-5875.
+
+The two corrected locators faithfully name existing native fields; exact source and parsed-delta proof supports the bounded fix. No chemistry or literature-support reassessment is claimed.
+
+## Findings
+
+### f-native-class-inchi-locators: Two native generic-class locators name absent InChI fields
+
+minor / resolved / confirmed; issue key: staphyloxanthin-native-class-inchi-locators.
+
+The initial record had nonexistent inchi fragments on stx-edge-050 and052 evidence[1]. The current byte-identical withheld draft removes exactly those two fragments. Available common-name/dblink/cml fields remain valid; all other record content is unchanged. This terminal disposition addresses only issue368.
+
+Disposition: On retained d7590ac5 bytes, both nonexistent ; inchi fragments were removed, with every other parsed field unchanged. Original native XML and actual KGX comparison independently verify the exact correction. This completed observation is confined to provenance and does not renew scientific approval or resolve issue369.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml; SHA256 d7590ac585b3c2c9be97b19c2602b0568f8a90c9c8face0d3b5e82e9d15c6d30; edges050/052 evidence[1]/source_locator | supports | The retained draft contains only actual generic-class locator fields. Relocation preserves exact fixed bytes. |
+| native | https://pathway.yeastgenome.org/getxml?META:NDP-glucoses; Complete NDP-glucoses and Nucleoside-Diphosphates native Compound objects; original SHA256 0c44c7614143eacf9c60418da831ca3dc59f6e170aa26b6f21006d7a0f0a4f90 and b318200efe050468a07255fccda7a67f6ad9d8c31d4b8aa83abcae443a9eb4ec | supports | Both original objects contain common-name, dblink and cml/molecule; neither contains inchi. The corrected locators match those available fields. |
+| fix-audit | research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-fix-audit.json; Exact structural diff and actual KGX node/edge/evidence comparison | supports | Exactly two locator fragments changed; no chemistry, assertions, references, identifiers or other graph metadata changed. |
+| history | reviews/structured/20261011T081828Z-staphyloxanthin-stereochemistry-review/review.yaml; Both exact previous issue368 occurrences: 20261011T080814Z and 20261011T081828Z staphyloxanthin reviews. | supports | Both predecessor occurrences retain issue368 open, while the later scientific observation also adds open major issue369. |
+| final-gates | research/pathway_additions/2026-10-11-next-201/integration-receipt.json; All seven final_gates, exact log hashes, supporting receipts and deferred_records | supports | All terminal exits are0; full final suite1059 passed,3 skipped,3 warnings343.94s. Initial unrelated helper lint failure and prewithholding checks remain separately retained. These deterministic checks do not establish scientific support. |
+| withholding | research/pathway_additions/2026-10-11-next-201/withholding-exclusion-audit.json; Retained candidate hash and original rg -uu scope; reviewer independently repeated rg -uu -n -F MetaCyc:PWY-5875 data/pathways pages | supports | Retained bytes match d7590ac5. The exact target ID is absent from data/pathways and pages, including hidden and ignored files; independent rg returned1 with empty output. Research/source-authority identities intentionally remain. |
+
+## Limits And Additional Notes
+
+- Scientific review is explicitly excluded; major stereochemistry issue369 remains open in the independent scientific observation.
+- The pathway draft is withheld from maintained data and publication. A provenance-only pass cannot be interpreted as eligibility to publish it.
+- Final seven shared checks and exact log/supporting hashes were verified after withholding. Initial lint failure and earlier three-record tests remain historical receipts; they are not substituted for the final run.
+- No pathway, source authority, generated page, or prior review was edited by this reviewer.
+- The sole planned terminal disposition is the verified issue368 locator correction; it does not retire any other issue key.
+- Scientific issue369 remains open in 20261011T081828Z-staphyloxanthin-stereochemistry-review. This scientific_review:false result must not be indexed as final scientific approval for the withheld candidate.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T082923Z-staphyloxanthin-locator-resolution
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Provenance-only resolution of staphyloxanthin native-class locators
+started_at: '2026-10-11T08:21:37.180776Z'
+finished_at: '2026-10-11T08:29:23.017433Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author the staphyloxanthin record or dossier. Reviewer-authored
+    sulfoquinovose is excluded.
+skill: pathwaymech-resolve-reviews
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: Issue368 is resolved only for the two independently verified native-class
+  source locators on the unchanged withheld research draft. This is a completed provenance-only
+  observation, not scientific approval. Scientific issue369 remains open and the candidate
+  is excluded from maintained publication.
+source:
+  git_revision: 9e936b267374181f7f87402045777534d2f17508
+  state: working_tree
+  inputs:
+  - path: research/pathway_additions/2026-10-11-next-201/integration-receipt.json
+    sha256: 4650102e7250f48ff29da54c2dfe76dbff5d40334577253f5c5320e4048e3982
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-fix-audit.json
+    sha256: f8e3760ca7e4bcbd08edf6b42877e15d49b52e597b8cb88931dd3a7afcb9ea0a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-withholding.json
+    sha256: 261c36c119d70f54c3739a16d76547fa53383184476b70f2e865ad2b70b265bf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml
+    sha256: d7590ac585b3c2c9be97b19c2602b0568f8a90c9c8face0d3b5e82e9d15c6d30
+    role: target
+  - path: research/pathway_additions/2026-10-11-next-201/withholding-exclusion-audit.json
+    sha256: 0162c992f06371e4d7a55dae8aff24f4decc2ccba616c4a83ba3f0f53be514eb
+    role: context
+  - path: reviews/structured/20261011T080814Z-staphyloxanthin-initial-independent-review/review.md
+    sha256: 8b9dcf47487d5871fc811bf49abc6ef0ee4c8c2ba921c84e18a697c48e7fea55
+    role: context
+  - path: reviews/structured/20261011T080814Z-staphyloxanthin-initial-independent-review/review.yaml
+    sha256: 723206580d96eb7a4f53da1e9ba022691bfd7a4aaeaf18df7bbb7d8226095ac8
+    role: context
+  - path: reviews/structured/20261011T081828Z-staphyloxanthin-stereochemistry-review/review.md
+    sha256: 3486237551ef2051e62efa40cabf8cb600ea2b2dc315420111f844f79207452d
+    role: context
+  - path: reviews/structured/20261011T081828Z-staphyloxanthin-stereochemistry-review/review.yaml
+    sha256: 6fdfa6b7f70a593798e4d5e5af5204d9cea5d717644ab883a4808267b513ee5b
+    role: context
+targets:
+- target_id: MetaCyc:PWY-5875
+  path: research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml
+  label: staphyloxanthin biosynthesis — withheld research draft
+  kind: source
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml
+    role: withheld_research_draft
+scope:
+  description: 'Bounded reconciliation of issue368 only: original native generic-class
+    fields, exact two-locator diff, retained draft identity and saved finding lineage.'
+  selection: Both selected predecessor YAML/Markdown pairs were read; source target
+    retains the same pathway target_id after relocation to withheld research.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5875
+  exclusions:
+  - target: Staphyloxanthin whole-record scientific correctness and issue369
+    reason: The separate scientific stereochemistry review remains needs_curation
+      with issue369 open. This provenance-only observation does not renew literature
+      support or authorize pathway publication.
+  - target: Other pathway records
+    reason: Outside the two-locator resolution scope.
+checks:
+- check_id: inspect
+  name: Canonical current withheld-draft inspection
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-201-staph-review/provenance-targets.yaml
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Retained d7590ac5 draft and exact previous observations captured with original
+    target_id.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: fix-replay
+  name: Independent exact source/parsed-diff/KGX replay
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-201-staph-review/fix-replay.py
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Original XML lacks inchi; exactly two such locator fragments removed. Actual
+    export preserves all remaining nodes, edges, evidence, reference metadata and
+    contexts. Relocated draft is byte-identical to replayed input.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - fix-audit
+- check_id: lineage
+  name: Canonical saved-review integrity check
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py check --base 9e936b267374181f7f87402045777534d2f17508
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Actual session88854 completed with58valid reviews; exact issue368 predecessor
+    IDs and target retention checked.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: final-render
+  name: Coordinated final render
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just render-pages
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash c004bcc607460307ec186f40467ded3ea258233c2df8b3f78f0faaddf999a65c.
+    Final two-record publication cohort has 203 maintained records; retained research
+    is not published pathway chemistry.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+- check_id: final-validate
+  name: Coordinated final validate
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just validate
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash 207a30b626c0feac88fc4259b96fc5dcf7c3171f8c330eec663dfc8b048a191e.
+    Final two-record publication cohort has 203 maintained records; retained research
+    is not published pathway chemistry.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+- check_id: final-test
+  name: Coordinated final test
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just test
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash 4043febe46319036c303ac4f4207b4bc0e9536bf1d71336e3deda64a64226ade.
+    1059 passed, 3 skipped, 3 warnings in 343.94s (0:05:43)
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+- check_id: final-lint
+  name: Coordinated final lint
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just lint
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.
+    Final two-record publication cohort has 203 maintained records; retained research
+    is not published pathway chemistry.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+- check_id: final-identifiers
+  name: Coordinated final identifiers
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just check-identifiers
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash f0a8cf8e02bd0800b27b87bfc6bdc1239395b260d53e3d2a67228c30b73e61f1.
+    Final two-record publication cohort has 203 maintained records; retained research
+    is not published pathway chemistry.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+- check_id: final-kgx
+  name: Coordinated final kgx
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just kgx-export --output-dir
+    /private/tmp/pathwaymech-next-201-kgx
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash 70e1a5d19f99ad0c70c0411691e02ff6e456a187efd5f1a608359eb4f7a21a1e.
+    Final two-record publication cohort has 203 maintained records; retained research
+    is not published pathway chemistry.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+- check_id: final-diff
+  name: Coordinated final diff
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Terminal result independently confirmed from exact log hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+    Final two-record publication cohort has 203 maintained records; retained research
+    is not published pathway chemistry.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - final-gates
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml
+  locator: SHA256 d7590ac585b3c2c9be97b19c2602b0568f8a90c9c8face0d3b5e82e9d15c6d30;
+    edges050/052 evidence[1]/source_locator
+  summary: The retained draft contains only actual generic-class locator fields. Relocation
+    preserves exact fixed bytes.
+  support: supports
+  accessed_at: '2026-10-11T08:21:37.180776Z'
+- evidence_id: native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:NDP-glucoses
+  locator: Complete NDP-glucoses and Nucleoside-Diphosphates native Compound objects;
+    original SHA256 0c44c7614143eacf9c60418da831ca3dc59f6e170aa26b6f21006d7a0f0a4f90
+    and b318200efe050468a07255fccda7a67f6ad9d8c31d4b8aa83abcae443a9eb4ec
+  summary: Both original objects contain common-name, dblink and cml/molecule; neither
+    contains inchi. The corrected locators match those available fields.
+  support: supports
+  accessed_at: '2026-10-11T08:21:37.180776Z'
+- evidence_id: fix-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-fix-audit.json
+  locator: Exact structural diff and actual KGX node/edge/evidence comparison
+  summary: Exactly two locator fragments changed; no chemistry, assertions, references,
+    identifiers or other graph metadata changed.
+  support: supports
+  accessed_at: '2026-10-11T08:21:37.180776Z'
+- evidence_id: history
+  kind: prior_review
+  reference: reviews/structured/20261011T081828Z-staphyloxanthin-stereochemistry-review/review.yaml
+  locator: 'Both exact previous issue368 occurrences: 20261011T080814Z and 20261011T081828Z
+    staphyloxanthin reviews.'
+  summary: Both predecessor occurrences retain issue368 open, while the later scientific
+    observation also adds open major issue369.
+  support: supports
+  accessed_at: '2026-10-11T08:21:37.180776Z'
+- evidence_id: final-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/integration-receipt.json
+  locator: All seven final_gates, exact log hashes, supporting receipts and deferred_records
+  summary: All terminal exits are0; full final suite1059 passed,3 skipped,3 warnings343.94s.
+    Initial unrelated helper lint failure and prewithholding checks remain separately
+    retained. These deterministic checks do not establish scientific support.
+  support: supports
+  accessed_at: '2026-10-11T08:29:23.017433Z'
+- evidence_id: withholding
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/withholding-exclusion-audit.json
+  locator: Retained candidate hash and original rg -uu scope; reviewer independently
+    repeated rg -uu -n -F MetaCyc:PWY-5875 data/pathways pages
+  summary: Retained bytes match d7590ac5. The exact target ID is absent from data/pathways
+    and pages, including hidden and ignored files; independent rg returned1 with empty
+    output. Research/source-authority identities intentionally remain.
+  support: supports
+  accessed_at: '2026-10-11T08:29:23.017433Z'
+  search_scope: All files under data/pathways and pages using rg -uu; hidden and ignored
+    files included. No claim of absence from research, history or identity authority
+    snapshots.
+assessments:
+- assessment_id: locator-resolution
+  area: provenance
+  topic: Available native-class fields and exact locator correction
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: The two corrected locators faithfully name existing native fields; exact
+    source and parsed-delta proof supports the bounded fix. No chemistry or literature-support
+    reassessment is claimed.
+  evidence_ids:
+  - target
+  - native
+  - fix-audit
+  - history
+findings:
+- finding_id: f-native-class-inchi-locators
+  issue_key: staphyloxanthin-native-class-inchi-locators
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Two native generic-class locators name absent InChI fields
+  description: The initial record had nonexistent inchi fragments on stx-edge-050
+    and052 evidence[1]. The current byte-identical withheld draft removes exactly
+    those two fragments. Available common-name/dblink/cml fields remain valid; all
+    other record content is unchanged. This terminal disposition addresses only issue368.
+  target_ids:
+  - MetaCyc:PWY-5875
+  field_paths:
+  - mechanistic_edges[id=stx-edge-050]/evidence[1]/source_locator
+  - mechanistic_edges[id=stx-edge-052]/evidence[1]/source_locator
+  evidence_ids:
+  - target
+  - native
+  - fix-audit
+  - history
+  rule_id: 'review-yaml-record Evidence Rules: exact native object in source_locator'
+  native_severity: minor
+  normalization_reason: Bounded source locator gap; chemistry and native class identity
+    remain supported.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-11-next-201/withheld/staphyloxanthin-biosynthesis.yaml
+    role: withheld_research_draft
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T080814Z-staphyloxanthin-initial-independent-review
+    finding_id: f-native-class-inchi-locators
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T081828Z-staphyloxanthin-stereochemistry-review
+    finding_id: f-native-class-inchi-locators
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/368
+  disposition_reason: On retained d7590ac5 bytes, both nonexistent ; inchi fragments
+    were removed, with every other parsed field unchanged. Original native XML and
+    actual KGX comparison independently verify the exact correction. This completed
+    observation is confined to provenance and does not renew scientific approval or
+    resolve issue369.
+actions: []
+limitations:
+- Scientific review is explicitly excluded; major stereochemistry issue369 remains
+  open in the independent scientific observation.
+- The pathway draft is withheld from maintained data and publication. A provenance-only
+  pass cannot be interpreted as eligibility to publish it.
+- Final seven shared checks and exact log/supporting hashes were verified after withholding.
+  Initial lint failure and earlier three-record tests remain historical receipts;
+  they are not substituted for the final run.
+notes:
+- No pathway, source authority, generated page, or prior review was edited by this
+  reviewer.
+- The sole planned terminal disposition is the verified issue368 locator correction;
+  it does not retire any other issue key.
+- Scientific issue369 remains open in 20261011T081828Z-staphyloxanthin-stereochemistry-review.
+  This scientific_review:false result must not be indexed as final scientific approval
+  for the withheld candidate.
+```

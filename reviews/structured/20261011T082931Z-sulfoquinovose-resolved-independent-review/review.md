@@ -1,0 +1,836 @@
+# Independent sulfoquinovose review and verified locator resolution
+
+- Review: 20261011T082931Z-sulfoquinovose-resolved-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T08:03:20Z
+- Finished UTC: 2026-10-11T08:29:31Z
+- Reviewer: Codex independent reviewer (/root/pathway_authority_cache) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete four-step E. coli K-12 sulfo-EMP route is supported within its explicit source and experimental limits. All 41 edges and 84 evidence blocks were reviewed, with independent replay of 15 original chemical sides and four balances. The saved minor locator finding, issue 366, is resolved with exact predecessor lineage. No open findings remain. All final required publication checks passed on the frozen 203-record corpus, including 1,059 tests.
+
+## Scope And Provenance
+
+Complete scientific review of one maintained pathway and evidence-backed successor to its saved initial provenance finding. Read-only with respect to the target.
+
+Selection: Exact final target 741fc68daedf7cb7000b7cc5dc94ce5c0029fe9d30ce56d392c51a2aa9ac390c
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9e936b267374181f7f87402045777534d2f17508.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-7446 | data/pathways/sulfoquinovose-degradation-i.yaml | maintained | sulfoquinovose degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical pre-assessment inspection | passed | True | MetaCyc:PWY-7446 | Actual canonical inspect captured original frozen target and current shared authority/schema bytes before assessment. |
+| Read-only whitespace check | passed | True | MetaCyc:PWY-7446 | Actual command exited zero during this independent review. |
+| Independent source and actual KGX replay | passed | True | MetaCyc:PWY-7446 | Actual session 21730 terminal exit 0 on final target; 34 bodies, 15 sides, four balances, native identity/assembly and 41-edge / 84-evidence KGX parity. |
+| Canonical append-only review history check | passed | True | MetaCyc:PWY-7446 | Actual initial check exit 0, 57 valid reviews including the saved initial observation; final successor check follows save. |
+| Superseded initial lint attempt | failed | False | MetaCyc:PWY-7446 | Original log inspected: root helper import ordering and one long line failed. Root corrected formatting before final gates. This initial result is not relabeled as a pass. |
+| Final coordinated render | passed | True | MetaCyc:PWY-7446 | Rendered 203 admitted pathway pages and removed the withheld orphan page. Delegated actual command receipt and complete log digest independently inspected. |
+| Final coordinated validate | passed | True | MetaCyc:PWY-7446 | Final native/closed-schema, evidence, identifier, source, history, research and generated-page checks passed for the admitted corpus. Delegated actual command receipt and complete log digest independently inspected. |
+| Final coordinated test | passed | True | MetaCyc:PWY-7446 | 1059 passed, 3 skipped, 3 warnings in 343.94s (0:05:43) Delegated actual command receipt and complete log digest independently inspected. |
+| Final coordinated lint | passed | True | MetaCyc:PWY-7446 | All Ruff checks passed on final frozen code and research helpers. Delegated actual command receipt and complete log digest independently inspected. |
+| Final coordinated identifiers | passed | True | MetaCyc:PWY-7446 | Verified identifiers and canonical label policies in 203 pathway records. Delegated actual command receipt and complete log digest independently inspected. |
+| Final coordinated kgx | passed | True | MetaCyc:PWY-7446 | Actual separate CLI export succeeded for 203 records; structural and evidence parity independently audited. Delegated actual command receipt and complete log digest independently inspected. |
+| Final coordinated diff | passed | True | MetaCyc:PWY-7446 | Whitespace check exited 0 with an empty log. Delegated actual command receipt and complete log digest independently inspected. |
+| Final canonical inspect and unchanged-input verification | passed | True | MetaCyc:PWY-7446 | Actual reviewer session 98737 exited 0; all 24 prior captured inputs were unchanged and the two sealed integration receipts were added after inspection. |
+| Governed artifact synchronization | passed | True | MetaCyc:PWY-7446 | Actual delegated receipt and original log verified: 22 governed artifacts match the pinned CLAW revision. |
+| Superseded external review draft validation | failed | False | MetaCyc:PWY-7446 | Two unsaved draft attempts were rejected for a missing bounded search_scope and an unsupported assessment-area enum. Both contract fields were corrected before canonical save; no target or scientific source changed. Final canonical validation is run separately. |
+
+## Scientific And Domain Assessments
+
+### Exact complete sulfo-EMP boundary and novelty
+
+identity: supported. Targets: MetaCyc:PWY-7446.
+
+PWY-7446 is the complete free-SQ route through SF, SFP and SLA to DHAP plus organic-sulfur DHPS. All four native members and three sequential handoffs remain present. It is distinct from SQ glycoside cleavage, mutarotation, sulfo-ED and complete sulfur mineralization.
+
+### All source-issued sides, directions, stereochemistry and balances
+
+grounding: supported. Targets: MetaCyc:PWY-7446.
+
+All 15 sides from current original Rhea reproduce the graph and four atom/charge balances. YihU reduction is 40513 right-to-left, not the master written oxidation. Current beta-SQ, unspecified SF anomer and S-SLA/S-DHPS forms retain the primary limitations and explicit older native R comment.
+
+### E. coli activities versus Salmonella assays and assembly evidence
+
+evidence: supported. Targets: MetaCyc:PWY-7446.
+
+Direct coupled 2014 E. coli assays support four activities; 2021 prepared EcYihT inactivity and SeYihT kinetic data remain explicitly separate. YihS hexamer comes from native/current annotation with stated tiers; YihU tetramer has direct primary support. Functional enables for YihV/YihT does not assert monomer sufficiency or transfer Se solution measurements to E. coli.
+
+### Nucleotide-associated magnesium and conditional regulation
+
+scope: supported. Targets: MetaCyc:PWY-7446.
+
+YihV Mg is supported by observed nucleotide-associated structures, with assay conditions retained and no universal/free-ion rescue claim. Positive/negative modulators, high additive concentrations, substrate and ATP dependence match Table 1 and supplement. CsqR effects remain in vitro or stated reporter/gene scope.
+
+### Verified issue 366 resolution with immutable lineage
+
+provenance: supported. Targets: MetaCyc:PWY-7446.
+
+The original review is preserved. Independent semantic comparison finds only the p2–3 to p1–3 locator change; the new selector includes each component of the unchanged assertion. Required predecessor finding is retained below, not silently dropped.
+
+### Computational expression context is bounded
+
+scope: supported. Targets: MetaCyc:PWY-7446.
+
+E. coli MG1655 dataset gene hits are correctly contextual. They do not establish catalysis or strain-wide physiology. Zero module-name hits and no summary candidates do not establish absence.
+
+### Evidence and local graph preservation
+
+graph: supported. Targets: MetaCyc:PWY-7446.
+
+Actual independent target KGX contains all 41 edges and 84 evidence blocks with descriptions and endpoints preserved. Final corpus audit verifies the same target bytes in SVG and published downloads, with 31 SVG nodes and 32 named local nodes including the scope taxon; all evidence anchors and endpoints resolve.
+
+### Final frozen publication checks
+
+consistency: supported. Targets: MetaCyc:PWY-7446.
+
+All required checks passed on the final 203-record publication scope after the unrelated staphyloxanthin candidate was withheld. The initial root-helper lint failure is preserved as a superseded observation. Scientific conclusions above depend on independently inspected sources, not the test pass alone.
+
+## Findings
+
+### f-sr-derepression-locator: SR gel-shift result is excluded by the cited paragraph selector
+
+minor / resolved / confirmed; issue key: sulfoquinovose-sr-derepression-paragraph-locator.
+
+The original source selector omitted paragraph 1 for a combined SR gel-shift/AFM assertion. The corrected target now selects all three exact paragraphs; the scientific assertion and conditional scope are unchanged.
+
+Disposition: Independently compared initial and corrected YAML: exactly one field changes, edge032 evidence[0] source_locator from sec2.2 p2–3 to p1–3. Resolved the final XPath against original PMC8006165 and reread the gel-shift, thermal and AFM paragraphs. Final independent source/KGX replay passes on 741fc68d. No chemistry, effect or condition changed.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| initial | reviews/structured/20261011T080521Z-sulfoquinovose-initial-independent-review/review.yaml; f-sr-derepression-locator / sulfoquinovose-sr-derepression-paragraph-locator | supports | Complete YAML and paired Markdown were read. It preserves the original ddf84c0b target and open minor issue 366; no other structured predecessor was found in the canonical checked history. |
+| final-target | data/pathways/sulfoquinovose-degradation-i.yaml; All identity, taxa, participants, reactions, edges and references; especially edge032/evidence[0] | supports | Final target 741fc68d differs from the preserved initial target at exactly one field: sec2.2 selector now includes p1–p3. Chemistry, assertion and every other field are unchanged. |
+| primary-2021 | PMID:33791429 / PMC8006165; Original JATS sec2.1–sec2.4 and Tables; sec2.2 p1–p3 | supports | Original full text independently read. Paragraph 1 reports SR gel-shift/relative derepression, paragraph 2 thermal unfolding, paragraph 3 AFM. Exact corrected XPath returns all three. Assay conflicts, organism scope, beta-SQ and regulatory conditions were assessed. |
+| primary-2014 | PMID:24463506 / Denger et al.; Original Denger2014.pdf, printed pp. 114–116, Figures 2–3 and Methods | supports | Full original PDF independently extracted and key pages rendered. Supports the full four-enzyme route in K-12-derived strains and sequential coupled enzyme assays; DHPS retains organic sulfur and cross-feeding mineralization is separate. |
+| primary-yihu | DOI:10.1021/acscatal.9b04427; Original accepted manuscript, printed pp. 6–8, 10–11 and 18; Figures 1A, 4 and 6 | supports | Full original PDF independently extracted and pages rendered. YihU crystal and solution tetramer are supported; kinetic assays use racemic SLA with relative D assignment assumed active. Figure 1A explicitly depicts S-SLA and S-DHPS, so relative D is not misread as absolute R. Current UniProt reference 6 maps to this exact DOI. |
+| primary-si | DOI:10.1021/acscentsci.0c01285.s001; Original publisher Figshare PDF: S10 Figure S9; S19 Figure S19; S20 Figure S20B; S30 sequences; S33–S34 assays | supports | Original supplement rendered and read. EcYihV is mainly dimer with minor tetramer; YihT solution mass is Salmonella while Ec and Se crystallographic tetramers are distinct panels. Conditions and additive concentrations qualify the regulatory edges. |
+| csqr | PMID:30372406; Original indexed abstractText; current UniProt P32144 comments[0] | supports | Actual primary abstract supports CsqR repression of the two pathway transcription units and itself, plus SQ induction; no full-text inspection claimed. |
+| native | MetaCyc PWY-7446, RXN-15296–15299, CPLX0-7683 and CPLX0-7794; full current UniProt entries; Original native XML membership, ordering, family cross-references, component coefficients and monomer dblink; exact current UniProt comments/physiologicalReactions | supports | Four native transformations, YihS six-subunit and YihU four-subunit complexes, explicit monomer crosswalks and all five K-12 protein identities verified. Structured assembly/catalysis evidence is not mislabeled as direct primary measurements; older R-SLA comment retained as conflict. |
+| replay | research/pathway_additions/2026-10-11-next-201/sulfoquinovose-independent-review-audit.json; body_checks; sides; balances; edge_coverage; native_assemblies; execution | supports | Independent reviewer code replayed original merged Rhea RDF subjects, directed side chains and coefficients, ChEBI formulas/charges, all 34 source bodies, native identities and actual KGX evidence parity. Final actual session 21730 exited 0 on corrected target. |
+| context | research/pathway_additions/2026-10-11-next-201/imodulondb-context.json; e_coli/precise_mg1655 datasets and yihS/yihT/yihU/yihV/csqR searches | context_only | Inspected unchanged canonical client acquisition and parser replay after console unavailability. Independently rehashed all 28 original API bodies. Gene keys b3880/b3881/b3882/b3883/b3884 are context; no module-name hits are not proof of absent membership or expression. |
+| novelty | research/pathway_additions/2026-10-11-next-201/sulfoquinovose-dedup.json; Complete author two-root rg -uu commands and results; independent current maintained-corpus search | supports | Hidden and ignored files were included. Exact native route, labels, synonyms, reactions, proteins and papers distinguish prior lexical leads from a maintained equivalent. Independent maintained-corpus check matches only the new target. |
+| final-gates | research/pathway_additions/2026-10-11-next-201/integration-receipt.json; final_gates; test_summary; vendored_check; records; deferred_records | supports | Inspected terminal parent command receipts and exact log bodies for frozen 203-record publication scope: render, validate, test, lint, identifier check, KGX and diff all exited 0; 1,059 tests passed, 3 skipped, 3 upstream warnings. The historical initial lint failure remains recorded separately. |
+| final-graph | research/pathway_additions/2026-10-11-next-201/generated-graph-kgx-audit.json; records[id=MetaCyc:PWY-7446]; KGX; execution | supports | The independent programmatic audit verifies final SQ target hash, all 41 SVG/KGX edges, all 84 evidence blocks, endpoint/anchor geometry and separate CLI export parity. Scope is structural and does not replace scientific source assessment. |
+
+## Limits And Additional Notes
+
+- The 2021 EcYihT preparation was inactive while Salmonella enzyme was active; the record retains the 2014 E. coli coupled evidence and does not transfer Salmonella kinetic measurements.
+- YihS slow alpha-substrate turnover cannot be excluded and the enzyme-generated SF anomer is unresolved. The selected current substrate/product forms retain these limits.
+- YihU kinetic work used racemic SLA with an assumed active relative D isomer; current absolute S assignment is corroborated separately by the original structure depiction and database chemistry.
+- Native/current YihS assembly annotation is not upgraded to an independent direct measurement from the inspected 2008 abstract.
+- High-concentration regulatory and kinase-additive effects are conditional assays, not a quantitative claim of intracellular control.
+- The CsqR 2018 and YihS 2008 papers were inspected as indexed abstracts; no uninspected full-text claim.
+- iModulonDB searches provide expression context only; console unavailability and direct canonical-client fallback are explicit.
+- Generated artifacts were checked programmatically; no browser interaction or post-merge live deployment verification is claimed by this scientific review.
+- No maintained target edits were performed by this reviewer. Aromatic author work is a different record and is excluded from this scientific judgement.
+- Complete original initial YAML and Markdown were read; canonical history check passed 57 reviews before successor. Original target and source input bytes remain in the root archive.
+- Reviewer replay failed first on overly narrow assumptions about unused contextual reference entries, direct RDF direction predicates and native master versus directed cross-references. Each assumption was corrected against originals; these tooling failures are retained in the audit and do not imply record defects.
+- Original PDFs were independently extracted and selected relevant pages rendered; no browser page visual inspection is claimed.
+- The final publication cohort contains two admitted records and one separately retained, withheld staphyloxanthin candidate. That candidate is excluded from this target review. Final gates below apply to the 203-record admitted corpus, not merely the earlier 204-record candidate run.
+- Final canonical inspect exited 0 after all 24 previously captured input hashes were rechecked unchanged; it added only the newly sealed integration and generated-artifact receipts. All seven final log bodies and the vendored-check log were rehashed against their recorded digests.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T082931Z-sulfoquinovose-resolved-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent sulfoquinovose review and verified locator resolution
+started_at: '2026-10-11T08:03:20Z'
+finished_at: '2026-10-11T08:29:31Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_authority_cache)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author this target or its dossiers. Authored the separate
+    aromatic pathway in this cohort, excluded from this review. Read complete SQ target
+    and original primary/native/UniProt sources independently.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete four-step E. coli K-12 sulfo-EMP route is supported within its
+  explicit source and experimental limits. All 41 edges and 84 evidence blocks were
+  reviewed, with independent replay of 15 original chemical sides and four balances.
+  The saved minor locator finding, issue 366, is resolved with exact predecessor lineage.
+  No open findings remain. All final required publication checks passed on the frozen
+  203-record corpus, including 1,059 tests.
+source:
+  git_revision: 9e936b267374181f7f87402045777534d2f17508
+  state: working_tree
+  inputs:
+  - path: data/identifier_authorities/ontology.json
+    sha256: cd16025aa5ad10c17a847e7aa30555b21e33557a45a2f87596dbaa94a9fe86b3
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 4f492b22382e8687da13b29c7535d69ea76bd910841f25a4b5b5edf540fafd5c
+    role: context
+  - path: data/pathways/sulfoquinovose-degradation-i.yaml
+    sha256: 741fc68daedf7cb7000b7cc5dc94ce5c0029fe9d30ce56d392c51a2aa9ac390c
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/generated-graph-kgx-audit.json
+    sha256: 0dd5e35865ab93d850a32d5fb9a918f6f6a0d0381010923531596306e417cbba
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-context.json
+    sha256: c4d0a2527fb653f80038426e9ee245fff220fe1e6588eb03576e516fa6831ae5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-parser-replay.json
+    sha256: 39162cef1dec4f6769677aed300f075a802affb030b0346bbe01aed7a09cdecc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-runner-availability.json
+    sha256: 7babad1d11bc59e94b3b66736543e84a859ce14dad729b2c13aa58ddb3008e45
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-source-manifest.json
+    sha256: bbd695c306e60b07824468d3022e03b0f20a67ba7c5c1212e72b5f5ad78127cc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/integration-receipt.json
+    sha256: 4650102e7250f48ff29da54c2dfe76dbff5d40334577253f5c5320e4048e3982
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-authority-delta.json
+    sha256: 1c4312168bf90d0f3171f297d0b3aa62c45672055b68eb834f511b9d4a7aab59
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-curation.md
+    sha256: d20db78d808c6ff744f24cb63bcfc17ffe921e3fab7af9c9d6ea86ec2cc51bf7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-dedup.json
+    sha256: 4e05f46062f8b781a2d81ae1da65e0577272e28f5ff2fecce2b0391fdbd7181c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-identifiers.json
+    sha256: b28702830a17e6e1e35d72a0d4000f8048726b917fb416d86b1766a8928ed597
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-independent-review-audit.json
+    sha256: bf54a009b771a7c1b67f7a23b2d9000a5cbf7eb670380e2377789cc81d6df59d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-protein-projection.json
+    sha256: 81490857a3fc4c700ecc658181c270ae06bc6aa98d4db525b95c1188a7cfbd41
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-provenance-fix.json
+    sha256: 0b6b8474e5997b1d5150ec2da57fc747251a6a64621b5192eab3eed3463a797a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-replay.py
+    sha256: 705343378f38537bcf77a5e6f781a2e8fcb100f5a3f80203b6b786b81cc0f168
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-source-manifest.json
+    sha256: 27aeacc9a0e4c9648d61276c5b00050abe3034e3d8fe7a074d5a040fab148d65
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-source-projection.json
+    sha256: db1f57dfaf4ce720f56a95165c1b017f7ef9799ec886f3887e1d6caec75010e9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-validation.json
+    sha256: 1e3865f753d018ba15ee17ca2772a517dad9c0f81cfba24083dbba3ed5bd00d8
+    role: context
+  - path: reviews/structured/20261011T080521Z-sulfoquinovose-initial-independent-review/review.md
+    sha256: 56cebc9d5f13a3efafe018a1f892260f447d05109812faf95784b68c5ad24f3f
+    role: context
+  - path: reviews/structured/20261011T080521Z-sulfoquinovose-initial-independent-review/review.yaml
+    sha256: 2ff17b2dd54a815651b88f2300ce2c77af49144f5a931e374248f2b06c1e2817
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+targets:
+- target_id: MetaCyc:PWY-7446
+  path: data/pathways/sulfoquinovose-degradation-i.yaml
+  label: sulfoquinovose degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained record
+scope:
+  description: Complete scientific review of one maintained pathway and evidence-backed
+    successor to its saved initial provenance finding. Read-only with respect to the
+    target.
+  selection: Exact final target 741fc68daedf7cb7000b7cc5dc94ce5c0029fe9d30ce56d392c51a2aa9ac390c
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-7446
+  exclusions:
+  - target: Other cohort pathway science
+    reason: Different review ownership; authoring the separate aromatic pathway does
+      not provide independent review of that pathway.
+  - target: Adjacent SQ glycoside uptake/hydrolysis, SR branch and sulfur mineralization
+    reason: Outside the exact four-reaction native pathway, with explicit source dispositions
+      retained.
+checks:
+- check_id: inspect
+  name: Canonical pre-assessment inspection
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-201-sq-review-targets.yaml --input src/pathwaymech/schema.py
+    --input data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual canonical inspect captured original frozen target and current shared
+    authority/schema bytes before assessment.
+- check_id: diff
+  name: Read-only whitespace check
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual command exited zero during this independent review.
+- check_id: independent-replay
+  name: Independent source and actual KGX replay
+  command: PYTHONPATH=src UV_NO_SYNC=1 .venv/bin/python /private/tmp/pathwaymech-next-201-sq-independent/replay.py
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual session 21730 terminal exit 0 on final target; 34 bodies, 15 sides,
+    four balances, native identity/assembly and 41-edge / 84-evidence KGX parity.
+- check_id: canonical-history
+  name: Canonical append-only review history check
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py check --base 9e936b267374181f7f87402045777534d2f17508
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual initial check exit 0, 57 valid reviews including the saved initial
+    observation; final successor check follows save.
+- check_id: initial-lint
+  name: Superseded initial lint attempt
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just lint
+  status: failed
+  required: false
+  exit_code: 1
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: 'Original log inspected: root helper import ordering and one long line
+    failed. Root corrected formatting before final gates. This initial result is not
+    relabeled as a pass.'
+- check_id: final-render
+  name: Final coordinated render
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just render-pages
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Rendered 203 admitted pathway pages and removed the withheld orphan page.
+    Delegated actual command receipt and complete log digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-validate
+  name: Final coordinated validate
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just validate
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Final native/closed-schema, evidence, identifier, source, history, research
+    and generated-page checks passed for the admitted corpus. Delegated actual command
+    receipt and complete log digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-test
+  name: Final coordinated test
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just test
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: 1059 passed, 3 skipped, 3 warnings in 343.94s (0:05:43) Delegated actual
+    command receipt and complete log digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-lint
+  name: Final coordinated lint
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just lint
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: All Ruff checks passed on final frozen code and research helpers. Delegated
+    actual command receipt and complete log digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-identifiers
+  name: Final coordinated identifiers
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just check-identifiers
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Verified identifiers and canonical label policies in 203 pathway records.
+    Delegated actual command receipt and complete log digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-kgx
+  name: Final coordinated kgx
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just kgx-export --output-dir
+    /private/tmp/pathwaymech-next-201-kgx
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual separate CLI export succeeded for 203 records; structural and evidence
+    parity independently audited. Delegated actual command receipt and complete log
+    digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-diff
+  name: Final coordinated diff
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-201-20261011/src UV_NO_SYNC=1
+    UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Whitespace check exited 0 with an empty log. Delegated actual command receipt
+    and complete log digest independently inspected.
+  evidence_ids:
+  - final-gates
+- check_id: final-inspect
+  name: Final canonical inspect and unchanged-input verification
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-201-sq-review-targets.yaml
+    --input src/pathwaymech/schema.py --input data/identifier_authorities/ontology.json
+    --input data/identifier_authorities/sources.json --input docs/CURATION.md --input
+    docs/HARMONIZATION.md --input docs/CAUSAL_GRAPHS.md --input reviews/structured/20261011T080521Z-sulfoquinovose-initial-independent-review/review.yaml
+    --input reviews/structured/20261011T080521Z-sulfoquinovose-initial-independent-review/review.md
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-authority-delta.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-curation.md
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-dedup.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-identifiers.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-independent-review-audit.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-protein-projection.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-provenance-fix.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-replay.py
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-source-projection.json
+    --input research/pathway_additions/2026-10-11-next-201/sulfoquinovose-validation.json
+    --input research/pathway_additions/2026-10-11-next-201/imodulondb-context.json
+    --input research/pathway_additions/2026-10-11-next-201/imodulondb-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-201/imodulondb-parser-replay.json
+    --input research/pathway_additions/2026-10-11-next-201/imodulondb-runner-availability.json
+    --input research/pathway_additions/2026-10-11-next-201/integration-receipt.json
+    --input research/pathway_additions/2026-10-11-next-201/generated-graph-kgx-audit.json
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Actual reviewer session 98737 exited 0; all 24 prior captured inputs were
+    unchanged and the two sealed integration receipts were added after inspection.
+- check_id: vendored
+  name: Governed artifact synchronization
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just vendored-check
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: 'Actual delegated receipt and original log verified: 22 governed artifacts
+    match the pinned CLAW revision.'
+  evidence_ids:
+  - final-gates
+- check_id: draft-contract
+  name: Superseded external review draft validation
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py validate /private/tmp/pathwaymech-next-201-sq-independent/successor-draft.yaml;
+    later same validator on successor-final.yaml
+  status: failed
+  required: false
+  exit_code: 1
+  target_ids:
+  - MetaCyc:PWY-7446
+  summary: Two unsaved draft attempts were rejected for a missing bounded search_scope
+    and an unsupported assessment-area enum. Both contract fields were corrected before
+    canonical save; no target or scientific source changed. Final canonical validation
+    is run separately.
+evidence:
+- evidence_id: initial
+  kind: prior_review
+  reference: reviews/structured/20261011T080521Z-sulfoquinovose-initial-independent-review/review.yaml
+  locator: f-sr-derepression-locator / sulfoquinovose-sr-derepression-paragraph-locator
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Complete YAML and paired Markdown were read. It preserves the original
+    ddf84c0b target and open minor issue 366; no other structured predecessor was
+    found in the canonical checked history.
+  snapshot_sha256: 2ff17b2dd54a815651b88f2300ce2c77af49144f5a931e374248f2b06c1e2817
+- evidence_id: final-target
+  kind: record_content
+  reference: data/pathways/sulfoquinovose-degradation-i.yaml
+  locator: All identity, taxa, participants, reactions, edges and references; especially
+    edge032/evidence[0]
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: 'Final target 741fc68d differs from the preserved initial target at exactly
+    one field: sec2.2 selector now includes p1–p3. Chemistry, assertion and every
+    other field are unchanged.'
+  snapshot_sha256: 741fc68daedf7cb7000b7cc5dc94ce5c0029fe9d30ce56d392c51a2aa9ac390c
+- evidence_id: primary-2021
+  kind: primary_source
+  reference: PMID:33791429 / PMC8006165
+  locator: Original JATS sec2.1–sec2.4 and Tables; sec2.2 p1–p3
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Original full text independently read. Paragraph 1 reports SR gel-shift/relative
+    derepression, paragraph 2 thermal unfolding, paragraph 3 AFM. Exact corrected
+    XPath returns all three. Assay conflicts, organism scope, beta-SQ and regulatory
+    conditions were assessed.
+  snapshot_sha256: b94d347820a23930dbde3ada5f6f2805d56a42e6ae3e3d580611ab93e5a53c05
+- evidence_id: primary-2014
+  kind: primary_source
+  reference: PMID:24463506 / Denger et al.
+  locator: Original Denger2014.pdf, printed pp. 114–116, Figures 2–3 and Methods
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Full original PDF independently extracted and key pages rendered. Supports
+    the full four-enzyme route in K-12-derived strains and sequential coupled enzyme
+    assays; DHPS retains organic sulfur and cross-feeding mineralization is separate.
+  snapshot_sha256: e3c80fff89a548b26f8de5578e100c17c995e098243256d5f3d96058809aa61d
+- evidence_id: primary-yihu
+  kind: primary_source
+  reference: DOI:10.1021/acscatal.9b04427
+  locator: Original accepted manuscript, printed pp. 6–8, 10–11 and 18; Figures 1A,
+    4 and 6
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Full original PDF independently extracted and pages rendered. YihU crystal
+    and solution tetramer are supported; kinetic assays use racemic SLA with relative
+    D assignment assumed active. Figure 1A explicitly depicts S-SLA and S-DHPS, so
+    relative D is not misread as absolute R. Current UniProt reference 6 maps to this
+    exact DOI.
+  snapshot_sha256: 30e34da151f2e8b37098047787c17689ff0161f7a20d11760c7cb4689288491d
+- evidence_id: primary-si
+  kind: primary_source
+  reference: DOI:10.1021/acscentsci.0c01285.s001
+  locator: 'Original publisher Figshare PDF: S10 Figure S9; S19 Figure S19; S20 Figure
+    S20B; S30 sequences; S33–S34 assays'
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Original supplement rendered and read. EcYihV is mainly dimer with minor
+    tetramer; YihT solution mass is Salmonella while Ec and Se crystallographic tetramers
+    are distinct panels. Conditions and additive concentrations qualify the regulatory
+    edges.
+  snapshot_sha256: a4d4f57a30c7ac7cff3a62d644e074913ebda0390a5e0a91f91e5e97f560ffbc
+- evidence_id: csqr
+  kind: primary_source
+  reference: PMID:30372406
+  locator: Original indexed abstractText; current UniProt P32144 comments[0]
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Actual primary abstract supports CsqR repression of the two pathway transcription
+    units and itself, plus SQ induction; no full-text inspection claimed.
+  snapshot_sha256: aba137ecfa831c28bbe34b3ecdfaba2bd7421b468a6726ee3ed7bcd2c1c17e84
+- evidence_id: native
+  kind: database
+  reference: MetaCyc PWY-7446, RXN-15296–15299, CPLX0-7683 and CPLX0-7794; full current
+    UniProt entries
+  locator: Original native XML membership, ordering, family cross-references, component
+    coefficients and monomer dblink; exact current UniProt comments/physiologicalReactions
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Four native transformations, YihS six-subunit and YihU four-subunit complexes,
+    explicit monomer crosswalks and all five K-12 protein identities verified. Structured
+    assembly/catalysis evidence is not mislabeled as direct primary measurements;
+    older R-SLA comment retained as conflict.
+- evidence_id: replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-independent-review-audit.json
+  locator: body_checks; sides; balances; edge_coverage; native_assemblies; execution
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Independent reviewer code replayed original merged Rhea RDF subjects, directed
+    side chains and coefficients, ChEBI formulas/charges, all 34 source bodies, native
+    identities and actual KGX evidence parity. Final actual session 21730 exited 0
+    on corrected target.
+  snapshot_sha256: bf54a009b771a7c1b67f7a23b2d9000a5cbf7eb670380e2377789cc81d6df59d
+- evidence_id: context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-201/imodulondb-context.json
+  locator: e_coli/precise_mg1655 datasets and yihS/yihT/yihU/yihV/csqR searches
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: context_only
+  summary: Inspected unchanged canonical client acquisition and parser replay after
+    console unavailability. Independently rehashed all 28 original API bodies. Gene
+    keys b3880/b3881/b3882/b3883/b3884 are context; no module-name hits are not proof
+    of absent membership or expression.
+  snapshot_sha256: c4d0a2527fb653f80038426e9ee245fff220fe1e6588eb03576e516fa6831ae5
+- evidence_id: novelty
+  kind: search
+  reference: research/pathway_additions/2026-10-11-next-201/sulfoquinovose-dedup.json
+  locator: Complete author two-root rg -uu commands and results; independent current
+    maintained-corpus search
+  accessed_at: '2026-10-11T08:20:42Z'
+  support: supports
+  summary: Hidden and ignored files were included. Exact native route, labels, synonyms,
+    reactions, proteins and papers distinguish prior lexical leads from a maintained
+    equivalent. Independent maintained-corpus check matches only the new target.
+  snapshot_sha256: 4e05f46062f8b781a2d81ae1da65e0577272e28f5ff2fecce2b0391fdbd7181c
+  search_scope: Author rg -uu included hidden and ignored files in the owned worktree
+    and original Documents checkout for exact PWY-7446, sulfoquinovose/sulfo-EMP labels,
+    RXN-15296 through RXN-15299, Yih protein identifiers and primary papers. Reviewer
+    independently searched current data/pathways with rg -uu; no claim of whole-computer
+    absence.
+- evidence_id: final-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/integration-receipt.json
+  locator: final_gates; test_summary; vendored_check; records; deferred_records
+  accessed_at: '2026-10-11T08:29:31Z'
+  support: supports
+  summary: 'Inspected terminal parent command receipts and exact log bodies for frozen
+    203-record publication scope: render, validate, test, lint, identifier check,
+    KGX and diff all exited 0; 1,059 tests passed, 3 skipped, 3 upstream warnings.
+    The historical initial lint failure remains recorded separately.'
+  snapshot_sha256: 4650102e7250f48ff29da54c2dfe76dbff5d40334577253f5c5320e4048e3982
+- evidence_id: final-graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/generated-graph-kgx-audit.json
+  locator: records[id=MetaCyc:PWY-7446]; KGX; execution
+  accessed_at: '2026-10-11T08:29:31Z'
+  support: supports
+  summary: The independent programmatic audit verifies final SQ target hash, all 41
+    SVG/KGX edges, all 84 evidence blocks, endpoint/anchor geometry and separate CLI
+    export parity. Scope is structural and does not replace scientific source assessment.
+  snapshot_sha256: 0dd5e35865ab93d850a32d5fb9a918f6f6a0d0381010923531596306e417cbba
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact complete sulfo-EMP boundary and novelty
+  outcome: supported
+  summary: PWY-7446 is the complete free-SQ route through SF, SFP and SLA to DHAP
+    plus organic-sulfur DHPS. All four native members and three sequential handoffs
+    remain present. It is distinct from SQ glycoside cleavage, mutarotation, sulfo-ED
+    and complete sulfur mineralization.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - native
+  - primary-2014
+  - novelty
+- assessment_id: chemistry
+  area: grounding
+  topic: All source-issued sides, directions, stereochemistry and balances
+  outcome: supported
+  summary: All 15 sides from current original Rhea reproduce the graph and four atom/charge
+    balances. YihU reduction is 40513 right-to-left, not the master written oxidation.
+    Current beta-SQ, unspecified SF anomer and S-SLA/S-DHPS forms retain the primary
+    limitations and explicit older native R comment.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - replay
+  - primary-2021
+  - primary-yihu
+- assessment_id: catalysis
+  area: evidence
+  topic: E. coli activities versus Salmonella assays and assembly evidence
+  outcome: supported
+  summary: Direct coupled 2014 E. coli assays support four activities; 2021 prepared
+    EcYihT inactivity and SeYihT kinetic data remain explicitly separate. YihS hexamer
+    comes from native/current annotation with stated tiers; YihU tetramer has direct
+    primary support. Functional enables for YihV/YihT does not assert monomer sufficiency
+    or transfer Se solution measurements to E. coli.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - native
+  - primary-2014
+  - primary-2021
+  - primary-yihu
+  - primary-si
+- assessment_id: cofactor
+  area: scope
+  topic: Nucleotide-associated magnesium and conditional regulation
+  outcome: supported
+  summary: YihV Mg is supported by observed nucleotide-associated structures, with
+    assay conditions retained and no universal/free-ion rescue claim. Positive/negative
+    modulators, high additive concentrations, substrate and ATP dependence match Table
+    1 and supplement. CsqR effects remain in vitro or stated reporter/gene scope.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - primary-2021
+  - primary-si
+  - csqr
+- assessment_id: provenance
+  area: provenance
+  topic: Verified issue 366 resolution with immutable lineage
+  outcome: supported
+  summary: The original review is preserved. Independent semantic comparison finds
+    only the p2–3 to p1–3 locator change; the new selector includes each component
+    of the unchanged assertion. Required predecessor finding is retained below, not
+    silently dropped.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - initial
+  - final-target
+  - primary-2021
+  - replay
+- assessment_id: context
+  area: scope
+  topic: Computational expression context is bounded
+  outcome: supported
+  summary: E. coli MG1655 dataset gene hits are correctly contextual. They do not
+    establish catalysis or strain-wide physiology. Zero module-name hits and no summary
+    candidates do not establish absence.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - context
+- assessment_id: export
+  area: graph
+  topic: Evidence and local graph preservation
+  outcome: supported
+  summary: Actual independent target KGX contains all 41 edges and 84 evidence blocks
+    with descriptions and endpoints preserved. Final corpus audit verifies the same
+    target bytes in SVG and published downloads, with 31 SVG nodes and 32 named local
+    nodes including the scope taxon; all evidence anchors and endpoints resolve.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - replay
+  - final-target
+  - final-graph
+  - final-gates
+- assessment_id: final-validation
+  area: consistency
+  topic: Final frozen publication checks
+  outcome: supported
+  summary: All required checks passed on the final 203-record publication scope after
+    the unrelated staphyloxanthin candidate was withheld. The initial root-helper
+    lint failure is preserved as a superseded observation. Scientific conclusions
+    above depend on independently inspected sources, not the test pass alone.
+  target_ids:
+  - MetaCyc:PWY-7446
+  evidence_ids:
+  - final-gates
+  - final-graph
+  - replay
+findings:
+- finding_id: f-sr-derepression-locator
+  issue_key: sulfoquinovose-sr-derepression-paragraph-locator
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: SR gel-shift result is excluded by the cited paragraph selector
+  description: The original source selector omitted paragraph 1 for a combined SR
+    gel-shift/AFM assertion. The corrected target now selects all three exact paragraphs;
+    the scientific assertion and conditional scope are unchanged.
+  target_ids:
+  - MetaCyc:PWY-7446
+  field_paths:
+  - mechanistic_edges[id=sulfoquinovose-edge-032]/evidence[0]/source_locator
+  evidence_ids:
+  - initial
+  - final-target
+  - primary-2021
+  - replay
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway record
+  rule_id: review-yaml-record precise native source locators
+  native_severity: minor
+  normalization_reason: Bounded retrieval/provenance omission; the original inspected
+    article supports the complete assertion.
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T080521Z-sulfoquinovose-initial-independent-review
+    finding_id: f-sr-derepression-locator
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/366
+  disposition_reason: 'Independently compared initial and corrected YAML: exactly
+    one field changes, edge032 evidence[0] source_locator from sec2.2 p2–3 to p1–3.
+    Resolved the final XPath against original PMC8006165 and reread the gel-shift,
+    thermal and AFM paragraphs. Final independent source/KGX replay passes on 741fc68d.
+    No chemistry, effect or condition changed.'
+actions: []
+limitations:
+- The 2021 EcYihT preparation was inactive while Salmonella enzyme was active; the
+  record retains the 2014 E. coli coupled evidence and does not transfer Salmonella
+  kinetic measurements.
+- YihS slow alpha-substrate turnover cannot be excluded and the enzyme-generated SF
+  anomer is unresolved. The selected current substrate/product forms retain these
+  limits.
+- YihU kinetic work used racemic SLA with an assumed active relative D isomer; current
+  absolute S assignment is corroborated separately by the original structure depiction
+  and database chemistry.
+- Native/current YihS assembly annotation is not upgraded to an independent direct
+  measurement from the inspected 2008 abstract.
+- High-concentration regulatory and kinase-additive effects are conditional assays,
+  not a quantitative claim of intracellular control.
+- The CsqR 2018 and YihS 2008 papers were inspected as indexed abstracts; no uninspected
+  full-text claim.
+- iModulonDB searches provide expression context only; console unavailability and
+  direct canonical-client fallback are explicit.
+- Generated artifacts were checked programmatically; no browser interaction or post-merge
+  live deployment verification is claimed by this scientific review.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/366
+notes:
+- No maintained target edits were performed by this reviewer. Aromatic author work
+  is a different record and is excluded from this scientific judgement.
+- Complete original initial YAML and Markdown were read; canonical history check passed
+  57 reviews before successor. Original target and source input bytes remain in the
+  root archive.
+- Reviewer replay failed first on overly narrow assumptions about unused contextual
+  reference entries, direct RDF direction predicates and native master versus directed
+  cross-references. Each assumption was corrected against originals; these tooling
+  failures are retained in the audit and do not imply record defects.
+- Original PDFs were independently extracted and selected relevant pages rendered;
+  no browser page visual inspection is claimed.
+- The final publication cohort contains two admitted records and one separately retained,
+  withheld staphyloxanthin candidate. That candidate is excluded from this target
+  review. Final gates below apply to the 203-record admitted corpus, not merely the
+  earlier 204-record candidate run.
+- Final canonical inspect exited 0 after all 24 previously captured input hashes were
+  rechecked unchanged; it added only the newly sealed integration and generated-artifact
+  receipts. All seven final log bodies and the vendored-check log were rehashed against
+  their recorded digests.
+```

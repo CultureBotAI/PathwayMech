@@ -1,0 +1,483 @@
+# Independent initial staphyloxanthin source review
+
+- Review: 20261011T080814Z-staphyloxanthin-initial-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T08:02:57.925857Z
+- Finished UTC: 2026-10-11T08:08:14.108148Z
+- Reviewer: Codex independent reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+Full target and primary/native sources support the complete nine-step route with explicit terminal-donor and strain limitations. One grouped minor finding covers two nonexistent InChI locator fields. Final shared gates remain pending.
+
+## Scope And Provenance
+
+One exact source-native staphyloxanthin record; scientific all-edge source review with final shared gate verification pending.
+
+Selection: Canonical initial inspect captured761c7a4b before assessment; all target/dossier input hashes rechecked unchanged before save.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9e936b267374181f7f87402045777534d2f17508.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5875 | data/pathways/staphyloxanthin-biosynthesis.yaml | maintained | staphyloxanthin biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical initial inspection | passed | True | MetaCyc:PWY-5875 | Actual initial inspect preceded assessment; initial target and nine dossier hashes remain unchanged. |
+| Independent original-source and export replay | passed | False | MetaCyc:PWY-5875 | Session68728 exited0 after reviewer API-use correction; fullRDF/native/ChEBI and actual KGX metadata replay passed. |
+| Coordinated full validate | unavailable | True | MetaCyc:PWY-5875 | Root full test still running; final terminal coordinated seal not yet captured in this initial partial observation. Root reports other gates passed, which successor will independently verify. |
+| Coordinated full test | unavailable | True | MetaCyc:PWY-5875 | Root full test still running; final terminal coordinated seal not yet captured in this initial partial observation. Root reports other gates passed, which successor will independently verify. |
+| Coordinated full lint | unavailable | True | MetaCyc:PWY-5875 | Initial root lint log records two formatting errors; parent corrected unrelated helper, final complete lint receipt pending. |
+| Coordinated full diff | unavailable | True | MetaCyc:PWY-5875 | Root full test still running; final terminal coordinated seal not yet captured in this initial partial observation. Root reports other gates passed, which successor will independently verify. |
+
+## Scientific And Domain Assessments
+
+### Complete source-native boundary
+
+identity: supported. Targets: MetaCyc:PWY-5875.
+
+All nine source-defined reactions represented; no convenient subset or extra heterologous pigment branch.
+
+### Exact chemical states and source-qualified donors
+
+grounding: supported. Targets: MetaCyc:PWY-5875.
+
+Current charged reactions and native terminal classes agree; donor identity remains a database model, not an experimental specificity claim.
+
+### Organism, assembly and evidence tiers
+
+scope: supported. Targets: MetaCyc:PWY-5875.
+
+Newman annotations, KCTC1928 clones, RN4220 deletion and C244S study remain qualified; functional roles do not imply monomer sufficiency.
+
+### Exact native locator support
+
+provenance: concern. Targets: MetaCyc:PWY-5875.
+
+Two generic-class evidence blocks list nonexistent inchi fields; remaining available fields support the scientific assertions.
+
+## Findings
+
+### f-native-class-inchi-locators: Two native generic-class locators name absent InChI fields
+
+minor / open / confirmed; issue key: staphyloxanthin-native-class-inchi-locators.
+
+stx-edge-050 evidence[1] and stx-edge-052 evidence[1] include inchi in source_locator. The exact original NDP-glucoses and Nucleoside-Diphosphates XML Compound objects contain no such element. Their common-name/dblink/cml/molecule fields remain valid support. Issue https://github.com/CultureBotAI/PathwayMech/issues/368.
+
+## Recommended Actions And Acceptance Checks
+
+### fix-native-class-locators
+
+Remove only the nonexistent inchi fragment from the two class locators; retain available native fields and qualified chemistry.
+
+- Verify two exact locator-only changes against original XML; no molecule identity or reaction change.
+- Refresh author source replay and generated pages; capture final required gate receipts.
+- Save independent successor retaining this finding issue_key and exact previous_occurrences.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/staphyloxanthin-biosynthesis.yaml; Complete frozen761c7a4b target,1250lines | supports | All31participants,9reactions,70edges and123evidence read and assessed. |
+| native | https://pathway.yeastgenome.org/getxml?META:PWY-5875; Full native pathway and nine reaction XMLs, component chemical objects; MONOMER17444/13882/13883 comments | supports | Full boundary and source-qualified terminal donor model independently verified. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Original142 RDF, seven directed reactions22673,31552,31396,31400,31404,56105,42385 and33side chains | supports | All orientations, coefficients, charge/formula identities and seven balances match. Generic donor symbols are not specific physiology. |
+| primary | https://pmc.ncbi.nlm.nih.gov/articles/PMC3381123/; Complete2012article;1999PMC103650;2008PMC2747771;2005PMID16020541 abstract | supports | Direct biochemical and genetic support preserves six enzymes, native pigment versus heterologous analogues, boundPSPP and heterogeneousCrtN assembly. |
+| later | https://hub.hku.hk/bitstream/10722/293537/1/content.pdf; Tao2020 Results/Discussion pp948-952,Fig6, independently inspected web PDF | supports | C244S dimer, diapolycopenal analogue and Newman genetics support qualified statement; no WT KCTC1928 donor/assembly conclusion. |
+| protein | https://rest.uniprot.org/uniprotkb/O07854.json; Complete five current original UniProt JSONs; all attached JSON pointers resolved | supports | Newman identity, exact functional annotations and similarity cofactor tiers remain separate from genetic evidence. |
+| locator | https://pathway.yeastgenome.org/getxml?META:NDP-glucoses; Compound/inchi and corresponding Nucleoside-Diphosphates object; full original XML hashes0c44c761…/b318200e… | refutes | Each object contains common-name,dblink,cml/molecule but no inchi element; two evidence locators name an absent field. |
+| audit | research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-review-audit.json; Independent replay68728 terminal0; exact fullRDF/native/ChEBI/actualKGX checks | supports | 67 unique retained body hashes checked;33Rhea and8native sides;70edges123evidence preserved. |
+| context | research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-context.json; s_aureus/staph_precise108 component4; staph_precise165 nativecomponent63 and exact failed nullable metadata | supports | Four crtN/P/Q/O rows are bounded USA300 expression context; Newman/KCTC activity not inferred. Two165 parser failures retained, no false full-parser success. |
+
+## Limits And Additional Notes
+
+- Full shared test still running; first shared lint failed on unrelated iModulon helper formatting, fixed by parent but final lint seal pending.
+- Reviewer helper first run failed at an incorrect dict input to KGX; corrected use of native validated record and TSV API, then full replay68728 exited0. This was a reviewer method correction, not a product defect.
+- No browser visual inspection; exact programmatic export only.
+- Tao2020 primary PDF independently inspected through web retrieval; no retained original-body digest or unavailable supplement claim.
+- Activated terminal donor identities are explicitly proposed native assignments, not directly established donor assays; generic CrtP donor unresolved.
+- USA300 iModulon context does not bridge strain-specific mechanism;165 source failures remain failures.
+- Exact reviewed input copies retained externally under /private/tmp/pathwaymech-next-201-staph-review/initial-inputs for parent archival before correction.
+- No reviewed target or author dossier was edited. Parent owns GitHub issue368.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T080814Z-staphyloxanthin-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent initial staphyloxanthin source review
+started_at: '2026-10-11T08:02:57.925857Z'
+finished_at: '2026-10-11T08:08:14.108148Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author the staphyloxanthin record or dossier. Reviewer-authored
+    sulfoquinovose is excluded.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: Full target and primary/native sources support the complete nine-step route
+  with explicit terminal-donor and strain limitations. One grouped minor finding covers
+  two nonexistent InChI locator fields. Final shared gates remain pending.
+source:
+  git_revision: 9e936b267374181f7f87402045777534d2f17508
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    sha256: 761c7a4b25f2ff5fb00de30d58599fc6905b5af6eed8f87df9ce39ae76cd86a2
+    role: target
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-context.json
+    sha256: 723b0d5cf112610370de3a994e4f4c6e9f4704d70e3b57acc6599d14e35323de
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-parser-replay.json
+    sha256: d634e95207f157c0de19013a93261a859fcd041be4dbd93eec2ecdd9910149b5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-source-manifest.json
+    sha256: 01e301abeb0fe4fa718b88f5b4e65e4c98c39a5e5dc729ca77ca7b3beef9c4a6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph165-context.json
+    sha256: 746f6a62bd30893e024c721fca269020b08be6d9b14a8a5804d0d462af09d919
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph165-native-fallback.json
+    sha256: fce39f56b2179f3ca3cde363ee72b73a967c085dd882736b81babb00ff77d867
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph165-replay.json
+    sha256: 6ddc32c00407d2f3487fbdbac102a284e61778e3a650c876d6c4ceae65a7c821
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph165-replay.py
+    sha256: 5748d24b870bc7f7b0e58568ebab5f5608d71ca89156bdc230857afede1797f7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/imodulondb-staph165-source-manifest.json
+    sha256: bafe8bdf0f19b909b7e234cb650ed83b2ed838fe35a38b43479d7b637ed2b1cc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-authority-delta.json
+    sha256: 6ded51d4aa6240c2b53887be91827f4f933cc029e78f6547eea825ca9cc5d82d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-curation.md
+    sha256: 2e4d18cf60e32d92fa016b5196b82ec2dc324f3efb1e7d8541b6402c0e1e0903
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-dedup.json
+    sha256: ea5af4a46c22e580e10bd229954d96b10c4ee5e08e47d8eb9eeea7130f92d8ae
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-identifiers.json
+    sha256: 49296386db5e35a67796fbdd6baa49d3de03665db5af76c99774f2a70af53d1e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-review-audit.json
+    sha256: d94cf917765a9a0a8dadc0dd0c33aa25118e581f079c8462eb772561546f5bdc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-protein-projection.json
+    sha256: 0a32005a3f8aa86cee8774071b33ec70b21941c9aa94d08e02262866806ac68a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-replay.py
+    sha256: d3827ebf67a6c98667b6dcc86036bc5cf4e3bb471edfe3765d68f359511e3e98
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-source-manifest.json
+    sha256: 6d350933aa10a056ffafd043b82684893329eab59fe24725207e70d22c99cd61
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-source-projection.json
+    sha256: dc85551177f06c1f2536112ee3c2cfe9571e45c00080a935fba5c5a686716f19
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-validation.json
+    sha256: 85f381a95be8681124dc7bdebdba1c01348b3bdbdf10ae705fb2bb1a5dc64f09
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: ffa1107da83c8ff173833662e78ba73c779bbab9f2da33cea993b614e99d6345
+    role: context
+targets:
+- target_id: MetaCyc:PWY-5875
+  path: data/pathways/staphyloxanthin-biosynthesis.yaml
+  label: staphyloxanthin biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained
+scope:
+  description: One exact source-native staphyloxanthin record; scientific all-edge
+    source review with final shared gate verification pending.
+  selection: Canonical initial inspect captured761c7a4b before assessment; all target/dossier
+    input hashes rechecked unchanged before save.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5875
+  exclusions:
+  - target: Reviewer-authored sulfoquinovose and other pathway records
+    reason: Outside independent scientific scope.
+checks:
+- check_id: inspect
+  name: Canonical initial inspection
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-201-staph-review/targets.yaml
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Actual initial inspect preceded assessment; initial target and nine dossier
+    hashes remain unchanged.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: source-replay
+  name: Independent original-source and export replay
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-201-staph-review/replay.py
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Session68728 exited0 after reviewer API-use correction; fullRDF/native/ChEBI
+    and actual KGX metadata replay passed.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - audit
+- check_id: validate
+  name: Coordinated full validate
+  command: just validate
+  status: unavailable
+  required: true
+  summary: Root full test still running; final terminal coordinated seal not yet captured
+    in this initial partial observation. Root reports other gates passed, which successor
+    will independently verify.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: test
+  name: Coordinated full test
+  command: just test
+  status: unavailable
+  required: true
+  summary: Root full test still running; final terminal coordinated seal not yet captured
+    in this initial partial observation. Root reports other gates passed, which successor
+    will independently verify.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: lint
+  name: Coordinated full lint
+  command: just lint
+  status: unavailable
+  required: true
+  summary: Initial root lint log records two formatting errors; parent corrected unrelated
+    helper, final complete lint receipt pending.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: diff
+  name: Coordinated full diff
+  command: git diff --check
+  status: unavailable
+  required: true
+  summary: Root full test still running; final terminal coordinated seal not yet captured
+    in this initial partial observation. Root reports other gates passed, which successor
+    will independently verify.
+  target_ids:
+  - MetaCyc:PWY-5875
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/staphyloxanthin-biosynthesis.yaml
+  locator: Complete frozen761c7a4b target,1250lines
+  summary: All31participants,9reactions,70edges and123evidence read and assessed.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-5875
+  locator: Full native pathway and nine reaction XMLs, component chemical objects;
+    MONOMER17444/13882/13883 comments
+  summary: Full boundary and source-qualified terminal donor model independently verified.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Original142 RDF, seven directed reactions22673,31552,31396,31400,31404,56105,42385
+    and33side chains
+  summary: All orientations, coefficients, charge/formula identities and seven balances
+    match. Generic donor symbols are not specific physiology.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: primary
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3381123/
+  locator: Complete2012article;1999PMC103650;2008PMC2747771;2005PMID16020541 abstract
+  summary: Direct biochemical and genetic support preserves six enzymes, native pigment
+    versus heterologous analogues, boundPSPP and heterogeneousCrtN assembly.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: later
+  kind: primary_source
+  reference: https://hub.hku.hk/bitstream/10722/293537/1/content.pdf
+  locator: Tao2020 Results/Discussion pp948-952,Fig6, independently inspected web
+    PDF
+  summary: C244S dimer, diapolycopenal analogue and Newman genetics support qualified
+    statement; no WT KCTC1928 donor/assembly conclusion.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: protein
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/O07854.json
+  locator: Complete five current original UniProt JSONs; all attached JSON pointers
+    resolved
+  summary: Newman identity, exact functional annotations and similarity cofactor tiers
+    remain separate from genetic evidence.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: locator
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:NDP-glucoses
+  locator: Compound/inchi and corresponding Nucleoside-Diphosphates object; full original
+    XML hashes0c44c761…/b318200e…
+  summary: Each object contains common-name,dblink,cml/molecule but no inchi element;
+    two evidence locators name an absent field.
+  support: refutes
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-review-audit.json
+  locator: Independent replay68728 terminal0; exact fullRDF/native/ChEBI/actualKGX
+    checks
+  summary: 67 unique retained body hashes checked;33Rhea and8native sides;70edges123evidence
+    preserved.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-context.json
+  locator: s_aureus/staph_precise108 component4; staph_precise165 nativecomponent63
+    and exact failed nullable metadata
+  summary: Four crtN/P/Q/O rows are bounded USA300 expression context; Newman/KCTC
+    activity not inferred. Two165 parser failures retained, no false full-parser success.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete source-native boundary
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: All nine source-defined reactions represented; no convenient subset or
+    extra heterologous pigment branch.
+  evidence_ids:
+  - native
+  - target
+- assessment_id: chemistry
+  area: grounding
+  topic: Exact chemical states and source-qualified donors
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: Current charged reactions and native terminal classes agree; donor identity
+    remains a database model, not an experimental specificity claim.
+  evidence_ids:
+  - rhea
+  - native
+  - audit
+- assessment_id: roles
+  area: scope
+  topic: Organism, assembly and evidence tiers
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: Newman annotations, KCTC1928 clones, RN4220 deletion and C244S study remain
+    qualified; functional roles do not imply monomer sufficiency.
+  evidence_ids:
+  - protein
+  - primary
+  - later
+  - context
+- assessment_id: provenance
+  area: provenance
+  topic: Exact native locator support
+  outcome: concern
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: Two generic-class evidence blocks list nonexistent inchi fields; remaining
+    available fields support the scientific assertions.
+  evidence_ids:
+  - locator
+  - native
+  - target
+findings:
+- finding_id: f-native-class-inchi-locators
+  issue_key: staphyloxanthin-native-class-inchi-locators
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Two native generic-class locators name absent InChI fields
+  description: stx-edge-050 evidence[1] and stx-edge-052 evidence[1] include inchi
+    in source_locator. The exact original NDP-glucoses and Nucleoside-Diphosphates
+    XML Compound objects contain no such element. Their common-name/dblink/cml/molecule
+    fields remain valid support. Issue https://github.com/CultureBotAI/PathwayMech/issues/368.
+  target_ids:
+  - MetaCyc:PWY-5875
+  field_paths:
+  - mechanistic_edges[id=stx-edge-050]/evidence[1]/source_locator
+  - mechanistic_edges[id=stx-edge-052]/evidence[1]/source_locator
+  evidence_ids:
+  - locator
+  - native
+  - target
+  rule_id: 'review-yaml-record Evidence Rules: exact native object in source_locator'
+  native_severity: minor
+  normalization_reason: Bounded source locator gap; chemistry and native class identity
+    remain supported.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained_record
+actions:
+- action_id: fix-native-class-locators
+  description: Remove only the nonexistent inchi fragment from the two class locators;
+    retain available native fields and qualified chemistry.
+  finding_ids:
+  - f-native-class-inchi-locators
+  target_ids:
+  - MetaCyc:PWY-5875
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Verify two exact locator-only changes against original XML; no molecule identity
+    or reaction change.
+  - Refresh author source replay and generated pages; capture final required gate
+    receipts.
+  - Save independent successor retaining this finding issue_key and exact previous_occurrences.
+limitations:
+- Full shared test still running; first shared lint failed on unrelated iModulon helper
+  formatting, fixed by parent but final lint seal pending.
+- Reviewer helper first run failed at an incorrect dict input to KGX; corrected use
+  of native validated record and TSV API, then full replay68728 exited0. This was
+  a reviewer method correction, not a product defect.
+- No browser visual inspection; exact programmatic export only.
+- Tao2020 primary PDF independently inspected through web retrieval; no retained original-body
+  digest or unavailable supplement claim.
+- Activated terminal donor identities are explicitly proposed native assignments,
+  not directly established donor assays; generic CrtP donor unresolved.
+- USA300 iModulon context does not bridge strain-specific mechanism;165 source failures
+  remain failures.
+notes:
+- Exact reviewed input copies retained externally under /private/tmp/pathwaymech-next-201-staph-review/initial-inputs
+  for parent archival before correction.
+- No reviewed target or author dossier was edited. Parent owns GitHub issue368.
+```
