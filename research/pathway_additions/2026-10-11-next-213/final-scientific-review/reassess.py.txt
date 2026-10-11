@@ -1,0 +1,83 @@
+from pathlib import Path
+from datetime import UTC,datetime
+import copy,csv,hashlib,json,re,subprocess
+import yaml
+from lxml import etree as ET
+from pathwaymech.kgx import LOCAL_PREDICATE_CURIES
+R=Path('/private/tmp/pathwaymech-next-213-20261011');O=Path(__file__).parent;D=R/'research/pathway_additions/2026-10-11-next-213'
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def read(p):return json.loads(Path(p).read_text())
+def write(p,d):
+ with p.open('x') as f:f.write(json.dumps(d,indent=2)+'\n')
+started=datetime.now(UTC).isoformat();inspection=read(O/'inspect.log');source=inspection['source'];assert source['git_revision']=='8ef390b2bad5853d7d6bf58b119e6fc47775141f'
+for row in source['inputs']:assert sha(R/row['path'])==row['sha256'],row['path']
+initial_path=R/'reviews/structured/20261011T132809Z-petrobactin-initial-independent-review/review.yaml';initial=yaml.safe_load(initial_path.read_text())
+assert sha(initial_path)=='96a6fb538c764ea50a20bd1b6a2d2c988948c60d3c0113818b0d8b37a66884e5'
+assert sha(initial_path.with_suffix('.md'))=='d41c43774afb7eaa3d0e557046647da8d3ac9b8544322a53a9ea143dc7b1fa60'
+archive=read(D/'initial-review-inputs/captured-inputs.json'); assert len(archive['inputs'])==25
+for row in archive['inputs']:assert sha(R/row['maintained_archive'])==row['sha256']
+T=R/'data/pathways/petrobactin-biosynthesis.yaml';raw=yaml.safe_load(T.read_text());old=yaml.safe_load((D/'initial-review-inputs/petrobactin-biosynthesis.yaml').read_text())
+assert sha(T)=='7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a'
+e=next(e for e in raw['mechanistic_edges'] if e['id']=='petrobactin-edge-082');prior=next(v for v in old['mechanistic_edges'] if v['id']=='petrobactin-edge-082')
+expected='The selected versioned Sterne AsbD protein participates in petrobactin biosynthesis. This contextual participation does not assert an exact identity between AsbD and every member of the generic carrier classes.'
+assert e['description']==expected
+comparison=copy.deepcopy(raw);next(v for v in comparison['mechanistic_edges'] if v['id']==e['id'])['description']=prior['description'];assert comparison==old
+assert len(raw['reactions'])==10 and len(raw['participants'])==28 and len(raw['mechanistic_edges'])==94
+assert sum(len(e['evidence']) for e in raw['mechanistic_edges'])==149 and len(raw['references'])==59
+assert not raw.get('source_mappings')
+assert 'MetaCyc:CPD-9985' in {n['id'] for n in raw['participants']}
+assert not {'CHEBI:142778','RHEA:63821'} & {n['id'] for n in raw['participants']+raw['reactions']}
+# Re-inspect the exact original protein and retained secondary accession.
+acceptance=read(D/'independent-description-acceptance.json');body_checks=[]
+for row in acceptance['original_identity']['original_source_hashes']:
+ assert sha(row['path'])==row['sha256'];body_checks.append(row)
+protein=ET.parse(body_checks[0]['path']).xpath('//GBSeq[GBSeq_accession-version="AAT54156.1"]');assert len(protein)==1
+protein=protein[0];seq=protein.findtext('GBSeq_sequence').upper()
+quals={(q.findtext('GBQualifier_name'),q.findtext('GBQualifier_value')) for q in protein.findall('.//GBQualifier')}
+assert ('strain','Sterne') in quals and ('db_xref','taxon:260799') in quals
+u=read(body_checks[1]['path']);assert u['primaryAccession']=='A0A0J1I1I3' and 'Q81RQ6' in u['secondaryAccessions'];assert seq==u['sequence']['value'] and len(seq)==91
+source_excerpts={str(i):u['comments'][i] for i in [0,2]}
+assert e['subject']=='NCBIProtein:AAT54156.1' and e['predicate']=='part_of' and e['object']=='MetaCyc:PWY-6289'
+# No changed scientific evidence is hidden in refreshed replay metadata.
+for name in ['source-manifest','source-projection','identity-assessment']:
+ original=read(D/f'petrobactin-{name}.json');current=read(D/f'portable-replay/petrobactin-{name}.json')
+ assert current['target_sha256']==sha(T)
+ before=copy.deepcopy(original);before['target_sha256']=sha(T)
+ if name=='source-projection':
+  for edge in before['graph_to_source']:
+   if edge['id']=='petrobactin-edge-082':edge['description']=expected
+ assert before==current,name
+# Final original-body label authorities were integrated without altering baseline rows.
+for name in ['ontology','sources']:
+ current=read(R/f'data/identifier_authorities/{name}.json')
+ old_snapshot=json.loads(subprocess.check_output(['git','show',f'{source["git_revision"]}:data/identifier_authorities/{name}.json'],cwd=R))
+ for k in ['terms','sources']:
+  assert all(current[k][key]==value for key,value in old_snapshot[k].items())
+# Verify the sealed real checks, preserved console bytes and all supporting receipt hashes.
+seal=read(D/'integration-receipt.json');assert sha(D/'integration-receipt.json')=='27f2c22f392fa5fa60fce1c024517036532c9105af8cd11e32bb88a6ad05b594'
+assert seal['base_commit']==source['git_revision'] and seal['records'][0]['sha256']==sha(T)
+assert len(seal['final_gates'])==7 and all(g['exit_code']==0 for g in seal['final_gates'])
+for g in seal['final_gates']:assert sha(g['log'])==g['log_sha256']
+assert '1256 passed, 3 skipped, 3 warnings in 471.26s' in Path(next(g['log'] for g in seal['final_gates'] if g['name']=='test')).read_text()
+for name,digest in seal['supporting_receipts'].items():assert sha(D/name)==digest,name
+for name,digest in seal['generated_paths'].items():assert sha(R/name)==digest,name
+console=read(D/'console-transcripts.json')
+for row in console['logs']:
+ data=row['utf8_text'].encode();assert hashlib.sha256(data).hexdigest()==row['sha256'] and len(data)==row['bytes']
+# Replay the target projection from the actual generated download, independently of the audit summary.
+exported=[]
+for row in csv.DictReader((R/'pages/downloads/edges.tsv').open(),delimiter='\t'):
+ if row['id'].startswith('pathwaymech:MetaCyc_PWY-6289_'):exported.append(row)
+assert len(exported)==94
+byid={re.search(r'_(petrobactin-edge-\d{3})_',row['id'])[1]:row for row in exported};refs={r['id']:r for r in raw['references']}
+for edge in raw['mechanistic_edges']:
+ row=byid[edge['id']]
+ assert (row['subject'],row['predicate'],row['object'])==(edge['subject'],LOCAL_PREDICATE_CURIES[edge['predicate']],edge['object'])
+ assert json.loads(row['evidence'])==edge['evidence'] and row['description']==edge.get('description','')
+ assert json.loads(row['reference_metadata'])==[refs[k] for k in sorted({x['reference_id'] for x in edge['evidence']})]
+helper=R/'research/pathway_additions/2026-10-11-next-213/portable-replay/petrobactin-replay.py';technical=read(D/'portable-replay-review/independent-successor.json');assert not technical['findings'] and sha(helper)==technical['helper_sha256']
+for row in source['inputs']:assert sha(R/row['path'])==row['sha256']
+report={'status':'passed_final_independent_scientific_reassessment','started_at':started,'finished_at':datetime.now(UTC).isoformat(),'source':source,'target_sha256':sha(T),'finding':{'issue_key':'petrobactin-asbd-protein-scope-description','previous_review':initial['review_id'],'previous_finding':'f-asbd-protein-description','verified_disposition':'resolved','before':prior['description'],'after':expected,'only_one_parsed_field_changed':True,'all_other_scientific_fields_unchanged':True},'historical_inputs_recoverable':25,'current_original_identity':{'versioned_accession':'AAT54156.1','primary_uniprot':u['primaryAccession'],'secondary':'Q81RQ6','strain':'Sterne','sequence_length':len(seq),'exact_sequence_equal':True,'bodies':body_checks,'comments':source_excerpts},'preserved_boundary':{'reactions':10,'both_branches':True,'participants':28,'edges':94,'evidence':149,'references':59},'integrated_export_parity':{'edges':94,'evidence':149,'complete_metadata':True},'actual_gate_receipt_sha256':sha(D/'integration-receipt.json'),'all_seven_gate_log_digests_match':True,'test_summary':seal['test_summary'],'technical_acceptance':{'issue':390,'helper_sha256':sha(helper),'independent_receipt':str(D/'portable-replay-review/independent-successor.json'),'independent_receipt_sha256':sha(D/'portable-replay-review/independent-successor.json'),'self_approval':False},'limitations':['Complete original source assessment and chemistry/primary replay were performed in the initial independent observation and remain applicable to unchanged scientific assertions. This successor repeats exact changed-description/source checks and final integration evidence, not a new full literature search.','Reviewer authored a portable helper adaptation and earlier parser work; separate independent technical acceptance is cited, not self-approved.','Unknown maturation catalyst, source constitutional conflict, inferred carrier bookkeeping, construct and primary-access limits remain unchanged.'],'findings':[]}
+write(O/'final-reassessment.json',report)
+print(json.dumps({'status':report['status'],'sha256':sha(O/'final-reassessment.json'),'captured_inputs':len(source['inputs']),'all_seven_checks':True,'open_findings':0}))

@@ -1,0 +1,75 @@
+{
+  "status": "needs_correction",
+  "finished_at": "2026-10-11T13:45:37.822832+00:00",
+  "independence": "Independent technical review of another author\u2019s portable helper. I authored prospective authority selection; its implementation approval remains root-owned. No new canonical scientific approval is claimed.",
+  "findings": [
+    {
+      "key": "petrobactin-replay-receipt-output-race",
+      "severity": "minor",
+      "owner": "proposed external petrobactin-replay.py",
+      "helper_sha256": "8850666b01ffb31e04a34e17362ca9c9e3164a8a83775011e35f4dd940d9abe1",
+      "locations": [
+        {
+          "line": 80,
+          "role": "startup existence check"
+        },
+        {
+          "line": 938,
+          "role": "final nonexclusive write_text truncates any intervening file"
+        }
+      ],
+      "trigger": "After the helper creates its new companion artifact directory, another process creates the requested receipt path before the final write.",
+      "observed": "Unmodified helper returned exit 0 and overwrote the independent sentinel with its successful replay receipt.",
+      "sentinel_sha256": "9ab872d7cd000768c310fb9335c5a58706186c2a2bd7c530d79dc3e9151b7fe6",
+      "overwritten_receipt_sha256": "58adcfe1e20a49acd8d4d6a8da09d2a4a02598f669771b8e966500ef4ac9c97c",
+      "impact": "Violates the explicit only-new-output contract and can erase another receipt or file created during replay; no scientific/source defect demonstrated.",
+      "fix": "Use atomic exclusive creation of the receipt at the actual write (e.g. output.open(\"x\")) and fail without altering a file created after preflight. Keep the existing companion-directory exclusive mkdir guard.",
+      "regression": "Run the real CLI, wait for its companion directory to appear, exclusively create a sentinel receipt, then require nonzero exit and identical sentinel bytes; retain a fresh-output success control.",
+      "scope": "External proposal only; no maintained installation occurred."
+    }
+  ],
+  "target_sha256": "7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a",
+  "helper_sha256": "8850666b01ffb31e04a34e17362ca9c9e3164a8a83775011e35f4dd940d9abe1",
+  "inputs_archive": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/initial-inputs/manifest.json",
+  "inputs_archive_sha256": "03d88bab28fcc2b481b73948e638e3fd8f86817402ec2e36919770eafa133c0f",
+  "scope_delta_audit": {
+    "path": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/scope-delta-audit.json",
+    "sha256": "86dfd4f84d41895ed08d8170b3e507fbe6c19407cf7951afaf5253405fdfee7c"
+  },
+  "negative_controls": {
+    "path": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/negative-controls.json",
+    "sha256": "7763922f567a7c7eea9029531f6f7b34a10f985438a307fdc5c3f1510fb90922",
+    "count": 10,
+    "all_rejected": true
+  },
+  "actual_original_source_replay": {
+    "receipt": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/output_collision/receipt.json",
+    "sha256": "58adcfe1e20a49acd8d4d6a8da09d2a4a02598f669771b8e966500ef4ac9c97c",
+    "exit_code": 0,
+    "source_bodies": 52,
+    "references": 59,
+    "selected_sides": 54,
+    "native_members": 10,
+    "balances": 10,
+    "kgx": {
+      "nodes": 40,
+      "edges": 94,
+      "evidence": 149,
+      "nodes_sha256": "fde42dbeb09f8b1ca9da7cba03cf8c55d98d219fca45f5b178ce2ebf9394679c",
+      "edges_sha256": "d102dcd69b394f9c97e577a9da3fb12e2674b7f895d9bb6438f3d3b0d0c6cb00"
+    },
+    "scope": "Executed standalone from a relocated helper/input directory; scientific checks passed, but output collision violated file preservation."
+  },
+  "collision_reproduction": {
+    "path": "/private/tmp/pathwaymech-petrobactin-portable-independent-review-20261011/output-collision-reproduction.json",
+    "sha256": "02b175c402922da9130e1de854f30376ee5b16cbc57b703e424835e592bf5438"
+  },
+  "companion_output_scope": "Existing companion-directory control rejected before writing. The new directory is reserved with mkdir(exist_ok=False). No separate companion-directory defect is claimed.",
+  "all_owner_inputs_unchanged": true,
+  "unresolved_count": 1,
+  "limits": [
+    "No shared authority installation or corpus-gate approval.",
+    "No independent approval of my own authority-selection code.",
+    "Original public source attribution and restrictions preserved; no synthetic authority body introduced."
+  ]
+}

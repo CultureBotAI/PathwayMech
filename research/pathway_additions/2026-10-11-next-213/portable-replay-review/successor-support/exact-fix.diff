@@ -1,0 +1,12 @@
+--- /private/tmp/pathwaymech-petrobactin-portable-replay-20261011/petrobactin-replay.py
++++ /private/tmp/pathwaymech-petrobactin-output-fix-20261011/petrobactin-replay.py
+@@ -935,7 +935,8 @@
+         assert sha(path) == expected, f"Input changed during replay: {path}"
+     for path, expected in authority_inputs.items():
+         assert sha(path) == expected, f"Authority changed during replay: {path}"
+-    output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
++    with output.open("x", encoding="utf-8") as stream:
++        stream.write(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+     print(
+         json.dumps(
+             {
