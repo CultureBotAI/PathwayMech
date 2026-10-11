@@ -1,0 +1,32 @@
+{
+  "issues": [
+    {
+      "issue": 354,
+      "url": "https://github.com/CultureBotAI/PathwayMech/issues/354",
+      "title": "Represent generic chemical classes without narrowing their molecular kind",
+      "finding": "The complete SAM cycle uses generic chemical classes spanning small molecules and macromolecules; existing narrower categories cannot represent this supported kind.",
+      "implementation": "Add chemical_entity to both validators, render it as a chemical node and export biolink:ChemicalEntity while preserving exact native identity and roles.",
+      "validation": "End-to-end schema/page/KGX regression and negative cofactor guard; 50 focused tests and full 1050-pass suite. Independent code audit preserves all 192 baseline graph pages and KGX output.",
+      "independent_audit": "chemical-entity-independent-audit.json",
+      "status": "implemented_and_independently_code_reviewed",
+      "scientific_review": "See review-index.json for the independent SAM record review.",
+      "github_closure": "Pending merge; this pre-publication ledger does not claim GitHub closure."
+    },
+    {
+      "issue": 355,
+      "url": "https://github.com/CultureBotAI/PathwayMech/issues/355",
+      "title": "Preserve the AllA lyase qualification in the cohort summary",
+      "finding": "Independent integration review found that the new README used hydrolysis where the source establishes urea release and leaves the microscopic participation of water unresolved.",
+      "target": "research/pathway_additions/2026-10-11-next-192/README.md",
+      "before": "The AllA hydrolysis and Ni-rescue experiment is direct primary evidence",
+      "after": "The AllA urea-release and Ni-rescue experiment is direct primary evidence",
+      "before_file_sha256": "f4bed8b3484dfe3a8774db58d7000aa43504a94586698866e62fd70a8ea28e42",
+      "after_file_sha256": "64a336a9e0125653dfd02862c7d5ab63c19dd07cbb462039313a26c96b42b5ff",
+      "status": "corrected_and_independently_verified",
+      "scope": "Summary wording only; maintained YAML, evidence, generated page and scientific review target remain unchanged.",
+      "github_closure": "Pending merge; this pre-publication ledger does not claim GitHub closure.",
+      "independent_verification": "Reviewer re-read corrected sentence against the unchanged record and primary-source scope; final integration audit retains both wordings."
+    }
+  ],
+  "limits": "Final integration audit verifies these implementations; remote closure is a later merge check."
+}

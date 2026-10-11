@@ -1,0 +1,916 @@
+# Independent scientific review of S-adenosyl-L-methionine cycle I
+
+- Review: 20261011T054402Z-sam-cycle-i-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T05:34:51.367099Z
+- Finished UTC: 2026-10-11T05:44:02.720126Z
+- Reviewer: Codex /root/pathway_authority_cache (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete native five-transformation activated methyl cycle and its explicit MetH alternative are supported. All 54 edges, 109 evidence entries and 36 references were assessed at their stated source tiers. No confirmed findings remain; generic methyl-acceptor identity, LuxS similarity annotations and seven abstract-only primary sources remain explicit limitations. All final required corpus gates passed, including 1,050 tests; final generated SVG and KGX checks passed.
+
+## Scope And Provenance
+
+One full maintained pathway: one K-12 taxon, 32 participants, six reaction nodes, 54 edges, 109 evidence entries and 36 references.
+
+Selection: Exact frozen target assigned by parent; no sampling.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 0919419d95f65d097e867c6d8452f1ca552f550b.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6151 | data/pathways/s-adenosyl-l-methionine-cycle-i.yaml | maintained | S-adenosyl-L-methionine cycle I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Superseded reviewer document target-kind validation | failed | False | MetaCyc:PWY-6151 | Initial final-document validation rejected kind pathway, which inspect accepts but the governed report enum does not. Corrected review target metadata to maintained; no scientific target or source change. |
+| Initial and final canonical inspection | passed | True | MetaCyc:PWY-6151 | Initial inspection actually completed before scientific assessment (session95614). Final inspection succeeded after all final inputs were read; target, schema, authorities and initial unchanged context hashes remain equal. The two changed author receipts were explicitly rechecked. |
+| Superseded reviewer helper import error | failed | False | MetaCyc:PWY-6151 | Initial session62362 exited1 after scientific source checks because a reviewer helper imported nonexistent build_kgx. Replaced with existing documented code APIs; target and source bytes unchanged. |
+| Independent original-source and exact KGX replay | passed | True | MetaCyc:PWY-6151 | Actual session35861 exit0:43 originals,36 reference hashes,66 original RDF subjects,21 exact Rhea sides/five complete balances, five native generic sides, full native boundary, two physical assemblies/five protein identities and actual54-edge/109-evidence export. |
+| Superseded reviewer tuple/list comparison | failed | False | MetaCyc:PWY-6151 | Original body digests matched; initial assertion compared Python dataclass tuples to JSON lists. Explicit JSON normalization corrected the reviewer comparison without changing retained API data. |
+| Independent retained canonical adapter replay | passed | True | MetaCyc:PWY-6151 | Actual exit0:26 retained body hashes,22 searches, covered datasets and all three component tables replayed through unchanged adapter. No new network retrieval claimed. Confirmed component72 metE/metK weights and threshold. |
+| Independent original-paper extraction and rendered-page inspection | passed | True | MetaCyc:PWY-6151 | Actual exit0 produced14 pages of text and four rendered pages; printed p468 was independently viewed, and pp467–468/470–471/473–474 text read. Primary PDF identity/hash matches PMID and DOI. |
+| Final delegated render | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-render.log SHA256 c9360c998fc556281b8d7141b0df5a75232fa20fb415cb788b57473a3682c67d. |
+| Final delegated validate | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-validate.log SHA256 a196afe7a0a514170f83e75e3a4bb123db4e215d92418210456ff4b077d5fde5. |
+| Final delegated test | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-test.log SHA256 87a0802c44e6f18ee33c9e1a4b682cea44d453d1a2b487250937531beecd3511. 1050 passed, 3 skipped, 3 warnings in 334.54s (0:05:34) |
+| Final delegated lint | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-lint.log SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41. |
+| Final delegated identifiers | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-identifiers.log SHA256 352d595d204d38b6b4ad9a4e7487331be258189a62cf08cda5e7a15a250fd3da. |
+| Final delegated kgx | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-kgx.log SHA256 523e1c2079d278abec2dbc2d02afff4f974efed80415ef854c834d0f9b2e9d92. |
+| Final delegated diff | passed | True | MetaCyc:PWY-6151 | Root executed the command on frozen cohort inputs; reviewer independently read and rehashed actual log /private/tmp/pathwaymech-next-192-final-diff.log SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. |
+| Final generated SVG/KGX audit | passed | True | MetaCyc:PWY-6151 | Actual root session59426 exit0; reviewed sealed receipt and exact target portion, with all54 edges/109 evidence preserved. Own target export and generic node page inspection independently agree. |
+
+## Scientific And Domain Assessments
+
+### Complete native cycle and alternative boundary
+
+identity: supported. Targets: MetaCyc:PWY-6151.
+
+Five native transformations are complete. MetH is explicitly supported as an alternative, without creating an extra serial requirement or claiming coverage of generic methionine synthesis or cycleII.
+
+### Exact direction, stoichiometry, folate forms and generic scope
+
+grounding: supported. Targets: MetaCyc:PWY-6151.
+
+All21 Rhea sides and five fully specified equations balance. Native generic RXN-7605 preserves five sides with formal methyl-transfer bookkeeping; its unspecified class has no universal fixed molecular formula. MetE retains triglutamate, MetH selected monoglutamate is not exclusive, and MetK net phosphate hydrolysis is not double-counted.
+
+### Every edge at the nearest source tier
+
+evidence: supported. Targets: MetaCyc:PWY-6151.
+
+Edges001–026 retain chemical-source assertions;027–032 native membership and distinct MetH alternative;033–039 source order versus separately supported material continuity;040–046 components/activity;047–054 cofactors. All109 evidence entries were read against their actual source kinds and locators.
+
+### Physical assemblies versus gene-product activities
+
+representation: supported. Targets: MetaCyc:PWY-6151.
+
+MetK tetramer/Pfs dimer have named physical assemblies and exact components; LuxS, MetE and MetH enables do not assert monomer sufficiency. Generic acceptors export as ChemicalEntity, not narrower small molecules.
+
+### Cofactor alternatives and inference grades
+
+scope: supported. Targets: MetaCyc:PWY-6151.
+
+MetK Mg/Mn/Co alternatives and K per-subunit binding are supported without simultaneous-metal demand. LuxS generic iron and homodimer remain ECO0000250. MetE HAMAP and directly inspected Zn evidence remain distinct. MetH methylcobalamin cycles internally; no reactivation reaction is invented.
+
+### K-12 strain provenance and signaling limits
+
+scope: supported. Targets: MetaCyc:PWY-6151.
+
+K-12 reviewed identities and actual MG1655 Pfs/LuxS sources support the scoped record; BL21 is expression host, O157:H7 complementation is distinct, and not every K-12 derivative or organism is asserted functional. No specific downstream AI-2 or universal signaling role follows.
+
+### Reference bodies and source-specific statements
+
+provenance: supported. Targets: MetaCyc:PWY-6151.
+
+36 reference digests and43 original artifacts pass independent verification. Seven primary papers remain abstract-only. Changed author manifest and native projection were re-read and re-parsed; original and final hashes are recorded, not silently substituted.
+
+### Maintained and generated representation
+
+consistency: supported. Targets: MetaCyc:PWY-6151.
+
+Frozen target and initial shared science/code inputs are unchanged. Actual export preserves every local edge/evidence and broad generic chemical type; completed final corpus gates are recorded below.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/s-adenosyl-l-methionine-cycle-i.yaml; Complete YAML, all local nodes/edges/evidence/references; frozen SHA256 f400f02c796aeca00d11aa29f8783f7f672bd7f87d7d07f827bfbca36eac3e22. | supports | Read complete target after governed inspection; target and scientific shared inputs unchanged throughout review. |
+| native | https://pathway.yeastgenome.org/getxml?META:PWY-6151; Original MetaCyc 22.5 XML: reaction-list, SAM-PWY child, five reaction-ordering pairs, reaction-layout and comment paragraph beginning The cycle continues; individual reaction dblink objects. | supports | Full five-transform cycle is explicit; MetH is a comment-described alternative rather than an invented sixth mandatory serial reaction. The MetE standalone reversible 21199 maps through master21196 to selected direction21197; MetH folate-chain specialization remains explicit. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Release142 original compressed RDF SHA8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf; masters21080/17805/17753/21196/11172, directed21081/17806/17754/21197/11173; all side containsN/participant/compound/accession/formula/charge triples. | supports | Independently reconstructed 66 original subjects, 21 chemical side occurrences and five complete element/charge balances. All coefficients are one; each chemical edge locator matches its exact source chain. |
+| generic | https://pathway.yeastgenome.org/getxml?META:RXN-7605; RXN-7605 left/right/comment; Demethylated-methyl-acceptors and Methylated-methyl-acceptors native class attributes/common-name/comment; SAM/SAH/PROTON compound ChEBI unification links. | supports | Five native chemical sides are retained. Generic classes explicitly permit an unknown or undefined chemical donor/acceptor, including macromolecular acceptors; chemical_entity and current canonical donor labels preserve source scope. No particular methyltransferase or fixed complete class formula is claimed. |
+| proteins | https://rest.uniprot.org/uniprotkb/P0A817.json; Full reviewed2026_03 P0A817/P0AF12/P45578/P13009/P25665; organism, catalytic reaction crossrefs, SUBUNIT and COFACTOR comments; original JSON bodies rehashed. | supports | All five proteins identify E. coli K-12. MetK and Pfs physical assemblies have separate native component identities; LuxS enables and iron remain by similarity, MetE catalysis/zinc retain HAMAP, MetH retains direct experimental annotation. |
+| assemblies | https://pathway.yeastgenome.org/getxml?META:S-ADENMETSYN-CPLX; S-ADENMETSYN-CPLX component coefficient4 -&gt; S-ADENMETSYN-MONOMER/P0A817; CPLX0-1541 component coefficient2 -&gt; EG11090-MONOMER/P0AF12. | supports | Exact source identities and component stoichiometry independently match. Protein-level cofactor counts are per protomer; no unsupported LuxS assembly identifier or monomer sufficiency is inferred. |
+| primary-full | https://shokatlab.ucsf.edu/pdfs/11489131.pdf; Original14-page PDF SHA40999a1cf8795969b60ad720b21b22a1e3c8f44fcc47548b4937e07027104ae0; printed pp467–468 Table1/Fig4; pp470–471 discussion; p473 Methods. Independently re-extracted with pypdfium2 and inspected rendered p468. | supports | Purified MG1655-derived GST Pfs and LuxS, expressed in BL21, establish ordered SAH/SRH cleavage and homocysteine. O157:H7 complementation is separate. Absolute AI-2 structure was unresolved; record does not transfer cyclic signaling identity to DPD or use the suspected metal in this paper as direct iron proof. |
+| primary-abstracts | https://pubmed.ncbi.nlm.nih.gov/6251075/; Actual retained indexed core abstracts for PMID6251075,14967023,11591349,9201956,9398304,11170420,16618098; all titles/DOIs/years and body hashes checked. | supports | Bounded primary support covers MetK tetramer and divalent alternatives, Pfs dimer, MetH methylcobalamin transfer and Zn removal/rescue, MetE/MetH substrate-Zn coordination and MetE triglutamate activation. Full-text experimental details are not claimed for these seven papers. |
+| replay | /private/tmp/pathwaymech-next-192-evidence/sam-review/replay.json; Independent replay.py; final actual session35861 exit0; replay-final.log. | supports | 43 source bodies and36 reference digests match; native full boundary, five family links, two assemblies and five protein identities pass. Actual local KGX preserves54 edges/109 evidence and broad ChemicalEntity categories. This supplements manual scientific assessment. |
+| imodulon | research/pathway_additions/2026-10-11-next-192/imodulondb-context.json; Canonical dataset inventory/search22/component3,65,72; independent offline context-replay.py validates26 retained body hashes, all query projections and tables. | context_only | e_coli/precise_mg1655 component72 contains metE/b3829 and metK/b2942 with weights0.280840607/0.171566727 above threshold0.101935613. No mechanistic edge relies on this computational expression context. Search substring hits and missing pfs alias are not biological absence. |
+| categories | research/pathway_additions/2026-10-11-next-192/chemical-entity-independent-audit.json; Root implementation diff in schema.py/schema YAML/kgx.py/graph_view.py; tests/test_graph_context.py; independent actual target KGX. | supports | Generic chemical category is additive, broad ChemicalEntity export and chemical graph kind agree, and existing small-molecule behavior remains. Independent technical reviewer reports28 focused tests passed and baseline byte preservation; this reviewer inspected the implementation and actual SAM export. |
+| dedup | research/pathway_additions/2026-10-11-next-192/sam-cycle-dedup.json; Author full ignored/hidden-inclusive worktree and original checkout searches; reviewer rg --no-ignore --hidden over data/pathways/research/reports; adjacent cycleII record. | supports | CycleII uses one-step SAH hydrolase and differs mechanistically from the Pfs/LuxS loop. Shared methionine enzymes and MTA salvage do not duplicate the complete defined cycle; PathBank specific betaine/AI-2 assertions were not silently incorporated. |
+| authority | research/pathway_additions/2026-10-11-next-192/authority-integration.json; Canonical original-source extraction and authority-source-inspection; six SAM MetaCyc HTML bodies independently rehashed. | supports | All selected identifiers retain issuing-authority identity and labels. Shared baseline facts are preserved; authority names do not constitute experimental mechanism support. |
+| gates | research/pathway_additions/2026-10-11-next-192/integration-receipt.json; Final delegated actual command receipts and retained logs, rehashed before save. | supports | Required full-corpus checks and publication graph audit are assessed from completed actual receipts, separately from scientific evidence. |
+| graph | research/pathway_additions/2026-10-11-next-192/generated-graph-kgx-audit.json; SAM record SHA and all54 SVG/KGX edges,109 evidence blocks,39 SVG nodes and40 declared local nodes; actual CLI export hashes. | supports | All endpoints and anchors, complete evidence/description/reference metadata, graph geometry and record contexts are preserved. This programmatic audit is distinct from browser visual inspection and scientific validation. |
+
+## Limits And Additional Notes
+
+- Seven primary papers were available as inspected abstracts only; full-text experimental details are not asserted.
+- LuxS iron and homodimer annotations remain by similarity; current catalytic assignment is not falsely relabeled as direct source-specific metal or assembly measurement.
+- Generic methyl-acceptor classes deliberately lack defined structures and a single enzyme; formal methyl bookkeeping is not a universal molecular-formula assertion.
+- MetH is an alternative source-defined cycle branch; the selected monoglutamate equation does not exhaust its folate substrate range.
+- iModulonDB membership is computational expression context only; missing alias or module hits do not establish biological absence.
+- Programmatic source, SVG and KGX checks are not a browser visual audit or experimental replication.
+- Initial inspection at 2026-10-11T05:34:51.367099Z captured target before assessment. No SAM target change occurred.
+- Two author inputs changed after initial inspection: source-manifest receipt normalization and source-projection native list-wrapper flattening. Both final files were re-read and independently checked against original bodies; exact initial/final hashes are retained in input-changes.json.
+- The first reviewer replay completed original-source checks then failed on an incorrect build_kgx import; corrected to the existing kgx_nodes/kgx_edges/write_kgx APIs and complete replay passed. An initial iModulon comparison failed solely on tuple-versus-JSON-list normalization; normalized replay passed without modifying data.
+- Issue354 introduced appropriate generic ChemicalEntity support before this review. No unsaved pre-fix finding or fabricated predecessor is asserted.
+- Changed input research/pathway_additions/2026-10-11-next-192/sam-cycle-source-manifest.json: initial SHA256 2ed8c95bfe2b39a41cdc52c40f01d09c8684782d0db3339b3b8ae96a8b01d0ab; final SHA256 c4b9f47f9fa99da02587879d9733f078eaeb29eaa8323836fe6b65534172dd4f. Final original-source replay and manual native boundary reinspection independently establish current contents.
+- Changed input research/pathway_additions/2026-10-11-next-192/sam-cycle-source-projection.json: initial SHA256 1c6230896f49cfa87cef8de8fac5faa6be1dd80463d9591506317de8894701a6; final SHA256 2cb4182c5292e11afc74732f137553ea54da3bad2124471fb5ae0f2b83297d86. Final original-source replay and manual native boundary reinspection independently establish current contents.
+- Independent external replay receipt SHA256 4464f96a429a205cb4b32e193346d6ae00cc0926e0b9e9c0680e06f32a66cb35; helper SHA256 21b618fd3daa675d6523c5dcf3847365b7263fdf03fef094002361d65a5d7c26; canonical context replay receipt SHA256 38690df24e616fb46d9100101461c9119e0a30752beb3d99573beab3624a50c0. Raw artifacts remain external and are individually pinned by the maintained source manifest.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of S-adenosyl-L-methionine cycle I
+started_at: '2026-10-11T05:34:51.367099Z'
+reviewer:
+  identity: Codex /root/pathway_authority_cache
+  kind: agent
+  independence: independent
+  independence_basis: Did not author or edit the SAM target, its author dossiers or
+    the chemical_entity implementation. Authored the separate allantoin-to-glyoxylate
+    III record, excluded from this scientific review. Root owns shared authorities
+    and full gates. Independently read primary/native/protein sources, reconstructed
+    full-RDF facts and replayed actual KGX.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete native five-transformation activated methyl cycle and its explicit
+  MetH alternative are supported. All 54 edges, 109 evidence entries and 36 references
+  were assessed at their stated source tiers. No confirmed findings remain; generic
+  methyl-acceptor identity, LuxS similarity annotations and seven abstract-only primary
+  sources remain explicit limitations. All final required corpus gates passed, including
+  1,050 tests; final generated SVG and KGX checks passed.
+scope:
+  description: 'One full maintained pathway: one K-12 taxon, 32 participants, six
+    reaction nodes, 54 edges, 109 evidence entries and 36 references.'
+  selection: Exact frozen target assigned by parent; no sampling.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6151
+  exclusions:
+  - target: Other cohort records and baseline scientific claims
+    reason: Separate author and reviewer assignments. Shared technical preservation
+      checks are context, not scientific reassessment of other records.
+  - target: Specific methyltransferase substrates and downstream cyclic or borated
+      AI-2 species
+    reason: Outside the explicitly generic native methylation step and DPD endpoint;
+      no exact uninspected identity is supplied.
+findings: []
+actions: []
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+  locator: Complete YAML, all local nodes/edges/evidence/references; frozen SHA256
+    f400f02c796aeca00d11aa29f8783f7f672bd7f87d7d07f827bfbca36eac3e22.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Read complete target after governed inspection; target and scientific shared
+    inputs unchanged throughout review.
+- evidence_id: native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6151
+  locator: 'Original MetaCyc 22.5 XML: reaction-list, SAM-PWY child, five reaction-ordering
+    pairs, reaction-layout and comment paragraph beginning The cycle continues; individual
+    reaction dblink objects.'
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Full five-transform cycle is explicit; MetH is a comment-described alternative
+    rather than an invented sixth mandatory serial reaction. The MetE standalone reversible
+    21199 maps through master21196 to selected direction21197; MetH folate-chain specialization
+    remains explicit.
+- evidence_id: rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Release142 original compressed RDF SHA8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf;
+    masters21080/17805/17753/21196/11172, directed21081/17806/17754/21197/11173; all
+    side containsN/participant/compound/accession/formula/charge triples.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Independently reconstructed 66 original subjects, 21 chemical side occurrences
+    and five complete element/charge balances. All coefficients are one; each chemical
+    edge locator matches its exact source chain.
+- evidence_id: generic
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-7605
+  locator: RXN-7605 left/right/comment; Demethylated-methyl-acceptors and Methylated-methyl-acceptors
+    native class attributes/common-name/comment; SAM/SAH/PROTON compound ChEBI unification
+    links.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Five native chemical sides are retained. Generic classes explicitly permit
+    an unknown or undefined chemical donor/acceptor, including macromolecular acceptors;
+    chemical_entity and current canonical donor labels preserve source scope. No particular
+    methyltransferase or fixed complete class formula is claimed.
+- evidence_id: proteins
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0A817.json
+  locator: Full reviewed2026_03 P0A817/P0AF12/P45578/P13009/P25665; organism, catalytic
+    reaction crossrefs, SUBUNIT and COFACTOR comments; original JSON bodies rehashed.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: All five proteins identify E. coli K-12. MetK and Pfs physical assemblies
+    have separate native component identities; LuxS enables and iron remain by similarity,
+    MetE catalysis/zinc retain HAMAP, MetH retains direct experimental annotation.
+- evidence_id: assemblies
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:S-ADENMETSYN-CPLX
+  locator: S-ADENMETSYN-CPLX component coefficient4 -> S-ADENMETSYN-MONOMER/P0A817;
+    CPLX0-1541 component coefficient2 -> EG11090-MONOMER/P0AF12.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Exact source identities and component stoichiometry independently match.
+    Protein-level cofactor counts are per protomer; no unsupported LuxS assembly identifier
+    or monomer sufficiency is inferred.
+- evidence_id: primary-full
+  kind: primary_source
+  reference: https://shokatlab.ucsf.edu/pdfs/11489131.pdf
+  locator: Original14-page PDF SHA40999a1cf8795969b60ad720b21b22a1e3c8f44fcc47548b4937e07027104ae0;
+    printed pp467–468 Table1/Fig4; pp470–471 discussion; p473 Methods. Independently
+    re-extracted with pypdfium2 and inspected rendered p468.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Purified MG1655-derived GST Pfs and LuxS, expressed in BL21, establish
+    ordered SAH/SRH cleavage and homocysteine. O157:H7 complementation is separate.
+    Absolute AI-2 structure was unresolved; record does not transfer cyclic signaling
+    identity to DPD or use the suspected metal in this paper as direct iron proof.
+- evidence_id: primary-abstracts
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/6251075/
+  locator: Actual retained indexed core abstracts for PMID6251075,14967023,11591349,9201956,9398304,11170420,16618098;
+    all titles/DOIs/years and body hashes checked.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: Bounded primary support covers MetK tetramer and divalent alternatives,
+    Pfs dimer, MetH methylcobalamin transfer and Zn removal/rescue, MetE/MetH substrate-Zn
+    coordination and MetE triglutamate activation. Full-text experimental details
+    are not claimed for these seven papers.
+- evidence_id: replay
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-192-evidence/sam-review/replay.json
+  locator: Independent replay.py; final actual session35861 exit0; replay-final.log.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: 43 source bodies and36 reference digests match; native full boundary, five
+    family links, two assemblies and five protein identities pass. Actual local KGX
+    preserves54 edges/109 evidence and broad ChemicalEntity categories. This supplements
+    manual scientific assessment.
+- evidence_id: imodulon
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-192/imodulondb-context.json
+  locator: Canonical dataset inventory/search22/component3,65,72; independent offline
+    context-replay.py validates26 retained body hashes, all query projections and
+    tables.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: context_only
+  summary: e_coli/precise_mg1655 component72 contains metE/b3829 and metK/b2942 with
+    weights0.280840607/0.171566727 above threshold0.101935613. No mechanistic edge
+    relies on this computational expression context. Search substring hits and missing
+    pfs alias are not biological absence.
+- evidence_id: categories
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/chemical-entity-independent-audit.json
+  locator: Root implementation diff in schema.py/schema YAML/kgx.py/graph_view.py;
+    tests/test_graph_context.py; independent actual target KGX.
+  accessed_at: '2026-10-11T05:44:02.720126Z'
+  support: supports
+  summary: Generic chemical category is additive, broad ChemicalEntity export and
+    chemical graph kind agree, and existing small-molecule behavior remains. Independent
+    technical reviewer reports28 focused tests passed and baseline byte preservation;
+    this reviewer inspected the implementation and actual SAM export.
+- evidence_id: dedup
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-192/sam-cycle-dedup.json
+  locator: Author full ignored/hidden-inclusive worktree and original checkout searches;
+    reviewer rg --no-ignore --hidden over data/pathways/research/reports; adjacent
+    cycleII record.
+  accessed_at: '2026-10-11T05:34:51.367099Z'
+  support: supports
+  summary: CycleII uses one-step SAH hydrolase and differs mechanistically from the
+    Pfs/LuxS loop. Shared methionine enzymes and MTA salvage do not duplicate the
+    complete defined cycle; PathBank specific betaine/AI-2 assertions were not silently
+    incorporated.
+- evidence_id: authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-192/authority-integration.json
+  locator: Canonical original-source extraction and authority-source-inspection; six
+    SAM MetaCyc HTML bodies independently rehashed.
+  accessed_at: '2026-10-11T05:44:02.720126Z'
+  support: supports
+  summary: All selected identifiers retain issuing-authority identity and labels.
+    Shared baseline facts are preserved; authority names do not constitute experimental
+    mechanism support.
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+  locator: Final delegated actual command receipts and retained logs, rehashed before
+    save.
+  accessed_at: '2026-10-11T05:44:02.720126Z'
+  support: supports
+  summary: Required full-corpus checks and publication graph audit are assessed from
+    completed actual receipts, separately from scientific evidence.
+- evidence_id: graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-192/generated-graph-kgx-audit.json
+  locator: SAM record SHA and all54 SVG/KGX edges,109 evidence blocks,39 SVG nodes
+    and40 declared local nodes; actual CLI export hashes.
+  accessed_at: '2026-10-11T05:44:02.720126Z'
+  support: supports
+  summary: All endpoints and anchors, complete evidence/description/reference metadata,
+    graph geometry and record contexts are preserved. This programmatic audit is distinct
+    from browser visual inspection and scientific validation.
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete native cycle and alternative boundary
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: Five native transformations are complete. MetH is explicitly supported
+    as an alternative, without creating an extra serial requirement or claiming coverage
+    of generic methionine synthesis or cycleII.
+  evidence_ids:
+  - target
+  - native
+  - dedup
+- assessment_id: chemistry
+  area: grounding
+  topic: Exact direction, stoichiometry, folate forms and generic scope
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: All21 Rhea sides and five fully specified equations balance. Native generic
+    RXN-7605 preserves five sides with formal methyl-transfer bookkeeping; its unspecified
+    class has no universal fixed molecular formula. MetE retains triglutamate, MetH
+    selected monoglutamate is not exclusive, and MetK net phosphate hydrolysis is
+    not double-counted.
+  evidence_ids:
+  - rhea
+  - generic
+  - native
+  - replay
+- assessment_id: evidence
+  area: evidence
+  topic: Every edge at the nearest source tier
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: Edges001–026 retain chemical-source assertions;027–032 native membership
+    and distinct MetH alternative;033–039 source order versus separately supported
+    material continuity;040–046 components/activity;047–054 cofactors. All109 evidence
+    entries were read against their actual source kinds and locators.
+  evidence_ids:
+  - target
+  - native
+  - rhea
+  - proteins
+  - primary-full
+  - primary-abstracts
+- assessment_id: assemblies
+  area: representation
+  topic: Physical assemblies versus gene-product activities
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: MetK tetramer/Pfs dimer have named physical assemblies and exact components;
+    LuxS, MetE and MetH enables do not assert monomer sufficiency. Generic acceptors
+    export as ChemicalEntity, not narrower small molecules.
+  evidence_ids:
+  - assemblies
+  - proteins
+  - primary-abstracts
+  - categories
+- assessment_id: cofactors
+  area: scope
+  topic: Cofactor alternatives and inference grades
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: MetK Mg/Mn/Co alternatives and K per-subunit binding are supported without
+    simultaneous-metal demand. LuxS generic iron and homodimer remain ECO0000250.
+    MetE HAMAP and directly inspected Zn evidence remain distinct. MetH methylcobalamin
+    cycles internally; no reactivation reaction is invented.
+  evidence_ids:
+  - proteins
+  - primary-abstracts
+  - assemblies
+- assessment_id: organism
+  area: scope
+  topic: K-12 strain provenance and signaling limits
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: K-12 reviewed identities and actual MG1655 Pfs/LuxS sources support the
+    scoped record; BL21 is expression host, O157:H7 complementation is distinct, and
+    not every K-12 derivative or organism is asserted functional. No specific downstream
+    AI-2 or universal signaling role follows.
+  evidence_ids:
+  - proteins
+  - primary-full
+  - imodulon
+- assessment_id: provenance
+  area: provenance
+  topic: Reference bodies and source-specific statements
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: 36 reference digests and43 original artifacts pass independent verification.
+    Seven primary papers remain abstract-only. Changed author manifest and native
+    projection were re-read and re-parsed; original and final hashes are recorded,
+    not silently substituted.
+  evidence_ids:
+  - replay
+  - primary-full
+  - primary-abstracts
+  - authority
+- assessment_id: integration
+  area: consistency
+  topic: Maintained and generated representation
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-6151
+  summary: Frozen target and initial shared science/code inputs are unchanged. Actual
+    export preserves every local edge/evidence and broad generic chemical type; completed
+    final corpus gates are recorded below.
+  evidence_ids:
+  - target
+  - replay
+  - categories
+  - gates
+limitations:
+- Seven primary papers were available as inspected abstracts only; full-text experimental
+  details are not asserted.
+- LuxS iron and homodimer annotations remain by similarity; current catalytic assignment
+  is not falsely relabeled as direct source-specific metal or assembly measurement.
+- Generic methyl-acceptor classes deliberately lack defined structures and a single
+  enzyme; formal methyl bookkeeping is not a universal molecular-formula assertion.
+- MetH is an alternative source-defined cycle branch; the selected monoglutamate equation
+  does not exhaust its folate substrate range.
+- iModulonDB membership is computational expression context only; missing alias or
+  module hits do not establish biological absence.
+- Programmatic source, SVG and KGX checks are not a browser visual audit or experimental
+  replication.
+notes:
+- Initial inspection at 2026-10-11T05:34:51.367099Z captured target before assessment.
+  No SAM target change occurred.
+- 'Two author inputs changed after initial inspection: source-manifest receipt normalization
+  and source-projection native list-wrapper flattening. Both final files were re-read
+  and independently checked against original bodies; exact initial/final hashes are
+  retained in input-changes.json.'
+- The first reviewer replay completed original-source checks then failed on an incorrect
+  build_kgx import; corrected to the existing kgx_nodes/kgx_edges/write_kgx APIs and
+  complete replay passed. An initial iModulon comparison failed solely on tuple-versus-JSON-list
+  normalization; normalized replay passed without modifying data.
+- Issue354 introduced appropriate generic ChemicalEntity support before this review.
+  No unsaved pre-fix finding or fabricated predecessor is asserted.
+- 'Changed input research/pathway_additions/2026-10-11-next-192/sam-cycle-source-manifest.json:
+  initial SHA256 2ed8c95bfe2b39a41cdc52c40f01d09c8684782d0db3339b3b8ae96a8b01d0ab;
+  final SHA256 c4b9f47f9fa99da02587879d9733f078eaeb29eaa8323836fe6b65534172dd4f. Final
+  original-source replay and manual native boundary reinspection independently establish
+  current contents.'
+- 'Changed input research/pathway_additions/2026-10-11-next-192/sam-cycle-source-projection.json:
+  initial SHA256 1c6230896f49cfa87cef8de8fac5faa6be1dd80463d9591506317de8894701a6;
+  final SHA256 2cb4182c5292e11afc74732f137553ea54da3bad2124471fb5ae0f2b83297d86. Final
+  original-source replay and manual native boundary reinspection independently establish
+  current contents.'
+- Independent external replay receipt SHA256 4464f96a429a205cb4b32e193346d6ae00cc0926e0b9e9c0680e06f32a66cb35;
+  helper SHA256 21b618fd3daa675d6523c5dcf3847365b7263fdf03fef094002361d65a5d7c26;
+  canonical context replay receipt SHA256 38690df24e616fb46d9100101461c9119e0a30752beb3d99573beab3624a50c0.
+  Raw artifacts remain external and are individually pinned by the maintained source
+  manifest.
+source:
+  git_revision: 0919419d95f65d097e867c6d8452f1ca552f550b
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 0a9935940ece68b9dc9d01e53bbb686adb9bb88761c0d4a8ed51222662314cc2
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: ee16d51dd29aa1691fff45c143fa1a1a4c22c58b1058e3e264e34241bb100e0d
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 6d0fba1a3e20b0bf97732406e3a65cb29feaa0ecafd3f402c76ff3e3e2d7d1a0
+    role: context
+  - path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+    sha256: f400f02c796aeca00d11aa29f8783f7f672bd7f87d7d07f827bfbca36eac3e22
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: f3321fa3db6551f5c84e5f73f0f9d760e037249e2a15f165e916895fd2b27cb6
+    role: generated publication artifact; maintained scientific owner data/pathways/s-adenosyl-l-methionine-cycle-i.yaml;
+      generator src/pathwaymech/cli.py, graph_view.py and kgx.py
+  - path: pages/downloads/manifest.json
+    sha256: 7df7fb26fcaa4d54a7c442c019fb585570dce2b1a381096d338c7a166b5fed4a
+    role: generated publication artifact; maintained scientific owner data/pathways/s-adenosyl-l-methionine-cycle-i.yaml;
+      generator src/pathwaymech/cli.py, graph_view.py and kgx.py
+  - path: pages/downloads/nodes.tsv
+    sha256: a88e710ee0317aa7442ccd377596feac6deb80960ff54dc03c78055c6268acc0
+    role: generated publication artifact; maintained scientific owner data/pathways/s-adenosyl-l-methionine-cycle-i.yaml;
+      generator src/pathwaymech/cli.py, graph_view.py and kgx.py
+  - path: pages/records/MetaCyc_PWY-6151.html
+    sha256: 1e8a3757151729e60f07ad47581ae6823a399a4bc7fb10f49927ea7d1bb20660
+    role: generated publication artifact; maintained scientific owner data/pathways/s-adenosyl-l-methionine-cycle-i.yaml;
+      generator src/pathwaymech/cli.py, graph_view.py and kgx.py
+  - path: research/pathway_additions/2026-10-11-next-192/authority-integration.json
+    sha256: 31b4563e05bb824f024f3548f78e4f5e5fa6b2e6b775fcf638574a8ffda7ee4d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/authority-source-inspection.json
+    sha256: 914e2cebbd8f869b39c27d42403b8dd2ca3ac5f0e459d5b405dfcfec7655700c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/baseline-preservation.json
+    sha256: 2a3d92c4aea373d3dcf1aa8d4140bf367027b859e46f19a18903b76813d0a934
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/chemical-entity-independent-audit.json
+    sha256: cecf2e1e815be86a3730742a46d378dfa466664c5ca4ab28509f010ba1be7ab2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/generated-graph-kgx-audit.json
+    sha256: 61df1ae5af025bfedce15c11cdcff1da7283c32c77d207233b9af7f18fe7340b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/generic-chemical-rationale.json
+    sha256: dbc5d820d532e18c3dde22e745e41884f64b7e34cc589e1f4d65d2d1a08c1972
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-context.json
+    sha256: 558b20bcf108fdcb7604177f8a8cc83c3dbc30d28b1bc4c43ad467a4dc6a894d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-parser-replay.json
+    sha256: 3e55fee75d36a27a3b2d78d0e2a423b1753f00f4fc0776bfbeeb58181a80760d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-runner-availability.json
+    sha256: 324fd5ef0fcfea2b301cdac3791bbb4a507682897f7eca35406ffa7de3db6fa5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/imodulondb-source-manifest.json
+    sha256: 261292c60259cafc66bc8cb82de6738d6c819fb7d50cde184f2c3d8ecad3b4f7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+    sha256: ce0c463e3aab7995f7ee06112969a0fd6df89d7eb990b9912444b323e89cf212
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-authority-delta.json
+    sha256: a0cb4175493d811d090216d6208c80fcffeb56c0ac7b0adbb8653e73a3142144
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-curation.md
+    sha256: 2b907fba53dec4b6a2e6a69c12e43033d85dc28eeb0cad2b928ad636c7fb08fc
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-dedup.json
+    sha256: 82943879e1138d0986fb72ad556fb6f7e51cc25c6335e7d6d23ecc7bf0ff8e27
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-identifiers.json
+    sha256: fe192a2541a50393f5d4530ef04932d3a0a8ed1e321f4a38bfddd6287a66e1e6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-protein-projection.json
+    sha256: 19033618c7e13ef00683daf8d44bb0eeed84f5c09bcf16cbcaf275f83b34b575
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-replay.py
+    sha256: 86bf90982229634fefbfd5f22cafcf3ac4eb7d18d28b0f792aa97f438d66f366
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-source-manifest.json
+    sha256: c4b9f47f9fa99da02587879d9733f078eaeb29eaa8323836fe6b65534172dd4f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-source-projection.json
+    sha256: 2cb4182c5292e11afc74732f137553ea54da3bad2124471fb5ae0f2b83297d86
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-192/sam-cycle-validation.json
+    sha256: 189466fefa71f382147b1e18caea3d577b5aee3a1f1c23fb223788fee3f3f54f
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 3f133d2251dd965a4152cdc91b9169e75776c3615bd80c7a5a679abe27e4f86a
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 574dbe45598843d9e6a2e751f40990bb7f342e978b487ddad882b8b11a71dacb
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: ffa1107da83c8ff173833662e78ba73c779bbab9f2da33cea993b614e99d6345
+    role: context
+  - path: tests/test_graph_context.py
+    sha256: 6045384939639880738ec31f6f65b0ce0c09c2c825686bf7a2d68eb5f6a429eb
+    role: context
+targets:
+- target_id: MetaCyc:PWY-6151
+  path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+  label: S-adenosyl-L-methionine cycle I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+    role: maintained_record
+finished_at: '2026-10-11T05:44:02.720126Z'
+review_id: 20261011T054402Z-sam-cycle-i-independent-review
+checks:
+- check_id: review-target-kind-initial
+  name: Superseded reviewer document target-kind validation
+  status: failed
+  required: false
+  command: scripts/record_review.py validate completed-review.yaml
+  summary: Initial final-document validation rejected kind pathway, which inspect
+    accepts but the governed report enum does not. Corrected review target metadata
+    to maintained; no scientific target or source change.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - target
+- check_id: inspect
+  name: Initial and final canonical inspection
+  status: passed
+  required: true
+  command: .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-192-evidence/sam-review/targets.yaml
+    --input .claude/skills/add-pathway/SKILL.md --input .claude/skills/review-yaml-record/SKILL.md
+    --input CLAUDE.md --input conf/identifier_policy.yaml --input conf/identifier_sources.json
+    --input data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/CAUSAL_GRAPHS.md --input docs/CURATION.md --input docs/HARMONIZATION.md
+    --input docs/record-review-profile.md --input docs/record-reviews.md --input justfile
+    --input pages/downloads/edges.tsv --input pages/downloads/manifest.json --input
+    pages/downloads/nodes.tsv --input pages/records/MetaCyc_PWY-6151.html --input
+    research/pathway_additions/2026-10-11-next-192/authority-integration.json --input
+    research/pathway_additions/2026-10-11-next-192/authority-source-inspection.json
+    --input research/pathway_additions/2026-10-11-next-192/baseline-preservation.json
+    --input research/pathway_additions/2026-10-11-next-192/chemical-entity-independent-audit.json
+    --input research/pathway_additions/2026-10-11-next-192/generated-graph-kgx-audit.json
+    --input research/pathway_additions/2026-10-11-next-192/generic-chemical-rationale.json
+    --input research/pathway_additions/2026-10-11-next-192/imodulondb-context.json
+    --input research/pathway_additions/2026-10-11-next-192/imodulondb-parser-replay.json
+    --input research/pathway_additions/2026-10-11-next-192/imodulondb-runner-availability.json
+    --input research/pathway_additions/2026-10-11-next-192/imodulondb-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-192/integration-receipt.json
+    --input research/pathway_additions/2026-10-11-next-192/sam-cycle-authority-delta.json
+    --input research/pathway_additions/2026-10-11-next-192/sam-cycle-curation.md --input
+    research/pathway_additions/2026-10-11-next-192/sam-cycle-dedup.json --input research/pathway_additions/2026-10-11-next-192/sam-cycle-identifiers.json
+    --input research/pathway_additions/2026-10-11-next-192/sam-cycle-protein-projection.json
+    --input research/pathway_additions/2026-10-11-next-192/sam-cycle-replay.py --input
+    research/pathway_additions/2026-10-11-next-192/sam-cycle-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-192/sam-cycle-source-projection.json
+    --input research/pathway_additions/2026-10-11-next-192/sam-cycle-validation.json
+    --input src/pathwaymech/graph_view.py --input src/pathwaymech/kgx.py --input src/pathwaymech/schema.py
+    --input src/pathwaymech/schema/pathwaymech.yaml --input tests/test_graph_context.py
+  summary: Initial inspection actually completed before scientific assessment (session95614).
+    Final inspection succeeded after all final inputs were read; target, schema, authorities
+    and initial unchanged context hashes remain equal. The two changed author receipts
+    were explicitly rechecked.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - target
+  - native
+  - authority
+- check_id: reviewer-replay-import
+  name: Superseded reviewer helper import error
+  status: failed
+  required: false
+  command: .venv/bin/python /private/tmp/pathwaymech-next-192-evidence/sam-review/replay.py
+  summary: Initial session62362 exited1 after scientific source checks because a reviewer
+    helper imported nonexistent build_kgx. Replaced with existing documented code
+    APIs; target and source bytes unchanged.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - replay
+- check_id: source-replay
+  name: Independent original-source and exact KGX replay
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 .venv/bin/python
+    /private/tmp/pathwaymech-next-192-evidence/sam-review/replay.py
+  summary: Actual session35861 exit0:43 originals,36 reference hashes,66 original
+    RDF subjects,21 exact Rhea sides/five complete balances, five native generic sides,
+    full native boundary, two physical assemblies/five protein identities and actual54-edge/109-evidence
+    export.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - replay
+  - rhea
+  - native
+  - generic
+- check_id: context-comparison-initial
+  name: Superseded reviewer tuple/list comparison
+  status: failed
+  required: false
+  command: .venv/bin/python - (initial retained iModulon replay)
+  summary: Original body digests matched; initial assertion compared Python dataclass
+    tuples to JSON lists. Explicit JSON normalization corrected the reviewer comparison
+    without changing retained API data.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - imodulon
+- check_id: context-replay
+  name: Independent retained canonical adapter replay
+  status: passed
+  required: true
+  command: .venv/bin/python /private/tmp/pathwaymech-next-192-evidence/sam-review/context-replay.py
+  summary: Actual exit0:26 retained body hashes,22 searches, covered datasets and
+    all three component tables replayed through unchanged adapter. No new network
+    retrieval claimed. Confirmed component72 metE/metK weights and threshold.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - imodulon
+- check_id: pdf
+  name: Independent original-paper extraction and rendered-page inspection
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache uv run --offline
+    --no-project --with pypdfium2 --with pillow python - (extract and render primary-11489131.pdf)
+  summary: Actual exit0 produced14 pages of text and four rendered pages; printed
+    p468 was independently viewed, and pp467–468/470–471/473–474 text read. Primary
+    PDF identity/hash matches PMID and DOI.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - primary-full
+- check_id: final-render
+  name: Final delegated render
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-render.log
+    SHA256 c9360c998fc556281b8d7141b0df5a75232fa20fb415cb788b57473a3682c67d.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: final-validate
+  name: Final delegated validate
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-validate.log
+    SHA256 a196afe7a0a514170f83e75e3a4bb123db4e215d92418210456ff4b077d5fde5.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: final-test
+  name: Final delegated test
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-test.log
+    SHA256 87a0802c44e6f18ee33c9e1a4b682cea44d453d1a2b487250937531beecd3511. 1050
+    passed, 3 skipped, 3 warnings in 334.54s (0:05:34)
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: final-lint
+  name: Final delegated lint
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-lint.log
+    SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: final-identifiers
+  name: Final delegated identifiers
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-identifiers.log
+    SHA256 352d595d204d38b6b4ad9a4e7487331be258189a62cf08cda5e7a15a250fd3da.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: final-kgx
+  name: Final delegated kgx
+  status: passed
+  required: true
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-192-kgx
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-kgx.log SHA256
+    523e1c2079d278abec2dbc2d02afff4f974efed80415ef854c834d0f9b2e9d92.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: final-diff
+  name: Final delegated diff
+  status: passed
+  required: true
+  command: git diff --check
+  summary: Root executed the command on frozen cohort inputs; reviewer independently
+    read and rehashed actual log /private/tmp/pathwaymech-next-192-final-diff.log
+    SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gates
+- check_id: graph
+  name: Final generated SVG/KGX audit
+  status: passed
+  required: true
+  command: /private/tmp/pathwaymech-next-192-graph-audit.py --comparison-kgx-dir /private/tmp/pathwaymech-next-192-kgx
+  summary: Actual root session59426 exit0; reviewed sealed receipt and exact target
+    portion, with all54 edges/109 evidence preserved. Own target export and generic
+    node page inspection independently agree.
+  target_ids:
+  - MetaCyc:PWY-6151
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - graph
+  - replay
+```

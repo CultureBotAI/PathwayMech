@@ -1,0 +1,94 @@
+{
+  "target": "data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml",
+  "target_sha256": "1fe731570ceb2038b0b153686be184c99afbd82ab6ba9a9516694b2277de1b37",
+  "searches": [
+    {
+      "scope": "/private/tmp/pathwaymech-next-192-20261011",
+      "command": [
+        "rg",
+        "--hidden",
+        "--no-ignore",
+        "-n",
+        "-i",
+        "PWY-5705|allantoin degradation to glyoxylate III|P77731|24107613|UREIDOGLYCOLATE-LYASE-RXN|allA|glxA2|b0505",
+        "/private/tmp/pathwaymech-next-192-20261011",
+        "-g",
+        "!.git/**",
+        "-g",
+        "!.venv/**",
+        "-g",
+        "!**/__pycache__/**"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "raw_path": "/private/tmp/pathwaymech-next-192-evidence/allantoin/worktree-glyoxylate-dedup.txt",
+      "sha256": "d67fdeb59ba2a98c8675cce514d0fdb2b27a7b9f8ef8acc474d7944565e29864",
+      "line_count": 1617,
+      "file_count": 92,
+      "hidden_and_ignored_included": true,
+      "only_exclusions": [
+        ".git",
+        ".venv",
+        "__pycache__"
+      ],
+      "complete_match_inventory": "/private/tmp/pathwaymech-next-192-evidence/allantoin/glyoxylate-searches.json",
+      "complete_match_inventory_sha256": "181238ab3945e00f1f2681be1d8ce7c024e04b9eee781365d23990a074975665"
+    },
+    {
+      "scope": "/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech",
+      "command": [
+        "rg",
+        "--hidden",
+        "--no-ignore",
+        "-n",
+        "-i",
+        "PWY-5705|allantoin degradation to glyoxylate III|P77731|24107613|UREIDOGLYCOLATE-LYASE-RXN|allA|glxA2|b0505",
+        "/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech",
+        "-g",
+        "!.git/**",
+        "-g",
+        "!.venv/**",
+        "-g",
+        "!**/__pycache__/**"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "raw_path": "/private/tmp/pathwaymech-next-192-evidence/allantoin/original-glyoxylate-dedup.txt",
+      "sha256": "e13b90e71f6063358e671dfd78f6f5802ca04569d5720b54d5857ed599d23f19",
+      "line_count": 9324,
+      "file_count": 1514,
+      "hidden_and_ignored_included": true,
+      "only_exclusions": [
+        ".git",
+        ".venv",
+        "__pycache__"
+      ],
+      "complete_match_inventory": "/private/tmp/pathwaymech-next-192-evidence/allantoin/glyoxylate-searches.json",
+      "complete_match_inventory_sha256": "181238ab3945e00f1f2681be1d8ce7c024e04b9eee781365d23990a074975665"
+    }
+  ],
+  "decisions": [
+    {
+      "existing": "MetaCyc:PWY0-41",
+      "path": "data/pathways/allantoin-degradation-iv-anaerobic.yaml",
+      "disposition": "Shared first three reactions; after ureidoglycolate the existing full anaerobic oxamate branch uses AllD/AllFGH/AllK and spontaneous carbamate decomposition. The new exact pathway uses AllA, producing glyoxylate and urea."
+    },
+    {
+      "existing": "gomodel:YeastPathways_PWY-5694",
+      "path": "data/pathways/allantoin-degradation-to-glyoxylate-i.yaml",
+      "disposition": "Existing yeast three-step route uses DAL2 allantoicase to make urea and ureidoglycolate directly. New Ecoli four-step variant instead uses AllC and AllE with a distinct S-ureidoglycine intermediate, carbon dioxide and two ammonium; this is a mechanistic distinction, not just organism/name."
+    },
+    {
+      "existing": "gomodel:YeastPathways_PWY-5697",
+      "path": "data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml",
+      "disposition": "Adjacent yeast endpoint/module, not the exact full four-step ammonia-then-urea glyoxylate variant."
+    }
+  ],
+  "prior_dispositions": [
+    "research/pathway_additions/2026-10-10-cyanate-monapterin/next-handoff.md",
+    "research/pathway_additions/2026-10-10-citrate-sbm/allantoin-handoff.md",
+    "research/pathway_additions/2026-10-10-salvage/allantoin-curation.md",
+    "research/pathway_additions/2026-10-11-next-192/allantoin-duplicate-disposition.json"
+  ],
+  "conclusion": "The originally assigned oxamate candidate is duplicate. Parent explicitly authorized this independently verified full glyoxylate branch as a separate pathway task. No maintained exact PWY-5705 record was found in hidden/ignored-inclusive searches before authoring."
+}

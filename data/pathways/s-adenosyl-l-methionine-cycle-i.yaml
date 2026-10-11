@@ -1,0 +1,1033 @@
+id: MetaCyc:PWY-6151
+label: S-adenosyl-L-methionine cycle I
+description: 'The complete MetaCyc bacterial activated methyl cycle is represented with E. coli
+  K-12 proteins: MetK makes SAM, a generic methyltransferase reaction yields SAH, Pfs cleaves SAH
+  to adenine and S-ribosylhomocysteine, LuxS produces homocysteine and (S)-4,5-dihydroxypentane-2,3-dione,
+  and methionine synthase regenerates methionine. The five native transformations are retained,
+  with separate MetE triglutamate and documented MetH monoglutamate equations for the alternative
+  final step. Generic methyl-acceptor states retain their native donor labels and unspecified chemical
+  scope; no particular methylation target or catalyst is selected. LuxS-derived DPD is distinct
+  from downstream cyclic or borated AI-2 signals, which are outside this cycle. The protein scope
+  does not assert functionality in every K-12 derivative, universal quorum sensing, or simultaneous
+  use of all annotated alternative metals.'
+pathway_type: amino-acid-metabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16708
+  label: adenine
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:18608
+  label: (6S)-5-methyltetrahydrofolate(2-)
+  category: small_molecule
+- id: CHEBI:24875
+  label: iron cation
+  category: cofactor
+- id: CHEBI:28115
+  label: methylcobalamin
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:29103
+  label: potassium(1+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:29484
+  label: (S)-4,5-dihydroxypentane-2,3-dione
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:57453
+  label: (6S)-5,6,7,8-tetrahydrofolate(2-)
+  category: small_molecule
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:57856
+  label: S-adenosyl-L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:58140
+  label: tetrahydropteroyltri-L-glutamate(4-)
+  category: small_molecule
+- id: CHEBI:58195
+  label: S-(5-deoxy-D-ribos-5-yl)-L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:58199
+  label: L-homocysteine zwitterion
+  category: small_molecule
+- id: CHEBI:58207
+  label: 5-methyltetrahydropteroyltri-L-glutamate(4-)
+  category: small_molecule
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: MetaCyc:Demethylated-methyl-acceptors
+  label: a demethylated methyl donor
+  category: chemical_entity
+- id: MetaCyc:Methylated-methyl-acceptors
+  label: a methylated methyl donor
+  category: chemical_entity
+- id: UniProtKB:P0A817
+  label: S-adenosylmethionine synthase
+  category: protein
+- id: UniProtKB:P0AF12
+  label: 5'-methylthioadenosine/S-adenosylhomocysteine nucleosidase
+  category: protein
+- id: UniProtKB:P45578
+  label: S-ribosylhomocysteine lyase
+  category: protein
+- id: UniProtKB:P13009
+  label: Methionine synthase
+  category: protein
+- id: UniProtKB:P25665
+  label: 5-methyltetrahydropteroyltriglutamate--homocysteine methyltransferase
+  category: protein
+- id: MetaCyc:S-ADENMETSYN-CPLX
+  label: methionine adenosyltransferase
+  category: complex
+- id: MetaCyc:CPLX0-1541
+  label: 5'-methylthioadenosine/S-adenosylhomocysteine nucleosidase
+  category: complex
+reactions:
+- id: RHEA:21081
+  label: L-methionine + ATP + H2O => S-adenosyl-L-methionine + phosphate + diphosphate
+  direction: left_to_right
+- id: MetaCyc:RXN-7605
+  label: S-adenosyl-L-methionine + a demethylated methyl donor -> S-adenosyl-L-homocysteine + a
+    methylated methyl donor + H+
+  direction: left_to_right
+- id: RHEA:17806
+  label: S-adenosyl-L-homocysteine + H2O => S-(5-deoxy-D-ribos-5-yl)-L-homocysteine + adenine
+  direction: left_to_right
+- id: RHEA:17754
+  label: S-(5-deoxy-D-ribos-5-yl)-L-homocysteine => (S)-4,5-dihydroxypentane-2,3-dione + L-homocysteine
+  direction: left_to_right
+- id: RHEA:21197
+  label: 5-methyltetrahydropteroyltri-L-glutamate + L-homocysteine => tetrahydropteroyltri-L-glutamate
+    + L-methionine
+  direction: left_to_right
+- id: RHEA:11173
+  label: (6S)-5-methyl-5,6,7,8-tetrahydrofolate + L-homocysteine => (6S)-5,6,7,8-tetrahydrofolate
+    + L-methionine
+  direction: left_to_right
+mechanistic_edges:
+- id: sam-cycle-edge-001
+  subject: CHEBI:57844
+  predicate: consumes
+  object: RHEA:21081
+  evidence:
+  - &id002
+    reference_id: RHEA:21080
+    source_assertion: Rhea RHEA:21081 lists CHEBI:57844 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:21081/rh:substrates -> http://rdf.rhea-db.org/21080_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_21080_compound_2530/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2530/rh:accession
+- id: sam-cycle-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:21081
+  evidence:
+  - reference_id: RHEA:21080
+    source_assertion: Rhea RHEA:21081 lists CHEBI:30616 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:21081/rh:substrates -> http://rdf.rhea-db.org/21080_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_21080_compound_6372/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6372/rh:accession
+- id: sam-cycle-edge-003
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:21081
+  evidence:
+  - reference_id: RHEA:21080
+    source_assertion: Rhea RHEA:21081 lists CHEBI:15377 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:21081/rh:substrates -> http://rdf.rhea-db.org/21080_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_21080_compound_1283/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1283/rh:accession
+- id: sam-cycle-edge-004
+  subject: RHEA:21081
+  predicate: produces
+  object: CHEBI:59789
+  evidence:
+  - &id003
+    reference_id: RHEA:21080
+    source_assertion: Rhea RHEA:21081 lists CHEBI:59789 on its products side with coefficient 1.
+    source_locator: RHEA:21081/rh:products -> http://rdf.rhea-db.org/21080_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_21080_compound_6127/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6127/rh:accession
+- id: sam-cycle-edge-005
+  subject: RHEA:21081
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:21080
+    source_assertion: Rhea RHEA:21081 lists CHEBI:43474 on its products side with coefficient 1.
+    source_locator: RHEA:21081/rh:products -> http://rdf.rhea-db.org/21080_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_21080_compound_5518/rh:compound
+      -> http://rdf.rhea-db.org/Compound_5518/rh:accession
+- id: sam-cycle-edge-006
+  subject: RHEA:21081
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:21080
+    source_assertion: Rhea RHEA:21081 lists CHEBI:33019 on its products side with coefficient 1.
+    source_locator: RHEA:21081/rh:products -> http://rdf.rhea-db.org/21080_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_21080_compound_2106/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2106/rh:accession
+- id: sam-cycle-edge-007
+  subject: CHEBI:57856
+  predicate: consumes
+  object: RHEA:17806
+  evidence:
+  - &id006
+    reference_id: RHEA:17805
+    source_assertion: Rhea RHEA:17806 lists CHEBI:57856 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:17806/rh:substrates -> http://rdf.rhea-db.org/17805_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_17805_compound_4281/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4281/rh:accession
+- id: sam-cycle-edge-008
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17806
+  evidence:
+  - reference_id: RHEA:17805
+    source_assertion: Rhea RHEA:17806 lists CHEBI:15377 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:17806/rh:substrates -> http://rdf.rhea-db.org/17805_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_17805_compound_1283/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1283/rh:accession
+- id: sam-cycle-edge-009
+  subject: RHEA:17806
+  predicate: produces
+  object: CHEBI:58195
+  evidence:
+  - &id007
+    reference_id: RHEA:17805
+    source_assertion: Rhea RHEA:17806 lists CHEBI:58195 on its products side with coefficient 1.
+    source_locator: RHEA:17806/rh:products -> http://rdf.rhea-db.org/17805_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_17805_compound_5411/rh:compound
+      -> http://rdf.rhea-db.org/Compound_5411/rh:accession
+- id: sam-cycle-edge-010
+  subject: RHEA:17806
+  predicate: produces
+  object: CHEBI:16708
+  evidence:
+  - reference_id: RHEA:17805
+    source_assertion: Rhea RHEA:17806 lists CHEBI:16708 on its products side with coefficient 1.
+    source_locator: RHEA:17806/rh:products -> http://rdf.rhea-db.org/17805_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_17805_compound_4174/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4174/rh:accession
+- id: sam-cycle-edge-011
+  subject: CHEBI:58195
+  predicate: consumes
+  object: RHEA:17754
+  evidence:
+  - &id008
+    reference_id: RHEA:17753
+    source_assertion: Rhea RHEA:17754 lists CHEBI:58195 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:17754/rh:substrates -> http://rdf.rhea-db.org/17753_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_17753_compound_5411/rh:compound
+      -> http://rdf.rhea-db.org/Compound_5411/rh:accession
+- id: sam-cycle-edge-012
+  subject: RHEA:17754
+  predicate: produces
+  object: CHEBI:29484
+  evidence:
+  - reference_id: RHEA:17753
+    source_assertion: Rhea RHEA:17754 lists CHEBI:29484 on its products side with coefficient 1.
+    source_locator: RHEA:17754/rh:products -> http://rdf.rhea-db.org/17753_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_17753_compound_5596/rh:compound
+      -> http://rdf.rhea-db.org/Compound_5596/rh:accession
+- id: sam-cycle-edge-013
+  subject: RHEA:17754
+  predicate: produces
+  object: CHEBI:58199
+  evidence:
+  - &id009
+    reference_id: RHEA:17753
+    source_assertion: Rhea RHEA:17754 lists CHEBI:58199 on its products side with coefficient 1.
+    source_locator: RHEA:17754/rh:products -> http://rdf.rhea-db.org/17753_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_17753_compound_3869/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3869/rh:accession
+- id: sam-cycle-edge-014
+  subject: CHEBI:58207
+  predicate: consumes
+  object: RHEA:21197
+  evidence:
+  - reference_id: RHEA:21196
+    source_assertion: Rhea RHEA:21197 lists CHEBI:58207 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:21197/rh:substrates -> http://rdf.rhea-db.org/21196_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_21196_compound_3620/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3620/rh:accession
+- id: sam-cycle-edge-015
+  subject: CHEBI:58199
+  predicate: consumes
+  object: RHEA:21197
+  evidence:
+  - &id010
+    reference_id: RHEA:21196
+    source_assertion: Rhea RHEA:21197 lists CHEBI:58199 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:21197/rh:substrates -> http://rdf.rhea-db.org/21196_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_21196_compound_3869/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3869/rh:accession
+- id: sam-cycle-edge-016
+  subject: RHEA:21197
+  predicate: produces
+  object: CHEBI:58140
+  evidence:
+  - reference_id: RHEA:21196
+    source_assertion: Rhea RHEA:21197 lists CHEBI:58140 on its products side with coefficient 1.
+    source_locator: RHEA:21197/rh:products -> http://rdf.rhea-db.org/21196_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_21196_compound_4911/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4911/rh:accession
+- id: sam-cycle-edge-017
+  subject: RHEA:21197
+  predicate: produces
+  object: CHEBI:57844
+  evidence:
+  - &id001
+    reference_id: RHEA:21196
+    source_assertion: Rhea RHEA:21197 lists CHEBI:57844 on its products side with coefficient 1.
+    source_locator: RHEA:21197/rh:products -> http://rdf.rhea-db.org/21196_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_21196_compound_2530/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2530/rh:accession
+- id: sam-cycle-edge-018
+  subject: CHEBI:18608
+  predicate: consumes
+  object: RHEA:11173
+  evidence:
+  - reference_id: RHEA:11172
+    source_assertion: Rhea RHEA:11173 lists CHEBI:18608 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:11173/rh:substrates -> http://rdf.rhea-db.org/11172_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_11172_compound_1195/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1195/rh:accession
+- id: sam-cycle-edge-019
+  subject: CHEBI:58199
+  predicate: consumes
+  object: RHEA:11173
+  evidence:
+  - &id011
+    reference_id: RHEA:11172
+    source_assertion: Rhea RHEA:11173 lists CHEBI:58199 on its substrates side with coefficient
+      1.
+    source_locator: RHEA:11173/rh:substrates -> http://rdf.rhea-db.org/11172_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_11172_compound_3869/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3869/rh:accession
+- id: sam-cycle-edge-020
+  subject: RHEA:11173
+  predicate: produces
+  object: CHEBI:57453
+  evidence:
+  - reference_id: RHEA:11172
+    source_assertion: Rhea RHEA:11173 lists CHEBI:57453 on its products side with coefficient 1.
+    source_locator: RHEA:11173/rh:products -> http://rdf.rhea-db.org/11172_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_11172_compound_4996/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4996/rh:accession
+- id: sam-cycle-edge-021
+  subject: RHEA:11173
+  predicate: produces
+  object: CHEBI:57844
+  evidence:
+  - &id012
+    reference_id: RHEA:11172
+    source_assertion: Rhea RHEA:11173 lists CHEBI:57844 on its products side with coefficient 1.
+    source_locator: RHEA:11173/rh:products -> http://rdf.rhea-db.org/11172_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_11172_compound_2530/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2530/rh:accession
+- id: sam-cycle-edge-022
+  subject: CHEBI:59789
+  predicate: consumes
+  object: MetaCyc:RXN-7605
+  evidence:
+  - &id004
+    reference_id: MetaCyc:RXN-7605
+    source_assertion: RXN-7605 places S-ADENOSYLMETHIONINE on its left side with implicit coefficient
+      1; this is a generic methyl-transfer reaction, not a specified methylation target.
+    source_locator: Reaction[@frameid='RXN-7605']/left/Compound[@frameid='S-ADENOSYLMETHIONINE'];
+      comment; reaction-direction
+  - reference_id: MetaCyc:S-ADENOSYLMETHIONINE
+    source_assertion: The native S-ADENOSYLMETHIONINE compound cross-references CHEBI:59789.
+    source_locator: Compound[@frameid='S-ADENOSYLMETHIONINE']/dblink[dblink-db='CHEBI']/dblink-oid
+- id: sam-cycle-edge-023
+  subject: MetaCyc:Demethylated-methyl-acceptors
+  predicate: consumes
+  object: MetaCyc:RXN-7605
+  description: A generic chemical class is retained without identifying a particular small molecule,
+    protein, RNA or DNA substrate.
+  evidence:
+  - reference_id: MetaCyc:RXN-7605
+    source_assertion: RXN-7605 places Demethylated-methyl-acceptors on its left side with implicit
+      coefficient 1; this is a generic methyl-transfer reaction, not a specified methylation target.
+    source_locator: Reaction[@frameid='RXN-7605']/left/Compound[@frameid='Demethylated-methyl-acceptors'];
+      comment; reaction-direction
+  - reference_id: MetaCyc:Demethylated-methyl-acceptors
+    source_assertion: The class leaves the methyl donor or acceptor identity undefined; the donor
+      wording is its native label, while this reaction determines its acceptor role.
+    source_locator: Compound[@frameid='Demethylated-methyl-acceptors']/common-name, synonym, comment;
+      cml/molecule
+- id: sam-cycle-edge-024
+  subject: MetaCyc:RXN-7605
+  predicate: produces
+  object: CHEBI:57856
+  evidence:
+  - &id005
+    reference_id: MetaCyc:RXN-7605
+    source_assertion: RXN-7605 places ADENOSYL-HOMO-CYS on its right side with implicit coefficient
+      1; this is a generic methyl-transfer reaction, not a specified methylation target.
+    source_locator: Reaction[@frameid='RXN-7605']/right/Compound[@frameid='ADENOSYL-HOMO-CYS'];
+      comment; reaction-direction
+  - reference_id: MetaCyc:ADENOSYL-HOMO-CYS
+    source_assertion: The native ADENOSYL-HOMO-CYS compound cross-references CHEBI:57856.
+    source_locator: Compound[@frameid='ADENOSYL-HOMO-CYS']/dblink[dblink-db='CHEBI']/dblink-oid
+- id: sam-cycle-edge-025
+  subject: MetaCyc:RXN-7605
+  predicate: produces
+  object: MetaCyc:Methylated-methyl-acceptors
+  description: A generic chemical class is retained without identifying a particular small molecule,
+    protein, RNA or DNA substrate.
+  evidence:
+  - reference_id: MetaCyc:RXN-7605
+    source_assertion: RXN-7605 places Methylated-methyl-acceptors on its right side with implicit
+      coefficient 1; this is a generic methyl-transfer reaction, not a specified methylation target.
+    source_locator: Reaction[@frameid='RXN-7605']/right/Compound[@frameid='Methylated-methyl-acceptors'];
+      comment; reaction-direction
+  - reference_id: MetaCyc:Methylated-methyl-acceptors
+    source_assertion: The class leaves the methyl donor or acceptor identity undefined; the donor
+      wording is its native label, while this reaction determines its acceptor role.
+    source_locator: Compound[@frameid='Methylated-methyl-acceptors']/common-name, synonym, comment;
+      cml/molecule
+- id: sam-cycle-edge-026
+  subject: MetaCyc:RXN-7605
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: MetaCyc:RXN-7605
+    source_assertion: RXN-7605 places PROTON on its right side with implicit coefficient 1; this
+      is a generic methyl-transfer reaction, not a specified methylation target.
+    source_locator: Reaction[@frameid='RXN-7605']/right/Compound[@frameid='PROTON']; comment; reaction-direction
+  - reference_id: MetaCyc:PROTON
+    source_assertion: The native PROTON compound cross-references CHEBI:15378.
+    source_locator: Compound[@frameid='PROTON']/dblink[dblink-db='CHEBI']/dblink-oid
+- id: sam-cycle-edge-027
+  subject: RHEA:21081
+  predicate: part_of
+  object: MetaCyc:PWY-6151
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: PWY-6151 includes child pathway SAM-PWY.
+    source_locator: Pathway[@frameid='PWY-6151']/reaction-list/Pathway[@frameid='SAM-PWY']
+  - reference_id: MetaCyc:SAM-PWY
+    source_assertion: SAM-PWY contains only S-ADENMETSYN-RXN, laid out left to right.
+    source_locator: Pathway[@frameid='SAM-PWY']/reaction-list; reaction-layout
+  - reference_id: MetaCyc:S-ADENMETSYN-RXN
+    source_assertion: S-ADENMETSYN-RXN explicitly cross-references RHEA:21081.
+    source_locator: Reaction[@frameid='S-ADENMETSYN-RXN']/dblink[dblink-db='RHEA']; reaction-direction
+  - &id013
+    reference_id: RHEA:21080
+    source_assertion: Rhea master 21080 has directed left-to-right reaction 21081.
+    source_locator: http://rdf.rhea-db.org/21080/rh:directionalReaction
+- id: sam-cycle-edge-028
+  subject: RHEA:17806
+  predicate: part_of
+  object: MetaCyc:PWY-6151
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: PWY-6151 contains ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN and selects its left-to-right
+      pathway layout.
+    source_locator: Pathway[@frameid='PWY-6151']/reaction-list/Reaction[@frameid='ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN'];
+      reaction-layout
+  - reference_id: MetaCyc:ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN
+    source_assertion: ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN explicitly cross-references RHEA:17806.
+    source_locator: Reaction[@frameid='ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN']/dblink[dblink-db='RHEA'];
+      reaction-direction
+  - &id014
+    reference_id: RHEA:17805
+    source_assertion: Rhea master 17805 has directed left-to-right reaction 17806.
+    source_locator: http://rdf.rhea-db.org/17805/rh:directionalReaction
+- id: sam-cycle-edge-029
+  subject: RHEA:17754
+  predicate: part_of
+  object: MetaCyc:PWY-6151
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: PWY-6151 contains RIBOSYLHOMOCYSTEINASE-RXN and selects its left-to-right
+      pathway layout.
+    source_locator: Pathway[@frameid='PWY-6151']/reaction-list/Reaction[@frameid='RIBOSYLHOMOCYSTEINASE-RXN'];
+      reaction-layout
+  - reference_id: MetaCyc:RIBOSYLHOMOCYSTEINASE-RXN
+    source_assertion: RIBOSYLHOMOCYSTEINASE-RXN explicitly cross-references RHEA:17754.
+    source_locator: Reaction[@frameid='RIBOSYLHOMOCYSTEINASE-RXN']/dblink[dblink-db='RHEA']; reaction-direction
+  - &id015
+    reference_id: RHEA:17753
+    source_assertion: Rhea master 17753 has directed left-to-right reaction 17754.
+    source_locator: http://rdf.rhea-db.org/17753/rh:directionalReaction
+- id: sam-cycle-edge-030
+  subject: RHEA:21197
+  predicate: part_of
+  object: MetaCyc:PWY-6151
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: PWY-6151 contains HOMOCYSMET-RXN and selects its left-to-right pathway layout.
+    source_locator: Pathway[@frameid='PWY-6151']/reaction-list/Reaction[@frameid='HOMOCYSMET-RXN'];
+      reaction-layout
+  - reference_id: MetaCyc:HOMOCYSMET-RXN
+    source_assertion: HOMOCYSMET-RXN explicitly cross-references RHEA:21199; its standalone reaction
+      direction is REVERSIBLE.
+    source_locator: Reaction[@frameid='HOMOCYSMET-RXN']/dblink[dblink-db='RHEA']; reaction-direction
+  - &id016
+    reference_id: RHEA:21196
+    source_assertion: Rhea master 21196 has directed left-to-right reaction 21197 and bidirectional
+      reaction 21199.
+    source_locator: http://rdf.rhea-db.org/21196/rh:directionalReaction; rh:bidirectionalReaction
+- id: sam-cycle-edge-031
+  subject: RHEA:11173
+  predicate: part_of
+  object: MetaCyc:PWY-6151
+  description: MetH alternative, represented by the current monoglutamate Rhea equation; native
+    HOMOCYSMETB12-RXN permits an unspecified folate glutamate-chain length. This does not make monoglutamate
+    the exclusive cellular substrate.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: The pathway comment explicitly permits cobalamin-dependent methionine synthase
+      as an alternative to the independent enzyme and states that E. coli has both.
+    source_locator: Pathway[@frameid='PWY-6151']/comment; paragraph beginning 'The cycle continues'
+  - reference_id: MetaCyc:HOMOCYSMETB12-RXN
+    source_assertion: HOMOCYSMETB12-RXN explicitly cross-references RHEA:11173.
+    source_locator: Reaction[@frameid='HOMOCYSMETB12-RXN']/dblink[dblink-db='RHEA']; reaction-direction
+  - &id017
+    reference_id: RHEA:11172
+    source_assertion: Rhea master 11172 has directed left-to-right reaction 11173.
+    source_locator: http://rdf.rhea-db.org/11172/rh:directionalReaction
+- id: sam-cycle-edge-032
+  subject: MetaCyc:RXN-7605
+  predicate: part_of
+  object: MetaCyc:PWY-6151
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: PWY-6151 contains the generic methyl-transfer reaction RXN-7605, laid out
+      left to right.
+    source_locator: Pathway[@frameid='PWY-6151']/reaction-list/Reaction[@frameid='RXN-7605']; reaction-layout
+- id: sam-cycle-edge-033
+  subject: RHEA:21197
+  predicate: precedes
+  object: RHEA:21081
+  description: The source-defined cycle closes through CHEBI:57844; ordering does not assert an
+    irreversible thermodynamic constraint.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: Native pathway ordering places HOMOCYSMET-RXN before S-ADENMETSYN-RXN.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='S-ADENMETSYN-RXN']/predecessor-reactions/Reaction[@frameid='HOMOCYSMET-RXN']
+  - *id001
+  - *id002
+- id: sam-cycle-edge-034
+  subject: RHEA:21081
+  predicate: precedes
+  object: MetaCyc:RXN-7605
+  description: The source-defined cycle closes through CHEBI:59789; ordering does not assert an
+    irreversible thermodynamic constraint.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: Native pathway ordering places S-ADENMETSYN-RXN before RXN-7605.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='RXN-7605']/predecessor-reactions/Reaction[@frameid='S-ADENMETSYN-RXN']
+  - *id003
+  - *id004
+- id: sam-cycle-edge-035
+  subject: MetaCyc:RXN-7605
+  predicate: precedes
+  object: RHEA:17806
+  description: The source-defined cycle closes through CHEBI:57856; ordering does not assert an
+    irreversible thermodynamic constraint.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: Native pathway ordering places RXN-7605 before ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN']/predecessor-reactions/Reaction[@frameid='RXN-7605']
+  - *id005
+  - *id006
+- id: sam-cycle-edge-036
+  subject: RHEA:17806
+  predicate: precedes
+  object: RHEA:17754
+  description: The source-defined cycle closes through CHEBI:58195; ordering does not assert an
+    irreversible thermodynamic constraint.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: Native pathway ordering places ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN before
+      RIBOSYLHOMOCYSTEINASE-RXN.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='RIBOSYLHOMOCYSTEINASE-RXN']/predecessor-reactions/Reaction[@frameid='ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN']
+  - *id007
+  - *id008
+- id: sam-cycle-edge-037
+  subject: RHEA:17754
+  predicate: precedes
+  object: RHEA:21197
+  description: The source-defined cycle closes through CHEBI:58199; ordering does not assert an
+    irreversible thermodynamic constraint.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: Native pathway ordering places RIBOSYLHOMOCYSTEINASE-RXN before HOMOCYSMET-RXN.
+    source_locator: Pathway/reaction-ordering[Reaction/@frameid='HOMOCYSMET-RXN']/predecessor-reactions/Reaction[@frameid='RIBOSYLHOMOCYSTEINASE-RXN']
+  - *id009
+  - *id010
+- id: sam-cycle-edge-038
+  subject: RHEA:17754
+  predicate: provides_input_for
+  object: RHEA:11173
+  description: Material continuity for the documented MetH alternative, not an additional native
+    reaction-ordering triple.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: The pathway comment permits MetH as an alternative methionine-regenerating
+      enzyme in E. coli.
+    source_locator: Pathway[@frameid='PWY-6151']/comment; methionine synthase alternatives
+  - *id009
+  - *id011
+- id: sam-cycle-edge-039
+  subject: RHEA:11173
+  predicate: provides_input_for
+  object: RHEA:21081
+  description: Material continuity for the documented MetH alternative, not an additional native
+    reaction-ordering triple.
+  evidence:
+  - reference_id: MetaCyc:PWY-6151
+    source_assertion: The pathway comment permits MetH as an alternative methionine-regenerating
+      enzyme in E. coli.
+    source_locator: Pathway[@frameid='PWY-6151']/comment; methionine synthase alternatives
+  - *id012
+  - *id002
+- id: sam-cycle-edge-040
+  subject: MetaCyc:S-ADENMETSYN-CPLX
+  predicate: has_part
+  object: UniProtKB:P0A817
+  description: Source subunit coefficient 4; the protein component is not asserted to independently
+    catalyze the overall reaction.
+  evidence:
+  - reference_id: MetaCyc:S-ADENMETSYN-CPLX
+    source_assertion: The native complex contains 4 copies of S-ADENMETSYN-MONOMER.
+    source_locator: Protein[@frameid='S-ADENMETSYN-CPLX']/component/Protein; component/coefficient
+  - reference_id: MetaCyc:S-ADENMETSYN-MONOMER
+    source_assertion: S-ADENMETSYN-MONOMER is unified with UniProtKB:P0A817.
+    source_locator: Protein[@frameid='S-ADENMETSYN-MONOMER']/dblink[dblink-db='UNIPROT']
+  - reference_id: UniProtKB:P0A817
+    source_assertion: The reviewed SUBUNIT annotation describes a homotetramer (dimer of dimers),
+      with experimental ECO:0000269 evidence.
+    source_locator: comments[commentType='SUBUNIT']
+  - reference_id: PMID:14967023
+    source_assertion: The E. coli crystal structure is a dimer of dimers.
+    source_locator: Europe PMC resultList.result[0].abstractText; structural Results
+- id: sam-cycle-edge-041
+  subject: MetaCyc:CPLX0-1541
+  predicate: has_part
+  object: UniProtKB:P0AF12
+  description: Source subunit coefficient 2; the protein component is not asserted to independently
+    catalyze the overall reaction.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1541
+    source_assertion: The native complex contains 2 copies of EG11090-MONOMER.
+    source_locator: Protein[@frameid='CPLX0-1541']/component/Protein; component/coefficient
+  - reference_id: MetaCyc:EG11090-MONOMER
+    source_assertion: EG11090-MONOMER is unified with UniProtKB:P0AF12.
+    source_locator: Protein[@frameid='EG11090-MONOMER']/dblink[dblink-db='UNIPROT']
+  - reference_id: UniProtKB:P0AF12
+    source_assertion: The reviewed SUBUNIT annotation describes a homodimer, including ECO:0000269
+      structural evidence.
+    source_locator: comments[commentType='SUBUNIT']
+  - reference_id: PMID:11591349
+    source_assertion: The E. coli nucleosidase structure supports a functional dimer; contacts join
+      the two monomers.
+    source_locator: Europe PMC resultList.result[0].abstractText; structural Results
+- id: sam-cycle-edge-042
+  subject: MetaCyc:S-ADENMETSYN-CPLX
+  predicate: catalyzes
+  object: RHEA:21081
+  evidence:
+  - reference_id: MetaCyc:S-ADENMETSYN-CPLX
+    source_assertion: The native complex catalyzes S-ADENMETSYN-RXN.
+    source_locator: Protein[@frameid='S-ADENMETSYN-CPLX']/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P0A817
+    source_assertion: 'The reviewed E. coli K-12 protein has catalytic annotation RHEA:21080; evidence:
+      ECO:0000269 experimental and ECO:0000255 HAMAP.'
+    source_locator: organism.taxonId; comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - *id013
+  - reference_id: PMID:6251075
+    source_assertion: Purified E. coli adenosylmethionine synthetase performs synthesis and a stimulated
+      tripolyphosphatase reaction.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-043
+  subject: MetaCyc:CPLX0-1541
+  predicate: catalyzes
+  object: RHEA:17806
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1541
+    source_assertion: The native complex catalyzes ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN.
+    source_locator: Protein[@frameid='CPLX0-1541']/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: UniProtKB:P0AF12
+    source_assertion: 'The reviewed E. coli K-12 protein has catalytic annotation RHEA:17805; evidence:
+      ECO:0000269 experimental and ECO:0000255 HAMAP.'
+    source_locator: organism.taxonId; comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - *id014
+  - reference_id: PMID:11489131
+    source_assertion: Purified GST-Pfs from MG1655 removes adenine from SAH, producing SRH before
+      the LuxS step; sequential filtration and mass spectra test this order.
+    source_locator: PDF pp467-468, Table 1 and Fig.4B; p473, Overexpression and purification of
+      LuxS and Pfs
+- id: sam-cycle-edge-044
+  subject: UniProtKB:P45578
+  predicate: enables
+  object: RHEA:17754
+  description: Functional LuxS contribution; its homodimer annotation is by similarity (ECO:0000250).
+    No independently verified E. coli assembly identifier or monomer sufficiency is asserted.
+  evidence:
+  - reference_id: UniProtKB:P45578
+    source_assertion: 'The reviewed E. coli K-12 protein has catalytic annotation RHEA:17753; evidence:
+      curated catalytic annotation without a per-reaction evidence tag.'
+    source_locator: organism.taxonId; comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - *id015
+  - reference_id: PMID:11489131
+    source_assertion: Purified GST-LuxS from MG1655 acts on SRH after Pfs, with homocysteine detected.
+      DPD was inferred to cyclize; this study did not absolutely identify the AI-2 structure.
+    source_locator: PDF pp467-468, Table 1; pp470-471, Discussion; p473, Overexpression and purification
+- id: sam-cycle-edge-045
+  subject: UniProtKB:P25665
+  predicate: enables
+  object: RHEA:21197
+  description: MetE is annotated monomeric; this edge preserves its gene-product activity and separately
+    inspected experimental support without upgrading HAMAP evidence.
+  evidence:
+  - reference_id: UniProtKB:P25665
+    source_assertion: 'The reviewed E. coli K-12 protein has catalytic annotation RHEA:21196; evidence:
+      ECO:0000255 HAMAP.'
+    source_locator: organism.taxonId; comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - *id016
+  - reference_id: MetaCyc:HOMOCYSMET-MONOMER
+    source_assertion: The E. coli MetE entry states that it uses triglutamate folate, whereas MetH
+      uses mono- or triglutamate forms; purified K-12 enzyme was characterized.
+    source_locator: Protein[@frameid='HOMOCYSMET-MONOMER']/comment, first three paragraphs
+  - reference_id: PMID:16618098
+    source_assertion: MetE transfers a methyl group from methyltetrahydropteroyltriglutamate to
+      homocysteine; substrate-dependent absorbance studies address methyl-donor activation.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-046
+  subject: UniProtKB:P13009
+  predicate: enables
+  object: RHEA:11173
+  evidence:
+  - reference_id: UniProtKB:P13009
+    source_assertion: 'The reviewed E. coli K-12 protein has catalytic annotation RHEA:11172; evidence:
+      ECO:0000269 experimental.'
+    source_locator: organism.taxonId; comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - *id017
+  - reference_id: PMID:9201956
+    source_assertion: MetH transfers methyl from bound methylcobalamin to homocysteine and remethylates
+      the cofactor with methyltetrahydrofolate; purified holoenzyme and fragments were investigated.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-047
+  subject: UniProtKB:P0A817
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Mn2+ and Co2+ are tested alternatives to Mg2+, not a requirement that all three divalent
+    metals bind simultaneously; potassium is a separate monovalent cofactor.
+  evidence:
+  - reference_id: UniProtKB:P0A817
+    source_assertion: The reviewed COFACTOR annotation lists Mg(2+) (CHEBI:18420) with ECO:0000269
+      evidence; it distinguishes two divalent sites and one potassium site per subunit.
+    source_locator: comments[commentType='COFACTOR'].cofactors; note
+  - reference_id: PMID:6251075
+    source_assertion: Enzymatic activities require a divalent metal; phosphorothioate ATP studies
+      used Mg2+, Mn2+ or Co2+ and indicate metal-nucleotide binding.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-048
+  subject: UniProtKB:P0A817
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Mn2+ and Co2+ are tested alternatives to Mg2+, not a requirement that all three divalent
+    metals bind simultaneously; potassium is a separate monovalent cofactor.
+  evidence:
+  - reference_id: UniProtKB:P0A817
+    source_assertion: The reviewed COFACTOR annotation lists Mn(2+) (CHEBI:29035) with ECO:0000269
+      evidence; it distinguishes two divalent sites and one potassium site per subunit.
+    source_locator: comments[commentType='COFACTOR'].cofactors; note
+  - reference_id: PMID:6251075
+    source_assertion: Enzymatic activities require a divalent metal; phosphorothioate ATP studies
+      used Mg2+, Mn2+ or Co2+ and indicate metal-nucleotide binding.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-049
+  subject: UniProtKB:P0A817
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Mn2+ and Co2+ are tested alternatives to Mg2+, not a requirement that all three divalent
+    metals bind simultaneously; potassium is a separate monovalent cofactor.
+  evidence:
+  - reference_id: UniProtKB:P0A817
+    source_assertion: The reviewed COFACTOR annotation lists Co(2+) (CHEBI:48828) with ECO:0000269
+      evidence; it distinguishes two divalent sites and one potassium site per subunit.
+    source_locator: comments[commentType='COFACTOR'].cofactors; note
+  - reference_id: PMID:6251075
+    source_assertion: Enzymatic activities require a divalent metal; phosphorothioate ATP studies
+      used Mg2+, Mn2+ or Co2+ and indicate metal-nucleotide binding.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-050
+  subject: UniProtKB:P0A817
+  predicate: has_cofactor
+  object: CHEBI:29103
+  description: Mn2+ and Co2+ are tested alternatives to Mg2+, not a requirement that all three divalent
+    metals bind simultaneously; potassium is a separate monovalent cofactor.
+  evidence:
+  - reference_id: UniProtKB:P0A817
+    source_assertion: The reviewed COFACTOR annotation lists K(+) (CHEBI:29103) with ECO:0000269
+      evidence; it distinguishes two divalent sites and one potassium site per subunit.
+    source_locator: comments[commentType='COFACTOR'].cofactors; note
+- id: sam-cycle-edge-051
+  subject: UniProtKB:P45578
+  predicate: has_cofactor
+  object: CHEBI:24875
+  description: This is an inferred E. coli annotation at the generic iron-cation level. No exact
+    oxidation state, direct E. coli metal measurement or zinc-independent activity is asserted.
+  evidence:
+  - reference_id: UniProtKB:P45578
+    source_assertion: UniProt annotates one iron cation per subunit as a cofactor, inferred by similarity
+      (ECO:0000250).
+    source_locator: comments[commentType='COFACTOR'].cofactors[0]; note
+- id: sam-cycle-edge-052
+  subject: UniProtKB:P25665
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P25665
+    source_assertion: The COFACTOR annotation lists zinc(2+), one per subunit, with ECO:0000255
+      HAMAP evidence.
+    source_locator: comments[commentType='COFACTOR']
+  - reference_id: PMID:11170420
+    source_assertion: X-ray absorption studies of E. coli MetE demonstrate coordination of the homocysteine
+      analogue to its zinc site.
+    source_locator: Europe PMC resultList.result[0].abstractText; MetE and L-selenohomocysteine
+- id: sam-cycle-edge-053
+  subject: UniProtKB:P13009
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P13009
+    source_assertion: The COFACTOR annotation lists zinc(2+), one per subunit, with ECO:0000269
+      evidence.
+    source_locator: comments[commentType='COFACTOR'].cofactors; note
+  - reference_id: PMID:9398304
+    source_assertion: E. coli MetH zinc removal abolished methyl transfer; reconstitution partly
+      restored activity. Holoenzyme and a truncated protein contained about 0.9 equivalents of zinc.
+    source_locator: Europe PMC resultList.result[0].abstractText
+- id: sam-cycle-edge-054
+  subject: UniProtKB:P13009
+  predicate: has_cofactor
+  object: CHEBI:28115
+  description: Cobalamin cycling is internal to the net methionine-synthase equation. Reductive
+    reactivation is not added as a second methyl-transfer step of the native cycle.
+  evidence:
+  - reference_id: UniProtKB:P13009
+    source_assertion: UniProt lists methylcob(III)alamin as the cofactor with ECO:0000269 evidence.
+    source_locator: comments[commentType='COFACTOR'].cofactors[cofactorCrossReference.id='CHEBI:28115']
+  - reference_id: PMID:9201956
+    source_assertion: The bound methylcobalamin transfers methyl to homocysteine; methyltetrahydrofolate
+      then remethylates the bound cob(I)alamin.
+    source_locator: Europe PMC resultList.result[0].abstractText
+references:
+- id: MetaCyc:PWY-6151
+  title: MetaCyc S-adenosyl-L-methionine cycle I
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-6151
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 87d0c3c8c47350b1d8b6d19b37db114428dbb2e7cb527936eae58543d0e41fa7
+- id: MetaCyc:SAM-PWY
+  title: MetaCyc S-adenosyl-L-methionine biosynthesis
+  url: https://pathway.yeastgenome.org/getxml?META:SAM-PWY
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: ee0359d30840846650d89bfd872b6886f691e3416f97917de3afb698ca6ee82b
+- id: MetaCyc:S-ADENMETSYN-RXN
+  title: MetaCyc S-ADENMETSYN-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:S-ADENMETSYN-RXN
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 861cd881d1175649d8a25c6294418ac686c412a72ee7e8031feecdc2780c9ce2
+- id: MetaCyc:RXN-7605
+  title: MetaCyc RXN-7605
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-7605
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: f44fc8d5f627e20f1b41f289ff89e733586b62c4c65ec0b1bd9696eedee998ef
+- id: MetaCyc:ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN
+  title: MetaCyc ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:ADENOSYLHOMOCYSTEINE-NUCLEOSIDASE-RXN
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 885710a635de7d85420049a5f5c62f906d9ceb3954c5893099afa832ebe8d97a
+- id: MetaCyc:RIBOSYLHOMOCYSTEINASE-RXN
+  title: MetaCyc RIBOSYLHOMOCYSTEINASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:RIBOSYLHOMOCYSTEINASE-RXN
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 6cfeb96efc5691edeb6ab3acbc891e64ab1c52dc84e9941a9a13b8536959b5ad
+- id: MetaCyc:HOMOCYSMET-RXN
+  title: MetaCyc HOMOCYSMET-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:HOMOCYSMET-RXN
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 65cf669c8dd1fd78639a7feee5244d15a3fb47a75eabb57cc82df6e954e1b20a
+- id: MetaCyc:HOMOCYSMETB12-RXN
+  title: MetaCyc HOMOCYSMETB12-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:HOMOCYSMETB12-RXN
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: b60651147f79ab2b4e25a7501ff58f9c35c4b9a4d607f501c76f414e6a8b7c75
+- id: MetaCyc:S-ADENMETSYN-CPLX
+  title: MetaCyc methionine adenosyltransferase
+  url: https://pathway.yeastgenome.org/getxml?META:S-ADENMETSYN-CPLX
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 7f904a9c12927ae298b6a61c92374ec46bae8639da53b822521d5cc5ea40f83b
+- id: MetaCyc:CPLX0-1541
+  title: MetaCyc 5'-methylthioadenosine/S-adenosylhomocysteine nucleosidase
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-1541
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 50fe71870869d69b5efd3c628b8a1a451b5d8f5b63d23b6b8e60b1d5a23d1c31
+- id: MetaCyc:S-ADENMETSYN-MONOMER
+  title: MetaCyc methionine adenosyltransferase
+  url: https://pathway.yeastgenome.org/getxml?META:S-ADENMETSYN-MONOMER
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: ee2c005d545bf92ea83b17ced4dd381de6beb1fc2e42ce8c09f4f4f7cac5ebcb
+- id: MetaCyc:EG11090-MONOMER
+  title: MetaCyc 5'-methylthioadenosine/S-adenosylhomocysteine nucleosidase
+  url: https://pathway.yeastgenome.org/getxml?META:EG11090-MONOMER
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 27783530814404616097c142617171c5dbe5b394b147d405642b38d92dce3112
+- id: MetaCyc:HOMOCYSMET-MONOMER
+  title: MetaCyc HOMOCYSMET-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:HOMOCYSMET-MONOMER
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: e7ab420465400e611f97d8c56a48005abe445891bc194b2e51f4929617e33f4d
+- id: MetaCyc:Demethylated-methyl-acceptors
+  title: MetaCyc a demethylated methyl donor
+  url: https://pathway.yeastgenome.org/getxml?META:Demethylated-methyl-acceptors
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: ef9cf0464f2e12361b06fa69afa57aee6be43ceeeb9484349293eafc51be553e
+- id: MetaCyc:Methylated-methyl-acceptors
+  title: MetaCyc a methylated methyl donor
+  url: https://pathway.yeastgenome.org/getxml?META:Methylated-methyl-acceptors
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: fdad0a0d34db04b07b326310509b5a1bcbfa2c2c48766eee74a58331e0122f2b
+- id: MetaCyc:S-ADENOSYLMETHIONINE
+  title: MetaCyc S-adenosyl-L-methionine
+  url: https://pathway.yeastgenome.org/getxml?META:S-ADENOSYLMETHIONINE
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 1f1a6d61f3e5156bf82f8f0f0b2395c691808db85764e0c0e44d75cf99fe0b3b
+- id: MetaCyc:ADENOSYL-HOMO-CYS
+  title: MetaCyc S-adenosyl-L-homocysteine
+  url: https://pathway.yeastgenome.org/getxml?META:ADENOSYL-HOMO-CYS
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 30ac63e3204f75a08ac4611e2fb2a3e06716641a9e7e767a0a3cb4c38e53867f
+- id: MetaCyc:PROTON
+  title: MetaCyc H+
+  url: https://pathway.yeastgenome.org/getxml?META:PROTON
+  source_version: MetaCyc 22.5; original XML
+  source_sha256: 2df2c98d80ad6c76b622e5ff6d31e50244f036b3ecb26f4a0b647cf195029eb7
+- id: UniProtKB:P0A817
+  title: UniProtKB reviewed S-adenosylmethionine synthase
+  url: https://rest.uniprot.org/uniprotkb/P0A817.json
+  source_version: 2026_03, released 2026-09-02; full JSON
+  source_sha256: 96b4db3c9596a1e779bbc1d1459e6024981eadaa10ad79a446ee228373293d98
+- id: UniProtKB:P0AF12
+  title: UniProtKB reviewed 5'-methylthioadenosine/S-adenosylhomocysteine nucleosidase
+  url: https://rest.uniprot.org/uniprotkb/P0AF12.json
+  source_version: 2026_03, released 2026-09-02; full JSON
+  source_sha256: 9f22ed9e076eb0ba41aebc4d08df3728b82a38a1efc4381fdcc6a763ae187d48
+- id: UniProtKB:P45578
+  title: UniProtKB reviewed S-ribosylhomocysteine lyase
+  url: https://rest.uniprot.org/uniprotkb/P45578.json
+  source_version: 2026_03, released 2026-09-02; full JSON
+  source_sha256: 9434d6e2f68eb010e0fa9d916c56e234d582401a4b594f3807e439acbe9716a8
+- id: UniProtKB:P13009
+  title: UniProtKB reviewed Methionine synthase
+  url: https://rest.uniprot.org/uniprotkb/P13009.json
+  source_version: 2026_03, released 2026-09-02; full JSON
+  source_sha256: 7fda950332ad9c9a8604afacbab254e63ce6337b9209c357ca55779ed680d378
+- id: UniProtKB:P25665
+  title: UniProtKB reviewed 5-methyltetrahydropteroyltriglutamate--homocysteine methyltransferase
+  url: https://rest.uniprot.org/uniprotkb/P25665.json
+  source_version: 2026_03, released 2026-09-02; full JSON
+  source_sha256: d7bf2af0c4f7ed0a90872be6b5ba6a677e7ce01a81920f1cc653b2f0b6860140
+- id: RHEA:21080
+  title: Rhea RHEA:21080 family in complete release RDF
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142, 2026-09-02; SHA256 scope is complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:17805
+  title: Rhea RHEA:17805 family in complete release RDF
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142, 2026-09-02; SHA256 scope is complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:17753
+  title: Rhea RHEA:17753 family in complete release RDF
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142, 2026-09-02; SHA256 scope is complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:21196
+  title: Rhea RHEA:21196 family in complete release RDF
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142, 2026-09-02; SHA256 scope is complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:11172
+  title: Rhea RHEA:11172 family in complete release RDF
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142, 2026-09-02; SHA256 scope is complete compressed RDF
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:6251075
+  title: S-Adenosylmethionine synthetase from Escherichia coli.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:6251075%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Original article 1980-10-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: 8a5faedef736e23b51c0082b4c20e977228113e4228a93e2c4a48c4fbc13900b
+- id: PMID:14967023
+  title: 'Crystal structure of the S-adenosylmethionine synthetase ternary complex: a novel catalytic
+    mechanism of S-adenosylmethionine synthesis from ATP and Met.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:14967023%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Original article 2004-02-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: 002ca7c6ec99f6dc4c1ad7030ff1f1c9f8c6eb9a37286d2a40d7b3776546bbf5
+- id: PMID:11591349
+  title: Structure of E. coli 5'-methylthioadenosine/S-adenosylhomocysteine nucleosidase reveals
+    similarity to the purine nucleoside phosphorylases.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:11591349%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Original article 2001-10-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: f1f417bfbcffe7f7439176df67daa77e197591d42b93f8dd07451468998da32f
+- id: PMID:11489131
+  title: 'The LuxS family of bacterial autoinducers: biosynthesis of a novel quorum-sensing signal
+    molecule.'
+  url: https://shokatlab.ucsf.edu/pdfs/11489131.pdf
+  source_version: 2001 original published article, author-hosted PDF; inspected Results pp467-471
+    and Methods pp473-474
+  source_sha256: 40999a1cf8795969b60ad720b21b22a1e3c8f44fcc47548b4937e07027104ae0
+- id: PMID:9201956
+  title: Cobalamin-dependent methionine synthase is a modular protein with distinct regions for
+    binding homocysteine, methyltetrahydrofolate, cobalamin, and adenosylmethionine.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:9201956%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Original article 1997-07-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: 84f6599ca46f49e596eb9e5809cb9389f2c48eddd37d2bd8136fadb16581df98
+- id: PMID:9398304
+  title: 'Cobalamin-dependent methionine synthase from Escherichia coli: involvement of zinc in
+    homocysteine activation.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:9398304%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Original article 1997-12-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: 7d845ba91c571246f9961cba75cd53c818e60dc397d880c2d01f8fb8c3d2f646
+- id: PMID:11170420
+  title: Characterization of the zinc sites in cobalamin-independent and cobalamin-dependent methionine
+    synthase using zinc and selenium X-ray absorption spectroscopy.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:11170420%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Original article 2001-01-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: e0978bb2688c5395955625d4fdecca8c30c3eb1320167bdd27094844a8e348b2
+- id: PMID:16618098
+  title: Activation of methyltetrahydrofolate by cobalamin-independent methionine synthase.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1021/bi060052m&format=json&resultType=core
+  source_version: Original article 2006-04-01; inspected Europe PMC core record abstract, not full
+    text
+  source_sha256: d7041ee61b8f3124e6d259a51e675563647cfab72c9969099d084436c6720ca2

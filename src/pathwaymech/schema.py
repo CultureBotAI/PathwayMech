@@ -90,8 +90,8 @@ ALLOWED_EDGE_PREDICATES = {
 }
 
 NODE_CATEGORIES = {
-    "small_molecule", "lipid", "polymer", "protein", "gene", "dna", "rna", "cofactor",
-    "complex", "cellular_component", "molecular_activity", "biological_process",
+    "chemical_entity", "small_molecule", "lipid", "polymer", "protein", "gene", "dna", "rna",
+    "cofactor", "complex", "cellular_component", "molecular_activity", "biological_process",
 }
 
 

@@ -15,7 +15,7 @@ from collections import defaultdict, deque
 from pathwaymech.site_display import plain_label
 
 _CONTEXT = {"part_of", "has_part", "occurs_in", "located_in", "has_cofactor"}
-_CHEMICAL = {"small_molecule", "lipid", "polymer", "cofactor"}
+_CHEMICAL = {"chemical_entity", "small_molecule", "lipid", "polymer", "cofactor"}
 _CONTEXT_NODES = {"cellular_component", "biological_process"}
 _WIDTH = 236
 _GAP = 212

@@ -1,0 +1,424 @@
+id: MetaCyc:P121-PWY
+label: adenine and adenosine salvage I
+description: The complete two-reaction pathway converts adenosine to AMP through adenine. The E. coli
+  K-12 DeoD homohexamer phosphorolyzes adenosine to adenine and alpha-D-ribose 1-phosphate; the Apt homodimer
+  transfers phosphoribosyl from supplied PRPP to adenine, forming AMP and diphosphate. This is the phosphorolysis
+  route defined by P121-PWY, distinct from the four-step IMP-producing salvage III route and the nucleoside-hydrolase
+  route. E. coli enzyme identity and activity are supported separately from the native pathway definition,
+  whose listed species do not include E. coli. K-12 native enzyme annotations are distinguished from experiments
+  in K-12 derivatives and recombinant enzyme assays. Magnesium supports Apt activity; native annotation
+  also lists manganese as an alternative, without claiming simultaneous occupancy. Apt is intracellular,
+  with reported membrane association dependent on preparation. Phosphate is a DeoD substrate. The graph
+  selects the salvage directions of reversible chemistry and does not establish this branch as the dominant
+  route under all growth conditions. Transport, PRPP synthesis, alternative nucleoside hydrolysis, and
+  downstream AMP phosphorylation lie outside the exact two-step boundary.
+pathway_type: nucleotide-salvage
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:16335
+  label: adenosine
+  category: small_molecule
+- id: CHEBI:16708
+  label: adenine
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:57720
+  label: alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58017
+  label: 5-O-phosphonato-alpha-D-ribofuranosyl diphosphate(5-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: UniProtKB:P69503
+  label: Adenine phosphoribosyltransferase
+  category: protein
+- id: UniProtKB:P0ABP8
+  label: Purine nucleoside phosphorylase DeoD-type
+  category: protein
+- id: MetaCyc:DEOD-CPLX
+  label: purine nucleoside phosphorylase
+  category: complex
+- id: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+  label: adenine phosphoribosyltransferase
+  category: complex
+reactions:
+- id: RHEA:27643
+  label: adenosine + phosphate => alpha-D-ribose 1-phosphate + adenine
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16611
+  label: 5-phospho-alpha-D-ribose 1-diphosphate + adenine => AMP + diphosphate
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: adenine-i-edge-001
+  subject: CHEBI:16335
+  predicate: consumes
+  object: RHEA:27643
+  evidence:
+  - reference_id: RHEA:27643
+    source_assertion: RHEA:27643 substrates contain CHEBI:16335 with coefficient 1; the compound is adenosine.
+    source_locator: rh:27643 rh:substrates <http://rdf.rhea-db.org/27642_L>; <http://rdf.rhea-db.org/27642_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_2547>; <http://rdf.rhea-db.org/Participant_27642_compound_2547>
+      rh:compound <http://rdf.rhea-db.org/Compound_2547>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-002
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:27643
+  evidence:
+  - reference_id: RHEA:27643
+    source_assertion: RHEA:27643 substrates contain CHEBI:43474 with coefficient 1; the compound is hydrogenphosphate.
+    source_locator: rh:27643 rh:substrates <http://rdf.rhea-db.org/27642_L>; <http://rdf.rhea-db.org/27642_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_5518>; <http://rdf.rhea-db.org/Participant_27642_compound_5518>
+      rh:compound <http://rdf.rhea-db.org/Compound_5518>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-003
+  subject: RHEA:27643
+  predicate: produces
+  object: CHEBI:57720
+  evidence:
+  - reference_id: RHEA:27643
+    source_assertion: RHEA:27643 products contain CHEBI:57720 with coefficient 1; the compound is alpha-D-ribose
+      1-phosphate(2-).
+    source_locator: rh:27643 rh:products <http://rdf.rhea-db.org/27642_R>; <http://rdf.rhea-db.org/27642_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_2276>; <http://rdf.rhea-db.org/Participant_27642_compound_2276>
+      rh:compound <http://rdf.rhea-db.org/Compound_2276>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-004
+  subject: RHEA:27643
+  predicate: produces
+  object: CHEBI:16708
+  evidence:
+  - reference_id: RHEA:27643
+    source_assertion: RHEA:27643 products contain CHEBI:16708 with coefficient 1; the compound is adenine.
+    source_locator: rh:27643 rh:products <http://rdf.rhea-db.org/27642_R>; <http://rdf.rhea-db.org/27642_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_4174>; <http://rdf.rhea-db.org/Participant_27642_compound_4174>
+      rh:compound <http://rdf.rhea-db.org/Compound_4174>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-005
+  subject: RHEA:27643
+  predicate: part_of
+  object: MetaCyc:P121-PWY
+  evidence:
+  - reference_id: MetaCyc:P121-PWY
+    source_assertion: P121-PWY includes ADENPHOSPHOR-RXN and selects native layout direction L2R.
+    source_locator: Pathway[@frameid="P121-PWY"]/reaction-list/Reaction[@frameid="ADENPHOSPHOR-RXN"];
+      reaction-layout[Reaction/@frameid="ADENPHOSPHOR-RXN"]/direction
+  - reference_id: MetaCyc:ADENPHOSPHOR-RXN
+    source_assertion: ADENPHOSPHOR-RXN links to Rhea 27645 bidirectional; native chemical sides and physiological
+      orientation are retained separately.
+    source_locator: Reaction[@frameid="ADENPHOSPHOR-RXN"]/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+  - reference_id: RHEA:27643
+    source_assertion: Rhea master 27642 contains directed reaction 27643; the selected left-to-right member
+      supplies the normalized chemical equation.
+    source_locator: rh:27642 rh:directionalReaction rh:27643; rh:27643 rh:substrates/rh:products/rh:equation
+- id: adenine-i-edge-006
+  subject: CHEBI:58017
+  predicate: consumes
+  object: RHEA:16611
+  evidence:
+  - reference_id: RHEA:16611
+    source_assertion: RHEA:16611 substrates contain CHEBI:58017 with coefficient 1; the compound is 5-O-phosphonato-alpha-D-ribofuranosyl
+      diphosphate(5-).
+    source_locator: rh:16611 rh:substrates <http://rdf.rhea-db.org/16609_R>; <http://rdf.rhea-db.org/16609_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_16609_compound_4203>; <http://rdf.rhea-db.org/Participant_16609_compound_4203>
+      rh:compound <http://rdf.rhea-db.org/Compound_4203>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-007
+  subject: CHEBI:16708
+  predicate: consumes
+  object: RHEA:16611
+  evidence:
+  - reference_id: RHEA:16611
+    source_assertion: RHEA:16611 substrates contain CHEBI:16708 with coefficient 1; the compound is adenine.
+    source_locator: rh:16611 rh:substrates <http://rdf.rhea-db.org/16609_R>; <http://rdf.rhea-db.org/16609_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_16609_compound_4174>; <http://rdf.rhea-db.org/Participant_16609_compound_4174>
+      rh:compound <http://rdf.rhea-db.org/Compound_4174>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-008
+  subject: RHEA:16611
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:16611
+    source_assertion: RHEA:16611 products contain CHEBI:456215 with coefficient 1; the compound is adenosine
+      5'-monophosphate(2-).
+    source_locator: rh:16611 rh:products <http://rdf.rhea-db.org/16609_L>; <http://rdf.rhea-db.org/16609_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_16609_compound_2590>; <http://rdf.rhea-db.org/Participant_16609_compound_2590>
+      rh:compound <http://rdf.rhea-db.org/Compound_2590>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-009
+  subject: RHEA:16611
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:16611
+    source_assertion: RHEA:16611 products contain CHEBI:33019 with coefficient 1; the compound is diphosphate(3-).
+    source_locator: rh:16611 rh:products <http://rdf.rhea-db.org/16609_L>; <http://rdf.rhea-db.org/16609_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_16609_compound_2106>; <http://rdf.rhea-db.org/Participant_16609_compound_2106>
+      rh:compound <http://rdf.rhea-db.org/Compound_2106>; rh:accession/rh:formula/rh:charge
+- id: adenine-i-edge-010
+  subject: RHEA:16611
+  predicate: part_of
+  object: MetaCyc:P121-PWY
+  evidence:
+  - reference_id: MetaCyc:P121-PWY
+    source_assertion: P121-PWY includes ADENPRIBOSYLTRAN-RXN and selects native layout direction R2L.
+    source_locator: Pathway[@frameid="P121-PWY"]/reaction-list/Reaction[@frameid="ADENPRIBOSYLTRAN-RXN"];
+      reaction-layout[Reaction/@frameid="ADENPRIBOSYLTRAN-RXN"]/direction
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-RXN
+    source_assertion: ADENPRIBOSYLTRAN-RXN links to Rhea 16609 master; native chemical sides and physiological
+      orientation are retained separately.
+    source_locator: Reaction[@frameid="ADENPRIBOSYLTRAN-RXN"]/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+  - reference_id: RHEA:16611
+    source_assertion: Rhea master 16609 contains directed reaction 16611; the selected right-to-left member
+      supplies the normalized chemical equation.
+    source_locator: rh:16609 rh:directionalReaction rh:16611; rh:16611 rh:substrates/rh:products/rh:equation
+- id: adenine-i-edge-011
+  subject: UniProtKB:P0ABP8
+  predicate: part_of
+  object: MetaCyc:DEOD-CPLX
+  evidence:
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: Native DEOD-CPLX contains six DEOD-MONOMER subunits.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/component[Protein/@frameid="DEOD-MONOMER"]/coefficient
+  - reference_id: MetaCyc:DEOD-MONOMER
+    source_assertion: Native DEOD-MONOMER unification cross-reference identifies UniProt P0ABP8.
+    source_locator: Protein[@frameid="DEOD-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: The reviewed subunit comment describes a homohexamer, organized as a trimer of homodimers,
+      with experimental references.
+    source_locator: comments[commentType="SUBUNIT"].texts
+  - reference_id: PMID:30337572
+    source_assertion: The E. coli enzyme is a homohexamer; each dimer contributes residues to its neighboring
+      active site, and the trimer-of-dimers assembly stabilizes catalytically productive conformations.
+    source_locator: PMC6193948 Introduction; Results, concluding mechanistic paragraph; Fig. 4
+- id: adenine-i-edge-012
+  subject: MetaCyc:DEOD-CPLX
+  predicate: catalyzes
+  object: RHEA:27643
+  evidence:
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: DEOD-CPLX catalyzes ADENPHOSPHOR-ENZRXN, linked to ADENPHOSPHOR-RXN.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/catalyzes/Enzymatic-Reaction[@frameid="ADENPHOSPHOR-ENZRXN"]/reaction
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: The reviewed catalytic activity assigns adenosine phosphorolysis to RHEA:27642,
+      supported by experimental PubMed evidence; direction here follows P121-PWY.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences/id="RHEA:27642"]
+  - reference_id: PMID:30337572
+    source_assertion: Wild-type E. coli purine nucleoside phosphorylase was assayed with natural substrate
+      adenosine and phosphate; mutant and substrate-analogue results are distinguished from the wild-type
+      assay.
+    source_locator: PMC6193948 Results, Catalytic and kinetic properties; Table 1 and Fig. 2
+- id: adenine-i-edge-013
+  subject: UniProtKB:P69503
+  predicate: part_of
+  object: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+  evidence:
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+    source_assertion: The native E. coli MG1655 Apt complex contains two ADENPRIBOSYLTRAN-MONOMER subunits.
+    source_locator: Protein[@frameid="ADENPRIBOSYLTRAN-CPLX"]/component[Protein/@frameid="ADENPRIBOSYLTRAN-MONOMER"]/coefficient;
+      species/Organism/@frameid
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-MONOMER
+    source_assertion: The native Apt subunit has UniProt P69503 as a unification cross-reference.
+    source_locator: Protein[@frameid="ADENPRIBOSYLTRAN-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid
+  - reference_id: UniProtKB:P69503
+    source_assertion: Reviewed subunit annotation states homodimer; no experimental evidence code is attached
+      to this particular comment.
+    source_locator: comments[commentType="SUBUNIT"].texts
+- id: adenine-i-edge-014
+  subject: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+  predicate: catalyzes
+  object: RHEA:16611
+  evidence:
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+    source_assertion: Native Apt complex catalyzes ADENPRIBOSYLTRAN-ENZRXN, which links to ADENPRIBOSYLTRAN-RXN.
+    source_locator: Protein[@frameid="ADENPRIBOSYLTRAN-CPLX"]/catalyzes/Enzymatic-Reaction/reaction
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-RXN
+    source_assertion: 'The native reaction is physiologically right-to-left: adenine plus PRPP forms AMP
+      plus diphosphate.'
+    source_locator: Reaction[@frameid="ADENPRIBOSYLTRAN-RXN"]/right; left; reaction-direction
+  - reference_id: UniProtKB:P69503
+    source_assertion: Reviewed catalytic activity assigns RHEA:16609 under HAMAP MF_00004 inference; this
+      annotation is not presented as a direct assay.
+    source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction.reactionCrossReferences; reaction.evidences
+  - reference_id: PMID:21111048
+    source_assertion: Recombinant E. coli APRT expressed in BL21(AI) was purified and assayed with adenine
+      and PRPP in a coupled assay. This demonstrates activity of the recombinant construct, not whole-pathway
+      wild-type flux.
+    source_locator: PMC4125576 Methods, expression/purification and APRT assay; Results, Determination
+      of enzyme activities; Fig. 3c; Table 1
+- id: adenine-i-edge-015
+  subject: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-ENZRXN
+    source_assertion: The native Apt enzymatic reaction lists Mg2+ as cofactor, citing Hochstadt-Ozer
+      and Stadtman 1971; that paper was not independently available in full text here.
+    source_locator: Enzymatic-Reaction[@frameid="ADENPRIBOSYLTRAN-ENZRXN"]/cofactor[Compound/@frameid="MG+2"]
+  - reference_id: PMID:21111048
+    source_assertion: The recombinant APRT coupled activity assay included 10 mM MgCl2, 1.5 mM PRPP and
+      1.5 mM adenine hydrochloride at pH 7.8; the assay does not establish in vivo metal occupancy.
+    source_locator: PMC4125576 Methods, Activity assays/APRT, paragraph beginning "The spectrophotometric
+      assay"
+- id: adenine-i-edge-016
+  subject: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: MetaCyc:ADENPRIBOSYLTRAN-ENZRXN
+    source_assertion: The native enzymatic reaction lists Mn2+ as an alternative to Mg2+. This is source
+      annotation, not a claim of simultaneous binding or a separately inspected manganese assay.
+    source_locator: Enzymatic-Reaction[@frameid="ADENPRIBOSYLTRAN-ENZRXN"]/alternative-cofactor[cofactor/Compound/@frameid="MG+2"]/alternate/Compound[@frameid="MN+2"]
+- id: adenine-i-edge-017
+  subject: UniProtKB:P69503
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P69503
+    source_assertion: The reviewed entry locates Apt in the cytoplasm; the location comment has no attached
+      experimental evidence code.
+    source_locator: comments[commentType="SUBCELLULAR LOCATION"].subcellularLocations.location
+  - reference_id: PMID:365172
+    source_assertion: The inspected abstract places adenine phosphoribosyltransferase intracellularly
+      and reports no significant association with purified membrane fractions, distinguishing localization
+      from preparation-dependent membrane association.
+    source_locator: Europe PMC resultList.result[id="365172"].abstractText
+- id: adenine-i-edge-018
+  subject: RHEA:27643
+  predicate: provides_input_for
+  object: RHEA:16611
+  evidence:
+  - reference_id: MetaCyc:P121-PWY
+    source_assertion: The native pathway orders ADENPHOSPHOR-RXN before ADENPRIBOSYLTRAN-RXN and shows
+      ADENINE as the connecting native compound.
+    source_locator: Pathway[@frameid="P121-PWY"]/reaction-ordering[Reaction/@frameid="ADENPRIBOSYLTRAN-RXN"]/predecessor-reactions;
+      reaction-layout/right-primaries
+  - reference_id: RHEA:27643
+    source_assertion: RHEA:27643 products contain CHEBI:16708 with coefficient 1; the compound is adenine.
+    source_locator: rh:27643 rh:products <http://rdf.rhea-db.org/27642_R>; <http://rdf.rhea-db.org/27642_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_4174>; <http://rdf.rhea-db.org/Participant_27642_compound_4174>
+      rh:compound <http://rdf.rhea-db.org/Compound_4174>; rh:accession/rh:formula/rh:charge
+  - reference_id: RHEA:16611
+    source_assertion: RHEA:16611 substrates contain CHEBI:16708 with coefficient 1; the compound is adenine.
+    source_locator: rh:16611 rh:substrates <http://rdf.rhea-db.org/16609_R>; <http://rdf.rhea-db.org/16609_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_16609_compound_4174>; <http://rdf.rhea-db.org/Participant_16609_compound_4174>
+      rh:compound <http://rdf.rhea-db.org/Compound_4174>; rh:accession/rh:formula/rh:charge
+  - reference_id: PMID:765747
+    source_assertion: The E. coli salvage scheme places purine nucleoside phosphorylase between adenosine
+      and adenine and adenine phosphoribosyltransferase between adenine and AMP; experiments use the K-12
+      derivatives listed in Table 1.
+    source_locator: p. 85, Fig. 1; pp. 86-87, Methods and Table 1
+- id: adenine-i-edge-019
+  subject: UniProtKB:P69503
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: UniProtKB:P69503
+    source_assertion: The reviewed entry identifies Escherichia coli strain K12, taxon 83333, with ordered
+      locus b0469.
+    source_locator: organism.taxonId; organism.scientificName; genes.orderedLocusNames
+- id: adenine-i-edge-020
+  subject: UniProtKB:P0ABP8
+  predicate: part_of
+  object: NCBITaxon:83333
+  evidence:
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: The reviewed entry identifies Escherichia coli strain K12, taxon 83333, with ordered
+      locus b4384.
+    source_locator: organism.taxonId; organism.scientificName; genes.orderedLocusNames
+references:
+- id: MetaCyc:P121-PWY
+  title: MetaCyc P121-PWY native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:P121-PWY
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: 9c80cd6e3f9fc1b42962fdce4de83a7375b6875ca6849aa49c7f492d7af8fb7f
+- id: MetaCyc:ADENPHOSPHOR-RXN
+  title: MetaCyc ADENPHOSPHOR-RXN native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:ADENPHOSPHOR-RXN
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: 57c09f3b3b8955e3a7139292e0c3bd0506d4a467782d15099439c22cff29817b
+- id: MetaCyc:ADENPRIBOSYLTRAN-RXN
+  title: MetaCyc ADENPRIBOSYLTRAN-RXN native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:ADENPRIBOSYLTRAN-RXN
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: bd78fa689e81837ddcf191d42c79e476ad0133176a9cc3cd66fd0fc0eb5a2fbb
+- id: MetaCyc:DEOD-CPLX
+  title: MetaCyc DEOD-CPLX native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:DEOD-CPLX
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: f362dcc29babaf5d23e730a329a7c436a0944d811a36ad1adb8ee8569e7962e5
+- id: MetaCyc:DEOD-MONOMER
+  title: MetaCyc DEOD-MONOMER native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:DEOD-MONOMER
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: 99f6dcc78816a3a58aab669c0cdaa9a886a0c854dfa8076cbd9a03aa31766893
+- id: MetaCyc:ADENPRIBOSYLTRAN-CPLX
+  title: MetaCyc ADENPRIBOSYLTRAN-CPLX native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:ADENPRIBOSYLTRAN-CPLX
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: 701bca05bc04a5cc9563857c5a24bb988dd501fcea490b1b057455a5b7bec557
+- id: MetaCyc:ADENPRIBOSYLTRAN-MONOMER
+  title: MetaCyc ADENPRIBOSYLTRAN-MONOMER native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:ADENPRIBOSYLTRAN-MONOMER
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: ec2c66e510ba13affe101895a5b3ad347e7534d98cd031c3f01d6620a8e1c901
+- id: MetaCyc:ADENPRIBOSYLTRAN-ENZRXN
+  title: MetaCyc ADENPRIBOSYLTRAN-ENZRXN native full XML
+  url: https://pathway.yeastgenome.org/getxml?META:ADENPRIBOSYLTRAN-ENZRXN
+  source_version: MetaCyc 22.5 native XML
+  source_sha256: ffe8555991465ae4a0112e168da951a0bd288b3ae2f1dc9ccdeb72c7c1094d4d
+- id: UniProtKB:P69503
+  title: Adenine phosphoribosyltransferase
+  url: https://rest.uniprot.org/uniprotkb/P69503.json
+  source_version: UniProt release 2026_03; 02-September-2026
+  source_sha256: 1b76a94fe77706f03fdb9d7c3b38b8b85b4ea3cd7e6e22dff1af46289cad71bf
+- id: UniProtKB:P0ABP8
+  title: Purine nucleoside phosphorylase DeoD-type
+  url: https://rest.uniprot.org/uniprotkb/P0ABP8.json
+  source_version: UniProt release 2026_03; 02-September-2026
+  source_sha256: 261a1c1e34fcc0af42d3a3b4a16c27a01ecba13eee2437d3f4d8c51e422eed02
+- id: RHEA:27643
+  title: Rhea directed reaction 27643
+  url: https://www.rhea-db.org/rhea/27643
+  source_version: Rhea 142; 2026-09-02; full RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:16611
+  title: Rhea directed reaction 16611
+  url: https://www.rhea-db.org/rhea/16611
+  source_version: Rhea 142; 2026-09-02; full RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:30337572
+  title: Crystallographic snapshots of ligand binding to hexameric purine nucleoside phosphorylase and
+    kinetic studies give insight into the mechanism of catalysis.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6193948/
+  source_version: 2018 primary full text, PMC BioC XML
+  source_sha256: 1218e2d0107c64412a92a0e365c4bedfa2011eabc73008e9aa8399f20e5b821d
+- id: PMID:21111048
+  title: Expression, purification and analysis of the activity of enzymes from the pentose phosphate pathway.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4125576/
+  source_version: 2011 primary full text, PMC BioC XML
+  source_sha256: 8bcd1b5acffdea4abae8fcda0326e95d13fdc5de1f7681d46bc353271c19156b
+- id: PMID:765747
+  title: Location on the chromosome of Escherichia coli of genes governing purine metabolism.
+  url: https://ecosalgenes.frenoy.eu/pdf/370.pdf
+  source_version: 1975 primary full PDF, 7 pages
+  source_sha256: a94c9a8e77e5d839c8bbf07444e21bfbf187347f085d99d5f89745e0043bca0f
+- id: PMID:365172
+  title: The location of purine phosphoribosyltransferase activities in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/365172/
+  source_version: 1978 primary abstract in Europe PMC exact PMID batch; full text not inspected
+  source_sha256: 9f90796958cc1a4cd7571e8706d6580d07b5894c81207de48ec6b5fb4ca0cedc

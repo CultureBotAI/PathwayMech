@@ -23,6 +23,13 @@ role. A chemical may be both a reaction participant and an enzyme cofactor;
 the incident edges distinguish those roles. Cellular components and biological
 processes are context nodes, not metabolites to consume.
 
+Use `chemical_entity` when the source establishes a chemical entity or generic
+chemical class without restricting it to a narrower molecular kind. For example,
+the generic methyl acceptors in the SAM cycle can include small molecules and
+macromolecules. This category exports as `biolink:ChemicalEntity` and renders as
+a chemical node. It does not establish a specific structure, molecular size or
+cofactor role; retain the source-native identity and edge evidence.
+
 Use `polymer` for a supported chemical polymer class. It exports as
 `biolink:ChemicalEntity` and renders as a chemical node, avoiding the default
 small-molecule classification for an uncategorized ChEBI participant. This
