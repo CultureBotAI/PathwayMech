@@ -1,0 +1,930 @@
+id: PathBank:SMP0002089
+label: Purine Deoxyribonucleosides Degradation
+description: The complete six-reaction PathBank pathway annotated here for Escherichia coli K-12 MG1655
+  channels deoxyadenosine, deoxyinosine and deoxyguanosine into free purine bases, acetaldehyde and D-glyceraldehyde
+  3-phosphate. Add deaminates deoxyadenosine to deoxyinosine; the DeoD homohexamer provides three parallel
+  phosphorolysis branches, including direct deoxyadenosine cleavage. DeoB transfers the deoxyribose phosphate
+  from C1 to C5 and DeoC cleaves the resulting sugar phosphate. Degradation-directed Rhea reactions retain
+  every chemical side and its exact charge and stereochemistry. This native boundary ends before acetaldehyde
+  oxidation to acetyl-CoA and does not assert purine ring degradation, nucleoside uptake, or nucleotide
+  salvage. MG1655 follows native component annotations; the reviewed proteins are K-12 entries, and the
+  inspected enzyme studies do not establish whole-pathway flux in MG1655. DeoC's monomer/dimer states
+  and Add's inferred zinc assignment remain explicitly qualified.
+pathway_type: purine-deoxyribonucleoside-catabolism
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:17256
+  label: 2'-deoxyadenosine
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:28997
+  label: 2'-deoxyinosine
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57259
+  label: 2-deoxy-alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:16708
+  label: adenine
+  category: small_molecule
+- id: CHEBI:17368
+  label: hypoxanthine
+  category: small_molecule
+- id: CHEBI:17172
+  label: 2'-deoxyguanosine
+  category: small_molecule
+- id: CHEBI:16235
+  label: guanine
+  category: small_molecule
+- id: CHEBI:62877
+  label: 2-deoxy-D-ribofuranose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:59776
+  label: D-glyceraldehyde 3-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:15343
+  label: acetaldehyde
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: UniProtKB:P22333
+  label: Adenosine deaminase
+  category: protein
+- id: UniProtKB:P0ABP8
+  label: Purine nucleoside phosphorylase DeoD-type
+  category: protein
+- id: UniProtKB:P0A6K6
+  label: Phosphopentomutase
+  category: protein
+- id: UniProtKB:P0A6L0
+  label: Deoxyribose-phosphate aldolase
+  category: protein
+- id: MetaCyc:DEOD-CPLX
+  label: purine nucleoside phosphorylase
+  category: complex
+reactions:
+- id: RHEA:28191
+  label: 2'-deoxyadenosine + H2O + H(+) => 2'-deoxyinosine + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27743
+  label: 2'-deoxyadenosine + phosphate => 2-deoxy-alpha-D-ribose 1-phosphate + adenine
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27751
+  label: 2'-deoxyinosine + phosphate => 2-deoxy-alpha-D-ribose 1-phosphate + hypoxanthine
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27739
+  label: 2'-deoxyguanosine + phosphate => 2-deoxy-alpha-D-ribose 1-phosphate + guanine
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27659
+  label: 2-deoxy-alpha-D-ribose 1-phosphate => 2-deoxy-D-ribose 5-phosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:12822
+  label: 2-deoxy-D-ribose 5-phosphate => D-glyceraldehyde 3-phosphate + acetaldehyde
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: purine-deoxy-edge-001
+  subject: CHEBI:17256
+  predicate: consumes
+  object: RHEA:28191
+  evidence:
+  - reference_id: RHEA:28191
+    source_assertion: Rhea RHEA:28191 assigns CHEBI:17256 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28191']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28190_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28190_compound_1711'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:28191
+  evidence:
+  - reference_id: RHEA:28191
+    source_assertion: Rhea RHEA:28191 assigns CHEBI:15377 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28191']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28190_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28190_compound_1283'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:28191
+  evidence:
+  - reference_id: RHEA:28191
+    source_assertion: Rhea RHEA:28191 assigns CHEBI:15378 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28191']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28190_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28190_compound_3249'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-004
+  subject: RHEA:28191
+  predicate: produces
+  object: CHEBI:28997
+  evidence:
+  - reference_id: RHEA:28191
+    source_assertion: Rhea RHEA:28191 assigns CHEBI:28997 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28191']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28190_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28190_compound_6258'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-005
+  subject: RHEA:28191
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:28191
+    source_assertion: Rhea RHEA:28191 assigns CHEBI:28938 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28191']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28190_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28190_compound_1012'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-006
+  subject: CHEBI:17256
+  predicate: consumes
+  object: RHEA:27743
+  evidence:
+  - reference_id: RHEA:27743
+    source_assertion: Rhea RHEA:27743 assigns CHEBI:17256 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27743']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27742_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27742_compound_1711'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-007
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:27743
+  evidence:
+  - reference_id: RHEA:27743
+    source_assertion: Rhea RHEA:27743 assigns CHEBI:43474 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27743']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27742_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27742_compound_5518'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-008
+  subject: RHEA:27743
+  predicate: produces
+  object: CHEBI:57259
+  evidence:
+  - reference_id: RHEA:27743
+    source_assertion: Rhea RHEA:27743 assigns CHEBI:57259 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27743']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27742_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27742_compound_3098'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-009
+  subject: RHEA:27743
+  predicate: produces
+  object: CHEBI:16708
+  evidence:
+  - reference_id: RHEA:27743
+    source_assertion: Rhea RHEA:27743 assigns CHEBI:16708 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27743']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27742_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27742_compound_4174'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-010
+  subject: CHEBI:28997
+  predicate: consumes
+  object: RHEA:27751
+  evidence:
+  - reference_id: RHEA:27751
+    source_assertion: Rhea RHEA:27751 assigns CHEBI:28997 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27751']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27750_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27750_compound_6258'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-011
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:27751
+  evidence:
+  - reference_id: RHEA:27751
+    source_assertion: Rhea RHEA:27751 assigns CHEBI:43474 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27751']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27750_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27750_compound_5518'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-012
+  subject: RHEA:27751
+  predicate: produces
+  object: CHEBI:57259
+  evidence:
+  - reference_id: RHEA:27751
+    source_assertion: Rhea RHEA:27751 assigns CHEBI:57259 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27751']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27750_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27750_compound_3098'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-013
+  subject: RHEA:27751
+  predicate: produces
+  object: CHEBI:17368
+  evidence:
+  - reference_id: RHEA:27751
+    source_assertion: Rhea RHEA:27751 assigns CHEBI:17368 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27751']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27750_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27750_compound_3881'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-014
+  subject: CHEBI:17172
+  predicate: consumes
+  object: RHEA:27739
+  evidence:
+  - reference_id: RHEA:27739
+    source_assertion: Rhea RHEA:27739 assigns CHEBI:17172 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27739']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27738_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27738_compound_3664'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-015
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:27739
+  evidence:
+  - reference_id: RHEA:27739
+    source_assertion: Rhea RHEA:27739 assigns CHEBI:43474 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27739']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27738_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27738_compound_5518'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-016
+  subject: RHEA:27739
+  predicate: produces
+  object: CHEBI:57259
+  evidence:
+  - reference_id: RHEA:27739
+    source_assertion: Rhea RHEA:27739 assigns CHEBI:57259 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27739']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27738_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27738_compound_3098'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-017
+  subject: RHEA:27739
+  predicate: produces
+  object: CHEBI:16235
+  evidence:
+  - reference_id: RHEA:27739
+    source_assertion: Rhea RHEA:27739 assigns CHEBI:16235 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27739']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27738_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27738_compound_2523'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-018
+  subject: CHEBI:57259
+  predicate: consumes
+  object: RHEA:27659
+  evidence:
+  - reference_id: RHEA:27659
+    source_assertion: Rhea RHEA:27659 assigns CHEBI:57259 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27659']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27658_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27658_compound_3098'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-019
+  subject: RHEA:27659
+  predicate: produces
+  object: CHEBI:62877
+  evidence:
+  - reference_id: RHEA:27659
+    source_assertion: Rhea RHEA:27659 assigns CHEBI:62877 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27659']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27658_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27658_compound_14166'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-020
+  subject: CHEBI:62877
+  predicate: consumes
+  object: RHEA:12822
+  evidence:
+  - reference_id: RHEA:12822
+    source_assertion: Rhea RHEA:12822 assigns CHEBI:62877 to substrates with coefficient 1; the linked
+      compound resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12822']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/12821_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_12821_compound_14166'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-021
+  subject: RHEA:12822
+  predicate: produces
+  object: CHEBI:59776
+  evidence:
+  - reference_id: RHEA:12822
+    source_assertion: Rhea RHEA:12822 assigns CHEBI:59776 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12822']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/12821_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_12821_compound_6062'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-022
+  subject: RHEA:12822
+  predicate: produces
+  object: CHEBI:15343
+  evidence:
+  - reference_id: RHEA:12822
+    source_assertion: Rhea RHEA:12822 assigns CHEBI:15343 to products with coefficient 1; the linked compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/12822']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/12821_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_12821_compound_3952'];
+      rh:compound/rh:chebi
+- id: purine-deoxy-edge-023
+  subject: UniProtKB:P22333
+  predicate: enables
+  object: RHEA:28191
+  description: Functional Add role; no inference that an isolated monomer is sufficient. Exact activity
+    is attributed to the inspected curated sources; the cited 1978 full text was inaccessible.
+  evidence:
+  - reference_id: UniProtKB:P22333
+    source_assertion: Reviewed Add catalytic-activity comment 2 assigns deoxyadenosine deamination to
+      RHEA:28190 and physiological left-to-right RHEA:28191, with experimental attribution to PMID:357905
+      alongside HAMAP inference.
+    source_locator: comments[2].reaction; comments[2].physiologicalReactions; comments[2].reaction.evidences
+  - reference_id: MetaCyc:ADDALT-ENZRXN
+    source_assertion: ADDALT-ENZRXN assigns ADDALT-RXN to ADENODEAMIN-MONOMER, marks it physiologically
+      relevant and cites purified-native-protein assay evidence from PMID:357905.
+    source_locator: Enzymatic-Reaction[@frameid="ADDALT-ENZRXN"]/reaction, enzyme, physiologically-relevant,
+      evidence
+  - reference_id: MetaCyc:ADENODEAMIN-MONOMER
+    source_assertion: The native Add entity explicitly cross-references UniProt P22333 and MG1655 TAX-511145;
+      it distinguishes E. coli K-12 enzyme data from the murine monomeric zinc-enzyme comparison.
+    source_locator: Protein[@frameid="ADENODEAMIN-MONOMER"]/dblink[dblink-db="UNIPROT"], species, comment
+- id: purine-deoxy-edge-024
+  subject: MetaCyc:DEOD-CPLX
+  predicate: catalyzes
+  object: RHEA:27743
+  description: The physiologically relevant degradation direction is selected for reversible phosphorolysis;
+    the catalyst is the DeoD hexamer.
+  evidence:
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: Reviewed DeoD catalytic-activity comment 6 assigns the exact deoxyribonucleoside
+      phosphorolysis to RHEA:27742, citing experimental PMID:235429; comment 10 identifies the homohexamer.
+    source_locator: comments[6].reaction; comments[6].reaction.evidences; comments[10]
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: The native purine nucleoside phosphorylase complex contains six DEOD-MONOMER subunits
+      and catalyzes DEOXYADENPHOSPHOR-RXN.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/component; catalyzes/Enzymatic-Reaction/reaction
+- id: purine-deoxy-edge-025
+  subject: MetaCyc:DEOD-CPLX
+  predicate: catalyzes
+  object: RHEA:27751
+  description: The physiologically relevant degradation direction is selected for reversible phosphorolysis;
+    the catalyst is the DeoD hexamer.
+  evidence:
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: Reviewed DeoD catalytic-activity comment 8 assigns the exact deoxyribonucleoside
+      phosphorolysis to RHEA:27750, citing experimental PMID:235429; comment 10 identifies the homohexamer.
+    source_locator: comments[8].reaction; comments[8].reaction.evidences; comments[10]
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: The native purine nucleoside phosphorylase complex contains six DEOD-MONOMER subunits
+      and catalyzes DEOXYINOPHOSPHOR-RXN.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/component; catalyzes/Enzymatic-Reaction/reaction
+- id: purine-deoxy-edge-026
+  subject: MetaCyc:DEOD-CPLX
+  predicate: catalyzes
+  object: RHEA:27739
+  description: The physiologically relevant degradation direction is selected for reversible phosphorolysis;
+    the catalyst is the DeoD hexamer.
+  evidence:
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: Reviewed DeoD catalytic-activity comment 7 assigns the exact deoxyribonucleoside
+      phosphorolysis to RHEA:27738, citing experimental PMID:235429; comment 10 identifies the homohexamer.
+    source_locator: comments[7].reaction; comments[7].reaction.evidences; comments[10]
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: The native purine nucleoside phosphorylase complex contains six DEOD-MONOMER subunits
+      and catalyzes DEOXYGUANPHOSPHOR-RXN.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/component; catalyzes/Enzymatic-Reaction/reaction
+- id: purine-deoxy-edge-027
+  subject: UniProtKB:P0A6K6
+  predicate: catalyzes
+  object: RHEA:27659
+  description: Monomeric enzyme supported by the inspected physical-characterization abstract; C1-to-C5
+    degradation direction selected from the reversible reaction.
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: Reviewed DeoB catalytic-activity comment 1 assigns the exact deoxyribose 1-phosphate
+      to 5-phosphate interconversion to RHEA:27658, citing PMID:1089430 and PMID:4992818.
+    source_locator: comments[1].reaction; comments[1].reaction.evidences
+  - reference_id: PMID:1089430
+    source_assertion: The inspected primary abstract reports that all four purified phosphodeoxyribomutase
+      forms consist of a single polypeptide chain, with molecular weight about 45,000, and have different
+      cobalt-binding properties.
+    source_locator: resultList.result[0].abstractText
+  - reference_id: MetaCyc:PPENTOMUT-MONOMER
+    source_assertion: PPENTOMUT-MONOMER explicitly cross-references UniProt P0A6K6, is assigned to MG1655
+      and catalyzes the deoxyribose phosphomutase reaction.
+    source_locator: Protein[@frameid="PPENTOMUT-MONOMER"]/dblink[dblink-db="UNIPROT"], species, catalyzes
+- id: purine-deoxy-edge-028
+  subject: UniProtKB:P0A6L0
+  predicate: enables
+  object: RHEA:12822
+  description: Functional DeoC role retains the documented monomer/dimer alternatives; no invented physical
+    assembly or universal monomer-sufficiency claim. Degradation cleavage is selected from reversible
+    aldol chemistry.
+  evidence:
+  - reference_id: UniProtKB:P0A6L0
+    source_assertion: Reviewed DeoC assigns deoxyribose 5-phosphate cleavage to RHEA:12821, with experimental
+      references, and explicitly annotates both monomer and homodimer states.
+    source_locator: comments[1].reaction; comments[4]
+  - reference_id: PMID:7675789
+    source_assertion: The primary abstract identifies E. coli class I DERA and its reversible cleavage
+      of deoxyribose 5-phosphate into acetaldehyde and glyceraldehyde 3-phosphate.
+    source_locator: resultList.result[0].abstractText
+  - reference_id: PMID:6749498
+    source_assertion: The inspected E. coli K-12 primary abstract reports that purified DeoC may exist
+      in both monomeric and dimeric forms.
+    source_locator: resultList.result[0].abstractText
+  - reference_id: MetaCyc:DEOXYRIBOSE-P-ALD-MONOMER
+    source_assertion: The native MG1655 DeoC entity cross-references P0A6L0; its comment reports monomer
+      in Tris/HCl with EDTA and dimer in phosphate buffer, citing PMID:6749498.
+    source_locator: Protein[@frameid="DEOXYRIBOSE-P-ALD-MONOMER"]/dblink[dblink-db="UNIPROT"], species,
+      comment
+- id: purine-deoxy-edge-029
+  subject: UniProtKB:P0ABP8
+  predicate: part_of
+  object: MetaCyc:DEOD-CPLX
+  description: Six DeoD copies per native complex. The PathBank and MetaCyc assembly descriptions corroborate
+    composition; no physical-instance sameAs mapping is asserted.
+  evidence:
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: The native DEOD-CPLX component slot specifies six copies of DEOD-MONOMER.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/component
+  - reference_id: MetaCyc:DEOD-MONOMER
+    source_assertion: DEOD-MONOMER explicitly cross-references UniProt P0ABP8 and is a component of DEOD-CPLX.
+    source_locator: Protein[@frameid="DEOD-MONOMER"]/dblink[dblink-db="UNIPROT"], component-of
+  - reference_id: PathBank:SMP0002089
+    source_assertion: Native ProteinComplex/4056 has six copies of Protein/6182; its protein reference
+      identifies P0ABP8. This independently supports the same six-subunit composition.
+    source_locator: bp:Complex[@rdf:ID="ProteinComplex/4056"]/bp:componentStoichiometry; bp:Stoichiometry[@rdf:ID="Protein/6182/Stoichiometry/6.0"];
+      bp:ProteinReference[@rdf:ID="ProteinReference/6182"]/bp:xref
+  - reference_id: PMID:235429
+    source_assertion: The inspected primary abstract supports six identical subunits; association experiments
+      suggest that only the hexameric form is active.
+    source_locator: resultList.result[0].abstractText
+  - reference_id: PMID:30337572
+    source_assertion: The primary full text reports six identical chains arranged as a trimer of dimers
+      and explains that the hexameric architecture stabilizes catalytically competent dimers.
+    source_locator: body; Results and Discussion, crystal structures paragraph beginning "All PNP structures";
+      Conclusions
+- id: purine-deoxy-edge-030
+  subject: UniProtKB:P22333
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Inferred zinc cofactor annotation; the mammalian structural comparison is not transferred
+    as E. coli experimental proof.
+  evidence:
+  - reference_id: UniProtKB:P22333
+    source_assertion: Reviewed Add annotates Zn(2+) and one zinc ion per subunit using ECO:0000255 HAMAP-Rule
+      MF_00540; this is sequence-based inference, not a directly inspected E. coli metal-binding experiment.
+    source_locator: comments[3].cofactors; comments[3].note
+- id: purine-deoxy-edge-031
+  subject: UniProtKB:P0A6K6
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Alternative metal-supported activities, not simultaneous occupancy or proof of the physiological
+    metal. The source-cited 1970 full paper was inaccessible; no primary metal stoichiometry is inferred.
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: 'Reviewed DeoB annotates Mn(2+) support: Mn(2+) and Co(2+) are equally good activators;
+      Ni(2+) can substitute less efficiently, attributed to PMID:4992818. The two-Mn binding stoichiometry
+      is separately marked by similarity.'
+    source_locator: comments[3].cofactors; comments[3].note.texts[0]
+- id: purine-deoxy-edge-032
+  subject: UniProtKB:P0A6K6
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Alternative metal-supported activities, not simultaneous occupancy or proof of the physiological
+    metal. The source-cited 1970 full paper was inaccessible; no primary metal stoichiometry is inferred.
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: 'Reviewed DeoB annotates Co(2+) support: Mn(2+) and Co(2+) are equally good activators;
+      Ni(2+) can substitute less efficiently, attributed to PMID:4992818. The two-Mn binding stoichiometry
+      is separately marked by similarity.'
+    source_locator: comments[3].cofactors; comments[3].note.texts[0]
+- id: purine-deoxy-edge-033
+  subject: UniProtKB:P0A6K6
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: Alternative metal-supported activities, not simultaneous occupancy or proof of the physiological
+    metal. The source-cited 1970 full paper was inaccessible; no primary metal stoichiometry is inferred.
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: 'Reviewed DeoB annotates Ni(2+) support: Mn(2+) and Co(2+) are equally good activators;
+      Ni(2+) can substitute less efficiently, attributed to PMID:4992818. The two-Mn binding stoichiometry
+      is separately marked by similarity.'
+    source_locator: comments[3].cofactors; comments[3].note.texts[0]
+- id: purine-deoxy-edge-034
+  subject: UniProtKB:P22333
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: UniProtKB:P22333
+    source_assertion: The reviewed protein explicitly carries a GO:0005829 cytosol cross-reference with
+      IDA:EcoCyc attribution; this is an inspected database assertion, not a newly repeated localization
+      experiment.
+    source_locator: uniProtKBCrossReferences[database="GO",id="GO:0005829"].properties; evidences
+- id: purine-deoxy-edge-035
+  subject: UniProtKB:P0ABP8
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: The reviewed protein explicitly carries a GO:0005829 cytosol cross-reference with
+      IDA:EcoCyc attribution; this is an inspected database assertion, not a newly repeated localization
+      experiment.
+    source_locator: uniProtKBCrossReferences[database="GO",id="GO:0005829"].properties; evidences
+- id: purine-deoxy-edge-036
+  subject: UniProtKB:P0A6K6
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: UniProtKB:P0A6K6
+    source_assertion: The reviewed protein explicitly carries a GO:0005829 cytosol cross-reference with
+      IDA:EcoCyc attribution; this is an inspected database assertion, not a newly repeated localization
+      experiment.
+    source_locator: uniProtKBCrossReferences[database="GO",id="GO:0005829"].properties; evidences
+- id: purine-deoxy-edge-037
+  subject: UniProtKB:P0A6L0
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: UniProtKB:P0A6L0
+    source_assertion: The reviewed protein explicitly carries a GO:0005829 cytosol cross-reference with
+      IDA:EcoCyc attribution; this is an inspected database assertion, not a newly repeated localization
+      experiment.
+    source_locator: uniProtKBCrossReferences[database="GO",id="GO:0005829"].properties; evidences
+- id: purine-deoxy-edge-038
+  subject: MetaCyc:DEOD-CPLX
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: The native DEOD-CPLX location is CCO-CYTOSOL, the cytosolic compartment.
+    source_locator: Protein[@frameid="DEOD-CPLX"]/location
+- id: purine-deoxy-edge-039
+  subject: RHEA:28191
+  predicate: part_of
+  object: PathBank:SMP0002089
+  description: Native generic/protonation forms are projected to the exact reviewed-enzyme Rhea species;
+    no exactMatch between different ChEBI forms is asserted. Native 6068 is written right-to-left, which
+    is the selected deamination direction.
+  evidence:
+  - reference_id: PathBank:SMP0002089
+    source_assertion: The exact pathway SMP0002089 declares Reactions/6068 as a pathway component and
+      links it to a step. Its substrates, products and catalyst correspond to this selected degradation
+      reaction; all native chemical roles are retained.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002089"]/bp:pathwayComponent;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6068"]; linked bp:Catalysis
+  - reference_id: MetaCyc:ADDALT-RXN
+    source_assertion: Native reaction ADDALT-RXN has Rhea cross-reference 28190; its enzyme and chemical
+      identities support the bridge from the PathBank reaction to this Rhea family.
+    source_locator: Reaction[@frameid="ADDALT-RXN"]/dblink[dblink-db="RHEA"], left, right, enzymatic-reaction
+  - reference_id: RHEA:28191
+    source_assertion: Rhea master 28190 explicitly links directed left-to-right member 28191.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28190"]/rh:directionalReaction
+- id: purine-deoxy-edge-040
+  subject: RHEA:27743
+  predicate: part_of
+  object: PathBank:SMP0002089
+  description: Native generic/protonation forms are projected to the exact reviewed-enzyme Rhea species;
+    no exactMatch between different ChEBI forms is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002089
+    source_assertion: The exact pathway SMP0002089 declares Reactions/6069 as a pathway component and
+      links it to a step. Its substrates, products and catalyst correspond to this selected degradation
+      reaction; all native chemical roles are retained.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002089"]/bp:pathwayComponent;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6069"]; linked bp:Catalysis
+  - reference_id: MetaCyc:DEOXYADENPHOSPHOR-RXN
+    source_assertion: Native reaction DEOXYADENPHOSPHOR-RXN has Rhea cross-reference 27745; its enzyme
+      and chemical identities support the bridge from the PathBank reaction to this Rhea family.
+    source_locator: Reaction[@frameid="DEOXYADENPHOSPHOR-RXN"]/dblink[dblink-db="RHEA"], left, right,
+      enzymatic-reaction
+  - reference_id: RHEA:27743
+    source_assertion: Rhea master 27742 explicitly links directed left-to-right member 27743 and bidirectional
+      member 27745.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27742"]/rh:directionalReaction;
+      rh:bidirectionalReaction
+- id: purine-deoxy-edge-041
+  subject: RHEA:27751
+  predicate: part_of
+  object: PathBank:SMP0002089
+  description: Native generic/protonation forms are projected to the exact reviewed-enzyme Rhea species;
+    no exactMatch between different ChEBI forms is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002089
+    source_assertion: The exact pathway SMP0002089 declares Reactions/6067 as a pathway component and
+      links it to a step. Its substrates, products and catalyst correspond to this selected degradation
+      reaction; all native chemical roles are retained.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002089"]/bp:pathwayComponent;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6067"]; linked bp:Catalysis
+  - reference_id: MetaCyc:DEOXYINOPHOSPHOR-RXN
+    source_assertion: Native reaction DEOXYINOPHOSPHOR-RXN has Rhea cross-reference 27753; its enzyme
+      and chemical identities support the bridge from the PathBank reaction to this Rhea family.
+    source_locator: Reaction[@frameid="DEOXYINOPHOSPHOR-RXN"]/dblink[dblink-db="RHEA"], left, right, enzymatic-reaction
+  - reference_id: RHEA:27751
+    source_assertion: Rhea master 27750 explicitly links directed left-to-right member 27751 and bidirectional
+      member 27753.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27750"]/rh:directionalReaction;
+      rh:bidirectionalReaction
+- id: purine-deoxy-edge-042
+  subject: RHEA:27739
+  predicate: part_of
+  object: PathBank:SMP0002089
+  description: Native generic/protonation forms are projected to the exact reviewed-enzyme Rhea species;
+    no exactMatch between different ChEBI forms is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002089
+    source_assertion: The exact pathway SMP0002089 declares Reactions/6070 as a pathway component and
+      links it to a step. Its substrates, products and catalyst correspond to this selected degradation
+      reaction; all native chemical roles are retained.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002089"]/bp:pathwayComponent;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6070"]; linked bp:Catalysis
+  - reference_id: MetaCyc:DEOXYGUANPHOSPHOR-RXN
+    source_assertion: Native reaction DEOXYGUANPHOSPHOR-RXN has Rhea cross-reference 27741; its enzyme
+      and chemical identities support the bridge from the PathBank reaction to this Rhea family.
+    source_locator: Reaction[@frameid="DEOXYGUANPHOSPHOR-RXN"]/dblink[dblink-db="RHEA"], left, right,
+      enzymatic-reaction
+  - reference_id: RHEA:27739
+    source_assertion: Rhea master 27738 explicitly links directed left-to-right member 27739 and bidirectional
+      member 27741.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27738"]/rh:directionalReaction;
+      rh:bidirectionalReaction
+- id: purine-deoxy-edge-043
+  subject: RHEA:27659
+  predicate: part_of
+  object: PathBank:SMP0002089
+  description: Native generic/protonation forms are projected to the exact reviewed-enzyme Rhea species;
+    no exactMatch between different ChEBI forms is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002089
+    source_assertion: The exact pathway SMP0002089 declares Reactions/6071 as a pathway component and
+      links it to a step. Its substrates, products and catalyst correspond to this selected degradation
+      reaction; all native chemical roles are retained.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002089"]/bp:pathwayComponent;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6071"]; linked bp:Catalysis
+  - reference_id: MetaCyc:D-PPENTOMUT-RXN
+    source_assertion: Native reaction D-PPENTOMUT-RXN has Rhea cross-reference 27661; its enzyme and chemical
+      identities support the bridge from the PathBank reaction to this Rhea family.
+    source_locator: Reaction[@frameid="D-PPENTOMUT-RXN"]/dblink[dblink-db="RHEA"], left, right, enzymatic-reaction
+  - reference_id: RHEA:27659
+    source_assertion: Rhea master 27658 explicitly links directed left-to-right member 27659 and bidirectional
+      member 27661.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27658"]/rh:directionalReaction;
+      rh:bidirectionalReaction
+- id: purine-deoxy-edge-044
+  subject: RHEA:12822
+  predicate: part_of
+  object: PathBank:SMP0002089
+  description: Native generic/protonation forms are projected to the exact reviewed-enzyme Rhea species;
+    no exactMatch between different ChEBI forms is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002089
+    source_assertion: The exact pathway SMP0002089 declares Reactions/6072 as a pathway component and
+      links it to a step. Its substrates, products and catalyst correspond to this selected degradation
+      reaction; all native chemical roles are retained.
+    source_locator: bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002089"]/bp:pathwayComponent;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/6072"]; linked bp:Catalysis
+  - reference_id: MetaCyc:DEOXYRIBOSE-P-ALD-RXN
+    source_assertion: Native reaction DEOXYRIBOSE-P-ALD-RXN has Rhea cross-reference 12824; its enzyme
+      and chemical identities support the bridge from the PathBank reaction to this Rhea family.
+    source_locator: Reaction[@frameid="DEOXYRIBOSE-P-ALD-RXN"]/dblink[dblink-db="RHEA"], left, right,
+      enzymatic-reaction
+  - reference_id: RHEA:12822
+    source_assertion: Rhea master 12821 explicitly links directed left-to-right member 12822 and bidirectional
+      member 12824.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/12821"]/rh:directionalReaction;
+      rh:bidirectionalReaction
+- id: purine-deoxy-edge-045
+  subject: RHEA:28191
+  predicate: provides_input_for
+  object: RHEA:27751
+  description: Material transfer through the exact shared intermediate; diagram array ordering is not
+    treated as a causal chain between parallel branches.
+  evidence:
+  - reference_id: RHEA:28191
+    source_assertion: This directed reaction produces CHEBI:28997; the linked product compound supplies
+      the chemically identical intermediate consumed by RHEA:27751.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/28191"]/rh:products; side/rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:27751
+    source_assertion: This directed reaction consumes CHEBI:28997, the exact species produced by RHEA:28191.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27751"]/rh:substrates; side/rh:contains1/rh:compound/rh:chebi
+- id: purine-deoxy-edge-046
+  subject: RHEA:27743
+  predicate: provides_input_for
+  object: RHEA:27659
+  description: Material transfer through the exact shared intermediate; diagram array ordering is not
+    treated as a causal chain between parallel branches.
+  evidence:
+  - reference_id: RHEA:27743
+    source_assertion: This directed reaction produces CHEBI:57259; the linked product compound supplies
+      the chemically identical intermediate consumed by RHEA:27659.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27743"]/rh:products; side/rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:27659
+    source_assertion: This directed reaction consumes CHEBI:57259, the exact species produced by RHEA:27743.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27659"]/rh:substrates; side/rh:contains1/rh:compound/rh:chebi
+- id: purine-deoxy-edge-047
+  subject: RHEA:27751
+  predicate: provides_input_for
+  object: RHEA:27659
+  description: Material transfer through the exact shared intermediate; diagram array ordering is not
+    treated as a causal chain between parallel branches.
+  evidence:
+  - reference_id: RHEA:27751
+    source_assertion: This directed reaction produces CHEBI:57259; the linked product compound supplies
+      the chemically identical intermediate consumed by RHEA:27659.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27751"]/rh:products; side/rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:27659
+    source_assertion: This directed reaction consumes CHEBI:57259, the exact species produced by RHEA:27751.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27659"]/rh:substrates; side/rh:contains1/rh:compound/rh:chebi
+- id: purine-deoxy-edge-048
+  subject: RHEA:27739
+  predicate: provides_input_for
+  object: RHEA:27659
+  description: Material transfer through the exact shared intermediate; diagram array ordering is not
+    treated as a causal chain between parallel branches.
+  evidence:
+  - reference_id: RHEA:27739
+    source_assertion: This directed reaction produces CHEBI:57259; the linked product compound supplies
+      the chemically identical intermediate consumed by RHEA:27659.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27739"]/rh:products; side/rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:27659
+    source_assertion: This directed reaction consumes CHEBI:57259, the exact species produced by RHEA:27739.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27659"]/rh:substrates; side/rh:contains1/rh:compound/rh:chebi
+- id: purine-deoxy-edge-049
+  subject: RHEA:27659
+  predicate: provides_input_for
+  object: RHEA:12822
+  description: Material transfer through the exact shared intermediate; diagram array ordering is not
+    treated as a causal chain between parallel branches.
+  evidence:
+  - reference_id: RHEA:27659
+    source_assertion: This directed reaction produces CHEBI:62877; the linked product compound supplies
+      the chemically identical intermediate consumed by RHEA:12822.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/27659"]/rh:products; side/rh:contains1/rh:compound/rh:chebi
+  - reference_id: RHEA:12822
+    source_assertion: This directed reaction consumes CHEBI:62877, the exact species produced by RHEA:27659.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/12822"]/rh:substrates; side/rh:contains1/rh:compound/rh:chebi
+references:
+- id: PathBank:SMP0002089
+  title: PathBank native purine deoxyribonucleosides degradation
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: Native BioPAX PW002077.owl from primary archive; SHA256 covers uncompressed member bytes
+  source_sha256: c515d4778a7c92d66060ceeffac95c89149cc5400e388e1110fc2cd95fc040a6
+- id: UniProtKB:P22333
+  title: Reviewed UniProtKB P22333
+  url: https://rest.uniprot.org/uniprotkb/P22333.json
+  source_version: UniProt release 2026_03; response release date 02-September-2026
+  source_sha256: 23e32e2f4a9fc0b04d71ef7ccef5441c01b1b100951453b1f47d623fe4782181
+- id: UniProtKB:P0ABP8
+  title: Reviewed UniProtKB P0ABP8
+  url: https://rest.uniprot.org/uniprotkb/P0ABP8.json
+  source_version: UniProt release 2026_03; response release date 02-September-2026
+  source_sha256: 261a1c1e34fcc0af42d3a3b4a16c27a01ecba13eee2437d3f4d8c51e422eed02
+- id: UniProtKB:P0A6K6
+  title: Reviewed UniProtKB P0A6K6
+  url: https://rest.uniprot.org/uniprotkb/P0A6K6.json
+  source_version: UniProt release 2026_03; response release date 02-September-2026
+  source_sha256: 832643bbf42bfcb2ef2e5598e24ff7f18f224bde94291d56a8d5a61bed4b3d66
+- id: UniProtKB:P0A6L0
+  title: Reviewed UniProtKB P0A6L0
+  url: https://rest.uniprot.org/uniprotkb/P0A6L0.json
+  source_version: UniProt release 2026_03; response release date 02-September-2026
+  source_sha256: 01150821cd4ffac2f7a86659cd71e2304bb63dc76c118e7ae3716d8812b1f76c
+- id: RHEA:28191
+  title: Rhea exact directed reaction 28191
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; SHA256 covers complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27743
+  title: Rhea exact directed reaction 27743
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; SHA256 covers complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27751
+  title: Rhea exact directed reaction 27751
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; SHA256 covers complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27739
+  title: Rhea exact directed reaction 27739
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; SHA256 covers complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27659
+  title: Rhea exact directed reaction 27659
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; SHA256 covers complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:12822
+  title: Rhea exact directed reaction 12822
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; SHA256 covers complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:DEOD-CPLX
+  title: MetaCyc native DEOD-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:DEOD-CPLX
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: f362dcc29babaf5d23e730a329a7c436a0944d811a36ad1adb8ee8569e7962e5
+- id: MetaCyc:DEOD-MONOMER
+  title: MetaCyc native DEOD-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:DEOD-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 99f6dcc78816a3a58aab669c0cdaa9a886a0c854dfa8076cbd9a03aa31766893
+- id: MetaCyc:ADENODEAMIN-MONOMER
+  title: MetaCyc native ADENODEAMIN-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:ADENODEAMIN-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: cd205f5ac0648b466801dbb087db3a5e129ec35d19e5482162ac564339020f39
+- id: MetaCyc:PPENTOMUT-MONOMER
+  title: MetaCyc native PPENTOMUT-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:PPENTOMUT-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 84c86e1b8614d1f6258f966e941c49d761907e4ce4d25f8e812e6cb0e8cfc6d6
+- id: MetaCyc:DEOXYRIBOSE-P-ALD-MONOMER
+  title: MetaCyc native DEOXYRIBOSE-P-ALD-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:DEOXYRIBOSE-P-ALD-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 8f9f749c26add22c93ac663ead671d74591d97f8fbfc47a0b3886e2eb1b4c848
+- id: MetaCyc:ADDALT-ENZRXN
+  title: MetaCyc native ADDALT-ENZRXN
+  url: https://pathway.yeastgenome.org/getxml?META:ADDALT-ENZRXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 063bdf468d26aa2d59583fb900951c84ce0ce241d870ee27034a2fa432269e57
+- id: MetaCyc:D-PPENTOMUT
+  title: MetaCyc native D-PPENTOMUT
+  url: https://pathway.yeastgenome.org/getxml?META:D-PPENTOMUT
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: efd51fd25ff94a89ec2d1684a270ef242cd0693af5b1f962beb8f245e3d51d7c
+- id: PMID:235429
+  title: Purine nucleoside phosphorylase from Escherichia coli and Salmonella typhimurium. Purification
+    and some properties.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:235429%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary indexed abstract inspected; no full-text claim
+  source_sha256: 27b6d685708a8029c74c2b075ce547478d088766ce3af6011bbd22db57458432
+- id: PMID:1089430
+  title: Multiple forms of phosphodeoxyribomutase from Escherichia coli. Physical and chemical characterization.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:1089430%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary indexed abstract inspected; no full-text claim
+  source_sha256: b43ff5def2d79a3a67e05538ff51ae632c8f72fa957138e597467294d00c84e2
+- id: PMID:6749498
+  title: The primary structure of Escherichia coli K12 2-deoxyribose 5-phosphate aldolase. Nucleotide
+    sequence of the deoC gene and the amino acid sequence of the enzyme.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:6749498%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary indexed abstract inspected; no full-text claim
+  source_sha256: 62d1dc57a84eb2477f4bef142fb3d8f84681b7e628439c2838294a3d35d12f89
+- id: PMID:7675789
+  title: 'Crystallization and preliminary crystallographic data for class I deoxyribose-5-phosphate aldolase
+    from Escherichia coli: an application of reverse screening.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:7675789%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary indexed abstract inspected; no full-text claim
+  source_sha256: f95a349302cf3e77b3e883f012cfa00eb0b898c39b87a01280fc0f0afa6c3722
+- id: PMID:30337572
+  title: Crystallographic snapshots of ligand binding to hexameric purine nucleoside phosphorylase and
+    kinetic studies give insight into the mechanism of catalysis
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6193948/fullTextXML
+  source_version: 2018 primary full text; PMC6193948 XML
+  source_sha256: 0c51eed472206bdb260953635e23b7354cf89098eb6abc75e21c6c0bc8e1fd63
+- id: MetaCyc:ADDALT-RXN
+  title: MetaCyc native ADDALT-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:ADDALT-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 4fb48d64f28672b87f542d1a7ba787c426ab0c637fdd4a701cad7951c395a4e3
+- id: MetaCyc:DEOXYADENPHOSPHOR-RXN
+  title: MetaCyc native DEOXYADENPHOSPHOR-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DEOXYADENPHOSPHOR-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 2b49ac7da21543fd914a87ba30314e6e7be46ca85562cdf5c3e67f2613a587ec
+- id: MetaCyc:DEOXYINOPHOSPHOR-RXN
+  title: MetaCyc native DEOXYINOPHOSPHOR-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DEOXYINOPHOSPHOR-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 0e10cfd347853ca7ca5be099946df4c6c85238485a4832abbd98fb35fe4982eb
+- id: MetaCyc:DEOXYGUANPHOSPHOR-RXN
+  title: MetaCyc native DEOXYGUANPHOSPHOR-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DEOXYGUANPHOSPHOR-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 3248226e74802bf466aea7bb6ace0ad6d145cd59afe1243b49c49a2a0c0d110b
+- id: MetaCyc:D-PPENTOMUT-RXN
+  title: MetaCyc native D-PPENTOMUT-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:D-PPENTOMUT-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: fafeddb75d6c4beab4e5170e978899d1d7b75ec753653a66b7e20d735ba96b07
+- id: MetaCyc:DEOXYRIBOSE-P-ALD-RXN
+  title: MetaCyc native DEOXYRIBOSE-P-ALD-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DEOXYRIBOSE-P-ALD-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: b0d4a64b4370fcd228c6aeb287c0c216e892770b7bd653dc18afd825287236a9
+curation_history:
+- timestamp: '2026-10-11T01:14:13Z'
+  curator: Codex
+  action: add-pathway
+  changes: Curated all six native SMP0002089 reactions after ignored-inclusive deduplication; verified
+    exact Rhea sides, source-specific direction bridges, DeoD assembly and qualified enzyme/cofactor evidence.
+    Preserved the boundary difference from the seven-reaction MetaCyc superpathway.
+  llm_assisted: true

@@ -1,0 +1,582 @@
+id: MetaCyc:PWY-5386
+label: methylglyoxal degradation I
+description: The complete three-reaction glutathione-dependent route from methylglyoxal to pyruvate represented
+  by MetaCyc PWY-5386 and PathBank SMP0002125, curated for the E. coli K-12 protein core. GloA acts as
+  a homodimer on the spontaneously formed methylglyoxal-glutathione hemithioacetal; the source net reaction
+  includes that nonenzymatic condensation. Monomeric GloB hydrolyzes (R)-S-lactoylglutathione, regenerating
+  glutathione and releasing D-(R)-lactate. FAD-dependent membrane-associated Dld oxidizes D-lactate to
+  pyruvate while reducing a quinone. Exact Rhea quinone/quinol classes are retained without asserting
+  ubiquinone-6 specificity; ubiquinone-8 supports reconstituted E. coli respiration. The native PathBank
+  L-lactate identity and oxidized-glutathione cross-reference are rejected. Pathway-level flux evidence
+  comes from MG1655-derived SIJ488 strains with engineered glycolytic deletions grown on glycerol, not
+  unrestricted wild-type flux. The older MetaCyc description calls the D-lactate fate likely; the 2022
+  deletion study supports this branch in its tested context. The GloB branch does not exclude accessory
+  GloC activity. Ni activates GloA whereas Zn activates GloB; published GloA metal occupancies differ
+  and are retained in the cofactor evidence. Upstream methylglyoxal synthesis, alternative glutathione-independent
+  routes, Kef regulation and downstream respiratory-chain reactions are outside this pathway.
+pathway_type: detoxification
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:17158
+  label: methylglyoxal
+  category: small_molecule
+- id: CHEBI:57925
+  label: glutathionate(1-)
+  category: small_molecule
+- id: CHEBI:57474
+  label: (R)-S-lactoylglutathionate(1-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:16004
+  label: (R)-lactate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:132124
+  label: 1,4-benzoquinones
+  category: small_molecule
+- id: CHEBI:24646
+  label: hydroquinones
+  category: small_molecule
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: UniProtKB:P0AC81
+  label: Lactoylglutathione lyase
+  category: protein
+- id: UniProtKB:P0AC84
+  label: Hydroxyacylglutathione hydrolase GloB
+  category: protein
+- id: UniProtKB:P06149
+  label: Quinone-dependent D-lactate dehydrogenase
+  category: protein
+- id: MetaCyc:GLYOXI-CPLX
+  label: glyoxalase I
+  category: complex
+- id: GO:0005886
+  label: plasma membrane
+  category: cellular_component
+reactions:
+- id: RHEA:19071
+  label: methylglyoxal + glutathione => (R)-S-lactoylglutathione
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:25246
+  label: (R)-S-lactoylglutathione + H2O => (R)-lactate + glutathione + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:51469
+  label: (R)-lactate + a quinone => a quinol + pyruvate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: mg1-edge-001
+  subject: CHEBI:17158
+  predicate: consumes
+  object: RHEA:19071
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:19069
+    source_assertion: RHEA:19071 substrates contain CHEBI:17158 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19071 rh:substrates; http://rdf.rhea-db.org/19069_R rh:contains1
+      http://rdf.rhea-db.org/Participant_19069_compound_4547; rh:compound/rh:chebi
+- id: mg1-edge-002
+  subject: CHEBI:57925
+  predicate: consumes
+  object: RHEA:19071
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:19069
+    source_assertion: RHEA:19071 substrates contain CHEBI:57925 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19071 rh:substrates; http://rdf.rhea-db.org/19069_R rh:contains1
+      http://rdf.rhea-db.org/Participant_19069_compound_4810; rh:compound/rh:chebi
+- id: mg1-edge-003
+  subject: RHEA:19071
+  predicate: produces
+  object: CHEBI:57474
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:19069
+    source_assertion: RHEA:19071 products contain CHEBI:57474 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19071 rh:products; http://rdf.rhea-db.org/19069_L rh:contains1
+      http://rdf.rhea-db.org/Participant_19069_compound_1514; rh:compound/rh:chebi
+- id: mg1-edge-004
+  subject: CHEBI:57474
+  predicate: consumes
+  object: RHEA:25246
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 substrates contain CHEBI:57474 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25246 rh:substrates; http://rdf.rhea-db.org/25245_L rh:contains1
+      http://rdf.rhea-db.org/Participant_25245_compound_1514; rh:compound/rh:chebi
+- id: mg1-edge-005
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:25246
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25246 rh:substrates; http://rdf.rhea-db.org/25245_L rh:contains1
+      http://rdf.rhea-db.org/Participant_25245_compound_1283; rh:compound/rh:chebi
+- id: mg1-edge-006
+  subject: RHEA:25246
+  predicate: produces
+  object: CHEBI:16004
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 products contain CHEBI:16004 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25246 rh:products; http://rdf.rhea-db.org/25245_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25245_compound_2842; rh:compound/rh:chebi
+- id: mg1-edge-007
+  subject: RHEA:25246
+  predicate: produces
+  object: CHEBI:57925
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 products contain CHEBI:57925 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25246 rh:products; http://rdf.rhea-db.org/25245_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25245_compound_4810; rh:compound/rh:chebi
+- id: mg1-edge-008
+  subject: RHEA:25246
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 products contain CHEBI:15378 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25246 rh:products; http://rdf.rhea-db.org/25245_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25245_compound_3249; rh:compound/rh:chebi
+- id: mg1-edge-009
+  subject: CHEBI:16004
+  predicate: consumes
+  object: RHEA:51469
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:51468
+    source_assertion: RHEA:51469 substrates contain CHEBI:16004 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/51469 rh:substrates; http://rdf.rhea-db.org/51468_L rh:contains1
+      http://rdf.rhea-db.org/Participant_51468_compound_2842; rh:compound/rh:chebi
+- id: mg1-edge-010
+  subject: CHEBI:132124
+  predicate: consumes
+  object: RHEA:51469
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:51468
+    source_assertion: RHEA:51469 substrates contain CHEBI:132124 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/51469 rh:substrates; http://rdf.rhea-db.org/51468_L rh:contains1
+      http://rdf.rhea-db.org/Participant_51468_compound_13027; rh:compound/rh:chebi
+- id: mg1-edge-011
+  subject: RHEA:51469
+  predicate: produces
+  object: CHEBI:24646
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:51468
+    source_assertion: RHEA:51469 products contain CHEBI:24646 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/51469 rh:products; http://rdf.rhea-db.org/51468_R rh:contains1
+      http://rdf.rhea-db.org/Participant_51468_compound_13026; rh:compound/rh:chebi
+- id: mg1-edge-012
+  subject: RHEA:51469
+  predicate: produces
+  object: CHEBI:15361
+  description: Coefficient 1 in the selected physiological direction. Charge and stereochemistry follow
+    the exact Rhea chemical; quinone/quinol nodes are corresponding substituted chemical classes, not
+    a chain-length-specific pair.
+  evidence:
+  - reference_id: RHEA:51468
+    source_assertion: RHEA:51469 products contain CHEBI:15361 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/51469 rh:products; http://rdf.rhea-db.org/51468_R rh:contains1
+      http://rdf.rhea-db.org/Participant_51468_compound_3719; rh:compound/rh:chebi
+- id: mg1-edge-013
+  subject: UniProtKB:P0AC81
+  predicate: part_of
+  object: MetaCyc:GLYOXI-CPLX
+  description: Two GloA chains form the homodimer; subunit membership does not assert that an isolated
+    chain catalyzes the net reaction.
+  evidence:
+  - reference_id: MetaCyc:GLYOXI-CPLX
+    source_assertion: GLYOXI-CPLX contains GLYOXI-MONOMER with coefficient 2.
+    source_locator: /ptools-xml/Protein[@frameid="GLYOXI-CPLX"]/component[Protein/@frameid="GLYOXI-MONOMER"]/coefficient
+  - reference_id: MetaCyc:GLYOXI-MONOMER
+    source_assertion: GLYOXI-MONOMER has an explicit UniProt unification cross-reference P0AC81.
+    source_locator: /ptools-xml/Protein[@frameid="GLYOXI-MONOMER"]/dblink[dblink-db="UNIPROT"]
+  - reference_id: PMID:9628737
+    quote: gel filtration analysis indicated GlxI to be a homodimer of 30 kDa.
+- id: mg1-edge-014
+  subject: MetaCyc:GLYOXI-CPLX
+  predicate: catalyzes
+  object: RHEA:19071
+  description: GloA isomerizes the hemithioacetal formed spontaneously from methylglyoxal and glutathione.
+    The Rhea net equation folds the preceding spontaneous equilibrium into the conversion; it is not evidence
+    that GloA catalyzes initial condensation.
+  evidence:
+  - reference_id: MetaCyc:GLYOXI-CPLX
+    source_assertion: The complex catalyzes GLYOXI-ENZRXN, whose reaction is GLYOXI-RXN.
+    source_locator: /ptools-xml/Protein[@frameid="GLYOXI-CPLX"]/catalyzes/Enzymatic-Reaction[@frameid="GLYOXI-ENZRXN"]
+  - reference_id: UniProtKB:P0AC81
+    source_assertion: FUNCTION specifies spontaneous hemithioacetal formation followed by GloA isomerization;
+      catalytic annotation names RHEA:19069 with ECO:0000269/PMID10913283.
+    source_locator: /comments/0; /comments/1/reaction
+  - reference_id: RHEA:19069
+    source_assertion: RHEA:19071 is the right-to-left directional member of master RHEA:19069, producing
+      (R)-S-lactoylglutathione.
+    source_locator: http://rdf.rhea-db.org/19069 rh:directionalReaction; http://rdf.rhea-db.org/19071
+      rh:substrates/rh:products
+  - reference_id: PathBank:SMP0002125
+    source_assertion: Native ReactionCatalysis/6107 assigns glyoxalase I complex ProteinComplex/4108 to
+      Reactions/6149; the complex contains two Protein/6205 chains, whose reference identifies P0AC81.
+    source_locator: 'PW002113.owl#ReactionCatalysis/6107; #ProteinComplex/4108; #Protein/6205/Stoichiometry/2.0;
+      #ProteinReference/6205'
+- id: mg1-edge-015
+  subject: UniProtKB:P0AC84
+  predicate: catalyzes
+  object: RHEA:25246
+  description: Monomeric GloB hydrolyzes the R-specific thioester. This is the source map’s GloB branch;
+    GloC provides an experimentally supported accessory isoenzyme but is not required to invent an additional
+    chemical step.
+  evidence:
+  - reference_id: UniProtKB:P0AC84
+    source_assertion: The specific (R)-S-lactoylglutathione hydrolysis is RHEA:25245 (ECO:0000269/PMID17196158,25670698);
+      SUBUNIT says monomer (ECO:0000269/PMID17196158).
+    source_locator: /comments/2/reaction; /comments/7
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 is the left-to-right directional member of RHEA:25245.
+    source_locator: http://rdf.rhea-db.org/25245 rh:directionalReaction; http://rdf.rhea-db.org/25246
+      rh:substrates/rh:products
+  - reference_id: PMID:17196158
+    quote: Glyoxalase II (Glx II) hydrolyzes the thioester into d-lactate and free glutathione.
+  - reference_id: PathBank:SMP0002125
+    source_assertion: Native ReactionCatalysis/6108 assigns Protein/6206 (UniProt P0AC84) to Reactions/6150.
+      Its L-lactate label/xref is contradicted by the independently inspected R-specific enzyme chemistry.
+    source_locator: 'PW002113.owl#ReactionCatalysis/6108; #ProteinReference/6206; #Reactions/6150; #CompoundReference/PW_C000122'
+  - reference_id: PMID:25670698
+    quote: The two isoenzymes have additive effects and ensure maximal MG degradation.
+- id: mg1-edge-016
+  subject: UniProtKB:P06149
+  predicate: catalyzes
+  object: RHEA:51469
+  description: Respiratory Dld oxidizes D-(R)-lactate using enzyme-bound FAD and a quinone acceptor. The
+    generic Rhea class is faithful to current annotation; no UQ6 specificity, NAD dependence or direct
+    proton pumping by Dld is inferred. The inspected 1986 reconstitution used ubiquinone-8; its electron-transfer
+    step was not electrogenic.
+  evidence:
+  - reference_id: UniProtKB:P06149
+    source_assertion: 'Dld catalytic annotation names RHEA:51468: (R)-lactate + a quinone = a quinol +
+      pyruvate; ECO:0000269/PMID3013300,7578233 and ECO:0000255/HAMAP MF_02092.'
+    source_locator: /comments/1/reaction
+  - reference_id: RHEA:51468
+    source_assertion: RHEA:51469 is the left-to-right directional member of RHEA:51468, using the exact
+      ChEBI quinone and quinol classes.
+    source_locator: http://rdf.rhea-db.org/51468 rh:directionalReaction; http://rdf.rhea-db.org/51469
+      rh:substrates/rh:products
+  - reference_id: PathBank:SMP0002125
+    source_assertion: Native ReactionCatalysis/6109 assigns Protein/5893 (UniProt P06149) to Reactions/6151.
+      The L-lactate and UQ6 assignments are not imported as exact Rhea equivalences.
+    source_locator: 'PW002113.owl#ReactionCatalysis/6109; #ProteinReference/5893; #Reactions/6151'
+  - reference_id: PMID:3013300
+    quote: proteoliposomes reconstituted with purified D-lactate dehydrogenase, ubiquinone 8, and purified
+      cytochrome o
+- id: mg1-edge-017
+  subject: MetaCyc:GLYOXI-CPLX
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: Ni2+ activates E. coli GloA, whereas Zn2+ does not. Current annotation of the 2000 structures
+    reports one Ni per subunit/two per dimer; the 1998 solution study reported one Ni per dimer. These
+    are differing measurements, not a universal physiological occupancy. Co2+ and Cd2+ also activated
+    protein-metal complexes in the structural study.
+  evidence:
+  - reference_id: UniProtKB:P0AC81
+    source_assertion: 'COFACTOR: Ni2+ (ECO:0000269/PMID10913283); note reports one nickel per subunit/two
+      between dimer subunits and inactivity with Zn2+.'
+    source_locator: /comments/2/cofactors; /comments/2/note
+  - reference_id: PMID:10913283
+    quote: the Escherichia coli enzyme is inactive in the presence of Zn(2+) and is maximally active with
+      Ni(2+).
+  - reference_id: PMID:9628737
+    source_assertion: The indexed abstract reports one nickel ion per dimeric enzyme by inductively coupled
+      plasma and atomic absorption analyses; this differs from the later structured annotation.
+    source_locator: /resultList/result[0]/abstractText, metal-analysis sentences
+- id: mg1-edge-018
+  subject: UniProtKB:P0AC84
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Current annotation reports two Zn2+ ions per GloB monomer. Mn2+ and Co2+ substitute in
+    reconstitution experiments; this is not a claim of in vivo metal substitution. Neither GloA nickel
+    dependence nor other organisms’ mixed metals are transferred to GloB.
+  evidence:
+  - reference_id: UniProtKB:P0AC84
+    source_assertion: GloB binds two Zn2+ ions per subunit (ECO:0000269/PMID17196158); Mn2+ and Co2+ can
+      replace zinc in reconstitution experiments.
+    source_locator: /comments/3/cofactors; /comments/3/note
+- id: mg1-edge-019
+  subject: UniProtKB:P06149
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: FAD is bound to Dld and cycles redox state during turnover; it is not a freely consumed
+    substrate in the net quinone reaction. The ChEBI charge state follows current UniProt grounding.
+  evidence:
+  - reference_id: UniProtKB:P06149
+    source_assertion: COFACTOR identifies FAD/CHEBI:57692 with experimental support from PMID10944213,4575624,4582730,7578233,
+      alongside HAMAP inference.
+    source_locator: /comments/2/cofactors
+  - reference_id: PMID:10944213
+    quote: a noncovalently bound FAD cofactor
+- id: mg1-edge-020
+  subject: UniProtKB:P06149
+  predicate: located_in
+  object: GO:0005886
+  description: Dld is a peripheral enzyme on the cytoplasmic side of the E. coli inner (plasma) membrane.
+    The edge does not encode integral topology or a universal location for the whole pathway.
+  evidence:
+  - reference_id: UniProtKB:P06149
+    source_assertion: 'SUBCELLULAR LOCATION: cell inner membrane, peripheral membrane protein, cytoplasmic
+      side; experimental citations include PMID1092688,4575624,4582730 alongside HAMAP.'
+    source_locator: /comments/5/subcellularLocations/0
+  - reference_id: PMID:10944213
+    quote: located on the cytoplasmic side of the inner membrane
+- id: mg1-edge-021
+  subject: RHEA:19071
+  predicate: part_of
+  object: MetaCyc:PWY-5386
+  description: Native reaction membership plus an independently grounded selected Rhea direction. The
+    Dld bridge uses matching catalyst and chemistry, not a fabricated exact-match cross-reference.
+  evidence:
+  - reference_id: MetaCyc:PWY-5386
+    source_assertion: PWY-5386 explicitly lists GLYOXI-RXN; its reaction-layout selects R2L.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-5386"]/reaction-list; reaction-layout[Reaction/@frameid="GLYOXI-RXN"]
+  - reference_id: MetaCyc:GLYOXI-RXN
+    source_assertion: GLYOXI-RXN has native Rhea unification cross-reference 19072; this is the bidirectional
+      family member, not the selected directed accession.
+    source_locator: /ptools-xml/Reaction[@frameid="GLYOXI-RXN"]/dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:19069
+    source_assertion: Master RHEA:19069 explicitly has bidirectionalReaction RHEA:19072 and directionalReaction
+      RHEA:19071.
+    source_locator: http://rdf.rhea-db.org/19069 rh:bidirectionalReaction http://rdf.rhea-db.org/19072;
+      rh:directionalReaction http://rdf.rhea-db.org/19071
+- id: mg1-edge-022
+  subject: RHEA:25246
+  predicate: part_of
+  object: MetaCyc:PWY-5386
+  description: Native reaction membership plus an independently grounded selected Rhea direction. The
+    Dld bridge uses matching catalyst and chemistry, not a fabricated exact-match cross-reference.
+  evidence:
+  - reference_id: MetaCyc:PWY-5386
+    source_assertion: PWY-5386 explicitly lists GLYOXII-RXN; its reaction-layout selects L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-5386"]/reaction-list; reaction-layout[Reaction/@frameid="GLYOXII-RXN"]
+  - reference_id: MetaCyc:GLYOXII-RXN
+    source_assertion: GLYOXII-RXN has native Rhea unification cross-reference 25245; this is the master,
+      not the selected directed accession.
+    source_locator: /ptools-xml/Reaction[@frameid="GLYOXII-RXN"]/dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:25245
+    source_assertion: Master RHEA:25245 explicitly has directionalReaction RHEA:25246.
+    source_locator: http://rdf.rhea-db.org/25245 rh:directionalReaction http://rdf.rhea-db.org/25246
+- id: mg1-edge-023
+  subject: RHEA:51469
+  predicate: part_of
+  object: MetaCyc:PWY-5386
+  description: Native reaction membership plus an independently grounded selected Rhea direction. The
+    Dld bridge uses matching catalyst and chemistry, not a fabricated exact-match cross-reference.
+  evidence:
+  - reference_id: MetaCyc:PWY-5386
+    source_assertion: PWY-5386 explicitly lists DLACTDEHYDROGFAD-RXN; its reaction-layout selects L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-5386"]/reaction-list; reaction-layout[Reaction/@frameid="DLACTDEHYDROGFAD-RXN"]
+  - reference_id: MetaCyc:DLACTDEHYDROGFAD-RXN
+    source_assertion: Native reaction consumes D-LACTATE and Ubiquinones, producing PYRUVATE and Ubiquinols;
+      it has no explicit Rhea dblink.
+    source_locator: /ptools-xml/Reaction[@frameid="DLACTDEHYDROGFAD-RXN"]/left; /right
+  - reference_id: UniProtKB:P06149
+    source_assertion: The native Dld controller P06149 is independently assigned RHEA:51468; the current
+      Rhea reaction uses broader quinone/quinol classes.
+    source_locator: /comments/1/reaction; /uniProtKBCrossReferences[database="BioCyc"]
+  - reference_id: RHEA:51468
+    source_assertion: Master RHEA:51468 explicitly has directionalReaction RHEA:51469.
+    source_locator: http://rdf.rhea-db.org/51468 rh:directionalReaction http://rdf.rhea-db.org/51469
+- id: mg1-edge-024
+  subject: RHEA:19071
+  predicate: provides_input_for
+  object: RHEA:25246
+  description: The R-specific lactoylglutathione product is the GloB substrate; glutathione is regenerated
+    by hydrolysis.
+  evidence:
+  - reference_id: RHEA:19069
+    source_assertion: RHEA:19071 produces CHEBI:57474.
+    source_locator: http://rdf.rhea-db.org/19071 rh:products; http://rdf.rhea-db.org/19069_L rh:contains1
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 consumes CHEBI:57474 and produces CHEBI:57925.
+    source_locator: http://rdf.rhea-db.org/25246 rh:substrates/rh:products
+  - reference_id: UniProtKB:P0AC84
+    source_assertion: FUNCTION identifies the hydrolysis of (R)-S-lactoylglutathione to (R)-lactate and
+      glutathione, with ECO:0000269 primary citations.
+    source_locator: /comments/0
+- id: mg1-edge-025
+  subject: RHEA:25246
+  predicate: provides_input_for
+  object: RHEA:51469
+  description: GloB-derived D-lactate feeds Dld oxidation to pyruvate. The 2022 physiological test used
+    MG1655-derived SIJ488 glycolysis mutants on glycerol; it does not prove identical basal flux in every
+    K-12 condition or GloB exclusivity over GloC.
+  evidence:
+  - reference_id: RHEA:25245
+    source_assertion: RHEA:25246 produces CHEBI:16004, the R-specific lactate.
+    source_locator: http://rdf.rhea-db.org/25246 rh:products; http://rdf.rhea-db.org/25245_R rh:contains1
+  - reference_id: RHEA:51468
+    source_assertion: RHEA:51469 consumes CHEBI:16004 and produces pyruvate.
+    source_locator: http://rdf.rhea-db.org/51469 rh:substrates/rh:products
+  - reference_id: PMID:37850128
+    quote: the absence of GloA or Dld completely abolished growth on glycerol
+references:
+- id: MetaCyc:PWY-5386
+  title: methylglyoxal degradation I
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5386
+  source_version: MetaCyc 22.5; native XML retrieved 2026-10-11 UTC
+  source_sha256: 00ff04c1d2806dfa130b6f17082ed158a762b771d5955112927dec4730c8a918
+- id: MetaCyc:GLYOXI-CPLX
+  title: glyoxalase I
+  url: https://pathway.yeastgenome.org/getxml?META:GLYOXI-CPLX
+  source_version: MetaCyc 22.5; native XML retrieved 2026-10-11 UTC
+  source_sha256: 5ba519e1ab67d57aa28f7e64770a6d68bcd2b3877f828246e74613aacc324f04
+- id: MetaCyc:GLYOXI-MONOMER
+  title: glyoxalase I subunit
+  url: https://pathway.yeastgenome.org/getxml?META:GLYOXI-MONOMER
+  source_version: MetaCyc 22.5; native XML retrieved 2026-10-11 UTC
+  source_sha256: 0cd1f7ab34b314eff314d1411eb8ebd1260baa75c8104239c0f972a2fff71b44
+- id: MetaCyc:GLYOXI-RXN
+  title: lactoylglutathione lyase reaction
+  url: https://pathway.yeastgenome.org/getxml?META:GLYOXI-RXN
+  source_version: MetaCyc 22.5; native XML retrieved 2026-10-11 UTC
+  source_sha256: 6a7a1b978ba143de4326aaea171f1ffaf14f52bb5506db8825a084248a8a1d31
+- id: MetaCyc:GLYOXII-RXN
+  title: hydroxyacylglutathione hydrolase reaction
+  url: https://pathway.yeastgenome.org/getxml?META:GLYOXII-RXN
+  source_version: MetaCyc 22.5; native XML retrieved 2026-10-11 UTC
+  source_sha256: d1805c8958b7e0bdc1e2a0ce520efdb1a14afc556aee7213d5d892eae93f8594
+- id: MetaCyc:DLACTDEHYDROGFAD-RXN
+  title: D-lactate dehydrogenase reaction
+  url: https://pathway.yeastgenome.org/getxml?META:DLACTDEHYDROGFAD-RXN
+  source_version: MetaCyc 22.5; native XML retrieved 2026-10-11 UTC
+  source_sha256: d65dae1c6dd8d365c188b805c26016db5b9ba08893ac5dcb89fb02433208f33c
+- id: PathBank:SMP0002125
+  title: Methylglyoxal Degradation I
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: Primary archive Last-Modified 2019-08-16; SHA256 covers member PW002113.owl, not ZIP
+  source_sha256: 4acbf2083dba4aa1be7bdd7a1b5e11f7d93694fa919e56a0f6b0fdc104b32193
+- id: UniProtKB:P0AC81
+  title: Lactoylglutathione lyase
+  url: https://rest.uniprot.org/uniprotkb/P0AC81.json
+  source_version: UniProt 2026_03, release date 2026-09-02; full JSON retrieved 2026-10-11 UTC
+  source_sha256: 45b8af31cd9ff71ebaa84bdace95022b9105f21de9d8bc6efe7fcdfc81035740
+- id: UniProtKB:P0AC84
+  title: Hydroxyacylglutathione hydrolase GloB
+  url: https://rest.uniprot.org/uniprotkb/P0AC84.json
+  source_version: UniProt 2026_03, release date 2026-09-02; full JSON retrieved 2026-10-11 UTC
+  source_sha256: cb45f73fafd008ac848b645ca5e13883803feb767179f78d92540540cdee9f7c
+- id: UniProtKB:P06149
+  title: Quinone-dependent D-lactate dehydrogenase
+  url: https://rest.uniprot.org/uniprotkb/P06149.json
+  source_version: UniProt 2026_03, release date 2026-09-02; full JSON retrieved 2026-10-11 UTC
+  source_sha256: 60f583cad209142f1903bf985c55046590561c1e6d2ef7330e9d49bdd989ffcb
+- id: RHEA:19069
+  title: 'Rhea 19069: reaction family and selected direction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 (2026-09-02); SHA256 covers full compressed RDF, selected subjects retained
+    in research projection
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:25245
+  title: 'Rhea 25245: reaction family and selected direction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 (2026-09-02); SHA256 covers full compressed RDF, selected subjects retained
+    in research projection
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:51468
+  title: 'Rhea 51468: reaction family and selected direction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 (2026-09-02); SHA256 covers full compressed RDF, selected subjects retained
+    in research projection
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:9628737
+  title: 'Overproduction and characterization of a dimeric non-zinc glyoxalase I from Escherichia coli:
+    evidence for optimal activation by nickel ions.'
+  url: https://pubmed.ncbi.nlm.nih.gov/9628737/
+  source_version: Europe PMC indexed primary abstract/metadata response retrieved 2026-10-11 UTC; not
+    publisher full text
+  source_sha256: 035d5dcc535259902b93994cab8ab347eb5677a9b0f4950d3a46326c29747fbf
+- id: PMID:10913283
+  title: Determination of the structure of Escherichia coli glyoxalase I suggests a structural basis for
+    differential metal activation.
+  url: https://pubmed.ncbi.nlm.nih.gov/10913283/
+  source_version: Europe PMC indexed primary abstract/metadata response retrieved 2026-10-11 UTC; not
+    publisher full text
+  source_sha256: 8f5b4fc79cb48e8bc231dc75091cee265d896f66ab260b615e5e1e170f0d5688
+- id: PMID:17196158
+  title: Escherichia coli glyoxalase II is a binuclear zinc-dependent metalloenzyme.
+  url: https://pubmed.ncbi.nlm.nih.gov/17196158/
+  source_version: Europe PMC indexed primary abstract/metadata response retrieved 2026-10-11 UTC; not
+    publisher full text
+  source_sha256: 5db1a0aa36cf6100e39b8aa40047521371854a22947b3e8970130646e4ca071a
+- id: PMID:25670698
+  title: Deciphering the role of the type II glyoxalase isoenzyme YcbL (GlxII-2) in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/25670698/
+  source_version: Europe PMC indexed primary abstract/metadata response retrieved 2026-10-11 UTC; not
+    publisher full text
+  source_sha256: a2fc2b0206d1578ea60e8390bfa46bbdb1fa8ba1aeeafb645f1107f45788655a
+- id: PMID:3013300
+  title: D-lactate oxidation and generation of the proton electrochemical gradient in membrane vesicles
+    from Escherichia coli GR19N and in proteoliposomes reconstituted with purified D-lactate dehydrogenase
+    and cytochrome o oxidase.
+  url: https://pubmed.ncbi.nlm.nih.gov/3013300/
+  source_version: Europe PMC indexed primary abstract/metadata response retrieved 2026-10-11 UTC; not
+    publisher full text; source abstract truncated at 250 words
+  source_sha256: 9716a91b72ccbc8e0e86334087d0436db715b9a4011bc847f01b51663262147a
+- id: PMID:10944213
+  title: The crystal structure of D-lactate dehydrogenase, a peripheral membrane respiratory enzyme.
+  url: https://pubmed.ncbi.nlm.nih.gov/10944213/
+  source_version: Europe PMC indexed primary abstract/metadata response retrieved 2026-10-11 UTC; not
+    publisher full text
+  source_sha256: cfdbd6444a83c415b84af14a485f5b84d12bbeeee5f112df53f2b5095ab14683
+- id: PMID:37850128
+  title: Activating Silent Glycolysis Bypasses in Escherichia coli
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10521649/fullTextXML
+  source_version: Published 2022, DOI 10.34133/2022/9859643; Europe PMC full-text JATS retrieved 2026-10-11
+    UTC
+  source_sha256: b589694256fb3da774f5d71bd56b10bcefef06ea74772d22e1cb0e20ffe3480d

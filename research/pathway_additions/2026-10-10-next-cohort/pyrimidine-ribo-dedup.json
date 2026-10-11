@@ -1,0 +1,132 @@
+{
+  "base_commit": "117e2e8b99989a846bd04901268a7a49cc0bd500",
+  "base_records": 174,
+  "current_scan": {
+    "records_compared": 176,
+    "overlaps": [
+      {
+        "path": "data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml",
+        "id": "MetaCyc:PWY-7181",
+        "label": "pyrimidine deoxyribonucleosides degradation",
+        "taxa": [
+          {
+            "id": "NCBITaxon:511145",
+            "label": "Escherichia coli str. K-12 substr. MG1655"
+          }
+        ],
+        "shared_mechanistic_nodes": [
+          "MetaCyc:CYTIDEAM-CPLX",
+          "UniProtKB:P0ABF6"
+        ],
+        "shared_chemicals": [
+          "CHEBI:15377",
+          "CHEBI:15378",
+          "CHEBI:17568",
+          "CHEBI:28938",
+          "CHEBI:29105",
+          "CHEBI:43474",
+          "GO:0005829"
+        ],
+        "reactions": [
+          "RHEA:13434",
+          "RHEA:22825",
+          "RHEA:16038"
+        ]
+      },
+      {
+        "path": "data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml",
+        "id": "gomodel:YeastPathways_YEAST-RNT-SALV",
+        "label": "salvage pathways of pyrimidine ribonucleotides",
+        "taxa": [
+          {
+            "id": "NCBITaxon:559292",
+            "label": "Saccharomyces cerevisiae S288C"
+          }
+        ],
+        "shared_mechanistic_nodes": [],
+        "shared_chemicals": [
+          "CHEBI:15377",
+          "CHEBI:15378",
+          "CHEBI:16704",
+          "CHEBI:17562",
+          "CHEBI:17568",
+          "CHEBI:28938",
+          "CHEBI:29105",
+          "GO:0005829"
+        ],
+        "reactions": [
+          "gomodel:CDPKIN-RXN",
+          "gomodel:CYTDEAM-RXN",
+          "gomodel:CYTIDEAM2-RXN",
+          "gomodel:CYTIDINEKIN-RXN",
+          "gomodel:RXN-11832",
+          "gomodel:RXN0-361",
+          "gomodel:URACIL-PRIBOSYLTRANS-RXN",
+          "gomodel:URIDINE-NUCLEOSIDASE-RXN",
+          "gomodel:URIDINEKIN-RXN"
+        ]
+      },
+      {
+        "path": "data/pathways/purine-deoxyribonucleosides-degradation.yaml",
+        "id": "PathBank:SMP0002089",
+        "label": "Purine Deoxyribonucleosides Degradation",
+        "taxa": [
+          {
+            "id": "NCBITaxon:511145",
+            "label": "Escherichia coli str. K-12 substr. MG1655"
+          }
+        ],
+        "shared_mechanistic_nodes": [
+          "UniProtKB:P0A6K6"
+        ],
+        "shared_chemicals": [
+          "CHEBI:15377",
+          "CHEBI:15378",
+          "CHEBI:28938",
+          "CHEBI:29035",
+          "CHEBI:29105",
+          "CHEBI:43474",
+          "CHEBI:48828",
+          "GO:0005829"
+        ],
+        "reactions": [
+          "RHEA:28191",
+          "RHEA:27743",
+          "RHEA:27751",
+          "RHEA:27739",
+          "RHEA:27659",
+          "RHEA:12822"
+        ]
+      }
+    ]
+  },
+  "search": {
+    "command": "rg -n --no-ignore --hidden -i <source IDs, exact Rhea, proteins and semantic titles> . -g !.git/** -g !.venv/**",
+    "ignored_and_hidden_included": true,
+    "path": "/private/tmp/pathwaymech-next-cohort-20261010",
+    "initial_output_sha256": "249242fedd866e1e0aac56feacfc33f114afa5d1b84d404a5af9479bae30e1cc",
+    "final_output_sha256": "14374035e1414cbc0dca6b87b60385e0542b3edf6371d55cbaf5b84d13e5c2e5",
+    "original_documents_checkout": "Inaccessible; not claimed searched. Accessible worktree includes the current committed corpus and research."
+  },
+  "decision": "Distinct full microbial source pathway; accept exactlySMP0002038, not narrowerMetaCycPWY0-1295.",
+  "semantic_dispositions": [
+    {
+      "record": "MetaCyc:PWY-7181",
+      "reason": "Deoxy substrates, Cdd/DeoA and three reactions; shared Cdd protein does not equate pathways. No shared selected directed reaction."
+    },
+    {
+      "record": "gomodel:YeastPathways_YEAST-RNT-SALV",
+      "reason": "Different yeast taxon and salvage boundary; cytidine deamination overlaps chemistry but uridine hydrolysis/kinases replace bacterial phosphorolysis, periplasmicCpdB/import and ribose-phosphate catabolism."
+    },
+    {
+      "record": "PathBank:SMP0002089 concurrent draft",
+      "reason": "Purine deoxyribonucleosides use DeoB on a deoxy sugar plus DeoC cleavage, not ribose5P endpoint. SharedDeoB is substrate/promiscuity overlap."
+    }
+  ],
+  "prior_dispositions_read": [
+    "research/pathway_additions/2026-10-10-next-routes/pyrimidine-curation.md",
+    "research/pathway_additions/2026-10-10-next-routes/pyrimidine-dedup.json",
+    "research/pathway_additions/2026-10-10-frl-phn/pathbank-screening.json"
+  ],
+  "exhaustion_claim": false
+}
