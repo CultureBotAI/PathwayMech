@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-11T17:07:40.080800+00:00",
+  "helper_sha256": "f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e",
+  "guard_source_sha256": "b601fb65ad0467683b5f685e8acfcc43ca231761a01973bd644bb3548143926b",
+  "formal_input_count": 18,
+  "prior_proof_count": 16,
+  "controls": [
+    {
+      "case": "clean_control",
+      "scope": "Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.",
+      "rejected": false,
+      "error": null,
+      "success_output_exists": true,
+      "sentinel_unchanged": null
+    },
+    {
+      "case": "late_formal_bytes",
+      "scope": "Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.",
+      "rejected": true,
+      "error": "AssertionError: ('formal input changed', PosixPath('/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/late_formal_bytes/formal-0.txt'))",
+      "success_output_exists": false,
+      "sentinel_unchanged": null
+    },
+    {
+      "case": "late_prior_proof_bytes",
+      "scope": "Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.",
+      "rejected": true,
+      "error": "AssertionError: ('prior proof changed', PosixPath('/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/late_prior_proof_bytes/proof-0.txt'))",
+      "success_output_exists": false,
+      "sentinel_unchanged": null
+    },
+    {
+      "case": "formal_same_bytes_symlink_retarget",
+      "scope": "Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.",
+      "rejected": true,
+      "error": "AssertionError: ('formal input changed', PosixPath('/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/formal_same_bytes_symlink_retarget/formal-0.txt'))",
+      "success_output_exists": false,
+      "sentinel_unchanged": null
+    },
+    {
+      "case": "proof_same_bytes_symlink_retarget",
+      "scope": "Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.",
+      "rejected": true,
+      "error": "AssertionError: ('prior proof changed', PosixPath('/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/proof_same_bytes_symlink_retarget/proof-0.txt'))",
+      "success_output_exists": false,
+      "sentinel_unchanged": null
+    },
+    {
+      "case": "late_output_collision",
+      "scope": "Exact unmodified AST statements for final formal/prior-proof identity+byte checks and exclusive output; representative real input copies, no original input mutation and no repeat scientific replay.",
+      "rejected": true,
+      "error": "FileExistsError: [Errno 17] File exists: '/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/late_output_collision/result.json'",
+      "success_output_exists": true,
+      "sentinel_unchanged": true
+    },
+    {
+      "case": "actual_cli_existing_output",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-entner-doudoroff-author-20261011/ed-replay-final.py",
+        "--record",
+        "/private/tmp/pathwaymech-entner-doudoroff-author-20261011/draft/entner-doudoroff-pathway.yaml",
+        "--repo",
+        "/private/tmp/pathwaymech-next-216-20261011",
+        "--output",
+        "/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/startup-collision/result.json"
+      ],
+      "returncode": 1,
+      "rejected": true,
+      "sentinel_unchanged": true
+    },
+    {
+      "case": "actual_cli_changed_prior_proof_before_import",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/startup-proof/ed-replay-final.py",
+        "--record",
+        "/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/startup-proof/draft/entner-doudoroff-pathway.yaml",
+        "--repo",
+        "/private/tmp/pathwaymech-next-216-20261011",
+        "--output",
+        "/private/tmp/pathwaymech-ed-whole-record-review-20261011/guard-fixtures/startup-proof/result.json"
+      ],
+      "returncode": 1,
+      "rejected": true,
+      "success_output_exists": false
+    }
+  ],
+  "limitations": [
+    "Final guard controls deliberately execute exact extracted statements instead of rereading 20 GB of issuing databases for each case. Their clean control is not a scientific pass.",
+    "Whole runtime import closure and all source path identities are not claimed bound by this external author helper. Maintained integration needs a broader binding wrapper and canonical gates."
+  ]
+}

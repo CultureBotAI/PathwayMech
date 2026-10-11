@@ -1,0 +1,45 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,subprocess,os
+R=Path('/private/tmp/pathwaymech-next-218-20261011');head='4362f83bea78b350129acd4183db79f07510ec7c';merge='721755c9b4af76d32d2b1f232571bbfeab232441';tree='4aca0986a74c1c25445a83546acf65564885f8c5';D='research/pathway_additions/2026-10-11-next-218/'
+out=Path('/private/tmp/pathwaymech-next-217-merge-finalized.json');bridge=Path('/private/tmp/pathwaymech-next-218-merged-baseline-bridge.json');assert not out.exists() and not bridge.exists()
+def run(*a):return subprocess.check_output(a,cwd=R)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def api(p):return json.loads(run('gh','api','repos/CultureBotAI/PathwayMech/'+p))
+proof=Path('/private/tmp/pathwaymech-next-217-publication-watch/actual-merge.json');prior=json.loads(proof.read_text());assert prior['merge']==merge and prior['reviewed_head']==head and prior['merged_tree']==tree
+pr=api('pulls/405');assert pr['merged'] and pr['merge_commit_sha']==merge and pr['head']['sha']==head
+assert api('git/commits/'+merge)['tree']['sha']==tree
+issues={}
+for n in [402,404]:
+ v=api('issues/'+str(n));assert v['state']=='closed';issues[str(n)]={k:v[k] for k in ['state','state_reason','closed_at','html_url']}
+assert run('git','branch','--show-current').decode().strip()=='feat/pathway-next-218-20261011'
+assert run('git','rev-parse','HEAD').decode().strip()==merge
+assert run('git','rev-parse',head+'^{tree}').decode().strip()==run('git','rev-parse',merge+'^{tree}').decode().strip()==tree
+assert run('git','diff','--cached','--name-only')==b''
+core=json.loads(Path('/private/tmp/pathwaymech-next-218-core-adoption.json').read_text());adopt=json.loads(Path('/private/tmp/pathwaymech-next-218-dossier-adoption.json').read_text())
+expected={r['destination']:r['sha256'] for r in core['files']};expected.update({r['path']:r['sha256'] for r in adopt['files']})
+expected[D+'dossier-adoption.json']=sha('/private/tmp/pathwaymech-next-218-dossier-adoption.json')
+expected[D+'adopt-dossier.py.txt']=sha('/private/tmp/pathwaymech-next-218-adopt-dossier-successor.py')
+expected['history/records/entner-doudoroff-pathway/2026-10-11T173703Z-codex-d014fa.yaml']='56daa9fc7c9771d1aa01f9ee46e581d8192c6a323a277ae2c774d3a4efc58c53'
+# Root-authored working README was not sealed before initial reset. Bind current bytes without claiming an unavailable before snapshot.
+expected[D+'README.md']='293a2f4ec7ab2e1521c1cffa74ce406dda09e410073975fc2578e73fdcf8d4ba'
+for rel,h in expected.items():assert sha(R/rel)==h,rel
+baseline={}
+for line in run('git','ls-tree','-rz',merge).split(b'\0'):
+ if not line:continue
+ meta,path=line.split(b'\t',1);mode,kind,oid=meta.decode().split();assert kind=='blob';baseline[path.decode()]=(mode,oid)
+changed={'conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json'}
+assert set(run('git','diff','--name-only').decode().splitlines())==changed
+for rel,(mode,oid) in baseline.items():
+ if rel in changed:continue
+ body=(R/rel).read_bytes();assert hashlib.sha1(f'blob {len(body)}\0'.encode()+body).hexdigest()==oid,rel
+physical={str(p.relative_to(R)):sha(p) for p in R.rglob('*') if p.is_file() and not p.is_symlink() and not any(x in {'.git','.venv','__pycache__','node_modules'} for x in p.relative_to(R).parts)}
+unknown=set(physical)-set(baseline)-set(expected)
+for rel in unknown:assert rel.startswith('.ruff_cache/') and run('git','check-ignore',rel).decode().strip()==rel,rel
+now=datetime.now(timezone.utc).isoformat()
+r={'status':'actual_merge_tree_and_issue_closures_verified','at':now,'pr':405,'merge':merge,'reviewed_head':head,'tree':tree,'issues':issues,'publication_and_cleanup':'pending separate verification'}
+with out.open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+b={'status':'actual_merged_baseline_current_state_reverified','at':now,'worktree':str(R),'branch':'feat/pathway-next-218-20261011','previous_head':head,'head':merge,'tree':tree,'baseline_files_verified':len(baseline)-len(changed),'adopted_or_root_owned_files_verified':len(expected),'current_physical_files':len(physical),'ignored_runtime_cache_files':sorted(unknown),'empty_staged_diff':True,'working_diff_paths':sorted(changed),'merge_receipt_sha256':sha(out),'initial_attempt':{'session':38085,'exit_code':1,'chunk':'1c5d7f','script_sha256':sha('/private/tmp/pathwaymech-next-217-finalize-merge-and-bridge-218.py'),'outcome':'Soft reset completed to identical tree; index identity passed, then compound status/diff/inventory assertion failed. Individual initial snapshots existed only in process memory, so the exact failed clause is not claimed.'},'successor_scope':'No repeated reset or Git mutation. Freshly checked all baseline file blobs, all adopted file receipts, record history, current root README, no unaccounted files beyond separately identified ignored Ruff cache entries and empty index. Root README bound as current working bytes, not an unavailable before snapshot.','current_file_hashes':physical}
+with bridge.open('x') as f:json.dump(b,f,indent=2);f.write('\n')
+s=Path('/private/tmp/pathwaymech-next-218-state.json');v=json.loads(s.read_text());v.update(base=merge,actual_merged_base_pending=False,merged_baseline_bridge_sha256=sha(bridge),phase='record_authorities_and_dossier_adopted');s.write_text(json.dumps(v,indent=2)+'\n')
+print(json.dumps({'merge':merge,'closed_issues':list(issues),'bridge':str(bridge),'sha256':sha(bridge),'baseline_files':len(baseline)-len(changed),'adopted_files':len(expected)}))

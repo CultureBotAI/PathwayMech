@@ -1,0 +1,134 @@
+"""Read-only independent selected authority and whole prior-entry preservation audit."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import html
+import json
+import re
+import sqlite3
+import subprocess
+
+R = Path('/private/tmp/pathwaymech-next-218-20261011')
+O = Path('/private/tmp/pathwaymech-next-218-independent-scientific-review')
+BASE = '721755c9b4af76d32d2b1f232571bbfeab232441'
+S = Path('/private/tmp/pathwaymech-ed-authority-selection-20261011/selected-successor/selection.json')
+
+def sha(p):
+    with Path(p).open('rb') as handle:
+        return hashlib.file_digest(handle, 'sha256').hexdigest()
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=R)
+
+assert __debug__
+assert sha(S) == '732749701f8feef98a8afc40ba7bb9027fb452f54afc55de7e232ada82a3fae2'
+s = json.loads(S.read_text())
+assert git('rev-parse', 'HEAD').decode().strip() == BASE
+assert git('rev-parse', BASE + '^{tree}') == git('rev-parse', '4362f83bea78b350129acd4183db79f07510ec7c^{tree}')
+before = {}
+current = {}
+preserved = {}
+for key, path in [('manifest', 'conf/identifier_sources.json'), ('sources', 'data/identifier_authorities/sources.json'), ('ontology', 'data/identifier_authorities/ontology.json')]:
+    before[key] = json.loads(git('show', BASE + ':' + path))
+    current[key] = json.loads((R / path).read_text())
+    if key == 'manifest':
+        assert current[key][:len(before[key])] == before[key]
+        assert current[key][len(before[key]):] == [x['manifest_entry'] for x in s['selected_new_inputs']]
+        preserved[key] = {'old_count': len(before[key]), 'current_count': len(current[key]), 'current_sha256': sha(R / path)}
+    else:
+        for field, value in before[key].items():
+            if field in ('terms', 'sources'):
+                assert all(current[key][field][k] == v for k, v in value.items())
+            else:
+                assert current[key][field] == value
+        preserved[key] = {'old_count': len(before[key]['terms']), 'current_count': len(current[key]['terms']), 'added': sorted(current[key]['terms'].keys() - before[key]['terms'].keys()), 'current_sha256': sha(R / path)}
+
+native = []
+for row in s['selected_new_inputs']:
+    p = Path(row['original_path'])
+    assert sha(p) == row['sha256']
+    text = p.read_text()
+    ident, = row['selected_ids']
+    entry = row['manifest_entry']
+    assert entry in current['manifest']
+    for proof in row['acquisition_proof']:
+        assert sha(proof['path']) == proof['sha256']
+        assert proof['observation']['sha256'] == sha(p)
+        assert proof['observation']['status'] == 200
+    if ident.startswith('KEGG:'):
+        fields = {}
+        key = None
+        for line in text.splitlines():
+            if line == '///':
+                break
+            if line[:12].strip():
+                key = line[:12].strip()
+                fields.setdefault(key, [])
+            if key:
+                fields[key].append(line[12:].strip())
+        assert fields['ENTRY'][0].split()[0] == ident.split(':')[1]
+        label = ' '.join(fields['NAME'])
+        assert not {'VERSION', 'RELEASE'} & fields.keys()
+        assert entry['version'] == 'Entry snapshot retrieved ' + row['acquisition_proof'][0]['observation']['finished_at'] + '; original response has no per-entry release designation'
+    else:
+        object_id = re.search(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'", text)[1]
+        assert 'MetaCyc:' + object_id == ident
+        label = ' '.join(html.unescape(re.sub('<[^>]+>', '', re.search(r'<TITLE>MetaCyc (.*?)</TITLE>', text, re.I | re.S)[1])).split())
+        plain = ' '.join(html.unescape(re.sub('<[^>]+>', ' ', text)).split())
+        assert 'MetaCyc version 27.0.' in plain and 'Pathway Tools version 27.0' in plain
+        assert entry['version'] == 'MetaCyc 27.0; Pathway Tools 27.0; original canonical HTML retrieved 2026-10-11'
+    actual = {'label': label, 'synonyms': [], 'source': entry['key']}
+    assert actual == current['sources']['terms'][ident]
+    native.append({'id': ident, 'source_sha256': sha(p), 'derived_label': label, 'version': entry['version']})
+
+def names(item):
+    description = item['proteinDescription']
+    all_names = []
+    for name in [description.get('recommendedName', {}), *description.get('submissionNames', []), *description.get('alternativeNames', [])]:
+        if name.get('fullName', {}).get('value'):
+            all_names.append(name['fullName']['value'])
+        all_names.extend(x['value'] for x in name.get('shortNames', []))
+    return {'label': all_names[0], 'synonyms': sorted(set(all_names[1:]) - {all_names[0]})}
+
+proteins = []
+for row in s['reused_inputs']:
+    fresh_path = Path(row['original_path'])
+    batch_path = Path(row['selected_existing_body'])
+    entry = row['existing_entry_preserved']
+    assert sha(fresh_path) == row['sha256'] and sha(batch_path) == entry['sha256']
+    fresh = json.loads(fresh_path.read_text())
+    items = json.loads(batch_path.read_text())['results']
+    selected = [i for i in items if i['primaryAccession'] == fresh['primaryAccession']]
+    assert len(selected) == 1
+    old = selected[0]
+    assert old['organism']['taxonId'] == fresh['organism']['taxonId'] == 83333
+    assert names(old) == names(fresh)
+    ident = 'UniProtKB:' + fresh['primaryAccession']
+    assert current['sources']['terms'][ident] == {**names(old), 'source': entry['key']}
+    assert entry in before['manifest'] and current['sources']['sources'][entry['key']]['version'] == '2026_03'
+    proteins.append({'id': ident, 'authority_batch_sha256': sha(batch_path), 'current_scientific_sha256': sha(fresh_path), 'current_entry_audit': fresh['entryAudit'], 'authority_version_preserved': entry['version'], 'sequence_length': fresh['sequence']['length'], 'taxon': fresh['organism']['taxonId']})
+
+ontology = []
+for check in s['ontology_checks']:
+    p = Path(check['path'])
+    stat_before = p.stat()
+    with sqlite3.connect('file:' + str(p) + '?mode=ro', uri=True) as db:
+        for ident in check['selected_rows']:
+            pairs = list(db.execute('SELECT predicate, value FROM statements WHERE subject=? AND predicate IN (?,?)', (ident, 'rdfs:label', 'oio:hasExactSynonym')))
+            labels = {v for k, v in pairs if k == 'rdfs:label' and v}
+            assert len(labels) == 1
+            label, = labels
+            actual = current['ontology']['terms'][ident]
+            assert actual['label'] == label
+            assert actual['synonyms'] == sorted({v for k, v in pairs if k == 'oio:hasExactSynonym' and v and v != label})
+            assert current['ontology']['sources'][actual['source']] == check['source_metadata']
+            ontology.append({'id': ident, 'label': label, 'source': actual['source'], 'database': str(p)})
+    stat_after = p.stat()
+    assert (stat_before.st_ino, stat_before.st_size, stat_before.st_mtime_ns) == (stat_after.st_ino, stat_after.st_size, stat_after.st_mtime_ns)
+assert len(native) == 4 and len(proteins) == 4 and len(ontology) == 21
+result = {'at': datetime.now(timezone.utc).isoformat(), 'actual_base': BASE, 'actual_tree_equals_reviewed_myx_tree': True, 'selection_sha256': sha(S), 'prior_entries_and_metadata_preserved': preserved, 'new_native_objects': native, 'existing_protein_authority_reuse': proteins, 'selected_ontology_rows': ontology, 'scope': 'Reviewer independently compared every prior authority entry/metadata and manifest entry against actual merge base; freshly derived four new native labels/versions from original bodies, compared four old protein authority batch records with current scientific JSON, and queried 21 original SQL terms. No fresh whole database hash in this audit; root whole database hashes and prior reviewer original source replay remain attributed evidence. Rhea139 SQL authority remains distinct from Rhea142 scientific RDF.', 'pending': ['Current formatted-helper integration replay', 'Terminal full gates', 'Canonical final freeze and inspect']}
+p = O / 'current-authority-audit.json'
+with p.open('x') as f:
+    json.dump(result, f, indent=2)
+    f.write('\n')
+print(json.dumps({'path': str(p), 'sha256': sha(p), 'native_objects': len(native), 'proteins': len(proteins), 'selected_SQL_terms': len(ontology), 'preservation': preserved}))

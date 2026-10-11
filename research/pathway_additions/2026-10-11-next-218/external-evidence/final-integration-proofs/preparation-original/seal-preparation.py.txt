@@ -1,0 +1,73 @@
+"""Seal external preparation only, including real narrow fixture cache evidence."""
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-218-20261011')
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write(name, value):
+    with (ROOT / name).open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+checks = {
+    ROOT / 'integration-replay.py': 'a60587397a1f2b38dba30cfe8df0c69c621554424d1d5ceb9cfc308e01b75f8d',
+    ROOT / 'integration-replay.py.before-safe-path.txt': '130566b640191e12d66ca8a2f083105d1eebf823ae034882cf4d2357bee4f36c',
+    ROOT / 'boundary-controls.py': '566f428ff79f3cbef472b67c28958308856815f8959ac0d8c206af4f8bb0c678',
+    ROOT / 'boundary-controls.py.before-safe-path.txt': 'ff3422b13ff096366bdb08038489716d01b62ccb4e480e42b99e48ce75b8f3a5',
+    ROOT / 'expected-bindings.json': '9098dfa9b03a3b5d3a161b4b7673fd7b50e3051ba0ef364a3e646ab501cbdd9e',
+    ROOT / 'controls-attempt-1/results.json': '7945bbb0f72d99ce0ae2da846023a1304e60dbc4bfedf24f0ec247e71dd81024',
+    ROOT / 'controls-attempt-2/results.json': 'f1c6811503a2d00f0cc31e26185cb1216826f8aff1f953856554fa6c8e7f61ca',
+}
+for path, expected in checks.items():
+    if sha(path) != expected:
+        raise RuntimeError('Prepared artifact changed: ' + str(path))
+helpers = []
+for path in [Path('/private/tmp/pathwaymech-entner-doudoroff-author-20261011/ed-replay-final.py'), REPO / 'research/pathway_additions/2026-10-11-next-218/ed-replay-final.py']:
+    actual = sha(path)
+    if actual != 'f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e':
+        raise RuntimeError('Accepted helper changed')
+    helpers.append({'path': str(path), 'sha256': actual})
+prefix = 'env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B '
+commands = [
+    {'name': 'original-narrow-controls', 'command': prefix + str(ROOT / 'boundary-controls.py') + ' controls-attempt-1', 'code_at_execution': str(ROOT / 'boundary-controls.py.before-safe-path.txt'), 'terminal_chunk': 'a0f3d2', 'exit_code': 0, 'cases': 40},
+    {'name': 'safe-path-successor-controls', 'command': prefix + str(ROOT / 'boundary-controls.py') + ' controls-attempt-2', 'terminal_chunk': '286a60', 'exit_code': 0, 'cases': 42},
+    {'name': 'prepare-final-bindings', 'command': prefix + str(ROOT / 'prepare-bindings.py') + ' --dossier-adoption-sha256 3aa8aa2e860797c29a5b1f36866ea545193dd867930c30ddf541750c6d1e30e7 --baseline-bridge /private/tmp/pathwaymech-next-218-merged-baseline-bridge.json --baseline-bridge-sha256 dac3f42cf709ae3fc9d4bc586a0fd8bdb0d6caa46266fb48ca80fa9e391bb2bb', 'session_id': 41328, 'started_chunk': 'b52a10', 'terminal_chunk': '22c70a', 'exit_code': 0},
+    {'name': 'fatal-lint-successor', 'command': 'env PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache .venv/bin/ruff check --isolated --select E9,F63,F7,F82 ' + ' '.join(str(ROOT / name) for name in ['integration-replay.py', 'prepare-bindings.py', 'boundary-controls.py']), 'terminal_chunk': 'c80b84', 'exit_code': 0},
+]
+for row in commands:
+    row['cwd'] = str(REPO)
+    row['login'] = False
+write('actual-execution.json', {'status': 'actual_preparation_terminal_receipts_no_full_replay', 'commands': commands})
+artifacts = []
+for path in sorted(ROOT.rglob('*')):
+    # Include intentional binary pyc fixtures; no ignored-file exclusion here.
+    if path.is_symlink():
+        artifacts.append({'path': str(path), 'kind': 'symlink', 'link_target': str(path.readlink()), 'resolved_path': str(path.resolve()), 'target_sha256': sha(path) if path.is_file() else None})
+    elif path.is_file():
+        artifacts.append({'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)})
+write('proof-artifacts.json', {'scope': 'All preparation files, retained prior code and both narrow control attempts, including hidden/ignored files and intentionally stale binary pyc fixtures. Original scientific bodies/databases are bound externally and not copied.', 'artifacts': artifacts})
+bindings = json.loads((ROOT / 'expected-bindings.json').read_bytes())
+completion = {
+    'status': 'ready_for_root_review_no_full_ed_replay_run', 'canonical_approval': False,
+    'accepted_helpers': helpers, 'target_sha256': '548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af',
+    'interface': '--repo PATH --helper PATH --binding-manifest PATH --binding-sha256 SHA256 --output-dir NEW_EXTERNAL_PATH',
+    'expected_input_bindings': len(bindings['files']), 'deferred_actual_source_hashes': len(bindings['deferred_source_digest_paths']),
+    'narrow_controls_passed': 42, 'prior_control_attempt_preserved': 40,
+    'scientific_replay_run': False, 'canonical_gates_run': False, 'maintained_writes': [],
+    'root_full_gates_and_independent_scientific_review': 'separate', 'actual_execution': commands,
+    'review_scope': 'One bounded collaborator finding on nested cwd import was corrected and demonstrated by actual narrow child controls. No exhaustive independent code approval is claimed; root driver review remains pending.',
+    'artifacts': [{'path': str(ROOT / name), 'sha256': sha(ROOT / name)} for name in [
+        'integration-replay.py', 'prepare-bindings.py', 'boundary-controls.py', 'expected-bindings.json',
+        'controls-attempt-1/results.json', 'controls-attempt-2/results.json', 'safe-path-correction.json',
+        'README.md', 'actual-execution.json', 'proof-artifacts.json', 'seal-preparation.py']],
+}
+write('completion.json', completion)
+print(json.dumps({'completion': str(ROOT / 'completion.json'), 'sha256': sha(ROOT / 'completion.json'), 'status': completion['status'], 'bindings': len(bindings['files'])}))

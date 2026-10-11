@@ -1,0 +1,10 @@
+for p, rp in identities:
+    assert p.resolve() == rp and rp.read_bytes() == captured[str(rp)], (
+        "formal input changed",
+        p,
+    )
+for p, rp, h in proofs:
+    assert p.resolve() == rp and sha(rp) == h, ("prior proof changed", p)
+with a.output.open("x") as out:
+    json.dump(result, out, indent=2)
+    out.write("\n")

@@ -1,0 +1,36 @@
+{
+  "status": "preexecution_packaging_review_findings_corrected",
+  "reviewer": "/root/pyochelin_packaging_successor/ed_wrapper_review",
+  "scope": "Read-only packaging completeness and guard review; no source replay or scientific approval.",
+  "prior_code": "prepare-package.py.before-review.txt",
+  "findings": [
+    {
+      "finding": "Preflight verified regular sealed artifacts but skipped historical symlink rows.",
+      "resolution": "Verify all eleven sealed link kinds, link targets, resolved identities and target hashes, including null hashes for dangling links."
+    },
+    {
+      "finding": "Final verification checked source rows but omitted a fresh alias destination check and complete tree inventories.",
+      "resolution": "Recheck all static and completed dynamic trees; every destination identity, mode, raw hash and decoded source recovery; staged membership and maintained collisions before sealing."
+    },
+    {
+      "finding": "A literal __pycache__ destination directory remains ignored after binary encoding.",
+      "resolution": "Archive that component as captured-pycache while preserving original source/logical paths. This correction preceded the retained before-review snapshot and was independently confirmed by the collaborator."
+    }
+  ],
+  "readonly_inventory": {
+    "original_regular_files": 164,
+    "original_symlinks": 10,
+    "formatting_regular_files": 13,
+    "formatting_symlinks": 1,
+    "intentional_binary_pyc_files": 2,
+    "hidden_runtime_mutation_fixtures": 4,
+    "empty_original_fixture_directories": 11,
+    "cases_by_attempt": [40, 42, 13],
+    "sealed_artifact_entries_freshly_checked": 184
+  },
+  "limits": [
+    "No packaging seal attempt failed: these issues were found during preparation before final sealing.",
+    "No source, runtime, authority, scientific record or maintained dossier was changed.",
+    "The preflight capture receipt predates the additional symlink checks; the final package execution rechecks them."
+  ]
+}

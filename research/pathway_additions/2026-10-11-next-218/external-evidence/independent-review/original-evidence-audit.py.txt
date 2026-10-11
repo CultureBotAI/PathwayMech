@@ -1,0 +1,47 @@
+import pathlib,json,hashlib,sqlite3,re,datetime,yaml
+from lxml import html,etree
+S=pathlib.Path('/private/tmp/pathwaymech-entner-doudoroff-author-20261011');D=pathlib.Path(__file__).resolve().parent
+p=json.loads((S/'draft/ed-source-projection.json').read_text());m=json.loads((S/'draft/ed-source-manifest.json').read_text());r=yaml.safe_load((S/'draft/entner-doudoroff-pathway.yaml').read_text());f=json.loads((S/'draft/ed-chemical-identities.json').read_text());a=json.loads((S/'draft/ed-authority-proposal.json').read_text())
+def sh(b):return hashlib.sha256(b).hexdigest()
+checks=[]
+for x in m['bodies']:
+ b=pathlib.Path(x['path']).read_bytes();assert sh(b)==x['sha256'];checks.append({'path':x['path'],'sha256':sh(b),'bytes':len(b),'accepted_body':x['accepted_body']})
+for x in m['prior_proof_inputs']:
+ b=pathlib.Path(x['path']).read_bytes();assert sh(b)==x['sha256']
+prim=[]
+for x in p['primary_anchors']:
+ b=pathlib.Path(x['path']).read_bytes();t=etree.fromstring(b) if x['path'].endswith('.xml') else html.fromstring(b);tx=[' '.join(' '.join(n.itertext()).split()) for n in t.xpath(x['selector'])];assert tx==x['texts'];assert sh('\n'.join(tx).encode())==x['selected_text_sha256'];prim.append({'path':x['path'],'sha256':sh(b),'selector':x['selector'],'selected_text_sha256':sh('\n'.join(tx).encode()),'texts':tx})
+# Independently inspect all original UniProt pointers and primary selectors, keeping selected values for review.
+evidence=[]
+for e in r['mechanistic_edges']:
+ for i,v in enumerate(e['evidence']):
+  ref=v['reference_id'];path=p['references_to_original_paths'].get(ref);loc=v['source_locator'];row={'edge':e['id'],'index':i,'reference':ref,'assertion':v['source_assertion'],'locator':loc,'source_path':path}
+  if ref.startswith('UniProtKB:'):
+   obj=json.loads(pathlib.Path(path).read_bytes());vals=[]
+   for q in loc.split('; '):
+    z=obj
+    for key in q.strip('/').split('/'):z=z[int(key)] if isinstance(z,list) else z[key]
+    vals.append(z)
+   row['original_values']=vals
+  elif ref.startswith('PMID:') and ref!='PMID:22519976':
+   b=pathlib.Path(path).read_bytes();t=etree.fromstring(b) if path.endswith('.xml') else html.fromstring(b);row['original_values']=[' '.join(' '.join(n.itertext()).split()) for n in t.xpath(loc)];assert row['original_values']
+  elif ref.startswith('MetaCyc:'):
+   t=etree.fromstring(pathlib.Path(path).read_bytes());row['original_values']=[etree.tostring(n,encoding='unicode') for sel in loc.split('; ') for n in t.xpath(sel)];assert row['original_values']
+  evidence.append(row)
+labels=[]
+with sqlite3.connect('file:'+f['chebi_database']['path']+'?mode=ro',uri=True) as db:
+ for cid,expected in f['chebi_terms'].items():
+  actual=[{'predicate':q,'value':v,'object':o} for q,v,o in db.execute('SELECT predicate,value,object FROM statements WHERE subject=?',(cid,))];assert actual==expected
+  labels.append({'id':cid,'label':next(x['value'] for x in actual if x['predicate']=='rdfs:label'),'formula':next(x['value'] for x in actual if x['predicate']=='chemrof:generalized_empirical_formula'),'charge':next(x['value'] for x in actual if x['predicate']=='chemrof:charge'),'inchi':next(x['value'] for x in actual if x['predicate']=='chemrof:inchi_string')})
+for x in a['extra_ontology_originals']:
+ with sqlite3.connect('file:'+x['path']+'?mode=ro',uri=True) as db:
+  actual=[{'predicate':q,'value':v,'object':o} for q,v,o in db.execute('SELECT predicate,value,object FROM statements WHERE subject=?',(x['id'],))];assert actual==x['rows'];labels.append({'id':x['id'],'label':next(y['value'] for y in actual if y['predicate']=='rdfs:label')})
+refs=[]
+for q in r['references']:
+ row={'id':q['id'],'title':q['title'],'url':q.get('url'),'digest':q.get('source_sha256')}
+ if q['id'].startswith('PMID:') and q['id']!='PMID:22519976':
+  path=p['references_to_original_paths'][q['id']];b=pathlib.Path(path).read_bytes();t=etree.fromstring(b) if path.endswith('.xml') else html.fromstring(b)
+  titles=t.xpath('/article/front/article-meta/title-group/article-title' if path.endswith('.xml') else '//h1');pmids=t.xpath('/article/front/article-meta/article-id[@pub-id-type="pmid"]/text()' if path.endswith('.xml') else '//meta[@name="citation_pmid"]/@content');assert pmids==[q['id'].split(':')[1]];assert len(titles)==1;assert re.sub(r'\s','',''.join(titles[0].itertext()))==re.sub(r'\s','',q['title']);row['original_pmid']=pmids[0]
+ refs.append(row)
+result={'at':datetime.datetime.now(datetime.UTC).isoformat(),'record_sha256':sh((S/'draft/entner-doudoroff-pathway.yaml').read_bytes()),'source_checks':checks,'prior_proofs':m['prior_proof_inputs'],'primary_original_selections':prim,'evidence_selections':evidence,'issuing_sql_labels':labels,'reference_metadata':refs,'scope':'Actual independent original reads, SQL rows and pointer/selector projections; scientific interpretation is in whole-record-review.json. Whole database hashes are checked by separate full positive replay.'}
+(D/'original-evidence-audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'bodies':len(checks),'prior_proofs':len(m['prior_proof_inputs']),'evidence':len(evidence),'primary_selections':len(prim),'SQL_labels':len(labels),'references':len(refs),'sha256':sh((D/'original-evidence-audit.json').read_bytes())}))

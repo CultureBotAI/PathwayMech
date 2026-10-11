@@ -1,0 +1,39 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import ast,hashlib,json,subprocess,os
+R=Path('/private/tmp/pathwaymech-next-218-20261011');D=R/'research/pathway_additions/2026-10-11-next-218';H=D/'ed-replay-final.py';A=D/'external-evidence/helper-formatting-successor';O=Path('/private/tmp/pathwaymech-next-218-helper-formatting-adoption.json')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def digest(b):return hashlib.sha256(b).hexdigest()
+assert not O.exists() and not A.exists()
+terminal=json.loads(Path('/private/tmp/pathwaymech-next-218-full-gates-initial-terminal.json').read_text());assert terminal['session_id']==12654 and terminal['exit_code']==1
+receipt=Path('/private/tmp/pathwaymech-next-218-final-gate-receipts.json');checks=json.loads(receipt.read_text());assert len(checks)==7 and {x['name'] for x in checks if x['exit_code']}=={'lint'}
+for x in checks:assert sha(x['log'])==x['log_sha256']
+inputs=Path('/private/tmp/pathwaymech-next-218-final-gate-inputs.json');bound=json.loads(inputs.read_text())
+for rel,h in bound.items():assert sha(R/rel)==h,rel
+old=H.read_bytes();new=Path('/private/tmp/pathwaymech-next-218-ed-replay-formatting-successor.py').read_bytes()
+assert digest(old)=='f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e' and digest(new)=='3a9dd4147891e12af58bcffba333e94053c908c814184fe49b151d6c8e2ade74'
+assert new==old.replace(b'from lxml import etree, html  # noqa: E402\nfrom pathwaymech',b'from lxml import etree, html  # noqa: E402\n\nfrom pathwaymech')
+old_ast=ast.dump(ast.parse(old),include_attributes=False);assert old_ast==ast.dump(ast.parse(new),include_attributes=False)
+A.mkdir(parents=True)
+with (A/'ed-replay-final-original.py.txt').open('xb') as f:f.write(old)
+for source,name in [(receipt,'initial-full-gate-receipts.json'),(inputs,'initial-full-gate-inputs.json'),(Path('/private/tmp/pathwaymech-next-218-full-gates-initial-terminal.json'),'initial-full-gate-terminal.json'),(Path('/private/tmp/pathwaymech-next-218-final-gates-successor.py'),'initial-full-gate-driver.py.txt'),(Path('/private/tmp/pathwaymech-next-218-helper-formatting-preparation.json'),'formatting-preparation.json')]:
+ with (A/name).open('xb') as f:f.write(source.read_bytes())
+for x in checks:
+ raw=Path(x['log']).read_bytes();wrapper={'encoding':'utf-8','original_bytes':len(raw),'original_sha256':digest(raw),'content':raw.decode()}
+ with (A/(x['name']+'.log.txt.json')).open('x') as f:json.dump(wrapper,f,indent=2);f.write('\n')
+plan=json.loads(Path('/private/tmp/pathwaymech-ed-copy-plan-20261011/copy-plan.json').read_text());aliases=[]
+for group in ['copy_entries','exact_byte_aliases','formal_input_resolution','fixture_resolution']:
+ for row in plan[group]:
+  if row.get('destination')==str(H.relative_to(R)) and row['sha256']==digest(old):aliases.append({'group':group,'source':row['path'],'previous_destination':row['destination'],'archive_destination':str((A/'ed-replay-final-original.py.txt').relative_to(R)),'sha256':digest(old)})
+assert aliases
+H.write_bytes(new);assert H.read_bytes()==new
+r={'status':'formatting_successor_adopted_original_preserved','at':datetime.now(timezone.utc).isoformat(),'issue':'https://github.com/CultureBotAI/PathwayMech/issues/406','active_helper':str(H),'original_archive':str(A/'ed-replay-final-original.py.txt'),'original_external':'/private/tmp/pathwaymech-entner-doudoroff-author-20261011/ed-replay-final.py','original_sha256':digest(old),'successor_sha256':digest(new),'change':'Exactly one blank line between lxml and pathwaymech imports; no executable AST change.','ast_sha256':digest(old_ast.encode()),'ast_identical_ignoring_source_locations':True,'historical_alias_successors':aliases,'initial_gates':{'receipt_sha256':sha(receipt),'terminal':terminal,'passed':[x['name'] for x in checks if x['exit_code']==0],'failed':['lint']},'limits':['Original accepted helper and original adoption receipts are historical evidence, not assertions that the active helper remains byte-identical.','Current lint, render/history checks and integrated scientific replay must pass with the successor helper. No repeat of unchanged full test suite is implied.']}
+assert sha(r['original_external'])==digest(old)
+with O.open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+with (A/'adoption.json').open('xb') as f:f.write(O.read_bytes())
+with (A/'adopt-formatting.py.txt').open('xb') as f:f.write(Path(__file__).read_bytes())
+cmd=[str(R/'.venv/bin/python'),'scripts/new_history_record.py','--kind','infrastructure','--slug','entner-doudoroff-authority-and-replay-evidence','--path','research/pathway_additions/2026-10-11-next-218/ed-replay-final.py','--event','EDIT','--outcome','changed','--actor-name','codex','--actor-type','ai_agent','--agent-tool','codex','--issue','406','--summary','Format ED replay imports while preserving accepted original helper','--details','Full initial gates passed rendering, validation, tests, identifiers, KGX and tracked whitespace; lint found a missing separator between third-party and pathwaymech imports. Preserve the original helper and all initial gate receipts, add exactly one blank line, and verify identical executable AST apart from source locations. Historical alias successors point to the exact original archive. Updated lint, history/render validation and integrated replay follow this entry.']
+p=subprocess.run(cmd,cwd=R,text=True,capture_output=True,env=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1'));print(p.stdout);print(p.stderr);assert p.returncode==0
+Path('/private/tmp/pathwaymech-next-218-helper-formatting-history-execution.json').write_text(json.dumps({'command':cmd,'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr},indent=2)+'\n')
+readme=D/'README.md';s=readme.read_text();s+='\nThe initial full gate run passed all checks except Ruff I001 in the accepted helper. Issue #406 is addressed by adding one blank line between import groups; executable AST identity was verified. The exact original helper, initial gate receipts and explicit successor mappings for historical aliases are preserved under `external-evidence/helper-formatting-successor/`. The current integrated replay uses the formatting successor and is assessed separately.\n';readme.write_text(s)
+print(json.dumps({'status':r['status'],'receipt':str(O),'sha256':sha(O),'historical_alias_successors':len(aliases)}))

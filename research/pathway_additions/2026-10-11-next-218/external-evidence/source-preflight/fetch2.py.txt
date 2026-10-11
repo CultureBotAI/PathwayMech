@@ -1,0 +1,9 @@
+exec(open('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011/fetch.py').read().split('with concurrent.futures.ThreadPoolExecutor')[0])
+ITEMS = [(x+'.xml', 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+x) for x in ['PGLUCONDEHYDRAT-RXN','KDPGALDOL-RXN','GLYCOLYSIS-E-D']]
+ITEMS += [(x+'.html', 'https://pmc.ncbi.nlm.nih.gov/articles/'+x+'/') for x in ['PMC276539','PMC206259','PMC545716']]
+ITEMS += [('PMC206259.pdf', 'https://europepmc.org/articles/PMC206259?pdf=render'),('PMC276539.pdf','https://europepmc.org/articles/PMC276539?pdf=render')]
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+    rows = list(pool.map(fetch, ITEMS))
+with (ROOT / 'acquisition-2.json').open('x') as f:
+    json.dump(rows, f, indent=2)
+print(json.dumps(rows, indent=2))

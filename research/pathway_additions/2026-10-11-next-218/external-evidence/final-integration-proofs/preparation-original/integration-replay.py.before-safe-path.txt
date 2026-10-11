@@ -1,0 +1,529 @@
+"""Bound one unchanged Entner-Doudoroff source replay to the current maintained inputs.
+
+No science edits, authority building, full QC, publication, or test-only CLI mode.
+The expected binding manifest is an independently reviewed input, not generated
+or refreshed by this runner. Only standard-library imports precede capture.
+"""
+
+import sys
+
+if sys.flags.optimize:
+    raise SystemExit("Optimized Python is forbidden: source helper uses assertions")
+
+import argparse
+from datetime import UTC, datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+
+HELPER_SHA = "f67d96bb1601ac0dce491886e9f28a119cfb355ba54d16f34d2e1121ec030e9e"
+TARGET_SHA = "548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af"
+TARGET = "data/pathways/entner-doudoroff-pathway.yaml"
+ADJACENT = {
+    "draft/ed-source-manifest.json": "a61f692824161ac9fd59cd01dc14ffdc608d75ba1ec6fc5b126486e5068b1506",
+    "draft/ed-source-projection.json": "d2699bad8bfb243bcdefce1ec907c636f640ad2be8fbb13704cea88930f0b31b",
+    "draft/ed-chemical-identities.json": "06997e8e0a2e1a47a06e0022642e22207c35f18269e2db4db5f030724db14d76",
+    "draft/ed-protein-projection.json": "311e94feceb6fdecff17d64d4ce7856db6ad46ad7349165cdf164b1f64a33f03",
+    "draft/ed-authority-proposal.json": "51b7672bb5e62510855081c9382018cd0bffaf8ba7a9ad7ab6aa536f1ca7245c",
+    "draft/ed-identifiers.json": "7339fc46759bb33a670f93ce0cbea1b528715c6b5bf840c5e0e9694cead7a7e6",
+    "draft/ed-coverage.json": "b29c374c126f3d488c348abe525b7cd4a82b1d4914c8dc49df3b0504d32c0bba",
+    "draft/ed-curation.md": "74d2f00a55a84abaea2858c98bd37dab28c7ba5b31ae67fd2e0b45e17ab335d4",
+    "draft/ed-dedup.json": "0ebf1f398e1a206988c5af5e557531f49f6ef30818972af115d29bdae58ee248",
+    "imod/context.json": "36a3d57d8a296e11a050450daa7c0464659d61083256c422e15f91979c5e4491",
+    "imod/manifest.json": "65629fb23ddccf3d406dcc5a42a2f1c2f105748ff307c43b71b1b473cbe3eb27",
+}
+ADAPTER_ROOT = Path("/private/tmp/claw-published-duf-offline-20261007/src/kg_microbe_sources")
+ADAPTER_SHA = "1901c6ab519795051d0b70b57412c4ad463949b3dd02a49d05936464e6fd4aa2"
+RDKIT_PYTHON = (
+    "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python"
+)
+REQUIRED = {
+    "conf/identifier_policy.yaml",
+    "conf/identifier_sources.json",
+    "conf/rhea_identifier_updates.json",
+    "data/identifier_authorities/ontology.json",
+    "data/identifier_authorities/sources.json",
+    "pyproject.toml",
+    "uv.lock",
+    "scripts/build_source_identifier_snapshot.py",
+    "scripts/build_ontology_identifier_snapshot.py",
+}
+ROLE_SET = {
+    "formal",
+    "runtime",
+    "authority",
+    "policy",
+    "manifest",
+    "record",
+    "source",
+    "prior_proof",
+    "integration_proof",
+    "environment",
+}
+
+
+class IntegrityError(ValueError):
+    pass
+
+
+def require(condition, message):
+    if not condition:
+        raise IntegrityError(message)
+
+
+def now():
+    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def file_hash(path):
+    h = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(4 * 1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def unique_pairs(items):
+    result = {}
+    for key, value in items:
+        require(key not in result, "Duplicate JSON key: " + key)
+        result[key] = value
+    return result
+
+
+def read_json(raw):
+    return json.loads(raw, object_pairs_hook=unique_pairs)
+
+
+def absolute(path):
+    return Path(os.path.abspath(path))
+
+
+def check_entry(entry):
+    require(set(entry) == {"path", "resolved_path", "sha256", "role"}, "Invalid binding fields")
+    require(entry["role"] in ROLE_SET, "Unknown binding role")
+    require(re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]) is not None, "Invalid input digest")
+    path = Path(entry["path"])
+    require(path.is_absolute() and str(absolute(path)) == str(path), "Noncanonical declared path")
+    require(
+        path.resolve(strict=True) == Path(entry["resolved_path"]),
+        "Resolved input identity changed: " + str(path),
+    )
+    require(path.is_file(), "Input is not a file: " + str(path))
+    actual = file_hash(path)
+    require(actual == entry["sha256"], "Input digest changed: " + str(path))
+    require(
+        path.resolve(strict=True) == Path(entry["resolved_path"]),
+        "Resolved input identity changed during hash: " + str(path),
+    )
+    return dict(entry)
+
+
+def capture_bindings(entries):
+    require(isinstance(entries, list) and entries, "No declared bindings")
+    paths = [x["path"] for x in entries]
+    require(len(paths) == len(set(paths)), "Duplicate binding path")
+    return [check_entry(entry) for entry in entries]
+
+
+def inventory(root):
+    """Includes dotfiles and Git-ignored files; excludes only interpreter caches."""
+    root = Path(root)
+    require(root.is_dir(), "Missing inventory root: " + str(root))
+    found = []
+    for directory, dirs, files in os.walk(root, followlinks=False):
+        dirs[:] = [name for name in dirs if name != "__pycache__"]
+        for name in dirs:
+            require(
+                not (Path(directory) / name).is_symlink(),
+                "Symlinked inventory directory: " + str(Path(directory) / name),
+            )
+        for name in files:
+            if name.endswith((".pyc", ".pyo")):
+                continue
+            path = Path(directory) / name
+            require(path.is_file(), "Non-file inventory entry: " + str(path))
+            found.append(str(absolute(path)))
+    return sorted(found)
+
+
+def check_inventories(specs, bindings):
+    paths = {x["path"] for x in bindings}
+    for spec in specs:
+        require(set(spec) == {"root", "paths"}, "Invalid inventory fields")
+        actual = inventory(spec["root"])
+        require(actual == spec["paths"], "Input inventory changed: " + spec["root"])
+        require(set(actual) <= paths, "Inventory contains unbound inputs: " + spec["root"])
+
+
+def capture_manifest(path, expected_sha):
+    require(
+        re.fullmatch(r"[0-9a-f]{64}", expected_sha) is not None, "Invalid binding-manifest digest"
+    )
+    declared = absolute(path)
+    resolved = declared.resolve(strict=True)
+    raw = declared.read_bytes()
+    require(digest(raw) == expected_sha, "Binding-manifest digest changed")
+    document = read_json(raw)
+    require(
+        document["manifest_identity"] == {"path": str(declared), "resolved_path": str(resolved)},
+        "Binding-manifest identity changed",
+    )
+    require(
+        declared.resolve(strict=True) == resolved, "Binding-manifest identity changed during read"
+    )
+    return document, {
+        "path": str(declared),
+        "resolved_path": str(resolved),
+        "sha256": expected_sha,
+        "role": "manifest",
+    }
+
+
+def check_output(path, protected_roots, bound_paths):
+    output = absolute(path)
+    require(
+        not output.exists() and not output.is_symlink(), "Output already exists: " + str(output)
+    )
+    resolved = output.resolve(strict=False)
+    require(output.parent.resolve(strict=True).is_dir(), "Output parent must exist")
+    for root in protected_roots:
+        require(
+            not resolved.is_relative_to(Path(root).resolve()),
+            "Output is inside a protected input tree",
+        )
+    for name in bound_paths:
+        require(not Path(name).resolve().is_relative_to(resolved), "Output contains a bound input")
+    return output, resolved
+
+
+def check_contract(document, repo, helper):
+    require(document["format"] == "ed-integration-bindings-v1", "Unknown binding format")
+    require(
+        document["repo"] == {"path": str(repo), "resolved_path": str(repo.resolve())},
+        "Repository identity changed",
+    )
+    require(document["helper"] == str(helper), "Helper path differs from approved bindings")
+    bound = {x["path"]: x for x in document["files"]}
+    mandatory = {str(repo / x) for x in REQUIRED | {TARGET}}
+    mandatory |= {str(helper), str(absolute(__file__))}
+    mandatory |= {str(helper.resolve().parent / x) for x in ADJACENT}
+    require(mandatory <= bound.keys(), "Missing required formal/runtime/authority bindings")
+    require(bound[str(helper)]["sha256"] == HELPER_SHA, "Accepted helper digest differs")
+    require(bound[str(repo / TARGET)]["sha256"] == TARGET_SHA, "Accepted target digest differs")
+    for relative, expected in ADJACENT.items():
+        require(
+            bound[str(helper.resolve().parent / relative)]["sha256"] == expected,
+            "Accepted adjacent input digest differs: " + relative,
+        )
+    expected_roots = {
+        str(repo / "src"),
+        str(repo / "scripts"),
+        str(repo / "data/pathways"),
+        str(ADAPTER_ROOT),
+    }
+    require(
+        {x["root"] for x in document["inventories"]} == expected_roots,
+        "Missing complete local runtime or corpus inventory",
+    )
+    require(
+        document["python"]["executable"] == str(absolute(sys.executable)),
+        "Interpreter declared path changed",
+    )
+    require(document["python"]["version"] == sys.version, "Interpreter version changed")
+    require(
+        document["python"]["prefix"] == sys.prefix
+        and document["python"]["base_prefix"] == sys.base_prefix,
+        "Interpreter environment changed",
+    )
+    require(str(absolute(sys.executable)) in bound, "Interpreter is not bound")
+    require(
+        document["integration_proofs"]
+        and all(
+            path in bound and bound[path]["role"] == "integration_proof"
+            for path in document["integration_proofs"]
+        ),
+        "Missing authority-selection/root-adoption proof bindings",
+    )
+    require(
+        str(repo) in document["protected_roots"]
+        and str(helper.resolve().parent) in document["protected_roots"],
+        "Missing output protection roots",
+    )
+
+
+def check_source_coverage(document, helper):
+    """Check accepted ED metadata and every declared helper dependency."""
+    bound = {x["path"]: x for x in document["files"]}
+
+    def read_adjacent(relative):
+        raw = (helper.resolve().parent / relative).read_bytes()
+        require(
+            digest(raw) == ADJACENT[relative], "Adjacent input changed before parsing: " + relative
+        )
+        return read_json(raw)
+
+    def require_dependency(path, expected):
+        name = str(absolute(path))
+        require(
+            name in bound and bound[name]["sha256"] == expected,
+            "Unbound source/prior-proof input: " + name,
+        )
+
+    source = read_adjacent("draft/ed-source-manifest.json")
+    require(source["record_sha256"] == TARGET_SHA, "Source-manifest target mismatch")
+    dependencies = source["bodies"] + source["issuing_databases"] + source["prior_proof_inputs"]
+    for item in dependencies:
+        require_dependency(item["path"], item["sha256"])
+    # These production inputs have distinct scope from the helper's Rhea142
+    # chemistry RDF. Root authority review supplies their selection semantics.
+    require(document["production_authority_sources"], "Missing production source bindings")
+    for item in document["production_authority_sources"]:
+        require_dependency(item["path"], item["sha256"])
+    authority = read_adjacent("draft/ed-authority-proposal.json")
+    for item in authority["source_inputs"]:
+        require_dependency(item["original_path"], item["manifest_entry"]["sha256"])
+    for item in authority["extra_ontology_originals"]:
+        require_dependency(item["path"], item["sha256"])
+    facts = read_adjacent("draft/ed-chemical-identities.json")
+    for key in ["chebi_database", "rhea_source"]:
+        require_dependency(facts[key]["path"], facts[key]["sha256"])
+    for item in facts["kegg_bridges"].values():
+        require_dependency(item["kegg_mol"], item["mol_sha256"])
+    for item in read_adjacent("imod/manifest.json"):
+        require_dependency(item["path"], item["sha256"])
+    adapter = read_adjacent("imod/context.json")["adapter"]
+    require(
+        adapter == {"path": str(ADAPTER_ROOT / "imodulondb.py"), "sha256": ADAPTER_SHA},
+        "Accepted Claw adapter identity changed",
+    )
+    require_dependency(adapter["path"], adapter["sha256"])
+    for name in ["__init__.py", "catalogue.py", "fetch.py"]:
+        require(
+            str(ADAPTER_ROOT / name) in bound, "Unbound Claw adapter import dependency: " + name
+        )
+    require(
+        RDKIT_PYTHON in bound and document["rdkit_python"]["executable"] == RDKIT_PYTHON,
+        "RDKit interpreter is not bound",
+    )
+
+
+def recheck_formal_inputs(document, own_manifest):
+    for entry in document["files"]:
+        if entry["role"] not in {"source", "prior_proof"}:
+            check_entry(entry)
+    check_inventories(document["inventories"], document["files"])
+    check_entry(own_manifest)
+
+
+def final_recheck(document, own_manifest):
+    # Slow source reads first; formal inputs are freshly checked last. Never use
+    # startup bytes or cached digests as current-file evidence.
+    check_entry(own_manifest)
+    check_inventories(document["inventories"], document["files"])
+    for entry in document["files"]:
+        if entry["role"] in {"source", "prior_proof"}:
+            check_entry(entry)
+    recheck_formal_inputs(document, own_manifest)
+
+
+def child_environment(repo, output):
+    # A fresh external prefix prevents imports from consuming unbound local
+    # __pycache__ files. Nested RDKit inherits the same environment.
+    env = dict(
+        os.environ,
+        PYTHONPATH=str(repo / "src"),
+        PYTHONNOUSERSITE="1",
+        PYTHONDONTWRITEBYTECODE="1",
+        PYTHONPYCACHEPREFIX=str(output / ".python-cache"),
+        UV_NO_SYNC="1",
+        UV_CACHE_DIR="/private/tmp/pathwaymech-curation-uv-cache",
+    )
+    env.pop("PYTHONOPTIMIZE", None)
+    env.pop("PYTHONHOME", None)
+    return env
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", type=Path, required=True)
+    parser.add_argument("--helper", type=Path, required=True)
+    parser.add_argument("--binding-manifest", type=Path, required=True)
+    parser.add_argument("--binding-sha256", required=True)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    args = parser.parse_args()
+    started = now()
+    repo, helper = absolute(args.repo), absolute(args.helper)
+    document, own_manifest = capture_manifest(args.binding_manifest, args.binding_sha256)
+    output, expected_output = check_output(
+        args.output_dir, document["protected_roots"], [x["path"] for x in document["files"]]
+    )
+    check_contract(document, repo, helper)
+    check_inventories(document["inventories"], document["files"])
+    captured = capture_bindings(document["files"])
+    check_entry(own_manifest)
+    check_source_coverage(document, helper)
+    check_inventories(document["inventories"], captured)
+    recheck_formal_inputs(document, own_manifest)
+    # Do not let inherited optimization, user-site or alternate Python roots
+    # change the approved child environment. -P omits unsafe script/CWD paths.
+    # A fresh external cache prefix prevents use of unbound existing local pycs.
+    env = child_environment(repo, output)
+    output.mkdir(exist_ok=False)
+    output_stat = output.stat()
+    commands = []
+    python = [str(absolute(sys.executable)), "-B", "-P"]
+    child_output = output / "source-replay.json"
+    gates = [
+        (
+            "source-replay",
+            python
+            + [
+                str(helper),
+                "--record",
+                str(repo / TARGET),
+                "--repo",
+                str(repo),
+                "--output",
+                str(child_output),
+            ],
+        ),
+        (
+            "identifiers",
+            python
+            + [
+                "-c",
+                "from pathlib import Path;import sys;from pathwaymech.cli import check_identifiers_main;raise SystemExit(check_identifiers_main([],root=Path(sys.argv[1])))",
+                str(repo),
+            ],
+        ),
+        (
+            "native-schema",
+            python
+            + ["-c", "from pathwaymech.cli import validate_main;raise SystemExit(validate_main())"],
+        ),
+        (
+            "strict-schema",
+            python
+            + [
+                "-c",
+                "from pathlib import Path;import sys;from pathwaymech.cli import validate_strict_main;raise SystemExit(validate_strict_main([sys.argv[2]],root=Path(sys.argv[1])))",
+                str(repo),
+                str(repo / TARGET),
+            ],
+        ),
+    ]
+    try:
+        for name, command in gates:
+            begin = now()
+            with (
+                (output / (name + ".stdout")).open("xb") as stdout,
+                (output / (name + ".stderr")).open("xb") as stderr,
+            ):
+                process = subprocess.run(command, cwd=repo, env=env, stdout=stdout, stderr=stderr)
+            commands.append(
+                {
+                    "name": name,
+                    "command": command,
+                    "started_at": begin,
+                    "finished_at": now(),
+                    "exit_code": process.returncode,
+                    "stdout_sha256": file_hash(output / (name + ".stdout")),
+                    "stderr_sha256": file_hash(output / (name + ".stderr")),
+                }
+            )
+            require(process.returncode == 0, "Child check failed: " + name)
+        source_result = read_json(child_output.read_bytes())
+        require(
+            source_result["status"] == "passed_external_author_replay_not_independent_approval",
+            "Unexpected child scope/status",
+        )
+        require(source_result["record_sha256"] == TARGET_SHA, "Child target differs")
+        report = {
+            "status": "passed_current_integrated_replay_not_independent_scientific_approval",
+            "started_at": started,
+            "repo": document["repo"],
+            "helper_sha256": HELPER_SHA,
+            "target_sha256": TARGET_SHA,
+            "binding_manifest": own_manifest,
+            "bound_inputs": captured,
+            "commands": commands,
+            "child_receipt_sha256": file_hash(child_output),
+            "environment": {
+                k: env[k]
+                for k in [
+                    "PYTHONPATH",
+                    "PYTHONNOUSERSITE",
+                    "PYTHONDONTWRITEBYTECODE",
+                    "PYTHONPYCACHEPREFIX",
+                    "UV_NO_SYNC",
+                    "UV_CACHE_DIR",
+                ]
+            },
+            "python": document["python"],
+            "rdkit_python": document["rdkit_python"],
+            "limits": [
+                "Unchanged child checks its original ED source/proposal and cached expression-context responses; it does not approve production authority selection or the integrated corpus. Current identifier gate and root authority-selection acceptance are separate evidence.",
+                "Identifier and native schema checks are current corpus checks; the explicit strict check targets this pathway. Root full validation/history/render/tests/lint/KGX and independent scientific review remain separate.",
+                "Installed-distribution metadata and interpreter identities are bound provenance, not a claim to hash every third-party package or standard-library implementation.",
+                "Myx PR405 merge/tree status is separate lifecycle evidence; this replay makes no actual-merged-baseline claim.",
+                "Endpoint checks cannot exclude arbitrary transient machine-state mutation between observations. No production guard bypass or test-only runtime injection exists.",
+            ],
+        }
+        final_recheck(document, own_manifest)
+        require(
+            not output.is_symlink() and output.resolve() == expected_output,
+            "Output directory identity changed",
+        )
+        require(
+            (output.stat().st_dev, output.stat().st_ino)
+            == (output_stat.st_dev, output_stat.st_ino),
+            "Output directory replaced",
+        )
+        report["finished_at"] = now()
+        with (output / "integration-replay.json").open("x") as stream:
+            json.dump(report, stream, indent=2)
+            stream.write("\n")
+        print(
+            json.dumps(
+                {
+                    "status": report["status"],
+                    "receipt": str(output / "integration-replay.json"),
+                    "sha256": file_hash(output / "integration-replay.json"),
+                }
+            )
+        )
+    except Exception as error:
+        # Preserve attempts without overwriting a child result or creating PASS.
+        if (
+            output.is_dir()
+            and not output.is_symlink()
+            and output.resolve() == expected_output
+            and (output.stat().st_dev, output.stat().st_ino)
+            == (output_stat.st_dev, output_stat.st_ino)
+        ):
+            with (output / "integration-failure.json").open("x") as stream:
+                json.dump(
+                    {
+                        "status": "failed",
+                        "started_at": started,
+                        "failed_at": now(),
+                        "error": repr(error),
+                        "commands": commands,
+                    },
+                    stream,
+                    indent=2,
+                )
+                stream.write("\n")
+        raise
+
+
+if __name__ == "__main__":
+    main()

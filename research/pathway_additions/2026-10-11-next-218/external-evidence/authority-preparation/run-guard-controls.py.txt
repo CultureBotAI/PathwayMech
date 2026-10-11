@@ -1,0 +1,64 @@
+"""Exercise dry-run fail-closed boundaries without repeating source builders."""
+import copy
+import hashlib
+import json
+import os
+import subprocess
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-217-20261011')
+OUT = Path('/private/tmp/pathwaymech-ed-authority-selection-20261011')
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def main():
+    parent = OUT / 'guard-controls'
+    parent.mkdir(exist_ok=False)
+    original = OUT / 'selected/selection.json'
+    helper = OUT / 'dry-run-authorities.py'
+    original_sha, helper_sha = sha(original), sha(helper)
+    selection = json.loads(original.read_bytes())
+    prior = json.loads((ROOT / 'conf/identifier_sources.json').read_bytes())
+    cases = {}
+    for field in ['key', 'path']:
+        mutated = copy.deepcopy(selection)
+        mutated['selected_new_inputs'][0]['manifest_entry'][field] = prior[0][field]
+        cases['duplicate-' + field] = (mutated, ['-B'], 'manifest collision: ' + field)
+    stale = copy.deepcopy(selection); stale['target']['sha256'] = '0' * 64
+    cases['stale-target'] = (stale, ['-B'], 'input digest mismatch')
+    stale = copy.deepcopy(selection); stale['preparation_baseline']['baseline_files']['conf/identifier_policy.yaml'] = '0' * 64
+    cases['stale-policy'] = (stale, ['-B'], 'input digest mismatch')
+    cases['optimized-python'] = (selection, ['-O', '-B'], 'Assertions must be enabled')
+    cases['existing-output'] = (selection, ['-B'], 'FileExistsError')
+    results = []
+    for name, (data, flags, expected) in cases.items():
+        fixture = parent / (name + '.json')
+        with fixture.open('x') as f:
+            json.dump(data, f, indent=2); f.write('\n')
+        destination = parent / (name + '-output')
+        sentinel = b'preserve exact output\x00no final newline'
+        if name == 'existing-output':
+            destination.mkdir(); (destination / 'sentinel.bin').write_bytes(sentinel)
+        command = [sys.executable, *flags, str(helper), '--repo-root', str(ROOT), '--selection', str(fixture), '--output-dir', str(destination)]
+        started = datetime.now(UTC).isoformat()
+        process = subprocess.run(command, cwd=ROOT, env={**os.environ, 'PYTHONPATH': str(ROOT / 'src'), 'PYTHONDONTWRITEBYTECODE': '1'}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        log = parent / (name + '.log'); log.write_bytes(process.stdout)
+        assert process.returncode != 0 and expected.encode() in process.stdout, name
+        if name == 'existing-output':
+            assert list(destination.iterdir()) == [destination / 'sentinel.bin'] and (destination / 'sentinel.bin').read_bytes() == sentinel
+        else:
+            assert not os.path.lexists(destination), name
+        results.append(dict(name=name, command=command, started_at=started, finished_at=datetime.now(UTC).isoformat(), exit_code=process.returncode, expected_failure=expected, fixture_sha256=sha(fixture), log=str(log), log_sha256=sha(log), output_absent_or_preserved=True))
+    assert sha(original) == original_sha and sha(helper) == helper_sha
+    with (parent / 'receipt.json').open('x') as f:
+        json.dump(dict(status='passed_six_expected_rejections', finished_at=datetime.now(UTC).isoformat(), checks=results, original_selection_sha256=original_sha, helper_sha256=helper_sha, limits='Preparation control-flow boundaries only; not a scientific replay, canonical review, or corpus gate.'), f, indent=2); f.write('\n')
+    print(json.dumps({'status': 'passed', 'count': len(results), 'receipt_sha256': sha(parent / 'receipt.json')}))
+
+
+if __name__ == '__main__':
+    main()

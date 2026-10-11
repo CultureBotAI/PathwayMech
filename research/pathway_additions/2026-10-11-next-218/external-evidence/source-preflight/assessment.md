@@ -1,0 +1,47 @@
+# Complete Entner–Doudoroff route: bounded discovery handoff
+
+Recommend **KEGG:M00008**, the complete four-transformation Entner–Doudoroff module from glucose 6-phosphate to D-glyceraldehyde 3-phosphate and pyruvate, for a separate curation task. This is a source-backed feasible lead, not a maintained draft or formal approval. The two-step **MetaCyc:ENTNER-DOUDOROFF-PWY** is a separately defined complete shunt; it must not be called an exact equivalent of M00008 or silently used to reduce its boundary.
+
+## Exact identity and boundary
+
+The fresh original KEGG entry identifies M00008 as a Pathway Module and supplies `K00036 (K01057,K07404) K01690 K01625`. Five cached DRAM rows at physical lines 92–96 encode these four positions, with two alternative lactonase KOs at the second position. DRAM is KEGG-derived annotation support, not an independent experiment or a basis for inferring a two-subunit lactonase. The current original KEGG definition, rather than row order alone, establishes the selected module.
+
+All four transformations are retained: Zwf oxidation of glucose 6-phosphate; Pgl lactone hydrolysis; Edd 6-phosphogluconate dehydration; and Eda KDPG aldol cleavage. Import, gluconate phosphorylation, conversion of the GAP product through lower glycolysis, and fermentation are outside this module. The related MetaCyc `GLYCOLYSIS-E-D` is a superpathway containing glycolysis and the ED shunt, plus the two upstream reactions. It is not the selected identity.
+
+The original MetaCyc XML explicitly contains exactly `PGLUCONDEHYDRAT-RXN` and `KDPGALDOL-RXN`, orders them, and orients both left-to-right. Both its XML27.0 common-name and the fetched canonical HTML title are **Entner-Doudoroff shunt**. Initial search results used the historical name “pathway I”; that is not the inspected page title. Its links to oxidative PPP and sugar-acid degradation are links, not additional members.
+
+The pinned issuing GO data explicitly define GO:0061678 broadly enough to cover multiple variants and cross-reference four native pathways. GO:0009255 is obsolete and replaced by that broad term. No exact active GO identity is asserted for the selected four-step module.
+
+## Novelty and prior sources
+
+The recorded searches use `rg -uu --follow` over all text in the original Documents checkout, the retained215 checkout, and the actual216 checkout at B merge `3fb840bf48d871bc37576cc669d23441c0206e66`. Only `.git` internals and `.venv` runtime directories were excluded; binary archive contents are not text-search results. The complete raw matches and exact observed Git heads are retained in `dedup-*.jsonl` and `dedup.json`.
+
+No maintained M00008 or MetaCyc ED-shunt record was found in these scopes. Existing oxidative PPP shares Zwf/Pgl; existing galacturonate degradation shares Rhea17090/Eda chemistry; sulfoED has different substrates and chemistry. These overlaps do not constitute the whole selected route. Prior hidden DRAM originals/support rows and SEED menu text are source leads. The retained BRENDA canary covers a broad 15-reaction map and documents missing assertion-specific enzyme context; it is neither a maintained ED record nor a sufficient substitute for this exact module. Older causal-graph reports refer to the shared galacturonate aldolase. Prior pathway-addition ledger hits are chiefly sulfoED and preserved inventories, not a rejected ordinary ED candidate. No claim is made that the remaining source universe has been exhausted.
+
+## Chemistry and enzyme evidence
+
+Fresh original UniProt bodies identify K-12 proteins Zwf P0AC53 (491 aa, b1852), Pgl P52697 (331 aa, b0767), Edd P0ADF6 (603 aa, b1851), and Eda P0A955 (213 aa, b1850). All four bodies use taxon83333; that grouping is not itself proof that each cited experiment used MG1655. P00350 was also inspected from the existing PPP record and correctly excluded: it is Gnd, the oxidative PPP decarboxylase, not Zwf.
+
+The original cached Rhea142 RDF and direction table were freshly rehashed and parsed. The four prospective directions15842/12557/17278/17090 contain15 chemical-side assertions, and all four equations balance against the original formulas and charges checked against pinned ChEBI SQL. The sum at this protonation is:
+
+`D-glucose 6-phosphate + NADP(3−) → D-glyceraldehyde 3-phosphate + pyruvate + NADPH(4−) + 2 H+`.
+
+The water consumed by Pgl cancels the water produced by Edd. NADH in the published LDH-coupled assays is an analytical reagent, not an Eda substrate. No Mn-cofactor edge follows merely from adding manganese to the Edd expression medium or assay buffer.
+
+Important remaining mapping task: current E. coli Zwf/Rhea15842 uses generic D-glucose 6-phosphate, whereas the KEGG R02736/C01172 lead is beta-D-glucose 6-phosphate. The source projection expressly avoids an exactMatch claim. Inspect the original compound/reaction structures and alternative R10907 before selecting final normalized chemistry. There is no demonstrated biological contradiction here; this is an uncompleted source-normalization check.
+
+## Actual primary access and scope
+
+- **PMID15576773 / PMC532434:** complete original HTML obtained; the relevant Methods/Results/Discussion were inspected. MG1655-derived deletion and complementation experiments establish ybhE as pgl, with direct extract activity. The authors explicitly caution that the assay is not fully quantitative. Initial engineering was in DY378, followed by transfer into MG1655. Figure4 and its caption distinguish these preparations.
+- **PMID17962400 / PMC2211689:** complete original HTML obtained; exact Edd preparation and Eda assay/construct sections inspected. Edd was amplified from K-12 DNA and expressed as pET-PGDH in BL21(DE3); the preparation used for KDPG synthesis was fractionated lysate, not a purified Edd structure. Eda mutant constructs are N-terminal His-tagged; natural-substrate/wild-type measurements must be distinguished from mutant specificity data. The reported K-12 source does not establish an MG1655-specific construct.
+- **PMID17102132 / PMC5136138:** complete original HTML obtained; MG1655-derived strain information, Edd lysate assay, and peroxide-inactivation passages inspected. The EPR measurement discussed beside Edd inactivation was performed on fumarase A. It must not be recast as an Edd-specific EPR characterization. Current UniProt assigns the Edd [4Fe–4S] cofactor through mixed inference/curation evidence and gives one-cluster stoichiometry by similarity/HAMAP.
+- **PMID11274385 / PMC31111:** complete original HTML obtained; recombinant purification and mechanistic structure passages inspected. pKK-223 E. coli expression and a SeMet BL21 preparation are stated. Do not silently equate the expression host with the original donor strain. Native Eda complex `KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX` explicitly has three subunits and cites PMID7007372; that older assembly primary remains a follow-up source.
+- **PMID15659677 / PMC545716:** complete original HTML read. Multiple K-12 derivatives, especially W1485 and P90C, are distinguished. Results and Discussion support indirect positive CsrA effects on Eda, despite the contradictory negative-control heading and current UniProt induction wording. GntR/KdgR/PhoB findings are condition-specific transcriptional regulation, not catalytic inhibition. These should be adjudicated during curation rather than copied wholesale.
+- **PMID1624451,5337840:** original article landing HTML and abstracts obtained. Linked old scans/PDFs were not obtained through the tested endpoints: EuropePMC returned403, PMC PDF paths returned small HTML rather than PDF, and one fullTextXML attempt returned500. No complete old-paper reading is claimed. The 1992 abstract describes602-aa Edd versus current603-aa P0ADF6; PMID8344525 explicitly notes sequence differences. Exact historical-to-current sequence claims require adjudication, not forced equality.
+- **PMID1704005:** original indexed metadata/abstract obtained, with PMC207213 as a full-paper lead. Current Zwf activity is HAMAP-derived in the inspected body. Exact purified activity/assembly follow-up would strengthen curation; no obligatory oligomer is inferred from unrelated interaction comments.
+
+## Handoff conditions
+
+Proceed only as a new complete four-step curation task after root chooses the exact identity. Preserve every module transformation and explicitly account for both Pgl KO alternatives without importing a second protein by assumption. Resolve G6P anomer/source mapping, retain assay-versus-protein strain scope, evaluate direct assembly/cofactor claims, and retain the CsrA wording conflict. A narrower native-shunt record is a legitimate different boundary only if explicitly selected as such. No maintained files, authorities, history, reviews or GitHub state were changed here.
+
+All33 HTTP response bodies are retained, including failed/rejected downloads. `source-manifest.json`, `source-projection.json`, `primary-scope-ledger.json`, `rhea-equations-v2.json`, and `preflight-replay.json` distinguish data access, direct assays, source conventions and unfinished curation. The first adapted Rhea helper/report retained an irrelevant old net-description string; it is preserved as a superseded preparation attempt. The corrected v2 was executed and checked; neither attempt touched maintained records. A fetch launch after215 environment cleanup failed before network execution; the retained195 interpreter completed that same bounded acquisition.

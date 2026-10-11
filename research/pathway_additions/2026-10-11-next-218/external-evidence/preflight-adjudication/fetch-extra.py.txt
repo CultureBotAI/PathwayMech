@@ -1,0 +1,28 @@
+from pathlib import Path
+from urllib import request, parse
+import datetime, hashlib, json
+
+root = Path('/private/tmp/pathwaymech-entner-doudoroff-independent-adjudication-20261011')
+items = [
+ ('PMID22519976-wiley.html', 'https://febs.onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08610.x'),
+ ('pone0152403-s002.xlsx', 'https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0152403.s002&type=supplementary'),
+ ('PMID16549675-full.html', 'https://www.microbiologyresearch.org/deliver/fulltext/micro/152/4/1119.html?itemId=/content/journal/micro/10.1099/mic.0.28612-0&mimeType=html&fmt=ahah'),
+]
+rows = []
+for name, url in items:
+    row = {'url': url, 'name': name, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    try:
+        with request.urlopen(request.Request(url, headers={'User-Agent': 'PathwayMech-source-review/1.0'}), timeout=40) as response:
+            body = response.read()
+            final = parse.urlsplit(response.url)
+            row.update(status=response.status, final_url=parse.urlunsplit((final.scheme,final.netloc,final.path,'','')), redirect_query_redacted=bool(final.query), content_type=response.headers.get('Content-Type'))
+        path = root / 'originals' / name
+        with path.open('xb') as stream:
+            stream.write(body)
+        row.update(path=str(path), sha256=hashlib.sha256(body).hexdigest(), bytes=len(body))
+    except Exception as error:
+        row['error'] = str(error)
+    rows.append(row)
+with (root/'acquisition-extra.json').open('x') as stream:
+    json.dump(rows, stream, indent=2)
+print(json.dumps(rows, indent=2))

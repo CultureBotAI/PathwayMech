@@ -1,0 +1,29 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,subprocess,os
+R=Path('/private/tmp/pathwaymech-next-218-20261011');head='4362f83bea78b350129acd4183db79f07510ec7c';tree='4aca0986a74c1c25445a83546acf65564885f8c5';out=Path('/private/tmp/pathwaymech-next-217-merge-finalized.json');bridge=Path('/private/tmp/pathwaymech-next-218-merged-baseline-bridge.json');assert not out.exists() and not bridge.exists()
+def run(*a):return subprocess.check_output(a,cwd=R,text=True).strip()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def api(p):return json.loads(run('gh','api','repos/CultureBotAI/PathwayMech/'+p))
+proof=Path('/private/tmp/pathwaymech-next-217-publication-watch/actual-merge.json');prior=json.loads(proof.read_text());merge=prior['merge'];assert prior['reviewed_head']==head and prior['merged_tree']==tree
+p=api('pulls/405');assert p['merged'] and p['merge_commit_sha']==merge and p['head']['sha']==head
+commit=api('git/commits/'+merge);assert commit['tree']['sha']==tree
+issues={}
+for n in [402,404]:
+ v=api('issues/'+str(n));assert v['state']=='closed';issues[str(n)]={k:v[k] for k in ['state','state_reason','closed_at','html_url']}
+assert run('git','branch','--show-current')=='feat/pathway-next-218-20261011' and run('git','rev-parse','HEAD')==head
+before_status=run('git','status','--porcelain=v1');before_index=run('git','write-tree');before_diff=run('git','diff','--binary');before_cached=run('git','diff','--cached','--binary')
+# Preserve every repository file, including ignored/untracked curation files; dependency/cache trees are separate runtime artifacts.
+def inventory():
+ return {str(p.relative_to(R)):sha(p) for p in R.rglob('*') if p.is_file() and not p.is_symlink() and not any(x in {'.git','.venv','__pycache__','node_modules'} for x in p.relative_to(R).parts)}
+before=inventory();run('git','fetch','origin','main');assert run('git','rev-parse','origin/main')==merge
+assert run('git','rev-parse',merge+'^{tree}')==run('git','rev-parse',head+'^{tree}')==tree
+run('git','reset','--soft',merge)
+assert run('git','rev-parse','HEAD')==merge and run('git','write-tree')==before_index
+assert run('git','status','--porcelain=v1')==before_status and run('git','diff','--binary')==before_diff and run('git','diff','--cached','--binary')==before_cached and inventory()==before
+r={'status':'actual_merge_tree_and_issue_closures_verified','at':datetime.now(timezone.utc).isoformat(),'pr':405,'merge':merge,'reviewed_head':head,'tree':tree,'issues':issues,'publication_and_cleanup':'pending separate verification'}
+with out.open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+b={'status':'actual_merged_baseline_adopted_with_identical_tree','at':r['at'],'worktree':str(R),'branch':'feat/pathway-next-218-20261011','previous_head':head,'head':merge,'tree':tree,'tracked_untracked_files_preserved':len(before),'index_and_working_diffs_preserved':True,'merge_receipt_sha256':sha(out)}
+with bridge.open('x') as f:json.dump(b,f,indent=2);f.write('\n')
+s=Path('/private/tmp/pathwaymech-next-218-state.json');v=json.loads(s.read_text());v.update(base=merge,actual_merged_base_pending=False,merged_baseline_bridge_sha256=sha(bridge));s.write_text(json.dumps(v,indent=2)+'\n')
+print(json.dumps({'merge':merge,'closed_issues':list(issues),'bridge':str(bridge),'sha256':sha(bridge)}))

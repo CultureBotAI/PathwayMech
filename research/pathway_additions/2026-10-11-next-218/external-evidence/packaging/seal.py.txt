@@ -1,0 +1,68 @@
+"""Seal external ED copy plan and support entries; no maintained apply mode."""
+from pathlib import Path
+from datetime import datetime, UTC
+import base64, hashlib, json, os, subprocess
+O=Path(__file__).absolute().parent
+R=Path('/private/tmp/pathwaymech-next-218-20261011')
+D=Path('research/pathway_additions/2026-10-11-next-218')
+def h(p):
+    with Path(p).open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
+def save(p,d):
+    with p.open('x') as f: json.dump(d,f,indent=2,ensure_ascii=False);f.write('\n')
+def decoded(e):
+    b=Path(e['copy_source']).read_bytes()
+    assert hashlib.sha256(b).hexdigest()==e['destination_sha256']
+    if e['mode']=='lossless_json_wrapper':
+        w=json.loads(b); b=w['content'].encode() if w['encoding']=='utf-8' else base64.b64decode(w['content'],validate=True)
+    assert hashlib.sha256(b).hexdigest()==e['sha256'] and len(b)==e['bytes']
+    return b
+plan=json.loads((O/'copy-plan.json').read_text())
+assert h(O/'copy-plan.json')=='b7c6082c2450e9232b478424de9a640a12b2c5004d807ae573414a9a0778d566'
+assert h(O/'validation.json')=='24c99d1ebcbc02281b9c68d4ca4214f2aa7a17729822f293fc660b2094caad80'
+index={e['destination']:e for e in plan['copy_entries']}
+for e in plan['copy_entries']:
+    assert not os.path.lexists(R/e['destination'])
+    assert str(Path(e['path']).resolve(strict=True))==e['resolved_path']
+    assert Path(e['path']).read_bytes()==decoded(e)
+    assert h(O/'preview'/e['destination'])==e['destination_sha256']
+for e in plan['exact_byte_aliases']:
+    assert Path(e['path']).read_bytes()==decoded(index[e['destination']])
+for e in plan['formal_input_resolution']:
+    if e.get('destination'):
+        assert hashlib.sha256(decoded(index[e['destination']])).hexdigest()==e['sha256']
+for e in plan['fixture_resolution']:
+    if e['mode']=='retained-external':
+        assert h(e['path'])==e['sha256']
+        assert all(h(p)==e['sha256'] for p in e['original_paths'])
+    else:
+        assert hashlib.sha256(decoded(index[e['destination']])).hexdigest()==e['sha256']
+for e in plan['protected_existing']: assert h(e['path'])==e['sha256']
+for e in plan['input_bindings']:
+    assert str(Path(e['path']).resolve(strict=True))==e['resolved_path']
+    assert h(e['path'])==e['sha256']
+for e in plan['symlink_observations']:
+    assert Path(e['path']).is_symlink() and os.readlink(e['path'])==e['target']
+    assert str(Path(e['path']).resolve(strict=True))==e['resolved_path']
+    if 'sha256' in e: assert h(e['path'])==e['sha256']
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()==plan['observed_baseline']['commit']
+execution={'observed_at':datetime.now(UTC).isoformat(),'initial':{'command':str(Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'))+' -B '+str(O/'build-plan.py'),'session_id':17061,'exit_code':1,'terminal_chunk':'bd422f','log':str(O/'build-plan-initial.log'),'sha256':h(O/'build-plan-initial.log'),'disposition':'Preserved fixture-closure stop; no original input mutation.'},'successor':{'command':str(Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'))+' -B '+str(O/'build-plan.py'),'session_id':14697,'exit_code':0,'terminal_chunk':'4de563','log':str(O/'build-plan-successor.log'),'sha256':h(O/'build-plan-successor.log')},'no_maintained_writes':True}
+save(O/'execution.json',execution)
+support=[]
+for name in ['build-plan-initial.py.txt','build-plan-initial.log','preparation-disposition.json','build-plan.py','build-plan-successor.log','copy-plan.json','validation.json','README.md','execution.json','seal.py']:
+    p=O/name;b=p.read_bytes();source=p;mode='exact_bytes';dest=D/'external-evidence/packaging'/name
+    if p.suffix=='.py':dest=dest.with_name(dest.name+'.txt')
+    if p.suffix=='.log':
+        source=O/'payload'/(h(p)+'.json')
+        if not source.exists(): save(source,{'format':'lossless-immutable-evidence-v1','original_sha256':h(p),'original_bytes':len(b),'encoding':'utf-8','content':b.decode()})
+        mode='lossless_json_wrapper';dest=dest.with_name(dest.name+'.json')
+    assert not os.path.lexists(R/dest) and str(dest) not in index
+    row={'path':str(p),'resolved_path':str(p.resolve()),'sha256':h(p),'bytes':len(b),'copy_source':str(source),'destination':str(dest),'destination_sha256':h(source),'mode':mode,'role':'External packaging provenance; historical code is inert, no canonical approval'}
+    decoded(row);support.append(row)
+    q=O/'preview'/dest;q.parent.mkdir(parents=True,exist_ok=True)
+    with q.open('xb') as f:f.write(source.read_bytes())
+cmd=['git','diff','--no-index','--check',str(O/'empty'),str(O/'preview')]
+x=subprocess.run(cmd,capture_output=True,text=True,check=False)
+assert x.returncode==1 and not x.stdout and not x.stderr
+result={'status':'sealed_external_copy_plan_for_root_review_not_applied','sealed_at':datetime.now(UTC).isoformat(),'destination_repo':str(R),'destination_dossier':str(D),'prospective_base':plan['observed_baseline'],'copy_plan':{'path':str(O/'copy-plan.json'),'sha256':h(O/'copy-plan.json')},'validation':{'path':str(O/'validation.json'),'sha256':h(O/'validation.json')},'README':{'path':str(O/'README.md'),'sha256':h(O/'README.md')},'execution':{'path':str(O/'execution.json'),'sha256':h(O/'execution.json')},'counts':{'dossier_copy_entries':len(plan['copy_entries']),'packaging_support_entries':len(support),'exact_byte_aliases':len(plan['exact_byte_aliases']),'formal_resolutions':len(plan['formal_input_resolution']),'fixture_regular_files':len(plan['fixture_resolution']),'packaged_fixture_files':sum(e['mode']=='lossless_json_wrapper' for e in plan['fixture_resolution']),'external_original_fixture_aliases':sum(e['mode']=='retained-external' for e in plan['fixture_resolution']),'fixture_symlink_observations':2,'external_cache_symlink_observations':1146},'packaging_support_entries':support,'active_code':plan['replay_contract']['active_python'],'unchanged_target':plan['scientific_target'],'root_core_adoption':plan['root_adoption_proof'],'protected_existing':plan['protected_existing'],'rechecks':{'all_original_and_packaged_file_hashes_match':True,'all_formal_and_fixture_references_resolve':True,'all_declared_resolved_paths_match':True,'all_symlink_observations_match':True,'all_new_destinations_absent':True,'protected_current_files_match':True,'no_maintained_writes':True,'whitespace_check':{'command':cmd,'exit_code':x.returncode,'stdout':x.stdout,'stderr':x.stderr}},'limits':['No maintained adoption, new scientific replay, independent approval or canonical review is claimed by this packaging run.','Actual Myx merge bridge is pending; the current prospective head and root-adopted ED files are bound exactly.','The source helper remains unchanged with its original scope. Separate integrated runtime/policy/authority binding and canonical corpus gates are required.','External raw and absolute prior-proof dependencies remain at their original declared paths. Archive aliases are not runtime path rewrites.','Root alone owns top-level dossier README.md; this plan maps only an archived packaging README.'],'handoff_archival_recommendation':{'destination':str(D/'external-evidence/packaging/handoff.json'),'instruction':'If retained, copy this newly sealed handoff exclusively using its independently observed complete hash; its own hash is intentionally not self-referential.'}}
+save(O/'handoff.json',result)
+print(json.dumps({'handoff_sha256':h(O/'handoff.json'),'plan_sha256':h(O/'copy-plan.json'),'dossier_copies':len(plan['copy_entries']),'support_copies':len(support),'active_code':plan['replay_contract']['active_python'],'maintained_writes':[]},indent=2))

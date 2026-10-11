@@ -1,0 +1,139 @@
+"""Root verification and exclusive adoption of the sealed ED proof package."""
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import subprocess
+from datetime import datetime, timezone
+
+ROOT = Path('/private/tmp/pathwaymech-next-218-20261011')
+PACKAGE = Path('/private/tmp/pathwaymech-next-218-final-proof-packaging')
+DOSSIER = ROOT / 'research/pathway_additions/2026-10-11-next-218'
+RECEIPT = Path('/private/tmp/pathwaymech-next-218-final-proof-root-adoption.json')
+SEALS = {
+    'handoff.json': 'de35e31b7cc05eadd9f028adadc59c528aa97d7114e52e0dd8c2ebacaee3386e',
+    'copy-plan.json': 'fba191e9956d8f58ff379b7e13b7004b84c071f289a6cdaa9560beee2664cebc',
+    'adoption-copy-plan.json': '4abce77c64c4b4c6bcc19548133cf2dd9e118494c722d4943b06e3b375932cf1',
+    'execution-completion.json': '44e9c265cf46ae6eb3444fc741924e6255f9f3457425058972bb8e9adaae26fc',
+}
+
+def require(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+def body(path):
+    require(path.stat().st_size < 24 * 1024 * 1024, f'Size: {path}')
+    return path.read_bytes()
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def write(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('xb') as f:
+        f.write(data)
+    path.chmod(0o644)
+
+def dumps(value):
+    return (json.dumps(value, indent=2) + '\n').encode()
+
+def destination(value):
+    relative = Path(value)
+    require(not relative.is_absolute() and '..' not in relative.parts, f'Unsafe destination {value}')
+    p = ROOT / relative
+    require(p.is_relative_to(DOSSIER / 'external-evidence'), f'Scope: {p}')
+    require(p.resolve(strict=False) == p, f'Symlink ancestor: {p}')
+    return p
+
+require(not RECEIPT.exists(), 'Receipt already exists')
+for name, expected in SEALS.items():
+    require(sha(body(PACKAGE / name)) == expected, f'Seal: {name}')
+plan = json.loads((PACKAGE / 'copy-plan.json').read_text())
+complete = json.loads((PACKAGE / 'adoption-copy-plan.json').read_text())
+execution = json.loads((PACKAGE / 'execution-completion.json').read_text())
+for row in execution['artifacts']:
+    require(sha(body(Path(row['path']))) == row['sha256'], f'Execution artifact: {row["path"]}')
+require(plan['actual_root_positive_terminal']['exit_code'] == 0, 'Positive terminal missing')
+require(sha(body(DOSSIER / 'ed-replay-final.py')) == plan['active_helper_sha256'], 'Helper changed')
+rows = plan['source_to_destination'] + plan['directory_observations']
+for row in rows:
+    p = Path(row['source'])
+    require(format(stat.S_IMODE(p.lstat().st_mode), '04o') == row['source_mode'], f'Source mode: {p}')
+    if row['kind'] == 'symlink':
+        require(p.is_symlink() and os.readlink(p) == row['link_target'], f'Symlink: {p}')
+        require(str(p.resolve(strict=False)) == row['resolved_path'] and p.exists() == row['target_exists'], f'Link identity: {p}')
+        require(sha(os.fsencode(os.readlink(p))) == row['link_text_sha256'], f'Link text: {p}')
+        if row['target_exists']:
+            require(len(body(p)) == row['target_bytes'] and sha(body(p)) == row['target_sha256'], f'Link target: {p}')
+    elif row['kind'] == 'directory':
+        require(p.is_dir() and not p.is_symlink(), f'Directory: {p}')
+    else:
+        require(p.is_file() and not p.is_symlink(), f'File: {p}')
+        require(str(p.resolve()) == row['resolved_path'], f'Resolved identity: {p}')
+        require(len(body(p)) == row['source_bytes'] and sha(body(p)) == row['source_sha256'], f'Source bytes: {p}')
+# pathlib includes hidden, ignored, and binary fixture paths; do not follow links.
+for row in plan['directory_observations']:
+    if '/' in row['logical_path']:
+        continue
+    root = Path(row['source'])
+    observed = {str(root)} | {str(p) for p in root.rglob('*')}
+    expected = {r['source'] for r in rows if r['logical_path'] == row['logical_path'] or r['logical_path'].startswith(row['logical_path'] + '/')}
+    require(observed == expected, f'Tree membership: {root}')
+copies = {r['destination']: r for r in complete['copies']}
+require(len(copies) == len(complete['copies']) == 171, 'Copy cardinality')
+payloads = {}
+for key, row in copies.items():
+    p, dest = Path(row['source']), destination(key)
+    require(not dest.exists() and not dest.is_symlink(), f'Collision: {dest}')
+    require(p.is_file() and not p.is_symlink(), f'Package kind: {p}')
+    data = body(p)
+    require(sha(data) == row['sha256'] and len(data) == row['bytes'], f'Copy bytes: {p}')
+    require(format(stat.S_IMODE(p.stat().st_mode), '04o') == row['source_mode'] == row['destination_mode'] == '0644', f'Copy mode: {p}')
+    payloads[key] = data
+for row in plan['source_to_destination']:
+    dest = destination(row['destination'])
+    if row['destination'] in payloads:
+        raw = payloads[row['destination']]
+    else:
+        require(dest.is_file() and not dest.is_symlink(), f'Alias kind: {dest}')
+        require(str(dest.resolve()) == row['destination_resolved_path'], f'Alias identity: {dest}')
+        require(format(stat.S_IMODE(dest.stat().st_mode), '04o') == row['destination_mode'], f'Alias mode: {dest}')
+        raw = body(dest)
+    require(sha(raw) == row['destination_sha256'] and len(raw) == row['destination_bytes'], f'Mapping bytes: {dest}')
+    if row['kind'] == 'symlink':
+        observation = json.loads(raw)
+        require(all(observation.get(k) == v for k, v in row.items() if k in ['source','logical_path','source_mode','kind','link_target','link_text_sha256','resolved_path','target_exists','target_sha256','target_bytes']), f'Link observation: {dest}')
+        continue
+    if 'lossless' in row['representation']:
+        wrapped = json.loads(raw)
+        require(wrapped['encoding'] in ['utf-8', 'base64'], f'Encoding: {dest}')
+        recovered = wrapped['content'].encode('utf-8') if wrapped['encoding'] == 'utf-8' else base64.b64decode(wrapped['content'], validate=True)
+        require(sha(recovered) == wrapped['original_sha256'] and len(recovered) == wrapped['original_bytes'], f'Wrapper: {dest}')
+    else:
+        recovered = raw
+    require(sha(recovered) == row['source_sha256'] and len(recovered) == row['source_bytes'], f'Recovery: {dest}')
+ignored = subprocess.run(['git','check-ignore','--no-index','--stdin','-z'], cwd=ROOT, input=('\0'.join(copies) + '\0').encode(), capture_output=True)
+require(ignored.returncode == 1 and not ignored.stdout and not ignored.stderr, 'Ignored copy destination')
+for key, data in payloads.items():
+    write(destination(key), data)
+for key, row in copies.items():
+    require(sha(body(destination(key))) == row['sha256'], f'Adopted copy: {key}')
+receipt = {
+    'status': 'passed_root_verified_and_adopted_final_proof_package',
+    'observed_at': datetime.now(timezone.utc).isoformat(),
+    'sealed_package_inputs': SEALS,
+    'copies_adopted': complete['copies'],
+    'regular_sources_verified_and_recovered': sum(r['kind'] == 'file' for r in plan['source_to_destination']),
+    'symlink_observations_verified': sum(r['kind'] == 'symlink' for r in plan['source_to_destination']),
+    'directory_observations_verified': len(plan['directory_observations']),
+    'active_helper_sha256': plan['active_helper_sha256'],
+    'root_positive_terminal': plan['actual_root_positive_terminal'],
+    'adopter_sha256': sha(Path(__file__).read_bytes()),
+    'limits': ['Small proof owners and package sources rehashed; source databases were not replayed again.', 'Canonical scientific review and complete staged whitespace gate remain separate.', 'Symlinks recorded without creating maintained symlinks; archived Python remains inert.'],
+}
+write(RECEIPT, dumps(receipt))
+write(DOSSIER / 'external-evidence/final-proof-root-adoption.json', body(RECEIPT))
+write(DOSSIER / 'external-evidence/adopt-final-proofs.py.txt', Path(__file__).read_bytes())
+print(json.dumps({'status': receipt['status'], 'copies': len(copies), 'recovered_sources': receipt['regular_sources_verified_and_recovered'], 'receipt': str(RECEIPT), 'sha256': sha(body(RECEIPT))}))

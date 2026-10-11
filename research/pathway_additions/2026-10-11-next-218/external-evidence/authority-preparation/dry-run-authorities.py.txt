@@ -1,0 +1,279 @@
+"""Rebuild proposed authorities externally; this command has no apply mode."""
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
+from pathlib import Path
+
+
+def sha(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def save(path, value):
+    with path.open("x") as stream:
+        json.dump(value, stream, indent=2)
+        stream.write("\n")
+
+
+def main():
+    if not __debug__:
+        raise RuntimeError("Assertions must be enabled")
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ["repo-root", "selection", "output-dir"]:
+        parser.add_argument("--" + name, required=True, type=Path)
+    args = parser.parse_args()
+    root = args.repo_root.resolve(strict=True)
+    cache = Path("/private/tmp/pathwaymech-curation-authorities")
+    out = args.output_dir.absolute()
+    if os.path.lexists(out):
+        raise FileExistsError(out)
+    bindings = {}
+
+    def capture(path, expected=None):
+        path = Path(path).absolute()
+        data = path.read_bytes()
+        digest = hashlib.sha256(data).hexdigest()
+        if expected is not None and digest != expected:
+            raise ValueError("input digest mismatch: " + str(path))
+        if str(path) in bindings and bindings[str(path)][1] != digest:
+            raise ValueError("changed input capture: " + str(path))
+        bindings[str(path)] = (str(path.resolve(strict=True)), digest, data)
+        return data
+
+    def recheck():
+        for name, (resolved, digest, _) in bindings.items():
+            if str(Path(name).resolve(strict=True)) != resolved or sha(name) != digest:
+                raise ValueError("input changed after capture: " + name)
+
+    started = datetime.now(UTC).isoformat()
+    selection = json.loads(capture(args.selection))
+    capture(__file__)
+    lock = selection["preparation_baseline"]
+    for rel, digest in {**lock["baseline_files"], **lock["runtime_files"]}.items():
+        capture(root / rel, digest)
+    for item in selection["captured_inputs"]:
+        capture(item["path"], item["sha256"])
+        if str(Path(item["path"]).resolve(strict=True)) != item["resolved_path"]:
+            raise ValueError("selection input path changed")
+    target = Path(selection["target"]["path"])
+    target_bytes = capture(target, selection["target"]["sha256"])
+    for protected in [root, cache, target.parent.parent]:
+        if out.resolve().is_relative_to(protected.resolve()):
+            raise ValueError("output must be outside protected input trees")
+    before = {
+        name: json.loads(bindings[str(root / f"data/identifier_authorities/{name}.json")][2])
+        for name in ["ontology", "sources"]
+    }
+    prior = json.loads(bindings[str(root / "conf/identifier_sources.json")][2])
+    entries = [r["manifest_entry"] for r in selection["selected_new_inputs"]]
+    if len(prior) != selection["counts"]["manifest_before"]:
+        raise ValueError("baseline manifest count mismatch")
+    for field in ["key", "path"]:
+        values = [e[field] for e in prior + entries]
+        if len(values) != len(set(values)):
+            raise ValueError("manifest collision: " + field)
+    locations = {e["path"]: cache / "sources" / e["path"] for e in prior}
+    for item in selection["selected_new_inputs"]:
+        entry = item["manifest_entry"]
+        capture(item["original_path"], entry["sha256"])
+        locations[entry["path"]] = Path(item["original_path"])
+        for proof in item["acquisition_proof"]:
+            capture(proof["path"], proof["sha256"])
+    for item in selection["reused_inputs"]:
+        assert item["existing_entry_preserved"] in prior
+    manifest = prior + entries
+    for entry in manifest:
+        rel = Path(entry["path"])
+        if rel.is_absolute() or ".." in rel.parts or not locations[entry["path"]].is_file():
+            raise ValueError("invalid or missing original cache body: " + str(rel))
+    # Original parser code is bound before importing it; only the fresh external
+    # output directory can receive files. Existing source bodies are linked, not copied.
+    import yaml
+
+    recheck()
+    out.mkdir(parents=False, exist_ok=False)
+    overlay = out / "source-cache"
+    overlay.mkdir()
+    for entry in manifest:
+        destination = overlay / entry["path"]
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.symlink_to(locations[entry["path"]])
+    mpath = out / "identifier_sources.json"
+    save(mpath, manifest)
+    selected = out / "selected-identifiers"
+    selected.mkdir()
+    all_ids = (
+        set(before["ontology"]["terms"])
+        | set(before["sources"]["terms"])
+        | set(selection["selected_ontology_terms"])
+        | set(selection["selected_source_terms"])
+    )
+    with (selected / "ids.yaml").open("x") as stream:
+        yaml.safe_dump(
+            {"id": "GO:0008150", "participants": [{"id": ident} for ident in sorted(all_ids)]},
+            stream,
+            sort_keys=False,
+        )
+    ont_command = [
+        sys.executable,
+        "-B",
+        str(root / "scripts/build_ontology_identifier_snapshot.py"),
+    ]
+    for prefix, filename in [
+        ("GO", "go"),
+        ("CHEBI", "chebi"),
+        ("NCBITaxon", "ncbitaxon"),
+        ("RHEA", "rhea"),
+    ]:
+        ont_command += ["--source", prefix + "=" + str(cache / (filename + ".db"))]
+    ont_command += [
+        "--corpus",
+        str(selected),
+        "--rhea-updates",
+        str(root / "conf/rhea_identifier_updates.json"),
+        "--cache-dir",
+        str(overlay),
+        "--output",
+        str(out / "ontology.json"),
+    ]
+    commands = {
+        "ontology": ont_command,
+        "sources": [
+            sys.executable,
+            "-B",
+            str(root / "scripts/build_source_identifier_snapshot.py"),
+            "--manifest",
+            str(mpath),
+            "--cache-dir",
+            str(overlay),
+            "--records",
+            str(selected),
+            "--output",
+            str(out / "sources.json"),
+        ],
+    }
+
+    def run(pair):
+        name, command = pair
+        log = out / (name + ".log")
+        start = datetime.now(UTC).isoformat()
+        with log.open("x") as stream:
+            process = subprocess.run(
+                command,
+                cwd=root,
+                check=False,
+                env={
+                    **os.environ,
+                    "PYTHONPATH": str(root / "src"),
+                    "UV_NO_SYNC": "1",
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                    "UV_CACHE_DIR": "/private/tmp/pathwaymech-curation-uv-cache",
+                },
+                stdout=stream,
+                stderr=subprocess.STDOUT,
+            )
+        return dict(
+            command=command,
+            started_at=start,
+            finished_at=datetime.now(UTC).isoformat(),
+            exit_code=process.returncode,
+            log=str(log),
+            log_sha256=sha(log),
+        )
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        checks = list(pool.map(run, commands.items()))
+    save(out / "execution.json", checks)
+    if any(row["exit_code"] != 0 for row in checks):
+        raise ValueError("canonical builder failed; no maintained files written")
+    deltas = {}
+    for name in before:
+        after = json.loads((out / (name + ".json")).read_text())
+        delta = {}
+        for field in ["terms", "sources"]:
+            assert before[name][field].keys() <= after[field].keys()
+            assert all(after[field][k] == v for k, v in before[name][field].items()), (
+                name,
+                field,
+                "baseline assertion drift",
+            )
+            delta[field] = dict(
+                before=len(before[name][field]),
+                after=len(after[field]),
+                added=sorted(after[field].keys() - before[name][field].keys()),
+                removed=[],
+                changed_existing=[],
+            )
+        expected = selection[
+            "selected_ontology_terms" if name == "ontology" else "selected_source_terms"
+        ]
+        assert set(delta["terms"]["added"]) == set(expected) - set(before[name]["terms"])
+        assert all(after["terms"][k] == v for k, v in expected.items())
+        deltas[name] = dict(sha256=sha(out / (name + ".json")), **delta)
+    sandbox = out / "one-record-validation"
+    (sandbox / "data/pathways").mkdir(parents=True)
+    (sandbox / "data/identifier_authorities").mkdir()
+    (sandbox / "conf").mkdir()
+    (sandbox / "data/pathways" / target.name).write_bytes(target_bytes)
+    (sandbox / "conf/identifier_policy.yaml").write_bytes(
+        bindings[str(root / "conf/identifier_policy.yaml")][2]
+    )
+    for name in before:
+        shutil.copyfile(
+            out / (name + ".json"), sandbox / f"data/identifier_authorities/{name}.json"
+        )
+    sys.path.insert(0, str(root / "src"))
+    from pathwaymech.identifiers import identifier_errors
+
+    recheck()
+    errors = identifier_errors(sandbox)
+    assert not errors, errors
+    # Builders check original hashes before parsing. Recheck retained originals
+    # at completion as well; do not attest a replacement body under an old name.
+    source_body_recheck = []
+    for entry in manifest:
+        path = locations[entry["path"]]
+        digest = sha(path)
+        assert digest == entry["sha256"], str(path)
+        source_body_recheck.append(dict(path=str(path), sha256=digest))
+    recheck()
+    report = dict(
+        status="passed_external_canonical_dry_run",
+        started_at=started,
+        finished_at=datetime.now(UTC).isoformat(),
+        mode="external_only_no_apply",
+        observed_repo_head=subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=root, text=True
+        ).strip(),
+        preparation_baseline=lock,
+        selection_sha256=sha(args.selection),
+        helper_sha256=sha(__file__),
+        checks=checks,
+        snapshots=deltas,
+        manifest_inputs=dict(before=len(prior), after=len(manifest), added=entries),
+        one_record_identifier_errors=errors,
+        source_body_recheck=source_body_recheck,
+        all_baseline_terms_and_metadata_preserved=True,
+        maintained_writes=[],
+        no_shared_cache_writes=True,
+        no_source_acquisition=True,
+        limits=[
+            "Preparation only; root must independently review before future integration.",
+            "No apply option. Current Myx working-tree authorities are prospective; an actual future merged-base bridge must be proved separately.",
+            "Canonical builders and identifier check are not full corpus gates.",
+        ],
+    )
+    save(out / "report.json", report)
+    print(json.dumps(dict(status=report["status"], snapshots=deltas), indent=2))
+
+
+if __name__ == "__main__":
+    main()

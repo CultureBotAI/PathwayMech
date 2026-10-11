@@ -1,0 +1,15 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,subprocess,os,sys
+R=Path('/private/tmp/pathwaymech-next-218-20261011');P=Path('/private/tmp/pathwaymech-ed-integrated-replay-formatting-successor-20261011');A=Path('/private/tmp/pathwaymech-next-218-integrated-replay-root-acceptance.json');V=json.loads(A.read_text());O=Path('/private/tmp/pathwaymech-next-218-integrated-replay-execution');assert not O.exists()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+assert sha(P/'completion.json')==V['completion_sha256'];assert sha(P/'integration-replay.py')==V['driver_sha256'];assert sha(P/'expected-bindings.json')==V['binding_manifest_sha256']
+cmd=[str(R/'.venv/bin/python'),'-B',str(P/'integration-replay.py'),'--repo',str(R),'--helper',str(R/'research/pathway_additions/2026-10-11-next-218/ed-replay-final.py'),'--binding-manifest',str(P/'expected-bindings.json'),'--binding-sha256',V['binding_manifest_sha256'],'--output-dir','/private/tmp/pathwaymech-ed-integrated-replay-positive-20261011']
+env=dict(os.environ,PYTHONPATH=str(R/'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',PYTHONDONTWRITEBYTECODE='1');O.mkdir();started=datetime.now(timezone.utc).isoformat();print(json.dumps({'status':'approved_integrated_replay_started','at':started,'binding_manifest_sha256':V['binding_manifest_sha256']}),flush=True)
+with (O/'console.log').open('xb') as log:
+ p=subprocess.Popen(cmd,cwd=R,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+ for line in p.stdout:log.write(line);log.flush();sys.stdout.buffer.write(line);sys.stdout.buffer.flush()
+ code=p.wait()
+r={'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'command':cmd,'exit_code':code,'console_log':str(O/'console.log'),'console_sha256':sha(O/'console.log'),'root_acceptance_sha256':sha(A)}
+with (O/'completion.json').open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+print(json.dumps(r),flush=True);raise SystemExit(code)

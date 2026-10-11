@@ -1,0 +1,65 @@
+import pathlib,json,re,gzip,hashlib,sqlite3,collections,datetime,subprocess
+from lxml import etree
+import yaml
+D=pathlib.Path(__file__).resolve().parent;S=pathlib.Path('/private/tmp/pathwaymech-entner-doudoroff-author-20261011');r=yaml.safe_load((S/'draft/entner-doudoroff-pathway.yaml').read_text());p=json.loads((S/'draft/ed-source-projection.json').read_text());f=json.loads((S/'draft/ed-chemical-identities.json').read_text());paths=p['references_to_original_paths'];rh='http://rdf.rhea-db.org/';R='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+def fields(path):
+ o={}
+ for l in pathlib.Path(path).read_text().splitlines():
+  if l=='///':break
+  if l[:12].strip():key=l[:12].strip();o[key]=[]
+  o[key].append(l[12:].strip())
+ return {k:'\n'.join(v) for k,v in o.items()}
+mod=fields(paths['KEGG:M00008']);assert mod['DEFINITION']=='K00036 (K01057,K07404) K01690 K01625';assert re.findall(r'\[RN:([^]]+)\]',mod['ORTHOLOGY'])==['R02736 R10907','R02035','R02036','R05605'];assert 'M00008' not in fields(paths['KEGG:R10907'])['MODULE']
+# Independently parse the actual compressed source once and keep its exact RDF object chains.
+with gzip.open(f['rhea_source']['path'],'rb') as stream:t=etree.parse(stream)
+nodes={}
+for n in t.getroot():
+ if n.get(R+'about'):nodes.setdefault(n.get(R+'about'),[]).extend(list(n))
+def values(uri,name):return list(dict.fromkeys(x.get(R+'resource') or x.text for x in nodes[uri] if etree.QName(x).localname==name))
+sto={};chains=[]
+for rid,master,kegg,bidir in [('12557','12556','R02035','12559'),('17278','17277','R02036','17280'),('17090','17089','R05605','17092')]:
+ assert rh+rid in values(rh+master,'directionalReaction');assert rh+bidir in values(rh+master,'bidirectionalReaction');assert 'R'+rid not in fields(paths['KEGG:'+kegg]).get('DBLINKS','');assert 'RHEA: '+bidir in fields(paths['KEGG:'+kegg])['DBLINKS']
+ c=collections.Counter()
+ for name,sign in [('substrates',-1),('products',1)]:
+  side,=values(rh+rid,name)
+  for n in nodes[side]:
+   pred=etree.QName(n).localname
+   if not re.fullmatch(r'contains\d+',pred):continue
+   part=n.get(R+'resource');compound,=values(part,'compound');cid,=values(compound,'accession');coef=int(pred[8:]);c[cid]+=sign*coef;chains.append({'reaction':'RHEA:'+rid,'side':name,'side_object':side,'predicate':pred,'participant':part,'compound':compound,'chemical':cid,'coefficient':coef,'formula':values(compound,'formula')[0],'charge':values(compound,'charge')[0]})
+ sto['RHEA:'+rid]=dict(c)
+for kid in ['R02736','R10907']:
+ ff=fields(paths['KEGG:'+kid]);assert ff['ENTRY'].startswith(kid+' ');left,right=ff['EQUATION'].split(' <=> ');c=collections.Counter()
+ for side,sign in [(left,-1),(right,1)]:
+  for cid in side.split(' + '):c[f['kegg_bridges'][cid]['selected_id']]+=sign
+ sto['KEGG:'+kid]=dict(c)
+actual={rid:collections.Counter() for rid in sto}
+for e in r['mechanistic_edges']:
+ if e['predicate']=='consumes':rid=e['object'];cid=e['subject'];sign=-1
+ elif e['predicate']=='produces':rid=e['subject'];cid=e['object'];sign=1
+ else:continue
+ coef=int(re.match(r'Coefficient: (\d+)\.',e['description'])[1]);actual[rid][cid]+=sign*coef
+assert {k:dict(v) for k,v in actual.items()}==sto
+# Fresh SQL chemistry and independently recomputed native MOL structures.
+chem={}
+with sqlite3.connect('file:'+f['chebi_database']['path']+'?mode=ro',uri=True) as db:
+ for cid in {c for st in sto.values() for c in st}:
+  vals={q:v for q,v in db.execute('SELECT predicate,value FROM statements WHERE subject=?',(cid,)) if v is not None};chem[cid]={'formula':vals['chemrof:generalized_empirical_formula'],'charge':int(vals['chemrof:charge']),'inchi':vals['chemrof:inchi_string']}
+for row in chains:assert row['formula']==chem[row['chemical']]['formula'] and int(row['charge'])==chem[row['chemical']]['charge']
+rd='/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python';molpaths=[b['kegg_mol'] for b in f['kegg_bridges'].values()];code='import sys,json;from rdkit import Chem;print(json.dumps({p:Chem.MolToInchi(Chem.MolFromMolFile(p,removeHs=False)) for p in sys.argv[1:]}))';run=subprocess.run([rd,'-c',code,*molpaths],capture_output=True,text=True,check=True);mols=json.loads(run.stdout);bridges=[]
+for cid,b in f['kegg_bridges'].items():
+ native=mols[b['kegg_mol']];charged=chem[b['selected_id']]['inchi'];assert re.sub(r'/p[+-]?\d+','',native)==re.sub(r'/p[+-]?\d+','',charged);bridges.append({'native':cid,'selected':b['selected_id'],'native_inchi':native,'selected_inchi':charged,'exact_inchi':native==charged})
+balances={}
+for rid,st in sto.items():
+ residual=collections.Counter()
+ for cid,coef in st.items():
+  for atom,num in re.findall(r'([A-Z][a-z]?)(\d*)',chem[cid]['formula']):residual[atom]+=coef*int(num or 1)
+  residual['charge']+=coef*chem[cid]['charge']
+ assert not any(residual.values());balances[rid]=dict(residual)
+nets={}
+for donor in ['KEGG:R02736','KEGG:R10907']:
+ net=collections.Counter()
+ for rid in [donor,'RHEA:12557','RHEA:17278','RHEA:17090']:
+  for cid,v in sto[rid].items():net[cid]+=v
+ nets[donor]={k:v for k,v in net.items() if v}
+ assert nets[donor]['CHEBI:15378']==2 and 'CHEBI:15377' not in nets[donor]
+result={'at':datetime.datetime.now(datetime.UTC).isoformat(),'record_sha256':hashlib.sha256((S/'draft/entner-doudoroff-pathway.yaml').read_bytes()).hexdigest(),'module_definition':mod['DEFINITION'],'module_orthology':mod['ORTHOLOGY'],'equations':sto,'rhea_chains':chains,'chemical_bridges':bridges,'balances':balances,'separate_branch_nets':nets,'scope':'Reviewer-written original KEGG/Rhea/MOL/SQL derivation independent of author replay implementation; whole source hashes covered by full replay and independent small-body audit.'};(D/'independent-chemistry.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'reactions':len(sto),'chains':len(chains),'bridges':len(bridges),'balances':len(balances),'nets':nets,'sha256':hashlib.sha256((D/'independent-chemistry.json').read_bytes()).hexdigest()}))

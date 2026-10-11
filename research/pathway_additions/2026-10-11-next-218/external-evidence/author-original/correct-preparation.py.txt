@@ -1,0 +1,30 @@
+from pathlib import Path
+import json,hashlib,shutil
+import yaml
+R=Path(__file__).parent;D=R/'draft';A=R/'pre-replay-inputs';A.mkdir()
+paths=[R/'prepare-dossier.py',R/'ed-replay.py',R/'author-replay-initial.log',D/'entner-doudoroff-pathway.yaml',D/'ed-source-manifest.json',D/'ed-source-projection.json',D/'ed-authority-proposal.json',D/'ed-identifiers.json']
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+rows=[]
+for p in paths:
+ q=A/p.name;shutil.copyfile(p,q);rows.append(dict(path=str(p),archived_path=str(q),sha256=sha(q)))
+(A/'manifest.json').write_text(json.dumps(rows,indent=2)+'\n')
+p=R/'prepare-dossier.py';s=p.read_text().replace("rows=rows if isinstance(rows,list) else [rows]", "rows=rows if isinstance(rows,list) else rows.get('responses',[rows])");p.write_text(s)
+m=json.loads((D/'ed-source-manifest.json').read_text());q=Path('/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011/acquisition.json');new=json.loads(q.read_text())['responses']
+for row in new:
+ assert sha(Path(row['path']))==row['sha256'];m['bodies'].append(dict(row,acquisition_receipt=str(q),accepted_body=row['status']==200))
+m['failed_access_without_body']=[x for x in m['failed_access_without_body'] if x.get('acquisition')!=str(q)]
+t=D/'entner-doudoroff-pathway.yaml';r=yaml.safe_load(t.read_text());changes=[]
+for edge in r['mechanistic_edges']:
+ for ev in edge['evidence']:
+  old=ev.get('source_assertion','')
+  if 'entry and structure MOL' in old:
+   ev['source_assertion']=old.replace('entry and structure MOL','entry and its ATOM/BOND fields')
+   changes.append(edge['id'])
+t.write_text(yaml.safe_dump(r,sort_keys=False,allow_unicode=True,width=100));h=sha(t)
+# Synchronize unsealed author representations; the source statements reference the flatfile itself.
+for name in ['ed-source-projection.json','ed-authority-proposal.json','ed-identifiers.json']:
+ p=D/name;v=json.loads(p.read_text());v['record_sha256']=h;p.write_text(json.dumps(v,indent=2)+'\n')
+m['record_sha256']=h;(D/'ed-source-manifest.json').write_text(json.dumps(m,indent=2)+'\n')
+p=R/'build-draft.py';p.write_text(p.read_text().replace('entry and structure MOL','entry and its ATOM/BOND fields'))
+(R/'preparation-correction.json').write_text(json.dumps(dict(prior_archive=str(A/'manifest.json'),new_record_sha256=h,added_originals=new,source_assertion_field_scoping_edges=changes,scope='Unsealed author preparation: manifest nested responses and flatfile-local wording; chemical graph and counts unchanged.'),indent=2)+'\n')
+print(h,len(m['bodies']))

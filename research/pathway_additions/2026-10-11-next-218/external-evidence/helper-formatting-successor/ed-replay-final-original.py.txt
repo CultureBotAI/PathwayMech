@@ -1,0 +1,626 @@
+"""Replay complete ED draft against originals; author validation, not approval."""
+
+import argparse
+import gzip
+import hashlib
+import importlib.util
+import json
+import re
+import sqlite3
+import subprocess
+import sys
+import zipfile
+from collections import Counter
+from copy import deepcopy
+from dataclasses import asdict
+from datetime import UTC, datetime
+from pathlib import Path
+
+p = argparse.ArgumentParser()
+p.add_argument("--record", type=Path, required=True)
+p.add_argument("--repo", type=Path, required=True)
+p.add_argument("--output", type=Path, required=True)
+a = p.parse_args()
+assert a.record.is_file() and a.repo.is_dir()
+assert not a.output.exists() and a.output.parent.is_dir()
+ROOT = Path(__file__).resolve().parent
+D = ROOT / "draft"
+started = datetime.now(UTC).isoformat()
+core = [
+    a.record,
+    D / "ed-source-manifest.json",
+    D / "ed-source-projection.json",
+    D / "ed-chemical-identities.json",
+    D / "ed-protein-projection.json",
+    D / "ed-authority-proposal.json",
+    D / "ed-identifiers.json",
+    D / "ed-coverage.json",
+    D / "ed-curation.md",
+    D / "ed-dedup.json",
+    Path(__file__),
+    a.repo / "src/pathwaymech/schema.py",
+    a.repo / "src/pathwaymech/schema/pathwaymech.yaml",
+    a.repo / "src/pathwaymech/kgx.py",
+    a.repo / "scripts/build_source_identifier_snapshot.py",
+    ROOT / "imod/context.json",
+    ROOT / "imod/manifest.json",
+    Path("/private/tmp/claw-published-duf-offline-20261007/src/kg_microbe_sources/imodulondb.py"),
+]
+identities = [(x.absolute(), x.resolve()) for x in core]
+captured = {str(y): y.read_bytes() for _, y in identities}
+
+
+def digest(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+def sha(p):
+    with Path(p).open("rb") as f:
+        return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def readj(p):
+    return json.loads(captured[str(p.resolve())])
+
+
+manifest = readj(D / "ed-source-manifest.json")
+proofs = []
+for x in manifest["prior_proof_inputs"]:
+    p = Path(x["path"]).absolute()
+    rp = p.resolve()
+    assert sha(rp) == x["sha256"], p
+    proofs.append((p, rp, x["sha256"]))
+bodies = {}
+for x in manifest["bodies"]:
+    p = Path(x["path"])
+    raw = p.read_bytes()
+    assert digest(raw) == x["sha256"], p
+    bodies[str(p)] = raw
+for x in manifest["issuing_databases"]:
+    assert sha(x["path"]) == x["sha256"], x["path"]
+print("Original bodies and all formal/prior-proof hashes passed", flush=True)
+sys.path.insert(0, str(a.repo / "src"))
+import yaml  # noqa: E402
+from lxml import etree, html  # noqa: E402
+from pathwaymech.kgx import kgx_edges, kgx_nodes, write_kgx  # noqa: E402
+from pathwaymech.schema import validate_record  # noqa: E402
+from pathwaymech.strict import strict_errors  # noqa: E402
+
+r = yaml.safe_load(captured[str(a.record.resolve())])
+projection = readj(D / "ed-source-projection.json")
+facts = readj(D / "ed-chemical-identities.json")
+proteins = readj(D / "ed-protein-projection.json")
+authority = readj(D / "ed-authority-proposal.json")
+assert (
+    digest(captured[str(a.record.resolve())])
+    == manifest["record_sha256"]
+    == projection["record_sha256"]
+)
+refs = {x["id"]: x for x in r["references"]}
+assert r["references"] == manifest["references"]
+source_by_sha = {digest(b): p for p, b in bodies.items()}
+for ref in refs.values():
+    if "source_sha256" not in ref:
+        assert ref["id"] == "PMID:22519976" and "no local article digest" in ref["source_version"]
+    else:
+        assert ref["source_sha256"] in source_by_sha or any(
+            ref["source_sha256"] == v["sha256"] for v in manifest["issuing_databases"]
+        )
+
+
+def original(path):
+    return bodies[str(Path(path))]
+
+
+def fields(raw):
+    out = {}
+    for line in raw.decode().splitlines():
+        if line == "///":
+            break
+        if line[:12].strip():
+            key = line[:12].strip()
+            out[key] = []
+        out[key].append(line[12:].strip())
+    return {k: "\n".join(v) for k, v in out.items()}
+
+
+source_paths = projection["references_to_original_paths"]
+module = fields(original(source_paths["KEGG:M00008"]))
+assert module["DEFINITION"] == "K00036 (K01057,K07404) K01690 K01625"
+assert re.findall(r"\[RN:([^]]+)\]", module["ORTHOLOGY"]) == [
+    "R02736 R10907",
+    "R02035",
+    "R02036",
+    "R05605",
+]
+# Issuing compound structures and ChEBI normalization, including all downstream sides.
+chemdb = Path(facts["chebi_database"]["path"])
+with sqlite3.connect(f"file:{chemdb}?mode=ro", uri=True) as db:
+    for cid, rows in facts["chebi_terms"].items():
+        actual = [
+            {"predicate": p, "value": v, "object": o}
+            for p, v, o in db.execute(
+                "SELECT predicate,value,object FROM statements WHERE subject=?", (cid,)
+            )
+        ]
+        assert actual == rows, cid
+        assert not any(x["predicate"] == "owl:deprecated" and x["value"] == "true" for x in rows)
+
+
+def cv(cid, pred):
+    return next(
+        x["value"] or x["object"] for x in facts["chebi_terms"][cid] if x["predicate"] == pred
+    )
+
+
+molpaths = [b["kegg_mol"] for b in facts["kegg_bridges"].values()]
+rdkit = "/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python"
+program = (
+    "from rdkit import Chem\nimport json,sys\n"
+    "print(json.dumps({p:Chem.MolToInchi(Chem.MolFromMolFile(p,removeHs=False)) "
+    "for p in sys.argv[1:]}))"
+)
+run = subprocess.run([rdkit, "-c", program, *molpaths], capture_output=True, text=True, check=True)
+inchis = json.loads(run.stdout)
+
+
+def normal(s):
+    return re.sub(r"/p[+-]?\d+", "", s)
+
+
+for b in facts["kegg_bridges"].values():
+    assert sha(b["kegg_mol"]) == b["mol_sha256"]
+    assert inchis[b["kegg_mol"]] == b["mol_inchi"]
+    assert normal(b["mol_inchi"]) == normal(cv(b["selected_id"], "chemrof:inchi_string"))
+assert cv("CHEBI:58247", "chemrof:inchi_string") != cv("CHEBI:58225", "chemrof:inchi_string")
+assert cv("CHEBI:58247", "chemrof:inchi_string") != cv("CHEBI:61548", "chemrof:inchi_string")
+# Native complete Rhea graph and its exact directional/reversible relationships.
+rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+rh = "http://rdf.rhea-db.org/"
+g = {}
+with gzip.open(facts["rhea_source"]["path"], "rb") as stream:
+    for _, el in etree.iterparse(stream, events=("end",), tag=rdf + "Description"):
+        uri = el.get(rdf + "about")
+        if uri:
+            node = g.setdefault(uri, {})
+            for child in el:
+                pred = etree.QName(child).localname
+                val = child.get(rdf + "resource") or (child.text or "").strip()
+                if val not in node.setdefault(pred, []):
+                    node[pred].append(val)
+        el.clear()
+        while el.getprevious() is not None:
+            del el.getparent()[0]
+expected = {}
+side_count = 0
+for rid, fr in facts["rhea"].items():
+    uri = rh + rid.split(":")[1]
+    assert uri in g[rh + fr["master"]]["directionalReaction"]
+    assert rh + fr["bidirectional"] in g[rh + fr["master"]]["bidirectionalReaction"]
+    assert (
+        fr["bidirectional"]
+        in fields(original(source_paths["KEGG:" + fr["source_kegg"]]))["DBLINKS"]
+    )
+    sto = Counter()
+    for pred, sign in [("substrates", -1), ("products", 1)]:
+        side = g[uri][pred][0]
+        for contains, parts in g[side].items():
+            if re.fullmatch(r"contains\d+", contains):
+                for part in parts:
+                    cu = g[part]["compound"][0]
+                    comp = g[cu]
+                    cid = comp["accession"][0]
+                    sto[cid] += sign * int(contains[8:])
+                    assert comp["formula"][0] == cv(cid, "chemrof:generalized_empirical_formula")
+                    assert comp["charge"][0] == cv(cid, "chemrof:charge")
+                    side_count += 1
+    expected[rid] = dict(sto)
+# Build the two normalized KEGG equations from their actual native sides.
+for kid in ["R02736", "R10907"]:
+    f = fields(original(source_paths["KEGG:" + kid]))
+    left, right = f["EQUATION"].split(" <=> ")
+    sto = Counter()
+    for side, sign in [(left, -1), (right, 1)]:
+        for token in side.split(" + "):
+            assert re.fullmatch("C[0-9]{5}", token), token
+            sto[facts["kegg_bridges"][token]["selected_id"]] += sign
+    expected["KEGG:" + kid] = dict(sto)
+assert "M00008" not in fields(original(source_paths["KEGG:R10907"]))["MODULE"]
+assert projection["equations"] == expected
+# Native component identity and explicit stoichiometry.
+complex_ref = "MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-CPLX"
+mon_ref = "MetaCyc:KDPGALDOL-4OH2OXOGLUTARALDOL-MONOMER"
+cx = etree.fromstring(original(source_paths[complex_ref]))
+mo = etree.fromstring(original(source_paths[mon_ref]))
+assert cx.findtext("Protein/component/coefficient") == "3"
+assert cx.find("Protein/component/Protein").get("frameid") == mon_ref.split(":")[1]
+assert mo.xpath('/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]/dblink-oid/text()') == ["P0A955"]
+sequence_checks = []
+for acc, pr in proteins.items():
+    u = json.loads(original(source_paths["UniProtKB:" + acc]))
+    assert u["primaryAccession"] == acc and u["organism"]["taxonId"] == 83333
+    assert (
+        u["sequence"] == pr["sequence"]
+        and digest(u["sequence"]["value"].encode()) == pr["sequence_sha256"]
+    )
+    sequence_checks.append(
+        {
+            "accession": acc,
+            "length": u["sequence"]["length"],
+            "sha256": pr["sequence_sha256"],
+            "scope": "Current issuing native sequence, not historical construct sequence equality",
+        }
+    )
+assert proteins["P0ADF6"]["sequence"]["length"] == 603
+assert proteins["P0ADF6"]["conflicts"][0]["alternativeSequence"]["originalSequence"] == "PLR"
+assert proteins["P0ADF6"]["conflicts"][0]["alternativeSequence"]["alternativeSequences"] == ["AC"]
+# Exact primary selectors are independently replayed from their original bodies.
+for anchor in projection["primary_anchors"]:
+    b = original(anchor["path"])
+    assert digest(b) == anchor["sha256"]
+    tree = etree.fromstring(b) if anchor["path"].endswith(".xml") else html.fromstring(b)
+    nodes = tree.xpath(anchor["selector"])
+    texts = [" ".join(" ".join(x.itertext()).split()) for x in nodes]
+    assert (
+        texts == anchor["texts"]
+        and digest("\n".join(texts).encode()) == anchor["selected_text_sha256"]
+    )
+# Original workbook accession row, separately scoped from the actual kinetic construct.
+supp = Path(source_paths["DOI:10.1371/journal.pone.0152403.s002"])
+with zipfile.ZipFile(supp) as z:
+    ss = ["".join(x.itertext()) for x in etree.fromstring(z.read("xl/sharedStrings.xml"))]
+    sheet = etree.fromstring(z.read("xl/worksheets/sheet1.xml"))
+    ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    row = sheet.xpath('//s:row[@r="9"]', namespaces=ns)[0]
+    vals = [
+        ss[int(x.find("s:v", ns).text)] if x.get("t") == "s" else x.find("s:v", ns).text
+        for x in row
+        if x.find("s:v", ns) is not None
+    ]
+    assert vals == ["Escherichia coli", "-", "P0AC53"]
+
+
+def chemical_graph(rec):
+    assert {x["id"] for x in rec["reactions"]} == set(expected)
+    assert rec["id"] == "KEGG:M00008"
+    st = {rid: Counter() for rid in expected}
+    for edge in rec["mechanistic_edges"]:
+        pred = edge["predicate"]
+        if pred not in ["consumes", "produces"]:
+            continue
+        rid, cid, sign = (
+            (edge["object"], edge["subject"], -1)
+            if pred == "consumes"
+            else (edge["subject"], edge["object"], 1)
+        )
+        assert rid in st
+        coef = int(re.match(r"Coefficient: (\d+)\.", edge["description"])[1])
+        st[rid][cid] += sign * coef
+    assert {k: dict(v) for k, v in st.items()} == expected
+    edges = rec["mechanistic_edges"]
+    membership = {(e["subject"], e["object"]) for e in edges if e["predicate"] == "part_of"}
+    assert membership == {(rid, "KEGG:M00008") for rid in expected}
+    bridges = {(e["subject"], e["object"]) for e in edges if e["predicate"] == "provides_input_for"}
+    assert bridges == {
+        ("KEGG:R02736", "RHEA:12557"),
+        ("KEGG:R10907", "RHEA:12557"),
+        ("RHEA:12557", "RHEA:17278"),
+        ("RHEA:17278", "RHEA:17090"),
+    }
+    assert not any(e["predicate"] == "precedes" for e in edges)
+    assembly = [e for e in edges if e["predicate"] == "has_part"]
+    assert (
+        len(assembly) == 1
+        and assembly[0]["subject"] == complex_ref
+        and assembly[0]["object"] == "UniProtKB:P0A955"
+    )
+    assert "Stoichiometry: 3" in assembly[0]["description"]
+    cofac = [e for e in edges if e["predicate"] == "has_cofactor"]
+    assert (
+        len(cofac) == 1
+        and cofac[0]["subject"] == "UniProtKB:P0ADF6"
+        and cofac[0]["object"] == "CHEBI:49883"
+    )
+    assert "inference tier" in cofac[0]["description"]
+    for e in edges:
+        if e["subject"] == "UniProtKB:P0AC53" and e["predicate"] == "enables":
+            assert "qualified" in json.dumps(e).lower() and "exclusive" in json.dumps(e).lower()
+    assert not any(e["predicate"] == "inhibits" for e in edges)
+    balances = {}
+    for rid, sto in st.items():
+        res = Counter()
+        for cid, coef in sto.items():
+            formula = cv(cid, "chemrof:generalized_empirical_formula")
+            for atom, n in re.findall(r"([A-Z][a-z]?)(\d*)", formula):
+                res[atom] += coef * int(n or 1)
+            res["charge"] += coef * int(cv(cid, "chemrof:charge"))
+        assert not any(res.values()), (rid, res)
+        balances[rid] = dict(res)
+    nets = {}
+    for first in ["KEGG:R02736", "KEGG:R10907"]:
+        net = Counter()
+        for rid in [first, "RHEA:12557", "RHEA:17278", "RHEA:17090"]:
+            net.update(st[rid])
+        nets[first] = {k: v for k, v in net.items() if v}
+        assert (
+            nets[first]["CHEBI:15378"] == 2
+            and nets[first]["CHEBI:59776"] == nets[first]["CHEBI:15361"] == 1
+        )
+        assert "CHEBI:15377" not in nets[first]
+    return balances, nets
+
+
+balances, nets = chemical_graph(r)
+negative = []
+
+
+def reject(name, mutate):
+    clone = deepcopy(r)
+    mutate(clone)
+    try:
+        chemical_graph(clone)
+    except (AssertionError, KeyError, TypeError):
+        negative.append({"name": name, "rejected": True})
+    else:
+        raise AssertionError("Negative accepted: " + name)
+
+
+reject("missing NAD alternative", lambda x: x["reactions"].pop(1))
+reject(
+    "alpha substituted for native beta",
+    lambda x: next(e for e in x["mechanistic_edges"] if e["subject"] == "CHEBI:58247").update(
+        subject="CHEBI:58225"
+    ),
+)
+reject(
+    "serial donor alternatives",
+    lambda x: x["mechanistic_edges"].append(
+        {
+            "subject": "KEGG:R02736",
+            "predicate": "provides_input_for",
+            "object": "KEGG:R10907",
+        }
+    ),
+)
+reject(
+    "LDH reporter NADH added to Eda",
+    lambda x: x["mechanistic_edges"].append(
+        {
+            "subject": "CHEBI:57945",
+            "predicate": "consumes",
+            "object": "RHEA:17090",
+            "description": "Coefficient: 1.",
+        }
+    ),
+)
+reject(
+    "wrong chemical coefficient",
+    lambda x: next(e for e in x["mechanistic_edges"] if e["predicate"] == "consumes").update(
+        description="Coefficient: 2."
+    ),
+)
+reject(
+    "wrong assembly stoichiometry",
+    lambda x: next(e for e in x["mechanistic_edges"] if e["predicate"] == "has_part").update(
+        description="Stoichiometry: 2"
+    ),
+)
+reject(
+    "unfounded mandatory Mn",
+    lambda x: next(e for e in x["mechanistic_edges"] if e["predicate"] == "has_cofactor").update(
+        object="CHEBI:29035"
+    ),
+)
+# Replay every located evidence assertion using the declared original, not only an author count.
+anchors = []
+for edge in r["mechanistic_edges"]:
+    for index, ev in enumerate(edge["evidence"]):
+        refid = ev["reference_id"]
+        loc = ev["source_locator"]
+        source = refs[refid]
+        if refid.startswith("UniProtKB:"):
+            obj = json.loads(original(source_paths[refid]))
+            for pointer in loc.split("; "):
+                val = obj
+                for key in pointer.strip("/").split("/"):
+                    val = val[int(key)] if isinstance(val, list) else val[key]
+                assert val is not None
+            mode = "original JSON pointer"
+        elif refid.startswith("MetaCyc:"):
+            tree = etree.fromstring(original(source_paths[refid]))
+            for sel in loc.split("; "):
+                assert tree.xpath(sel), (edge["id"], sel)
+            mode = "original native XPath"
+        elif refid.startswith("PMID:") and refid != "PMID:22519976":
+            path = source_paths[refid]
+            tree = (
+                etree.fromstring(original(path))
+                if path.endswith(".xml")
+                else html.fromstring(original(path))
+            )
+            assert tree.xpath(loc), (edge["id"], loc)
+            mode = "original primary XPath"
+        elif refid == "PMID:22519976":
+            assert "Purification" in loc and "Discussion" in loc
+            mode = "web-inspected main text; intentionally no local article byte replay"
+        elif refid.startswith("KEGG:"):
+            f = fields(original(source_paths[refid]))
+            for key in loc.split("; "):
+                assert key in f, (edge["id"], refid, key)
+            mode = "original flatfile field"
+        elif refid.startswith("RHEA:"):
+            assert rh + refid.split(":")[1] in g
+            mode = "original RDF direction and side chain verified above"
+        elif refid.startswith("CHEBI:"):
+            assert facts["chebi_terms"][refid]
+            mode = "original full semantic SQL selection"
+        else:
+            assert refid == "DOI:10.1371/journal.pone.0152403.s002"
+            mode = "original workbook row"
+        anchors.append({"edge": edge["id"], "index": index, "reference": refid, "mode": mode})
+# Independently reparse all retained expression-context responses through the unchanged adapter.
+context = readj(ROOT / "imod/context.json")
+imod_manifest = readj(ROOT / "imod/manifest.json")
+adapter_path = Path(context["adapter"]["path"])
+assert digest(captured[str(adapter_path.resolve())]) == context["adapter"]["sha256"]
+sys.path.insert(0, str(adapter_path.parent.parent))
+from kg_microbe_sources.imodulondb import ImodulonDBClient  # noqa: E402
+
+responses = {row["url"]: json.loads(original(row["path"])) for row in imod_manifest}
+client = ImodulonDBClient(transport=lambda url: responses[url])
+
+
+def serialized(value):
+    return json.loads(json.dumps(value))
+
+
+assert serialized([asdict(x) for x in client.organism_datasets()]) == context["datasets"]
+for query, result in context["queries"].items():
+    assert serialized(asdict(client.search("e_coli", "precise_mg1655", query))) == result
+for gene, result in context["genes"].items():
+    assert serialized(asdict(client.gene("e_coli", "precise_mg1655", gene))) == result
+for component, result in context["components"].items():
+    assert (
+        serialized(asdict(client.imodulon_genes("e_coli", "precise_mg1655", int(component))))
+        == result
+    )
+# Every additional issuing SQL label is queried from the original database, not just its cache hash.
+for extra in authority["extra_ontology_originals"]:
+    with sqlite3.connect(f"file:{extra['path']}?mode=ro", uri=True) as db:
+        actual = [
+            {"predicate": p, "value": v, "object": o}
+            for p, v, o in db.execute(
+                "SELECT predicate,value,object FROM statements WHERE subject=?",
+                (extra["id"],),
+            )
+        ]
+    assert actual == extra["rows"]
+    assert next(x["value"] for x in actual if x["predicate"] == "rdfs:label") == extra["label"]
+
+# Narrow front-matter metadata, never a descendant article-title from a cited paper.
+for refid, path in source_paths.items():
+    if not refid.startswith("PMID:"):
+        continue
+    b = original(path)
+    if path.endswith(".xml"):
+        t = etree.fromstring(b)
+        titles = t.xpath("/article/front/article-meta/title-group/article-title")
+        pmids = t.xpath('/article/front/article-meta/article-id[@pub-id-type="pmid"]/text()')
+    else:
+        t = html.fromstring(b)
+        titles = t.xpath("//h1")
+        pmids = t.xpath('//meta[@name="citation_pmid"]/@content')
+    assert len(titles) == 1 and pmids == [refid.split(":")[1]]
+    # HTML/JATS inline tags may create or omit whitespace around punctuation.
+    original_title = "".join(titles[0].itertext())
+    assert re.sub(r"\s", "", original_title) == re.sub(r"\s", "", refs[refid]["title"])
+coverage = readj(D / "ed-coverage.json")
+assert coverage["record_sha256"] == manifest["record_sha256"]
+assert [x["edge"] for x in coverage["graph_to_source"]] == [e["id"] for e in r["mechanistic_edges"]]
+for projected, edge in zip(coverage["graph_to_source"], r["mechanistic_edges"], strict=True):
+    assert (projected["subject"], projected["predicate"], projected["object"]) == (
+        edge["subject"],
+        edge["predicate"],
+        edge["object"],
+    )
+    assert projected["references"] == [e["reference_id"] for e in edge["evidence"]]
+    assert projected["locators"] == [e["source_locator"] for e in edge["evidence"]]
+
+# Current issuing authority terms and unchanged canonical source parser.
+spec = importlib.util.spec_from_file_location(
+    "builder", a.repo / "scripts/build_source_identifier_snapshot.py"
+)
+builder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(builder)
+for row in authority["source_inputs"]:
+    q = Path(row["original_path"])
+    assert sha(q) == row["manifest_entry"]["sha256"]
+    terms = list(
+        builder.source_terms(row["manifest_entry"]["kind"], q, url=row["manifest_entry"]["url"])
+    )
+    assert terms == [(x["id"], x["label"], x["synonyms"]) for x in row["terms"]]
+validated = validate_record(r)
+errors = strict_errors([a.record], a.repo)
+assert not errors, errors
+nodes = kgx_nodes([validated])
+edges = kgx_edges([validated])
+assert len(nodes) == 26 and len(edges) == 37
+for old, new in zip(r["mechanistic_edges"], edges, strict=True):
+    assert new.subject == old["subject"] and new.object == old["object"]
+    assert json.loads(new.evidence) == old["evidence"] and new.description == old["description"]
+    assert json.loads(new.reference_metadata) == [
+        refs[x] for x in sorted({e["reference_id"] for e in old["evidence"]})
+    ]
+node_by_id = {n.id: n for n in nodes}
+assert node_by_id["KEGG:R02736"].category == "biolink:BiochemicalReaction"
+assert node_by_id[complex_ref].category == "biolink:MacromolecularComplex"
+export = a.output.with_suffix(".kgx")
+export.mkdir(exist_ok=False)
+write_kgx([validated], export)
+for path, raw in bodies.items():
+    assert sha(path) == digest(raw), path
+for row in manifest["issuing_databases"]:
+    assert sha(row["path"]) == row["sha256"]
+result = {
+    "status": "passed_external_author_replay_not_independent_approval",
+    "started_at": started,
+    "finished_at": datetime.now(UTC).isoformat(),
+    "record_sha256": manifest["record_sha256"],
+    "original_bodies": len(bodies),
+    "native_members": list(expected),
+    "rhea_sides": side_count,
+    "kegg_structure_bridges": len(facts["kegg_bridges"]),
+    "balances": balances,
+    "branch_nets": nets,
+    "sequence_checks": sequence_checks,
+    "primary_anchors": len(projection["primary_anchors"]),
+    "imodulondb": {
+        "original_bodies": len(imod_manifest),
+        "queries": len(context["queries"]),
+        "component_ids": list(context["components"]),
+        "scope": context["scope"],
+    },
+    "all_evidence_anchors": anchors,
+    "negative_controls": negative,
+    "strict_errors": errors,
+    "KGX": {
+        "nodes": len(nodes),
+        "edges": len(edges),
+        "evidence": len(anchors),
+        "outputs": [{"path": str(q), "sha256": sha(q)} for q in export.iterdir()],
+    },
+    "captured_inputs": [
+        {"path": str(p), "resolved_path": str(rp), "sha256": digest(captured[str(rp)])}
+        for p, rp in identities
+    ],
+    "prior_proof_inputs": [
+        {"path": str(p), "resolved_path": str(rp), "sha256": h} for p, rp, h in proofs
+    ],
+    "limits": projection["limits"]
+    + [
+        "No maintained integration, generated pages, full-corpus gates "
+        "or independent scientific approval."
+    ],
+}
+# Fresh path and byte checks are after slow processing, immediately before exclusive output.
+for p, rp in identities:
+    assert p.resolve() == rp and rp.read_bytes() == captured[str(rp)], (
+        "formal input changed",
+        p,
+    )
+for p, rp, h in proofs:
+    assert p.resolve() == rp and sha(rp) == h, ("prior proof changed", p)
+with a.output.open("x") as out:
+    json.dump(result, out, indent=2)
+    out.write("\n")
+print(
+    json.dumps(
+        {
+            "status": result["status"],
+            "output": str(a.output),
+            "sha256": sha(a.output),
+            "KGX": result["KGX"],
+            "negative_controls": len(negative),
+        }
+    )
+)

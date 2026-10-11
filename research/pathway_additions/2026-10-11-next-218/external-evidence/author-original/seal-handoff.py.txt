@@ -1,0 +1,41 @@
+"""Seal an external author handoff only after the observed final replay has passed."""
+from pathlib import Path
+from datetime import UTC, datetime
+import json, hashlib, subprocess
+import yaml
+R=Path(__file__).parent;D=R/'draft'
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def row(p):return dict(path=str(p.resolve()),sha256=sha(p),bytes=p.stat().st_size)
+def dump(p,v):
+ with p.open('x') as f:json.dump(v,f,indent=2);f.write('\n')
+target=D/'entner-doudoroff-pathway.yaml';replay=R/'author-replay-complete.json';v=json.loads(replay.read_text());r=yaml.safe_load(target.read_text());assert v['status']=='passed_external_author_replay_not_independent_approval' and v['record_sha256']==sha(target)
+# All success-bound formal and proof inputs remain unchanged at handoff seal.
+for x in v['captured_inputs']+v['prior_proof_inputs']:
+ p=Path(x['path']);assert str(p.resolve())==x['resolved_path'] and sha(p)==x['sha256'],p
+m=json.loads((D/'ed-source-manifest.json').read_text())
+for x in m['bodies']:assert sha(x['path'])==x['sha256']
+repo=Path('/private/tmp/pathwaymech-next-216-20261011')
+commands=[
+ dict(label='additional original acquisition initial sandbox attempt',tool_chunk='2d6519',exit_code=1,log=row(R/'acquisition.log'),scope='DNS/network failure before successful authorized retry; retained'),
+ dict(label='additional official original acquisition retry',session_id=20832,tool_chunk='8cfa26',exit_code=0,log=row(R/'acquisition-network.log')),
+ dict(label='original chemical source facts',session_id=39845,tool_chunk='cae227',exit_code=0,log=row(R/'prepare-facts-final.log')),
+ dict(label='ignored/hidden/followed dedup',session_id=95097,tool_chunk='43fd29',exit_code=0,log=row(R/'dedup.log')),
+ dict(label='current iModulon original-body acquisition and immediate parser replay',tool_chunk='9f4a31',exit_code=0,scope='21 bodies, 15 queries; serialized offline replay repeated in final ED helper'),
+ dict(label='complete draft generation',session_id=89589,tool_chunk='d1dd34',exit_code=0,log=row(R/'build-draft.log')),
+ dict(label='source and authority proposal preparation',session_id=56791,tool_chunk='65cfcb',exit_code=0,log=row(R/'prepare-dossier.log')),
+ dict(label='first whole-source replay preparation failure',session_id=36216,tool_chunk='e40cbb',exit_code=1,log=row(R/'author-replay-initial.log'),scope='Nested normalization responses omitted from assembled manifest. Original bytes intact; original inputs archived and manifest corrected.'),
+ dict(label='second whole-source replay preparation failure',session_id=20758,tool_chunk='52a5cb',exit_code=1,log=row(R/'author-replay-second.log'),scope='All chemistry/primary selectors passed before tuple-versus-list serialized adapter comparison failed. Canonical parser unchanged; final helper normalizes only JSON serialization.'),
+ dict(label='narrow primary metadata, closed schema and actual KGX',session_id=97154,tool_chunk='5d1180',exit_code=0,scope='26 nodes/37 edges; no full original-source success claim from this narrow check'),
+ dict(label='final helper Ruff check and format',tool_chunk='092298',exit_code=0,scope='Repository pyproject configuration; final script formatting/check completed before session67581 start'),
+ dict(label='final helper preparation attempt',session_id=47619,tool_chunk='12c135',exit_code=1,log=row(R/'author-replay-final.log'),scope='One component-response comparison had not yet received JSON serialization normalization; canonical parser and source values unchanged.'),
+ dict(label='final complete author replay',session_id=67581,tool_chunk='7ce879',exit_code=0,log=row(R/'author-replay-complete.log'),receipt=row(replay),started_at=v['started_at'],finished_at=v['finished_at'])
+]
+execution=dict(sealed_at=datetime.now(UTC).isoformat(),status='external_author_execution_complete',commands=commands,preparation_failures=[row(R/x) for x in ['prepare-facts.log','prepare-facts-successor.log','replay-lint-initial.log','replay-root-lint-initial.log']],limits=['Observed terminal results are listed; no maintained root gates, browser review, independent whole-record scientific approval or publication is claimed.'])
+dump(R/'execution-receipt.json',execution)
+owned=[*sorted(D.iterdir()),R/'ed-replay-final.py',replay,R/'execution-receipt.json',R/'acquisition.json',R/'chemical-source-facts.json',R/'preparation-correction.json',R/'final-replay-serialization-correction.json',R/'pre-freeze-locator-preparation.json',R/'imod/context.json',R/'imod/manifest.json',R/'imod/runner-availability.json']
+owned += [R/'pre-replay-inputs/manifest.json',R/'author-replay-initial.log',R/'author-replay-second.log',R/'author-replay-final.log',R/'author-replay-complete.log']
+proposal=json.loads((D/'ed-authority-proposal.json').read_text())
+handoff=dict(sealed_at=datetime.now(UTC).isoformat(),status='complete_external_author_draft_ready_for_independent_whole_record_review',record=row(target),identity=r['id'],label=r['label'],counts=dict(reactions=len(r['reactions']),participants=len(r['participants']),taxa=len(r['taxa']),edges=len(r['mechanistic_edges']),evidence=sum(len(e['evidence']) for e in r['mechanistic_edges']),references=len(r['references']),KGX=v['KGX']),owned_inputs=[row(p) for p in owned],original_sources=dict(manifest=row(D/'ed-source-manifest.json'),retained_http_bodies=len(m['bodies']),accepted_http_bodies=sum(bool(x.get('accepted_body',x.get('status')==200)) for x in m['bodies']),databases=m['issuing_databases'],web_only=m['web_inspected_without_body']),authority=dict(proposal=row(D/'ed-authority-proposal.json'),version_observations=row(D/'ed-authority-version-observations.json'),required_new_source_ids=proposal['required_new_named_source_ids'],required_new_ontology_ids=proposal['required_new_named_ontology_ids']),read_only_repository=dict(path=str(repo),head_at_seal=subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip(),scope='Source-code validation environment only; parent may advance its unrelated prepared cohort. Dedup records its actual earlier HEAD separately.'),kgx_artifacts=[row(R/x['path']) for x in v['KGX']['outputs']],scientific_limits=json.loads((D/'ed-source-projection.json').read_text())['limits']+['Current Edd cluster count/type retains annotation inference; explicit peroxide-paper EPR belongs to fumarase A.','Eda recombinant trimer and native component identity do not prove exact historical donor-strain/construct equality.','CsrA conflicting heading/current annotation is retained; no direct inhibition edge.'],execution=row(R/'execution-receipt.json'),independence='Author source projection/replay, not independent approval. Earlier root and independent preflight decisions are immutable prior proof inputs; whole-record independent review remains required.',preservation='All predecessor sources and Myx seals remain unchanged. No maintained record, source snapshot, manifest, schema, history, page, Git or GitHub mutation was performed.')
+dump(R/'handoff.json',handoff)
+print(json.dumps(dict(handoff=row(R/'handoff.json'),record=handoff['record'],counts=handoff['counts'],execution=handoff['execution'])))

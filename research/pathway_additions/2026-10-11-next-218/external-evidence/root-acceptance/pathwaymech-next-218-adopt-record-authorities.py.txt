@@ -1,0 +1,33 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,os,subprocess
+R=Path('/private/tmp/pathwaymech-next-218-20261011');D=Path('/private/tmp/pathwaymech-ed-authority-selection-20261011');out=Path('/private/tmp/pathwaymech-next-218-core-adoption.json');assert not out.exists()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+p=Path('/private/tmp/pathwaymech-next-218-authority-root-review.json');assert sha(p)=='7ae58b591bd3b71a9238ffa5f967beb361e0209ab9b49beb72764ba79baad576';a=json.loads(p.read_text());assert a['status']=='accepted_exact_canonical_authority_artifacts_for_guarded_adoption'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()==a['committed_prospective_base']
+h=json.loads((D/'handoff.json').read_text());assert sha(D/'handoff.json')==a['handoff_sha256'];s=json.loads(Path(h['selection']['path']).read_text());assert sha(h['selection']['path'])==a['selection_sha256']
+for rel,expected in a['baseline_hash_bridge'].items():assert sha(R/rel)==expected and not (R/rel).is_symlink(),rel
+target=R/'data/pathways/entner-doudoroff-pathway.yaml';assert not os.path.lexists(target)
+source=Path(h['target']['path']);assert sha(source)==a['target_sha256'];planned=[(source,target)]
+for row,rel in zip(h['production_outputs'],['conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json']):
+ assert sha(row['path'])==row['sha256'];planned.append((Path(row['path']),R/rel))
+caches=[]
+for row in s['selected_new_inputs']:
+ src=Path(row['original_path']);dst=Path(row['prospective_cache_path']);assert sha(src)==row['sha256']
+ if os.path.lexists(dst):assert dst.is_file() and not dst.is_symlink() and sha(dst)==row['sha256']
+ caches.append((src,dst,row['sha256']))
+for src,dst,expected in caches:
+ if not dst.exists():
+  dst.parent.mkdir(parents=True,exist_ok=True)
+  with dst.open('xb') as f:f.write(src.read_bytes())
+ assert sha(dst)==expected
+for src,dst in planned:
+ raw=src.read_bytes()
+ if dst==target:
+  with dst.open('xb') as f:f.write(raw)
+ else:dst.write_bytes(raw)
+ assert sha(dst)==sha(src)
+r={'status':'core_record_and_reviewed_authorities_adopted','at':datetime.now(timezone.utc).isoformat(),'baseline':a['committed_prospective_base'],'actual_merge_pending':True,'root_authority_review_sha256':sha(p),'target_sha256':sha(target),'files':[{'source':str(src),'destination':str(dst.relative_to(R)),'sha256':sha(dst)} for src,dst in planned],'cache_sources':[{'path':str(dst),'sha256':expected} for src,dst,expected in caches],'scope':'Exact original target; four new source bodies, six new source terms and three ontology terms. Existing E.coli protein batch provenance reused; all previous authority entries unchanged.','next':['Adopt immutable dossier and append history before render','Integrated source replay plus full corpus gates and independent canonical scientific review','Bridge actual Myx merge/tree before EDPRpublication']}
+with out.open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+state=Path('/private/tmp/pathwaymech-next-218-state.json');d=json.loads(state.read_text());d.update(phase='record_and_authorities_adopted_dossier_pending',updated_at=datetime.now(timezone.utc).isoformat(),root_authority_review_sha256=sha(p),core_adoption_sha256=sha(out));state.write_text(json.dumps(d,indent=2)+'\n')
+print(json.dumps({'status':r['status'],'target_sha256':sha(target),'receipt_sha256':sha(out)}))

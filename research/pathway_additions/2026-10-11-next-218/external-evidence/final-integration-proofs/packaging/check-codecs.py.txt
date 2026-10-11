@@ -1,0 +1,40 @@
+"""Bounded packaging checks on current small proof bytes; no scientific replay."""
+import importlib.util
+import json
+from pathlib import Path
+import subprocess
+
+here = Path(__file__).absolute().parent
+spec = importlib.util.spec_from_file_location('proof_packager', here / 'prepare-package.py')
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+module.checks()
+rows = json.loads((here / 'static-inputs.json').read_text())['entries']
+results = []
+destinations = []
+for row in rows:
+    if row['kind'] != 'file':
+        continue
+    relative, encoded, representation = module.encode_file(row)
+    decoded = module.decode_wrapper(json.loads(encoded)) if representation.startswith('lossless_') else encoded
+    module.require(module.sha(decoded) == row['source_sha256'] and len(decoded) == row['source_bytes'], 'Codec mismatch')
+    module.require(not module.unsafe_whitespace(encoded), 'Unsafe archived whitespace')
+    module.require(relative.suffix not in {'.py', '.pyc', '.yaml', '.yml'}, 'Active-looking archive filename')
+    destinations.append(str(module.DEST / relative))
+    results.append({'source': row['source'], 'proposed_destination': destinations[-1],
+                    'source_sha256': row['source_sha256'], 'representation': representation,
+                    'encoded_sha256': module.sha(encoded), 'decoded_equal': True})
+command = ['git', 'check-ignore', '--no-index', '--stdin', '-z']
+checked = subprocess.run(command, cwd=module.REPO,
+                         input=('\0'.join(destinations) + '\0').encode(), capture_output=True)
+module.require(checked.returncode == 1 and checked.stdout == b'' and checked.stderr == b'', 'Proposed archive path is ignored')
+report = {'status': 'passed_bounded_codec_and_gitignore_checks',
+          'scope': 'Only small captured proof files; no original source bodies or databases opened, no positive replay launched.',
+          'driver_sha256': module.sha(module.raw(here / 'prepare-package.py')),
+          'regular_files_checked': len(results),
+          'binary_pyc': [r for r in results if r['source'].endswith('.pyc')],
+          'all_decoded_bytes_equal': True, 'all_archived_bytes_whitespace_safe': True,
+          'gitignore': {'command': command, 'exit_code': checked.returncode, 'ignored_paths': []},
+          'results': results}
+module.write(here / 'codec-check.json', module.dump(report))
+print(json.dumps({k:v for k,v in report.items() if k not in {'results','binary_pyc'}}))

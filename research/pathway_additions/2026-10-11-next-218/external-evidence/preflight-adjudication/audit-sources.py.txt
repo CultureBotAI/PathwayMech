@@ -1,0 +1,195 @@
+"""Independent bounded original-source checks; no maintained record validation."""
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+import re
+import sqlite3
+import subprocess
+import zipfile
+from pathlib import Path
+
+from lxml import etree
+
+ROOT = Path('/private/tmp/pathwaymech-entner-doudoroff-independent-adjudication-20261011')
+PRE = Path('/private/tmp/pathwaymech-entner-doudoroff-preflight-20261011')
+KEGG = Path('/private/tmp/pathwaymech-entner-doudoroff-root-normalization-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities')
+RD = '/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python'
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def sha(path):
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def fields(path):
+    out = {}
+    for line in Path(path).read_text().splitlines():
+        if line == '///':
+            break
+        key, value = line[:12].strip(), line[12:].strip()
+        if key:
+            current = key
+            out[current] = []
+        out[current].append(value)
+    return {k: '\n'.join(v) for k, v in out.items()}
+
+
+checks = []
+handoff = json.loads((PRE/'handoff.json').read_text())
+for row in handoff['artifacts']:
+    assert sha(row['path']) == row['sha256'], row['path']
+checks.append({'check': 'all prior preflight artifact hashes', 'count': len(handoff['artifacts'])})
+manifest = json.loads((PRE/'source-manifest.json').read_text())
+for row in manifest['original_responses']:
+    assert sha(row['path']) == row['sha256'], row['path']
+checks.append({'check': 'all retained HTTP bodies including rejected responses', 'count': len(manifest['original_responses']), 'accepted': sum(r['accepted_body'] for r in manifest['original_responses'])})
+root_acquisition = json.loads((KEGG/'acquisition.json').read_text())
+if isinstance(root_acquisition, dict):
+    root_acquisition = root_acquisition.get('responses', root_acquisition.get('sources', []))
+for row in root_acquisition:
+    assert sha(row['path']) == row['sha256'], row['path']
+checks.append({'check': 'root retained official KEGG bodies', 'count': len(root_acquisition)})
+
+module = fields(PRE/'raw/M00008.txt')
+assert module['ENTRY'].startswith('M00008')
+assert module['DEFINITION'] == 'K00036 (K01057,K07404) K01690 K01625'
+assert '[RN:R02736 R10907]' in module['ORTHOLOGY']
+reactions = {x: fields(KEGG/'originals'/f'{x}.txt') for x in ['R02736', 'R10907', 'R00835']}
+assert reactions['R02736']['EQUATION'] == 'C01172 + C00006 <=> C01236 + C00005 + C00080'
+assert reactions['R10907']['EQUATION'] == 'C01172 + C00003 <=> C01236 + C00004 + C00080'
+assert 'M00008' in reactions['R02736']['MODULE']
+assert 'M00008' not in reactions['R10907'].get('MODULE', '')
+assert reactions['R00835']['EQUATION'].startswith('C00092 + C00006')
+assert '15844' in reactions['R00835']['DBLINKS']
+
+# Recompute KEGG structure identities independently, using only original mol bodies.
+mol_program = '''from rdkit import Chem
+import json,sys
+out={}
+for path in sys.argv[1:]:
+ m=Chem.MolFromMolFile(path,removeHs=False)
+ assert m is not None
+ out[path]={'inchi':Chem.MolToInchi(m),'charge':Chem.GetFormalCharge(m)}
+print(json.dumps(out))'''
+mol_paths = [str(KEGG/'originals'/f'{x}.mol') for x in ['C01172', 'C00092']]
+mol_run = subprocess.run([RD, '-c', mol_program, *mol_paths], capture_output=True, text=True, check=True)
+mols = json.loads(mol_run.stdout)
+selected = ['17719','58247','61548','58225','57955','58349','57783','57540','57945','15378','15377','58759','57569','59776','15361']
+terms = {}
+dbpath = CACHE/'chebi.db'
+db_before = dbpath.stat()
+dbhash = sha(dbpath)
+with sqlite3.connect(f'file:{dbpath}?mode=ro', uri=True) as db:
+    for num in selected:
+        term = 'CHEBI:' + num
+        terms[term] = {p: v if v is not None else o for p,v,o in db.execute('SELECT predicate,value,object FROM statements WHERE subject=?',(term,)) if p in ['rdfs:label','chemrof:inchi_string','chemrof:generalized_empirical_formula','chemrof:charge','owl:deprecated']}
+        assert terms[term].get('owl:deprecated') not in [True,'true']
+assert mols[mol_paths[0]]['inchi'] == terms['CHEBI:17719']['chemrof:inchi_string']
+normal = lambda s: re.sub(r'/p[+-]?\d+', '', s)
+assert normal(terms['CHEBI:58247']['chemrof:inchi_string']) == mols[mol_paths[0]]['inchi']
+assert terms['CHEBI:58247']['chemrof:inchi_string'] != terms['CHEBI:61548']['chemrof:inchi_string']
+assert terms['CHEBI:58247']['chemrof:inchi_string'] != terms['CHEBI:58225']['chemrof:inchi_string']
+assert normal(terms['CHEBI:61548']['chemrof:inchi_string']) == mols[mol_paths[1]]['inchi']
+assert db_before.st_mtime_ns == dbpath.stat().st_mtime_ns and db_before.st_size == dbpath.stat().st_size
+
+# Independently parse the original complete Rhea RDF, not the prospective JSON.
+rdf = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+rh = 'http://rdf.rhea-db.org/'
+graph = {}
+with gzip.open(CACHE/'rhea.rdf.gz', 'rb') as stream:
+    for _, elem in etree.iterparse(stream, events=('end',), tag=rdf+'Description'):
+        uri = elem.get(rdf+'about')
+        if uri:
+            node = graph.setdefault(uri, {})
+            for child in elem:
+                pred = etree.QName(child).localname
+                value = child.get(rdf+'resource') or (child.text or '').strip()
+                if value not in node.setdefault(pred, []):
+                    node[pred].append(value)
+        elem.clear()
+        while elem.getprevious() is not None:
+            del elem.getparent()[0]
+native = {}
+for master, directed in [('15841','15842'),('12556','12557'),('17277','17278'),('17089','17090')]:
+    assert rh+directed in graph[rh+master]['directionalReaction']
+    values = collections.Counter()
+    for pred, sign in [('substrates', -1), ('products', 1)]:
+        side = graph[rh+directed][pred][0]
+        for contains, participants in graph[side].items():
+            if re.fullmatch(r'contains\d+', contains):
+                for participant in participants:
+                    compound = graph[graph[participant]['compound'][0]]
+                    cid = compound['accession'][0]
+                    values[cid] += sign * int(contains[8:])
+                    if cid in terms:
+                        assert compound['formula'][0] == terms[cid]['chemrof:generalized_empirical_formula']
+                        assert compound['charge'][0] == terms[cid]['chemrof:charge']
+    native[directed] = dict(values)
+assert native['15842']['CHEBI:61548'] == -1
+first = dict(native['15842'])
+del first['CHEBI:61548']
+first['CHEBI:58247'] = -1
+nad = dict(first)
+del nad['CHEBI:58349'], nad['CHEBI:57783']
+nad.update({'CHEBI:57540': -1, 'CHEBI:57945': 1})
+eq = {'KEGG:R02736': first, 'KEGG:R10907': nad, **{'RHEA:'+k:v for k,v in native.items() if k!='15842'}}
+balances = {}
+for name, equation in eq.items():
+    residual = collections.Counter()
+    for cid, coefficient in equation.items():
+        term = terms[cid]
+        formula = term['chemrof:generalized_empirical_formula']
+        atoms = re.findall(r'([A-Z][a-z]?)(\d*)', formula)
+        assert ''.join(a+b for a,b in atoms) == formula
+        for atom, count in atoms:
+            residual[atom] += coefficient * int(count or 1)
+        residual['charge'] += coefficient * int(term['chemrof:charge'])
+    assert not any(residual.values()), (name,residual)
+    balances[name] = dict(residual)
+nets = {}
+for first_id in ['KEGG:R02736','KEGG:R10907']:
+    total = collections.Counter()
+    for rid in [first_id,'RHEA:12557','RHEA:17278','RHEA:17090']:
+        total.update(eq[rid])
+    nets[first_id] = {k:v for k,v in total.items() if v}
+
+supp = ROOT/'originals/pone0152403-s002.xlsx'
+with zipfile.ZipFile(supp) as archive:
+    ns = {'x':'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+    strings = [''.join(n.itertext()) for n in etree.fromstring(archive.read('xl/sharedStrings.xml'))]
+    sheet = etree.fromstring(archive.read('xl/worksheets/sheet1.xml'))
+    rows = []
+    for row in sheet.findall('.//x:row', ns):
+        values = []
+        for cell in row:
+            val = cell.find('x:v',ns)
+            if val is not None:
+                values.append(strings[int(val.text)] if cell.get('t')=='s' else val.text)
+        if any('Escherichia coli' in v for v in values):
+            rows.append({'row':row.get('r'),'cells':values})
+assert any('P0AC53' in row['cells'] for row in rows)
+
+out = {
+ 'started_at':started,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ 'scope':'Independent candidate adjudication, not an authored record or canonical review.',
+ 'checks': checks, 'module':{k:module[k] for k in ['ENTRY','NAME','DEFINITION','ORTHOLOGY']},
+ 'kegg_equations':{k:v['EQUATION'] for k,v in reactions.items()},
+ 'module_inverse_conflict':{'M00008_ORTHOLOGY':'R02736 R10907','R10907_MODULE':reactions['R10907'].get('MODULE')},
+ 'mol_structures':mols,'chebi_terms':terms,
+ 'issuing_database':{'path':str(dbpath),'sha256':dbhash,'bytes':db_before.st_size,'unchanged_mtime_and_size':True},
+ 'rhea_original':{'path':str(CACHE/'rhea.rdf.gz'),'sha256':sha(CACHE/'rhea.rdf.gz')},
+ 'native_rhea_equations':native,'prospective_five_equations':eq,'balances':balances,'alternative_branch_nets':nets,
+ 'equation_limit':'KEGG first-position graphs are explicit acid-base-normalized source-specific beta equations. Neither is falsely asserted to be exactly Rhea15842; NAD/NADP alternatives are mutually exclusive choices per pathway turnover, not additive reactions.',
+ 's1_table_row':rows,
+ 's1_table_limit':'P0AC53 is the sequence-analysis row. This is not exact sequence verification of the historical tagged, cleaved kinetic construct.',
+}
+with (ROOT/'original-source-check.json').open('x') as stream:
+    json.dump(out,stream,indent=2)
+print(json.dumps({'status':'pass','checked_preflight_artifacts':len(handoff['artifacts']),'equations':len(eq),'nets':nets,'s1_table_row':rows,'receipt':str(ROOT/'original-source-check.json')}))
