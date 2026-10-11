@@ -1,0 +1,627 @@
+# Independent staphyloxanthin presqualene stereochemistry review
+
+- Review: 20261011T081828Z-staphyloxanthin-stereochemistry-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T08:11:00Z
+- Finished UTC: 2026-10-11T08:18:28.322620Z
+- Reviewer: Codex independent reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+The two issue368 locator fragments are corrected and independently verified. Additional native/current/primary structural comparison reveals a material, unadjudicated presqualene stereochemistry conflict (issue369); no passing whole-record verdict is given.
+
+## Scope And Provenance
+
+One staphyloxanthin record: resolve source locator findings, preserve a new material stereochemical grounding conflict pending adjudication.
+
+Selection: Canonical re-inspection captures frozen d7590ac5 target and current source dossiers. Whole initial target review is retained; successor independently compares both locator corrections and new original chemical/primary evidence.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9e936b267374181f7f87402045777534d2f17508.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5875 | data/pathways/staphyloxanthin-biosynthesis.yaml | maintained | staphyloxanthin biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical current inspection | passed | True | MetaCyc:PWY-5875 | Current frozen target and captured contexts re-inspected before successor assessment. |
+| Independent exact locator fix and actual KGX comparison | passed | False | MetaCyc:PWY-5875 | Exactly two nonexistent InChI locator fragments removed. Every local node, edge, evidence and reference metadata remain equal apart from those corrected strings. |
+| Independent original native, ChEBI and RCSB descriptor comparison | passed | False | MetaCyc:PWY-5875 | Session80216 terminal0 confirms three nonidentical absolute stereochemical descriptors, unchanged connectivity, and exact primary/structure strain bridge. A successful comparison identifies a concern; it is not a scientific pass. |
+| Coordinated final validate | unavailable | True | MetaCyc:PWY-5875 | Final post-locator shared gate driver is still running; no final seal yet. Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper lint failure was corrected. This partial successor does not claim final gate completion. |
+| Coordinated final test | unavailable | True | MetaCyc:PWY-5875 | Final post-locator shared gate driver is still running; no final seal yet. Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper lint failure was corrected. This partial successor does not claim final gate completion. |
+| Coordinated final lint | unavailable | True | MetaCyc:PWY-5875 | Final post-locator shared gate driver is still running; no final seal yet. Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper lint failure was corrected. This partial successor does not claim final gate completion. |
+| Coordinated final diff | unavailable | True | MetaCyc:PWY-5875 | Final post-locator shared gate driver is still running; no final seal yet. Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper lint failure was corrected. This partial successor does not claim final gate completion. |
+
+## Scientific And Domain Assessments
+
+### Complete source-native boundary
+
+identity: supported. Targets: MetaCyc:PWY-5875.
+
+All nine source-defined reactions represented; no convenient subset or extra heterologous pigment branch.
+
+### Exact chemical states and source-qualified donors
+
+grounding: concern. Targets: MetaCyc:PWY-5875.
+
+All current Rhea sides and balances reproduce, but this is insufficient to adjudicate the exact PSPP structure: native MetaCyc, ChEBI and primary-linked RCSB encode distinct configurations.
+
+### Organism, assembly and evidence tiers
+
+scope: supported. Targets: MetaCyc:PWY-5875.
+
+Newman annotations, KCTC1928 clones, RN4220 deletion and C244S study remain qualified; functional roles do not imply monomer sufficiency.
+
+### Exact native locator support
+
+provenance: supported. Targets: MetaCyc:PWY-5875.
+
+Both issue368 source locators now identify only actual native fields; exact parsed two-string correction independently confirmed.
+
+## Findings
+
+### f-native-class-inchi-locators: Two native generic-class locators name absent InChI fields
+
+minor / open / confirmed; issue key: staphyloxanthin-native-class-inchi-locators.
+
+stx-edge-050 evidence[1] and stx-edge-052 evidence[1] include inchi in source_locator. The exact original NDP-glucoses and Nucleoside-Diphosphates XML Compound objects contain no such element. Their common-name/dblink/cml/molecule fields remain valid support. Issue https://github.com/CultureBotAI/PathwayMech/issues/368. The exact correction is independently verified in current bytes; this partial observation retains the finding open pending a completed disposition. The exact current d7590ac5 record removes only the nonexistent ; inchi fragments from edge050 and052 evidence[1]. Independent original XML and full parsed/actual-KGX comparison verify the available locators and all remaining graph content. 
+
+### f-presqualene-stereochemistry: Presqualene exact structure is selected despite unadjudicated source stereochemistry conflict
+
+major / open / confirmed; issue key: staphyloxanthin-presqualene-stereochemical-source-conflict.
+
+The maintained participant CHEBI:57310 used by produces edge003 and consumes edge007 encodes /t28-,29-,30-/m0/s1. Native CPD-465 encodes /t28-,29-,30+/m0/s1 despite a CHEBI57310 unification crossreference. Primary-linked RCSB PS7 encodes /t28-,29-,30-/m1/s1; removing only the expected /p-3 protonation difference leaves an enantiomeric relation to current ChEBI. The current acid CHEBI15442 has the same normalized structure and an SSS name, while CHEBI57310 has an RRR synonym. The matching-native wording on membership edges001/006 does not expose this disagreement. Lin2010/3NPR is A017934/97, so it cannot silently establish the selected Newman stereochemistry. Exact current-Rhea agreement alone does not adjudicate these structures. Issue369 requires evidence-backed resolution before maintaining this exact-node claim.
+
+## Recommended Actions And Acceptance Checks
+
+### adjudicate-presqualene
+
+Preserve exact current candidate and all conflicting original sources; resolve the full-route presqualene grounding through inspected primary and issuing-authority evidence, or withhold the complete candidate from maintained publication while retaining research and review history. Do not silently substitute a near-match or use a prose caveat to override a contradictory exact graph node.
+
+- Compare full connectivity and all stereochemical layers after explicitly scoped protonation normalization; retain original hashes and exact strain/construct contexts.
+- If a corrected or genuinely source-supported uncertain representation is possible, verify its issuing identifiers, complete native nine-step boundary, catalyst specificity and all sides/balances independently.
+- If unresolved, archive byte-identical candidate and this needs_curation review, remove it from maintained data/pages/KGX, and leave issue369 open.
+- Retain both issue368 and issue369 lineages; assign terminal dispositions only in a valid completed observation with honest scope and actual checks.
+
+### persist-verified-locator-disposition
+
+After applicable checks, save a completed, explicitly provenance-only observation for the already verified issue368 correction, preserving scientific issue369 as an open concern. No further locator change is requested.
+
+- Retain both exact predecessor occurrence identities, independently verified two-string diff and raw XML evidence.
+- Keep the scientific stereochemistry concern open; do not label a provenance-only disposition as renewed scientific approval.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| native | https://pathway.yeastgenome.org/getxml?META:PWY-5875; Full native pathway and nine reaction XMLs, component chemical objects; MONOMER17444/13882/13883 comments | supports | Full boundary and source-qualified terminal donor model independently verified. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Original142 RDF, seven directed reactions22673,31552,31396,31400,31404,56105,42385 and33side chains | supports | All orientations, coefficients, charge/formula identities and seven balances match. Generic donor symbols are not specific physiology. |
+| primary | https://pmc.ncbi.nlm.nih.gov/articles/PMC3381123/; Complete2012article;1999PMC103650;2008PMC2747771;2005PMID16020541 abstract | supports | Direct biochemical and genetic support preserves six enzymes, native pigment versus heterologous analogues, boundPSPP and heterogeneousCrtN assembly. |
+| later | https://hub.hku.hk/bitstream/10722/293537/1/content.pdf; Tao2020 Results/Discussion pp948-952,Fig6, independently inspected web PDF | supports | C244S dimer, diapolycopenal analogue and Newman genetics support qualified statement; no WT KCTC1928 donor/assembly conclusion. |
+| protein | https://rest.uniprot.org/uniprotkb/O07854.json; Complete five current original UniProt JSONs; all attached JSON pointers resolved | supports | Newman identity, exact functional annotations and similarity cofactor tiers remain separate from genetic evidence. |
+| locator | https://pathway.yeastgenome.org/getxml?META:NDP-glucoses; Compound/inchi and corresponding Nucleoside-Diphosphates object; full original XML hashes0c44c761…/b318200e… | refutes | Each object contains common-name,dblink,cml/molecule but no inchi element; two evidence locators name an absent field. |
+| audit | research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-review-audit.json; Independent replay68728 terminal0; exact fullRDF/native/ChEBI/actualKGX checks | supports | 67 unique retained body hashes checked;33Rhea and8native sides;70edges123evidence preserved. |
+| context | research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-context.json; s_aureus/staph_precise108 component4; staph_precise165 nativecomponent63 and exact failed nullable metadata | supports | Four crtN/P/Q/O rows are bounded USA300 expression context; Newman/KCTC activity not inferred. Two165 parser failures retained, no false full-parser success. |
+| target | data/pathways/staphyloxanthin-biosynthesis.yaml; Frozen d7590ac585b3c2c9be97b19c2602b0568f8a90c9c8face0d3b5e82e9d15c6d30; participants CHEBI:57310; edges001,003,006,007 | supports | Record uses current Rhea directed equations and exact presqualene chemical; the two native membership bridges call the transformations matching without preserving the conflicting stereochemistry. |
+| fix-audit | research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-fix-audit.json; Independent parsed record diff and actual KGX replay | supports | Exactly two locator-only removals independently verified against absent fields in original native XML. |
+| pspp-audit | research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-pspp-audit.json; All original descriptor strings, raw body hashes, ten other exact native/current pairs, current and conjugate-acid ChEBI properties | refutes | CPD-465 is a diastereomer of current ChEBI57310; PS7 has opposite absolute inversion flag to ChEBI57310 after protonation-only normalization. The current ChEBI synonym and encoded structure disagree. |
+| pspp-primary | https://feh.scs.illinois.edu/doc/papers/1293841206_355.pdf; Lin2010 PMID21098670 DOI10.1073/pnas.1010907107, main pp21338–21339 Structure of PSPP Bound to CrtM, Fig2 and original-deposition note; SI Methods/FigS2/TableS1 | context_only | Direct study reports PSPP complexes with Y129A and wild-type CrtM. Original RCSB3NPR/PS7 bridge has protein A9JQL9 from A017934/97, not the selected Newman O07854. This does not independently establish Newman absolute stereochemistry. |
+| pspp-rcsb | https://data.rcsb.org/rest/v1/core/chemcomp/PS7; /rcsb_chem_comp_descriptor/InChI; /chem_comp/name; original3NPR primary citation and polymer1 source metadata | refutes | PS7 encodes /t28-,29-,30-/m1/s1 and names RRR; selected ChEBI57310 encodes /t28-,29-,30-/m0/s1. Source-specific descriptors are not a permitted exact-match bridge. |
+| inchi-semantics | https://www.inchi-trust.org/technical-faq/; Sections8.3,8.5 and12.2; full preceding connectivity layers compared | supports | For the same connectivity and tetrahedral layer, the alternative absolute inversion flags distinguish mirror-related stereoisomers. Protonation is a separate layer. |
+
+## Limits And Additional Notes
+
+- Reviewer helper first run failed at an incorrect dict input to KGX; corrected use of native validated record and TSV API, then full replay68728 exited0. This was a reviewer method correction, not a product defect.
+- No browser visual inspection; exact programmatic export only.
+- Tao2020 primary PDF independently inspected through web retrieval; no retained original-body digest or unavailable supplement claim.
+- Activated terminal donor identities are explicitly proposed native assignments, not directly established donor assays; generic CrtP donor unresolved.
+- USA300 iModulon context does not bridge strain-specific mechanism;165 source failures remain failures.
+- Final post-locator shared gates remain in flight. Initial all-edge chemistry replay did not compare every native intermediate InChI; that missed scope is corrected by the present eleven-pair structural audit.
+- No independent crystallographic refinement was performed. RCSB component descriptors and deposited primary/strain links are inspected; their protein scope is not transferred silently to Newman.
+- This partial successor is sufficient to persist the material finding before changes, but does not declare complete scientific acceptance or select a replacement structure.
+- Prior immutable review was read in full; exact issue368 lineage retained. Additional structural audit changes the earlier provisional chemical assessment based on new inspected evidence.
+- No target or author dossier was edited by the reviewer. New original evidence and exact hashes are retained externally and summarized in the maintained independent PSPP audit.
+- Per completed-review lineage contract, issue368 remains structurally open in this partial observation even though its exact correction is independently verified; no prior finding is retired by this partial review.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T081828Z-staphyloxanthin-stereochemistry-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent staphyloxanthin presqualene stereochemistry review
+started_at: '2026-10-11T08:11:00Z'
+finished_at: '2026-10-11T08:18:28.322620Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author the staphyloxanthin record or dossier. Reviewer-authored
+    sulfoquinovose is excluded.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: The two issue368 locator fragments are corrected and independently verified.
+  Additional native/current/primary structural comparison reveals a material, unadjudicated
+  presqualene stereochemistry conflict (issue369); no passing whole-record verdict
+  is given.
+source:
+  git_revision: 9e936b267374181f7f87402045777534d2f17508
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    sha256: d7590ac585b3c2c9be97b19c2602b0568f8a90c9c8face0d3b5e82e9d15c6d30
+    role: target
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-fix-audit.json
+    sha256: f8e3760ca7e4bcbd08edf6b42877e15d49b52e597b8cb88931dd3a7afcb9ea0a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-pspp-audit.json
+    sha256: 6464c24638be66a89611646e93db05f0def3d24ba69338fb04a5492902fb7ac6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-source-manifest.json
+    sha256: ef31d318bbaf36a182ed846f5fd54f377e76d5782184a528a7bf7d1c801f9204
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-source-projection.json
+    sha256: 913c472566271c9190ceb2bb9d00ee63e8dbde5a24ceb84e63920daac1ef2c21
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-validation.json
+    sha256: fe9f4f025a03e6aed4180d0c9e86efb8e2a006369baddc9a376859f5ceacceaf
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+targets:
+- target_id: MetaCyc:PWY-5875
+  path: data/pathways/staphyloxanthin-biosynthesis.yaml
+  label: staphyloxanthin biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained
+scope:
+  description: 'One staphyloxanthin record: resolve source locator findings, preserve
+    a new material stereochemical grounding conflict pending adjudication.'
+  selection: Canonical re-inspection captures frozen d7590ac5 target and current source
+    dossiers. Whole initial target review is retained; successor independently compares
+    both locator corrections and new original chemical/primary evidence.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5875
+  exclusions:
+  - target: Reviewer-authored sulfoquinovose and other pathway records
+    reason: Outside independent scientific scope.
+checks:
+- check_id: inspect
+  name: Canonical current inspection
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-201-staph-review/targets.yaml --input research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-pspp-audit.json
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Current frozen target and captured contexts re-inspected before successor
+    assessment.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: locator-fix
+  name: Independent exact locator fix and actual KGX comparison
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-201-staph-review/fix-replay.py
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Exactly two nonexistent InChI locator fragments removed. Every local node,
+    edge, evidence and reference metadata remain equal apart from those corrected
+    strings.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - fix-audit
+- check_id: stereochemistry
+  name: Independent original native, ChEBI and RCSB descriptor comparison
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-201-staph-review/pspp/audit.py
+  status: passed
+  required: false
+  exit_code: 0
+  summary: Session80216 terminal0 confirms three nonidentical absolute stereochemical
+    descriptors, unchanged connectivity, and exact primary/structure strain bridge.
+    A successful comparison identifies a concern; it is not a scientific pass.
+  target_ids:
+  - MetaCyc:PWY-5875
+  evidence_ids:
+  - pspp-audit
+- check_id: validate
+  name: Coordinated final validate
+  command: just validate
+  status: unavailable
+  required: true
+  summary: Final post-locator shared gate driver is still running; no final seal yet.
+    Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper
+    lint failure was corrected. This partial successor does not claim final gate completion.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: test
+  name: Coordinated final test
+  command: just test
+  status: unavailable
+  required: true
+  summary: Final post-locator shared gate driver is still running; no final seal yet.
+    Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper
+    lint failure was corrected. This partial successor does not claim final gate completion.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: lint
+  name: Coordinated final lint
+  command: just lint
+  status: unavailable
+  required: true
+  summary: Final post-locator shared gate driver is still running; no final seal yet.
+    Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper
+    lint failure was corrected. This partial successor does not claim final gate completion.
+  target_ids:
+  - MetaCyc:PWY-5875
+- check_id: diff
+  name: Coordinated final diff
+  command: git diff --check
+  status: unavailable
+  required: true
+  summary: Final post-locator shared gate driver is still running; no final seal yet.
+    Initial full suite passed 1059 tests with 3 skipped; initial unrelated helper
+    lint failure was corrected. This partial successor does not claim final gate completion.
+  target_ids:
+  - MetaCyc:PWY-5875
+evidence:
+- evidence_id: native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-5875
+  locator: Full native pathway and nine reaction XMLs, component chemical objects;
+    MONOMER17444/13882/13883 comments
+  summary: Full boundary and source-qualified terminal donor model independently verified.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Original142 RDF, seven directed reactions22673,31552,31396,31400,31404,56105,42385
+    and33side chains
+  summary: All orientations, coefficients, charge/formula identities and seven balances
+    match. Generic donor symbols are not specific physiology.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: primary
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3381123/
+  locator: Complete2012article;1999PMC103650;2008PMC2747771;2005PMID16020541 abstract
+  summary: Direct biochemical and genetic support preserves six enzymes, native pigment
+    versus heterologous analogues, boundPSPP and heterogeneousCrtN assembly.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: later
+  kind: primary_source
+  reference: https://hub.hku.hk/bitstream/10722/293537/1/content.pdf
+  locator: Tao2020 Results/Discussion pp948-952,Fig6, independently inspected web
+    PDF
+  summary: C244S dimer, diapolycopenal analogue and Newman genetics support qualified
+    statement; no WT KCTC1928 donor/assembly conclusion.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: protein
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/O07854.json
+  locator: Complete five current original UniProt JSONs; all attached JSON pointers
+    resolved
+  summary: Newman identity, exact functional annotations and similarity cofactor tiers
+    remain separate from genetic evidence.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: locator
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:NDP-glucoses
+  locator: Compound/inchi and corresponding Nucleoside-Diphosphates object; full original
+    XML hashes0c44c761…/b318200e…
+  summary: Each object contains common-name,dblink,cml/molecule but no inchi element;
+    two evidence locators name an absent field.
+  support: refutes
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-review-audit.json
+  locator: Independent replay68728 terminal0; exact fullRDF/native/ChEBI/actualKGX
+    checks
+  summary: 67 unique retained body hashes checked;33Rhea and8native sides;70edges123evidence
+    preserved.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-201/imodulondb-staph108-context.json
+  locator: s_aureus/staph_precise108 component4; staph_precise165 nativecomponent63
+    and exact failed nullable metadata
+  summary: Four crtN/P/Q/O rows are bounded USA300 expression context; Newman/KCTC
+    activity not inferred. Two165 parser failures retained, no false full-parser success.
+  support: supports
+  accessed_at: '2026-10-11T08:08:14.108148Z'
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/staphyloxanthin-biosynthesis.yaml
+  locator: Frozen d7590ac585b3c2c9be97b19c2602b0568f8a90c9c8face0d3b5e82e9d15c6d30;
+    participants CHEBI:57310; edges001,003,006,007
+  summary: Record uses current Rhea directed equations and exact presqualene chemical;
+    the two native membership bridges call the transformations matching without preserving
+    the conflicting stereochemistry.
+  support: supports
+  accessed_at: '2026-10-11T08:18:28.322620Z'
+- evidence_id: fix-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-fix-audit.json
+  locator: Independent parsed record diff and actual KGX replay
+  summary: Exactly two locator-only removals independently verified against absent
+    fields in original native XML.
+  support: supports
+  accessed_at: '2026-10-11T08:18:28.322620Z'
+- evidence_id: pspp-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-201/staphyloxanthin-independent-pspp-audit.json
+  locator: All original descriptor strings, raw body hashes, ten other exact native/current
+    pairs, current and conjugate-acid ChEBI properties
+  summary: CPD-465 is a diastereomer of current ChEBI57310; PS7 has opposite absolute
+    inversion flag to ChEBI57310 after protonation-only normalization. The current
+    ChEBI synonym and encoded structure disagree.
+  support: refutes
+  accessed_at: '2026-10-11T08:18:28.322620Z'
+- evidence_id: pspp-primary
+  kind: primary_source
+  reference: https://feh.scs.illinois.edu/doc/papers/1293841206_355.pdf
+  locator: Lin2010 PMID21098670 DOI10.1073/pnas.1010907107, main pp21338–21339 Structure
+    of PSPP Bound to CrtM, Fig2 and original-deposition note; SI Methods/FigS2/TableS1
+  summary: Direct study reports PSPP complexes with Y129A and wild-type CrtM. Original
+    RCSB3NPR/PS7 bridge has protein A9JQL9 from A017934/97, not the selected Newman
+    O07854. This does not independently establish Newman absolute stereochemistry.
+  support: context_only
+  accessed_at: '2026-10-11T08:18:28.322620Z'
+- evidence_id: pspp-rcsb
+  kind: database
+  reference: https://data.rcsb.org/rest/v1/core/chemcomp/PS7
+  locator: /rcsb_chem_comp_descriptor/InChI; /chem_comp/name; original3NPR primary
+    citation and polymer1 source metadata
+  summary: PS7 encodes /t28-,29-,30-/m1/s1 and names RRR; selected ChEBI57310 encodes
+    /t28-,29-,30-/m0/s1. Source-specific descriptors are not a permitted exact-match
+    bridge.
+  support: refutes
+  accessed_at: '2026-10-11T08:18:28.322620Z'
+- evidence_id: inchi-semantics
+  kind: authority
+  reference: https://www.inchi-trust.org/technical-faq/
+  locator: Sections8.3,8.5 and12.2; full preceding connectivity layers compared
+  summary: For the same connectivity and tetrahedral layer, the alternative absolute
+    inversion flags distinguish mirror-related stereoisomers. Protonation is a separate
+    layer.
+  support: supports
+  accessed_at: '2026-10-11T08:18:28.322620Z'
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete source-native boundary
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: All nine source-defined reactions represented; no convenient subset or
+    extra heterologous pigment branch.
+  evidence_ids:
+  - native
+  - target
+- assessment_id: chemistry
+  area: grounding
+  topic: Exact chemical states and source-qualified donors
+  outcome: concern
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: 'All current Rhea sides and balances reproduce, but this is insufficient
+    to adjudicate the exact PSPP structure: native MetaCyc, ChEBI and primary-linked
+    RCSB encode distinct configurations.'
+  evidence_ids:
+  - rhea
+  - pspp-audit
+  - pspp-primary
+  - pspp-rcsb
+  - inchi-semantics
+- assessment_id: roles
+  area: scope
+  topic: Organism, assembly and evidence tiers
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: Newman annotations, KCTC1928 clones, RN4220 deletion and C244S study remain
+    qualified; functional roles do not imply monomer sufficiency.
+  evidence_ids:
+  - protein
+  - primary
+  - later
+  - context
+- assessment_id: provenance
+  area: provenance
+  topic: Exact native locator support
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY-5875
+  summary: Both issue368 source locators now identify only actual native fields; exact
+    parsed two-string correction independently confirmed.
+  evidence_ids:
+  - locator
+  - fix-audit
+findings:
+- finding_id: f-native-class-inchi-locators
+  issue_key: staphyloxanthin-native-class-inchi-locators
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Two native generic-class locators name absent InChI fields
+  description: 'stx-edge-050 evidence[1] and stx-edge-052 evidence[1] include inchi
+    in source_locator. The exact original NDP-glucoses and Nucleoside-Diphosphates
+    XML Compound objects contain no such element. Their common-name/dblink/cml/molecule
+    fields remain valid support. Issue https://github.com/CultureBotAI/PathwayMech/issues/368.
+    The exact correction is independently verified in current bytes; this partial
+    observation retains the finding open pending a completed disposition. The exact
+    current d7590ac5 record removes only the nonexistent ; inchi fragments from edge050
+    and052 evidence[1]. Independent original XML and full parsed/actual-KGX comparison
+    verify the available locators and all remaining graph content. '
+  target_ids:
+  - MetaCyc:PWY-5875
+  field_paths:
+  - mechanistic_edges[id=stx-edge-050]/evidence[1]/source_locator
+  - mechanistic_edges[id=stx-edge-052]/evidence[1]/source_locator
+  evidence_ids:
+  - locator
+  - native
+  - target
+  rule_id: 'review-yaml-record Evidence Rules: exact native object in source_locator'
+  native_severity: minor
+  normalization_reason: Bounded source locator gap; chemistry and native class identity
+    remain supported.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained_record
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T080814Z-staphyloxanthin-initial-independent-review
+    finding_id: f-native-class-inchi-locators
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/368
+- finding_id: f-presqualene-stereochemistry
+  issue_key: staphyloxanthin-presqualene-stereochemical-source-conflict
+  category: grounding
+  severity: major
+  status: open
+  certainty: confirmed
+  title: Presqualene exact structure is selected despite unadjudicated source stereochemistry
+    conflict
+  description: The maintained participant CHEBI:57310 used by produces edge003 and
+    consumes edge007 encodes /t28-,29-,30-/m0/s1. Native CPD-465 encodes /t28-,29-,30+/m0/s1
+    despite a CHEBI57310 unification crossreference. Primary-linked RCSB PS7 encodes
+    /t28-,29-,30-/m1/s1; removing only the expected /p-3 protonation difference leaves
+    an enantiomeric relation to current ChEBI. The current acid CHEBI15442 has the
+    same normalized structure and an SSS name, while CHEBI57310 has an RRR synonym.
+    The matching-native wording on membership edges001/006 does not expose this disagreement.
+    Lin2010/3NPR is A017934/97, so it cannot silently establish the selected Newman
+    stereochemistry. Exact current-Rhea agreement alone does not adjudicate these
+    structures. Issue369 requires evidence-backed resolution before maintaining this
+    exact-node claim.
+  target_ids:
+  - MetaCyc:PWY-5875
+  field_paths:
+  - participants[id=CHEBI:57310]
+  - mechanistic_edges[id=stx-edge-001]/evidence[1]/source_assertion
+  - mechanistic_edges[id=stx-edge-003]
+  - mechanistic_edges[id=stx-edge-006]/evidence[1]/source_assertion
+  - mechanistic_edges[id=stx-edge-007]
+  evidence_ids:
+  - pspp-audit
+  - pspp-primary
+  - pspp-rcsb
+  - inchi-semantics
+  - target
+  - rhea
+  rule_id: 'review-yaml-record Evidence Rules: preserve source conflicts; a near miss
+    is not a match'
+  native_severity: major
+  normalization_reason: Material unresolved exact chemical grounding. This is not
+    merely a label difference or a protonation mismatch; no conclusion that the selected
+    Newman enzyme has been experimentally shown to make the opposite stereoisomer
+    is asserted.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained_record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/369
+actions:
+- action_id: adjudicate-presqualene
+  description: Preserve exact current candidate and all conflicting original sources;
+    resolve the full-route presqualene grounding through inspected primary and issuing-authority
+    evidence, or withhold the complete candidate from maintained publication while
+    retaining research and review history. Do not silently substitute a near-match
+    or use a prose caveat to override a contradictory exact graph node.
+  finding_ids:
+  - f-presqualene-stereochemistry
+  target_ids:
+  - MetaCyc:PWY-5875
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Compare full connectivity and all stereochemical layers after explicitly scoped
+    protonation normalization; retain original hashes and exact strain/construct contexts.
+  - If a corrected or genuinely source-supported uncertain representation is possible,
+    verify its issuing identifiers, complete native nine-step boundary, catalyst specificity
+    and all sides/balances independently.
+  - If unresolved, archive byte-identical candidate and this needs_curation review,
+    remove it from maintained data/pages/KGX, and leave issue369 open.
+  - Retain both issue368 and issue369 lineages; assign terminal dispositions only
+    in a valid completed observation with honest scope and actual checks.
+- action_id: persist-verified-locator-disposition
+  description: After applicable checks, save a completed, explicitly provenance-only
+    observation for the already verified issue368 correction, preserving scientific
+    issue369 as an open concern. No further locator change is requested.
+  finding_ids:
+  - f-native-class-inchi-locators
+  target_ids:
+  - MetaCyc:PWY-5875
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloxanthin-biosynthesis.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Retain both exact predecessor occurrence identities, independently verified two-string
+    diff and raw XML evidence.
+  - Keep the scientific stereochemistry concern open; do not label a provenance-only
+    disposition as renewed scientific approval.
+limitations:
+- Reviewer helper first run failed at an incorrect dict input to KGX; corrected use
+  of native validated record and TSV API, then full replay68728 exited0. This was
+  a reviewer method correction, not a product defect.
+- No browser visual inspection; exact programmatic export only.
+- Tao2020 primary PDF independently inspected through web retrieval; no retained original-body
+  digest or unavailable supplement claim.
+- Activated terminal donor identities are explicitly proposed native assignments,
+  not directly established donor assays; generic CrtP donor unresolved.
+- USA300 iModulon context does not bridge strain-specific mechanism;165 source failures
+  remain failures.
+- Final post-locator shared gates remain in flight. Initial all-edge chemistry replay
+  did not compare every native intermediate InChI; that missed scope is corrected
+  by the present eleven-pair structural audit.
+- No independent crystallographic refinement was performed. RCSB component descriptors
+  and deposited primary/strain links are inspected; their protein scope is not transferred
+  silently to Newman.
+- This partial successor is sufficient to persist the material finding before changes,
+  but does not declare complete scientific acceptance or select a replacement structure.
+notes:
+- Prior immutable review was read in full; exact issue368 lineage retained. Additional
+  structural audit changes the earlier provisional chemical assessment based on new
+  inspected evidence.
+- No target or author dossier was edited by the reviewer. New original evidence and
+  exact hashes are retained externally and summarized in the maintained independent
+  PSPP audit.
+- Per completed-review lineage contract, issue368 remains structurally open in this
+  partial observation even though its exact correction is independently verified;
+  no prior finding is retired by this partial review.
+```

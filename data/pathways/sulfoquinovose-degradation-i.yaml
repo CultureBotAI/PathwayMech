@@ -1,0 +1,811 @@
+id: MetaCyc:PWY-7446
+label: sulfoquinovose degradation I
+description: 'The complete four-reaction sulfo-EMP route from free sulfoquinovose to glycerone phosphate
+  and (2S)-3-sulfopropanediol in Escherichia coli K-12. YihS isomerization, YihV phosphorylation, YihT
+  aldol cleavage and YihU NADH-dependent reduction retain all charged reaction sides. Current chemistry
+  selects beta-SQ and (2S)-SLA/(2S)-DHPS; the old native protein prose naming (2R)-SLA is superseded,
+  while the native reaction frames use a stereounspecified SLA class. E. coli YihT activity was detected
+  in the 2014 coupled reconstitution but not in the 2021 purified preparation; that later study used Salmonella
+  enzyme for kinetics. YihS and YihU use source-defined assemblies; YihV and YihT are qualified functional
+  gene-product assertions, not claims of monomer sufficiency. CsqR repression and assay-dependent kinase
+  modulation are included with their experimental conditions. The endpoint retains organic sulfur: glycoside
+  hydrolysis, SQ mutarotation, membrane transport, sulforhamnose side-reaction chemistry, lower glycolysis
+  and partner-organism DHPS mineralization are outside the four-member native boundary.'
+pathway_type: sulfo-EMP-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:142957
+  label: 6-sulfo-beta-D-quinovose(1-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16947
+  label: citrate(3-)
+  category: small_molecule
+- id: CHEBI:176527
+  label: (2S)-3-sulfopropanediol(1-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:190019
+  label: 6-sulfo-D-rhamnose(1-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:49299
+  label: D-fructofuranose 1,6-bisphosphate(4-)
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57579
+  label: D-fructose 6-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:57642
+  label: glycerone phosphate(2-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:58702
+  label: phosphonatoenolpyruvate
+  category: small_molecule
+- id: CHEBI:77132
+  label: 6-sulfo-D-quinovose(1-)
+  category: small_molecule
+- id: CHEBI:77133
+  label: 6-deoxy-6-sulfo-D-fructofuranose(1-)
+  category: small_molecule
+- id: CHEBI:77134
+  label: 6-deoxy-6-sulfo-D-fructofuranose 1-phosphate(3-)
+  category: small_molecule
+- id: CHEBI:77135
+  label: 3-sulfolactaldehyde(1-)
+  category: small_molecule
+- id: CHEBI:90109
+  label: L-3-sulfolactaldehyde(1-)
+  category: small_molecule
+- id: UniProtKB:P32140
+  label: Sulfoquinovose isomerase
+  category: protein
+- id: UniProtKB:P32141
+  label: Sulfofructosephosphate aldolase
+  category: protein
+- id: UniProtKB:P0A9V8
+  label: 3-sulfolactaldehyde reductase
+  category: protein
+- id: UniProtKB:P32143
+  label: Sulfofructose kinase
+  category: protein
+- id: UniProtKB:P32144
+  label: HTH-type transcriptional repressor CsqR
+  category: protein
+- id: MetaCyc:CPLX0-7683
+  label: sulfoquinovose isomerase
+  category: complex
+- id: MetaCyc:CPLX0-7794
+  label: 3-sulfolactaldehyde reductase
+  category: complex
+reactions:
+- id: RHEA:40440
+  label: 6-sulfo-beta-D-quinovose => 6-deoxy-6-sulfo-D-fructose
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:40444
+  label: 6-deoxy-6-sulfo-D-fructose + ATP => 6-deoxy-6-sulfo-D-fructose 1-phosphate + ADP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:40516
+  label: 6-deoxy-6-sulfo-D-fructose 1-phosphate => (2S)-3-sulfolactaldehyde + dihydroxyacetone phosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:40513
+  label: (2S)-3-sulfolactaldehyde + NADH + H(+) => (2S)-3-sulfopropanediol + NAD(+)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: sulfoquinovose-edge-001
+  subject: CHEBI:142957
+  predicate: consumes
+  object: RHEA:40440
+  evidence:
+  - reference_id: RHEA:40440
+    source_assertion: RHEA:40440 assigns CHEBI:142957 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40440']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40439_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40439_compound_15317'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_15317)
+- id: sulfoquinovose-edge-002
+  subject: RHEA:40440
+  predicate: produces
+  object: CHEBI:77133
+  evidence:
+  - reference_id: RHEA:40440
+    source_assertion: RHEA:40440 assigns CHEBI:77133 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40440']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40439_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40439_compound_9102'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9102)
+- id: sulfoquinovose-edge-003
+  subject: CHEBI:77133
+  predicate: consumes
+  object: RHEA:40444
+  evidence:
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:77133 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_9102'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9102)
+- id: sulfoquinovose-edge-004
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:40444
+  evidence:
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:30616 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_6372'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_6372)
+- id: sulfoquinovose-edge-005
+  subject: RHEA:40444
+  predicate: produces
+  object: CHEBI:77134
+  evidence:
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:77134 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_9103'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9103)
+- id: sulfoquinovose-edge-006
+  subject: RHEA:40444
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:456216 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_2710'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_2710)
+- id: sulfoquinovose-edge-007
+  subject: RHEA:40444
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_3249'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: sulfoquinovose-edge-008
+  subject: CHEBI:77134
+  predicate: consumes
+  object: RHEA:40516
+  evidence:
+  - reference_id: RHEA:40516
+    source_assertion: RHEA:40516 assigns CHEBI:77134 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40516']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40515_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40515_compound_9103'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9103)
+- id: sulfoquinovose-edge-009
+  subject: RHEA:40516
+  predicate: produces
+  object: CHEBI:90109
+  evidence:
+  - reference_id: RHEA:40516
+    source_assertion: RHEA:40516 assigns CHEBI:90109 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40516']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40515_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40515_compound_12045'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoquinovose-edge-010
+  subject: RHEA:40516
+  predicate: produces
+  object: CHEBI:57642
+  evidence:
+  - reference_id: RHEA:40516
+    source_assertion: RHEA:40516 assigns CHEBI:57642 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40516']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40515_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40515_compound_4255'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_4255)
+- id: sulfoquinovose-edge-011
+  subject: CHEBI:90109
+  predicate: consumes
+  object: RHEA:40513
+  evidence:
+  - reference_id: RHEA:40513
+    source_assertion: RHEA:40513 assigns CHEBI:90109 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40513']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40511_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40511_compound_12045'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+- id: sulfoquinovose-edge-012
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:40513
+  evidence:
+  - reference_id: RHEA:40513
+    source_assertion: RHEA:40513 assigns CHEBI:57945 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40513']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40511_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40511_compound_1650'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_1650)
+- id: sulfoquinovose-edge-013
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:40513
+  evidence:
+  - reference_id: RHEA:40513
+    source_assertion: RHEA:40513 assigns CHEBI:15378 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40513']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40511_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40511_compound_3249'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3249)
+- id: sulfoquinovose-edge-014
+  subject: RHEA:40513
+  predicate: produces
+  object: CHEBI:176527
+  evidence:
+  - reference_id: RHEA:40513
+    source_assertion: RHEA:40513 assigns CHEBI:176527 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40513']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40511_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40511_compound_17525'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_17525)
+- id: sulfoquinovose-edge-015
+  subject: RHEA:40513
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: RHEA:40513
+    source_assertion: RHEA:40513 assigns CHEBI:57540 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40513']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40511_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40511_compound_3484'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_3484)
+- id: sulfoquinovose-edge-016
+  subject: RHEA:40440
+  predicate: part_of
+  object: MetaCyc:PWY-7446
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: The native pathway lists RXN-15296 as a member.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7446"]/reaction-list/Reaction[@frameid="RXN-15296"]
+  - reference_id: MetaCyc:RXN-15296
+    source_assertion: The native reaction explicitly cross-references RHEA:40440.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-15296"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:40440
+    source_assertion: Rhea family 40439 contains directed reaction 40440, whose physiological side assignment
+      is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/40439"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/40440"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/40440"]/rh:substrates and rh:products
+  - reference_id: PMID:24463506
+    source_assertion: K-12 substrains grew aerobically on SQ; MG1655 proteomics and recombinant four-enzyme
+      reconstitution supported the route. BW25113 yihS, yihT and yihV deletions failed to grow on SQ.
+    source_locator: Printed pp114-116; Figure 2 and Figure 3; Methods, Bacteria and growth conditions
+      and Heterologous expression and purification
+- id: sulfoquinovose-edge-017
+  subject: RHEA:40444
+  predicate: part_of
+  object: MetaCyc:PWY-7446
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: The native pathway lists RXN-15297 as a member.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7446"]/reaction-list/Reaction[@frameid="RXN-15297"]
+  - reference_id: MetaCyc:RXN-15297
+    source_assertion: The native reaction explicitly cross-references RHEA:40444.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-15297"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:40444
+    source_assertion: Rhea family 40443 contains directed reaction 40444, whose physiological side assignment
+      is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/40443"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/40444"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/40444"]/rh:substrates and rh:products
+- id: sulfoquinovose-edge-018
+  subject: RHEA:40516
+  predicate: part_of
+  object: MetaCyc:PWY-7446
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: The native pathway lists RXN-15298 as a member.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7446"]/reaction-list/Reaction[@frameid="RXN-15298"]
+  - reference_id: MetaCyc:RXN-15298
+    source_assertion: The native reaction explicitly cross-references RHEA:40516.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-15298"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:40516
+    source_assertion: Rhea family 40515 contains directed reaction 40516, whose physiological side assignment
+      is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/40515"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/40516"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/40516"]/rh:substrates and rh:products
+- id: sulfoquinovose-edge-019
+  subject: RHEA:40513
+  predicate: part_of
+  object: MetaCyc:PWY-7446
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: The native pathway lists RXN-15299 as a member.
+    source_locator: /ptools-xml/Pathway[@frameid="PWY-7446"]/reaction-list/Reaction[@frameid="RXN-15299"]
+  - reference_id: MetaCyc:RXN-15299
+    source_assertion: The native reaction explicitly cross-references RHEA:40513.
+    source_locator: /ptools-xml/Reaction[@frameid="RXN-15299"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:40513
+    source_assertion: Rhea family 40511 contains directed reaction 40513, whose physiological side assignment
+      is used here.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/40511"]/rh:directionalReaction[@rdf:resource="http://rdf.rhea-db.org/40513"];
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/40513"]/rh:substrates and rh:products
+- id: sulfoquinovose-edge-020
+  subject: RHEA:40440
+  predicate: provides_input_for
+  object: RHEA:40444
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: Native reaction ordering places RXN-15296 before RXN-15297.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="RXN-15297"]/predecessor-reactions/Reaction[@frameid="RXN-15296"]
+  - reference_id: RHEA:40440
+    source_assertion: RHEA:40440 assigns CHEBI:77133 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40440']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40439_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40439_compound_9102'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9102)
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:77133 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_9102'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9102)
+  description: The connected reactions share CHEBI:77133; this is material transfer, not a claim that
+    the enzyme reactions are thermodynamically irreversible.
+- id: sulfoquinovose-edge-021
+  subject: RHEA:40444
+  predicate: provides_input_for
+  object: RHEA:40516
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: Native reaction ordering places RXN-15297 before RXN-15298.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="RXN-15298"]/predecessor-reactions/Reaction[@frameid="RXN-15297"]
+  - reference_id: RHEA:40444
+    source_assertion: RHEA:40444 assigns CHEBI:77134 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40444']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40443_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40443_compound_9103'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9103)
+  - reference_id: RHEA:40516
+    source_assertion: RHEA:40516 assigns CHEBI:77134 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40516']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40515_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40515_compound_9103'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_9103)
+  description: The connected reactions share CHEBI:77134; this is material transfer, not a claim that
+    the enzyme reactions are thermodynamically irreversible.
+- id: sulfoquinovose-edge-022
+  subject: RHEA:40516
+  predicate: provides_input_for
+  object: RHEA:40513
+  evidence:
+  - reference_id: MetaCyc:PWY-7446
+    source_assertion: Native reaction ordering places RXN-15298 before RXN-15299.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="RXN-15299"]/predecessor-reactions/Reaction[@frameid="RXN-15298"]
+  - reference_id: RHEA:40516
+    source_assertion: RHEA:40516 assigns CHEBI:90109 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40516']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40515_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40515_compound_12045'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+  - reference_id: RHEA:40513
+    source_assertion: RHEA:40513 assigns CHEBI:90109 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/40513']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/40511_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_40511_compound_12045'];
+      rh:compound/rh:chebi (http://rdf.rhea-db.org/Compound_12045)
+  description: The connected reactions share CHEBI:90109; this is material transfer, not a claim that
+    the enzyme reactions are thermodynamically irreversible.
+- id: sulfoquinovose-edge-023
+  subject: UniProtKB:P32140
+  predicate: part_of
+  object: MetaCyc:CPLX0-7683
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7683
+    source_assertion: The native assembly has 6 copies of EG11845-MONOMER.
+    source_locator: /ptools-xml/Protein[@frameid="CPLX0-7683"]/component[Protein/@frameid="EG11845-MONOMER"]/coefficient
+  - reference_id: MetaCyc:EG11845-MONOMER
+    source_assertion: The native protein maps to UniProt P32140 and belongs to CPLX0-7683.
+    source_locator: /ptools-xml/Protein[@frameid="EG11845-MONOMER"]/dblink[dblink-db="UNIPROT"]; component-of
+  - reference_id: UniProtKB:P32140
+    source_assertion: ECO:0000255; The reviewed entry annotates a homohexamer, with HAMAP and PMID18328504
+      evidence.
+    source_locator: /comments/5/texts
+  description: Assembly composition is 6 copies; the protein membership edge does not assert independent
+    monomer catalysis.
+- id: sulfoquinovose-edge-024
+  subject: UniProtKB:P0A9V8
+  predicate: part_of
+  object: MetaCyc:CPLX0-7794
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7794
+    source_assertion: The native assembly has 4 copies of EG11847-MONOMER.
+    source_locator: /ptools-xml/Protein[@frameid="CPLX0-7794"]/component[Protein/@frameid="EG11847-MONOMER"]/coefficient
+  - reference_id: MetaCyc:EG11847-MONOMER
+    source_assertion: The native protein maps to UniProt P0A9V8 and belongs to CPLX0-7794.
+    source_locator: /ptools-xml/Protein[@frameid="EG11847-MONOMER"]/dblink[dblink-db="UNIPROT"]; component-of
+  - reference_id: DOI:10.1021/acscatal.9b04427
+    source_assertion: E. coli YihU crystallized as a dimer of dimers, and SEC-MALS confirmed a solution
+      tetramer. The active site spans the intimate dimer interface.
+    source_locator: Accepted manuscript printed pp7-8, Results and Discussion, YihU forms a dimer of intimate
+      homodimer pairs; Figure 4A
+  description: Assembly composition is 4 copies; the protein membership edge does not assert independent
+    monomer catalysis.
+- id: sulfoquinovose-edge-025
+  subject: MetaCyc:CPLX0-7683
+  predicate: catalyzes
+  object: RHEA:40440
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7683
+    source_assertion: The native assembly catalyzes ENZRXN0-7820, linked to RXN-15296.
+    source_locator: /ptools-xml/Protein/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-7820"]/reaction
+  - reference_id: UniProtKB:P32140
+    source_assertion: ECO:0000269; SQ isomerase activity and physiological left-to-right RHEA:40440 are
+      annotated with direct evidence from PMID24463506 and PMID33791429.
+    source_locator: /comments/0; /comments/1/reaction and physiologicalReactions
+  - reference_id: PMID:33791429
+    source_assertion: E. coli YihS interconverts SQ, SF and SR and strongly prefers beta-SQ. Slow alpha-SQ
+      exchange may reflect mutarotation; low direct alpha activity was not excluded.
+    source_locator: //sec[@id="sec2.1"]/p[position() >= 1 and position() <= 4]; Figure 2a-b
+  - reference_id: PMID:24463506
+    source_assertion: Purified recombinant b3880 converted SQ into SF in the sequential reconstitution.
+    source_locator: Printed pp115-116, Figure 3a-b; Methods, Heterologous expression and purification
+  description: The selected catabolic branch is SQ to SF. SR formation is real but belongs to adjacent
+    side-reaction chemistry; no exclusive one-product or absolute alpha-anomer inactivity is asserted.
+- id: sulfoquinovose-edge-026
+  subject: UniProtKB:P32143
+  predicate: enables
+  object: RHEA:40444
+  evidence:
+  - reference_id: UniProtKB:P32143
+    source_assertion: ECO:0000269; The entry assigns SF kinase activity and RHEA:40444 to YihV with direct
+      2014/2021 evidence.
+    source_locator: /comments/0; /comments/1/reaction and physiologicalReactions
+  - reference_id: PMID:24463506
+    source_assertion: Adding purified recombinant b3883 and ATP after b3880 produced SFP and ADP; phosphatase
+      treatment converted SFP back to SF.
+    source_locator: Printed p115; Figure 3b-c; Methods, Heterologous expression and purification
+  - reference_id: PMID:33791429
+    source_assertion: E. coli YihV forms a dimeric structure with intersubunit active-site contacts. SEC-MALS
+      showed more than 60% dimer and a 13% tetramer subpopulation.
+    source_locator: //sec[@id="sec2.3"]/p[3]; Figure 4b-f
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Figure S9 explicitly identifies the solution assembly experiment as EcYihV; Figure
+      S9B reports dimer, minor tetramer and higher aggregates.
+    source_locator: Figure S9 caption, printed S10; Section 2, S29; EcYihV sequence, S30
+  description: Functional gene-product support, not monomer sufficiency. No verified external assembly
+    instance is substituted for the source-supported dimeric enzyme.
+- id: sulfoquinovose-edge-027
+  subject: UniProtKB:P32141
+  predicate: enables
+  object: RHEA:40516
+  evidence:
+  - reference_id: UniProtKB:P32141
+    source_assertion: ECO:0000269; The entry assigns SFP cleavage to (2S)-SLA and DHAP, with direct PMID24463506
+      and HAMAP MF_01912 evidence.
+    source_locator: /comments/0; /comments/1/reaction and physiologicalReactions
+  - reference_id: PMID:24463506
+    source_assertion: Adding recombinant b3881 to the coupled b3880/b3883 system generated SLA and DHAP;
+      subsequent NADH/YihU addition drove conversion further.
+    source_locator: Printed p116; Figure 3c-e; Methods, Heterologous expression and purification
+  - reference_id: PMID:33791429
+    source_assertion: The 2021 study detected no activity with its E. coli YihT preparation under tested
+      conditions, then used Salmonella YihT for positive direct kinetics.
+    source_locator: //sec[@id="sec2.4"]/p[1]
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Figure S19 solution tetramer data are for SeYihT. Figure S20B displays crystallographic
+      tetramers of EcYihT and SeYihT; this does not establish an E. coli solution tetramer experimentally.
+    source_locator: Figure S19 caption, S19; Figure S20B caption, S20; EcYihT and SeYihT sequences, S30
+  - reference_id: MetaCyc:EG11846-MONOMER
+    source_assertion: The old protein comment names (2R)-SLA. This legacy wording is not used as evidence
+      for the selected absolute stereochemistry.
+    source_locator: /ptools-xml/Protein/comment
+  - reference_id: DOI:10.1021/acscatal.9b04427
+    source_assertion: Figure 1A explicitly depicts the sulfo-EMP aldehyde as S-SLA and its reduction product
+      as S-DHPS.
+    source_locator: Accepted manuscript Figure 1A, printed p18 (PDF page20)
+  description: E. coli pathway function is supported by the 2014 coupled assay and genetics despite the
+    later preparation-specific negative assay. No Salmonella kinetic constants, solution stoichiometry
+    or Schiff-base residue experiment is transferred as direct E. coli evidence. Current (2S) chemistry
+    supersedes older native protein-comment (2R) wording.
+- id: sulfoquinovose-edge-028
+  subject: MetaCyc:CPLX0-7794
+  predicate: catalyzes
+  object: RHEA:40513
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7794
+    source_assertion: The native tetramer catalyzes ENZRXN0-7824 linked to RXN-15299.
+    source_locator: /ptools-xml/Protein/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-7824"]/reaction
+  - reference_id: UniProtKB:P0A9V8
+    source_assertion: ECO:0000269; The entry annotates (2S)-SLA reduction by NADH, physiological right-to-left
+      RHEA:40513, with direct PMID24463506 and DOI10.1021/acscatal.9b04427 evidence.
+    source_locator: /comments/0; /comments/1/reaction and physiologicalReactions
+  - reference_id: PMID:24463506
+    source_assertion: SLA reductase activity was enriched from SQ-grown MG1655 and reconstituted with
+      recombinant b3882; NADH drove SLA to DHPS. In the reverse assay NADP did not replace NAD.
+    source_locator: Printed pp115-116; Figure 3d-e; Methods, Enzyme assays and Heterologous expression
+      and purification
+  - reference_id: DOI:10.1021/acscatal.9b04427
+    source_assertion: The E. coli YihU ternary structure models S-DHPS; Figure 1A labels S-SLA to S-DHPS.
+      Kinetics used racemic SLA with an assumed active half, described as D-SLA in the text.
+    source_locator: Accepted manuscript printed pp6,10-11 and18; Figure 1A and Figure 6A-C
+  description: The selected reductive flux is right-to-left relative to the Rhea master. NADH is a consumed
+    cosubstrate, not a permanently bound prosthetic group; old relative D/L naming is not used to infer
+    a different absolute stereoisomer.
+- id: sulfoquinovose-edge-029
+  subject: UniProtKB:P32143
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: EcYihV structures contain hydrated Mg with AMPPNP and Mg coordinated to ADP in the
+      SF complex; kinetic assays used MgCl2.
+    source_locator: //sec[@id="sec2.3"]/p[position()=1 or position()=4 or position()=6]; Figure 4b-f
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: EcYihV kinetic assays contained 5 mM MgCl2 with ATP.
+    source_locator: Section SF kinase (YihV) kinetics, printed S33-S34
+  description: Nucleotide-associated Mg binding and assay support are retained; no metal-removal/rescue
+    test, exclusivity among divalent ions or fixed per-enzyme stoichiometry is claimed.
+- id: sulfoquinovose-edge-030
+  subject: UniProtKB:P32144
+  predicate: inhibits
+  object: MetaCyc:PWY-7446
+  evidence:
+  - reference_id: PMID:30372406
+    source_assertion: Genomic SELEX, gel shifts and in vivo reporters support CsqR repression of yihUTS,
+      yihV and csqR transcription units in E. coli K-12.
+    source_locator: /resultList/result[id="30372406"]/abstractText
+  - reference_id: UniProtKB:P32144
+    source_assertion: ECO:0000269; CsqR represses yihUTS, yihV and its own gene and binds their regulatory
+      DNA.
+    source_locator: /comments/0
+  description: Transcriptional repression of pathway-enzyme genes, not direct inhibition of the catalytic
+    reactions.
+- id: sulfoquinovose-edge-031
+  subject: CHEBI:77132
+  predicate: inhibits
+  object: UniProtKB:P32144
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: SQ disrupts E. coli CsqR-DNA binding in gel-shift and AFM experiments; these assays
+      do not resolve the SQ anomer.
+    source_locator: //sec[@id="sec2.2"]/p[position() >= 1 and position() <= 3]
+  description: In vitro derepression context; no universal cellular threshold or unique anomer specificity
+    is assigned.
+- id: sulfoquinovose-edge-032
+  subject: CHEBI:190019
+  predicate: inhibits
+  object: UniProtKB:P32144
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: SR relieves CsqR-DNA complexes in gel-shift and AFM experiments, less strongly than
+      SQ; SR did not stabilize the isolated effector-binding domain at 10 mM.
+    source_locator: //sec[@id="sec2.2"]/p[position() >= 1 and position() <= 3]
+  description: In vitro derepression context; no universal cellular threshold or unique anomer specificity
+    is assigned.
+- id: sulfoquinovose-edge-033
+  subject: CHEBI:456216
+  predicate: inhibits
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports ADP inhibition of EcYihV under its metabolite-addition assay conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-034
+  subject: CHEBI:77132
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports SQ activation of EcYihV under its metabolite-addition assay conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-035
+  subject: CHEBI:77135
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports SLA activation of EcYihV under its metabolite-addition assay conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-036
+  subject: CHEBI:57642
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports DHAP activation of EcYihV under its metabolite-addition assay
+      conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-037
+  subject: CHEBI:57579
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports F6P activation of EcYihV under its metabolite-addition assay conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-038
+  subject: CHEBI:49299
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports FBP activation of EcYihV under its metabolite-addition assay conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-039
+  subject: CHEBI:58702
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports PEP activation of EcYihV under its metabolite-addition assay conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-040
+  subject: CHEBI:16947
+  predicate: activates
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: The study reports citrate activation of EcYihV under its metabolite-addition assay
+      conditions.
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1 and Figure 4a
+  - reference_id: DOI:10.1021/acscentsci.0c01285.s001
+    source_assertion: Added metabolites were tested at 10 mM in ATP/Mg assays at pH7.5 and 30 degrees
+      C. These are conditional enzyme experiments, not measured intracellular concentrations.
+    source_locator: SF kinase (YihV) kinetics, printed S33-S34
+  description: Regulatory effects are conditional. Anomer-unspecified SQ/FBP and stereounspecified SLA
+    preserve the assay scope; they are not additional core-reaction intermediates.
+- id: sulfoquinovose-edge-041
+  subject: CHEBI:77133
+  predicate: inhibits
+  object: UniProtKB:P32143
+  evidence:
+  - reference_id: PMID:33791429
+    source_assertion: 'SF substrate inhibition of EcYihV depended on ATP concentration: estimated Ki about
+      8 mM at 1 mM ATP and 0.3 mM at 0.1 mM ATP.'
+    source_locator: //sec[@id="sec2.3"]/p[1]; Table 1
+  description: A substrate can also inhibit at elevated concentration; this edge is explicitly conditional
+    and does not negate SF consumption by the kinase reaction.
+references:
+- id: MetaCyc:PWY-7446
+  title: sulfoquinovose degradation I
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-7446
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: 7970734efae9b0f74c4e6ba1caa7af6b4a498a21d37e5c22b603347747b0d341
+- id: MetaCyc:RXN-15296
+  title: RXN-15296
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-15296
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: 96df0a7e5f9a73bb19389fcba8051ec358886724dda1fd78a0901983640538bb
+- id: MetaCyc:RXN-15297
+  title: RXN-15297
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-15297
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: de68618628cc2cb713a1ded6b3fa52672882d77a1394da05a6ad87dab70c0f90
+- id: MetaCyc:RXN-15298
+  title: RXN-15298
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-15298
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: 90fb6eecfed959e2a169933f975777b9829bd0695166754d360fb4a75d346bed
+- id: MetaCyc:RXN-15299
+  title: RXN-15299
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-15299
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: ec99597471d7069673adfb967254620c98172bec9dbb83d5785ed0709b8eca72
+- id: MetaCyc:CPLX0-7683
+  title: sulfoquinovose isomerase
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-7683
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: bdeeb46a5fd6bde252e6057c0c9ffd780bb4d737e1050521c46800de83b62961
+- id: MetaCyc:CPLX0-7794
+  title: 3-sulfolactaldehyde reductase
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-7794
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: fc5323760fb4485cd5e8ad7abf2710f218d66f61b309863cff1a0df70abc2a1b
+- id: MetaCyc:EG11845-MONOMER
+  title: sulfoquinovose isomerase
+  url: https://pathway.yeastgenome.org/getxml?META:EG11845-MONOMER
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: 47fbec47d1e304624a431a7b0cd18798cb5330478c1fe6590e21abfa2283a7ad
+- id: MetaCyc:EG11846-MONOMER
+  title: 6-deoxy-6-sulfofructose-1-phosphate aldolase
+  url: https://pathway.yeastgenome.org/getxml?META:EG11846-MONOMER
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: 1847d995e87087834275fbbc543142164ca25d6ccf3e7bd315047c3e27be5921
+- id: MetaCyc:EG11847-MONOMER
+  title: 3-sulfolactaldehyde reductase
+  url: https://pathway.yeastgenome.org/getxml?META:EG11847-MONOMER
+  source_version: MetaCyc 22.5 public mirror; complete native XML response retrieved 2026-10-11
+  source_sha256: 8e639b7a5c4bb59a6fb113a147a0433064be6a1b1f4a7bfd90a3e5d9d0f08f11
+- id: UniProtKB:P32140
+  title: Sulfoquinovose isomerase
+  url: https://rest.uniprot.org/uniprotkb/P32140.json
+  source_version: UniProt 2026_03 (02-September-2026); complete original entry JSON retrieved 2026-10-11
+  source_sha256: 20ad003895196c86a8af23d588466a45cbc0e86056bbc89a976c69e555ae0407
+- id: UniProtKB:P32141
+  title: Sulfofructosephosphate aldolase
+  url: https://rest.uniprot.org/uniprotkb/P32141.json
+  source_version: UniProt 2026_03 (02-September-2026); complete original entry JSON retrieved 2026-10-11
+  source_sha256: 877627100957281e8898a3aacfafab731d4bce0d1de8bcc1800f718d4a465b8b
+- id: UniProtKB:P0A9V8
+  title: 3-sulfolactaldehyde reductase
+  url: https://rest.uniprot.org/uniprotkb/P0A9V8.json
+  source_version: UniProt 2026_03 (02-September-2026); complete original entry JSON retrieved 2026-10-11
+  source_sha256: f1f73b2da94788f660d7d5dac2ec30045d4c58ebe5050d9b56381d4c3e4d9f5b
+- id: UniProtKB:P32143
+  title: Sulfofructose kinase
+  url: https://rest.uniprot.org/uniprotkb/P32143.json
+  source_version: UniProt 2026_03 (02-September-2026); complete original entry JSON retrieved 2026-10-11
+  source_sha256: 43e1a70a99162988cb01c8e6dcc365d6c263fbabfa8312c10622d7ed989f0600
+- id: UniProtKB:P32144
+  title: HTH-type transcriptional repressor CsqR
+  url: https://rest.uniprot.org/uniprotkb/P32144.json
+  source_version: UniProt 2026_03 (02-September-2026); complete original entry JSON retrieved 2026-10-11
+  source_sha256: 7ad472572ed9ad78e8554b55add376e4e4e97a6bba1f90b5b069878556f480e5
+- id: PMID:24463506
+  title: Sulphoglycolysis in Escherichia coli K-12 closes a gap in the biogeochemical sulphur cycle.
+  url: https://kops.uni-konstanz.de/bitstream/123456789/26077/2/Denger_260772.pdf
+  source_version: Original 2014 Nature article with Methods and Extended Data; SHA256 covers complete
+    15-page institutional PDF
+  source_sha256: e3c80fff89a548b26f8de5578e100c17c995e098243256d5f3d96058809aa61d
+- id: PMID:33791429
+  title: Molecular Basis of Sulfosugar Selectivity in Sulfoglycolysis
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8006165/fullTextXML
+  source_version: Original 2021 full-text JATS XML; complete response retrieved 2026-10-11
+  source_sha256: b94d347820a23930dbde3ada5f6f2805d56a42e6ae3e3d580611ab93e5a53c05
+- id: DOI:10.1021/acscentsci.0c01285.s001
+  title: 'Molecular Basis of Sulfosugar Selectivity in Sulfoglycolysis: Supporting Information'
+  url: https://ndownloader.figshare.com/files/26577379
+  source_version: Original publisher-deposited supplement, linked by Figshare article 14096259 to DOI
+    10.1021/acscentsci.0c01285; complete PDF
+  source_sha256: a4d4f57a30c7ac7cff3a62d644e074913ebda0390a5e0a91f91e5e97f560ffbc
+- id: DOI:10.1021/acscatal.9b04427
+  title: Dynamic Structural Changes Accompany the Production of Dihydroxypropanesulfonate by Sulfolactaldehyde
+    Reductase
+  url: https://eprints.whiterose.ac.uk/id/eprint/156563/1/acscatal.9b04427.pdf
+  source_version: 2020 accepted author manuscript, not publisher version of record; SHA256 covers full
+    27-page institutional PDF including 2 cover pages
+  source_sha256: 30e34da151f2e8b37098047787c17689ff0161f7a20d11760c7cb4689288491d
+- id: PMID:30372406
+  title: Regulatory role of CsqR (YihW) in transcription of the genes for catabolism of the anionic sugar
+    sulfoquinovose (SQ) in Escherichia coli K-12.
+  url: https://pubmed.ncbi.nlm.nih.gov/30372406/
+  source_version: Primary abstract inspected through Europe PMC; SHA256 covers the complete single-PMID
+    API JSON response, /resultList/result/0
+  source_sha256: aba137ecfa831c28bbe34b3ecdfaba2bd7421b468a6726ee3ed7bcd2c1c17e84
+- id: RHEA:40440
+  title: Rhea 142 directed reaction 40440 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:40444
+  title: Rhea 142 directed reaction 40444 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:40516
+  title: Rhea 142 directed reaction 40516 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:40513
+  title: Rhea 142 directed reaction 40513 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 covers complete official compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
