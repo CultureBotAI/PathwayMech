@@ -1,0 +1,141 @@
+{
+  "status": "root_cause_and_recovery_verified",
+  "completed_at": "2026-10-11T12:55:17.279471+00:00",
+  "ci": {
+    "run": 38140206532,
+    "job": 114472350329,
+    "head": "58bf19dcff135ef3b381350b96cae4b4dcb9c769",
+    "failed_test": "tests/test_record_review_contract.py::test_every_saved_structured_bundle_is_valid",
+    "original_log_sha256": "c3ca651fc813273ada7d8099c43e1f1b2c71b09106fbfb7a618cf26b8e2dbd65"
+  },
+  "root_cause": "Canonical source provenance requires retained source.git_revision commits. Full checkout fetch retrieves reachable refs/history; a reviewed intermediate PR commit became unreachable from fetched branches after squash merge/deletion. The fresh official-origin clone lacks exactly6647fd6, though long-lived local objects made earlier checks pass. This is environment preparation, not an invalid review or a reason to weaken provenance.",
+  "independent_isolation": {
+    "head": "58bf19dcff135ef3b381350b96cae4b4dcb9c769",
+    "base": "75b6c586be91719f5d5d8db1183581403c36a485",
+    "review_count": 77,
+    "distinct_revisions": 25,
+    "missing": [
+      {
+        "revision": "6647fd69597d516ca41dec6e6c8314032cbd7c3a",
+        "reviews": [
+          "reviews/structured/20261011T121829Z-aerobactin-page-currency-resolved-review/review.yaml",
+          "reviews/structured/20261011T120654Z-aerobactin-page-currency-initial-review/review.yaml",
+          "reviews/structured/20261011T121520Z-desferrioxamine-b-initial-independent-review/review.yaml"
+        ]
+      }
+    ],
+    "isolated": true,
+    "no_shallow_or_filter": true,
+    "origin": "https://github.com/CultureBotAI/PathwayMech.git"
+  },
+  "before": {
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_record_review_contract.py::test_every_saved_structured_bundle_is_valid"
+    ],
+    "started_at": "2026-10-11T12:53:01.859773+00:00",
+    "finished_at": "2026-10-11T12:53:42.898091+00:00",
+    "exit_code": 1,
+    "log_sha256": "d646ae93b85f7cd1b3639a5eae8aa65ca5bced95ea6d399ae0fbd2f7fcc4f308"
+  },
+  "exact_origin_fetch": {
+    "command": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "--no-recurse-submodules",
+      "--no-write-fetch-head",
+      "origin",
+      "6647fd69597d516ca41dec6e6c8314032cbd7c3a:refs/record-reviews/6647fd69597d516ca41dec6e6c8314032cbd7c3a"
+    ],
+    "started_at": "2026-10-11T12:53:58.417050+00:00",
+    "finished_at": "2026-10-11T12:53:59.148843+00:00",
+    "exit_code": 0,
+    "log_sha256": "812b146e0759df0e24aa4f1dcad8199beda7d14289a540ee35ec8dc051320a23",
+    "actual_type": "commit",
+    "retention_ref": "6647fd69597d516ca41dec6e6c8314032cbd7c3a",
+    "head_after": "58bf19dcff135ef3b381350b96cae4b4dcb9c769"
+  },
+  "after": {
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_record_review_contract.py::test_every_saved_structured_bundle_is_valid"
+    ],
+    "started_at": "2026-10-11T12:54:06.750541+00:00",
+    "finished_at": "2026-10-11T12:54:45.611828+00:00",
+    "exit_code": 0,
+    "log_sha256": "2995e99a763194812cb89ce868934ec5ca0144042ce7a15095ac5a06383c5e4d",
+    "worktree_status": ""
+  },
+  "preservation": "No immutable review, validator, maintained data or HEAD changed. Full isolated clone has no alternates, shallow metadata or partial-clone filtering. Only a local refs/record-reviews/fullSHA retention ref was added.",
+  "existing_mechanism_search": {
+    "scope": [
+      ".github",
+      "scripts",
+      "src",
+      "tests",
+      "docs",
+      "conf",
+      "justfile"
+    ],
+    "included_hidden_and_ignored": true,
+    "excluded": [
+      ".git internals",
+      ".venv dependencies"
+    ],
+    "result": "No existing restore/fetch implementation found within infrastructure scope; governed docs require available Git provenance and trusted event base but supply no automatic restoration."
+  },
+  "recommended_owner_change": {
+    "helper": "New non-governed scripts/fetch_review_revisions.py",
+    "canonical_intact": [
+      "scripts/record_review.py",
+      "schema/record_review.yaml",
+      "docs/record-reviews.md",
+      "tests/test_record_review_contract.py"
+    ],
+    "workflow": "Explicit preparation step after dependencies and before Test in .github/workflows/main.yaml; preserve trusted RECORD_REVIEW_BASE logic.",
+    "local": "Document explicit helper before local canonical review/test gates when a fresh clone lacks historical revisions; do not insert implicit network access into canonical validator.",
+    "algorithm": [
+      "Use governed review_paths/read_bytes/parse_review_bundle to validate every immutable pair and expected repository identity without requiring source commit presence.",
+      "Validate every declared revision before any network fetch. For this SHA1 repository require exact lowercase40hex; never use branch names, expressions or caller-provided URLs.",
+      "Only missing revisions are fetched, noninteractively from the validated official origin using argument lists; disable tags/submodules/FETCH_HEAD overwrite.",
+      "Require raw object type commit and exact requested SHA; a tag that peels to a commit does not satisfy a pinned commit.",
+      "Keep refs/record-reviews/SHA locally to avoid GC; reject conflicting existing retention refs rather than force-overwrite. Preserve HEAD, branch/worktree and tracked bytes.",
+      "All malformed pairs/revisions, unavailable origins, fetch failures and wrong returned object types are terminal errors. Run unchanged canonical gate afterward."
+    ],
+    "regressions": [
+      "Isolated bare-remote fixture retains a squashed review commit behind an unfetched PR ref; fresh nonshared clone starts missing it, exact fetch restores canonical consumer while bytes remain unchanged.",
+      "All-pair validation first: malformed SHA/expression or invalid canonical bundle triggers zero fetch attempts.",
+      "Unknown exact SHA/transport failure fails closed and does not report success or rewrite review inputs.",
+      "Blob/tag object IDs fail raw commit-type/exact-ID guard; conflicting retention ref cannot be overwritten.",
+      "Already available valid commits require no fetch; rerun is idempotent.",
+      "Wrong official origin/repository identity rejected; workflow test checks explicit preparation precedes canonical consumer."
+    ]
+  },
+  "limits": [
+    "This verifies actual current GitHub retrieval of the exact pinned revision; it does not guarantee indefinite upstream retention. If upstream cannot provide the exact object, fail closed and recover that original object from trusted retained history, never rewrite the review base.",
+    "Root implementation remains independently reviewable; this receipt verifies the approach and fresh-clone behavior, not yet its code.",
+    "Only the single failed canonical consumer was rerun; no redundant full suite."
+  ],
+  "artifacts": {
+    "existing-mechanism-search.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after-test.json": "f68ac5e85c2af90518539d90e5488501f694cee6342b4faaee529a122916892a",
+    "reproduce.py": "5964f1ea5f50cfd80d71dc340936abc0628dc77b3254b082555313595b5c54cd",
+    "reproduce.log": "88d58fe4e700ddef8de01131e16e241b169873419af01834a353e77468243117",
+    "fetch.log": "812b146e0759df0e24aa4f1dcad8199beda7d14289a540ee35ec8dc051320a23",
+    "clone.json": "c91c8b8dca73916314c743da89660463e00d3def517ea15415d3cfb6235810cc",
+    "before-test.log": "d646ae93b85f7cd1b3639a5eae8aa65ca5bced95ea6d399ae0fbd2f7fcc4f308",
+    "before-test.json": "8dbe80ae8c59c4c108b6ab3424d7e06955b1b0e86b272fd4f5e7b074dd357273",
+    "fetch.json": "5e10a9e51f4ccc74d97b3e66e1f56089d45f062ad7e7a9d29fbfcfeb56307b21",
+    "missing-before.json": "cc7ca3cb03ae6a4376706a8cc776d34296a2093c4b79a0ce8f02b50af53d6538",
+    "clone.log": "d02cdca0f541f947a53c081e3a955eea8cffb6bdf6e4bcb334388d52240c6baa",
+    "after-test.log": "2995e99a763194812cb89ce868934ec5ca0144042ce7a15095ac5a06383c5e4d",
+    "actual-ci-failed-job.log": "c3ca651fc813273ada7d8099c43e1f1b2c71b09106fbfb7a618cf26b8e2dbd65"
+  }
+}

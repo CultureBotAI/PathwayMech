@@ -1,0 +1,42 @@
+{
+  "target_sha256": "f9bb35866f883f0e47f5f5e98ba6ae2caf1d2d8ea967793b96f67d91e8fa1690",
+  "findings": [
+    {
+      "id": "f-desc-assay-figure-locators",
+      "issue_key": "desferrioxamine-b-desc-assay-figure-locators",
+      "severity": "minor",
+      "status": "open",
+      "title": "DesC assay evidence cites pathway figures instead of the assay figure",
+      "summary": "Two edge-local primary locators cite Figures 2\u20133, which show chemical structures and the pathway schematic. The actual succinyl/acetyl LC-MS assay traces are Figure 4(a)/(b). The cited Results section and separate SI evidence support both assertions, so this is a bounded locator error with no chemistry/catalyst change.",
+      "affected_evidence": [
+        {
+          "edge_id": "dfoB-edge-029",
+          "evidence_index": 1,
+          "reference_id": "PMID:29685972",
+          "before": {
+            "reference_id": "PMID:29685972",
+            "source_assertion": "Purified tagged DesC from coelicolor catalyzed N-hydroxycadaverine acylation with succinyl-CoA, giving the corresponding authentic-standard-matched product and CoA.",
+            "source_locator": "PMC5915712 Results and discussion \u00a72(a); Figures 2\u20133; original supplementary assays"
+          },
+          "proposed_source_locator": "PMC5915712 section[@id=\"s2a\"] (Results and discussion \u00a72(a)); figure[@id=\"RSTB20170068F4\"] panel a; separately cited original supplement \u00a71.6.1 and \u00a71.7",
+          "claim_supported": true
+        },
+        {
+          "edge_id": "dfoB-edge-030",
+          "evidence_index": 1,
+          "reference_id": "PMID:29685972",
+          "before": {
+            "reference_id": "PMID:29685972",
+            "source_assertion": "Purified tagged DesC from coelicolor catalyzed N-hydroxycadaverine acylation with acetyl-CoA, giving the corresponding authentic-standard-matched product and CoA.",
+            "source_locator": "PMC5915712 Results and discussion \u00a72(a); Figures 2\u20133; original supplementary assays"
+          },
+          "proposed_source_locator": "PMC5915712 section[@id=\"s2a\"] (Results and discussion \u00a72(a)); figure[@id=\"RSTB20170068F4\"] panel b; separately cited original supplement \u00a71.6.2 and \u00a71.7",
+          "claim_supported": true
+        }
+      ],
+      "source_path": "/private/tmp/pathwaymech-desferrioxamine-b-scout-20261011/originals/PMC5915712.html",
+      "source_sha256": "1bd6c3e3a9a9048f03545ede3a17af2a8de138f070acc00827cec61ac5d557f3",
+      "acceptance": "Change only the two incorrect figure fragments in the maintained owner once authorized, preserve the initial observation/bytes, add an original Figure4 locator guard and verify no node/reaction/edge/evidence-assertion delta. No root issue number has been supplied yet."
+    }
+  ]
+}

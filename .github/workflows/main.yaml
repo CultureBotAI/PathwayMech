@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --extra dev
 
+      - name: Restore historical review commits
+        run: uv run --locked python scripts/fetch_review_revisions.py
+
       # The same commands as `just lint`, `just test` and `just validate`.
       - name: Lint
         run: uv run --locked --extra dev ruff check .

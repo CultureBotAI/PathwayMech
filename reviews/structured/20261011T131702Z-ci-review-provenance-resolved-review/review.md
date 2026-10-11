@@ -1,0 +1,793 @@
+# Resolved technical review of CI historical provenance restoration and ref safety
+
+- Review: 20261011T131702Z-ci-review-provenance-resolved-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T13:07:28.907466Z
+- Finished UTC: 2026-10-11T13:17:02.328380Z
+- Reviewer: Codex independent technical reviewer (/root/pathway_authority_cache) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+Both confirmed technical findings are resolved with preserved exact lineage: the workflow restores verifiable official historical commits before tests, and the helper no longer redirects retention writes through symbolic refs. No new supported defect remains within the inspected scope. Scientific records and governed review contracts are unchanged.
+
+## Scope And Provenance
+
+Final provenance-restoration workflow, helper, six owner files and original/corrected check evidence at working-tree base 58bf19dc, resolving issues386 and387.
+
+Selection: Explicit correction review of the two saved initial technical observations.
+Coverage: full; 2 reviewed / 2 in the declared population.
+Source: working_tree at Git base 58bf19dcff135ef3b381350b96cae4b4dcb9c769.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| PathwayMech:review-provenance-ci | .github/workflows/main.yaml | maintained | CI restoration of historical review provenance |
+| PathwayMech:review-retention-helper | scripts/fetch_review_revisions.py | maintained | Historical review commit retention helper |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical final target and context inspection | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Actual canonical inspect exited 0; 27 final inputs still match captured hashes. |
+| Initial-helper full suite and corpus validation | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Root actual just test: 1144 passed, 3 skipped, 3 warnings; just validate, just lint and git diff --check also exited 0. This run used the initial helper before the symbolic-ref fix. |
+| Final helper, ref-safety and workflow regression suite | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Actual final owner db9635c4: 24 passed in 42.31 seconds, including nine real-Git symbolic-ref/race cases. Existing direct-ref conflicts, annotated/non-commit objects, failed fetches, malformed inputs, ignored bundles and provenance hashes remain covered. |
+| Final lint, infrastructure-history and whitespace checks | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Final just lint, just validate-history and git diff --check each exited 0 on the corrected owner; exact log hashes verified. |
+| Final-helper official missing-object clone replay | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Observed driver 42029 exit 0. Exact missing object fetched; 25 direct retention refs; unchanged canonical consumer 1 passed in 45.68 seconds; repeat no-fetch; no review, tracked-byte or HEAD changes. |
+| Independent original-ref-defect replay after correction | passed | True | PathwayMech:review-retention-helper | All three existing symbolic-ref cases now reject and leave all refs unchanged. |
+| Independent final canonical-consumer fail-closed probe | passed | True | PathwayMech:review-retention-helper | Valid historical source fetch succeeds; mismatched historical input hash returns CLI exit 1 despite a valid matching YAML/Markdown pair. Diagnostic process exits 0 because both outcomes match expectations. |
+| Original evidence, governed contracts and scientific context preservation | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | All 18 original formal technical inputs remain exactly recoverable. Five governed/gate files are unchanged. Scientific input scope is 52 current matches plus the original profile context in Git; no scientific record, authority, page or evidence change. |
+| Initial canonical validation and complete selected lineage | passed | True | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Both initial bundles passed canonical validate/save; the actual base58bf check reported 79 valid reviews. Full ignored-inclusive key search finds no competing later observation before this successor. |
+| Preserved original remote CI failure | failed | False | PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper | Original PR383 job failed with 1 failed, 1126 passed and 7 skipped because historical commit 6647fd6 was unavailable. This historical failure is retained and is superseded for the scoped defect by the successful final official-clone replay. |
+
+## Scientific And Domain Assessments
+
+### Exact original Git objects restored before unchanged checks
+
+provenance: supported. Targets: PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper.
+
+The official-source clone reproduces missing provenance before preparation and verifies it after the actual final helper. No edited review or hash substitute is used. The repository claim and fixed URL keep network retrieval tied to CultureBotAI/PathwayMech; full SHA-1 validation prevents revision/refspec option injection.
+
+### Ref updates remain within the retention namespace
+
+consistency: supported. Targets: PathwayMech:review-retention-helper.
+
+The initial dangling-ref failure is corrected. Symbolic refs present at validation are rejected before mutation; --no-deref makes a late race either fail compare-and-swap or affect only the retention name, never its unrelated referent. Nine real-Git cases and the independent three-case replay support this bounded behavior.
+
+### Governed provenance and append-only checks remain intact
+
+schema: supported. Targets: PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper.
+
+No edits to the canonical validator, schema, configuration, contract tests or gate entry point were introduced. Hidden and ignored bundles are discovered through the existing strict helper, all pairs are parsed before fetch, and invalid final provenance still produces nonzero exit. Fetch success is not review approval.
+
+### Scientific content and test scope are accurately preserved
+
+scope: supported. Targets: PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper.
+
+The 53-input science observation remains immutable: 52 inputs match current bytes and only the authorized profile documentation addition differs, with its original preserved in Git. The full 1144-test result precedes the final ref guard; 24 focused tests, final hygiene/history checks and official fresh-clone replay assess that correction. This technical review does not renew scientific approval.
+
+### Both original findings have explicit supported successor dispositions
+
+ownership: supported. Targets: PathwayMech:review-provenance-ci, PathwayMech:review-retention-helper.
+
+The original committed-workflow observation and separate proposed-helper observation remain byte-exact. This successor retains both target IDs, issue keys and exact prior finding identities; no fabricated or rewritten history is used.
+
+## Findings
+
+### f-missing-historical-review-commits: Fresh CI checkout cannot resolve an immutable review source commit
+
+minor / resolved / confirmed; issue key: ci-missing-historical-review-commits.
+
+The original workflow at 58bf19dc checks out full ordinary history but does not restore historical feature commits referenced by saved reviews. The required test fails resolving 6647fd69597d516ca41dec6e6c8314032cbd7c3a. Local object availability is not portable to a fresh clone. Keep the review source claim and rejection semantics unchanged; restore verifiable exact objects before validation.
+
+Disposition: The unchanged canonical consumer now verifies the previously absent historical commit after the actual final helper fetches its exact ID from the official repository. Final clone replay preserves all 154 review files, HEAD and tracked bytes and repeats without fetching. Required preparation is in the workflow before tests; governed checks and source hashes remain unchanged.
+
+### f-symbolic-review-retention-ref: A dangling symbolic retention ref creates an unrelated branch
+
+minor / resolved / confirmed; issue key: ci-review-retention-symbolic-ref.
+
+restore_revisions treats a dangling symbolic refs/record-reviews/&lt;sha&gt; as an absent ref. Its ordinary update-ref follows that symbolic name and creates its unrelated branch target, then returns success. Explicitly reject symbolic retention refs before fetching and updating; prevent dereference in the final compare-and-swap write so a concurrent replacement cannot redirect it.
+
+Disposition: The actual corrected helper rejects existing symbolic retention refs before fetching and before updating; its final compare-and-swap write uses --no-deref. The original failing scenario now rejects with no ref changes, and nine real-Git symbolic/race tests preserve unrelated targets. The final official-clone helper remains functional and idempotent.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-inspect | /private/tmp/pathwaymech-pr383-technical-review/final-inspect.json | supports | Canonical final capture of both affected targets and 25 context inputs; every captured current hash rechecked immediately before save. |
+| e-prior-workflow | reviews/structured/20261011T125829Z-ci-review-provenance-initial-review/review.yaml | supports | Original completed issue386 observation at exact Git commit 58bf19dc; its failed remote check and historical inputs remain immutable. |
+| e-prior-ref | reviews/structured/20261011T130153Z-ci-symbolic-retention-initial-review/review.yaml | supports | Original completed issue387 observation and exact helper SHA f7eb85f3 remain immutable; original bytes are archived. |
+| e-helper | scripts/fetch_review_revisions.py; collect_revisions, reject_symbolic_ref, restore_revisions and main | supports | Fixed official URL and full lowercase SHA-1 IDs constrain fetch inputs. Canonical pair parsing occurs before fetch; exact commit type/identity and canonical read_review are checked afterward. Existing symbolic refs are rejected and update-ref uses --no-deref. |
+| e-workflow | .github/workflows/main.yaml; jobs.qc.env and steps | supports | Historical commit preparation runs after dependency installation and before tests, for the same PR, merge-group and main job. Trusted RECORD_REVIEW_BASE, read-only permissions, persist-credentials false and full checkout remain intact. |
+| e-full | research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-full-gates.json | supports | Root actual initial-helper checks all exited 0. Full just test passed 1144 tests, 3 skipped and 3 warnings in 477.11 seconds at helper f7eb85f3. The later nine symbolic-ref tests were not in that run; this is not represented as a final-helper full-suite run. |
+| e-focused | research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-focused-gates.json | supports | Actual corrected helper db9635c4 passed 24 focused tests, including all nine symbolic-ref/race cases, plus final lint, history and diff checks. All receipt log hashes were independently verified. |
+| e-official | research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-fresh-clone.json | supports | Independent non-shared single-branch clone empirically lacked only historical commit 6647fd69597d516ca41dec6e6c8314032cbd7c3a. The actual final helper fetched that exact object from its fixed official URL, retained 25 direct refs, and the unchanged canonical consumer passed. A repeat fetched nothing. All 154 review files, tracked bytes and HEAD were preserved. |
+| e-execution | research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-fresh-clone-execution.json | supports | Independent driver session 42029 was observed terminating with exit 0. All 25 refs were independently checked as direct; all six owner input hashes still matched final bytes. |
+| e-symbolic | research/pathway_additions/2026-10-11-next-211/ci-provenance/fixed-symbolic-probe.json | supports | This reviewer repeated the original failing setup in three new temporary repositories on the actual final owner. Dangling, same-commit and different-commit symbolic refs were all rejected, with every ref and referent unchanged. |
+| e-hash | research/pathway_additions/2026-10-11-next-211/ci-provenance/final-invalid-provenance-probe.json | supports | This reviewer ran the final CLI against a real local-bare fixture: valid fetched historical provenance succeeds; a changed declared hash with matching rendered Markdown still exits 1. This explicitly test-only local transport does not substitute for the separately observed official fetch. |
+| e-proof-audit | /private/tmp/pathwaymech-pr383-technical-review/final-proof-audit.json | supports | Independently verified eight actual gate log hashes, all 18 prior formal technical inputs, the final official receipts and owner hashes. Scientific review inputs: 52 current exact matches; one authorized profile context change resolved against its exact original Git blob. |
+| e-archives | research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-inputs/manifest.json | supports | All five original proposed owner files remain byte-exact in this archive; original helper f7eb85f3 is recoverable alongside corrected db9635c4. |
+| e-profile | docs/record-review-profile.md | supports | The only changed scientific-review context adds explicit historical Git preparation instructions and limits. It does not change the scientific rubric or replace the canonical provenance and append-only checks. |
+| e-contract | scripts/record_review.py | supports | Canonical source_provenance, read_review, review_paths and append-only validation are unchanged from original 58bf19dc. The fetch helper imports and calls them rather than weakening their rules. |
+| e-lineage | /private/tmp/pathwaymech-pr383-technical-review/final-lineage-search.txt | supports | Gitignore-independent search of the complete current worktree, excluding only .git and .venv internals, found only the two selected initial review pairs for these stable issue keys. Both exact predecessors and all affected targets are retained. |
+
+## Limits And Additional Notes
+
+- The full corpus suite passed on the initial helper before the final symbolic-ref guard and its nine tests. The final owner passed 24 focused tests, final lint/history/diff and the actual official-clone replay; this report does not call that a new final-helper full-suite run.
+- Historical retrieval still depends on the official GitHub repository retaining the requested object. Unavailable objects fail preparation; no fabricated replacement is accepted.
+- The multi-revision helper is fail-closed for its result, not an all-or-nothing Git-object transaction. Earlier valid objects or retention refs may remain after a later failure, and retry is idempotent.
+- This is a technical repository review with scientific_review false. The only changed context in the existing science observation is the profile documentation; the other 52 current input hashes match.
+- Final pushed-head CI, merge integrity and live deployment remain subsequent publication checks.
+- Initial unsuccessful review-draft serialization used YAML aliases and was rejected before save; the saved initial observation used ordinary mappings. An external probe setup initially lacked its Python import path, then ran successfully after an external-only correction. Neither setup failure changed maintained owner files or evidence.
+- The original remote CI failure and initial symbolic-ref failure remain in their immutable observations. The correction-validation receipt is an earlier frozen stage; the separately sealed final-helper fresh-clone receipts complete its then-pending proof.
+- No record history, scientific data, rendered page, GitHub state or owner code was edited by this reviewer.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T131702Z-ci-review-provenance-resolved-review
+kind: repository
+repository: CultureBotAI/PathwayMech
+title: Resolved technical review of CI historical provenance restoration and ref safety
+started_at: '2026-10-11T13:07:28.907466Z'
+finished_at: '2026-10-11T13:17:02.328380Z'
+reviewer:
+  identity: Codex independent technical reviewer (/root/pathway_authority_cache)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Reviewer did not author the fetch helper, workflow, owner tests
+    or corrections. Reviewer authored the two independent initial technical observations
+    and local probes. Official fresh-clone verification was independently executed
+    by /root/verify_graph_publication; its original receipts and hashes were inspected.
+    Prior unrelated pathway contributions are disclosed and remain outside this review.
+skill: review-yaml-record and pathwaymech-resolve-reviews; bounded repository technical
+  scope
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: 'Both confirmed technical findings are resolved with preserved exact lineage:
+  the workflow restores verifiable official historical commits before tests, and the
+  helper no longer redirects retention writes through symbolic refs. No new supported
+  defect remains within the inspected scope. Scientific records and governed review
+  contracts are unchanged.'
+source:
+  git_revision: 58bf19dcff135ef3b381350b96cae4b4dcb9c769
+  state: working_tree
+  inputs:
+  - path: .github/workflows/main.yaml
+    sha256: 09bdf8c9135e5696658e14fea56ddf0961f15f9e7ba31c6780ffb9952ac22f20
+    role: target
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/correction-validation.json
+    sha256: f894c47dc87377328f84e3a05df180d38b1ed90b6ba8a44290a83db9533b9102
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-focused-gates.json
+    sha256: 50403b178c8750f38d653d889de1d64b815dd9e4919503eabcc64aa71bb76ae1
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-fresh-clone-execution.json
+    sha256: 9f04ceb2754ef031ef51313b76be8d89f2b42a5ffafb32c2a3db26888974cfaa
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-fresh-clone.json
+    sha256: f85ed27496d5cac1139d4ee3bd69f05431a446ee1ee740cf0038d2784181ca42
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-invalid-provenance-probe.json
+    sha256: 72a9d0f149b328cce16c9e23399680541366ae59d155e5dd7d3f97989237f634
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/fixed-symbolic-probe.json
+    sha256: 04ad42fd40e90ea9c32055590ca6e07a36e496c8dcaad0e3955b0194b6e1d96b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-full-gates.json
+    sha256: 1747784738db7eb350b170a36f0c075d462da8a9212daa7b0d144a4a44f6aac4
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-inputs/fetch_review_revisions.py.txt
+    sha256: f7eb85f3dac4c21a7e4b21d1efba3bb639bbd7d4dd12a4eae27f10ed045af0f2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-inputs/manifest.json
+    sha256: 57272f7caf409d3846748aedffc57e0e16b02a6946939731e8600a64913be87d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-211/ci-provenance/symbolic-ref-initial-probe.json
+    sha256: 93b04acf97249cb03f5ee4b51cbdc4cb2da40bae04ce3c1c247d6a659f870b34
+    role: context
+  - path: reviews/structured/20261011T123834Z-desferrioxamine-b-resolved-independent-review/review.yaml
+    sha256: 43d2718bc458b0101b9e2cfeb51e6ddfa6af111a520d1151107e59bbfe81548f
+    role: context
+  - path: reviews/structured/20261011T125829Z-ci-review-provenance-initial-review/review.md
+    sha256: ff9123631f012568dc6b04a524db4c6d9784a9b12f0036c501c4c9d0d5f32df5
+    role: context
+  - path: reviews/structured/20261011T125829Z-ci-review-provenance-initial-review/review.yaml
+    sha256: dcd65096b61abafc8dd222bed0cf91e65173dcd60b598157abee4e85ac6b9ab4
+    role: context
+  - path: reviews/structured/20261011T130153Z-ci-symbolic-retention-initial-review/review.md
+    sha256: 5ac35a8c54bc4edb5d13538b05ef770319fdbf0495979ae98ef25840ae66efe8
+    role: context
+  - path: reviews/structured/20261011T130153Z-ci-symbolic-retention-initial-review/review.yaml
+    sha256: e66b79dcd170188286c1a4143d8818b529d4e279784e067b1b4ccafd0eb2472a
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/fetch_review_revisions.py
+    sha256: db9635c46327fdc54d742405ba5beda1354568b02873d2088118da1b76c15fb5
+    role: target
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: tests/test_fetch_review_revisions.py
+    sha256: 4afc0cf7f51cd278803e98cb2742759391b0f8384fe9e5b59fbb276d253f8559
+    role: context
+  - path: tests/test_record_review_ci.py
+    sha256: 47b294bcfa50b23da1ccbfdaced689cf47b95d974321606150662e2a3efd32d1
+    role: context
+  - path: tests/test_record_review_contract.py
+    sha256: 7be08e684dcd235ddeae8f3c6a5d45b0ee74a60d1c1818cc81467e38901e5d56
+    role: context
+  - path: tests/test_review_retention_refs.py
+    sha256: 112a63ffb855dd6312e671a26cf720141c3babd6118a6d865827433728619e8e
+    role: context
+targets:
+- target_id: PathwayMech:review-provenance-ci
+  path: .github/workflows/main.yaml
+  label: CI restoration of historical review provenance
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: .github/workflows/main.yaml
+    role: workflow_preparation_owner
+- target_id: PathwayMech:review-retention-helper
+  path: scripts/fetch_review_revisions.py
+  label: Historical review commit retention helper
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/fetch_review_revisions.py
+    role: historical_revision_restoration_owner
+scope:
+  description: Final provenance-restoration workflow, helper, six owner files and
+    original/corrected check evidence at working-tree base 58bf19dc, resolving issues386
+    and387.
+  selection: Explicit correction review of the two saved initial technical observations.
+  coverage: full
+  population_size: 2
+  reviewed_target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  exclusions:
+  - target: Scientific literature reassessment, remote final-head CI, merge and deployment
+    reason: Scientific content is unchanged. The final pushed-head pipeline and publication
+      occur after this bounded local technical disposition and are not claimed complete.
+checks:
+- check_id: c-inspect
+  name: Canonical final target and context inspection
+  status: passed
+  required: true
+  summary: Actual canonical inspect exited 0; 27 final inputs still match captured
+    hashes.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-inspect
+  command: Exact scripts/record_review.py inspect argv retained in /private/tmp/pathwaymech-pr383-technical-review/final-inspect-command.json
+  exit_code: 0
+- check_id: c-initial-full
+  name: Initial-helper full suite and corpus validation
+  status: passed
+  required: true
+  summary: 'Root actual just test: 1144 passed, 3 skipped, 3 warnings; just validate,
+    just lint and git diff --check also exited 0. This run used the initial helper
+    before the symbolic-ref fix.'
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-full
+  - e-proof-audit
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just test; separate just validate, just lint and git diff --check runs
+  exit_code: 0
+  scope_note: Delegated actual logs inspected and rehashed. Final changed helper behavior
+    is covered by the separate 24-test and official-clone checks below.
+- check_id: c-focused
+  name: Final helper, ref-safety and workflow regression suite
+  status: passed
+  required: true
+  summary: 'Actual final owner db9635c4: 24 passed in 42.31 seconds, including nine
+    real-Git symbolic-ref/race cases. Existing direct-ref conflicts, annotated/non-commit
+    objects, failed fetches, malformed inputs, ignored bundles and provenance hashes
+    remain covered.'
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-focused
+  command: .venv/bin/python -m pytest -q tests/test_fetch_review_revisions.py tests/test_review_retention_refs.py
+    tests/test_record_review_ci.py
+  exit_code: 0
+- check_id: c-final-hygiene
+  name: Final lint, infrastructure-history and whitespace checks
+  status: passed
+  required: true
+  summary: Final just lint, just validate-history and git diff --check each exited
+    0 on the corrected owner; exact log hashes verified.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-focused
+  - e-proof-audit
+  command: 'Separate actual commands: just lint; just validate-history; git diff --check'
+  exit_code: 0
+- check_id: c-official
+  name: Final-helper official missing-object clone replay
+  status: passed
+  required: true
+  summary: Observed driver 42029 exit 0. Exact missing object fetched; 25 direct retention
+    refs; unchanged canonical consumer 1 passed in 45.68 seconds; repeat no-fetch;
+    no review, tracked-byte or HEAD changes.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-official
+  - e-execution
+  command: Independent final production helper execution followed by pytest -q tests/test_record_review_contract.py::test_every_saved_structured_bundle_is_valid
+    in a non-shared official-source clone; exact argv in retained receipts
+  exit_code: 0
+- check_id: c-symbolic
+  name: Independent original-ref-defect replay after correction
+  status: passed
+  required: true
+  summary: All three existing symbolic-ref cases now reject and leave all refs unchanged.
+  target_ids:
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-symbolic
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-pr383-technical-review/probe-fixed-owner.py
+  exit_code: 0
+- check_id: c-hash
+  name: Independent final canonical-consumer fail-closed probe
+  status: passed
+  required: true
+  summary: Valid historical source fetch succeeds; mismatched historical input hash
+    returns CLI exit 1 despite a valid matching YAML/Markdown pair. Diagnostic process
+    exits 0 because both outcomes match expectations.
+  target_ids:
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-hash
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-pr383-technical-review/probe-final-provenance.py
+  exit_code: 0
+- check_id: c-preservation
+  name: Original evidence, governed contracts and scientific context preservation
+  status: passed
+  required: true
+  summary: All 18 original formal technical inputs remain exactly recoverable. Five
+    governed/gate files are unchanged. Scientific input scope is 52 current matches
+    plus the original profile context in Git; no scientific record, authority, page
+    or evidence change.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-proof-audit
+  - e-archives
+  - e-profile
+  - e-contract
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-pr383-technical-review/check-final-proofs.py
+  exit_code: 0
+- check_id: c-lineage
+  name: Initial canonical validation and complete selected lineage
+  status: passed
+  required: true
+  summary: Both initial bundles passed canonical validate/save; the actual base58bf
+    check reported 79 valid reviews. Full ignored-inclusive key search finds no competing
+    later observation before this successor.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-prior-workflow
+  - e-prior-ref
+  - e-lineage
+  command: scripts/record_review.py check --base 58bf19dcff135ef3b381350b96cae4b4dcb9c769
+    --require-reviews
+  exit_code: 0
+- check_id: c-original-ci
+  name: Preserved original remote CI failure
+  status: failed
+  required: false
+  summary: Original PR383 job failed with 1 failed, 1126 passed and 7 skipped because
+    historical commit 6647fd6 was unavailable. This historical failure is retained
+    and is superseded for the scoped defect by the successful final official-clone
+    replay.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-prior-workflow
+  - e-official
+  command: uv run --locked --extra dev pytest -q
+  exit_code: 1
+evidence:
+- evidence_id: e-inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-pr383-technical-review/final-inspect.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Canonical final capture of both affected targets and 25 context inputs;
+    every captured current hash rechecked immediately before save.
+  snapshot_sha256: 25d5be814de5a83f00ba8e553c42c3d4ce4d53c0b4bb345c1ae8f98fdb528478
+- evidence_id: e-prior-workflow
+  kind: prior_review
+  reference: reviews/structured/20261011T125829Z-ci-review-provenance-initial-review/review.yaml
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Original completed issue386 observation at exact Git commit 58bf19dc; its
+    failed remote check and historical inputs remain immutable.
+  snapshot_sha256: dcd65096b61abafc8dd222bed0cf91e65173dcd60b598157abee4e85ac6b9ab4
+- evidence_id: e-prior-ref
+  kind: prior_review
+  reference: reviews/structured/20261011T130153Z-ci-symbolic-retention-initial-review/review.yaml
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Original completed issue387 observation and exact helper SHA f7eb85f3 remain
+    immutable; original bytes are archived.
+  snapshot_sha256: e66b79dcd170188286c1a4143d8818b529d4e279784e067b1b4ccafd0eb2472a
+- evidence_id: e-helper
+  kind: record_content
+  reference: scripts/fetch_review_revisions.py
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Fixed official URL and full lowercase SHA-1 IDs constrain fetch inputs.
+    Canonical pair parsing occurs before fetch; exact commit type/identity and canonical
+    read_review are checked afterward. Existing symbolic refs are rejected and update-ref
+    uses --no-deref.
+  snapshot_sha256: db9635c46327fdc54d742405ba5beda1354568b02873d2088118da1b76c15fb5
+  locator: collect_revisions, reject_symbolic_ref, restore_revisions and main
+- evidence_id: e-workflow
+  kind: record_content
+  reference: .github/workflows/main.yaml
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Historical commit preparation runs after dependency installation and before
+    tests, for the same PR, merge-group and main job. Trusted RECORD_REVIEW_BASE,
+    read-only permissions, persist-credentials false and full checkout remain intact.
+  snapshot_sha256: 09bdf8c9135e5696658e14fea56ddf0961f15f9e7ba31c6780ffb9952ac22f20
+  locator: jobs.qc.env and steps
+- evidence_id: e-full
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-full-gates.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Root actual initial-helper checks all exited 0. Full just test passed 1144
+    tests, 3 skipped and 3 warnings in 477.11 seconds at helper f7eb85f3. The later
+    nine symbolic-ref tests were not in that run; this is not represented as a final-helper
+    full-suite run.
+  snapshot_sha256: 1747784738db7eb350b170a36f0c075d462da8a9212daa7b0d144a4a44f6aac4
+- evidence_id: e-focused
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-focused-gates.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Actual corrected helper db9635c4 passed 24 focused tests, including all
+    nine symbolic-ref/race cases, plus final lint, history and diff checks. All receipt
+    log hashes were independently verified.
+  snapshot_sha256: 50403b178c8750f38d653d889de1d64b815dd9e4919503eabcc64aa71bb76ae1
+- evidence_id: e-official
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-fresh-clone.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Independent non-shared single-branch clone empirically lacked only historical
+    commit 6647fd69597d516ca41dec6e6c8314032cbd7c3a. The actual final helper fetched
+    that exact object from its fixed official URL, retained 25 direct refs, and the
+    unchanged canonical consumer passed. A repeat fetched nothing. All 154 review
+    files, tracked bytes and HEAD were preserved.
+  snapshot_sha256: f85ed27496d5cac1139d4ee3bd69f05431a446ee1ee740cf0038d2784181ca42
+- evidence_id: e-execution
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-helper-fresh-clone-execution.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Independent driver session 42029 was observed terminating with exit 0.
+    All 25 refs were independently checked as direct; all six owner input hashes still
+    matched final bytes.
+  snapshot_sha256: 9f04ceb2754ef031ef51313b76be8d89f2b42a5ffafb32c2a3db26888974cfaa
+- evidence_id: e-symbolic
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/fixed-symbolic-probe.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: This reviewer repeated the original failing setup in three new temporary
+    repositories on the actual final owner. Dangling, same-commit and different-commit
+    symbolic refs were all rejected, with every ref and referent unchanged.
+  snapshot_sha256: 04ad42fd40e90ea9c32055590ca6e07a36e496c8dcaad0e3955b0194b6e1d96b
+- evidence_id: e-hash
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/final-invalid-provenance-probe.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: 'This reviewer ran the final CLI against a real local-bare fixture: valid
+    fetched historical provenance succeeds; a changed declared hash with matching
+    rendered Markdown still exits 1. This explicitly test-only local transport does
+    not substitute for the separately observed official fetch.'
+  snapshot_sha256: 72a9d0f149b328cce16c9e23399680541366ae59d155e5dd7d3f97989237f634
+- evidence_id: e-proof-audit
+  kind: validation
+  reference: /private/tmp/pathwaymech-pr383-technical-review/final-proof-audit.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: 'Independently verified eight actual gate log hashes, all 18 prior formal
+    technical inputs, the final official receipts and owner hashes. Scientific review
+    inputs: 52 current exact matches; one authorized profile context change resolved
+    against its exact original Git blob.'
+  snapshot_sha256: f6bd866bda6d6234b17c2e0ce5407071eb954916327a279eeaa6caa2ca8db663
+- evidence_id: e-archives
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-211/ci-provenance/initial-helper-inputs/manifest.json
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: All five original proposed owner files remain byte-exact in this archive;
+    original helper f7eb85f3 is recoverable alongside corrected db9635c4.
+  snapshot_sha256: 57272f7caf409d3846748aedffc57e0e16b02a6946939731e8600a64913be87d
+- evidence_id: e-profile
+  kind: record_content
+  reference: docs/record-review-profile.md
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: The only changed scientific-review context adds explicit historical Git
+    preparation instructions and limits. It does not change the scientific rubric
+    or replace the canonical provenance and append-only checks.
+  snapshot_sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+- evidence_id: e-contract
+  kind: record_content
+  reference: scripts/record_review.py
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Canonical source_provenance, read_review, review_paths and append-only
+    validation are unchanged from original 58bf19dc. The fetch helper imports and
+    calls them rather than weakening their rules.
+  snapshot_sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+- evidence_id: e-lineage
+  kind: search
+  reference: /private/tmp/pathwaymech-pr383-technical-review/final-lineage-search.txt
+  accessed_at: '2026-10-11T13:17:02.328380Z'
+  support: supports
+  summary: Gitignore-independent search of the complete current worktree, excluding
+    only .git and .venv internals, found only the two selected initial review pairs
+    for these stable issue keys. Both exact predecessors and all affected targets
+    are retained.
+  snapshot_sha256: 2cb118fe8865f358b469d6433b08e0b5994a45417a2ae2bd1743fe5b3608e7d4
+  search_scope: 'Exact issue-key search with rg -n -uu across /private/tmp/pathwaymech-next-211-20261011,
+    including hidden and ignored files; excluded only .git and .venv internals. Queries:
+    ci-missing-historical-review-commits and ci-review-retention-symbolic-ref. Six
+    matches in the two selected initial YAML/Markdown pairs; no other matching observation
+    in this checkout.'
+assessments:
+- assessment_id: a-fetch
+  area: provenance
+  topic: Exact original Git objects restored before unchanged checks
+  outcome: supported
+  summary: The official-source clone reproduces missing provenance before preparation
+    and verifies it after the actual final helper. No edited review or hash substitute
+    is used. The repository claim and fixed URL keep network retrieval tied to CultureBotAI/PathwayMech;
+    full SHA-1 validation prevents revision/refspec option injection.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-helper
+  - e-workflow
+  - e-official
+  - e-execution
+  - e-hash
+- assessment_id: a-retention
+  area: consistency
+  topic: Ref updates remain within the retention namespace
+  outcome: supported
+  summary: The initial dangling-ref failure is corrected. Symbolic refs present at
+    validation are rejected before mutation; --no-deref makes a late race either fail
+    compare-and-swap or affect only the retention name, never its unrelated referent.
+    Nine real-Git cases and the independent three-case replay support this bounded
+    behavior.
+  target_ids:
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-symbolic
+  - e-focused
+  - e-helper
+  - e-prior-ref
+- assessment_id: a-contract
+  area: schema
+  topic: Governed provenance and append-only checks remain intact
+  outcome: supported
+  summary: No edits to the canonical validator, schema, configuration, contract tests
+    or gate entry point were introduced. Hidden and ignored bundles are discovered
+    through the existing strict helper, all pairs are parsed before fetch, and invalid
+    final provenance still produces nonzero exit. Fetch success is not review approval.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-contract
+  - e-hash
+  - e-proof-audit
+  - e-focused
+- assessment_id: a-scope
+  area: scope
+  topic: Scientific content and test scope are accurately preserved
+  outcome: supported
+  summary: 'The 53-input science observation remains immutable: 52 inputs match current
+    bytes and only the authorized profile documentation addition differs, with its
+    original preserved in Git. The full 1144-test result precedes the final ref guard;
+    24 focused tests, final hygiene/history checks and official fresh-clone replay
+    assess that correction. This technical review does not renew scientific approval.'
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-proof-audit
+  - e-profile
+  - e-full
+  - e-focused
+  - e-official
+- assessment_id: a-lineage
+  area: ownership
+  topic: Both original findings have explicit supported successor dispositions
+  outcome: supported
+  summary: The original committed-workflow observation and separate proposed-helper
+    observation remain byte-exact. This successor retains both target IDs, issue keys
+    and exact prior finding identities; no fabricated or rewritten history is used.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  - PathwayMech:review-retention-helper
+  evidence_ids:
+  - e-prior-workflow
+  - e-prior-ref
+  - e-archives
+  - e-lineage
+findings:
+- finding_id: f-missing-historical-review-commits
+  issue_key: ci-missing-historical-review-commits
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Fresh CI checkout cannot resolve an immutable review source commit
+  description: The original workflow at 58bf19dc checks out full ordinary history
+    but does not restore historical feature commits referenced by saved reviews. The
+    required test fails resolving 6647fd69597d516ca41dec6e6c8314032cbd7c3a. Local
+    object availability is not portable to a fresh clone. Keep the review source claim
+    and rejection semantics unchanged; restore verifiable exact objects before validation.
+  target_ids:
+  - PathwayMech:review-provenance-ci
+  field_paths:
+  - .github/workflows/main.yaml::jobs.qc.steps
+  evidence_ids:
+  - e-prior-workflow
+  - e-helper
+  - e-workflow
+  - e-official
+  - e-execution
+  - e-hash
+  rule_id: tests/test_record_review_contract.py::test_every_saved_structured_bundle_is_valid
+  native_severity: Required CI blocker caused by missing historical Git object preparation
+  normalization_reason: This is a bounded infrastructure provenance availability defect,
+    not incorrect biological data or evidence. Required CI must still pass before
+    publication.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: .github/workflows/main.yaml
+    role: workflow_preparation_owner
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/386
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T125829Z-ci-review-provenance-initial-review
+    finding_id: f-missing-historical-review-commits
+  disposition_reason: The unchanged canonical consumer now verifies the previously
+    absent historical commit after the actual final helper fetches its exact ID from
+    the official repository. Final clone replay preserves all 154 review files, HEAD
+    and tracked bytes and repeats without fetching. Required preparation is in the
+    workflow before tests; governed checks and source hashes remain unchanged.
+- finding_id: f-symbolic-review-retention-ref
+  issue_key: ci-review-retention-symbolic-ref
+  category: consistency
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: A dangling symbolic retention ref creates an unrelated branch
+  description: restore_revisions treats a dangling symbolic refs/record-reviews/<sha>
+    as an absent ref. Its ordinary update-ref follows that symbolic name and creates
+    its unrelated branch target, then returns success. Explicitly reject symbolic
+    retention refs before fetching and updating; prevent dereference in the final
+    compare-and-swap write so a concurrent replacement cannot redirect it.
+  target_ids:
+  - PathwayMech:review-retention-helper
+  field_paths:
+  - scripts/fetch_review_revisions.py::restore_revisions
+  evidence_ids:
+  - e-prior-ref
+  - e-helper
+  - e-symbolic
+  - e-focused
+  - e-official
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/fetch_review_revisions.py
+    role: historical_revision_restoration_owner
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/387
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T130153Z-ci-symbolic-retention-initial-review
+    finding_id: f-symbolic-review-retention-ref
+  disposition_reason: The actual corrected helper rejects existing symbolic retention
+    refs before fetching and before updating; its final compare-and-swap write uses
+    --no-deref. The original failing scenario now rejects with no ref changes, and
+    nine real-Git symbolic/race tests preserve unrelated targets. The final official-clone
+    helper remains functional and idempotent.
+actions: []
+limitations:
+- The full corpus suite passed on the initial helper before the final symbolic-ref
+  guard and its nine tests. The final owner passed 24 focused tests, final lint/history/diff
+  and the actual official-clone replay; this report does not call that a new final-helper
+  full-suite run.
+- Historical retrieval still depends on the official GitHub repository retaining the
+  requested object. Unavailable objects fail preparation; no fabricated replacement
+  is accepted.
+- The multi-revision helper is fail-closed for its result, not an all-or-nothing Git-object
+  transaction. Earlier valid objects or retention refs may remain after a later failure,
+  and retry is idempotent.
+- This is a technical repository review with scientific_review false. The only changed
+  context in the existing science observation is the profile documentation; the other
+  52 current input hashes match.
+- Final pushed-head CI, merge integrity and live deployment remain subsequent publication
+  checks.
+notes:
+- Initial unsuccessful review-draft serialization used YAML aliases and was rejected
+  before save; the saved initial observation used ordinary mappings. An external probe
+  setup initially lacked its Python import path, then ran successfully after an external-only
+  correction. Neither setup failure changed maintained owner files or evidence.
+- The original remote CI failure and initial symbolic-ref failure remain in their
+  immutable observations. The correction-validation receipt is an earlier frozen stage;
+  the separately sealed final-helper fresh-clone receipts complete its then-pending
+  proof.
+- No record history, scientific data, rendered page, GitHub state or owner code was
+  edited by this reviewer.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261011T125829Z-ci-review-provenance-initial-review
+  relationship: Exact original finding retained and resolved by this evidence-backed
+    technical successor.
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261011T130153Z-ci-symbolic-retention-initial-review
+  relationship: Exact original finding retained and resolved by this evidence-backed
+    technical successor.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/386
+- https://github.com/CultureBotAI/PathwayMech/issues/387
+- https://github.com/CultureBotAI/PathwayMech/pull/383
+```

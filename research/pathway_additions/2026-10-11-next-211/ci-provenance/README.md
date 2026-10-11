@@ -1,0 +1,13 @@
+# Historical review commit retrieval
+
+PR #383 failed its canonical review consumer after the preceding squash merge and branch deletion removed an intermediate review base from ordinary fetched history. Issue [#386](https://github.com/CultureBotAI/PathwayMech/issues/386) tracks the defect.
+
+The initial independent diagnosis preserves an actual isolated clone: the unchanged canonical test failed with missing commit `6647fd69597d516ca41dec6e6c8314032cbd7c3a`, and passed after retrieving that exact object from the official repository. The initial console transcript archive includes the actual remote CI failure and the first 15 passing focused tests. An initial lint check then found four formatting/unused-import issues in the new tests; those were corrected, and an annotated-tag rejection check was added before final validation.
+
+The maintained fix is an explicit preparation helper and CI step. It preserves the governed review validator, all saved reviews, pathway data, generated pages and scientific conclusions. Exact commit retrieval cannot recover objects no longer retained upstream; missing objects continue to fail validation. Subsequent validation and independent acceptance are separate observations.
+
+Independent review also reproduced a symbolic-ref redirection bug in the initial helper (issue #387). The original helper and four related inputs are retained under `initial-helper-inputs/`; its initial review and probe remain immutable. The corrected helper rejects symbolic retention refs and uses a non-dereferencing compare-and-swap update. Nine new real-Git cases cover existing and concurrent symbolic references.
+
+Validation is recorded with its actual scope: the complete corpus suite passed 1,144 tests on the initial helper; after the ref-safety correction, all 24 focused tests, full lint and history validation passed. The final independent isolated-clone replay uses the corrected helper, starts with the historical commit absent, retrieves exactly that object from the official URL, checks all 25 retained refs are direct commits, passes the unchanged canonical consumer and makes no fetch on repetition. The original source, review bytes and HEAD remain unchanged. Exact-head remote CI remains a publication requirement.
+
+Of the scientific review's 53 declared inputs, 52 remain current byte matches. The sole changed context is `docs/record-review-profile.md`, which adds the explicit preparation command without changing its scientific rubric. Its exact original bytes remain at the reviewed Git revision. No scientific review or old gate receipt was rewritten.
