@@ -1,0 +1,393 @@
+id: MetaCyc:PWY-6019
+label: pseudouridine degradation
+description: The complete two-step pseudouridine degradation pathway phosphorylates free pseudouridine
+  using ATP, then cleaves its C-C glycosidic bond to uracil and D-ribofuranose 5-phosphate. It follows
+  MetaCyc PWY-6019 and both reactions of the misleadingly titled PathBank Purine Degradation map. The
+  selected protein core is E. coli K-12, supported by reviewed annotations and direct K-12 PsuG characterization.
+  Whole-cell utilization in the original study was in UTI89; kinase structural studies used
+  strain B/BL21 and are not relabeled as K-12 flux or assembly experiments. PsuG is a supported homotrimer.
+  The K-12 kinase is assigned by reviewed functional annotation; the cited dimer experiments concern strain
+  B/BL21, so these sources do not establish the K-12 oligomeric state. Physiological PsuG cleavage is
+  selected despite reversible chemistry and an equilibrium favoring synthesis. Its Mn, Fe and Co alternatives
+  are retained without asserting simultaneous occupancy. The pathway ends at the two cleavage products;
+  RNA pseudouridylation, transport, uracil salvage and downstream pyrimidine-ring degradation are outside
+  the native boundary.
+pathway_type: pseudouridine-degradation
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:17802
+  label: pseudouridine
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:58380
+  label: pseudouridine 5'-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:78346
+  label: D-ribofuranose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:17568
+  label: uracil
+  category: small_molecule
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: UniProtKB:P30235
+  label: Pseudouridine kinase
+  category: protein
+- id: UniProtKB:P33025
+  label: Pseudouridine-5'-phosphate glycosidase
+  category: protein
+- id: MetaCyc:CPLX0-8233
+  label: pseudouridine-5'-phosphate glycosidase
+  category: complex
+reactions:
+- id: RHEA:22449
+  label: pseudouridine + ATP => psi-UMP + ADP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:18339
+  label: psi-UMP + H2O => D-ribose 5-phosphate + uracil
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: pseudouridine-edge-001
+  subject: CHEBI:17802
+  predicate: consumes
+  object: RHEA:22449
+  evidence:
+  - reference_id: RHEA:22449
+    source_assertion: RHEA:22449 assigns CHEBI:17802 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/22449 rh:substrates; http://rdf.rhea-db.org/22448_L rh:contains1
+      http://rdf.rhea-db.org/Participant_22448_compound_3821; http://rdf.rhea-db.org/Participant_22448_compound_3821
+      rh:compound http://rdf.rhea-db.org/Compound_3821; rh:chebi
+- id: pseudouridine-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:22449
+  evidence:
+  - reference_id: RHEA:22449
+    source_assertion: RHEA:22449 assigns CHEBI:30616 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/22449 rh:substrates; http://rdf.rhea-db.org/22448_L rh:contains1
+      http://rdf.rhea-db.org/Participant_22448_compound_6372; http://rdf.rhea-db.org/Participant_22448_compound_6372
+      rh:compound http://rdf.rhea-db.org/Compound_6372; rh:chebi
+- id: pseudouridine-edge-003
+  subject: RHEA:22449
+  predicate: produces
+  object: CHEBI:58380
+  evidence:
+  - reference_id: RHEA:22449
+    source_assertion: RHEA:22449 assigns CHEBI:58380 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/22449 rh:products; http://rdf.rhea-db.org/22448_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22448_compound_1644; http://rdf.rhea-db.org/Participant_22448_compound_1644
+      rh:compound http://rdf.rhea-db.org/Compound_1644; rh:chebi
+- id: pseudouridine-edge-004
+  subject: RHEA:22449
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:22449
+    source_assertion: RHEA:22449 assigns CHEBI:456216 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/22449 rh:products; http://rdf.rhea-db.org/22448_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22448_compound_2710; http://rdf.rhea-db.org/Participant_22448_compound_2710
+      rh:compound http://rdf.rhea-db.org/Compound_2710; rh:chebi
+- id: pseudouridine-edge-005
+  subject: RHEA:22449
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:22449
+    source_assertion: RHEA:22449 assigns CHEBI:15378 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/22449 rh:products; http://rdf.rhea-db.org/22448_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22448_compound_3249; http://rdf.rhea-db.org/Participant_22448_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; rh:chebi
+- id: pseudouridine-edge-006
+  subject: CHEBI:58380
+  predicate: consumes
+  object: RHEA:18339
+  evidence:
+  - reference_id: RHEA:18339
+    source_assertion: RHEA:18339 assigns CHEBI:58380 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/18339 rh:substrates; http://rdf.rhea-db.org/18337_R rh:contains1
+      http://rdf.rhea-db.org/Participant_18337_compound_1644; http://rdf.rhea-db.org/Participant_18337_compound_1644
+      rh:compound http://rdf.rhea-db.org/Compound_1644; rh:chebi
+- id: pseudouridine-edge-007
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:18339
+  evidence:
+  - reference_id: RHEA:18339
+    source_assertion: RHEA:18339 assigns CHEBI:15377 to its substrates, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/18339 rh:substrates; http://rdf.rhea-db.org/18337_R rh:contains1
+      http://rdf.rhea-db.org/Participant_18337_compound_1283; http://rdf.rhea-db.org/Participant_18337_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; rh:chebi
+- id: pseudouridine-edge-008
+  subject: RHEA:18339
+  predicate: produces
+  object: CHEBI:78346
+  evidence:
+  - reference_id: RHEA:18339
+    source_assertion: RHEA:18339 assigns CHEBI:78346 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/18339 rh:products; http://rdf.rhea-db.org/18337_L rh:contains1
+      http://rdf.rhea-db.org/Participant_18337_compound_9495; http://rdf.rhea-db.org/Participant_18337_compound_9495
+      rh:compound http://rdf.rhea-db.org/Compound_9495; rh:chebi
+- id: pseudouridine-edge-009
+  subject: RHEA:18339
+  predicate: produces
+  object: CHEBI:17568
+  evidence:
+  - reference_id: RHEA:18339
+    source_assertion: RHEA:18339 assigns CHEBI:17568 to its products, coefficient 1 via rh:contains1.
+    source_locator: http://rdf.rhea-db.org/18339 rh:products; http://rdf.rhea-db.org/18337_L rh:contains1
+      http://rdf.rhea-db.org/Participant_18337_compound_4063; http://rdf.rhea-db.org/Participant_18337_compound_4063
+      rh:compound http://rdf.rhea-db.org/Compound_4063; rh:chebi
+- id: pseudouridine-edge-010
+  subject: UniProtKB:P30235
+  predicate: enables
+  object: RHEA:22449
+  description: This gene-product/activity assertion does not establish an independently sufficient monomer.
+    The cited dimer experiments concern strain B/BL21; K-12 oligomeric state remains unestablished by
+    these sources. Assay MgATP does not separately establish free-Mg cofactor binding.
+  evidence:
+  - reference_id: UniProtKB:P30235
+    source_assertion: Reviewed K-12 PsuK annotates pseudouridine phosphorylation and RHEA:22448 with ECO:0000269
+      PMID:18591240. The original physiological study used UTI89; this edge retains the curated
+      K-12 gene-product assignment.
+    source_locator: /organism/taxonId; /comments/0; /comments/1/reaction
+  - reference_id: RHEA:22449
+    source_assertion: Master RHEA:22448 explicitly links directionalReaction RHEA:22449.
+    source_locator: http://rdf.rhea-db.org/22448 rh:directionalReaction http://rdf.rhea-db.org/22449
+  - reference_id: PMID:18591240
+    quote: specifically phosphorylates pseudouridine to pseudouridine 5'-phosphate
+    source_locator: /resultList/result[id="18591240"]/abstractText
+  - reference_id: PMID:35783380
+    source_assertion: The BL21-derived PsuK protein forms a homodimer by solution SEC and crystallography;
+      the construct is A0A140N873, not the selected K-12 accession. Assays contain MgCl2 and KCl; the
+      putative Mg sites were not modeled.
+    source_locator: 'PMC9247573: Results/Dimeric Structure of EcPsuK; Materials and Methods/Protein Expression
+      and Purification; Activity Assay; Discussion'
+- id: pseudouridine-edge-011
+  subject: MetaCyc:CPLX0-8233
+  predicate: catalyzes
+  object: RHEA:18339
+  description: PsuG is reversible; selecting degradation does not make the reverse synthesis impossible.
+    The 2012 kinetic assay favors the reverse reaction and must not be read as a measured forward physiological
+    flux.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8233
+    source_assertion: CPLX0-8233 catalyzes RXN0-5398 through ENZRXN0-6547; the pathway selects the cleavage
+      direction.
+    source_locator: Protein[@frameid="CPLX0-8233"]/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-6547"]/reaction
+  - reference_id: UniProtKB:P33025
+    source_assertion: Reviewed K-12 PsuG annotates reversible PsiMP cleavage, physiological cleavage direction
+      and RHEA:18337, citing experimental PMIDs 18591240/23066817 plus HAMAP MF_01876 inference.
+    source_locator: /organism/taxonId; /comments/0; /comments/1/reaction
+  - reference_id: PMID:23066817
+    source_assertion: The study amplified yeiN from K12 DNA and characterized recombinant enzyme in BL21.
+      Structures and covalent-adduct experiments support C-C bond cleavage; steady-state kinetic parameters
+      were measured in the reverse synthetic direction.
+    source_locator: PMC3526674 BioC passages offsets6100,6949,23258,24413,34501
+  - reference_id: RHEA:18339
+    source_assertion: Master RHEA:18337 explicitly links directionalReaction RHEA:18339, the right-to-left
+      cleavage member.
+    source_locator: http://rdf.rhea-db.org/18337 rh:directionalReaction http://rdf.rhea-db.org/18339
+- id: pseudouridine-edge-012
+  subject: UniProtKB:P33025
+  predicate: part_of
+  object: MetaCyc:CPLX0-8233
+  description: Three copies form the native trimer. The monomer node is a subunit and is not independently
+    assigned catalytic sufficiency.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-8233
+    source_assertion: The native complex has three EG12033-MONOMER components.
+    source_locator: Protein[@frameid="CPLX0-8233"]/component/Protein; component/coefficient
+  - reference_id: MetaCyc:EG12033-MONOMER
+    source_assertion: EG12033-MONOMER has explicit UNIPROT P33025 unification and MG1655 native taxonomy.
+    source_locator: Protein[@frameid="EG12033-MONOMER"]/dblink[dblink-db="UNIPROT"]; species/Organism
+  - reference_id: UniProtKB:P33025
+    source_assertion: SUBUNIT specifies homotrimer with ECO:0000269 PMID:23066817 and HAMAP MF_01876.
+    source_locator: /comments/5
+  - reference_id: PMID:23066817
+    quote: ΨMP glycosidase is a homotrimer
+    source_locator: PMC3526674 BioC passage offset17266
+- id: pseudouridine-edge-013
+  subject: MetaCyc:CPLX0-8233
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Alternative metal-supported activity is retained; this does not assert simultaneous occupancy
+    by all three metals or establish the dominant in vivo metal. Structural manganese occupancy is one
+    per subunit.
+  evidence:
+  - reference_id: UniProtKB:P33025
+    source_assertion: PsuG COFACTOR explicitly includes Mn(2+); the annotation states one manganese per
+      subunit and allows Fe(2+) and Co(2+) alternatives, with experimental citations 18591240/23066817.
+    source_locator: /comments/2/cofactors; /comments/2/note
+  - reference_id: PMID:23066817
+    source_assertion: The hydrated Mn site has one Asp ligand and five water ligands; the paper reports
+      highest activity with Fe(II), Co(II) and Mn(II), while Zn and, less strongly, Ni inhibit.
+    source_locator: PMC3526674 BioC passages offsets18370,31636
+- id: pseudouridine-edge-014
+  subject: MetaCyc:CPLX0-8233
+  predicate: has_cofactor
+  object: CHEBI:29033
+  description: Alternative metal-supported activity is retained; this does not assert simultaneous occupancy
+    by all three metals or establish the dominant in vivo metal. Structural manganese occupancy is one
+    per subunit.
+  evidence:
+  - reference_id: UniProtKB:P33025
+    source_assertion: PsuG COFACTOR explicitly includes Fe(2+); the annotation states one manganese per
+      subunit and allows Fe(2+) and Co(2+) alternatives, with experimental citations 18591240/23066817.
+    source_locator: /comments/2/cofactors; /comments/2/note
+  - reference_id: PMID:23066817
+    source_assertion: The hydrated Mn site has one Asp ligand and five water ligands; the paper reports
+      highest activity with Fe(II), Co(II) and Mn(II), while Zn and, less strongly, Ni inhibit.
+    source_locator: PMC3526674 BioC passages offsets18370,31636
+- id: pseudouridine-edge-015
+  subject: MetaCyc:CPLX0-8233
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Alternative metal-supported activity is retained; this does not assert simultaneous occupancy
+    by all three metals or establish the dominant in vivo metal. Structural manganese occupancy is one
+    per subunit.
+  evidence:
+  - reference_id: UniProtKB:P33025
+    source_assertion: PsuG COFACTOR explicitly includes Co(2+); the annotation states one manganese per
+      subunit and allows Fe(2+) and Co(2+) alternatives, with experimental citations 18591240/23066817.
+    source_locator: /comments/2/cofactors; /comments/2/note
+  - reference_id: PMID:23066817
+    source_assertion: The hydrated Mn site has one Asp ligand and five water ligands; the paper reports
+      highest activity with Fe(II), Co(II) and Mn(II), while Zn and, less strongly, Ni inhibit.
+    source_locator: PMC3526674 BioC passages offsets18370,31636
+- id: pseudouridine-edge-016
+  subject: RHEA:22449
+  predicate: part_of
+  object: MetaCyc:PWY-6019
+  evidence:
+  - reference_id: MetaCyc:PWY-6019
+    source_assertion: PWY-6019 explicitly lists PSEUDOURIDINE-KINASE-RXN; reaction-layout selects L2R
+      phosphorylation.
+    source_locator: Pathway[@frameid="PWY-6019"]/reaction-list; reaction-layout[Reaction/@frameid="PSEUDOURIDINE-KINASE-RXN"]/direction
+  - reference_id: MetaCyc:PSEUDOURIDINE-KINASE-RXN
+    source_assertion: PSEUDOURIDINE-KINASE-RXN has explicit RHEA 22449 unification cross-reference.
+    source_locator: Reaction[@frameid="PSEUDOURIDINE-KINASE-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid;
+      dblink-relationship
+- id: pseudouridine-edge-017
+  subject: RHEA:18339
+  predicate: part_of
+  object: MetaCyc:PWY-6019
+  evidence:
+  - reference_id: MetaCyc:PWY-6019
+    source_assertion: PWY-6019 explicitly lists RXN0-5398; reaction-layout selects R2L cleavage.
+    source_locator: Pathway[@frameid="PWY-6019"]/reaction-list; reaction-layout[Reaction/@frameid="RXN0-5398"]/direction
+  - reference_id: MetaCyc:RXN0-5398
+    source_assertion: RXN0-5398 has explicit RHEA 18340 unification cross-reference.
+    source_locator: Reaction[@frameid="RXN0-5398"]/dblink[dblink-db="RHEA"]/dblink-oid; dblink-relationship
+  - reference_id: RHEA:18339
+    source_assertion: Master RHEA:18337 links bidirectionalReaction RHEA:18340 and directionalReaction
+      RHEA:18339; the latter is the selected cleavage variant.
+    source_locator: http://rdf.rhea-db.org/18337 rh:bidirectionalReaction http://rdf.rhea-db.org/18340;
+      rh:directionalReaction http://rdf.rhea-db.org/18339
+- id: pseudouridine-edge-018
+  subject: RHEA:22449
+  predicate: provides_input_for
+  object: RHEA:18339
+  description: The shared PsiMP is chemically identical across the two selected Rhea sides. ATP phosphorylation
+    precedes reversible glycosidic-bond cleavage; downstream uracil utilization is not appended.
+  evidence:
+  - reference_id: MetaCyc:PWY-6019
+    source_assertion: RXN0-5398 has PSEUDOURIDINE-KINASE-RXN as its explicit predecessor; the two reaction-layouts
+      share PSEUDOURIDINE-5-P.
+    source_locator: Pathway[@frameid="PWY-6019"]/reaction-ordering; reaction-layout
+  - reference_id: RHEA:22449
+    source_assertion: RHEA:22449 produces CHEBI:58380, the substrate of the selected PsuG cleavage reaction.
+    source_locator: http://rdf.rhea-db.org/22449 rh:products; http://rdf.rhea-db.org/22448_R rh:contains1
+  - reference_id: RHEA:18339
+    source_assertion: RHEA:18339 consumes CHEBI:58380 and water, producing uracil and D-ribofuranose 5-phosphate.
+    source_locator: http://rdf.rhea-db.org/18339 rh:substrates; rh:products
+  - reference_id: PMID:18591240
+    source_assertion: The indexed primary abstract describes both sequential enzymes and reports failure
+      of yeiC(-) UTI89 mutants to metabolize pseudouridine. This is direct UTI89 physiology, not a K-12
+      whole-cell flux measurement.
+    source_locator: /resultList/result[id="18591240"]/abstractText
+references:
+- id: MetaCyc:PWY-6019
+  title: pseudouridine degradation
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-6019
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 046d3d9379d13ca3e2fd721ea3e30e665fc74b2ed9647617eda77ad3856b261b
+- id: MetaCyc:CPLX0-8233
+  title: pseudouridine-5'-phosphate glycosidase trimer
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-8233
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 5301e5c6d46a992965df5155185be0325b10a28e409b42ccf27c582bb628facf
+- id: MetaCyc:EG12033-MONOMER
+  title: PsuG subunit native cross-reference
+  url: https://pathway.yeastgenome.org/getxml?META:EG12033-MONOMER
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 7abaa29efdee617d4f8bbc3c45b08735d205f7744fcf63b334321a03f18aa692
+- id: MetaCyc:PSEUDOURIDINE-KINASE-RXN
+  title: pseudouridine kinase reaction
+  url: https://pathway.yeastgenome.org/getxml?META:PSEUDOURIDINE-KINASE-RXN
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: fa0d95c4aee8ee9b7d527b44b4c597ea737e9cf15bcb0d4aa3f147f6932a064f
+- id: MetaCyc:RXN0-5398
+  title: pseudouridine-5-phosphate glycosidase reversible reaction
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5398
+  source_version: MetaCyc 22.5; complete native XML retrieved 2026-10-11 UTC
+  source_sha256: 2302af84f70259ddfaf8ef7752b686f1ed14b59b629181a8ec0e20bfa8b1366c
+- id: UniProtKB:P30235
+  title: Reviewed K-12 Pseudouridine kinase
+  url: https://rest.uniprot.org/uniprotkb/P30235.json
+  source_version: UniProt 2026_03; retrieved 2026-10-11 UTC
+  source_sha256: a7c8ccd78e55cc458022bfa6d9add6c4647a29690712bd51dd107648fce5faaa
+- id: UniProtKB:P33025
+  title: Reviewed K-12 Pseudouridine-5'-phosphate glycosidase
+  url: https://rest.uniprot.org/uniprotkb/P33025.json
+  source_version: UniProt 2026_03; retrieved 2026-10-11 UTC
+  source_sha256: 8515b173013f1419a1f66f02c8941611ef98f313482e9492713c79183101669b
+- id: PMID:18591240
+  title: Molecular identification of pseudouridine-metabolizing enzymes.
+  url: https://pubmed.ncbi.nlm.nih.gov/18591240/
+  source_version: 2008; indexed abstract in Europe PMC core response; body digest covers retained JSON,
+    not inaccessible full article
+  source_sha256: 6c00509a7d51990543f07b857a3d9b68d3f83f7dd021434ab741c69d9ac89715
+- id: PMID:23066817
+  title: 'Pseudouridine monophosphate glycosidase: a new glycosidase mechanism.'
+  url: https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC3526674/unicode
+  source_version: 2012; complete primary article via PMC BioC XML; retrieved 2026-10-11 UTC
+  source_sha256: aefa88d2a4a9e3912cdf48af62c6e521462388134b75a730c6d93be1008dadfe
+- id: PMID:35783380
+  title: Structure Characterization of Escherichia coli Pseudouridine Kinase PsuK.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9247573/fullTextXML
+  source_version: 2022; complete PMC9247573 JATS XML; retrieved 2026-10-11 UTC
+  source_sha256: 4e3aa540e9310c71c6dbfa13261254cd1fa9c1708ac2e226d7eba87fc9e75ba1
+- id: RHEA:22449
+  title: Rhea directional reaction 22449
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF; named exact reaction and
+    related triples selected by locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:18339
+  title: Rhea directional reaction 18339
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; digest covers complete compressed RDF; named exact reaction and
+    related triples selected by locators
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf

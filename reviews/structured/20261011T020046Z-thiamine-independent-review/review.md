@@ -1,0 +1,2012 @@
+# Independent scientific review of superpathway of thiamine diphosphate biosynthesis I
+
+- Review: 20261011T020046Z-thiamine-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T01:52:49.623800Z
+- Finished UTC: 2026-10-11T02:00:46Z
+- Reviewer: Codex /root/pathway_authority_cache (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete native E. coli K-12 THISYN-PWY boundary is supported by ten nonduplicated current reactions, preserving all native branches. All 92 edges and 139 evidence blocks were reviewed. ThiF provenance issue338 was corrected and verified before this final bundle; no confirmed finding remains. All final required repository gates pass; their actual receipts were inspected separately from the scientific assessment.
+
+## Scope And Provenance
+
+Full single-record scientific review: 92 edges and 139 evidence blocks.
+
+Selection: Explicit parent assignment after a separate author froze the target; source bytes captured using governed inspect before assessment.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 6a331b8b9fd7bf4d9f7b6d2f6626b29157b47a69.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:THISYN-PWY | data/pathways/thiamine-diphosphate-biosynthesis-i.yaml | maintained | superpathway of thiamine diphosphate biosynthesis I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Governed initial input inspection | passed | True | MetaCyc:THISYN-PWY | Initial canonical inspect captured the exact target before assessment; primary and whole-record review followed. |
+| Independent full source and target export replay | passed | True | MetaCyc:THISYN-PWY | {'edges': 92, 'evidence': 139, 'reaction_sides': 59, 'source_bodies_rehashed': 112, 'kgx_nodes': 65, 'protein_identities': 11, 'quotes': 11}. Every source body and reference digest matched; source chemistry and exact evidence were independently checked. |
+| Independent unchanged structured source adapter replay | passed | False | MetaCyc:THISYN-PWY | All 27 searches, datasets and component97 reproduced from 29 rehashed retained bodies. Offline replay of prior retrieved bodies, not fresh network. |
+| Superseded reviewer replay setup | failed | False | MetaCyc:THISYN-PWY | Reviewer initially compared generic donor formulas literally: Rhea uses R/H2R while ChEBI uses A/H2A. Corrected the symbolic normalization for those two generic donor classes only; complete subsequent raw replay passed. No record defect or source change. |
+| Superseded reviewer replay setup | failed | False | MetaCyc:THISYN-PWY | Reviewer initially called nonexistent datasets() instead of public organism_datasets(); corrected to the documented adapter method and complete offline replay passed. |
+| just render-pages | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. pass |
+| just lint | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. pass |
+| just check-identifiers | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. pass |
+| git diff --check | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. pass |
+| just kgx-export --output-dir /private/tmp/pathwaymech-next-pathways-kgx | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. pass |
+| just validate | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. pass |
+| just test | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. 1,048 passed, 3 skipped, 3 upstream deprecation warnings in 234.69s. |
+| UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just vendored-check | passed | True | MetaCyc:THISYN-PWY | Delegated to root; actual terminal exit0 and retained log bytes independently inspected. All governed artifacts match pinned canonical revision; terminal success observed. |
+| Superseded vendored network attempt | failed | False | MetaCyc:THISYN-PWY | Root receipt retains a restricted-network DNS failure before the same unchanged command succeeded with network access. This initial result is not treated as the final gate. This is a delegated historical observation; the initial numeric exit code was not supplied and is not fabricated. |
+| Final governed input capture and changed-input reassessment | passed | True | MetaCyc:THISYN-PWY | The sole initially captured change is target issue338 correction: old4ef536c6 to current05fe1413. Source-specific fix and added primary evidence were independently checked. Shared frozen authority/page/gate inputs inspected. Every final source.input digest rechecked. |
+| Superseded draft format validation | failed | False | MetaCyc:THISYN-PWY | External draft used +00:00 instead of required Z timestamp spelling and inspection target kind record instead of maintained. Corrected serialization only; source hashes, assessment and timestamps remain the same instants. |
+
+## Scientific And Domain Assessments
+
+### Complete native superpathway boundary
+
+identity: supported. Targets: MetaCyc:THISYN-PWY.
+
+THISYN-PWY has three native children containing eleven reactions. The record covers each child, with the two elementary sulfur-relay steps represented by one current net reaction. The initial PathBank ten-step map has a different upstream purine boundary and is not silently declared covered.
+
+### thiamine-edge-001-059
+
+grounding: supported. Targets: MetaCyc:THISYN-PWY.
+
+All ten directed Rhea identities, 59 sides, exact coefficient predicates and compound URIs independently replayed from complete official RDF. All ten reactions balance. Five whole protein carrier states remain intact; reactive parts are balance bookkeeping only. Rhea R versus ChEBI A is an explicit generic-donor symbol equivalence, not a chemical identity change.
+
+### thiamine-edge-060-069
+
+identity: supported. Targets: MetaCyc:THISYN-PWY.
+
+Three exact native child pathways contain eleven reactions. Nine are bridged to verified current Rhea family members; RXN-14382 and RXN-9788 are represented once by the current net 43341 sulfur transfer. Native 26364 and26300 bidirectional members are not mistaken for directed selected 26362/26298. No omitted native branch or net/decomposition double count.
+
+### thiamine-edge-070-075
+
+graph: supported. Targets: MetaCyc:THISYN-PWY.
+
+IscS physical dimer catalysis, functional ThiF adenylation, qualified ThiI and IscS net-transfer roles, ThiS carrier role and Dxs physical dimer are supported. Known ThiF homodimer/ThiS heterotetramer is retained in evidence; functional enables does not assert monomer sufficiency. Dxs dependence on the pathway product TPP is explicit.
+
+### thiamine-edge-076-078
+
+scope: supported. Targets: MetaCyc:THISYN-PWY.
+
+ThiH and ThiG functions reside in the native ThiGH assembly with primary reconstitution support. Auxiliary reducing proteins are assay context; NADPH is net chemistry. Detailed ThiC E. coli reaction and Fe-S/oligomer assignments retain inference; cell-free additional factor and cross-species later work are not collapsed into direct E. coli structure evidence.
+
+### thiamine-edge-079-081
+
+scope: supported. Targets: MetaCyc:THISYN-PWY.
+
+ThiD functional role preserves unresolved monomer/tetramer conflict rather than choosing a convenient assembly. ThiE exact nonaromatic R/Z tautomer follows current curated annotation; later Bacillus stereochemistry is not relabeled as direct E. coli measurement. ThiL final phosphorylation is supported; absence of a cofactor comment does not assert metal independence.
+
+### thiamine-edge-082-085
+
+graph: supported. Targets: MetaCyc:THISYN-PWY.
+
+All four native component assertions and monomer UniProt bridges independently verified: IscS2, Dxs2, ThiG6+ThiH6. Primary at least six heterodimers supports the native projection without universal cellular stoichiometry.
+
+### thiamine-edge-086-092
+
+evidence: supported. Targets: MetaCyc:THISYN-PWY.
+
+PLP on IscS, Zn on ThiF, Fe-S on ThiH/ThiC, Mg and TPP on Dxs, and Mg on ThiE preserve direct/HAMAP/similarity evidence grades. No free Mg edge is inferred from MgATP assay composition. Issue338 corrects only source attribution of the ThiF zinc-position interpretation.
+
+### Observed ThiF citation defect corrected before final review
+
+provenance: supported. Targets: MetaCyc:THISYN-PWY.
+
+Original edge087 placed the zinc-position/structural-role interpretation inside a UniProt COFACTOR assertion that did not state it. Issue338 was filed. Final target limits UniProt evidence to Zn binding/count and separately cites PMID16388576 Results/S11/P21 for the structural interpretation. Both source blocks were independently verified.
+
+Issue https://github.com/CultureBotAI/PathwayMech/issues/338; prior inspected SHA2564ef536c637a89d7d74f183030f30244ded94fa3eabb6668d0046e224d75f84c1; final SHA25605fe1413e04fa3c2b95e44af1bda6c795ef53d3ea3529d18f6c42bac2e8079ea. No pre-fix immutable bundle exists; no resolved finding or previous_occurrence is fabricated.
+
+### Bounded structured-source context
+
+evidence: supported. Targets: MetaCyc:THISYN-PWY.
+
+Root resolved the canonical client after console-runner dependency failure. Reviewer independently reproduced the retained results offline. Computational expression association supports context only; dataset or hit absence is not biological absence.
+
+### Final validation and generated artifacts
+
+schema: supported. Targets: MetaCyc:THISYN-PWY.
+
+Final complete repository checks, target identity gate and structural SVG/KGX audit pass on unchanged final target hashes. No deterministic validation is substituted for the scientific source assessment.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/thiamine-diphosphate-biosynthesis-i.yaml; Entire maintained YAML; all local nodes, edges, evidence and references | supports | The complete native E. coli K-12 THISYN-PWY boundary is supported by ten nonduplicated current reactions, preserving all native branches. All 92 edges and 139 evidence blocks were reviewed. ThiF provenance issue338 was corrected and verified before this final bundle; no confirmed finding remains. |
+| independent-audit | research/pathway_additions/2026-10-11-next-pathways/thiamine-independent-review-audit.json; Full independent technical replay and per-edge scientific assessments | supports | Independent source rehashes, raw RDF side/coefficient replay, native identity/assembly checks and actual target KGX passed. These deterministic checks are supplemented by the primary/native scientific assessments recorded here. |
+| rhea | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Exact selected master/directional/bidirectional, side containsN, participant and compound triples | supports | All 59 chemical sides and ten balances independently verified. Five whole carrier states stay graph nodes; reactive parts and donor R/A symbols are used only for algebraic balance, not identity substitution. |
+| identity-search | Independent local exact and semantic search; Hidden/ignored-inclusive accessible worktree; native boundary and prior candidate dispositions | supports | The exact native pathway is distinct from other maintained routes; candidate and authority mentions do not establish an existing full record. |
+| source-1 | https://rest.uniprot.org/uniprotkb/P30136.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT']; comments[commentType='COFACTOR'] | supports | Phosphomethylpyrimidine synthase. Inspected exact source assertions for thiamine-edge-078, thiamine-edge-089. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 175; actual body digest. |
+| source-2 | https://rest.uniprot.org/uniprotkb/P76422.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT'] | supports | Hydroxymethylpyrimidine/phosphomethylpyrimidine kinase. Inspected exact source assertions for thiamine-edge-079. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 164; actual body digest. |
+| source-3 | https://rest.uniprot.org/uniprotkb/P30137.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='COFACTOR'] | supports | Thiamine-phosphate synthase. Inspected exact source assertions for thiamine-edge-080, thiamine-edge-092. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 187; actual body digest. |
+| source-4 | https://rest.uniprot.org/uniprotkb/P0AGG0.json; comments[commentType='CATALYTIC ACTIVITY'] | supports | Thiamine-monophosphate kinase. Inspected exact source assertions for thiamine-edge-081. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 134; actual body digest. |
+| source-5 | https://rest.uniprot.org/uniprotkb/P30138.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT']; comments[commentType='COFACTOR'] | supports | Sulfur carrier protein ThiS adenylyltransferase. Inspected exact source assertions for thiamine-edge-071, thiamine-edge-087. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 187; actual body digest. |
+| source-6 | https://rest.uniprot.org/uniprotkb/P30139.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT'] | supports | Thiazole synthase. Inspected exact source assertions for thiamine-edge-077, thiamine-edge-084. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 185; actual body digest. |
+| source-7 | https://rest.uniprot.org/uniprotkb/P30140.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT']; comments[commentType='COFACTOR'] | supports | 2-iminoacetate synthase. Inspected exact source assertions for thiamine-edge-076, thiamine-edge-085, thiamine-edge-088. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 174; actual body digest. |
+| source-8 | https://rest.uniprot.org/uniprotkb/P77718.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='FUNCTION'] | supports | tRNA sulfurtransferase. Inspected exact source assertions for thiamine-edge-069, thiamine-edge-072. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 180; actual body digest. |
+| source-9 | https://rest.uniprot.org/uniprotkb/P77488.json; comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT']; comments[commentType='COFACTOR'] | supports | 1-deoxy-D-xylulose-5-phosphate synthase. Inspected exact source assertions for thiamine-edge-075, thiamine-edge-083, thiamine-edge-090, thiamine-edge-091. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 199; actual body digest. |
+| source-10 | https://rest.uniprot.org/uniprotkb/P0A6B7.json; comments[commentType='FUNCTION']; comments[commentType='SUBUNIT']; comments[commentType='COFACTOR'] | supports | Cysteine desulfurase IscS. Inspected exact source assertions for thiamine-edge-073, thiamine-edge-082, thiamine-edge-086. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 162; actual body digest. |
+| source-11 | https://rest.uniprot.org/uniprotkb/O32583.json; comments[commentType='FUNCTION']; comments[commentType='PTM'] | supports | Sulfur carrier protein ThiS. Inspected exact source assertions for thiamine-edge-074. Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 161; actual body digest. |
+| source-12 | https://pathway.yeastgenome.org/getxml?META:THISYN-PWY; Exact record identity and source metadata | supports | superpathway of thiamine diphosphate biosynthesis I. Inspected exact source assertions for . Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-13 | https://pathway.yeastgenome.org/getxml?META:PWY-6890; Pathway[@frameid="PWY-6890"]/reaction-list; super-pathways/Pathway[@frameid="THISYN-PWY"] | supports | 4-amino-2-methyl-5-diphosphomethylpyrimidine biosynthesis. Inspected exact source assertions for thiamine-edge-065, thiamine-edge-066. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-14 | https://pathway.yeastgenome.org/getxml?META:PWY-6892; Pathway[@frameid="PWY-6892"]/reaction-list; super-pathways/Pathway[@frameid="THISYN-PWY"]; Pathway/reaction-list; comment, About This Pathway | supports | thiazole biosynthesis I (facultative anaerobic bacteria). Inspected exact source assertions for thiamine-edge-060, thiamine-edge-061, thiamine-edge-062, thiamine-edge-063, thiamine-edge-064, thiamine-edge-069. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-15 | https://pathway.yeastgenome.org/getxml?META:PWY-6894; Pathway[@frameid="PWY-6894"]/reaction-list; super-pathways/Pathway[@frameid="THISYN-PWY"] | supports | thiamine diphosphate biosynthesis I (E. coli). Inspected exact source assertions for thiamine-edge-067, thiamine-edge-068. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-16 | https://pathway.yeastgenome.org/getxml?META:CPLX0-248; Protein/component/Protein and coefficient | supports | cysteine desulfurase. Inspected exact source assertions for thiamine-edge-082. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-17 | https://pathway.yeastgenome.org/getxml?META:CPLX0-743; Protein/component/Protein and coefficient | supports | CPLX0-743. Inspected exact source assertions for thiamine-edge-083. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-18 | https://pathway.yeastgenome.org/getxml?META:CPLX0-3949; Protein/component/Protein and coefficient | supports | thiazole synthase. Inspected exact source assertions for thiamine-edge-084, thiamine-edge-085. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-19 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/17458 rh:substrates; http://rdf.rhea-db.org/17457_L rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_12158; rh:compound http://rdf.rhea-db.org/Compound_12158; http://rdf.rhea-db.org/17458 rh:substrates; http://rdf.rhea-db.org/17457_L rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_2467; rh:compound http://rdf.rhea-db.org/Compound_2467; http://rdf.rhea-db.org/17458 rh:products; http://rdf.rhea-db.org/17457_R rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_12157; rh:compound http://rdf.rhea-db.org/Compound_12157; http://rdf.rhea-db.org/17458 rh:products; http://rdf.rhea-db.org/17457_R rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_3361; rh:compound http://rdf.rhea-db.org/Compound_3361; http://rdf.rhea-db.org/17457 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 17457. Inspected exact source assertions for thiamine-edge-001, thiamine-edge-002, thiamine-edge-003, thiamine-edge-004, thiamine-edge-060. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-20 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/43345 rh:substrates; http://rdf.rhea-db.org/43344_L rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_12909; rh:compound http://rdf.rhea-db.org/Compound_12909; http://rdf.rhea-db.org/43345 rh:substrates; http://rdf.rhea-db.org/43344_L rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_6372; rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/43345 rh:substrates; http://rdf.rhea-db.org/43344_L rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/43345 rh:products; http://rdf.rhea-db.org/43344_R rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_12910; rh:compound http://rdf.rhea-db.org/Compound_12910; http://rdf.rhea-db.org/43345 rh:products; http://rdf.rhea-db.org/43344_R rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_2106; rh:compound http://rdf.rhea-db.org/Compound_2106; http://rdf.rhea-db.org/43344 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 43344. Inspected exact source assertions for thiamine-edge-005, thiamine-edge-006, thiamine-edge-007, thiamine-edge-008, thiamine-edge-009, thiamine-edge-061. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-21 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/43341 rh:substrates; http://rdf.rhea-db.org/43340_L rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_12910; rh:compound http://rdf.rhea-db.org/Compound_12910; http://rdf.rhea-db.org/43341 rh:substrates; http://rdf.rhea-db.org/43340_L rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_12157; rh:compound http://rdf.rhea-db.org/Compound_12157; http://rdf.rhea-db.org/43341 rh:substrates; http://rdf.rhea-db.org/43340_L rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_1304; rh:compound http://rdf.rhea-db.org/Compound_1304; http://rdf.rhea-db.org/43341 rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_19908; rh:compound http://rdf.rhea-db.org/Compound_19908; http://rdf.rhea-db.org/43341 rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_12158; rh:compound http://rdf.rhea-db.org/Compound_12158; http://rdf.rhea-db.org/43341 rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_3512; rh:compound http://rdf.rhea-db.org/Compound_3512; http://rdf.rhea-db.org/43341 rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_2590; rh:compound http://rdf.rhea-db.org/Compound_2590; http://rdf.rhea-db.org/43341 rh:products; http://rdf.rhea-db.org/43340_R rh:contains2 http://rdf.rhea-db.org/Participant_43340_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/43340 rh:directionalReaction; http://rdf.rhea-db.org/43341 rh:substrates and rh:products | supports | Rhea reaction family 43340. Inspected exact source assertions for thiamine-edge-010, thiamine-edge-011, thiamine-edge-012, thiamine-edge-013, thiamine-edge-014, thiamine-edge-015, thiamine-edge-016, thiamine-edge-017, thiamine-edge-069. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-22 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_6062; rh:compound http://rdf.rhea-db.org/Compound_6062; http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_3719; rh:compound http://rdf.rhea-db.org/Compound_3719; http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/12606 rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_2654; rh:compound http://rdf.rhea-db.org/Compound_2654; http://rdf.rhea-db.org/12606 rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_4391; rh:compound http://rdf.rhea-db.org/Compound_4391; http://rdf.rhea-db.org/12605 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 12605. Inspected exact source assertions for thiamine-edge-018, thiamine-edge-019, thiamine-edge-020, thiamine-edge-021, thiamine-edge-022, thiamine-edge-062. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-23 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_1046; rh:compound http://rdf.rhea-db.org/Compound_1046; http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_6127; rh:compound http://rdf.rhea-db.org/Compound_6127; http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_3438; rh:compound http://rdf.rhea-db.org/Compound_3438; http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_9982; rh:compound http://rdf.rhea-db.org/Compound_9982; http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_4232; rh:compound http://rdf.rhea-db.org/Compound_4232; http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_2028; rh:compound http://rdf.rhea-db.org/Compound_2028; http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_2530; rh:compound http://rdf.rhea-db.org/Compound_2530; http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_5188; rh:compound http://rdf.rhea-db.org/Compound_5188; http://rdf.rhea-db.org/26361 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 26361. Inspected exact source assertions for thiamine-edge-023, thiamine-edge-024, thiamine-edge-025, thiamine-edge-026, thiamine-edge-027, thiamine-edge-028, thiamine-edge-029, thiamine-edge-030, thiamine-edge-063. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-24 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_19908; rh:compound http://rdf.rhea-db.org/Compound_19908; http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_9982; rh:compound http://rdf.rhea-db.org/Compound_9982; http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_2654; rh:compound http://rdf.rhea-db.org/Compound_2654; http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_12909; rh:compound http://rdf.rhea-db.org/Compound_12909; http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_6833; rh:compound http://rdf.rhea-db.org/Compound_6833; http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains2 http://rdf.rhea-db.org/Participant_26297_compound_1283; rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/26297 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 26297. Inspected exact source assertions for thiamine-edge-031, thiamine-edge-032, thiamine-edge-033, thiamine-edge-034, thiamine-edge-035, thiamine-edge-036, thiamine-edge-037, thiamine-edge-064. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-25 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/24841 rh:substrates; http://rdf.rhea-db.org/24840_L rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_13720; rh:compound http://rdf.rhea-db.org/Compound_13720; http://rdf.rhea-db.org/24841 rh:substrates; http://rdf.rhea-db.org/24840_L rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_6127; rh:compound http://rdf.rhea-db.org/Compound_6127; http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_1332; rh:compound http://rdf.rhea-db.org/Compound_1332; http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_7041; rh:compound http://rdf.rhea-db.org/Compound_7041; http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_2028; rh:compound http://rdf.rhea-db.org/Compound_2028; http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_3001; rh:compound http://rdf.rhea-db.org/Compound_3001; http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_2530; rh:compound http://rdf.rhea-db.org/Compound_2530; http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains3 http://rdf.rhea-db.org/Participant_24840_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/24840 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 24840. Inspected exact source assertions for thiamine-edge-038, thiamine-edge-039, thiamine-edge-040, thiamine-edge-041, thiamine-edge-042, thiamine-edge-043, thiamine-edge-044, thiamine-edge-045, thiamine-edge-065. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-26 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/19894 rh:substrates; http://rdf.rhea-db.org/19893_L rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_1332; rh:compound http://rdf.rhea-db.org/Compound_1332; http://rdf.rhea-db.org/19894 rh:substrates; http://rdf.rhea-db.org/19893_L rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_6372; rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/19894 rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_4541; rh:compound http://rdf.rhea-db.org/Compound_4541; http://rdf.rhea-db.org/19894 rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_2710; rh:compound http://rdf.rhea-db.org/Compound_2710; http://rdf.rhea-db.org/19893 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 19893. Inspected exact source assertions for thiamine-edge-046, thiamine-edge-047, thiamine-edge-048, thiamine-edge-049, thiamine-edge-066. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-27 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_6833; rh:compound http://rdf.rhea-db.org/Compound_6833; http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4541; rh:compound http://rdf.rhea-db.org/Compound_4541; http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains2 http://rdf.rhea-db.org/Participant_47844_compound_3249; rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_5658; rh:compound http://rdf.rhea-db.org/Compound_5658; http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4391; rh:compound http://rdf.rhea-db.org/Compound_4391; http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_2106; rh:compound http://rdf.rhea-db.org/Compound_2106; http://rdf.rhea-db.org/47844 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 47844. Inspected exact source assertions for thiamine-edge-050, thiamine-edge-051, thiamine-edge-052, thiamine-edge-053, thiamine-edge-054, thiamine-edge-055, thiamine-edge-067. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-28 | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; http://rdf.rhea-db.org/15914 rh:substrates; http://rdf.rhea-db.org/15913_L rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5658; rh:compound http://rdf.rhea-db.org/Compound_5658; http://rdf.rhea-db.org/15914 rh:substrates; http://rdf.rhea-db.org/15913_L rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_6372; rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/15914 rh:products; http://rdf.rhea-db.org/15913_R rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5328; rh:compound http://rdf.rhea-db.org/Compound_5328; http://rdf.rhea-db.org/15914 rh:products; http://rdf.rhea-db.org/15913_R rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_2710; rh:compound http://rdf.rhea-db.org/Compound_2710; http://rdf.rhea-db.org/15913 rh:directionalReaction and rh:bidirectionalReaction | supports | Rhea reaction family 15913. Inspected exact source assertions for thiamine-edge-056, thiamine-edge-057, thiamine-edge-058, thiamine-edge-059, thiamine-edge-068. Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact. |
+| source-29 | https://pathway.yeastgenome.org/getxml?META:RXN0-308; Reaction/dblink[dblink-db='RHEA']/dblink-oid; Reaction/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-251"]/enzyme | supports | RXN0-308. Inspected exact source assertions for thiamine-edge-060, thiamine-edge-070. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-30 | https://pathway.yeastgenome.org/getxml?META:RXN-9789; Reaction/dblink[dblink-db='RHEA']/dblink-oid | supports | RXN-9789. Inspected exact source assertions for thiamine-edge-061. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-31 | https://pathway.yeastgenome.org/getxml?META:DXS-RXN; Reaction/dblink[dblink-db='RHEA']/dblink-oid; Reaction/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-1021"]/enzyme | supports | DXS-RXN. Inspected exact source assertions for thiamine-edge-062, thiamine-edge-075. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-32 | https://pathway.yeastgenome.org/getxml?META:RXN-11319; Reaction/dblink[dblink-db='RHEA']/dblink-oid | supports | RXN-11319. Inspected exact source assertions for thiamine-edge-063. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-33 | https://pathway.yeastgenome.org/getxml?META:THIAZOLSYN2-RXN; Reaction/dblink[dblink-db='RHEA']/dblink-oid | supports | THIAZOLSYN2-RXN. Inspected exact source assertions for thiamine-edge-064. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-34 | https://pathway.yeastgenome.org/getxml?META:PYRIMSYN1-RXN; Reaction/dblink[dblink-db='RHEA']/dblink-oid | supports | PYRIMSYN1-RXN. Inspected exact source assertions for thiamine-edge-065. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-35 | https://pathway.yeastgenome.org/getxml?META:PYRIMSYN3-RXN; Reaction/dblink[dblink-db='RHEA']/dblink-oid | supports | PYRIMSYN3-RXN. Inspected exact source assertions for thiamine-edge-066. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-36 | https://pathway.yeastgenome.org/getxml?META:RXN-12611; Reaction/dblink[dblink-db='RHEA']/dblink-oid; Reaction/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN-19942"]/enzyme | supports | thiamin phosphate synthase. Inspected exact source assertions for thiamine-edge-067, thiamine-edge-080. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-37 | https://pathway.yeastgenome.org/getxml?META:THI-P-KIN-RXN; Reaction/dblink[dblink-db='RHEA']/dblink-oid | supports | THI-P-KIN-RXN. Inspected exact source assertions for thiamine-edge-068. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-38 | https://pathway.yeastgenome.org/getxml?META:RXN-14382; Exact record identity and source metadata | supports | RXN-14382. Inspected exact source assertions for . Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-39 | https://pathway.yeastgenome.org/getxml?META:RXN-9788; Exact record identity and source metadata | supports | RXN-9788. Inspected exact source assertions for . Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-40 | https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:12860127%20AND%20SRC:MED&amp;format=xml&amp;resultType=core; Short literal primary excerpt, independently verified in source body | supports | Crystal structure of IscS, a cysteine desulfurase from Escherichia coli.. Inspected exact source assertions for thiamine-edge-070. Source access/version scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest. |
+| source-41 | https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:9632726%20AND%20SRC:MED&amp;format=xml&amp;resultType=core; Short literal primary excerpt, independently verified in source body | supports | Thiamin biosynthesis in Escherichia coli. Identification of ThiS thiocarboxylate as the immediate sulfur donor in the thiazole formation.. Inspected exact source assertions for thiamine-edge-071. Source access/version scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest. |
+| source-42 | https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:10781607%20AND%20SRC:MED&amp;format=xml&amp;resultType=core; Short literal primary excerpt, independently verified in source body | supports | The iscS gene in Escherichia coli is required for the biosynthesis of 4-thiouridine, thiamin, and NAD.. Inspected exact source assertions for thiamine-edge-072. Source access/version scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest. |
+| source-43 | https://pmc.ncbi.nlm.nih.gov/articles/PMC37467/; Short literal primary excerpt, independently verified in source body | supports | Biosynthesis of the thiazole moiety of thiamin in Escherichia coli: Identification of an acyldisulfide-linked protein–protein conjugate that is functionally analogous to the ubiquitin/E1 complex. Inspected exact source assertions for thiamine-edge-073. Source access/version scope: PMC full article HTML retrieved 2026-10-11; actual HTML digest. |
+| source-44 | https://pmc.ncbi.nlm.nih.gov/articles/PMC2820752/; Short literal primary excerpt, independently verified in source body | supports | Catalytic Activity of the Anaerobic Tyrosine Lyase Required for Thiamine Biosynthesis in Escherichia coli*<br>. Inspected exact source assertions for thiamine-edge-076, thiamine-edge-084, thiamine-edge-085. Source access/version scope: PMC full article HTML retrieved 2026-10-11; actual HTML digest. |
+| source-45 | https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:17403671%20AND%20SRC:MED&amp;format=xml&amp;resultType=core; Short literal primary excerpt, independently verified in source body | supports | Thiazole synthase from Escherichia coli: an investigation of the substrates and purified proteins required for activity in vitro.. Inspected exact source assertions for thiamine-edge-077. Source access/version scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest. |
+| source-46 | https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:15326535%20AND%20SRC:MED&amp;format=xml&amp;resultType=core; Short literal primary excerpt, independently verified in source body | supports | Biosynthesis of the thiamin pyrimidine: the reconstitution of a remarkable rearrangement reaction.. Inspected exact source assertions for thiamine-edge-078. Source access/version scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest. |
+| source-47 | https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:6284709%20AND%20SRC:MED&amp;format=xml&amp;resultType=core; Short literal primary excerpt, independently verified in source body | supports | thiK and thiL loci of Escherichia coli.. Inspected exact source assertions for thiamine-edge-081. Source access/version scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest. |
+| source-48 | https://pmc.ncbi.nlm.nih.gov/articles/PMC2566941/; Short literal primary excerpt, independently verified in source body; Results, ThiF active site, paragraph P21 (PMC2566941 section S11). | supports | Structure of the Escherichia coli ThiS-ThiF complex, a key component of the sulfur transfer system in thiamin biosynthesis. Inspected exact source assertions for thiamine-edge-071, thiamine-edge-087. Source access/version scope: PMC full article HTML retrieved 2026-10-11; actual HTML digest. |
+| source-49 | https://pathway.yeastgenome.org/getxml?META:HMP-P-KIN-CPLX; Protein/component/coefficient; component/citation | supports | HMP-P-KIN-CPLX. Inspected exact source assertions for thiamine-edge-079. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-50 | https://pathway.yeastgenome.org/getxml?META:G7325-MONOMER; Protein/dblink[dblink-db='UNIPROT']/dblink-oid | supports | cysteine desulfurase. Inspected exact source assertions for thiamine-edge-082. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-51 | https://pathway.yeastgenome.org/getxml?META:DXS-MONOMER; Protein/dblink[dblink-db='UNIPROT']/dblink-oid | supports | 1-deoxy-D-xylulose-5-phosphate synthase. Inspected exact source assertions for thiamine-edge-083. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-52 | https://pathway.yeastgenome.org/getxml?META:THIG-MONOMER; Protein/dblink[dblink-db='UNIPROT']/dblink-oid | supports | 1-deoxy-D-xylulose 5-phosphate:thiol sulfurtransferase. Inspected exact source assertions for thiamine-edge-084. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| source-53 | https://pathway.yeastgenome.org/getxml?META:THIH-MONOMER; Protein/dblink[dblink-db='UNIPROT']/dblink-oid | supports | 2-iminoacetate synthase. Inspected exact source assertions for thiamine-edge-085. Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11. |
+| expression-context | research/pathway_additions/2026-10-11-next-pathways/imodulondb-context.json; e_coli/precise_mg1655/97 | context_only | Thi component97 contains seven target genes: thiS,thiE,thiF,thiC,thiG,thiH,thiD. ThiM salvage membership does not expand this route boundary. Expression association is not direct mechanism or regulation evidence. |
+| final-gates | research/pathway_additions/2026-10-11-next-pathways/integration-validation.json; Final terminal exit codes and preserved log digests | supports | Inspected actual final gate receipts and rehashed retained logs. Full corpus checks pass; no in-flight or earlier failure is reported as terminal success. |
+| generated-audit | research/pathway_additions/2026-10-11-next-pathways/generated-graph-kgx-audit.json; This target SVG/KGX exact graph, evidence and reference preservation | supports | Separate actual CLI export and generated downloads match. Exact edge endpoints, complete evidence, source contexts and SVG anchors pass; this is structural artifact verification, not browser visual inspection. |
+| authority-final | research/pathway_additions/2026-10-11-next-pathways/authority-integration.json; Pinned ontology/source additions, baseline preservation and exact native new identities | supports | Canonical snapshots resolve final target IDs, retaining all prior authority entries and source metadata. |
+
+## Limits And Additional Notes
+
+- The exact native AIR boundary excludes upstream purine synthesis in the initial PathBank lead; this record does not claim that different lead is fully covered.
+- The net AH2/A electron donor is not physiologically resolved; no specific ferredoxin or complete elementary ThiI/ThiF relay is asserted.
+- ThiD oligomer annotations conflict; the functional edge leaves this unresolved. ThiGH isolated multimer is not universal cellular stoichiometry.
+- Several detailed E. coli assignments remain reviewed inference or cross-species context, especially ThiC and the exact thiazole tautomer; target wording keeps those grades.
+- No uniform wild-type flux, complete elementary enzymology, cofactor-free pathway initiation, or generalization from assay anaerobiosis to every pathway step is claimed.
+- Older primary sources inspected only as abstracts are explicitly labeled; current database assertions are not relabeled as new direct experiments.
+- Original Documents checkout is OS-inaccessible; hidden/ignored searches cover the accessible worktree.
+- No browser interaction or new experiments; final generated publication checks are programmatic and delegated to root.
+- Issue338 was a confirmed minor provenance finding during live review and was fixed before any immutable structured bundle. The current findings list is empty; original defect and verified correction remain in this assessment and hashed independent audit.
+- Reviewer-only replay setup errors and their successful replacements are preserved in checks. Generic donor R/A symbol normalization was limited to CHEBI13193/17499 and did not change any source or record chemical identity.
+- A second external draft validation rejected the historical initial vendored observation because it named an executed command without a retained numeric exit code. Its command field was removed; the failed attempt remains an honest delegated observation. Final repeated vendored command has observed exit0.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T020046Z-thiamine-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of superpathway of thiamine diphosphate biosynthesis
+  I
+started_at: '2026-10-11T01:52:49.623800Z'
+finished_at: '2026-10-11T02:00:46Z'
+reviewer:
+  identity: Codex /root/pathway_authority_cache
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author or edit this target or its mechanistic dossier.
+    Authored the separate pseudouridine record in this cohort. Root owns shared authority
+    integration and full repository gates. Independently inspected primary/native
+    source bodies, scientific evidence grades and every edge; earlier shared authority-tool
+    authorship does not substitute for raw source checks.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete native E. coli K-12 THISYN-PWY boundary is supported by ten
+  nonduplicated current reactions, preserving all native branches. All 92 edges and
+  139 evidence blocks were reviewed. ThiF provenance issue338 was corrected and verified
+  before this final bundle; no confirmed finding remains. All final required repository
+  gates pass; their actual receipts were inspected separately from the scientific
+  assessment.
+source:
+  git_revision: 6a331b8b9fd7bf4d9f7b6d2f6626b29157b47a69
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: 3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: f10c5134fb3c06b60f0aac9d68f09219fd2d8cb385bb5030c32629d61c66b9a5
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 53301d6edd435f9fa3191ba317efbfabeb45a0843c2d88ade0e80c8244714049
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 7fe18e8cb41db75a16c9d4afdb45f4db1a86a1fef47cf609c25263d3b567e743
+    role: context
+  - path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    sha256: 05fe1413e04fa3c2b95e44af1bda6c795ef53d3ea3529d18f6c42bac2e8079ea
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 3c861f2ab78e3bc62146d05af5ed5c4c4ae3e65343fc9bd44afa76da7f0b62e7
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: a3d4b48de5f227515f9b5de12dd172cd1eb626068235b2b2e58bc4f6a5ee567d
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/MetaCyc_THISYN-PWY.html
+    sha256: ba96e711888f6de6fe0470388ec2cf6f239bcb6490756463556298ef160f6909
+    role: generated page; maintained owner data/pathways/thiamine-diphosphate-biosynthesis-i.yaml;
+      renderer src/pathwaymech/cli.py and graph_view.py
+  - path: research/pathway_additions/2026-10-11-next-pathways/authority-integration.json
+    sha256: 6e0bebf1ed4802f103db47a98e4a0be4eaf9a3a9e4c3c4c13470544087bf0d37
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/authority-protein-crosscheck.json
+    sha256: 5c1519318f2e620043479613c0b7b789d1475a906ae071b40acefc5b49ceee0c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/authority-source-inspection.json
+    sha256: 7b7054c90254ec8bbed9c75ce351dc22b6e784a30175a9dbb281fde48db1f1c5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/baseline-preservation.json
+    sha256: 9ed2262fda352de3246e42357f38109fee36b41753750bc84219aa1bb5ee009f
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/browser-availability.json
+    sha256: 190ba0aad5bc1c4a7f3271c08cae5bf74d66b0b9f1ead5258ab514d3be2c9e11
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/generated-graph-kgx-audit.json
+    sha256: 87fe919bba958ee2804f782d7efa0a3a8ec895d324aa2e7e83e9bf13312c4730
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/imodulondb-context.json
+    sha256: 9476cb4d416878ab16deeb8a1d57a89b9fd448355a4b38b8994661c4b0c5d1cf
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/imodulondb-parser-replay.json
+    sha256: 986d5e3ebeb6036d2acd2705da067e116049013fe6701a09c99eacd2676676d7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/imodulondb-runner-availability.json
+    sha256: 9cf704bc4d5e2adfe144e745cce0c8fb0525ce3254e0be9d22078dcf0f608823
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/imodulondb-source-manifest.json
+    sha256: a308db444c631f2bb75b79c3bdab1894aab67dc45b6c4784077deff0981494da
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/integration-validation.json
+    sha256: c54763a27294bf2d6ea829ac31aba1b87f59884d74a27d03df4aaa356c2149d5
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-curation.md
+    sha256: 0e669802128aac195654ef3aa33c93b2fdfa1c5f1445225a756a450f6e90627e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-dedup.json
+    sha256: 4183940ab456917030c0a13964e1ce9254405b5753821a44100bbc96f82dcd4a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-identifiers.json
+    sha256: 5195b9c7b7d14614660e527c3fce942490c3dc4592afdfe359c88ca089c3ca81
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-independent-review-audit.json
+    sha256: 0fa908db81f30aa59923bd559156ca2e6a1ff86be24d4209fab3796b9ca77fe0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-replay.py
+    sha256: 2babe268e98122a1af1f369d5cf88f64d77b0298b3f849a35639a2ec6b5842a8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-scout-handoff.md
+    sha256: 8823875cc58c657166f0e782997a0a50758514a7d87d08fe389df7b1d60b535a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-source-manifest.json
+    sha256: 4745fb90fb71d4496c871a15b7e2208bfe9fdf09ddb16c397510a3ce3871a736
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-source-projection.json
+    sha256: ac291eecde4985d2fce9531886473e0502ed55312c380b4681ba6b0e0cb536f7
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-pathways/thiamine-validation.json
+    sha256: 537754119fa51c02997afb2822a689796058e5e0e53530d5cbd4d59c53293045
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 46882d1cfda27a29a8a1224088e8a623bc55bc3a8c1929a5e5c0f07a2c00587f
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 679a6bbeb8054d0e3f3eccfbbc6a6605d04d936d5f63f85d35d9cea732a48797
+    role: context
+scope:
+  description: 'Full single-record scientific review: 92 edges and 139 evidence blocks.'
+  selection: Explicit parent assignment after a separate author froze the target;
+    source bytes captured using governed inspect before assessment.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:THISYN-PWY
+  exclusions:
+  - target: Other cohort and baseline pathway records
+    reason: Not independent scientific targets of this bundle; adjacent sources inspected
+      only for identity and scope boundaries.
+  - target: Experimental replication and browser interaction
+    reason: No wet-lab or interactive browser work is claimed; source assessment and
+      programmatic generated-artifact checks have separate receipts.
+targets:
+- target_id: MetaCyc:THISYN-PWY
+  path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+  label: superpathway of thiamine diphosphate biosynthesis I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    role: maintained record
+checks:
+- check_id: inspect-initial
+  name: Governed initial input inspection
+  status: passed
+  required: true
+  summary: Initial canonical inspect captured the exact target before assessment;
+    primary and whole-record review followed.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - target
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/targets.yaml
+    --input conf/identifier_policy.yaml --input docs/CAUSAL_GRAPHS.md --input src/pathwaymech/schema.py
+    --input src/pathwaymech/schema/pathwaymech.yaml
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: independent-replay
+  name: Independent full source and target export replay
+  status: passed
+  required: true
+  summary: '{''edges'': 92, ''evidence'': 139, ''reaction_sides'': 59, ''source_bodies_rehashed'':
+    112, ''kgx_nodes'': 65, ''protein_identities'': 11, ''quotes'': 11}. Every source
+    body and reference digest matched; source chemistry and exact evidence were independently
+    checked.'
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  command: .venv/bin/python /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/independent-replay.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: context-replay
+  name: Independent unchanged structured source adapter replay
+  status: passed
+  required: false
+  summary: All 27 searches, datasets and component97 reproduced from 29 rehashed retained
+    bodies. Offline replay of prior retrieved bodies, not fresh network.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - expression-context
+  command: .venv/bin/python /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/context-replay.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: reviewer-setup-1
+  name: Superseded reviewer replay setup
+  status: failed
+  required: false
+  summary: 'Reviewer initially compared generic donor formulas literally: Rhea uses
+    R/H2R while ChEBI uses A/H2A. Corrected the symbolic normalization for those two
+    generic donor classes only; complete subsequent raw replay passed. No record defect
+    or source change.'
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/independent-replay.py
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: reviewer-setup-2
+  name: Superseded reviewer replay setup
+  status: failed
+  required: false
+  summary: Reviewer initially called nonexistent datasets() instead of public organism_datasets();
+    corrected to the documented adapter method and complete offline replay passed.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  command: .venv/bin/python /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/context-replay.py
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: root-gate-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. pass
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    render-pages
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-2
+  name: just lint
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. pass
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-3
+  name: just check-identifiers
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. pass
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    check-identifiers
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-4
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. pass
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-5
+  name: just kgx-export --output-dir /private/tmp/pathwaymech-next-pathways-kgx
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. pass
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    kgx-export --output-dir /private/tmp/pathwaymech-next-pathways-kgx
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-6
+  name: just validate
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. pass
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-7
+  name: just test
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. 1,048 passed, 3 skipped, 3 upstream deprecation warnings in 234.69s.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: root-gate-8
+  name: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    vendored-check
+  status: passed
+  required: true
+  summary: Delegated to root; actual terminal exit0 and retained log bytes independently
+    inspected. All governed artifacts match pinned canonical revision; terminal success
+    observed.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  command: UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache just
+    vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: initial-vendored-network
+  name: Superseded vendored network attempt
+  status: failed
+  required: false
+  summary: Root receipt retains a restricted-network DNS failure before the same unchanged
+    command succeeded with network access. This initial result is not treated as the
+    final gate. This is a delegated historical observation; the initial numeric exit
+    code was not supplied and is not fabricated.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+- check_id: inspect-final
+  name: Final governed input capture and changed-input reassessment
+  status: passed
+  required: true
+  summary: 'The sole initially captured change is target issue338 correction: old4ef536c6
+    to current05fe1413. Source-specific fix and added primary evidence were independently
+    checked. Shared frozen authority/page/gate inputs inspected. Every final source.input
+    digest rechecked.'
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - target
+  - independent-audit
+  - final-gates
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/targets.yaml
+    --input .claude/skills/add-pathway/SKILL.md --input .claude/skills/review-yaml-record/SKILL.md
+    --input conf/identifier_policy.yaml --input conf/identifier_sources.json --input
+    data/identifier_authorities/ontology.json --input data/identifier_authorities/sources.json
+    --input docs/CAUSAL_GRAPHS.md --input docs/CURATION.md --input docs/HARMONIZATION.md
+    --input docs/record-review-profile.md --input docs/record-reviews.md --input justfile
+    --input pages/records/MetaCyc_THISYN-PWY.html --input research/pathway_additions/2026-10-11-next-pathways/authority-integration.json
+    --input research/pathway_additions/2026-10-11-next-pathways/authority-protein-crosscheck.json
+    --input research/pathway_additions/2026-10-11-next-pathways/authority-source-inspection.json
+    --input research/pathway_additions/2026-10-11-next-pathways/baseline-preservation.json
+    --input research/pathway_additions/2026-10-11-next-pathways/browser-availability.json
+    --input research/pathway_additions/2026-10-11-next-pathways/generated-graph-kgx-audit.json
+    --input research/pathway_additions/2026-10-11-next-pathways/imodulondb-context.json
+    --input research/pathway_additions/2026-10-11-next-pathways/imodulondb-parser-replay.json
+    --input research/pathway_additions/2026-10-11-next-pathways/imodulondb-runner-availability.json
+    --input research/pathway_additions/2026-10-11-next-pathways/imodulondb-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-pathways/integration-validation.json
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-curation.md
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-dedup.json
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-identifiers.json
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-independent-review-audit.json
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-replay.py
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-scout-handoff.md
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-source-manifest.json
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-source-projection.json
+    --input research/pathway_additions/2026-10-11-next-pathways/thiamine-validation.json
+    --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: draft-format-validation
+  name: Superseded draft format validation
+  status: failed
+  required: false
+  summary: External draft used +00:00 instead of required Z timestamp spelling and
+    inspection target kind record instead of maintained. Corrected serialization only;
+    source hashes, assessment and timestamps remain the same instants.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py validate /private/tmp/pathwaymech-next-pathways-evidence/thiamine-review/draft-review.yaml
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids: []
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+  locator: Entire maintained YAML; all local nodes, edges, evidence and references
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: The complete native E. coli K-12 THISYN-PWY boundary is supported by ten
+    nonduplicated current reactions, preserving all native branches. All 92 edges
+    and 139 evidence blocks were reviewed. ThiF provenance issue338 was corrected
+    and verified before this final bundle; no confirmed finding remains.
+  snapshot_sha256: 05fe1413e04fa3c2b95e44af1bda6c795ef53d3ea3529d18f6c42bac2e8079ea
+- evidence_id: independent-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-pathways/thiamine-independent-review-audit.json
+  locator: Full independent technical replay and per-edge scientific assessments
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: Independent source rehashes, raw RDF side/coefficient replay, native identity/assembly
+    checks and actual target KGX passed. These deterministic checks are supplemented
+    by the primary/native scientific assessments recorded here.
+  snapshot_sha256: 0fa908db81f30aa59923bd559156ca2e6a1ff86be24d4209fab3796b9ca77fe0
+- evidence_id: rhea
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Exact selected master/directional/bidirectional, side containsN, participant
+    and compound triples
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: All 59 chemical sides and ten balances independently verified. Five whole
+    carrier states stay graph nodes; reactive parts and donor R/A symbols are used
+    only for algebraic balance, not identity substitution.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: identity-search
+  kind: search
+  reference: Independent local exact and semantic search
+  locator: Hidden/ignored-inclusive accessible worktree; native boundary and prior
+    candidate dispositions
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: The exact native pathway is distinct from other maintained routes; candidate
+    and authority mentions do not establish an existing full record.
+  search_scope: rg --no-ignore --hidden over accessible worktree including ignored
+    files, excluding .git/.venv and current generated/batch outputs. Original Documents
+    checkout remains OS-inaccessible; no whole-computer absence claim.
+  snapshot_sha256: 0fa908db81f30aa59923bd559156ca2e6a1ff86be24d4209fab3796b9ca77fe0
+- evidence_id: source-1
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P30136.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT'];
+    comments[commentType='COFACTOR']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Phosphomethylpyrimidine synthase. Inspected exact source assertions for
+    thiamine-edge-078, thiamine-edge-089. Source access/version scope: Reviewed full
+    UniProt JSON retrieved 2026-10-11; entry version 175; actual body digest.'
+  snapshot_sha256: 657c6c480fa7e9086c3fa986b849f3a14981efca8fa77cd35af86e4fdb8f482e
+- evidence_id: source-2
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P76422.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Hydroxymethylpyrimidine/phosphomethylpyrimidine kinase. Inspected exact
+    source assertions for thiamine-edge-079. Source access/version scope: Reviewed
+    full UniProt JSON retrieved 2026-10-11; entry version 164; actual body digest.'
+  snapshot_sha256: b0dfa0d060f67fe121e20c2823b469bc94dde145a6132a1706ff391d112f0577
+- evidence_id: source-3
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P30137.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='COFACTOR']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Thiamine-phosphate synthase. Inspected exact source assertions for thiamine-edge-080,
+    thiamine-edge-092. Source access/version scope: Reviewed full UniProt JSON retrieved
+    2026-10-11; entry version 187; actual body digest.'
+  snapshot_sha256: 527c5b8c50ca84d497a52867438a862be552b769c2a5b0906cfd5b0ff225d4c8
+- evidence_id: source-4
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0AGG0.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Thiamine-monophosphate kinase. Inspected exact source assertions for thiamine-edge-081.
+    Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11;
+    entry version 134; actual body digest.'
+  snapshot_sha256: 5272c2e747dabd317ede8c4ab32ff17aee3f74204fd4d4ab30c3a7655675f68d
+- evidence_id: source-5
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P30138.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT'];
+    comments[commentType='COFACTOR']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Sulfur carrier protein ThiS adenylyltransferase. Inspected exact source
+    assertions for thiamine-edge-071, thiamine-edge-087. Source access/version scope:
+    Reviewed full UniProt JSON retrieved 2026-10-11; entry version 187; actual body
+    digest.'
+  snapshot_sha256: 5e98839c0742e8f4af9469f8af50f9fd033adc67bb5edf10900ca174023eee89
+- evidence_id: source-6
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P30139.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Thiazole synthase. Inspected exact source assertions for thiamine-edge-077,
+    thiamine-edge-084. Source access/version scope: Reviewed full UniProt JSON retrieved
+    2026-10-11; entry version 185; actual body digest.'
+  snapshot_sha256: 00c096f44e433cd321cb938ea608ea6cdf615a0399e2965ca8ab27f838987c7c
+- evidence_id: source-7
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P30140.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT'];
+    comments[commentType='COFACTOR']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: '2-iminoacetate synthase. Inspected exact source assertions for thiamine-edge-076,
+    thiamine-edge-085, thiamine-edge-088. Source access/version scope: Reviewed full
+    UniProt JSON retrieved 2026-10-11; entry version 174; actual body digest.'
+  snapshot_sha256: 873b14d2454f2ab3bd4a0af773fe8b4606904e335d09bf65ca0cea9f31c6d036
+- evidence_id: source-8
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P77718.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='FUNCTION']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'tRNA sulfurtransferase. Inspected exact source assertions for thiamine-edge-069,
+    thiamine-edge-072. Source access/version scope: Reviewed full UniProt JSON retrieved
+    2026-10-11; entry version 180; actual body digest.'
+  snapshot_sha256: fc887ae13aa3ed4248a165a6b1fd5dbbbbe170a06900b475be6072da4967bcea
+- evidence_id: source-9
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P77488.json
+  locator: comments[commentType='CATALYTIC ACTIVITY']; comments[commentType='SUBUNIT'];
+    comments[commentType='COFACTOR']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: '1-deoxy-D-xylulose-5-phosphate synthase. Inspected exact source assertions
+    for thiamine-edge-075, thiamine-edge-083, thiamine-edge-090, thiamine-edge-091.
+    Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11;
+    entry version 199; actual body digest.'
+  snapshot_sha256: 5628fe96cf93c95aaa5241f0733dd0fdb541ef3d93e92cac805397ba64e5f848
+- evidence_id: source-10
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/P0A6B7.json
+  locator: comments[commentType='FUNCTION']; comments[commentType='SUBUNIT']; comments[commentType='COFACTOR']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Cysteine desulfurase IscS. Inspected exact source assertions for thiamine-edge-073,
+    thiamine-edge-082, thiamine-edge-086. Source access/version scope: Reviewed full
+    UniProt JSON retrieved 2026-10-11; entry version 162; actual body digest.'
+  snapshot_sha256: a0d3b03558f20344c51483645cc0686eec98b255dcfe98c218bbb32d698ebc62
+- evidence_id: source-11
+  kind: database
+  reference: https://rest.uniprot.org/uniprotkb/O32583.json
+  locator: comments[commentType='FUNCTION']; comments[commentType='PTM']
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Sulfur carrier protein ThiS. Inspected exact source assertions for thiamine-edge-074.
+    Source access/version scope: Reviewed full UniProt JSON retrieved 2026-10-11;
+    entry version 161; actual body digest.'
+  snapshot_sha256: fb9c9a3611f87bc70c06405d195ded6e9ca42d3f3aa04138e40d9f22bbc7c662
+- evidence_id: source-12
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:THISYN-PWY
+  locator: Exact record identity and source metadata
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'superpathway of thiamine diphosphate biosynthesis I. Inspected exact source
+    assertions for . Source access/version scope: MetaCyc 22.5 native XML; retrieved
+    2026-10-11.'
+  snapshot_sha256: 3b16074b043c12662f26e98adead8db179d769115c3357131092d2757a597b53
+- evidence_id: source-13
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6890
+  locator: Pathway[@frameid="PWY-6890"]/reaction-list; super-pathways/Pathway[@frameid="THISYN-PWY"]
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: '4-amino-2-methyl-5-diphosphomethylpyrimidine biosynthesis. Inspected exact
+    source assertions for thiamine-edge-065, thiamine-edge-066. Source access/version
+    scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 732ff15b7721e69b6aad4b5deca0548ca48c8f9063bf4f69dc6063bea9f33391
+- evidence_id: source-14
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6892
+  locator: Pathway[@frameid="PWY-6892"]/reaction-list; super-pathways/Pathway[@frameid="THISYN-PWY"];
+    Pathway/reaction-list; comment, About This Pathway
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'thiazole biosynthesis I (facultative anaerobic bacteria). Inspected exact
+    source assertions for thiamine-edge-060, thiamine-edge-061, thiamine-edge-062,
+    thiamine-edge-063, thiamine-edge-064, thiamine-edge-069. Source access/version
+    scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: c2677fa25d5cb114ce46042a8de2532d8c6d85a476449e8d419b3783d16ecb55
+- evidence_id: source-15
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-6894
+  locator: Pathway[@frameid="PWY-6894"]/reaction-list; super-pathways/Pathway[@frameid="THISYN-PWY"]
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'thiamine diphosphate biosynthesis I (E. coli). Inspected exact source
+    assertions for thiamine-edge-067, thiamine-edge-068. Source access/version scope:
+    MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 2ddbf01cc0504f33f5cad5c371a2d4f8d2c793d93d5bf1512c3089ae1212a4fd
+- evidence_id: source-16
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:CPLX0-248
+  locator: Protein/component/Protein and coefficient
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'cysteine desulfurase. Inspected exact source assertions for thiamine-edge-082.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: e8ae4d9a6ee046d433c646e83b317624ea3f4467b5e58f0c844a242129aacf6e
+- evidence_id: source-17
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:CPLX0-743
+  locator: Protein/component/Protein and coefficient
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'CPLX0-743. Inspected exact source assertions for thiamine-edge-083. Source
+    access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 1fe397e0ef222e57a2c252c3cdc15dcbf53fbd57b0cda1ef8ecde190eb69eb8b
+- evidence_id: source-18
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:CPLX0-3949
+  locator: Protein/component/Protein and coefficient
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'thiazole synthase. Inspected exact source assertions for thiamine-edge-084,
+    thiamine-edge-085. Source access/version scope: MetaCyc 22.5 native XML; retrieved
+    2026-10-11.'
+  snapshot_sha256: 062b90f2ed2be258fec5e649c58cf737176d3cbbe6ce8d65b127d96ab5f5aa95
+- evidence_id: source-19
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/17458 rh:substrates; http://rdf.rhea-db.org/17457_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_12158; rh:compound
+    http://rdf.rhea-db.org/Compound_12158; http://rdf.rhea-db.org/17458 rh:substrates;
+    http://rdf.rhea-db.org/17457_L rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_2467;
+    rh:compound http://rdf.rhea-db.org/Compound_2467; http://rdf.rhea-db.org/17458
+    rh:products; http://rdf.rhea-db.org/17457_R rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_12157;
+    rh:compound http://rdf.rhea-db.org/Compound_12157; http://rdf.rhea-db.org/17458
+    rh:products; http://rdf.rhea-db.org/17457_R rh:contains1 http://rdf.rhea-db.org/Participant_17457_compound_3361;
+    rh:compound http://rdf.rhea-db.org/Compound_3361; http://rdf.rhea-db.org/17457
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 17457. Inspected exact source assertions for thiamine-edge-001,
+    thiamine-edge-002, thiamine-edge-003, thiamine-edge-004, thiamine-edge-060. Source
+    access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete
+    compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-20
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/43345 rh:substrates; http://rdf.rhea-db.org/43344_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_12909; rh:compound
+    http://rdf.rhea-db.org/Compound_12909; http://rdf.rhea-db.org/43345 rh:substrates;
+    http://rdf.rhea-db.org/43344_L rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_6372;
+    rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/43345
+    rh:substrates; http://rdf.rhea-db.org/43344_L rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_3249;
+    rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/43345
+    rh:products; http://rdf.rhea-db.org/43344_R rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_12910;
+    rh:compound http://rdf.rhea-db.org/Compound_12910; http://rdf.rhea-db.org/43345
+    rh:products; http://rdf.rhea-db.org/43344_R rh:contains1 http://rdf.rhea-db.org/Participant_43344_compound_2106;
+    rh:compound http://rdf.rhea-db.org/Compound_2106; http://rdf.rhea-db.org/43344
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 43344. Inspected exact source assertions for thiamine-edge-005,
+    thiamine-edge-006, thiamine-edge-007, thiamine-edge-008, thiamine-edge-009, thiamine-edge-061.
+    Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the
+    complete compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-21
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/43341 rh:substrates; http://rdf.rhea-db.org/43340_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_12910; rh:compound
+    http://rdf.rhea-db.org/Compound_12910; http://rdf.rhea-db.org/43341 rh:substrates;
+    http://rdf.rhea-db.org/43340_L rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_12157;
+    rh:compound http://rdf.rhea-db.org/Compound_12157; http://rdf.rhea-db.org/43341
+    rh:substrates; http://rdf.rhea-db.org/43340_L rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_1304;
+    rh:compound http://rdf.rhea-db.org/Compound_1304; http://rdf.rhea-db.org/43341
+    rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_19908;
+    rh:compound http://rdf.rhea-db.org/Compound_19908; http://rdf.rhea-db.org/43341
+    rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_12158;
+    rh:compound http://rdf.rhea-db.org/Compound_12158; http://rdf.rhea-db.org/43341
+    rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_3512;
+    rh:compound http://rdf.rhea-db.org/Compound_3512; http://rdf.rhea-db.org/43341
+    rh:products; http://rdf.rhea-db.org/43340_R rh:contains1 http://rdf.rhea-db.org/Participant_43340_compound_2590;
+    rh:compound http://rdf.rhea-db.org/Compound_2590; http://rdf.rhea-db.org/43341
+    rh:products; http://rdf.rhea-db.org/43340_R rh:contains2 http://rdf.rhea-db.org/Participant_43340_compound_3249;
+    rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/43340
+    rh:directionalReaction; http://rdf.rhea-db.org/43341 rh:substrates and rh:products
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 43340. Inspected exact source assertions for thiamine-edge-010,
+    thiamine-edge-011, thiamine-edge-012, thiamine-edge-013, thiamine-edge-014, thiamine-edge-015,
+    thiamine-edge-016, thiamine-edge-017, thiamine-edge-069. Source access/version
+    scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official
+    RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-22
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_6062; rh:compound
+    http://rdf.rhea-db.org/Compound_6062; http://rdf.rhea-db.org/12606 rh:substrates;
+    http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_3719;
+    rh:compound http://rdf.rhea-db.org/Compound_3719; http://rdf.rhea-db.org/12606
+    rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_3249;
+    rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/12606
+    rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_2654;
+    rh:compound http://rdf.rhea-db.org/Compound_2654; http://rdf.rhea-db.org/12606
+    rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_4391;
+    rh:compound http://rdf.rhea-db.org/Compound_4391; http://rdf.rhea-db.org/12605
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 12605. Inspected exact source assertions for thiamine-edge-018,
+    thiamine-edge-019, thiamine-edge-020, thiamine-edge-021, thiamine-edge-022, thiamine-edge-062.
+    Source access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the
+    complete compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-23
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_1046; rh:compound
+    http://rdf.rhea-db.org/Compound_1046; http://rdf.rhea-db.org/26362 rh:substrates;
+    http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_6127;
+    rh:compound http://rdf.rhea-db.org/Compound_6127; http://rdf.rhea-db.org/26362
+    rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_3438;
+    rh:compound http://rdf.rhea-db.org/Compound_3438; http://rdf.rhea-db.org/26362
+    rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_9982;
+    rh:compound http://rdf.rhea-db.org/Compound_9982; http://rdf.rhea-db.org/26362
+    rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_4232;
+    rh:compound http://rdf.rhea-db.org/Compound_4232; http://rdf.rhea-db.org/26362
+    rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_2028;
+    rh:compound http://rdf.rhea-db.org/Compound_2028; http://rdf.rhea-db.org/26362
+    rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_2530;
+    rh:compound http://rdf.rhea-db.org/Compound_2530; http://rdf.rhea-db.org/26362
+    rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_5188;
+    rh:compound http://rdf.rhea-db.org/Compound_5188; http://rdf.rhea-db.org/26361
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 26361. Inspected exact source assertions for thiamine-edge-023,
+    thiamine-edge-024, thiamine-edge-025, thiamine-edge-026, thiamine-edge-027, thiamine-edge-028,
+    thiamine-edge-029, thiamine-edge-030, thiamine-edge-063. Source access/version
+    scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official
+    RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-24
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_19908; rh:compound
+    http://rdf.rhea-db.org/Compound_19908; http://rdf.rhea-db.org/26298 rh:substrates;
+    http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_9982;
+    rh:compound http://rdf.rhea-db.org/Compound_9982; http://rdf.rhea-db.org/26298
+    rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_2654;
+    rh:compound http://rdf.rhea-db.org/Compound_2654; http://rdf.rhea-db.org/26298
+    rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_12909;
+    rh:compound http://rdf.rhea-db.org/Compound_12909; http://rdf.rhea-db.org/26298
+    rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_6833;
+    rh:compound http://rdf.rhea-db.org/Compound_6833; http://rdf.rhea-db.org/26298
+    rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_3249;
+    rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/26298
+    rh:products; http://rdf.rhea-db.org/26297_R rh:contains2 http://rdf.rhea-db.org/Participant_26297_compound_1283;
+    rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/26297
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 26297. Inspected exact source assertions for thiamine-edge-031,
+    thiamine-edge-032, thiamine-edge-033, thiamine-edge-034, thiamine-edge-035, thiamine-edge-036,
+    thiamine-edge-037, thiamine-edge-064. Source access/version scope: Rhea release
+    142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-25
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/24841 rh:substrates; http://rdf.rhea-db.org/24840_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_13720; rh:compound
+    http://rdf.rhea-db.org/Compound_13720; http://rdf.rhea-db.org/24841 rh:substrates;
+    http://rdf.rhea-db.org/24840_L rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_6127;
+    rh:compound http://rdf.rhea-db.org/Compound_6127; http://rdf.rhea-db.org/24841
+    rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_1332;
+    rh:compound http://rdf.rhea-db.org/Compound_1332; http://rdf.rhea-db.org/24841
+    rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_7041;
+    rh:compound http://rdf.rhea-db.org/Compound_7041; http://rdf.rhea-db.org/24841
+    rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_2028;
+    rh:compound http://rdf.rhea-db.org/Compound_2028; http://rdf.rhea-db.org/24841
+    rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_3001;
+    rh:compound http://rdf.rhea-db.org/Compound_3001; http://rdf.rhea-db.org/24841
+    rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_2530;
+    rh:compound http://rdf.rhea-db.org/Compound_2530; http://rdf.rhea-db.org/24841
+    rh:products; http://rdf.rhea-db.org/24840_R rh:contains3 http://rdf.rhea-db.org/Participant_24840_compound_3249;
+    rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/24840
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 24840. Inspected exact source assertions for thiamine-edge-038,
+    thiamine-edge-039, thiamine-edge-040, thiamine-edge-041, thiamine-edge-042, thiamine-edge-043,
+    thiamine-edge-044, thiamine-edge-045, thiamine-edge-065. Source access/version
+    scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official
+    RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-26
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/19894 rh:substrates; http://rdf.rhea-db.org/19893_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_1332; rh:compound
+    http://rdf.rhea-db.org/Compound_1332; http://rdf.rhea-db.org/19894 rh:substrates;
+    http://rdf.rhea-db.org/19893_L rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_6372;
+    rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/19894
+    rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_4541;
+    rh:compound http://rdf.rhea-db.org/Compound_4541; http://rdf.rhea-db.org/19894
+    rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_2710;
+    rh:compound http://rdf.rhea-db.org/Compound_2710; http://rdf.rhea-db.org/19893
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 19893. Inspected exact source assertions for thiamine-edge-046,
+    thiamine-edge-047, thiamine-edge-048, thiamine-edge-049, thiamine-edge-066. Source
+    access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete
+    compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-27
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_6833; rh:compound
+    http://rdf.rhea-db.org/Compound_6833; http://rdf.rhea-db.org/47845 rh:substrates;
+    http://rdf.rhea-db.org/47844_L rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4541;
+    rh:compound http://rdf.rhea-db.org/Compound_4541; http://rdf.rhea-db.org/47845
+    rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains2 http://rdf.rhea-db.org/Participant_47844_compound_3249;
+    rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/47845
+    rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_5658;
+    rh:compound http://rdf.rhea-db.org/Compound_5658; http://rdf.rhea-db.org/47845
+    rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4391;
+    rh:compound http://rdf.rhea-db.org/Compound_4391; http://rdf.rhea-db.org/47845
+    rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_2106;
+    rh:compound http://rdf.rhea-db.org/Compound_2106; http://rdf.rhea-db.org/47844
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 47844. Inspected exact source assertions for thiamine-edge-050,
+    thiamine-edge-051, thiamine-edge-052, thiamine-edge-053, thiamine-edge-054, thiamine-edge-055,
+    thiamine-edge-067. Source access/version scope: Rhea release 142, 2026-09-02;
+    SHA-256 covers the complete compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-28
+  kind: authority
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: http://rdf.rhea-db.org/15914 rh:substrates; http://rdf.rhea-db.org/15913_L
+    rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5658; rh:compound
+    http://rdf.rhea-db.org/Compound_5658; http://rdf.rhea-db.org/15914 rh:substrates;
+    http://rdf.rhea-db.org/15913_L rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_6372;
+    rh:compound http://rdf.rhea-db.org/Compound_6372; http://rdf.rhea-db.org/15914
+    rh:products; http://rdf.rhea-db.org/15913_R rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5328;
+    rh:compound http://rdf.rhea-db.org/Compound_5328; http://rdf.rhea-db.org/15914
+    rh:products; http://rdf.rhea-db.org/15913_R rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_2710;
+    rh:compound http://rdf.rhea-db.org/Compound_2710; http://rdf.rhea-db.org/15913
+    rh:directionalReaction and rh:bidirectionalReaction
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Rhea reaction family 15913. Inspected exact source assertions for thiamine-edge-056,
+    thiamine-edge-057, thiamine-edge-058, thiamine-edge-059, thiamine-edge-068. Source
+    access/version scope: Rhea release 142, 2026-09-02; SHA-256 covers the complete
+    compressed official RDF artifact.'
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: source-29
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN0-308
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid; Reaction/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-251"]/enzyme
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'RXN0-308. Inspected exact source assertions for thiamine-edge-060, thiamine-edge-070.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: b7cfc31659f90f5637ad8ae269cc09868a47e8c7205b2e18398fadaa6331723c
+- evidence_id: source-30
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-9789
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'RXN-9789. Inspected exact source assertions for thiamine-edge-061. Source
+    access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: c702b30a85e578e6dac47a72939e8abc33431069b40cf00df288b829309ba086
+- evidence_id: source-31
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:DXS-RXN
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid; Reaction/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN0-1021"]/enzyme
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'DXS-RXN. Inspected exact source assertions for thiamine-edge-062, thiamine-edge-075.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 292dfef23c335de0431dfa3d253cedea1cb5456c245590fdf08c12b9dddb0c5f
+- evidence_id: source-32
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-11319
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'RXN-11319. Inspected exact source assertions for thiamine-edge-063. Source
+    access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 4c87b4447da267ae8766afe33c7a3f04004bc1c81a9f9f89a20dac6ab8d6d42a
+- evidence_id: source-33
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:THIAZOLSYN2-RXN
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'THIAZOLSYN2-RXN. Inspected exact source assertions for thiamine-edge-064.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: a834d4f02fd4bf112c082dcb7c7dba4551531ab09df3e4b29cb8e0d2e3b41fdf
+- evidence_id: source-34
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PYRIMSYN1-RXN
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'PYRIMSYN1-RXN. Inspected exact source assertions for thiamine-edge-065.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 720434e9a13e52672ee111cd3f18f38eaf57a88b69cd75a976f9aeeaa9e2ae7c
+- evidence_id: source-35
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PYRIMSYN3-RXN
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'PYRIMSYN3-RXN. Inspected exact source assertions for thiamine-edge-066.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: e952b8e7e467ffd1eccb88ed0650c2b194ed1291dc5de45d5d079da4c50b65cd
+- evidence_id: source-36
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-12611
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid; Reaction/enzymatic-reaction/Enzymatic-Reaction[@frameid="ENZRXN-19942"]/enzyme
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'thiamin phosphate synthase. Inspected exact source assertions for thiamine-edge-067,
+    thiamine-edge-080. Source access/version scope: MetaCyc 22.5 native XML; retrieved
+    2026-10-11.'
+  snapshot_sha256: eeed5dd2b07d0e7d4c0f42db888b8e49f2629f0e7b03ab89e72409e6024415e7
+- evidence_id: source-37
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:THI-P-KIN-RXN
+  locator: Reaction/dblink[dblink-db='RHEA']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'THI-P-KIN-RXN. Inspected exact source assertions for thiamine-edge-068.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: ebde39a8dd8a2b27af4cf3ff66ae1405e7c0ba96ee4ad1118f17f03bfd4b853a
+- evidence_id: source-38
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-14382
+  locator: Exact record identity and source metadata
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'RXN-14382. Inspected exact source assertions for . Source access/version
+    scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 9064f208364e215a2b302eec3c4ffe6aea1b99b220824efdcb601c1de47187a8
+- evidence_id: source-39
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:RXN-9788
+  locator: Exact record identity and source metadata
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'RXN-9788. Inspected exact source assertions for . Source access/version
+    scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: a8ccc58e49831770d6e48185e70045287437af31fa54fbf73d1d2da5b370a435
+- evidence_id: source-40
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:12860127%20AND%20SRC:MED&format=xml&resultType=core
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Crystal structure of IscS, a cysteine desulfurase from Escherichia coli..
+    Inspected exact source assertions for thiamine-edge-070. Source access/version
+    scope: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11;
+    not a full-text digest.'
+  snapshot_sha256: 47eb456e0df691e19e6f6b2e1c54db296c739e7fc4439075f329ae74aa428152
+- evidence_id: source-41
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:9632726%20AND%20SRC:MED&format=xml&resultType=core
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Thiamin biosynthesis in Escherichia coli. Identification of ThiS thiocarboxylate
+    as the immediate sulfur donor in the thiazole formation.. Inspected exact source
+    assertions for thiamine-edge-071. Source access/version scope: Europe PMC indexed
+    primary abstract and metadata retrieved 2026-10-11; not a full-text digest.'
+  snapshot_sha256: 1a497d37747d48bc9c18dc8250828852b4383bc38754442eb6884cc1dafc2fc1
+- evidence_id: source-42
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:10781607%20AND%20SRC:MED&format=xml&resultType=core
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'The iscS gene in Escherichia coli is required for the biosynthesis of
+    4-thiouridine, thiamin, and NAD.. Inspected exact source assertions for thiamine-edge-072.
+    Source access/version scope: Europe PMC indexed primary abstract and metadata
+    retrieved 2026-10-11; not a full-text digest.'
+  snapshot_sha256: a8e548a66d6102fb77b74fe5060d3233c3a8dbda20214b7f3e13cbafc16b92e0
+- evidence_id: source-43
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC37467/
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Biosynthesis of the thiazole moiety of thiamin in Escherichia coli: Identification
+    of an acyldisulfide-linked protein–protein conjugate that is functionally analogous
+    to the ubiquitin/E1 complex. Inspected exact source assertions for thiamine-edge-073.
+    Source access/version scope: PMC full article HTML retrieved 2026-10-11; actual
+    HTML digest.'
+  snapshot_sha256: d17a1a424002af073abbcec74b1f0134936d270ec100daa00f594a3ecaba3f85
+- evidence_id: source-44
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2820752/
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Catalytic Activity of the Anaerobic Tyrosine Lyase Required for Thiamine
+    Biosynthesis in Escherichia coli*
+
+    . Inspected exact source assertions for thiamine-edge-076, thiamine-edge-084,
+    thiamine-edge-085. Source access/version scope: PMC full article HTML retrieved
+    2026-10-11; actual HTML digest.'
+  snapshot_sha256: 25915620054c357692ee48396ac5dff4888f149b34fa23cf46e1da1df3a474a1
+- evidence_id: source-45
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:17403671%20AND%20SRC:MED&format=xml&resultType=core
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Thiazole synthase from Escherichia coli: an investigation of the substrates
+    and purified proteins required for activity in vitro.. Inspected exact source
+    assertions for thiamine-edge-077. Source access/version scope: Europe PMC indexed
+    primary abstract and metadata retrieved 2026-10-11; not a full-text digest.'
+  snapshot_sha256: 966bb9c9b2b88691c59868c8efe42ae0544a3b286ab80296a36c0400fd3dc103
+- evidence_id: source-46
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:15326535%20AND%20SRC:MED&format=xml&resultType=core
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Biosynthesis of the thiamin pyrimidine: the reconstitution of a remarkable
+    rearrangement reaction.. Inspected exact source assertions for thiamine-edge-078.
+    Source access/version scope: Europe PMC indexed primary abstract and metadata
+    retrieved 2026-10-11; not a full-text digest.'
+  snapshot_sha256: 3e9920ec4c149fdfd919016c5b0039e6d655572a57fdc1a0565a6adadb142b5c
+- evidence_id: source-47
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:6284709%20AND%20SRC:MED&format=xml&resultType=core
+  locator: Short literal primary excerpt, independently verified in source body
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'thiK and thiL loci of Escherichia coli.. Inspected exact source assertions
+    for thiamine-edge-081. Source access/version scope: Europe PMC indexed primary
+    abstract and metadata retrieved 2026-10-11; not a full-text digest.'
+  snapshot_sha256: a05512b7aa902a6f13d3ad28beb0aa7e2c85287c5d9ffdd5b9ef306804d2960d
+- evidence_id: source-48
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2566941/
+  locator: Short literal primary excerpt, independently verified in source body; Results,
+    ThiF active site, paragraph P21 (PMC2566941 section S11).
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'Structure of the Escherichia coli ThiS-ThiF complex, a key component of
+    the sulfur transfer system in thiamin biosynthesis. Inspected exact source assertions
+    for thiamine-edge-071, thiamine-edge-087. Source access/version scope: PMC full
+    article HTML retrieved 2026-10-11; actual HTML digest.'
+  snapshot_sha256: eef53bd9f39e6d70f238f2dda0985e22d7af189785315d1531edebe9cf27d1e1
+- evidence_id: source-49
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:HMP-P-KIN-CPLX
+  locator: Protein/component/coefficient; component/citation
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'HMP-P-KIN-CPLX. Inspected exact source assertions for thiamine-edge-079.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 27063f190186c32c8ac468611da35424dcafe7d4843efd44a23fcd633e997640
+- evidence_id: source-50
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:G7325-MONOMER
+  locator: Protein/dblink[dblink-db='UNIPROT']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: 'cysteine desulfurase. Inspected exact source assertions for thiamine-edge-082.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: 557d0dc9060ac3d794d97c59d4b91b5cad3845874d9e77f28f714ef87a6266d1
+- evidence_id: source-51
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:DXS-MONOMER
+  locator: Protein/dblink[dblink-db='UNIPROT']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: '1-deoxy-D-xylulose-5-phosphate synthase. Inspected exact source assertions
+    for thiamine-edge-083. Source access/version scope: MetaCyc 22.5 native XML; retrieved
+    2026-10-11.'
+  snapshot_sha256: d0ff9f24c03acdecf69e36b41c6a490de03c0eff0bef48344569905c24003e70
+- evidence_id: source-52
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:THIG-MONOMER
+  locator: Protein/dblink[dblink-db='UNIPROT']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: '1-deoxy-D-xylulose 5-phosphate:thiol sulfurtransferase. Inspected exact
+    source assertions for thiamine-edge-084. Source access/version scope: MetaCyc
+    22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: e03254efa587b655ff4ac5cbb6ccacb22e2a13b586b44ae65a405a6aa3f2b92c
+- evidence_id: source-53
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:THIH-MONOMER
+  locator: Protein/dblink[dblink-db='UNIPROT']/dblink-oid
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: '2-iminoacetate synthase. Inspected exact source assertions for thiamine-edge-085.
+    Source access/version scope: MetaCyc 22.5 native XML; retrieved 2026-10-11.'
+  snapshot_sha256: eb3afa2b87141702fa9f28c300bb033f72d9fefe7f86ba933f1d93ae1da9a1d9
+- evidence_id: expression-context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-pathways/imodulondb-context.json
+  locator: e_coli/precise_mg1655/97
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: context_only
+  summary: 'Thi component97 contains seven target genes: thiS,thiE,thiF,thiC,thiG,thiH,thiD.
+    ThiM salvage membership does not expand this route boundary. Expression association
+    is not direct mechanism or regulation evidence.'
+  snapshot_sha256: 9476cb4d416878ab16deeb8a1d57a89b9fd448355a4b38b8994661c4b0c5d1cf
+- evidence_id: final-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-pathways/integration-validation.json
+  locator: Final terminal exit codes and preserved log digests
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: Inspected actual final gate receipts and rehashed retained logs. Full corpus
+    checks pass; no in-flight or earlier failure is reported as terminal success.
+  snapshot_sha256: c54763a27294bf2d6ea829ac31aba1b87f59884d74a27d03df4aaa356c2149d5
+- evidence_id: generated-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-pathways/generated-graph-kgx-audit.json
+  locator: This target SVG/KGX exact graph, evidence and reference preservation
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: Separate actual CLI export and generated downloads match. Exact edge endpoints,
+    complete evidence, source contexts and SVG anchors pass; this is structural artifact
+    verification, not browser visual inspection.
+  snapshot_sha256: 87fe919bba958ee2804f782d7efa0a3a8ec895d324aa2e7e83e9bf13312c4730
+- evidence_id: authority-final
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-pathways/authority-integration.json
+  locator: Pinned ontology/source additions, baseline preservation and exact native
+    new identities
+  accessed_at: '2026-10-11T02:00:46Z'
+  support: supports
+  summary: Canonical snapshots resolve final target IDs, retaining all prior authority
+    entries and source metadata.
+  snapshot_sha256: 6e0bebf1ed4802f103db47a98e4a0be4eaf9a3a9e4c3c4c13470544087bf0d37
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Complete native superpathway boundary
+  outcome: supported
+  summary: THISYN-PWY has three native children containing eleven reactions. The record
+    covers each child, with the two elementary sulfur-relay steps represented by one
+    current net reaction. The initial PathBank ten-step map has a different upstream
+    purine boundary and is not silently declared covered.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - identity-search
+  - independent-audit
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-1
+  area: grounding
+  topic: thiamine-edge-001-059
+  outcome: supported
+  summary: All ten directed Rhea identities, 59 sides, exact coefficient predicates
+    and compound URIs independently replayed from complete official RDF. All ten reactions
+    balance. Five whole protein carrier states remain intact; reactive parts are balance
+    bookkeeping only. Rhea R versus ChEBI A is an explicit generic-donor symbol equivalence,
+    not a chemical identity change.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-2
+  area: identity
+  topic: thiamine-edge-060-069
+  outcome: supported
+  summary: Three exact native child pathways contain eleven reactions. Nine are bridged
+    to verified current Rhea family members; RXN-14382 and RXN-9788 are represented
+    once by the current net 43341 sulfur transfer. Native 26364 and26300 bidirectional
+    members are not mistaken for directed selected 26362/26298. No omitted native
+    branch or net/decomposition double count.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-3
+  area: graph
+  topic: thiamine-edge-070-075
+  outcome: supported
+  summary: IscS physical dimer catalysis, functional ThiF adenylation, qualified ThiI
+    and IscS net-transfer roles, ThiS carrier role and Dxs physical dimer are supported.
+    Known ThiF homodimer/ThiS heterotetramer is retained in evidence; functional enables
+    does not assert monomer sufficiency. Dxs dependence on the pathway product TPP
+    is explicit.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-4
+  area: scope
+  topic: thiamine-edge-076-078
+  outcome: supported
+  summary: ThiH and ThiG functions reside in the native ThiGH assembly with primary
+    reconstitution support. Auxiliary reducing proteins are assay context; NADPH is
+    net chemistry. Detailed ThiC E. coli reaction and Fe-S/oligomer assignments retain
+    inference; cell-free additional factor and cross-species later work are not collapsed
+    into direct E. coli structure evidence.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-5
+  area: scope
+  topic: thiamine-edge-079-081
+  outcome: supported
+  summary: ThiD functional role preserves unresolved monomer/tetramer conflict rather
+    than choosing a convenient assembly. ThiE exact nonaromatic R/Z tautomer follows
+    current curated annotation; later Bacillus stereochemistry is not relabeled as
+    direct E. coli measurement. ThiL final phosphorylation is supported; absence of
+    a cofactor comment does not assert metal independence.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-6
+  area: graph
+  topic: thiamine-edge-082-085
+  outcome: supported
+  summary: 'All four native component assertions and monomer UniProt bridges independently
+    verified: IscS2, Dxs2, ThiG6+ThiH6. Primary at least six heterodimers supports
+    the native projection without universal cellular stoichiometry.'
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: edges-7
+  area: evidence
+  topic: thiamine-edge-086-092
+  outcome: supported
+  summary: PLP on IscS, Zn on ThiF, Fe-S on ThiH/ThiC, Mg and TPP on Dxs, and Mg on
+    ThiE preserve direct/HAMAP/similarity evidence grades. No free Mg edge is inferred
+    from MgATP assay composition. Issue338 corrects only source attribution of the
+    ThiF zinc-position interpretation.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - rhea
+  - source-1
+  - source-2
+  - source-3
+  - source-4
+  - source-5
+  - source-6
+  - source-7
+  - source-8
+  - source-9
+  - source-10
+  - source-11
+  - source-12
+  - source-13
+  - source-14
+  - source-15
+  - source-16
+  - source-17
+  - source-18
+  - source-19
+  - source-20
+  - source-21
+  - source-22
+  - source-23
+  - source-24
+  - source-25
+  - source-26
+  - source-27
+  - source-28
+  - source-29
+  - source-30
+  - source-31
+  - source-32
+  - source-33
+  - source-34
+  - source-35
+  - source-36
+  - source-37
+  - source-38
+  - source-39
+  - source-40
+  - source-41
+  - source-42
+  - source-43
+  - source-44
+  - source-45
+  - source-46
+  - source-47
+  - source-48
+  - source-49
+  - source-50
+  - source-51
+  - source-52
+  - source-53
+- assessment_id: verified-338
+  area: provenance
+  topic: Observed ThiF citation defect corrected before final review
+  outcome: supported
+  summary: Original edge087 placed the zinc-position/structural-role interpretation
+    inside a UniProt COFACTOR assertion that did not state it. Issue338 was filed.
+    Final target limits UniProt evidence to Zn binding/count and separately cites
+    PMID16388576 Results/S11/P21 for the structural interpretation. Both source blocks
+    were independently verified.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - independent-audit
+  - target
+  details: Issue https://github.com/CultureBotAI/PathwayMech/issues/338; prior inspected
+    SHA2564ef536c637a89d7d74f183030f30244ded94fa3eabb6668d0046e224d75f84c1; final
+    SHA25605fe1413e04fa3c2b95e44af1bda6c795ef53d3ea3529d18f6c42bac2e8079ea. No pre-fix
+    immutable bundle exists; no resolved finding or previous_occurrence is fabricated.
+- assessment_id: expression
+  area: evidence
+  topic: Bounded structured-source context
+  outcome: supported
+  summary: Root resolved the canonical client after console-runner dependency failure.
+    Reviewer independently reproduced the retained results offline. Computational
+    expression association supports context only; dataset or hit absence is not biological
+    absence.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - expression-context
+  - independent-audit
+- assessment_id: gates
+  area: schema
+  topic: Final validation and generated artifacts
+  outcome: supported
+  summary: Final complete repository checks, target identity gate and structural SVG/KGX
+    audit pass on unchanged final target hashes. No deterministic validation is substituted
+    for the scientific source assessment.
+  target_ids:
+  - MetaCyc:THISYN-PWY
+  evidence_ids:
+  - final-gates
+  - generated-audit
+  - authority-final
+  - independent-audit
+findings: []
+actions: []
+limitations:
+- The exact native AIR boundary excludes upstream purine synthesis in the initial
+  PathBank lead; this record does not claim that different lead is fully covered.
+- The net AH2/A electron donor is not physiologically resolved; no specific ferredoxin
+  or complete elementary ThiI/ThiF relay is asserted.
+- ThiD oligomer annotations conflict; the functional edge leaves this unresolved.
+  ThiGH isolated multimer is not universal cellular stoichiometry.
+- Several detailed E. coli assignments remain reviewed inference or cross-species
+  context, especially ThiC and the exact thiazole tautomer; target wording keeps those
+  grades.
+- No uniform wild-type flux, complete elementary enzymology, cofactor-free pathway
+  initiation, or generalization from assay anaerobiosis to every pathway step is claimed.
+- Older primary sources inspected only as abstracts are explicitly labeled; current
+  database assertions are not relabeled as new direct experiments.
+- Original Documents checkout is OS-inaccessible; hidden/ignored searches cover the
+  accessible worktree.
+- No browser interaction or new experiments; final generated publication checks are
+  programmatic and delegated to root.
+notes:
+- Issue338 was a confirmed minor provenance finding during live review and was fixed
+  before any immutable structured bundle. The current findings list is empty; original
+  defect and verified correction remain in this assessment and hashed independent
+  audit.
+- Reviewer-only replay setup errors and their successful replacements are preserved
+  in checks. Generic donor R/A symbol normalization was limited to CHEBI13193/17499
+  and did not change any source or record chemical identity.
+- A second external draft validation rejected the historical initial vendored observation
+  because it named an executed command without a retained numeric exit code. Its command
+  field was removed; the failed attempt remains an honest delegated observation. Final
+  repeated vendored command has observed exit0.
+tags:
+- scientific-review
+- thiamine
+- independent
+```
