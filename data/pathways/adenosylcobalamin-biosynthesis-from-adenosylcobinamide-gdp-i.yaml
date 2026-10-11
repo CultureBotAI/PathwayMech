@@ -1,0 +1,582 @@
+id: MetaCyc:PWY-5509
+label: adenosylcobalamin biosynthesis from adenosylcobinamide-GDP I
+description: 'This three-reaction nucleotide-loop assembly pathway starts with supplied adenosylcobinamide-GDP
+  and 5,6-dimethylbenzimidazole. CobT transfers phosphoribose from nicotinate ribonucleotide, CobS joins
+  the resulting alpha-ribazole phosphate to the activated corrinoid, and CobC removes the terminal phosphate.
+  The graph represents reviewed Escherichia coli K-12 assignments with explicit evidence limits: CobT
+  homodimer and CobS function/magnesium annotations include similarity evidence, and the current E. coli
+  CobC annotation is inferred from Salmonella CobC. K-12 growth genetics supports salvage; the 2021 EcCobS
+  assays used a BL21-derived construct and heterologous accessory enzymes. A 2023 engineered cell-free
+  B12 production system separately used MG1655 CobT, CobS and CobC, including a soluble SIMPLEx-CobS fusion
+  and engineered complementation. This strengthens MG1655 functional support without establishing isolated
+  CobC kinetics, native quaternary structures or terminal-step physiology. Chemical naming inconsistencies
+  in that supplement are preserved as source conflicts; the graph uses independently balanced Rhea chemistry.
+  Terminal-step physiological timing was reassessed in Salmonella, not directly in K-12. No universal
+  enzyme essentiality, exclusive route or physiological flux is implied. The activated corrinoid input
+  separates this exact pathway from upstream cobinamide uptake, reduction, adenosylation and GDP activation;
+  this record does not cover the full salvage superpathway or de novo corrin-ring synthesis. The alternative
+  unphosphorylated-ribazole route and cobamide remodeling are excluded.'
+pathway_type: cofactor-biosynthesis
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15890
+  label: 5,6-dimethylbenzimidazole
+  category: small_molecule
+- id: CHEBI:18408
+  label: cobamamide
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:32544
+  label: nicotinate
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57502
+  label: nicotinate D-ribonucleotide(2-)
+  category: small_molecule
+- id: CHEBI:57918
+  label: alpha-ribazole 5'-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:58115
+  label: guanosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:60487
+  label: adenosylcobinamide guanosyl diphosphate(1-)
+  category: small_molecule
+- id: CHEBI:60493
+  label: adenosylcobalamin 5'-phosphate(2-)
+  category: small_molecule
+- id: UniProtKB:P36562
+  label: Nicotinate-nucleotide--dimethylbenzimidazole phosphoribosyltransferase
+  category: protein
+- id: UniProtKB:P36561
+  label: Adenosylcobinamide-GDP ribazoletransferase
+  category: protein
+- id: UniProtKB:P52086
+  label: Adenosylcobalamin/alpha-ribazole phosphatase
+  category: protein
+- id: PathBank:SMP0001898/ProteinComplex/3870
+  label: nicotinate-nucleotide dimethylbenzimidazole phosphoribosyltransferase
+  category: complex
+- id: GO:0005886
+  label: plasma membrane
+  category: cellular_component
+reactions:
+- id: RHEA:11197
+  label: 5,6-dimethylbenzimidazole + nicotinate beta-D-ribonucleotide => alpha-ribazole 5'-phosphate +
+    nicotinate + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:23561
+  label: alpha-ribazole 5'-phosphate + adenosylcob(III)inamide-GDP => adenosylcob(III)alamin 5'-phosphate
+    + GMP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:30368
+  label: adenosylcob(III)alamin 5'-phosphate + H2O => adenosylcob(III)alamin + phosphate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: nla-edge-001
+  subject: CHEBI:15890
+  predicate: consumes
+  object: RHEA:11197
+  evidence:
+  - reference_id: RHEA:11197
+    source_assertion: Rhea RHEA:11197 assigns CHEBI:15890 to its substrates with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11197']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/11196_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_11196_compound_2241'];
+      rh:compound/rh:chebi
+- id: nla-edge-002
+  subject: CHEBI:57502
+  predicate: consumes
+  object: RHEA:11197
+  evidence:
+  - reference_id: RHEA:11197
+    source_assertion: Rhea RHEA:11197 assigns CHEBI:57502 to its substrates with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11197']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/11196_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_11196_compound_2274'];
+      rh:compound/rh:chebi
+- id: nla-edge-003
+  subject: RHEA:11197
+  predicate: produces
+  object: CHEBI:57918
+  evidence:
+  - reference_id: RHEA:11197
+    source_assertion: Rhea RHEA:11197 assigns CHEBI:57918 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11197']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/11196_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_11196_compound_1950'];
+      rh:compound/rh:chebi
+- id: nla-edge-004
+  subject: RHEA:11197
+  predicate: produces
+  object: CHEBI:32544
+  evidence:
+  - reference_id: RHEA:11197
+    source_assertion: Rhea RHEA:11197 assigns CHEBI:32544 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11197']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/11196_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_11196_compound_2096'];
+      rh:compound/rh:chebi
+- id: nla-edge-005
+  subject: RHEA:11197
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:11197
+    source_assertion: Rhea RHEA:11197 assigns CHEBI:15378 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/11197']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/11196_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_11196_compound_3249'];
+      rh:compound/rh:chebi
+- id: nla-edge-006
+  subject: CHEBI:57918
+  predicate: consumes
+  object: RHEA:23561
+  evidence:
+  - reference_id: RHEA:23561
+    source_assertion: Rhea RHEA:23561 assigns CHEBI:57918 to its substrates with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23561']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/23560_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_23560_compound_1950'];
+      rh:compound/rh:chebi
+- id: nla-edge-007
+  subject: CHEBI:60487
+  predicate: consumes
+  object: RHEA:23561
+  evidence:
+  - reference_id: RHEA:23561
+    source_assertion: Rhea RHEA:23561 assigns CHEBI:60487 to its substrates with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23561']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/23560_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_23560_compound_6530'];
+      rh:compound/rh:chebi
+- id: nla-edge-008
+  subject: RHEA:23561
+  predicate: produces
+  object: CHEBI:60493
+  evidence:
+  - reference_id: RHEA:23561
+    source_assertion: Rhea RHEA:23561 assigns CHEBI:60493 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23561']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/23560_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_23560_compound_6640'];
+      rh:compound/rh:chebi
+- id: nla-edge-009
+  subject: RHEA:23561
+  predicate: produces
+  object: CHEBI:58115
+  evidence:
+  - reference_id: RHEA:23561
+    source_assertion: Rhea RHEA:23561 assigns CHEBI:58115 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23561']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/23560_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_23560_compound_3807'];
+      rh:compound/rh:chebi
+- id: nla-edge-010
+  subject: RHEA:23561
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:23561
+    source_assertion: Rhea RHEA:23561 assigns CHEBI:15378 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23561']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/23560_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_23560_compound_3249'];
+      rh:compound/rh:chebi
+- id: nla-edge-011
+  subject: CHEBI:60493
+  predicate: consumes
+  object: RHEA:30368
+  evidence:
+  - reference_id: RHEA:30368
+    source_assertion: Rhea RHEA:30368 assigns CHEBI:60493 to its substrates with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/30368']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/30367_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_30367_compound_6640'];
+      rh:compound/rh:chebi
+- id: nla-edge-012
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:30368
+  evidence:
+  - reference_id: RHEA:30368
+    source_assertion: Rhea RHEA:30368 assigns CHEBI:15377 to its substrates with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/30368']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/30367_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_30367_compound_1283'];
+      rh:compound/rh:chebi
+- id: nla-edge-013
+  subject: RHEA:30368
+  predicate: produces
+  object: CHEBI:18408
+  evidence:
+  - reference_id: RHEA:30368
+    source_assertion: Rhea RHEA:30368 assigns CHEBI:18408 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/30368']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/30367_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_30367_compound_4165'];
+      rh:compound/rh:chebi
+- id: nla-edge-014
+  subject: RHEA:30368
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:30368
+    source_assertion: Rhea RHEA:30368 assigns CHEBI:43474 to its products with coefficient 1; the exact
+      charged species is linked through rh:compound/rh:chebi.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/30368']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/30367_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_30367_compound_5518'];
+      rh:compound/rh:chebi
+- id: nla-edge-015
+  subject: PathBank:SMP0001898/ProteinComplex/3870
+  predicate: catalyzes
+  object: RHEA:11197
+  description: The native catalyst is represented as its CobT assembly, with the homodimer assignment
+    qualified by similarity on the membership edge. The engineered 2023 system supports MG1655 enzyme
+    function without establishing its native quaternary structure or physiological flux. The supplement
+    misabbreviates nicotinate ribonucleotide as NMN; exact chemistry follows inspected Rhea and reviewed
+    UniProt.
+  evidence:
+  - reference_id: PathBank:SMP0001898
+    source_assertion: Native ReactionCatalysis/5115 uses ProteinComplex/3870 as controller of Reactions/5142,
+      the DMB plus nicotinate-ribonucleotide reaction producing alpha-ribazole phosphate, nicotinate and
+      a proton.
+    source_locator: 'PW001884.owl: bp:Catalysis[@rdf:ID="ReactionCatalysis/5115"]/bp:controller; bp:controlled;
+      bp:BiochemicalReaction[@rdf:ID="Reactions/5142"]/bp:left; bp:right; bp:name'
+  - reference_id: UniProtKB:P36562
+    source_assertion: Reviewed K-12 CobT P36562 assigns DMB plus nicotinate beta-D-ribonucleotide to alpha-ribazole
+      5'-phosphate, nicotinate and H(+), with RHEA:11196. The reaction comment has no inline experimental
+      qualifier.
+    source_locator: /primaryAccession; /organism/taxonId; /comments/0; /comments/1/reaction
+  - reference_id: DOI:10.1038/s41467-023-40932-4
+    source_assertion: The 2023 supplement identifies the CobT used in the engineered cell-free B12 synthesis
+      system as E. coli MG1655 EC 2.4.2.21. This supports use of the MG1655 enzyme in a multienzyme system,
+      not direct characterization of its dimer.
+    source_locator: Supplementary Information, Supplementary Table 1, PDF page 4; Supplementary Table
+      2, PDF pages 7-9; main paper Methods, Cloning and purification of enzymes
+- id: nla-edge-016
+  subject: UniProtKB:P36562
+  predicate: part_of
+  object: PathBank:SMP0001898/ProteinComplex/3870
+  description: Membership retains the native dimer coefficient without upgrading a similarity annotation
+    to an experimentally established K-12 quaternary structure.
+  evidence:
+  - reference_id: PathBank:SMP0001898
+    source_assertion: ProteinComplex/3870 contains Protein/6552 with coefficient 2.0. Protein/6552 resolves
+      through ProteinReference/6552 and Reference/UniProt_P36562 to accession P36562.
+    source_locator: 'PW001884.owl: bp:Complex[@rdf:ID="ProteinComplex/3870"]/bp:component; bp:componentStoichiometry;
+      bp:Stoichiometry[@rdf:ID="Protein/6552/Stoichiometry/2.0"]; bp:ProteinReference[@rdf:ID="ProteinReference/6552"]/bp:xref;
+      bp:UnificationXref[@rdf:ID="Reference/UniProt_P36562"]'
+  - reference_id: UniProtKB:P36562
+    source_assertion: Reviewed CobT is annotated as a homodimer with ECO:0000250, an inference by similarity.
+    source_locator: /comments/3/commentType; /comments/3/texts/0/value; /comments/3/texts/0/evidences/0/evidenceCode
+- id: nla-edge-017
+  subject: UniProtKB:P36561
+  predicate: enables
+  object: RHEA:23561
+  description: This gene-product/activity edge retains the reviewed K-12 assignment without asserting
+    a physical monomer catalyst. The 2021 construct is BL21-derived; the 2023 work separately supports
+    engineered MG1655 CobS function. Cyanation during product analysis limits inference about the native
+    upper ligand from the final peak. The 2023 supplement misnames the product as adenosylcobinamide-5-P;
+    the independently balanced Rhea equation is retained. No direct E. coli cobamide-remodeling activity
+    is assigned.
+  evidence:
+  - reference_id: UniProtKB:P36561
+    source_assertion: Reviewed K-12 CobS includes the alpha-ribazole 5'-phosphate plus adenosylcobinamide-GDP
+      reaction RHEA:23560. Its FUNCTION comment explicitly qualifies this synthesis by similarity (ECO:0000250).
+    source_locator: /primaryAccession; /organism/taxonId; /comments/0; /comments/2/reaction
+  - reference_id: MetaCyc:COBS-MONOMER
+    source_assertion: COBS-MONOMER maps to P36561 and catalyzes COBALAMIN5PSYN-RXN through COBALAMIN5PSYN-ENZRXN.
+      The native comment cites Salmonella terminal-step reassessment for the function.
+    source_locator: Protein[@frameid="COBS-MONOMER"]/dblink[dblink-db="UNIPROT"]; catalyzes/Enzymatic-Reaction[@frameid="COBALAMIN5PSYN-ENZRXN"];
+      comment
+  - reference_id: PMID:7592411
+    source_assertion: E. coli K-12 cobS mutants failed the cobinamide-dependent growth test even with
+      DMB supplementation. This supports salvage function, not a purified assay of each current Rhea species.
+    source_locator: 'PMC177486: Results, Localization of mutations within the E. coli cob operon; Tables
+      2 and 3, printed page 6375; Materials and Methods, strain and cloning scope'
+  - reference_id: PMID:34031037
+    source_assertion: EcCobS-containing membranes supported the cobinamide-salvaging control with alpha-ribazole
+      phosphate, Salmonella CobU and Vibrio CobC. The experiment used a BL21-derived host and does not
+      assay K-12 CobC.
+    source_locator: 'PMC8407341: Results, In vitro reactions for VcCobS remodeling; Figure 4A; Table 1;
+      Materials and Methods, In vitro cobamide production assays'
+  - reference_id: PMID:31609521
+    source_assertion: The EcCobS expression construct was cloned from BL21. This identifies the origin
+      of the construct subsequently cited in the 2021 paper; exact equivalence to K-12 accession P36561
+      is not established here.
+    source_locator: Experimental procedures, Strain cultivation and cloning, second paragraph; pET16b
+      EcCobS construct
+  - reference_id: PMID:37620358
+    source_assertion: The 2023 study cloned CobS from E. coli MG1655, fused it to ApoAI* and signal-peptide-deleted
+      MBP for the SIMPLEx system, and tested engineered B12 production and a cell-free cascade. This is
+      an MG1655 construct with engineered solubilization, not a native membrane assembly assay.
+    source_locator: 'PMC10449867: Results, Promoting the reactions catalyzed by transmembrane enzymes;
+      Methods, Cloning and purification of enzymes; Supplementary Figure 9d'
+  - reference_id: DOI:10.1038/s41467-023-40932-4
+    source_assertion: Supplementary Table 1 identifies CobS as E. coli MG1655 EC 2.7.8.26; Supplementary
+      Figure 9d compares the engineered B16 parent, cobS deletion, and CobS or SIMPLEx-CobS complementation.
+      Its reaction product name is inconsistent with the intended cobalamin-phosphate structure.
+    source_locator: Supplementary Information, Supplementary Table 1, PDF page 4; Supplementary Figure
+      9d and legend, PDF page 23
+- id: nla-edge-018
+  subject: UniProtKB:P52086
+  predicate: enables
+  object: RHEA:30368
+  description: The reviewed K-12 annotation remains homology-qualified, with additional MG1655 functional
+    support from the engineered 2023 multienzyme system. That system does not establish isolated CobC
+    kinetics or native terminal-step physiology. Its supplement misnames the phosphate substrate and calls
+    CobC[4] a synthase; exact chemistry follows independent Rhea and reviewed annotation. The P52086-linked
+    6E4B dimer is structurally assigned without solution-assembly evidence. No physical monomer state
+    is inferred from the database frame name.
+  evidence:
+  - reference_id: UniProtKB:P52086
+    source_assertion: Reviewed K-12 CobC assigns adenosylcobalamin 5'-phosphate hydrolysis to RHEA:30367,
+      with ECO:0000250 and UniProtKB:P39701 as the homology source.
+    source_locator: /primaryAccession; /organism/taxonId; /comments/0; /comments/1/reaction/evidences
+  - reference_id: MetaCyc:RIBAZOLEPHOSPHAT-MONOMER
+    source_assertion: The version-22.5 P52086 frame describes E. coli K-12 CobC as uncharacterized and
+      predicts its phosphatase function by Salmonella homology. This historical source statement does
+      not account for the subsequently inspected 2023 engineered MG1655 system.
+    source_locator: Protein[@frameid="RIBAZOLEPHOSPHAT-MONOMER"]/comment; dblink[dblink-db="UNIPROT"];
+      catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-7469"]
+  - reference_id: PMID:17209023
+    source_assertion: Salmonella Typhimurium cobC mutants accumulated cobalamin phosphate; the paper assigns
+      terminal dephosphorylation to CobC and explicitly limits this physiological conclusion to that organism.
+    source_locator: 'PMC1899380: Results, A cobC strain accumulates AdoCbl-P; Figures 5 and 6; Discussion,
+      opening paragraph; Figure 8'
+  - reference_id: DOI:10.1038/s41467-023-40932-4
+    source_assertion: Supplementary Table 1 identifies the CobC phosphatase used in the 2023 cell-free
+      system as E. coli MG1655 EC 3.1.3.73. Table 2 includes this enzyme as CobC[4]. This is multienzyme-system
+      support, not isolated CobC kinetics; the reported K′eq column is calculated thermodynamics.
+    source_locator: Supplementary Information, Supplementary Table 1, PDF pages 2 and 5-6; Supplementary
+      Table 2 and footnote [4], PDF pages 7-9; main paper Methods, Cloning and purification of enzymes
+  - reference_id: DOI:10.2210/pdb6E4B/pdb
+    source_assertion: RCSB assembly 1 for 6E4B is an author-and-PISA-defined dimer. The author-evidence
+      field explicitly reports experimental_support as none; this does not establish a separately measured
+      solution oligomerization state.
+    source_locator: 'RCSB core assembly/6E4B/1 JSON: /pdbx_struct_assembly; /pdbx_struct_assembly_auth_evidence/0/experimental_support;
+      /rcsb_assembly_info'
+- id: nla-edge-019
+  subject: UniProtKB:P36561
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: The magnesium requirement is retained as a similarity-qualified annotation. MgCl2 in the
+    inspected reaction mixtures is an assay condition and is not an independent apo-enzyme metal-reconstitution
+    or binding experiment.
+  evidence:
+  - reference_id: UniProtKB:P36561
+    source_assertion: Reviewed CobS names Mg(2+) as cofactor, linked to CHEBI:18420, with ECO:0000250.
+    source_locator: /comments/3/commentType; /comments/3/cofactors/0
+- id: nla-edge-020
+  subject: UniProtKB:P36561
+  predicate: located_in
+  object: GO:0005886
+  description: This retains the reviewed location assertion. The 2005 cited paper was inspected at abstract
+    level; no detailed membrane topology or exclusive localization of every molecule is inferred.
+  evidence:
+  - reference_id: UniProtKB:P36561
+    source_assertion: Reviewed P36561 has cell-inner-membrane, multipass annotation with ECO:0000269 citing
+      PMID:15919996, and an explicit GO:0005886 cross-reference with IDA:EcoCyc and ECO:0000314.
+    source_locator: /comments/5/subcellularLocations/0; /uniProtKBCrossReferences/32
+- id: nla-edge-021
+  subject: RHEA:11197
+  predicate: part_of
+  object: MetaCyc:PWY-5509
+  evidence:
+  - reference_id: MetaCyc:PWY-5509
+    source_assertion: PWY-5509 lists DMBPPRIBOSYLTRANS-RXN as a member and selects L2R in reaction-layout.
+    source_locator: Pathway[@frameid="PWY-5509"]/reaction-list/Reaction[@frameid="DMBPPRIBOSYLTRANS-RXN"];
+      reaction-layout[Reaction[@frameid="DMBPPRIBOSYLTRANS-RXN"]]
+  - reference_id: MetaCyc:DMBPPRIBOSYLTRANS-RXN
+    source_assertion: DMBPPRIBOSYLTRANS-RXN supplies the matching chemical sides and the directional RHEA:11197
+      cross-reference.
+    source_locator: Reaction/left; right; reaction-direction; dblink[dblink-db="RHEA"]
+- id: nla-edge-022
+  subject: RHEA:23561
+  predicate: part_of
+  object: MetaCyc:PWY-5509
+  evidence:
+  - reference_id: MetaCyc:PWY-5509
+    source_assertion: PWY-5509 lists COBALAMIN5PSYN-RXN as a member and selects L2R in reaction-layout.
+    source_locator: Pathway[@frameid="PWY-5509"]/reaction-list/Reaction[@frameid="COBALAMIN5PSYN-RXN"];
+      reaction-layout[Reaction[@frameid="COBALAMIN5PSYN-RXN"]]
+  - reference_id: MetaCyc:COBALAMIN5PSYN-RXN
+    source_assertion: COBALAMIN5PSYN-RXN supplies the matching chemical sides and the directional RHEA:23561
+      cross-reference.
+    source_locator: Reaction/left; right; reaction-direction; dblink[dblink-db="RHEA"]
+- id: nla-edge-023
+  subject: RHEA:30368
+  predicate: part_of
+  object: MetaCyc:PWY-5509
+  evidence:
+  - reference_id: MetaCyc:PWY-5509
+    source_assertion: PWY-5509 lists RXN-8770 as a member and selects L2R in reaction-layout.
+    source_locator: Pathway[@frameid="PWY-5509"]/reaction-list/Reaction[@frameid="RXN-8770"]; reaction-layout[Reaction[@frameid="RXN-8770"]]
+  - reference_id: MetaCyc:RXN-8770
+    source_assertion: RXN-8770 supplies the hydrolysis sides, a bidirectional RHEA:30370 cross-reference
+      and a PHYSIOL-LEFT-TO-RIGHT direction. Selection of RHEA:30368 additionally uses the separately
+      cited Rhea family.
+    source_locator: Reaction/left; right; reaction-direction; dblink[dblink-db="RHEA"]
+  - reference_id: RHEA:30368
+    source_assertion: Rhea master 30367 links bidirectional reaction 30370 and directional reaction 30368.
+      Reaction 30368 consumes master side 30367_L and produces 30367_R, selecting the hydrolysis direction
+      that matches native RXN-8770.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/30367"]/rh:bidirectionalReaction;
+      rh:directionalReaction; rdf:Description[@rdf:about="http://rdf.rhea-db.org/30368"]/rh:substrates;
+      rh:products
+- id: nla-edge-024
+  subject: RHEA:11197
+  predicate: provides_input_for
+  object: RHEA:23561
+  description: The material-transfer edge represents the native annotated route. The cited 1999 reconstitution
+    uses Salmonella enzymes; the later MG1655 proteins occur in a larger engineered multienzyme system,
+    not an isolated native three-enzyme physiological-flux assay.
+  evidence:
+  - reference_id: MetaCyc:PWY-5509
+    source_assertion: PWY-5509 orders DMBPPRIBOSYLTRANS-RXN before COBALAMIN5PSYN-RXN. Alpha-ribazole
+      5'-phosphate is the first reaction's product and the second reaction's substrate.
+    source_locator: Pathway[@frameid="PWY-5509"]/reaction-ordering[Reaction[@frameid="COBALAMIN5PSYN-RXN"]]/predecessor-reactions;
+      reaction-layout
+  - reference_id: PMID:10518530
+    source_assertion: The Salmonella enzyme reconstitution uses the CobT product alpha-ribazole 5'-phosphate
+      with adenosylcobinamide-GDP for CobS-dependent formation of cobalamin phosphate.
+    source_locator: 'PMC18366: Results, The CobS Protein Has Cobalamin Synthase Activity; Isolation of
+      Products from the NLA and Cobalamin Synthase Reactions; Figures 3C and 4'
+- id: nla-edge-025
+  subject: RHEA:23561
+  predicate: provides_input_for
+  object: RHEA:30368
+  description: This sequence is the selected reviewed E. coli annotation with explicit cross-species inference
+    in the CobC annotation and later engineered MG1655 system support. The earlier 1999 in vitro paper
+    alone did not establish the physiological timing of phosphate removal; the 2007 reassessment establishes
+    it specifically in Salmonella.
+  evidence:
+  - reference_id: MetaCyc:PWY-5509
+    source_assertion: PWY-5509 orders RXN-8770 after COBALAMIN5PSYN-RXN through the adenosylcobalamin
+      5'-phosphate intermediate.
+    source_locator: Pathway[@frameid="PWY-5509"]/reaction-ordering[Reaction[@frameid="RXN-8770"]]/predecessor-reactions;
+      reaction-layout
+  - reference_id: PMID:10518530
+    source_assertion: Salmonella CobC-containing extract dephosphorylated the cobalamin phosphate formed
+      by nucleotide-loop assembly; vector-only extract did not. Corrinoids were cyanated before HPLC analysis.
+    source_locator: 'PMC18366: Results, The CobC Protein Can Dephosphorylate AdoCbl-5''-P in Vitro; Figure
+      6'
+  - reference_id: PMID:17209023
+    source_assertion: The later Salmonella study supports alpha-ribazole phosphate use by CobS followed
+      by terminal CobC dephosphorylation. Its Discussion states that validity in other prokaryotes remains
+      to be shown.
+    source_locator: 'PMC1899380: Results, Alpha-RP is the preferred substrate of the AdoCbl-5''-P synthase
+      (CobS) enzyme; Figure 7; Discussion, opening paragraph; Figure 8'
+references:
+- id: MetaCyc:PWY-5509
+  title: MetaCyc PWY-5509
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5509
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: de4e4e21ac728af6ed447d0d42e2b018b1fdeab29cc1062604108bfb3d2e7244
+- id: MetaCyc:DMBPPRIBOSYLTRANS-RXN
+  title: MetaCyc DMBPPRIBOSYLTRANS-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:DMBPPRIBOSYLTRANS-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: f4ee1227bb9c0a7ca91a8e9d99de08f1e4283d196c15e147f9573ce72a3e6394
+- id: MetaCyc:COBALAMIN5PSYN-RXN
+  title: MetaCyc COBALAMIN5PSYN-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:COBALAMIN5PSYN-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: f2efa5db8aad7f08f126e43f56ccc3603c1107f990f1e96dd70a2eb517ec1843
+- id: MetaCyc:RXN-8770
+  title: MetaCyc RXN-8770
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-8770
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: fcbdc14cb69887cc5b3c3f8edd25861e7ba453492b4781d2304acd92b395dadb
+- id: MetaCyc:COBS-MONOMER
+  title: MetaCyc COBS-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:COBS-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: 97b447af23a34ed1d87c1e8470ca626a0068ba750daa4552940269602600dd8f
+- id: MetaCyc:RIBAZOLEPHOSPHAT-MONOMER
+  title: MetaCyc RIBAZOLEPHOSPHAT-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:RIBAZOLEPHOSPHAT-MONOMER
+  source_version: 22.5; official mirror retrieved 2026-10-10
+  source_sha256: f961df8173c4986ed62c12c0a5afa548ef85476c56dd5bb8cd2f5cadf806d16c
+- id: PathBank:SMP0001898
+  title: 'Adenosylcobalamin Salvage from Cobinamide: native CobT assembly and reaction projection'
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: Preserved primary BioPAX archive member PW001884.owl; digest covers member bytes
+  source_sha256: 4b4233814e281b298cf718f03ae89c2c0af8e70a278ccd0ea0664d8575499612
+- id: UniProtKB:P36562
+  title: Reviewed UniProtKB P36562
+  url: https://rest.uniprot.org/uniprotkb/P36562.json
+  source_version: 2026_03; response release header; retrieved 2026-10-10
+  source_sha256: d1367904ff45c42a0e02ab1aead789089b6f65f0cb1927084c6683d59a88dbad
+- id: UniProtKB:P36561
+  title: Reviewed UniProtKB P36561
+  url: https://rest.uniprot.org/uniprotkb/P36561.json
+  source_version: 2026_03; response release header; retrieved 2026-10-10
+  source_sha256: af9140df9a25520426db89481572270d70fbc834fd3d79ecd122dec76edb2f98
+- id: UniProtKB:P52086
+  title: Reviewed UniProtKB P52086
+  url: https://rest.uniprot.org/uniprotkb/P52086.json
+  source_version: 2026_03; response release header; retrieved 2026-10-10
+  source_sha256: 0b52f469e0f7f25af8b06610db8fa168d5b78114f9a794f1b9ac3af0ae7f63f0
+- id: RHEA:11197
+  title: Rhea 11197 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:23561
+  title: Rhea 23561 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:30368
+  title: Rhea 30368 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:7592411
+  title: The cobalamin (coenzyme B12) biosynthetic genes of Escherichia coli.
+  url: https://europepmc.org/articles/PMC177486?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10 UTC
+  source_sha256: 42da7e9bae0a77458a857218fe302469602a6e9247cb4e5092af60c362ad122b
+- id: PMID:10518530
+  title: In vitro synthesis of the nucleotide loop of cobalamin by Salmonella typhimurium enzymes.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC18366/
+  source_version: Primary full text; retrieved 2026-10-10 UTC
+  source_sha256: e1879357ff7b981378c747cd9b687afa618f4cc71ab9d0d9982ae4b37c1339dd
+- id: PMID:17209023
+  title: 'Reassessment of the late steps of coenzyme B12 synthesis in Salmonella enterica: evidence that
+    dephosphorylation of adenosylcobalamin-5''-phosphate by the CobC phosphatase is the last step of the
+    pathway.'
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC1899380/
+  source_version: Primary full text; retrieved 2026-10-10 UTC
+  source_sha256: 9799f9e02b3cb36da51360533d3a8ef651693c3e1cdd232b32d50ecf16d83bdf
+- id: PMID:34031037
+  title: Direct Cobamide Remodeling via Additional Function of Cobamide Biosynthesis Protein CobS from
+    Vibrio cholerae.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8407341/
+  source_version: Primary full text; retrieved 2026-10-10 UTC
+  source_sha256: c030fdc34f5fb84c0543d327c8ee0050cf288dfcc915a2f9305239bd1392d77d
+- id: PMID:31609521
+  title: Specificity of cobamide remodeling, uptake and utilization in Vibrio cholerae.
+  url: https://onlinelibrary.wiley.com/doi/full/10.1111/mmi.14402
+  source_version: Publisher full text inspected through web tool 2026-10-11 UTC; no downloaded full-text
+    body digest
+- id: PMID:37620358
+  title: A synthetic cell-free 36-enzyme reaction system for vitamin B12 production.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10449867/
+  source_version: Primary full text; retrieved 2026-10-11 UTC
+  source_sha256: b672d2fa009658762fc8f41ccbd17fcbe943440b40353f7570c87651cee90f82
+- id: DOI:10.1038/s41467-023-40932-4
+  title: Supplementary Information for A synthetic cell-free 36-enzyme reaction system for vitamin B12
+    production.
+  url: https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-023-40932-4/MediaObjects/41467_2023_40932_MOESM3_ESM.pdf
+  source_version: Published Supplementary Information; retrieved 2026-10-11 UTC
+  source_sha256: b847c84fe5bf0b7de306cba3cb3c0ee8278053381a8dafaa35789dfcfa57dce7
+- id: DOI:10.2210/pdb6E4B/pdb
+  title: 'RCSB PDB 6E4B biological assembly 1: putative alpha-ribazole-5-phosphate phosphatase from Escherichia
+    coli K-12.'
+  url: https://data.rcsb.org/rest/v1/core/assembly/6E4B/1
+  source_version: RCSB current API response; entry revision 1.2 (2023-10-11); retrieved 2026-10-11 UTC
+  source_sha256: 53d35b7f80a5302e9d99389ff4196dceb0bbbe4d6e30c2f5ca91ca500515d5fd

@@ -77,6 +77,11 @@ as ChEBI or UniProt authority terms: those identifiers still require their own
 independent authority inputs. Scoped PathBank participant rules permit native
 BioPAX display names, and reaction rules permit curated Rhea step descriptions.
 The rules do not relax pathway titles, taxon labels or missing identifiers.
+MetaCyc records can also use verified PathBank physical participants when the
+native object preserves an assembly or molecular state. This participant-only
+contextual rule does not establish pathway membership, catalytic function, or
+sequence equivalence; those claims need independent edge evidence. It does not
+extend to PathBank reaction labels or pathway titles in a MetaCyc record.
 Archive members must be extracted without rewriting bytes, with the exact member
 path and archive digest recorded in `sha256_scope` when the public URL is a ZIP.
 
