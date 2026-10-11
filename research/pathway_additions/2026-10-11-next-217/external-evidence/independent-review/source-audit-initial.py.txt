@@ -1,0 +1,106 @@
+import hashlib,json,re,sqlite3,subprocess
+from collections import Counter
+from datetime import datetime,timezone
+from pathlib import Path
+from lxml import etree,html
+import yaml
+R=Path('/private/tmp/pathwaymech-myxochelin-independent-review-20261011');A=Path('/private/tmp/pathwaymech-myxochelin-author-20261011');P=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011/originals')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(4*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def obj(n):
+ tail='-native' if n=='CPD-25916' else ''
+ t=etree.parse(str(P/f'metacyc-{n}{tail}.xml'))
+ return t.xpath(f'/*/*[@frameid="{n}"]')[0]
+def vector(s):
+ parts=s.split('/');v=Counter()
+ for a,n in re.findall(r'([A-Z][a-z]?)(\d*)',parts[1]):v[a]+=int(n or 1)
+ for l in parts[2:]:
+  if re.fullmatch(r'[pq][+-]?\d+',l):
+   n=int(l[1:]);v['charge']+=n
+   if l[0]=='p':v['H']+=n
+ return v
+def combine(items):
+ v=Counter()
+ for coef,x in items:
+  for a,n in x.items():v[a]+=coef*n
+ return {a:n for a,n in v.items() if n}
+r=yaml.safe_load((A/'draft/myxochelin-a-and-b-biosynthesis.yaml').read_bytes());manifest=json.loads((A/'draft/myxochelin-source-manifest.json').read_text());start=datetime.now(timezone.utc).isoformat()
+raws={}
+for row in manifest['bodies']:
+ assert sha(row['path'])==row['sha256'];raws[row['sha256']]=Path(row['path'])
+for row in manifest['issuing_databases']:assert sha(row['path'])==row['sha256'];raws[row['sha256']]=Path(row['path'])
+for row in manifest['prior_proof_inputs']:assert sha(row['path'])==row['sha256']
+ids={'ATP':'CHEBI:30616','2-3-DIHYDROXYBENZOATE':'CHEBI:36654','PROTON':'CHEBI:15378','CPD-62':'CHEBI:57417','PPI':'CHEBI:33019','AMP':'CHEBI:456215','LYS':'CHEBI:32551','CPD-24910':'CHEBI:176581','NADPH':'CHEBI:57783','NADP':'CHEBI:58349','GLT':'CHEBI:29985','CPD-25905':'CHEBI:7061','2-KETOGLUTARATE':'CHEBI:16810'}
+carriers=['MxcF','MxcG','23-DHB-MxcF','Lysyl-MxcG','N-23-DHB-Lysyl-MxcG','N-N-di23-DHB-Lysyl-MxcG']
+for n in carriers+['CPD-25904','CPD-25916']:ids[n]='MetaCyc:'+n
+mols={}; sql=sqlite3.connect('file:/Users/marcin/.data/oaklib/chebi.db?mode=ro',uri=True)
+for n,i in ids.items():
+ el=obj(n)
+ if n in carriers:assert el.tag=='Protein' and el.find('inchi') is None;continue
+ s=el.findtext('inchi');mols[n]=s
+ if i.startswith('CHEBI:'):
+  entries=sql.execute("select value from statements where subject=? and predicate like '%inchi'",(i,)).fetchall()
+  assert len(entries)==1 and entries[0][0]==s,(n,i,entries,s)
+# Exact B identity; A narrower than unspecified ChEBI31877, no false mapping.
+a_generic=sql.execute("select value from statements where subject='CHEBI:31877' and predicate like '%inchi'").fetchone()[0]
+assert mols['CPD-25904'].split('/t')[0]==a_generic and '/t' in mols['CPD-25904'] and '/t' not in a_generic
+assert 'CHEBI:31877' not in {n['id'] for n in r['participants']}
+# Formula deltas are reactive residues relative to arbitrary conserved F/G scaffolds, not whole protein formulas.
+vectors={n:vector(s) for n,s in mols.items()}
+vectors.update({'MxcF':Counter(F_scaffold=1),'MxcG':Counter(G_scaffold=1),'23-DHB-MxcF':Counter(F_scaffold=1,C=7,H=4,O=3),'Lysyl-MxcG':Counter(G_scaffold=1,C=6,H=14,N=2,O=1,charge=2),'N-23-DHB-Lysyl-MxcG':Counter(G_scaffold=1,C=13,H=17,N=2,O=4,charge=1),'N-N-di23-DHB-Lysyl-MxcG':Counter(G_scaffold=1,C=20,H=20,N=2,O=7)})
+members=[x.get('frameid') for x in obj('PWY-8383').xpath('./reaction-list/Reaction')]
+assert len(members)==9 and set(members)=={n['id'].split(':')[1] for n in r['reactions']}
+actual=Counter((e['subject'],e['predicate'],e['object']) for e in r['mechanistic_edges'] if e['predicate'] in ['consumes','produces']);expected=Counter();equations={};balance={}
+for n in members:
+ e=obj(n); rev=e.findtext('reaction-direction')=='PHYSIOL-RIGHT-TO-LEFT';assert rev==(n=='RXN-23314')
+ q={}
+ for side,tag in [('inputs','right' if rev else 'left'),('outputs','left' if rev else 'right')]:
+  q[side]=[(x[0].get('frameid'),int(x.findtext('coefficient','1'))) for x in e.findall(tag)]
+  for f,c in q[side]:
+   assert c==1
+   triple=(ids[f],'consumes','MetaCyc:'+n) if side=='inputs' else ('MetaCyc:'+n,'produces',ids[f]);expected[triple]+=c
+ balance[n]=combine([(c if s=='outputs' else -c,vectors[f]) for s,entries in q.items() for f,c in entries]);assert not balance[n],(n,balance[n]);equations[n]=q
+assert expected==actual and sum(actual.values())==46
+nets={}
+for branch,last in [('A','RXN-23314'),('B','RXN-23315')]:
+ net=Counter()
+ for n,q in equations.items():
+  if n in ['RXN-23314','RXN-23315'] and n!=last:continue
+  k=2 if n in ['DHBAMPLIG-RXN','RXN-23310'] else 1
+  for side,rows in q.items():
+   for f,c in rows:net[f]+=(1 if side=='outputs' else -1)*k*c
+ net={f:n for f,n in net.items() if n};assert not any(x in net for x in carriers);assert not combine([(c,vectors[f]) for f,c in net.items()]);nets[branch]=net
+# Independent exact native CDS, protein version crossreference and species/strain scopes.
+gb=etree.parse(str(P/'AF299336.1.xml')); bridges=[]
+for accession,protein in [('Q9F638','AAG31128.1'),('Q9F637','AAG31129.1'),('Q9F636','AAG31130.1'),('Q9F631','AAG31135.1')]:
+ u=json.loads((A/f'originals/uniprot-{accession}.json').read_text());assert u['primaryAccession']==accession and u['organism']['taxonId']==41
+ fs=gb.xpath(f'//GBFeature[GBFeature_key="CDS" and GBFeature_quals/GBQualifier[GBQualifier_name="protein_id" and GBQualifier_value="{protein}"]]');assert len(fs)==1
+ seq=fs[0].xpath('string(GBFeature_quals/GBQualifier[GBQualifier_name="translation"]/GBQualifier_value)');assert seq==u['sequence']['value']
+ x=[x for x in u['uniProtKBCrossReferences'] if x['database']=='EMBL' and x['id']=='AF299336'];assert any(p['value']==protein for z in x for p in z.get('properties',[]))
+ bridges.append({'accession':accession,'protein_id':protein,'length':len(seq),'sha256':hashlib.sha256(seq.encode()).hexdigest()})
+sourcequals=gb.xpath('//GBFeature[GBFeature_key="source"]/GBFeature_quals/GBQualifier');scope={x.findtext('GBQualifier_name'):x.findtext('GBQualifier_value') for x in sourcequals};assert scope['strain']=='Sg a15' and scope['db_xref']=='taxon:675526'
+# Every evidence selector resolves against the referenced original; fingerprints retain location without republishing source prose.
+refs={x['id']:x for x in r['references']};anchors=[]
+for e in r['mechanistic_edges']:
+ for j,v in enumerate(e['evidence']):
+  ref=refs[v['reference_id']];path=raws[ref['source_sha256']];loc=v['source_locator'];counts=[]
+  if loc.startswith('/'):
+   if path.suffix=='.json':
+    d=json.loads(path.read_text())
+    for selector in loc.split('; '):
+     z=d
+     for token in selector.lstrip('/').split('/'):z=z[int(token)] if isinstance(z,list) else z[token.replace('~1','/').replace('~0','~')]
+     counts.append(1)
+   else:
+    t=html.fromstring(path.read_bytes()) if path.suffix=='.html' else etree.fromstring(path.read_bytes())
+    for selector in loc.split('; '):
+     vals=t.xpath(selector);assert vals,(e['id'],j,selector);counts.append(len(vals))
+  anchors.append({'edge':e['id'],'index':j,'reference_id':v['reference_id'],'source_sha256':ref['source_sha256'],'locator':loc,'selector_counts':counts,'assertion_sha256':hashlib.sha256(v['source_assertion'].encode()).hexdigest()})
+assert len(anchors)==239
+out={'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'target_sha256':sha(A/'draft/myxochelin-a-and-b-biosynthesis.yaml'),'original_body_count':len(manifest['bodies']),'original_database_count':len(manifest['issuing_databases']),'prior_proof_count':len(manifest['prior_proof_inputs']),'native_members':members,'chemical_side_count':sum(actual.values()),'reaction_balances':balance,'branch_nets':nets,'exact_native_CHEBI_inchis':13,'A_generic_not_exact':True,'native_sequence_bridges':bridges,'source_genome_scope':scope,'evidence_anchors':anchors,'limits':['Reactive residue/scaffold accounting does not establish full polypeptide formulas or reaction energetics.','The rendered primary figure and complete 2008 supplement were independently read separately; selector existence alone is not an evidence-entailment assessment.','Rhea20230 original participant chains are checked in unchanged full replay and separately reported, not assumed from Rhea citation metadata.']}
+(R/'source-audit.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({k:v for k,v in out.items() if k not in ['evidence_anchors','source_genome_scope']}))
+# Original structures passed to separate unchanged RDKit runtime.
+(R/'structure-inputs.json').write_text(json.dumps({'native':mols,'A_generic':a_generic},indent=2)+'\n')

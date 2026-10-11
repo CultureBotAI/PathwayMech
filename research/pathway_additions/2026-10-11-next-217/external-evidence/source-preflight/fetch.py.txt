@@ -1,0 +1,16 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import hashlib,json,requests,concurrent.futures,sys
+O=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011');B=O/'originals'
+items=json.loads(Path(sys.argv[1]).read_text())
+def get(item):
+ k,u=item;start=datetime.now(UTC).isoformat();p=B/k
+ assert not p.exists(),p
+ try:
+  r=requests.get(u,timeout=50)
+  with p.open('xb') as f:f.write(r.content)
+  return {'path':str(p),'url':u,'final_url':r.url,'status':r.status_code,'content_type':r.headers.get('content-type'),'sha256':hashlib.sha256(r.content).hexdigest(),'bytes':len(r.content),'started_at':start,'finished_at':datetime.now(UTC).isoformat()}
+ except Exception as e:return {'url':u,'error':repr(e),'started_at':start,'finished_at':datetime.now(UTC).isoformat()}
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:rows=list(pool.map(get,items))
+with Path(sys.argv[2]).open('x') as f:json.dump(rows,f,indent=2);f.write('\n')
+print(json.dumps(rows,indent=2))

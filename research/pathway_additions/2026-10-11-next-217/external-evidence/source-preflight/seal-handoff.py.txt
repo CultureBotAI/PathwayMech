@@ -1,0 +1,57 @@
+from datetime import UTC, datetime
+import hashlib
+import json
+from pathlib import Path
+
+O = Path(__file__).resolve().parent
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+result = json.loads((O / 'replay-final.json').read_text())
+execution = json.loads((O / 'replay-final-execution.json').read_text())
+assert execution['exit_code'] == 0
+assert execution['finished_at'] >= result['finished_at']
+rows = []
+failures = []
+for receipt in sorted(O.glob('acquisition*.json')):
+    data = json.loads(receipt.read_text())
+    assert isinstance(data, list)
+    for row in data:
+        if 'path' not in row:
+            failures.append({'receipt': str(receipt), **row})
+            continue
+        p = Path(row['path'])
+        assert digest(p) == row['sha256'], p
+        accepted = row.get('status') == 200 and p.name != 'metacyc-CPD-25916.xml'
+        rows.append({**row, 'acquisition_receipt': str(receipt), 'accepted_source_body': accepted})
+assert len(rows) == 66
+assert len({x['path'] for x in rows}) == len(rows)
+assert {str(p) for p in (O / 'originals').iterdir()} == {x['path'] for x in rows}
+manifest = {'sealed_at': datetime.now(UTC).isoformat(), 'bodies': rows, 'failures_without_body': failures, 'scope': 'All66 original responses rehashed,59 accepted bodies. Failed response bodies are retained but excluded from evidence. Main scientific replay covered65 responses; the one later original Figure5 image is independently rehashed here and visually inspected. The ChEBI original SQL full digest is in replay-final.json.'}
+with (O / 'source-manifest.json').open('x') as f:
+    json.dump(manifest, f, indent=2)
+    f.write('\n')
+
+artifacts = []
+for p in sorted(O.iterdir()):
+    if p.is_file() and p.name != 'handoff.json':
+        artifacts.append({'path': str(p), 'sha256': digest(p), 'bytes': p.stat().st_size})
+handoff = {
+    'sealed_at': datetime.now(UTC).isoformat(),
+    'status': 'external_preflight_ready_for_independent_representation_adjudication',
+    'candidate': {'id': 'MetaCyc:PWY-8383', 'label': 'myxochelin A and B biosynthesis', 'native_version': 'MetaCyc27.0 original XML', 'native_members': result['native_members'], 'native_member_count': 9, 'nested_pathway_count': 0, 'linked_precursor': 'MetaCyc:PWY-5901', 'scope_taxon': 'NCBITaxon:675526', 'current_taxon_label': 'Allostigmatella aurantiaca Sg a15', 'historical_name': 'Stigmatella aurantiaca Sg a15'},
+    'proposed_representation': 'Preserve all nine native reactions and both A/B branches. Native N6-first amidation is an explicitly qualified database convention; first amidation order remains experimentally unresolved in the inspected primary evidence. Root independently adjudicates that representation before authoring. Do not rename the N6 class, assert experimental N6-first proof, invent an exactMatch or remove a branch.',
+    'chemical_identity_decisions': {'A': 'NativeCPD25904 specifies a stereocenter absent from CHEBI31877; prefer exact native structure and reject exact equivalence.', 'B': 'NativeCPD25905 and CHEBI7061 full InChIs match.', 'aldehyde': 'NativeCPD25916 has an independently inspected complete structure.', 'carriers': 'Six native reactive-state classes; formal residue-balance derivation only, no invented full protein formulas or fixed complex stoichiometry.'},
+    'proof_summary': {'retained_response_bodies': len(rows), 'accepted_source_bodies': sum(x['accepted_source_body'] for x in rows), 'native_reactions': len(result['native_members']), 'exact_small_molecule_balances': 4, 'symbolic_carrier_balances': 5, 'balanced_endpoint_nets': 2, 'exact_native_sequence_bridges': result['sequence_bridges'], 'replay_session': 41074, 'replay_exit_code': 0, 'replay_terminal_chunk': 'cb5c30', 'replay_execution': str(O / 'replay-final-execution.json'), 'replay_scope_limit': 'Source preflight, not a maintained-record schema/KGX/global gate or final review.'},
+    'dedup': {'ignored_and_hidden_included': True, 'followed_symlinks': True, 'roots': ['/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech','/private/tmp/pathwaymech-next-215-20261011'], 'result': 'No full candidate record in the stated text scope. Four cross-Mech annotation entries are prior leads; existing DHB and bacillibactin pathways cover different native boundaries. Supplementary newly resolved IDs had zero hits.', 'scope_limit': 'Git internals and dependency environments excluded; compressed archives not exhaustively unpacked.'},
+    'access_limits': ['2001 complete original PMC article and Figure5 acquired and inspected.', '2008 complete official SI acquired, four pages read and visually inspected; publisher abstract read; full main not obtained.', '2000 full publisher text inspected via web only; local403 preserved. No invented local original full-text hash.', '2005 original abstract and metadata inspected, main unavailable in tried routes; pCBP-MxcL construct provenance remains qualified.', 'No fresh iModulon dataset applicability query in this preflight.', 'No claim of source exhaustion or permanent exclusion.'],
+    'remaining_checks_before_authoring': ['Root independently adjudicates N6-first native convention against the direct primary uncertainty.', 'Verify canonical native labels and current source-intake compatibility for every selected node.', 'Retain exact tagged/processed construct limits and distinguish experimental MtaA maturation from an unverified native PPTase.', 'Retain NADH alternative activity, PLP evidence, assay-only Mg scope and unresolved stable assembly.', 'If feasible acquire2005/2008 complete main bodies and strengthen the historical MxcL construct bridge.'],
+    'maintained_writes': [],
+    'github_mutations': [],
+    'artifacts': artifacts,
+}
+with (O / 'handoff.json').open('x') as f:
+    json.dump(handoff, f, indent=2)
+    f.write('\n')
+print(json.dumps({'path': str(O / 'handoff.json'), 'sha256': digest(O / 'handoff.json'), 'status': handoff['status'], 'source_manifest_sha256': digest(O / 'source-manifest.json'), 'assessment_sha256': digest(O / 'assessment.md'), 'replay_sha256': digest(O / 'replay-final.json')}, indent=2))

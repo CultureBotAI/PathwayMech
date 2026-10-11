@@ -1,0 +1,112 @@
+{
+  "created_at": "2026-10-11T16:56:28.382005+00:00",
+  "initial_selector": {
+    "session": null,
+    "chunk": "e7144e",
+    "exit_code": 1,
+    "log": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/selection-initial.log",
+    "reason": "Inherited 22.5 footer assumption rejected actual issuing original; no selection output."
+  },
+  "corrected_selector": {
+    "session": 38429,
+    "terminal_chunk": "4133b6",
+    "exit_code": 0,
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/prepare-selection.py",
+      "--lock",
+      "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/baseline-lock.json",
+      "--output-dir",
+      "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/selected"
+    ],
+    "log": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/selection.log",
+    "log_sha256": "1e31614ab8bf64680943817afc5b2272d527b6e2ac7d4cf82acd959e995d7e8c"
+  },
+  "canonical_dry_run": {
+    "session": 69072,
+    "terminal_chunk": "95a351",
+    "exit_code": 0,
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/dry-run-authorities.py",
+      "--repo-root",
+      "/private/tmp/pathwaymech-next-217-20261011",
+      "--selection",
+      "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/selected/selection.json",
+      "--output-dir",
+      "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run"
+    ],
+    "log": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run.log",
+    "log_sha256": "97a9f67edb52c78ee29028a0150e50252f8d5c387d60a8a172a2fee5878a68d8",
+    "children": [
+      {
+        "command": [
+          "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+          "-B",
+          "/private/tmp/pathwaymech-next-217-20261011/scripts/build_ontology_identifier_snapshot.py",
+          "--source",
+          "GO=/private/tmp/pathwaymech-curation-authorities/go.db",
+          "--source",
+          "CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db",
+          "--source",
+          "NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+          "--source",
+          "RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db",
+          "--corpus",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/selected-identifiers",
+          "--rhea-updates",
+          "/private/tmp/pathwaymech-next-217-20261011/conf/rhea_identifier_updates.json",
+          "--cache-dir",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/source-cache",
+          "--output",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/ontology.json"
+        ],
+        "started_at": "2026-10-11T16:54:07.175735+00:00",
+        "finished_at": "2026-10-11T16:55:35.393278+00:00",
+        "exit_code": 0,
+        "log": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/ontology.log",
+        "log_sha256": "77dbeec2ac6e20a21a62905faa4607c7d0a4f6fbfb43f75ab8c1dc0f696249cf"
+      },
+      {
+        "command": [
+          "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+          "-B",
+          "/private/tmp/pathwaymech-next-217-20261011/scripts/build_source_identifier_snapshot.py",
+          "--manifest",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/identifier_sources.json",
+          "--cache-dir",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/source-cache",
+          "--records",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/selected-identifiers",
+          "--output",
+          "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/sources.json"
+        ],
+        "started_at": "2026-10-11T16:54:07.175968+00:00",
+        "finished_at": "2026-10-11T16:55:02.200334+00:00",
+        "exit_code": 0,
+        "log": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/canonical-dry-run/sources.log",
+        "log_sha256": "2997d7614da9272bd29561070c3121ecab35b0162bcfbd9ddd62b73d92b3fc80"
+      }
+    ]
+  },
+  "guards": {
+    "chunk": "7a679f",
+    "exit_code": 0,
+    "receipt": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/guard-controls/receipt.json",
+    "sha256": "b12da497d713639ecaa2754061d07750e1f0b04f45d65b8164ebead4af1c2704"
+  },
+  "issue": {
+    "initial_search_exit_code": 1,
+    "initial_search_error": "error connecting to api.github.com",
+    "retry_search_exit_code": 0,
+    "retry_chunk": "f5498d",
+    "all_state_result": [],
+    "creation_session": 17547,
+    "creation_terminal_chunk": "5f5945",
+    "creation_exit_code": 0,
+    "observed_issue": "/private/tmp/pathwaymech-myxochelin-authority-selection-20261011/version-issue-observed.json",
+    "observed_issue_sha256": "33c2ddd832bf0888121ae056483fb08b93b1fed425a7dcb8e2e46da11def7744"
+  }
+}

@@ -1,0 +1,101 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib,json
+O=Path('/private/tmp/pathwaymech-myxochelin-independent-adjudication-20261011')
+P=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1048576),b''):h.update(b)
+ return h.hexdigest()
+def ref(p):
+ p=Path(p); return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def write(n,d):
+ with (O/n).open('x') as f:json.dump(d,f,indent=2);f.write('\n')
+H=json.loads((P/'handoff.json').read_text())
+assert sha(P/'handoff.json')=='fd0d7b6f066d0ec7c0a7bd97077314d8116dd657f6413672380fd81a3e96e584'
+for r in H['artifacts']: assert sha(r['path'])==r['sha256'],r['path']
+C=json.loads((O/'source-structure-check.json').read_text())
+for r in C['source_body_rehashes']:assert sha(r['path'])==r['sha256'],r['path']
+now=datetime.now(timezone.utc).isoformat()
+D={
+ 'completed_at':now,
+ 'reviewer':'/root/pathway_authority_cache',
+ 'independence':'The reviewer did not author the preflight and independently read its assessment, original primary/native sources, figures and sequence/structure objects. The independent checker does not import the author replay.',
+ 'scope':'Bounded external candidate adjudication before author assignment; not a maintained YAML review, canonical schema/KGX approval or permission to publish.',
+ 'decision':'support_complete_nine_object_native_projection_with_explicit_order_uncertainty',
+ 'candidate':H['candidate'],
+ 'input_handoff':ref(P/'handoff.json'),
+ 'assessment':ref(P/'assessment.md'),
+ 'reasoning':[
+  'The native definition issues a complete nine-reaction route from supplied DHB and lysine to both myxochelin endpoints. The primary experiments support the complete chemistry, while the proposed first amidation order is explicitly unknown in the inspected 2001 primary.',
+  'Unknown experimental order is not a demonstrated opposite order or a source structural contradiction. The native N6 intermediate can be represented as a qualified structured-database assertion, provided the exact specificity is not attributed to the experiment or asserted as an established exclusive physiological sequence.',
+  'The repository add-pathway rule permits inspected database assertions with their evidence tier and limitations. Qualification must be attached to every affected assertion and survive evidence export; a description-only disclaimer is insufficient.',
+  'Independent exact-original inspection found no endpoint structural identity defect requiring route truncation: B matches CHEBI7061 exactly; A must retain its native stereospecific identity instead of an exact mapping to unspecified CHEBI31877.'
+ ],
+ 'required_representation_conditions':[
+  {'scope':'RXN-23316, RXN-23312 and N-23-DHB-Lysyl-MxcG', 'condition':'Keep the issued N6 identity and native equations. Explicitly identify N6-first as the selected database convention in their participant, input/output, catalyst-role and ordering evidence. Add separate primary evidence for unresolved first amidation. Do not rename the native class to unspecified or claim the primary proves N6-first.'},
+  {'scope':'Full boundary','condition':'Retain all nine native objects and both endpoint branches. Keep PWY-5901 as a distinct supplied-precursor route and exclude composite RXN-23309/RXN-23311 from the graph to avoid double counting their component transformations.'},
+  {'scope':'Endpoints','condition':'Use native CPD-25904 for stereospecific A; do not assert exactMatch to CHEBI31877. Native CPD-25905 and CHEBI7061 have identical full InChIs and may support an exact source-derived identity bridge. Native CPD-25916 grounds the free aldehyde.'},
+  {'scope':'Species and experimental constructs','condition':'Native AF299336.1 translations match Q9F638/Q9F637/Q9F636/Q9F631. Retain original Sg a15/current taxon675526 versus species-level unreviewed UniProt41, and distinguish native sequence equality from tagged/processed experimental preparation identity.'},
+  {'scope':'Carrier and assembly scope','condition':'Treat the six carrier objects as reactive-state classes. Do not invent whole-protein formulas, exact tagged states, carrier molecule counts, fixed E:F:G:L assemblies or a native PPTase from heterologous MtaA coexpression.'},
+  {'scope':'Enzyme attribution','condition':'Reject shared DHBAMPLIG-RXN VibE/CPLX-7945 cross-organism controller inheritance; use the selected MxcE native/protein/primary evidence. The 2001 proposal alone is not direct MxcL assay evidence; cite the 2008 primary/SI separately.'},
+  {'scope':'Direction and cofactors','condition':'Reverse RXN-23314 according to its physiological RIGHT-TO-LEFT annotation. Retain NADPH selection plus measured slower NADH alternative, directly supported MxcL PLP, and assay-only Mg limits. The 3 ATP endpoint cost is a derived equation, not a directly measured ratio.'},
+  {'scope':'Graph/review acceptance','condition':'The later full record must preserve these limits in source-local evidence and generated export, resolve normal issuing-authority labels, and receive independent whole-record review. If exports erase the uncertainty, hold the record rather than silently presenting a demonstrated N6-first route.'}
+ ],
+ 'source_evidence':[
+  {'source':ref(P/'originals/metacyc-PWY-8383.xml'),'locator':'Pathway[@frameid="PWY-8383"]/reaction-list and pathway-links','assessment':'Nine direct objects; no nested pathway; supplied DHB link to PWY5901.'},
+  {'source':ref(P/'originals/metacyc-N-23-DHB-Lysyl-MxcG.xml'),'locator':'Protein/Compound frame N-23-DHB-Lysyl-MxcG common-name; RXN-23316/right and RXN-23312/left','assessment':'Native monoacyl class specifically names N6; preserve the source name including its native spelling. The precise first-site order is a database assertion, not an experimental conclusion.'},
+  {'source':ref(P/'originals/PMC58696.html'),'url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC58696/','locator':"//*[@id='F5']/figcaption/p, part C; original Figure 5; Methods sec2/p1; Results sec8/p1 and sec9/p1; Discussion",'assessment':'Read complete article and original figure. A reconstitution, carrier maturation and NADH alternative are directly supported; Figure5 explicitly leaves first amidation unknown. It does not depict a resolved monoacyl intermediate. B/MxcL is still proposed in this paper. Native and processed construct identities remain distinct.'},
+  {'source':ref(P/'originals/PMC58696-F5.jpg'),'assessment':'Visually inspected native figure. Both condensed DHB groups are depicted, but no first-amide assignment or fixed protein stoichiometry is established.'},
+  {'source':ref(P/'originals/ja8025278_si_001.pdf'),'locator':'S1 Cloning of mxcL; S2 Spectrophotometric measurement/Figure S1; S2-S3 Reconstitution/Figure S2; S3-S4 Detection/Figure S3','assessment':'All four official SI pages visually read. Supports actual recombinant MxcL preparation, PLP response, complete A/B reconstitution and free aldehyde detection. Does not resolve first amidation or fixed assembly. The 2005 pCBP-MxcL tagged sequence remains incompletely grounded.'},
+  {'source':ref(P/'originals/AF299336.1.xml'),'locator':'GBSeq feature-table CDS gene/protein_id/translation for mxcE/F/G/L','assessment':'Four full native translations independently match current batch UniProt sequences exactly; original genomic source is Sg a15.'},
+  {'source':ref(P/'originals/UniProt-mxc.json'),'locator':'results entries Q9F638, Q9F637, Q9F636, Q9F631, sequence.value/organism/entryType','assessment':'Current unreviewed species-level identities do not upgrade biological evidence or rewrite the genomic strain source.'}
+ ],
+ 'structure_checks':{
+  'independent_receipt':ref(O/'source-structure-check.json'),
+  'A':C['A_structure_decision'], 'B':C['B_structure_decision'],
+  'CML_limit':'Complete CML atom/bond arrays independently reproduce native constitutional Standard InChIs after removing native stereo layers that CML does not encode; stereochemistry comes from original native InChI, not inferred from unstereolabeled CML. Generic inherited SMILES were excluded.',
+  'tautomer_limit':'MolFromInchi may reconstruct mobile-H imidic-acid tautomers of amides. Initial raw-SMILES mismatch was a reviewer harness issue; equality of appropriate Standard InChI, formula and charge resolved it without editing source structures.',
+  'CHEBI7061_definition_limit':'The ChEBI free-text definition contains a hydroxy/reduction phrase inconsistent with its inspected B structure. The exact bridge relies on full original structure, not that prose; do not copy the definition as biosynthetic evidence.',
+  'native_branch_nets':C['native_branch_nets'],
+  'carrier_net_limit':'Both endpoint nets were independently recomputed from all native equations with carriers cancelling. Per-reaction symbolic residue balances are inherited preflight checks, not independent complete carrier structures or measured ATP/product ratios.'
+ },
+ 'fresh_access_observations':{
+  'official_2008_main':'Official ACS DOI web open failed403; an official main-article PDF was not obtained. The complete official SI remains accepted independently.',
+  '2005':'Original Wiley abstract inspected; full main not obtained. No exact 2008 tagged construct equality claimed.',
+  'third_party_2008_reproduction':{
+   'url':'https://www.lookchem.com/FreePDFArticle_120243-02-9_8658886.htm',
+   'scope':'Original paper reproduction/transcription read through web; third-party mirror, not an official publisher body. Its figures corroborate free-aldehyde A/B branching. This supplemental observation is not needed to establish the main decision.',
+   'local_graphics':'Two downloaded PNGs are transparent page-background graphics, with Figures1/2 and3 and publisher branding. Article text is separately overlaid in HTML and is absent from the PNGs. They must not be described as full main-article page images or a locally retained full article.',
+   'graphics_receipt':ref(O/'reprint-acquisition-network.json'),
+   'article_text_local_hash':None
+  },
+  'search_limit':'Bounded fresh searches and inspected later primary search results did not supply an experimental first-amidation order. This is not an exhaustive literature absence claim.'
+ },
+ 'dedup_scope':{'basis':'Reviewed existing hidden/ignored-inclusive preflight search and dispositions; no new full-repository search claimed by this adjudication.','details':H['dedup']},
+ 'actual_checks':[
+  {'command':'/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python -B /private/tmp/pathwaymech-myxochelin-independent-adjudication-20261011/check-originals.py > /private/tmp/pathwaymech-myxochelin-independent-adjudication-20261011/source-structure-check-final2.log 2>&1','cwd':'/private/tmp/pathwaymech-next-216-20261011','session':52668,'terminal_chunk':'ffe9ac','exit_code':0,'log':ref(O/'source-structure-check-final2.log'),'scope':'Independent original-native membership/directions/nets, full CML-InChI and original ChEBI structure comparison, four exact native sequence bridges, 66 retained-body digests and all preflight artifact digests.'},
+  {'status':'superseded reviewer harness failures preserved','details':['Initial raw SMILES tautomer comparison failed; replaced with constitutional Standard InChI comparison.','Initial equation parser assumed Compound children; exact native carrier slots include Protein children, now read without changing identities.','Project runtime lacked Pillow for optional matte rendering; separate retained RDKit/Pillow runtime performed it.'],'receipts':[ref(O/'initial-check-disposition.json'),ref(O/'typed-slot-disposition.json')]}
+ ],
+ 'final_predecessor_integrity':{'handoff_unchanged':True,'all_preflight_artifacts_rehashed':len(H['artifacts']),'all_retained_source_bodies_rehashed':len(C['source_body_rehashes']),'accepted_sources_per_preflight':59,'rejected_acquisitions_not_upgraded':True},
+ 'remaining_author_tasks':['Obtain exact canonical issuing-authority labels for all selected native nodes; preserve XML27.0 versus frontend22.5 provenance.','Perform the required source-to-graph and graph-to-source coverage on a complete draft and all reaction balances with explicit reactive-group accounting.','Check exact-organism iModulon applicability; no current result claimed by this adjudication.','An actual authoring assignment and independent complete-record review remain required.'],
+ 'maintained_writes':[], 'github_mutations':[], 'draft_created':False
+}
+write('decision.json',D)
+md='''The complete nine-object MetaCyc:PWY-8383 candidate is supportable for authoring with an explicit database-order limitation. The primary evidence supports the complete A/B route but does not establish which lysine nitrogen is amidated first. The native N6-first intermediate is an issued database convention, not a demonstrated exclusive physiological order.
+
+Preserve all nine native reactions, both free-aldehyde branches and the exact N6 carrier identity. Put the uncertainty on every affected reaction, participant, catalyst-role and ordering assertion, with separate native and primary evidence; a description-only caveat is insufficient. Do not rename the carrier, invent a generic identifier, omit one condensation or turn the primary figure into N6-first proof. Supplied DHB is the boundary: PWY-5901 is a separately linked precursor pathway.
+
+Independent structure checks confirm native myxochelin B and CHEBI:7061 have identical full InChIs. Native A is stereospecific whereas CHEBI:31877 is unspecified, so they cannot be asserted as exact equivalents. Complete CML connectivity agrees with the native structures; absolute stereochemistry is supplied by native InChI, not unstereolabeled CML. Ignore inherited generic SMILES and do not use ChEBI7061's inconsistent free-text definition to narrate B chemistry.
+
+The original 2001 full article and Figure5 explicitly leave the first amidation unresolved. All four official 2008 supplementary pages support recombinant MxcL/PLP, A/B reconstitution and the free aldehyde, without establishing amidation order or a fixed enzyme assembly. The official 2008 main remains unavailable. A freshly inspected third-party paper transcription and figure graphics provide limited corroboration; the downloaded PNGs contain figure backgrounds, not complete text pages or an official article PDF.
+
+Four original AF299336.1 translations exactly match current MxcE/F/G/L entries. This grounds the native Sg a15 sequence link, not every tagged or processed construct. Preserve the species-level unreviewed UniProt scope, historical construct limits, heterologous MtaA maturation versus unknown native PPTase, NADH alternative, directly supported PLP and assay-only Mg. Do not inherit the shared reaction's Vibrio VibE catalyst or invent carrier formulas and protein stoichiometry. Three ATP per endpoint is derived bookkeeping, not a measured coupling ratio.
+
+Independent original-source replay finished with exit0 (session52668), checking native membership/directions, both endpoint nets, exact structures and sequence bridges, and predecessor/source hashes. Two failed reviewer-harness attempts are retained and explained; no source or preflight bytes were changed. This is a bounded external adjudication, not a canonical maintained-record review or publication approval. Root should inspect this decision before assigning the complete author task.
+'''
+with (O/'decision.md').open('x') as f:f.write(md)
+artifacts=[ref(p) for p in sorted(O.rglob('*')) if p.is_file() and p.name not in {'handoff.json'}]
+write('handoff.json',{'sealed_at':datetime.now(timezone.utc).isoformat(),'status':'independent_external_preflight_adjudication_complete','decision':D['decision'],'candidate':'MetaCyc:PWY-8383','decision_json':ref(O/'decision.json'),'decision_markdown':ref(O/'decision.md'),'source_preflight':ref(P/'handoff.json'),'artifacts':artifacts,'root_decision_before_authoring_required':True,'maintained_writes':[]})
+print(json.dumps({'decision':ref(O/'decision.json'),'handoff':ref(O/'handoff.json'),'markdown':ref(O/'decision.md'),'files':len(artifacts)},indent=2))

@@ -1,0 +1,170 @@
+"""Read-only bounded source preflight; writes only a new external result."""
+from collections import Counter
+from datetime import UTC, datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+import sqlite3
+import sys
+
+from lxml import etree, html
+
+O = Path(__file__).resolve().parent
+R = O / 'originals'
+output = Path(sys.argv[1])
+assert not output.exists(), output
+started = datetime.now(UTC).isoformat()
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for block in iter(lambda: f.read(4 * 1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+sources = []
+failures = []
+for receipt in sorted(O.glob('acquisition*.json')):
+    rows = json.loads(receipt.read_text())
+    if isinstance(rows, dict):
+        rows = rows.get('sources', rows.get('results', []))
+    for row in rows:
+        if 'path' not in row:
+            failures.append({'receipt': str(receipt), **row})
+            continue
+        p = Path(row['path'])
+        assert sha(p) == row['sha256'], p
+        accepted = row.get('status') == 200
+        reason = 'Original response retained; fields inspected as documented in assessment.'
+        if p.name == 'metacyc-CPD-25916.xml':
+            accepted = False
+            reason = 'Official endpoint returned account HTML, not a chemical XML body.'
+        elif not accepted:
+            reason = 'Failed HTTP response retained; not scientific source evidence.'
+        if accepted and p.suffix == '.xml':
+            t = etree.parse(str(p))
+            assert t.getroot().tag in {'ptools-xml', 'GBSet', 'PubmedArticleSet'}
+        sources.append({**row, 'acquisition_receipt': str(receipt), 'accepted_source_body': accepted, 'disposition': reason})
+
+def native(frame):
+    suffix = '-native' if frame == 'CPD-25916' else ''
+    return etree.parse(str(R / f'metacyc-{frame}{suffix}.xml'))
+
+pwy = native('PWY-8383').getroot().find('Pathway')
+members = [x.get('frameid') for x in pwy.findall('reaction-list/Reaction')]
+expected = {'DHBAMPLIG-RXN','RXN-23310','RXN-22679','RXN-23308','RXN-23316','RXN-23312','RXN-23313','RXN-23314','RXN-23315'}
+assert set(members) == expected and len(members) == 9, members
+assert not pwy.findall('reaction-list/Pathway')
+links = [etree.tostring(x).decode() for x in pwy.findall('pathway-link')]
+assert any('PWY-5901' in x for x in links)
+reactions = {}
+for frame in members:
+    r = native(frame).getroot().find('Reaction')
+    direction = r.findtext('reaction-direction')
+    assert direction in {'PHYSIOL-LEFT-TO-RIGHT', 'PHYSIOL-RIGHT-TO-LEFT'}
+    sides = {}
+    for side in ('left', 'right'):
+        sides[side] = [{'id': x[0].get('frameid'), 'coefficient': int(x.findtext('coefficient', '1'))} for x in r.findall(side)]
+    if direction == 'PHYSIOL-RIGHT-TO-LEFT':
+        sides['left'], sides['right'] = sides['right'], sides['left']
+    reactions[frame] = {'native_direction': direction, 'physiological_sides': sides}
+assert reactions['RXN-23314']['native_direction'] == 'PHYSIOL-RIGHT-TO-LEFT'
+
+def vector(inchi):
+    assert inchi.startswith('InChI=1S/')
+    layers = inchi.split('/')
+    formula = layers[1]
+    v = Counter()
+    if not formula.startswith('p'):
+        for element, count in re.findall(r'([A-Z][a-z]?)(\d*)', formula):
+            v[element] += int(count or 1)
+    for layer in layers[1:]:
+        if layer.startswith('p'):
+            v['H'] += int(layer[1:])
+            v['charge'] += int(layer[1:])
+        if layer.startswith('q'):
+            v['charge'] += int(layer[1:])
+    return v
+
+def add(a, b, coefficient=1):
+    c = a.copy()
+    for key, val in b.items():
+        c[key] += coefficient * val
+    return Counter({k: v for k, v in c.items() if v})
+
+chem = {}
+for frame in {x['id'] for r in reactions.values() for side in r['physiological_sides'].values() for x in side}:
+    t = native(frame)
+    c = t.getroot().find('Compound')
+    if c is not None:
+        inchi = c.findtext('inchi')
+        assert inchi, frame
+        chem[frame] = {'inchi': inchi, 'vector': dict(vector(inchi))}
+
+# Formal algebraic residue deltas only, derived from the inspected native sides.
+# These are NOT source-issued full carrier formulae or exact protein structures.
+carrier = {'MxcF': Counter({'carrier_F': 1}), 'MxcG': Counter({'carrier_G': 1})}
+carrier['23-DHB-MxcF'] = add(carrier['MxcF'], Counter({'C':7,'H':4,'O':3}))
+carrier['Lysyl-MxcG'] = add(carrier['MxcG'], Counter({'C':6,'H':14,'N':2,'O':1,'charge':2}))
+carrier['N-23-DHB-Lysyl-MxcG'] = add(carrier['MxcG'], Counter({'C':13,'H':17,'N':2,'O':4,'charge':1}))
+carrier['N-N-di23-DHB-Lysyl-MxcG'] = add(carrier['MxcG'], Counter({'C':20,'H':20,'N':2,'O':7}))
+vectors = {k: Counter(v['vector']) for k,v in chem.items()} | carrier
+balances = {}
+for frame, r in reactions.items():
+    delta = Counter()
+    for side, sign in [('left',-1),('right',1)]:
+        for x in r['physiological_sides'][side]:
+            delta = add(delta, vectors[x['id']], sign*x['coefficient'])
+    assert not delta, (frame, delta)
+    balances[frame] = {'residual':dict(delta),'kind':'exact small-molecule balance' if frame in {'DHBAMPLIG-RXN','RXN-22679','RXN-23314','RXN-23315'} else 'symbolic carrier conservation; residue deltas derived, not issued carrier formulae'}
+nets = {}
+for name, last in [('A','RXN-23314'),('B','RXN-23315')]:
+    net = Counter()
+    for frame in expected - ({'RXN-23315'} if name == 'A' else {'RXN-23314'}):
+        n = 2 if frame in {'DHBAMPLIG-RXN','RXN-23310'} else 1
+        for side, sign in [('left',-1),('right',1)]:
+            for x in reactions[frame]['physiological_sides'][side]:
+                net[x['id']] += n*sign*x['coefficient']
+    net = {k:v for k,v in net.items() if v}
+    assert not any(k in carrier for k in net)
+    delta = Counter()
+    for frame,n in net.items():delta = add(delta,vectors[frame],n)
+    assert not delta
+    nets[name] = {'coefficients_products_positive':net,'element_and_charge_residual':dict(delta)}
+
+db = Path('/private/tmp/pathwaymech-curation-authorities/chebi.db').resolve()
+c = sqlite3.connect(f'file:{db}?mode=ro',uri=True)
+chebi = {}
+for id in ['CHEBI:31877','CHEBI:7061']:
+    rows = [dict(zip(['predicate','value','object'],r)) for r in c.execute('select predicate,value,object from statements where subject=?',(id,))]
+    chebi[id] = rows
+ci = {id:next(x['value'] for x in rows if x['predicate']=='chemrof:inchi_string') for id,rows in chebi.items()}
+assert ci['CHEBI:7061'] == chem['CPD-25905']['inchi']
+assert ci['CHEBI:31877'] != chem['CPD-25904']['inchi']
+assert ci['CHEBI:31877'] == chem['CPD-25904']['inchi'].split('/t')[0]
+
+g = etree.parse(str(R/'AF299336.1.xml'))
+batch = json.loads((R/'UniProt-mxc.json').read_text())['results']
+mapping = {'mxcE':'Q9F638','mxcF':'Q9F637','mxcG':'Q9F636','mxcL':'Q9F631'}
+sequences = []
+for f in g.xpath('//GBFeature[GBFeature_key="CDS"]'):
+    q={x.findtext('GBQualifier_name'):x.findtext('GBQualifier_value') for x in f.findall('GBFeature_quals/GBQualifier')}
+    if q.get('gene') not in mapping:continue
+    u = next(x for x in batch if x['primaryAccession']==mapping[q['gene']])
+    assert q['translation']==u['sequence']['value']
+    sequences.append({'gene':q['gene'],'protein':q['protein_id'],'uniprot':u['primaryAccession'],'length':len(q['translation']),'sequence_sha256':hashlib.sha256(q['translation'].encode()).hexdigest()})
+assert len(sequences)==4
+
+paper = html.fromstring((R/'PMC58696.html').read_bytes())
+caption = [' '.join(x.text_content().split()) for x in paper.xpath('//figcaption') if 'It is not known which amide is formed first.' in ' '.join(x.text_content().split())]
+assert len(caption)==1
+carrier_name = native('N-23-DHB-Lysyl-MxcG').getroot().find('Protein').findtext('common-name')
+assert '<sup>6</sup>' in carrier_name
+si = (O/'ja8025278-si-text.txt').read_text()
+for marker in ['pCBP','MxcL','Detection of the aldehyde intermediate','PFBHA','PLP','Reconstitution in vitro']:
+    assert marker in si
+
+out={'status':'bounded_preflight_replay_passed_not_curation_approval','started_at':started,'finished_at':datetime.now(UTC).isoformat(),'helper_sha256':sha(__file__),'source_originals':sources,'failed_requests_without_body':failures,'native_members':members,'pathway_links':links,'native_reactions':reactions,'small_molecules':chem,'derived_symbolic_carriers':{k:dict(v) for k,v in carrier.items()},'symbolic_carrier_limit':'Algebraic residue deltas are a consistency test only, not issued full carrier formulae or a resolution of N6-first specificity.','balances':balances,'endpoint_nets':nets,'sequence_bridges':sequences,'chebi_comparison':{'database':str(db),'database_sha256':sha(db),'rows':chebi,'myxochelin_B':'Exact full InChI match with CPD-25905','myxochelin_A':'CHEBI31877 stereounspecified; CPD25904 has one specified center; no exactMatch'},'native_primary_order_gap':{'native_name':carrier_name,'primary_locator':'PMC58696 Figure5 caption, panel C','primary_quote':'It is not known which amide is formed first.','resolution':'Not resolved by inspected 2008 SI/abstract; source-native N6-first convention is not direct experimental proof.'}}
+with output.open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps({'status':out['status'],'native_members':len(members),'source_body_count':len(sources),'accepted_bodies':sum(x['accepted_source_body'] for x in sources),'balances':len(balances),'sequence_bridges':len(sequences),'endpoint_nets':nets,'output':str(output),'sha256':sha(output)},indent=2))

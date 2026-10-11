@@ -1,0 +1,33 @@
+import concurrent.futures,hashlib,json,shutil,subprocess
+from datetime import datetime,timezone
+from pathlib import Path
+R=Path('/private/tmp/pathwaymech-myxochelin-independent-review-20261011');A=Path('/private/tmp/pathwaymech-myxochelin-author-20261011')
+PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';REPO='/private/tmp/pathwaymech-next-216-20261011'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+wrapper='''import builtins,json,runpy,sys\nfrom pathlib import Path\nhookfile=Path(sys.argv[1]); kind=sys.argv[2]; helper=sys.argv[3];args=sys.argv[4:]\noriginal_import=builtins.__import__; installed=False; changed=False\ndef mutate():\n global changed\n if changed:return\n changed=True\n if kind=='symlink':\n  hookfile.unlink();hookfile.symlink_to(hookfile.parent/'proof-other.json')\n elif kind=='projection':\n  d=json.loads(hookfile.read_text());d['native_members']=[];hookfile.write_text(json.dumps(d))\n else:hookfile.write_text('{"mutated_at_observed_hook":true}\\n')\ndef replacement(*a,**kw):\n global installed\n if kind=='early-prior' and a[0]=='yaml':mutate()\n m=original_import(*a,**kw)\n if a[0]=='pathwaymech.kgx' and not installed:\n  installed=True;original_write=m.write_kgx\n  def write(*x,**y):\n   if kind!='early-prior':mutate()\n   return original_write(*x,**y)\n  m.write_kgx=write\n return m\nbuiltins.__import__=replacement\nsys.argv=[helper]+args\nrunpy.run_path(helper,run_name='__main__')\n'''
+(R/'successor-binding-wrapper.py').write_text(wrapper)
+def run(kind):
+ d=R/('successor-'+kind);d.mkdir();(d/'draft').mkdir()
+ for p in A.glob('draft/*'):
+  if p.is_file():shutil.copyfile(p,d/'draft'/p.name)
+ for n in ['myxochelin-replay-successor.py','rhea-crosscheck.json']:shutil.copyfile(A/n,d/n)
+ manifest=d/'draft/myxochelin-source-manifest.json';m=json.loads(manifest.read_text());hook=d/'draft/myxochelin-source-projection.json';out=d/'result.json'
+ if kind in ['prior-proof','early-prior','symlink']:
+  row=m['prior_proof_inputs'][4];hook=d/'proof.json';original=Path(row['path'])
+  if kind=='symlink':
+   shutil.copyfile(original,d/'proof-initial.json');shutil.copyfile(original,d/'proof-other.json');hook.symlink_to(d/'proof-initial.json')
+  else:shutil.copyfile(original,hook)
+  row['path']=str(hook);manifest.write_text(json.dumps(m,indent=2)+'\n')
+ elif kind=='output-collision':hook=out
+ before={'resolved':str(hook.resolve()),'sha256':sha(hook) if hook.exists() else None}
+ argv=[PY,str(R/'successor-binding-wrapper.py'),str(hook),kind,str(d/'myxochelin-replay-successor.py'),'--record',str(d/'draft/myxochelin-a-and-b-biosynthesis.yaml'),'--repo',REPO,'--output',str(out)]
+ if kind=='positive':argv=[PY,str(d/'myxochelin-replay-successor.py'),'--record',str(d/'draft/myxochelin-a-and-b-biosynthesis.yaml'),'--repo',REPO,'--output',str(out)]
+ started=datetime.now(timezone.utc).isoformat()
+ with (d/'console.log').open('w') as f:p=subprocess.run(argv,stdout=f,stderr=subprocess.STDOUT)
+ data={'kind':kind,'command':argv,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':p.returncode,'helper_sha256':sha(d/'myxochelin-replay-successor.py'),'before':before,'after':{'resolved':str(hook.resolve()),'sha256':sha(hook) if hook.exists() else None},'output_exists':out.exists(),'output_sha256':sha(out) if out.exists() else None,'output_is_success':out.exists() and json.loads(out.read_text()).get('status')=='passed_external_author_replay_not_independent_approval','log_sha256':sha(d/'console.log')}
+ if kind=='positive':assert p.returncode==0 and data['output_is_success']
+ else:assert p.returncode!=0 and not data['output_is_success']
+ if kind=='output-collision':assert out.read_text()=='{"mutated_at_observed_hook":true}\n';data['sentinel_preserved']=True
+ (d/'probe.json').write_text(json.dumps(data,indent=2)+'\n');return data
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:results=list(pool.map(run,['positive','prior-proof','projection','early-prior','symlink','output-collision']))
+(R/'successor-probes.json').write_text(json.dumps(results,indent=2)+'\n');print(json.dumps(results,indent=2))

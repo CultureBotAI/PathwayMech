@@ -1,0 +1,28 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib
+root=Path('/private/tmp/pathwaymech-next-217-20261011');p=Path('/private/tmp/pathwaymech-myxochelin-integrated-replay-positive-20261011')
+out=Path('/private/tmp/pathwaymech-next-217-integrated-replay-root-adoption.json');assert not out.exists()
+def sha(x):return hashlib.sha256(Path(x).read_bytes()).hexdigest()
+receipt=p/'integration-replay.json';assert sha(receipt)=='453b8abcfd0c7336582465fa2cacc68b510ee5db91aa70da13c6c83e1a2b5b89'
+r=json.loads(receipt.read_text());assert r['status']=='passed_current_integrated_replay_not_independent_scientific_approval'
+bp=Path(r['binding_manifest']['path']);assert sha(bp)==r['binding_manifest']['sha256']=='39b94e1fe4285bb26704a4809569010320b7325b896425463d42a84a9c6c9c17'
+b=json.loads(bp.read_text());assert r['bound_inputs']==b['files'] and len(r['bound_inputs'])==1645
+assert r['helper_sha256']=='f91bb984deb34364e794cc2f83b4fcdff6ba53567df066f4af55a123e96cf1ad'
+assert r['target_sha256']==sha(root/'data/pathways/myxochelin-a-and-b-biosynthesis.yaml')=='5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2'
+assert [c['name'] for c in r['commands']]==['source-replay','identifiers','native-schema','strict-schema']
+for c in r['commands']:
+ assert c['exit_code']==0
+ for suffix in ['stdout','stderr']:assert sha(p/(c['name']+'.'+suffix))==c[suffix+'_sha256']
+assert sha(p/'source-replay.json')==r['child_receipt_sha256']=='5b5a65d2fe88d4c2d2e4919faa37cfef1c4cbd5c5b3233d79404c03544a16778'
+s=json.loads((p/'source-replay.json').read_text());assert s['record_sha256']==r['target_sha256'] and s['original_bodies']==103 and len(s['all_evidence_anchors'])==239 and len(s['native_members'])==9 and len(s['negative_controls'])==7 and not s['strict_schema_errors']
+for row in s['KGX']['paths']:assert sha(row['path'])==row['sha256']
+formal=0;small_source=0
+for row in b['files']:
+ path=Path(row['path']);assert str(path.resolve())==row['resolved_path']
+ if row['role'] not in ['source','prior_proof'] or path.stat().st_size<10_000_000:
+  assert sha(path)==row['sha256'];formal+=row['role'] not in ['source','prior_proof'];small_source+=row['role'] in ['source','prior_proof']
+assert formal==1533 and small_source==111
+report={'status':'accepted_current_integrated_source_replay_and_canonical_child_checks','at':datetime.now(timezone.utc).isoformat(),'actual_execution':{'session':92304,'exit_code':0,'terminal_chunk':'325b2d'},'integration_receipt_sha256':sha(receipt),'child_receipt_sha256':sha(p/'source-replay.json'),'binding_manifest_sha256':sha(bp),'target_sha256':r['target_sha256'],'formal_bindings_freshly_rehashed':formal,'small_source_and_proof_bindings_freshly_rehashed':small_source,'bound_total':1645,'checks':r['commands'],'source_counts':{'original_bodies':103,'reactions':9,'edges':78,'evidence':239,'references':62,'biological_negative_controls':7},'interpretation':'Root read driver and child scope/results, checked all child logs and KGX outputs, exact accepted bindings and current target, freshly rehashed all formal bindings and small source/prior-proof files. Complete issuing database was freshly hashed before/after by the accepted driver and unchanged child; root did not repeat that large database pass here.','limits':r['limits']+['Full corpus gate session28093 still includes a running test suite; no final corpus pass or current canonical scientific review is claimed by this adoption.']}
+with out.open('x') as f:json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps({'status':report['status'],'sha256':sha(out),'formal':formal,'small_sources_and_proofs':small_source}))

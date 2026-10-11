@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,hashlib,yaml
+from lxml import etree
+O=Path(__file__).parent;D=O/'draft';repo=Path('/private/tmp/pathwaymech-next-216-20261011');p=D/'myxochelin-a-and-b-biosynthesis.yaml';r=yaml.safe_load(p.read_text());a=json.loads((D/'myxochelin-authority-proposal.json').read_text());chem=json.loads((D/'myxochelin-chemical-identities.json').read_text());snapshot=json.loads((repo/'data/identifier_authorities/sources.json').read_text());onto=json.loads((repo/'data/identifier_authorities/ontology.json').read_text());terms=snapshot['terms']|onto['terms'];issuing={t['id']:(t,x) for x in a['proposed_inputs'] for t in x['terms']};ledger=[]
+for section,nodes in [('record',[r]),('taxa',r['taxa']),('participants',r['participants']),('reactions',r['reactions'])]:
+ for n in nodes:
+  id=n['id'];row={'id':id,'display_label':n['label'],'section':section,'baseline_authority_present':id in terms}
+  if id in issuing:
+   t,x=issuing[id];row|={'issuing_label':t['label'],'original_path':x['original_path'],'sha256':x['manifest_entry']['sha256'],'source_kind':x['manifest_entry']['kind'],'url':x['manifest_entry']['url'],'label_policy':'contextual existing policy' if section=='reactions' or id.startswith('UniProtKB:') else 'canonical'}
+   if row['label_policy']=='canonical':assert row['display_label']==row['issuing_label']
+  elif id.startswith('CHEBI:'):
+   cr=chem['selected_rows'][id];lab=next(x['value'] for x in cr if x['predicate']=='rdfs:label');assert lab==n['label'];row|={'issuing_label':lab,'original_path':chem['source_path'],'sha256':chem['source_sha256'],'source_kind':'original ChEBI255 semantic SQL','label_policy':'canonical'}
+  elif id=='NCBITaxon:675526':
+   q=O/'originals/taxonomy675526.xml';t=etree.parse(str(q));tax=t.find('Taxon');assert tax.findtext('TaxId')=='675526';lab=tax.findtext('ScientificName');assert lab==n['label'];row|={'issuing_label':lab,'original_path':str(q),'sha256':hashlib.sha256(q.read_bytes()).hexdigest(),'source_kind':'original NCBI Taxonomy XML','label_policy':'canonical'}
+  else:raise AssertionError(id)
+  ledger.append(row)
+for x in a['proposed_inputs']:
+ x['baseline_existing_identifiers']=[t['id'] for t in x['terms'] if t['id'] in terms]
+ x['integration_disposition']='Reuse existing baseline terms without overwriting; source retained as corroboration.' if x['baseline_existing_identifiers'] else 'Proposed new issuing-source input; root independent integration required.'
+(D/'myxochelin-authority-integration-dispositions.json').write_text(json.dumps(a,indent=2)+'\n')
+# Proposal is captured by live replay; do not mutate after replay starts. This helper is prepared but run later.
+out={'record_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'nodes':ledger,'reference_ids':[x['id'] for x in r['references']],'limits':['No shared authority mutation or production identifier-gate pass claimed.','All named IDs independently verified against issuing originals; contextual labels rely on current unmodified policy.','Native reaction references and source structures do not establish experimental absolute positional order.']}
+with (D/'myxochelin-identifiers.json').open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps({'nodes':len(ledger),'baseline_missing':sum(not x['baseline_authority_present'] for x in ledger)}))

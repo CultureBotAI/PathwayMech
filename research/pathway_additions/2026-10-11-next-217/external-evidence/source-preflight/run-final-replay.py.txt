@@ -1,0 +1,26 @@
+from datetime import UTC, datetime
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+o = Path(__file__).resolve().parent
+command = [sys.executable, str(o / 'replay-preflight.py'), str(o / 'replay-final.json')]
+start = datetime.now(UTC).isoformat()
+with (o / 'replay-final.log').open('x') as log:
+    result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, check=False)
+receipt = {
+    'command': command,
+    'cwd': str(Path.cwd()),
+    'started_at': start,
+    'finished_at': datetime.now(UTC).isoformat(),
+    'exit_code': result.returncode,
+    'log_sha256': hashlib.sha256((o / 'replay-final.log').read_bytes()).hexdigest(),
+    'prior_attempt_limit': 'The initial source replay passed, but its internal finished_at was evaluated before the final full SQL hash. This final runner captures actual subprocess completion; the initial helper/result/log remain preserved.',
+}
+with (o / 'replay-final-execution.json').open('x') as f:
+    json.dump(receipt, f, indent=2)
+    f.write('\n')
+print(json.dumps(receipt, indent=2))
+raise SystemExit(result.returncode)

@@ -1,0 +1,255 @@
+"""Prepare an external copy map and lossless inert evidence wrappers; no apply mode."""
+from pathlib import Path
+from datetime import datetime, UTC
+import base64
+import hashlib
+import json
+import os
+import subprocess
+
+HERE = Path(__file__).absolute().parent
+DEST = Path('/private/tmp/pathwaymech-next-217-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-217')
+A = Path('/private/tmp/pathwaymech-myxochelin-author-20261011')
+R = Path('/private/tmp/pathwaymech-myxochelin-independent-review-20261011')
+S = Path('/private/tmp/pathwaymech-myxochelin-authority-selection-20261011')
+P = Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011')
+J = Path('/private/tmp/pathwaymech-myxochelin-independent-adjudication-20261011')
+I = Path('/private/tmp/pathwaymech-myxochelin-imod-context-20261011')
+paths, canon, copies, aliases, excluded, symlinks = {}, {}, [], [], [], []
+bindings = {}
+
+def sha(p):
+    with Path(p).open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+def capture(p, expected=None):
+    p = Path(p).absolute()
+    resolved = p.resolve(strict=True)
+    b = p.read_bytes()
+    h = hashlib.sha256(b).hexdigest()
+    if expected is not None and h != expected:
+        raise ValueError('source digest mismatch: ' + str(p))
+    if str(p) in bindings and bindings[str(p)] != (str(resolved), h):
+        raise ValueError('source changed during capture: ' + str(p))
+    bindings[str(p)] = (str(resolved), h)
+    return b
+
+def read(p):
+    return json.loads(capture(p))
+
+def save(p, obj):
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open('x') as f:
+        json.dump(obj, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+
+def bad_whitespace(b):
+    return bool(b) and (any(line.rstrip(b'\r\n').endswith((b' ', b'\t')) for line in b.splitlines(keepends=True)) or b.endswith(b'\n\n'))
+
+def add(p, dest, role, *, wrap=False, active=False, unique=False, source_name=None):
+    p = Path(p).absolute()
+    if str(p) in paths:
+        return paths[str(p)]
+    b = capture(p)
+    digest = hashlib.sha256(b).hexdigest()
+    dest = Path(dest)
+    if not active:
+        if dest.suffix in {'.py', '.yaml', '.yml', '.log'}:
+            dest = dest.with_name(dest.name + '.txt')
+    # All fixtures are wrapped, including malformed JSON, exact YAML, Python,
+    # output sentinels and no-final-newline bodies. Never parse/normalize them.
+    wrap = wrap or p.suffix in {'.log', '.tsv', '.jsonl', '.diff'} or bad_whitespace(b)
+    if active and wrap:
+        raise ValueError('current active bytes require review, not normalization: ' + str(p))
+    mode = 'lossless_json_wrapper' if wrap else 'exact_bytes'
+    key = (digest, mode)
+    if key in canon and not unique:
+        item = dict(path=str(p), sha256=digest, bytes=len(b), disposition='exact-byte-alias', destination=canon[key], mode=mode, role=role)
+        aliases.append(item)
+        paths[str(p)] = item
+        return item
+    source = p
+    if wrap:
+        try:
+            content = b.decode('utf-8')
+            assert content.encode('utf-8') == b
+            encoding = 'utf-8'
+        except UnicodeDecodeError:
+            content = base64.b64encode(b).decode('ascii')
+            encoding = 'base64'
+        source = HERE / 'payload' / (digest + '.json')
+        if not source.exists():
+            save(source, dict(format='lossless-immutable-evidence-v1', original_sha256=digest, original_bytes=len(b), encoding=encoding, content=content))
+        dest = dest.with_name(dest.name + '.json')
+    if dest.is_absolute() or '..' in dest.parts or any(x['destination'] == str(dest) for x in copies):
+        raise ValueError('invalid or colliding destination: ' + str(dest))
+    item = dict(path=str(p), sha256=digest, bytes=len(b), source_name=source_name or p.name, disposition='planned-copy', destination=str(dest), copy_source=str(source), destination_sha256=sha(source), mode=mode, role=role)
+    copies.append(item)
+    canon.setdefault(key, str(dest))
+    paths[str(p)] = item
+    return item
+
+def archive(p, group, rel=None, **kw):
+    return add(p, DOSSIER/'external-evidence'/group/(rel or Path(p).name), 'immutable external evidence; not a historical canonical review', **kw)
+
+def external(p, reason):
+    p = Path(p).absolute()
+    if str(p) in paths:
+        return
+    if p.is_symlink():
+        entry = dict(path=str(p), disposition='retained-external-symlink', target=os.readlink(p), reason=reason)
+    else:
+        b = capture(p)
+        entry = dict(path=str(p), sha256=hashlib.sha256(b).hexdigest(), bytes=len(b), disposition='retained-external', reason=reason)
+    paths[str(p)] = entry
+    excluded.append(entry)
+
+capture(__file__)
+target = A/'draft/myxochelin-a-and-b-biosynthesis.yaml'
+assert sha(target) == '5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2'
+add(target, 'data/pathways/myxochelin-a-and-b-biosynthesis.yaml', 'accepted unchanged scientific record', active=True, unique=True)
+helper = A/'myxochelin-replay-successor.py'
+assert sha(helper) == 'f91bb984deb34364e794cc2f83b4fcdff6ba53567df066f4af55a123e96cf1ad'
+add(helper, DOSSIER/helper.name, 'active accepted source/schema/KGX replay; does not validate integrated authorities', active=True, unique=True)
+# Preserve helper-relative layout exactly. Original proposal metadata is historical
+# and remains distinct from the issue404 production selection.
+for p in sorted((A/'draft').iterdir()):
+    if p.is_file() and p != target:
+        add(p, DOSSIER/'draft'/p.name, 'sealed author dossier used by byte-identical replay', active=True, unique=True)
+add(A/'rhea-crosscheck.json', DOSSIER/'rhea-crosscheck.json', 'accepted helper-relative Rhea source crosscheck', active=True, unique=True)
+initial = read(R/'initial-inputs/manifest.json')
+assert len(initial) == 35
+for row in initial:
+    capture(row['original_path'], row['sha256'])
+    p = Path(row['archive_path'])
+    capture(p, row['sha256'])
+    # Keep the initial target independently recoverable even if current data later changes.
+    archive(p, 'initial-inputs', row['sha256']+'-'+Path(row['original_path']).name, unique=Path(row['original_path']) == target, source_name=Path(row['original_path']).name)
+archive(R/'initial-inputs/manifest.json', 'initial-inputs')
+for row in read(A/'handoff.json')['artifacts']:
+    capture(row['path'],row['sha256'])
+    p=Path(row['path'])
+    if str(p) not in paths:
+        archive(p,'author-original',p.relative_to(A))
+for p in sorted(A.iterdir()):
+    if p.is_file():
+        archive(p,'author-original')
+
+# Preserve every review receipt and every full positive/negative fixture byte.
+fixture_roots = []
+for p in sorted(R.iterdir()):
+    if p.is_file():
+        if p.suffix == '.png':
+            external(p,'Rendered original primary PDF page; original and visual source observations remain external, no redistributed paper image.')
+        else:
+            archive(p,'independent-review')
+    elif p.is_dir() and (p.name.startswith('binding-') or p.name.startswith('successor-')):
+        fixture_roots.append(p)
+        for q in sorted(p.rglob('*')):
+            rel=q.relative_to(p)
+            if q.is_symlink():
+                b=capture(q)
+                symlinks.append(dict(path=str(q),target=os.readlink(q),resolved_path=str(q.resolve()),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b),fixture=str(p),relative_path=str(rel),note='Symlink identity is reconstructed only in a separate external replay fixture, never installed as a maintained symlink.'))
+            elif q.is_file():
+                archive(q,'replay-fixtures',Path(p.name)/rel,wrap=True)
+    elif p.is_dir() and p.name == 'unchanged-replay.kgx':
+        for q in sorted(p.rglob('*')):
+            if q.is_file():archive(q,'independent-review',q.relative_to(R),wrap=True)
+
+# Discovery/primary-access receipts, original body manifest, qualified iMod context.
+for root, group in [(P,'source-preflight'),(J,'preflight-adjudication'),(I,'imodulondb')]:
+    for p in sorted(root.iterdir()):
+        if not p.is_file():continue
+        if p.suffix in {'.png','.pdf'} or p.name in {'PMC58696-text.txt','MIBiG1345-text.txt','ja8025278-si-text.txt'}:
+            external(p,'Original source rendering or full-text extraction stays external; hashes/provenance remain in retained source manifests and inspection receipts.')
+        elif p.name.endswith('-shared.txt'):
+            external(p,'Broad shared-chemical dedup output is redundant; exact defining searches, complete dispositions and scoped raw-dedup JSON are retained.')
+        else:archive(p,group)
+for row in read(A/'draft/myxochelin-source-manifest.json')['prior_proof_inputs']:
+    capture(row['path'],row['sha256'])
+    if str(Path(row['path'])) not in paths:archive(row['path'],'prior-proofs')
+root_accept=Path('/private/tmp/pathwaymech-myxochelin-root-source-acceptance-20261011.json')
+capture(root_accept,'54075502678a75d09b2e486296a243a9a0fd51b01cb3e45d00b0381aa6943a80')
+archive(root_accept,'root-acceptance')
+
+# Issue404 production selection and exact failed preparation are separate from
+# the unmodified proposal consumed by the accepted source replay.
+full_authority_names={'ontology.json','sources.json','identifier_sources.json','prospective-ontology.json','prospective-sources.json','prospective-identifier-sources.json'}
+for row in read(S/'handoff.json')['files']:
+    p=Path(row['path']);capture(p,row['sha256'])
+    if p.name in full_authority_names:
+        external(p,'Complete prospective authority snapshots/manifest stay external; canonical commands, per-ID deltas, original hashes and root independent adoption preserve their meaning without redundant corpus copies.')
+    elif 'one-record-validation' in p.parts:
+        external(p,'Generated isolated validation sandbox; its exact result/runtime/policy/output hashes are in the canonical report. Not a maintained corpus record.')
+    elif 'guard-controls' in p.parts:
+        archive(p,'authority-preparation',p.relative_to(S),wrap=True)
+    else:archive(p,'authority-preparation',p.relative_to(S))
+archive(S/'handoff.json','authority-preparation')
+
+# Explicit census uses os.walk (hidden/ignored included), with original/cache
+# trees kept external rather than interpreted as absent.
+roots=[A,R,S,P,J,I]
+excluded_trees=[]
+for root in roots:
+    for directory,dirs,files in os.walk(root,followlinks=False):
+        directory=Path(directory)
+        for name in list(dirs):
+            q=directory/name
+            if q.is_symlink() or name in {'originals','source-cache','__pycache__'}:
+                dirs.remove(name)
+                excluded_trees.append(dict(path=str(q),reason='Raw original body/cache/symlink environment tree retained externally; body manifest/source acceptance supplies source hashes.'))
+        for name in files:
+            q=directory/name
+            if q.is_symlink():
+                if not any(x['path']==str(q) for x in symlinks):external(q,'External symlink retained; no followed-tree absence claim.')
+            elif str(q) not in paths:
+                external(q,'Redundant generated scratch output or historical support remains external unchanged; all formal inputs and every independent replay fixture are explicitly mapped.')
+
+# Verify each original source path in historical evidence resolves exactly to
+# a mapped byte stream or an explicitly retained original body.
+formal=[]
+for label,rows,pk in [('initial-35',initial,'original_path'),('author-34',read(A/'handoff.json')['artifacts'],'path'),('review-completion-15',read(R/'completion.json')['artifacts'],'path'),('prior-proof-8',read(A/'draft/myxochelin-source-manifest.json')['prior_proof_inputs'],'path')]:
+    for row in rows:
+        p=Path(row[pk]);capture(p,row['sha256']);entry=paths.get(str(p))
+        if entry is None:
+            entry=next((x for x in copies+aliases if x['sha256']==row['sha256']),None)
+        assert entry and entry['disposition'] in {'planned-copy','exact-byte-alias'},(label,p)
+        formal.append(dict(set=label,path=str(p),sha256=row['sha256'],destination=entry['destination'],mode=entry['mode']))
+# All historical fixture file identities are recoverable, not merely regenerated.
+fixtures=[]
+for root in fixture_roots:
+    for p in sorted(root.rglob('*')):
+        if p.is_symlink():continue
+        if p.is_file():
+            e=paths[str(p)];assert e['mode']=='lossless_json_wrapper'
+            fixtures.append(dict(path=str(p),sha256=e['sha256'],destination=e['destination'],mode=e['mode']))
+
+preview=HERE/'preview';preview.mkdir()
+for e in copies:
+    destination=DEST/e['destination']
+    assert not os.path.lexists(destination),destination
+    assert sha(e['copy_source'])==e['destination_sha256']
+    b=Path(e['copy_source']).read_bytes()
+    if e['mode']=='lossless_json_wrapper':
+        w=json.loads(b);decoded=w['content'].encode('utf-8') if w['encoding']=='utf-8' else base64.b64decode(w['content'],validate=True)
+        assert hashlib.sha256(decoded).hexdigest()==e['sha256'] and len(decoded)==e['bytes']
+    else:assert e['sha256']==e['destination_sha256']
+    assert not bad_whitespace(b),e['destination']
+    q=preview/e['destination'];q.parent.mkdir(parents=True,exist_ok=True)
+    with q.open('xb') as f:f.write(b)
+assert all(x['destination'] in {e['destination'] for e in copies} for x in aliases)
+assert [e['destination'] for e in copies if e['destination'].endswith('.py')]==[str(DOSSIER/helper.name)]
+assert len([e for e in copies if e['destination'].startswith('data/pathways/')])==1
+empty=HERE/'empty';empty.mkdir()
+cmd=['git','diff','--no-index','--check',str(empty),str(preview)]
+checked=subprocess.run(cmd,capture_output=True,text=True,check=False)
+assert checked.returncode == 1 and not checked.stdout and not checked.stderr, (checked.returncode, checked.stdout, checked.stderr)
+# In no-index mode bit 1 reports differences; bit 2 reports whitespace errors.
+# A separate deliberate trailing-whitespace control returned 3 with a diagnostic.
+for name,(resolved,h) in bindings.items():
+    assert str(Path(name).resolve(strict=True))==resolved and sha(name)==h, name
+lock=read(S/'baseline-lock.json')
+plan=dict(created_at=datetime.now(UTC).isoformat(),status='external_copy_plan_only_not_applied',role='Production preparation; no independent approval of own authority outputs or copy plan.',destination_repo=str(DEST),destination_dossier=str(DOSSIER),provisional_base=dict(commit=lock['observed_head'],tree=lock['observed_head_tree']),merge_bridge=dict(parent_reported_merge='babe44ad1992d2950701e432f400965631d538a7',parent_reported_tree_equal=True,current_local_head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=DEST,text=True).strip(),local_transition_and_root_proof_required_before_canonical_review=True),scientific_target=dict(path=str(target),sha256=sha(target)),accepted_helper=dict(path=str(helper),sha256=sha(helper)),authority_handoff=dict(path=str(S/'handoff.json'),sha256=sha(S/'handoff.json')),authority_apply_status='No adoption or maintained application is claimed by this plan. Root owns independent review/adoption and will preserve that receipt separately.',copy_entries=copies,exact_byte_aliases=aliases,formal_input_resolution=formal,fixture_resolution=fixtures,fixture_symlinks=symlinks,retained_external=excluded,excluded_trees=excluded_trees,inventory_scope='os.walk includes hidden and ignored files; explicit original/cache/symlink exclusions are retention decisions, not absence claims.',application_contract=['Root must inspect plan before any apply; this helper has no apply option.','Freshly bind actual merged baseline/tree and independently adopted authority outputs; no commit or canonical review at the provisional head.','Every destination must be absent including dangling symlinks. Rehash source, create exclusively and rehash copied bytes; fail on any collision.','Only accepted f91 replay is current executable Python. Its adjacent draft inputs and rhea-crosscheck.json are copied exactly; pass maintained target/current repository explicitly and preserve declared external PDF virtualenv path.','Accepted source replay does not bind integrated authorities. A separate current-runtime/authority guard and canonical identifier+strict/full-corpus gates remain required.','Historical scripts/YAML/logs are inert or losslessly wrapped. Decode wrappers before comparing old digests; never normalize or strip historical evidence bytes.','Every independent negative fixture byte is present via content-deduplicated lossless wrapper. Reconstruct symlinks only in new external test fixtures from fixture_symlinks metadata.','Keep original article/native/API response bodies external; source availability is not redistribution permission.','Initial proposal/disposition version strings remain unchanged. Issue404 source-specific production selection is a separate linked correction, not a silent rewrite.','External initial review, false PASS, corrections and successor remain external observations; no fabricated historical canonical review. Root will save actual integrated review after current gates.','Root owns shared authorities/history/pages/Git/GitHub; this plan author applies none.'],validation=dict(initial35_rehashed=True,formal_resolution_count=len(formal),all_fixture_bytes_recoverable=True,fixture_file_count=len(fixtures),fixture_symlink_count=len(symlinks),all_destinations_absent=True,wrappers_roundtrip=True,current_helper_byte_identical=True,source_inputs_freshly_rechecked=len(bindings),whitespace_check=dict(command=cmd,exit_code=checked.returncode,stdout=checked.stdout,stderr=checked.stderr),maintained_writes=[]))
+save(HERE/'copy-plan.json',plan)
+print(json.dumps(dict(plan_sha256=sha(HERE/'copy-plan.json'),copies=len(copies),aliases=len(aliases),fixture_files=len(fixtures),formal_inputs=len(formal),external_files=len(excluded),planned_bytes=sum(x['bytes'] for x in copies)),indent=2))

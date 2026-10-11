@@ -1,0 +1,27 @@
+import builtins,json,runpy,sys
+from pathlib import Path
+hookfile=Path(sys.argv[1]); kind=sys.argv[2]; helper=sys.argv[3];args=sys.argv[4:]
+original_import=builtins.__import__; installed=False; changed=False
+def mutate():
+ global changed
+ if changed:return
+ changed=True
+ if kind=='symlink':
+  hookfile.unlink();hookfile.symlink_to(hookfile.parent/'proof-other.json')
+ elif kind=='projection':
+  d=json.loads(hookfile.read_text());d['native_members']=[];hookfile.write_text(json.dumps(d))
+ else:hookfile.write_text('{"mutated_at_observed_hook":true}\n')
+def replacement(*a,**kw):
+ global installed
+ if kind=='early-prior' and a[0]=='yaml':mutate()
+ m=original_import(*a,**kw)
+ if a[0]=='pathwaymech.kgx' and not installed:
+  installed=True;original_write=m.write_kgx
+  def write(*x,**y):
+   if kind!='early-prior':mutate()
+   return original_write(*x,**y)
+  m.write_kgx=write
+ return m
+builtins.__import__=replacement
+sys.argv=[helper]+args
+runpy.run_path(helper,run_name='__main__')

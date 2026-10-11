@@ -1,0 +1,144 @@
+"""Author an external complete PWY-8383 draft from inspected original bodies."""
+from pathlib import Path
+import hashlib,json,sqlite3,re,importlib.util
+from datetime import datetime,timezone
+from html import unescape
+from lxml import etree,html
+import yaml
+O=Path(__file__).parent; P=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011'); R=P/'originals'; D=O/'draft'
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(4*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def clean(s):return ' '.join(unescape(re.sub('<[^>]+>','',s or '')).split())
+def xml(f):return etree.parse(str(R/f'metacyc-{f}{"-native" if f=="CPD-25916" else ""}.xml'))
+def obj(f):return xml(f).xpath(f'/*/*[@frameid="{f}"]')[0]
+def path(f):return R/f'metacyc-{f}{"-native" if f=="CPD-25916" else ""}.xml'
+def ev(ref,assertion,loc):
+ assert len(assertion)<=400,(len(assertion),assertion)
+ return {'reference_id':ref,'source_assertion':assertion,'source_locator':loc}
+DB=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db').resolve(); db=sqlite3.connect(f'file:{DB}?mode=ro',uri=True)
+DBSHA=sha(DB)
+def rows(id):return [dict(zip(['predicate','value','object'],r)) for r in db.execute('select predicate,value,object from statements where subject=?',(id,))]
+def label(id):return db.execute('select value from statements where subject=? and predicate=?',(id,'rdfs:label')).fetchone()[0]
+order=['DHBAMPLIG-RXN','RXN-23310','RXN-22679','RXN-23308','RXN-23316','RXN-23312','RXN-23313','RXN-23314','RXN-23315']
+assert set(order)=={x.get('frameid') for x in obj('PWY-8383').findall('reaction-list/Reaction')}
+carriers={'MxcF','23-DHB-MxcF','MxcG','Lysyl-MxcG','N-23-DHB-Lysyl-MxcG','N-N-di23-DHB-Lysyl-MxcG'}
+chem={}; reactions={}; mappings={}
+for rxn in order:
+ o=obj(rxn); sides={side:[{'frame':x[0].get('frameid'),'coefficient':int(x.findtext('coefficient','1'))} for x in o.findall(side)] for side in ['left','right']}
+ direction=o.findtext('reaction-direction');reactions[rxn]={'native_direction':direction,'native_sides':sides,'inputs':sides['right' if direction=='PHYSIOL-RIGHT-TO-LEFT' else 'left'],'outputs':sides['left' if direction=='PHYSIOL-RIGHT-TO-LEFT' else 'right']}
+ for s in sides.values():
+  for x in s:
+   f=x['frame']
+   if f in chem:continue
+   n=obj(f); ins=n.findtext('inchi'); matches=[] if not ins else [z[0] for z in db.execute('select subject from statements where predicate=? and value=?',('chemrof:inchi_string',ins))]
+   assert len(matches)<=1,(f,matches)
+   selected=matches[0] if matches else 'MetaCyc:'+f
+   mappings[f]=selected;chem[f]={'selected_id':selected,'native_type':n.tag,'native_label':clean(n.findtext('common-name')),'native_inchi':ins,'label':label(selected) if matches else clean(n.findtext('common-name')),'category':'protein' if f in carriers else 'small_molecule'}
+assert mappings['CPD-25904']=='MetaCyc:CPD-25904' and mappings['CPD-25905']=='CHEBI:7061'
+chebi_ids={x for x in mappings.values() if x.startswith('CHEBI:')}|{'CHEBI:47942','CHEBI:597326'}
+chebi_rows={i:rows(i) for i in sorted(chebi_ids|{'CHEBI:31877'})}
+(D/'myxochelin-chemical-identities.json').write_text(json.dumps({'source_path':str(DB),'source_sha256':DBSHA,'selected_rows':chebi_rows,'native_bridges':chem,'A_disposition':'Native CPD25904 stereo is not exact to stereounspecified CHEBI31877.','B_disposition':'CHEBI7061 full InChI exact to CPD25905; chemically inconsistent definition excluded.'},indent=2)+'\n')
+refs={}; bodies=json.loads((P/'source-manifest.json').read_text())['bodies']; bypath={x['path']:x for x in bodies}
+def native_ref(f):
+ id='MetaCyc:'+f
+ if id not in refs:
+  q=path(f);b=bypath[str(q)];refs[id]={'id':id,'title':'MetaCyc native '+f,'url':b['url'],'source_version':'MetaCyc 27.0 original XML; retrieved 2026-10-11','source_sha256':sha(q)}
+ return id
+def nativ(f,assertion,loc):return ev(native_ref(f),assertion,loc)
+for i in chebi_ids:
+ refs[i]={'id':i,'title':'ChEBI '+label(i),'url':'http://purl.obolibrary.org/obo/chebi/255/chebi.owl','source_version':'ChEBI 255; hash covers original complete uncompressed Semantic SQL database','source_sha256':DBSHA}
+refs['PMID:11562468']={'id':'PMID:11562468','title':'In vitro reconstitution of the myxochelin biosynthetic machinery of Stigmatella aurantiaca Sg a15: Biochemical characterization of a reductive release mechanism from nonribosomal peptide synthetases','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC58696/','source_version':'2001 original full PNAS article in PMC HTML; retrieved 2026-10-11','source_sha256':sha(R/'PMC58696.html')}
+pub=etree.parse(str(R/'PMID18498160.xml'));title=''.join(pub.find('.//ArticleTitle').itertext())
+refs['DOI:10.1021/ja8025278']={'id':'DOI:10.1021/ja8025278','title':title+' — Supporting Information','url':'https://ndownloader.figshare.com/files/4631935','source_version':'2008 original official four-page supporting information, DOI-linked ACS Figshare; main body not acquired locally','source_sha256':sha(R/'ja8025278_si_001.pdf')}
+refs['PMID:18498160']={'id':'PMID:18498160','title':title,'url':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=18498160&retmode=xml','source_version':'Original PubMed XML; abstract scope only','source_sha256':sha(R/'PMID18498160.xml')}
+proteins={}; sequence_bridge=[];g=etree.parse(str(R/'AF299336.1.xml'))
+for gene,acc in [('mxcE','Q9F638'),('mxcF','Q9F637'),('mxcG','Q9F636'),('mxcL','Q9F631')]:
+ u=json.loads((O/'originals'/f'uniprot-{acc}.json').read_text());assert u['primaryAccession']==acc
+ cds=g.xpath(f'//GBFeature[GBFeature_key="CDS"][GBFeature_quals/GBQualifier[GBQualifier_name="gene"]/GBQualifier_value="{gene}"]');assert len(cds)==1
+ q={x.findtext('GBQualifier_name'):x.findtext('GBQualifier_value') for x in cds[0].findall('GBFeature_quals/GBQualifier')};assert q['translation']==u['sequence']['value']
+ ident='UniProtKB:'+acc; proteins[gene]=ident
+ refs[ident]={'id':ident,'title':'UniProtKB '+acc+' '+gene,'url':f'https://rest.uniprot.org/uniprotkb/{acc}.json','source_version':'Original individual UniProt JSON; unreviewed species-level entry; exact native sequence separately bridged to AF299336.1','source_sha256':sha(O/'originals'/f'uniprot-{acc}.json')}
+ nr='NCBIProtein:'+q['protein_id'];refs[nr]={'id':nr,'title':q['protein_id']+' '+gene+' native translation in Sg a15 AF299336.1','url':bypath[str(R/'AF299336.1.xml')]['url'],'source_version':'Original versioned AF299336.1 GenBank XML; reference digest covers whole nucleotide record, exact CDS qualifier selected','source_sha256':sha(R/'AF299336.1.xml')}
+ sequence_bridge.append({'gene':gene,'uniprot':ident,'ncbi':nr,'length':len(q['translation']),'sha256':hashlib.sha256(q['translation'].encode()).hexdigest(),'uniprot_json':str(O/'originals'/f'uniprot-{acc}.json')})
+(D/'myxochelin-sequence-bridges.json').write_text(json.dumps(sequence_bridge,indent=2)+'\n')
+refs['NCBITaxon:675526']={'id':'NCBITaxon:675526','title':'NCBI Taxonomy Allostigmatella aurantiaca Sg a15','url':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=675526&retmode=xml','source_version':'Original current NCBI taxonomy XML','source_sha256':sha(O/'originals/taxonomy675526.xml')}
+unc='N6-first is the selected native database convention; the first amidated lysine nitrogen is experimentally unresolved, not demonstrated to be N6 or exclusive.'
+unc_ev=ev('PMID:11562468','Figure 5C states that it is not known which lysine amide forms first. It supports both condensations but does not experimentally establish the selected native N6-first intermediate.','//*[@id="F5"]/figcaption/p')
+def primary(assertion,loc):return ev('PMID:11562468',assertion,loc)
+def si(assertion,loc):return ev('DOI:10.1021/ja8025278',assertion,loc)
+def seqev(gene):
+ b=next(x for x in sequence_bridge if x['gene']==gene)
+ return [ev(b['ncbi'],f'The {gene} CDS in AF299336.1 supplies {b["ncbi"].split(":")[1]}, {b["length"]} residues, from Sg a15. Its native translation is exactly identical to the selected UniProt sequence; engineered tags and processing are separate.',f'//GBFeature[GBFeature_key="CDS"][GBFeature_quals/GBQualifier[GBQualifier_name="gene"]/GBQualifier_value="{gene}"]/GBFeature_quals; //GBFeature[GBFeature_key="source"]/GBFeature_quals'),ev(b['uniprot'],'The entry provides the selected full native sequence and versioned EMBL protein cross-reference. This unreviewed species-level annotation is not itself an experimental assay.','/primaryAccession; /sequence; /uniProtKBCrossReferences; /entryType; /organism')]
+edges=[]
+def add(s,p,o,e,d):
+ edges.append({'id':f'myxochelin-edge-{len(edges)+1:03d}','subject':s,'predicate':p,'object':o,'description':d,'evidence':e})
+steps=['DHB adenylation','DHB loading onto MxcF','L-lysine adenylation','L-lysine loading onto MxcG','first DHB condensation (native N6-first convention)','second DHB condensation','reductive carrier release to the aldehyde','aldehyde reduction to myxochelin A','aldehyde transamination to myxochelin B']
+for rxn,step in zip(order,steps,strict=True):
+ e=[nativ('PWY-8383',f'The native pathway directly includes {rxn} among nine reaction members. PWY-5901 is separately linked precursor supply, not a nested member.',f'/ptools-xml/Pathway[@frameid="PWY-8383"]/reaction-list/Reaction[@frameid="{rxn}"]; /ptools-xml/Pathway/pathway-link')]
+ if rxn in ['RXN-23316','RXN-23312']:e.append(unc_ev)
+ add('MetaCyc:'+rxn,'part_of','MetaCyc:PWY-8383',e,'Complete native member: '+step+'. '+(unc if rxn in ['RXN-23316','RXN-23312'] else ''))
+side_projection=[]
+for rxn in order:
+ r=reactions[rxn]
+ for biological,pred in [('inputs','consumes'),('outputs','produces')]:
+  source_side=('right' if biological=='inputs' else 'left') if r['native_direction']=='PHYSIOL-RIGHT-TO-LEFT' else ('left' if biological=='inputs' else 'right')
+  for x in r[biological]:
+   f=x['frame'];c=chem[f];a=f'The original {source_side} side contains {f} with coefficient {x["coefficient"]}; native direction is {r["native_direction"]}. This is the selected {biological[:-1]} in pathway flux.'
+   evidence=[nativ(rxn,a,f'/ptools-xml/Reaction[@frameid="{rxn}"]/{source_side}[*[@frameid="{f}"]]; /ptools-xml/Reaction/reaction-direction')]
+   if c['native_inchi']:
+    evidence.append(nativ(f,'The native compound supplies its explicit Standard InChI, fixing the source chemical structure and protonation used in this equation.',f'/ptools-xml/Compound[@frameid="{f}"]/inchi'))
+    if c['selected_id'].startswith('CHEBI:'):
+     evidence.append(ev(c['selected_id'],'The issuing ChEBI Standard InChI exactly matches the native compound, including stated stereochemistry and protonation. The identifier is selected by structure; descriptive definitions are not biochemical evidence.',f'statements WHERE subject="{c["selected_id"]}" AND predicate IN ("rdfs:label","chemrof:inchi_string","chemrof:generalized_empirical_formula","chemrof:charge")'))
+   else:
+    evidence.append(nativ(f,'The original typed Protein class names this whole Mxc carrier reactive state. It does not supply a full molecular formula, engineered construct sequence or measured assembly stoichiometry.',f'/ptools-xml/Protein[@frameid="{f}"]/common-name'))
+   d=f'Coefficient: {x["coefficient"]}. '
+   if f in carriers:d+='Whole carrier reactive class, not a free acyl group or a fixed number of native protein molecules. '
+   if rxn in ['RXN-23316','RXN-23312'] or f=='N-23-DHB-Lysyl-MxcG':evidence.append(unc_ev);d+=unc
+   if f=='CPD-25904':d+='The exact native stereospecific product is retained; stereounspecified CHEBI:31877 is not an exact mapping.'
+   if f=='CPD-25905':d+='CHEBI:7061 full structural identity is used; its inconsistent hydroxy/reduction definition is excluded.'
+   if rxn=='RXN-23314':d+=' Native right-to-left flux reduces the aldehyde; the printed left side is the oxidation product side.'
+   s,o=(c['selected_id'],'MetaCyc:'+rxn) if pred=='consumes' else ('MetaCyc:'+rxn,c['selected_id'])
+   add(s,pred,o,evidence,d);side_projection.append({'edge_id':edges[-1]['id'],'reaction':rxn,'source_side':source_side,'biological_side':biological,'native_frame':f,'selected_id':c['selected_id'],'coefficient':x['coefficient']})
+# Activity support deliberately uses enables for the reaction decomposition/construct transfer.
+for rxn in order:
+ gene='mxcE' if rxn in order[:2] else ('mxcL' if rxn=='RXN-23315' else 'mxcG')
+ native={'mxcE':'MONOMER-124161','mxcG':'MONOMER-124162','mxcL':'MONOMER-124163'}[gene]
+ e=seqev(gene)
+ if gene=='mxcE':
+  e += [nativ(native,'The MxcE source object links Q9F638/AAG31128.1 and its composite DHB activation/loading activity RXN-23311. It is the myxochelin controller; the VibE controller of shared DHBAMPLIG-RXN is not transferred.','/ptools-xml/Protein/catalyzes/Enzymatic-Reaction/reaction; /ptools-xml/Protein/dblink'),primary('Discussion assigns DHB adenylation and loading onto the MxcF aryl-carrier domain to MxcE. The primary E/F/G reconstitution confirms pathway activity, rather than separately measuring each native half-reaction.','//*[@id="sec11"]/p[5]; //*[@id="sec9"]/p[1]')]
+ elif gene=='mxcG':
+  nassert='The MxcG object links Q9F636/AAG31130.1 and assigns lysine loading, iterative condensation, carrier reduction and aldehyde reduction to its domains.'
+  e += [nativ(native,nassert,'/ptools-xml/Protein/catalyzes; /ptools-xml/Protein/comment; /ptools-xml/Protein/dblink'),primary('The reconstituted E/F/G preparation forms A. Discussion assigns lysine activation/loading and two condensations to MxcG, and terminal two-stage reduction to its reductase domain. NADH also supports formation more slowly than NADPH.','//*[@id="sec9"]/p[1]; //*[@id="sec11"]/p[3]; //*[@id="sec11"]/p[5]')]
+  if rxn in ['RXN-23313','RXN-23314']:e.append(si('The complete enzyme preparation produces A and B; low amounts of free aldehyde were detected and characterized by LC-MS/MS and PFBHA derivatization.','S2-S3 Reconstitution in vitro; S3 Detection of the aldehyde intermediate; S4 Figure S-3'))
+ else:
+  e += [nativ(native,'The source links Q9F631/AAG31135.1 in Sg a15 to the MxcL aminotransferase and ENZRXN-31013/RXN-23315. It describes the later recombinant E/F/G/L reconstitution; the 2001 paper only proposed this function.','/ptools-xml/Protein/catalyzes/Enzymatic-Reaction/reaction; /ptools-xml/Protein/comment; /ptools-xml/Protein/dblink'),si('His6-MxcL was amplified from pCBP-MxcL and expressed in E. coli. E/F/G/L with glutamate produces A and B; free aldehyde is detected. The earlier pCBP construct is cited, not fully sequenced in this supplement.','S1 Cloning of mxcL; S1-S2 Overexpression and purification; S2-S3 Reconstitution in vitro; S3-S4 aldehyde analysis')]
+ if gene!='mxcL':e.append(primary('E/F/G genes were amplified from Sg a15 DNA using AF299336 primers. Intein-chitin constructs carry C-terminal extensions; purification and processing distinguish assayed proteins from exact bare native sequences.','//*[@id="sec2"]/p[1]; //*[@id="sec3"]/p[1]'))
+ d='Native gene-product/activity relation supported by source annotation and qualified recombinant reconstitution. No fixed E:F:G:L assembly is asserted. '
+ if rxn in ['RXN-23316','RXN-23312']:e.append(unc_ev);d+=unc
+ if gene=='mxcL':d+='The 2008 tagged preparation is linked through the cited earlier plasmid; its complete engineered sequence was not independently reconstructed.'
+ add(proteins[gene],'enables','MetaCyc:'+rxn,e,d)
+for rxn in ['RXN-23316','RXN-23312']:
+ add(proteins['mxcF'],'enables','MetaCyc:'+rxn,seqev('mxcF')+[primary('The MxcF aryl-carrier delivers activated DHB twice. The paper leaves reuse of one physical carrier versus two separately loaded carriers unresolved.','//*[@id="sec11"]/p[5]'),unc_ev],'Carrier contribution, not independent condensation catalysis or a fixed physical stoichiometry. '+unc)
+# Cofactor assertions retain annotation tiers and actual preparation scope.
+for gene,acc,index in [('mxcF','Q9F637',1),('mxcG','Q9F636',0)]:
+ add(proteins[gene],'has_cofactor','CHEBI:47942',[ev('UniProtKB:'+acc,'The current unreviewed entry annotates covalent phosphopantetheine association with ECO:0000256 rule-based evidence, not an independent native-strain binding assay.',f'/comments/{index}/cofactors'),primary('MtaA coexpression increases MxcF and separately expressed PCPG mass by about 340 Da. This directly supports phosphopantetheinylation of these constructs, not measured full-length MxcG occupancy or an identified native Sg a15 PPTase.','//*[@id="sec8"]/p[1]; //*[@id="sec5"]/p[1]')]+seqev(gene),'Covalent carrier prosthetic-group role. Heterologous MtaA maturation is supporting context outside the nine-member route; its identity is not transferred to a native activation edge.')
+add(proteins['mxcL'],'has_cofactor','CHEBI:597326',[ev('UniProtKB:Q9F631','The unreviewed entry annotates pyridoxal 5-prime-phosphate with ECO:0000256 ARBA evidence. This is distinct from the experimental tagged-preparation spectroscopy.','/comments/0/cofactors'),si('His6-MxcL incubated with PLP was buffer-exchanged before spectroscopy; addition of glutamate changes the PLP/PMP-associated UV spectrum.','S2 Spectrophotometric measurement of PLP-bound MxcL and Figure S-1')]+seqev('mxcL'),'PLP-dependent aminotransferase model with direct tagged-preparation spectroscopy and separately inferred native annotation; no cofactor stoichiometry claimed.')
+# Material handoffs; selected convention, not channeling or exclusive temporal ordering.
+links=[('DHBAMPLIG-RXN','RXN-23310','CPD-62'),('RXN-22679','RXN-23308','CPD-24910'),('RXN-23310','RXN-23316','23-DHB-MxcF'),('RXN-23310','RXN-23312','23-DHB-MxcF'),('RXN-23308','RXN-23316','Lysyl-MxcG'),('RXN-23316','RXN-23312','N-23-DHB-Lysyl-MxcG'),('RXN-23312','RXN-23313','N-N-di23-DHB-Lysyl-MxcG'),('RXN-23313','RXN-23314','CPD-25916'),('RXN-23313','RXN-23315','CPD-25916')]
+for a,b,f in links:
+ ae=next(e for e in edges if e['subject']=='MetaCyc:'+a and e['predicate']=='produces' and e['object']==mappings[f]);be=next(e for e in edges if e['subject']==mappings[f] and e['predicate']=='consumes' and e['object']=='MetaCyc:'+b)
+ e=[ae['evidence'][0],be['evidence'][0]];d='Shared material: '+mappings[f]+'. This does not establish physical channeling or simultaneous carrier occupancy. '
+ if a in ['RXN-23316','RXN-23312'] or b in ['RXN-23316','RXN-23312']:e.append(unc_ev);d+=unc
+ if f=='CPD-25916':e.append(si('Low amounts of a free aldehyde intermediate were detected by LC-MS/MS and PFBHA derivatization in the complete reconstitution. Both product branches are retained.','S3 Detection of the aldehyde intermediate; S4 Figure S-3'))
+ add('MetaCyc:'+a,'provides_input_for','MetaCyc:'+b,e,d)
+participants=[{'id':v['selected_id'],'label':v['label'],'category':v['category']} for v in chem.values()]
+participants += [{'id':proteins[g],'label':g[0].upper()+g[1:]+' ('+('aryl-carrier protein' if g=='mxcF' else 'myxochelin biosynthesis protein')+')','category':'protein'} for g in proteins]
+participants += [{'id':i,'label':label(i),'category':'cofactor'} for i in ['CHEBI:47942','CHEBI:597326']]
+record={'id':'MetaCyc:PWY-8383','label':'myxochelin A and B biosynthesis','description':'Complete nine-member native route from supplied 2,3-dihydroxybenzoate and L-lysine to both myxochelin A and B, scoped to native Sg a15 sequences and qualified recombinant experiments. DHB precursor pathway PWY-5901 is linked supply, not a nested member. The N6-monoacyl intermediate and N6-first order are the selected MetaCyc database convention: primary Figure 5C explicitly leaves the first amidated lysine nitrogen unresolved. This convention is retained on every affected edge and is not direct experimental or exclusive positional specificity. RXN-23314 carries native right-to-left physiological direction, reducing the free aldehyde to A. Native stereospecific A (CPD-25904) is not exactly CHEBI:31877, which omits its stereocenter; B is structurally identical to CHEBI:7061, whose inconsistent hydroxy/reduction definition is excluded. Whole carrier states are source-issued reactive protein classes, not free residues, invented whole-protein formulas or exact tagged constructs. E/F/G derive from Sg a15 DNA; their intein purification leaves extensions and processing. The later His6-MxcL preparation derives from the cited pCBP-MxcL plasmid, whose complete engineered sequence was not independently reconstructed. Direct 2001 A reconstitution and official 2008 supplementary A/B and aldehyde experiments have distinct scopes; the 2001 MxcL/B role was proposed. NADPH is selected by the native equations; experimentally slower NADH activity is retained as context. Heterologous MtaA coexpression supports carrier maturation, but does not identify a physiological Sg a15 PPTase. No fixed E:F:G:L assembly, isolated-enzyme magnesium requirement, compartment or regulatory edge is established. The three-ATP-per-product totals are derived net balances, not measured cellular yields. Current transcriptome inventory offers no exact organism dataset; it is not evidence of biological absence.','pathway_type':'siderophore-biosynthesis','taxa':[{'id':'NCBITaxon:675526','label':'Allostigmatella aurantiaca Sg a15'}],'participants':participants,'reactions':[{'id':'MetaCyc:'+r,'label':step,'direction':'right_to_left' if reactions[r]['native_direction']=='PHYSIOL-RIGHT-TO-LEFT' else 'left_to_right'} for r,step in zip(order,steps,strict=True)],'mechanistic_edges':edges,'references':list(refs.values())}
+(D/'myxochelin-a-and-b-biosynthesis.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+projection={'record_sha256':sha(D/'myxochelin-a-and-b-biosynthesis.yaml'),'pathway_id':record['id'],'native_members':order,'native_reactions':reactions,'chemical_edges':side_projection,'source_to_graph':{'nine_members':'all represented exactly once','linked_PWY5901':'outside selected supplied-DHB boundary','composite_RXN23309_RXN23311':'dispositioned as enzyme annotations; not extra members or duplicate chemistry','wrong_VibE_controller':'excluded; own MxcE source and exact Sg a15 primary used','carrier_maturation':'retained supporting cofactor/evidence context; native PPTase unassigned','N6_first':'database convention with primary uncertainty on all affected edges','A_exact_identity':'CPD25904 retained; no exact CHEBI31877 mapping','B_definition':'structure used; erroneous hydroxy/reduction definition excluded','assembly':'no fixed stoichiometry supported','cofactors':'PLP and phosphopantetheine retained with evidence tiers; Mg assay condition not binding evidence','NADH':'slower alternative experimentally observed, not silently equated to NADPH equation','regulation_compartment':'not established by inspected primary evidence'},'counts':{'reactions':len(order),'participants':len(participants),'edges':len(edges),'evidence':sum(len(x['evidence']) for x in edges),'references':len(refs)},'created_at':datetime.now(timezone.utc).isoformat()}
+(D/'myxochelin-source-projection.json').write_text(json.dumps(projection,indent=2)+'\n')
+print(json.dumps({'target_sha256':projection['record_sha256'],**projection['counts']}))

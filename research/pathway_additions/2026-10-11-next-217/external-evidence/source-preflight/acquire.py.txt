@@ -1,0 +1,21 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import hashlib,json,requests,concurrent.futures
+O=Path('/private/tmp/pathwaymech-myxochelin-preflight-20261011'); B=O/'originals'
+urls={
+ 'metacyc-aldehydes.html':'https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?detail-level=2&object=Aldehydes&prevOmics=Y&type=ECOCYC-CLASS',
+ 'PMC58696.xml':'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC58696/fullTextXML',
+ 'PMC58696.html':'https://pmc.ncbi.nlm.nih.gov/articles/PMC58696/',
+ 'ja8025278-si.pdf':'https://acs.figshare.com/ndownloader/files/3066838',
+ 'MIBiG1345.html':'https://mibig.secondarymetabolites.org/repository/BGC0001345.5/index.html',
+ 'UniProt-mxc.json':'https://rest.uniprot.org/uniprotkb/search?query=%28gene%3AmxcG+OR+gene%3AmxcL+OR+gene%3AmxcE+OR+gene%3AmxcF%29&format=json&size=500',
+}
+# SI numeric endpoint is only a discovery probe; identity must be independently verified before use.
+def get(k,u):
+ start=datetime.now(UTC).isoformat()
+ try:
+  r=requests.get(u,timeout=50);p=B/k;p.write_bytes(r.content)
+  return {'path':str(p),'url':u,'final_url':r.url,'status':r.status_code,'content_type':r.headers.get('content-type'),'sha256':hashlib.sha256(r.content).hexdigest(),'bytes':len(r.content),'started_at':start,'finished_at':datetime.now(UTC).isoformat()}
+ except Exception as e:return {'url':u,'error':repr(e),'started_at':start,'finished_at':datetime.now(UTC).isoformat()}
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:rows=list(pool.map(lambda x:get(*x),urls.items()))
+(O/'acquisition1.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

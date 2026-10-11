@@ -1,0 +1,54 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import base64,hashlib,json,os,subprocess
+root=Path('/private/tmp/pathwaymech-next-217-20261011');prep=Path('/private/tmp/pathwaymech-myxochelin-copy-plan-20261011')
+dossier=Path('research/pathway_additions/2026-10-11-next-217')
+out=Path('/private/tmp/pathwaymech-next-217-dossier-adoption.json')
+assert __debug__ and not out.exists() and not os.path.lexists(root/dossier)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def digest(b):return hashlib.sha256(b).hexdigest()
+hp=prep/'handoff.json';assert sha(hp)=='519337c3577616047d22665d09541c3acc2cbc80357ac6fd8b1dbbefeb4f9846'
+h=json.loads(hp.read_text());assert sha(h['plan']['path'])==h['plan']['sha256']=='04d1a6a6dbd26f3401641e4d162c6a830044af6cd4b12cbe1227cec0d5d6458f'
+plan=json.loads(Path(h['plan']['path']).read_text());assert sha(h['validation']['path'])==h['validation']['sha256']
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()=='babe44ad1992d2950701e432f400965631d538a7'
+for row in plan['already_present_protected']:
+ assert sha(root/row['destination'])==sha(row['path'])==row['sha256']
+for row in plan['expected_existing_tracked_changes']:assert sha(root/row['path'])==row['sha256']
+entries=plan['copy_entries']+h['plan_evidence_copy_entries']+[{'copy_source':str(hp),'source':str(hp),'source_sha256':sha(hp),'destination':str(dossier/'external-evidence/copy-plan/handoff.json'),'destination_sha256':sha(hp),'mode':'exact_bytes'}]
+prepared={};decoded={};identities={}
+def original_bytes(raw,mode):
+ if mode=='exact_bytes':return raw
+ assert mode=='lossless_json_wrapper'
+ item=json.loads(raw)
+ if item['encoding']=='utf-8':b=item['content'].encode('utf-8')
+ elif item['encoding']=='base64':b=base64.b64decode(item['content'],validate=True)
+ else:raise AssertionError(item['encoding'])
+ assert len(b)==item['original_bytes'] and digest(b)==item['original_sha256'];return b
+for row in entries:
+ rel=Path(row['destination']);assert not rel.is_absolute() and '..' not in rel.parts and rel.is_relative_to(dossier)
+ assert str(rel) not in prepared and not os.path.lexists(root/rel)
+ source=Path(row.get('path',row.get('source')));copy=Path(row['copy_source']);raw=copy.read_bytes();original=source.read_bytes()
+ expected=row.get('sha256',row.get('source_sha256'));assert digest(original)==expected
+ assert digest(raw)==row['destination_sha256'] and original_bytes(raw,row['mode'])==original
+ prepared[str(rel)]=raw;decoded[str(rel)]=original
+ identities[str(copy)]=(str(copy.resolve()),digest(raw));identities[str(source)]=(str(source.resolve()),expected)
+for group in ['exact_byte_aliases','formal_input_resolution','fixture_resolution']:
+ for row in plan[group]:
+  b=decoded.get(row['destination'])
+  if b is None:b=(root/row['destination']).read_bytes()
+  assert digest(b)==row['sha256'],(group,row['path'])
+  assert sha(row['path'])==row['sha256'],row['path']
+for row in plan['fixture_symlinks']:
+ p=Path(row['path']);assert p.is_symlink() and str(p.resolve())==row['resolved_path'] and sha(p)==row['sha256']
+assert sha(plan['accepted_helper']['path'])=='f91bb984deb34364e794cc2f83b4fcdff6ba53567df066f4af55a123e96cf1ad'
+# No source proof or destination changed while preparing the complete copy.
+for path,(resolved,expected) in identities.items():assert str(Path(path).resolve())==resolved and sha(path)==expected
+for rel,raw in prepared.items():
+ dest=root/rel;dest.parent.mkdir(parents=True,exist_ok=True)
+ with dest.open('xb') as f:f.write(raw)
+ assert sha(dest)==digest(raw)
+receipt={'status':'reviewed_copy_plan_adopted_exactly','at':datetime.now(timezone.utc).isoformat(),'plan_sha256':h['plan']['sha256'],'handoff_sha256':sha(hp),'copy_count':len(entries),'alias_count':len(plan['exact_byte_aliases']),'formal_binding_count':len(plan['formal_input_resolution']),'losslessly_wrapped_fixture_count':len(plan['fixture_resolution']),'symlink_identity_records':len(plan['fixture_symlinks']),'root_checks':'All source bytes, wrappers, historical aliases and formal inputs rehashed; decoded content equals original bytes; no destination collision; all copied bytes rehashed.','files':[{'path':p,'sha256':digest(b)} for p,b in sorted(prepared.items())],'limits':['The accepted source replay helper is unchanged and does not approve production metadata.','Current integrated replay, full corpus gates, render and saved scientific review remain required.']}
+with out.open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+with (root/dossier/'dossier-adoption.json').open('xb') as f:f.write(out.read_bytes())
+with (root/dossier/'adopt-dossier.py.txt').open('xb') as f:f.write(Path(__file__).read_bytes())
+print(json.dumps({'status':receipt['status'],'copies':len(entries),'sha256':sha(out)}))
