@@ -1,0 +1,968 @@
+id: MetaCyc:PWY0-1471
+label: uracil degradation III
+description: The complete Rut chemical route converts uracil to two ammonium ions, carbon dioxide and
+  3-hydroxypropionate, with FMN recycling. This E. coli K-12 reconstruction updates the older MetaCyc
+  peracid model using measured RutA/RutF, RutB, RutC and YdfG activities. RutA is represented by the current
+  net reaction, including spontaneous NADH reduction of its flavin-N5-oxide product; enzyme-bound intermediates
+  are not separate pathway metabolites. RutC is a homotrimer that accelerates 3-aminoacrylate deamination,
+  which also occurs spontaneously. Carbamate decay is spontaneous; the proposed RutD contribution remains
+  unmeasured. YdfG provides directly demonstrated terminal reduction, while the alternative RutE assignment
+  and its FMN cofactor remain qualified predictions. NCM3722 and derivative experiments establish nitrogen
+  utilization near room temperature, not unrestricted growth at 37°C or carbon assimilation. The 2021
+  polarity controls show that RutC and RutD are not essential under the tested conditions. Upstream transport
+  and nucleoside cleavage, thymine catabolism and regulatory circuitry are outside this uracil-route boundary.
+pathway_type: uracil-catabolism-rut-pathway
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:58210
+  label: FMN(3-)
+  category: cofactor
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: cofactor
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57618
+  label: FMNH2(2-)
+  category: cofactor
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: cofactor
+- id: CHEBI:17568
+  label: uracil
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:59891
+  label: ureidoacrylate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:59894
+  label: (Z)-3-aminoacrylate
+  category: small_molecule
+- id: CHEBI:13941
+  label: carbamate
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:33190
+  label: 3-oxopropanoate
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: cofactor
+- id: CHEBI:16510
+  label: 3-hydroxypropionate
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: cofactor
+- id: UniProtKB:P75893
+  label: FMN reductase (NADH) RutF
+  category: protein
+- id: UniProtKB:P75898
+  label: Pyrimidine monooxygenase RutA
+  category: protein
+- id: UniProtKB:P75897
+  label: Ureidoacrylate amidohydrolase RutB
+  category: protein
+- id: UniProtKB:P0AFQ5
+  label: 3-aminoacrylate deaminase RutC
+  category: protein
+- id: UniProtKB:P39831
+  label: NADP-dependent 3-hydroxy acid dehydrogenase YdfG
+  category: protein
+- id: UniProtKB:P75894
+  label: Probable malonic semialdehyde reductase RutE
+  category: protein
+- id: MetaCyc:CPLX0-1962
+  label: 3-hydroxy acid dehydrogenase
+  category: complex
+reactions:
+- id: RHEA:21622
+  label: FMN + NADH + 2 H(+) => FMNH2 + NAD(+)
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:31588
+  label: uracil + FMNH2 + NADH + O2 => (Z)-3-ureidoacrylate + FMN + NAD(+) + H2O + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:31604
+  label: (Z)-3-ureidoacrylate + H2O => (Z)-3-aminoacrylate + carbamate + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:15650
+  label: carbamate + 2 H(+) => NH4(+) + CO2
+  direction: left_to_right
+- id: RHEA:34948
+  label: (Z)-3-aminoacrylate + H2O + H(+) => 3-oxopropanoate + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:26440
+  label: 3-oxopropanoate + NADPH + H(+) => 3-hydroxypropanoate + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: rut-edge-001
+  subject: CHEBI:58210
+  predicate: consumes
+  object: RHEA:21622
+  evidence:
+  - reference_id: RHEA:21622
+    source_assertion: Rhea RHEA:21622 places CHEBI:58210 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21622 rh:substrates http://rdf.rhea-db.org/21620_R; http://rdf.rhea-db.org/21620_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_21620_compound_2613; http://rdf.rhea-db.org/Participant_21620_compound_2613
+      rh:compound http://rdf.rhea-db.org/Compound_2613; http://rdf.rhea-db.org/Compound_2613 rh:chebi
+- id: rut-edge-002
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:21622
+  evidence:
+  - reference_id: RHEA:21622
+    source_assertion: Rhea RHEA:21622 places CHEBI:57945 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21622 rh:substrates http://rdf.rhea-db.org/21620_R; http://rdf.rhea-db.org/21620_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_21620_compound_1650; http://rdf.rhea-db.org/Participant_21620_compound_1650
+      rh:compound http://rdf.rhea-db.org/Compound_1650; http://rdf.rhea-db.org/Compound_1650 rh:chebi
+- id: rut-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:21622
+  evidence:
+  - reference_id: RHEA:21622
+    source_assertion: Rhea RHEA:21622 places CHEBI:15378 on its substrates side with stoichiometric coefficient
+      2.
+    source_locator: http://rdf.rhea-db.org/21622 rh:substrates http://rdf.rhea-db.org/21620_R; http://rdf.rhea-db.org/21620_R
+      rh:contains2 http://rdf.rhea-db.org/Participant_21620_compound_3249; http://rdf.rhea-db.org/Participant_21620_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+- id: rut-edge-004
+  subject: RHEA:21622
+  predicate: produces
+  object: CHEBI:57618
+  evidence:
+  - reference_id: RHEA:21622
+    source_assertion: Rhea RHEA:21622 places CHEBI:57618 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21622 rh:products http://rdf.rhea-db.org/21620_L; http://rdf.rhea-db.org/21620_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_21620_compound_1829; http://rdf.rhea-db.org/Participant_21620_compound_1829
+      rh:compound http://rdf.rhea-db.org/Compound_1829; http://rdf.rhea-db.org/Compound_1829 rh:chebi
+- id: rut-edge-005
+  subject: RHEA:21622
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: RHEA:21622
+    source_assertion: Rhea RHEA:21622 places CHEBI:57540 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/21622 rh:products http://rdf.rhea-db.org/21620_L; http://rdf.rhea-db.org/21620_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_21620_compound_3484; http://rdf.rhea-db.org/Participant_21620_compound_3484
+      rh:compound http://rdf.rhea-db.org/Compound_3484; http://rdf.rhea-db.org/Compound_3484 rh:chebi
+- id: rut-edge-006
+  subject: CHEBI:17568
+  predicate: consumes
+  object: RHEA:31588
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:17568 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:substrates http://rdf.rhea-db.org/31587_L; http://rdf.rhea-db.org/31587_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_4063; http://rdf.rhea-db.org/Participant_31587_compound_4063
+      rh:compound http://rdf.rhea-db.org/Compound_4063; http://rdf.rhea-db.org/Compound_4063 rh:chebi
+- id: rut-edge-007
+  subject: CHEBI:57618
+  predicate: consumes
+  object: RHEA:31588
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:57618 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:substrates http://rdf.rhea-db.org/31587_L; http://rdf.rhea-db.org/31587_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_1829; http://rdf.rhea-db.org/Participant_31587_compound_1829
+      rh:compound http://rdf.rhea-db.org/Compound_1829; http://rdf.rhea-db.org/Compound_1829 rh:chebi
+- id: rut-edge-008
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:31588
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:57945 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:substrates http://rdf.rhea-db.org/31587_L; http://rdf.rhea-db.org/31587_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_1650; http://rdf.rhea-db.org/Participant_31587_compound_1650
+      rh:compound http://rdf.rhea-db.org/Compound_1650; http://rdf.rhea-db.org/Compound_1650 rh:chebi
+- id: rut-edge-009
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:31588
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:15379 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:substrates http://rdf.rhea-db.org/31587_L; http://rdf.rhea-db.org/31587_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_1198; http://rdf.rhea-db.org/Participant_31587_compound_1198
+      rh:compound http://rdf.rhea-db.org/Compound_1198; http://rdf.rhea-db.org/Compound_1198 rh:chebi
+- id: rut-edge-010
+  subject: RHEA:31588
+  predicate: produces
+  object: CHEBI:59891
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:59891 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products http://rdf.rhea-db.org/31587_R; http://rdf.rhea-db.org/31587_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_6882; http://rdf.rhea-db.org/Participant_31587_compound_6882
+      rh:compound http://rdf.rhea-db.org/Compound_6882; http://rdf.rhea-db.org/Compound_6882 rh:chebi
+- id: rut-edge-011
+  subject: RHEA:31588
+  predicate: produces
+  object: CHEBI:58210
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:58210 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products http://rdf.rhea-db.org/31587_R; http://rdf.rhea-db.org/31587_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_2613; http://rdf.rhea-db.org/Participant_31587_compound_2613
+      rh:compound http://rdf.rhea-db.org/Compound_2613; http://rdf.rhea-db.org/Compound_2613 rh:chebi
+- id: rut-edge-012
+  subject: RHEA:31588
+  predicate: produces
+  object: CHEBI:57540
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:57540 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products http://rdf.rhea-db.org/31587_R; http://rdf.rhea-db.org/31587_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_3484; http://rdf.rhea-db.org/Participant_31587_compound_3484
+      rh:compound http://rdf.rhea-db.org/Compound_3484; http://rdf.rhea-db.org/Compound_3484 rh:chebi
+- id: rut-edge-013
+  subject: RHEA:31588
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:15377 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products http://rdf.rhea-db.org/31587_R; http://rdf.rhea-db.org/31587_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_1283; http://rdf.rhea-db.org/Participant_31587_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:chebi
+- id: rut-edge-014
+  subject: RHEA:31588
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:31588
+    source_assertion: Rhea RHEA:31588 places CHEBI:15378 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products http://rdf.rhea-db.org/31587_R; http://rdf.rhea-db.org/31587_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31587_compound_3249; http://rdf.rhea-db.org/Participant_31587_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+- id: rut-edge-015
+  subject: CHEBI:59891
+  predicate: consumes
+  object: RHEA:31604
+  evidence:
+  - reference_id: RHEA:31604
+    source_assertion: Rhea RHEA:31604 places CHEBI:59891 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31604 rh:substrates http://rdf.rhea-db.org/31603_L; http://rdf.rhea-db.org/31603_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_31603_compound_6882; http://rdf.rhea-db.org/Participant_31603_compound_6882
+      rh:compound http://rdf.rhea-db.org/Compound_6882; http://rdf.rhea-db.org/Compound_6882 rh:chebi
+- id: rut-edge-016
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:31604
+  evidence:
+  - reference_id: RHEA:31604
+    source_assertion: Rhea RHEA:31604 places CHEBI:15377 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31604 rh:substrates http://rdf.rhea-db.org/31603_L; http://rdf.rhea-db.org/31603_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_31603_compound_1283; http://rdf.rhea-db.org/Participant_31603_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:chebi
+- id: rut-edge-017
+  subject: RHEA:31604
+  predicate: produces
+  object: CHEBI:59894
+  evidence:
+  - reference_id: RHEA:31604
+    source_assertion: Rhea RHEA:31604 places CHEBI:59894 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31604 rh:products http://rdf.rhea-db.org/31603_R; http://rdf.rhea-db.org/31603_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31603_compound_6886; http://rdf.rhea-db.org/Participant_31603_compound_6886
+      rh:compound http://rdf.rhea-db.org/Compound_6886; http://rdf.rhea-db.org/Compound_6886 rh:chebi
+- id: rut-edge-018
+  subject: RHEA:31604
+  predicate: produces
+  object: CHEBI:13941
+  evidence:
+  - reference_id: RHEA:31604
+    source_assertion: Rhea RHEA:31604 places CHEBI:13941 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31604 rh:products http://rdf.rhea-db.org/31603_R; http://rdf.rhea-db.org/31603_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31603_compound_4239; http://rdf.rhea-db.org/Participant_31603_compound_4239
+      rh:compound http://rdf.rhea-db.org/Compound_4239; http://rdf.rhea-db.org/Compound_4239 rh:chebi
+- id: rut-edge-019
+  subject: RHEA:31604
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:31604
+    source_assertion: Rhea RHEA:31604 places CHEBI:15378 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/31604 rh:products http://rdf.rhea-db.org/31603_R; http://rdf.rhea-db.org/31603_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_31603_compound_3249; http://rdf.rhea-db.org/Participant_31603_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+- id: rut-edge-020
+  subject: CHEBI:13941
+  predicate: consumes
+  object: RHEA:15650
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 places CHEBI:13941 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/15650 rh:substrates http://rdf.rhea-db.org/15649_L; http://rdf.rhea-db.org/15649_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_15649_compound_4239; http://rdf.rhea-db.org/Participant_15649_compound_4239
+      rh:compound http://rdf.rhea-db.org/Compound_4239; http://rdf.rhea-db.org/Compound_4239 rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: The native reaction explicitly sets spontaneous=true for carbamate decomposition
+      to ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: rut-edge-021
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:15650
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 places CHEBI:15378 on its substrates side with stoichiometric coefficient
+      2.
+    source_locator: http://rdf.rhea-db.org/15650 rh:substrates http://rdf.rhea-db.org/15649_L; http://rdf.rhea-db.org/15649_L
+      rh:contains2 http://rdf.rhea-db.org/Participant_15649_compound_3249; http://rdf.rhea-db.org/Participant_15649_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: The native reaction explicitly sets spontaneous=true for carbamate decomposition
+      to ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: rut-edge-022
+  subject: RHEA:15650
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 places CHEBI:28938 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/15650 rh:products http://rdf.rhea-db.org/15649_R; http://rdf.rhea-db.org/15649_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_15649_compound_1012; http://rdf.rhea-db.org/Participant_15649_compound_1012
+      rh:compound http://rdf.rhea-db.org/Compound_1012; http://rdf.rhea-db.org/Compound_1012 rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: The native reaction explicitly sets spontaneous=true for carbamate decomposition
+      to ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: rut-edge-023
+  subject: RHEA:15650
+  predicate: produces
+  object: CHEBI:16526
+  evidence:
+  - reference_id: RHEA:15650
+    source_assertion: Rhea RHEA:15650 places CHEBI:16526 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/15650 rh:products http://rdf.rhea-db.org/15649_R; http://rdf.rhea-db.org/15649_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_15649_compound_4391; http://rdf.rhea-db.org/Participant_15649_compound_4391
+      rh:compound http://rdf.rhea-db.org/Compound_4391; http://rdf.rhea-db.org/Compound_4391 rh:chebi
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: The native reaction explicitly sets spontaneous=true for carbamate decomposition
+      to ammonium and carbon dioxide.
+    source_locator: Reaction[@frameid='RXN0-5222']/spontaneous; left; right
+- id: rut-edge-024
+  subject: CHEBI:59894
+  predicate: consumes
+  object: RHEA:34948
+  evidence:
+  - reference_id: RHEA:34948
+    source_assertion: Rhea RHEA:34948 places CHEBI:59894 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/34948 rh:substrates http://rdf.rhea-db.org/34947_L; http://rdf.rhea-db.org/34947_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_34947_compound_6886; http://rdf.rhea-db.org/Participant_34947_compound_6886
+      rh:compound http://rdf.rhea-db.org/Compound_6886; http://rdf.rhea-db.org/Compound_6886 rh:chebi
+- id: rut-edge-025
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:34948
+  evidence:
+  - reference_id: RHEA:34948
+    source_assertion: Rhea RHEA:34948 places CHEBI:15377 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/34948 rh:substrates http://rdf.rhea-db.org/34947_L; http://rdf.rhea-db.org/34947_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_34947_compound_1283; http://rdf.rhea-db.org/Participant_34947_compound_1283
+      rh:compound http://rdf.rhea-db.org/Compound_1283; http://rdf.rhea-db.org/Compound_1283 rh:chebi
+- id: rut-edge-026
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:34948
+  evidence:
+  - reference_id: RHEA:34948
+    source_assertion: Rhea RHEA:34948 places CHEBI:15378 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/34948 rh:substrates http://rdf.rhea-db.org/34947_L; http://rdf.rhea-db.org/34947_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_34947_compound_3249; http://rdf.rhea-db.org/Participant_34947_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+- id: rut-edge-027
+  subject: RHEA:34948
+  predicate: produces
+  object: CHEBI:33190
+  evidence:
+  - reference_id: RHEA:34948
+    source_assertion: Rhea RHEA:34948 places CHEBI:33190 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/34948 rh:products http://rdf.rhea-db.org/34947_R; http://rdf.rhea-db.org/34947_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_34947_compound_5274; http://rdf.rhea-db.org/Participant_34947_compound_5274
+      rh:compound http://rdf.rhea-db.org/Compound_5274; http://rdf.rhea-db.org/Compound_5274 rh:chebi
+- id: rut-edge-028
+  subject: RHEA:34948
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:34948
+    source_assertion: Rhea RHEA:34948 places CHEBI:28938 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/34948 rh:products http://rdf.rhea-db.org/34947_R; http://rdf.rhea-db.org/34947_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_34947_compound_1012; http://rdf.rhea-db.org/Participant_34947_compound_1012
+      rh:compound http://rdf.rhea-db.org/Compound_1012; http://rdf.rhea-db.org/Compound_1012 rh:chebi
+- id: rut-edge-029
+  subject: CHEBI:33190
+  predicate: consumes
+  object: RHEA:26440
+  evidence:
+  - reference_id: RHEA:26440
+    source_assertion: Rhea RHEA:26440 places CHEBI:33190 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/26440 rh:substrates http://rdf.rhea-db.org/26438_R; http://rdf.rhea-db.org/26438_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_26438_compound_5274; http://rdf.rhea-db.org/Participant_26438_compound_5274
+      rh:compound http://rdf.rhea-db.org/Compound_5274; http://rdf.rhea-db.org/Compound_5274 rh:chebi
+- id: rut-edge-030
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:26440
+  evidence:
+  - reference_id: RHEA:26440
+    source_assertion: Rhea RHEA:26440 places CHEBI:57783 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/26440 rh:substrates http://rdf.rhea-db.org/26438_R; http://rdf.rhea-db.org/26438_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_26438_compound_3438; http://rdf.rhea-db.org/Participant_26438_compound_3438
+      rh:compound http://rdf.rhea-db.org/Compound_3438; http://rdf.rhea-db.org/Compound_3438 rh:chebi
+- id: rut-edge-031
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:26440
+  evidence:
+  - reference_id: RHEA:26440
+    source_assertion: Rhea RHEA:26440 places CHEBI:15378 on its substrates side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/26440 rh:substrates http://rdf.rhea-db.org/26438_R; http://rdf.rhea-db.org/26438_R
+      rh:contains1 http://rdf.rhea-db.org/Participant_26438_compound_3249; http://rdf.rhea-db.org/Participant_26438_compound_3249
+      rh:compound http://rdf.rhea-db.org/Compound_3249; http://rdf.rhea-db.org/Compound_3249 rh:chebi
+- id: rut-edge-032
+  subject: RHEA:26440
+  predicate: produces
+  object: CHEBI:16510
+  evidence:
+  - reference_id: RHEA:26440
+    source_assertion: Rhea RHEA:26440 places CHEBI:16510 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/26440 rh:products http://rdf.rhea-db.org/26438_L; http://rdf.rhea-db.org/26438_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_26438_compound_3378; http://rdf.rhea-db.org/Participant_26438_compound_3378
+      rh:compound http://rdf.rhea-db.org/Compound_3378; http://rdf.rhea-db.org/Compound_3378 rh:chebi
+- id: rut-edge-033
+  subject: RHEA:26440
+  predicate: produces
+  object: CHEBI:58349
+  evidence:
+  - reference_id: RHEA:26440
+    source_assertion: Rhea RHEA:26440 places CHEBI:58349 on its products side with stoichiometric coefficient
+      1.
+    source_locator: http://rdf.rhea-db.org/26440 rh:products http://rdf.rhea-db.org/26438_L; http://rdf.rhea-db.org/26438_L
+      rh:contains1 http://rdf.rhea-db.org/Participant_26438_compound_5188; http://rdf.rhea-db.org/Participant_26438_compound_5188
+      rh:compound http://rdf.rhea-db.org/Compound_5188; http://rdf.rhea-db.org/Compound_5188 rh:chebi
+- id: rut-edge-034
+  subject: UniProtKB:P75893
+  predicate: enables
+  object: RHEA:21622
+  description: Functional protein/activity assertion; no monomeric assembly is inferred.
+  evidence:
+  - reference_id: UniProtKB:P75893
+    source_assertion: The reviewed entry assigns P75893 to master RHEA:21620 with ECO:0000269 experimental
+      citations; the reaction entry is mapped separately to the selected directed member.
+    source_locator: /comments/1/reaction/reactionCrossReferences; /comments/1/reaction/evidences
+  - reference_id: RHEA:21622
+    source_assertion: Rhea master 21620 explicitly links directed member 21622; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/21620 rh:directionalReaction http://rdf.rhea-db.org/21622;
+      http://rdf.rhea-db.org/21622 rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:20369853
+    source_assertion: Partially purified RutF plus purified RutA, NADH and FMN yielded ureidoacrylate;
+      homogeneous Fre substituted in vitro. RutF supplies reduced FMN.
+    source_locator: PMC2873085 paragraphs P1-P2; Figure 1; Scheme 1
+- id: rut-edge-035
+  subject: UniProtKB:P75898
+  predicate: enables
+  object: RHEA:31588
+  description: Current net chemistry includes spontaneous NADH reduction of FMN-N5-oxide. The old free-peracid
+    pathway layout is not carried forward; this is not a claim that RutA catalyzes every elementary net
+    substep.
+  evidence:
+  - reference_id: UniProtKB:P75898
+    source_assertion: The reviewed entry assigns P75898 to master RHEA:31587 with ECO:0000269 experimental
+      citations; the reaction entry is mapped separately to the selected directed member.
+    source_locator: /comments/1/reaction/reactionCrossReferences; /comments/1/reaction/evidences
+  - reference_id: RHEA:31588
+    source_assertion: Rhea master 31587 explicitly links directed member 31588; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/31587 rh:directionalReaction http://rdf.rhea-db.org/31588;
+      http://rdf.rhea-db.org/31588 rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:28661684
+    source_assertion: RutA assays without NADH accumulated FMN-N5-oxide, verified against a synthetic
+      standard by chromatography, mass spectrometry and 18O2 labeling.
+    source_locator: PMC6040642 main text following Figure 3; Figure 4A-F
+- id: rut-edge-036
+  subject: UniProtKB:P75897
+  predicate: enables
+  object: RHEA:31604
+  description: The explicit intermediate reaction is selected; net RHEA:42624 is excluded to avoid counting
+    carbamate decomposition twice.
+  evidence:
+  - reference_id: UniProtKB:P75897
+    source_assertion: The reviewed entry assigns P75897 to master RHEA:31603 with ECO:0000269 experimental
+      citations; the reaction entry is mapped separately to the selected directed member.
+    source_locator: /comments/2/reaction/reactionCrossReferences; /comments/2/reaction/evidences
+  - reference_id: RHEA:31604
+    source_assertion: Rhea master 31603 explicitly links directed member 31604; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/31603 rh:directionalReaction http://rdf.rhea-db.org/31604;
+      http://rdf.rhea-db.org/31604 rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:20400551
+    source_assertion: RutB hydrolyzed synthetic ureidoacrylate; coupled measurements supported aminoacrylate
+      and carbamate intermediates, followed by spontaneous nitrogen release.
+    source_locator: PMC2916427 Results section sec18 The RutB reaction; Figure 5B; Table 4
+- id: rut-edge-037
+  subject: UniProtKB:P0AFQ5
+  predicate: enables
+  object: RHEA:34948
+  description: Functional protein/activity assertion preserves the measured homotrimer without inventing
+    an external complex identifier. The reaction also proceeds spontaneously; RutC is not essential in
+    the tested whole-cell conditions.
+  evidence:
+  - reference_id: UniProtKB:P0AFQ5
+    source_assertion: The reviewed entry assigns P0AFQ5 to master RHEA:34947 with ECO:0000269 experimental
+      citations; the reaction entry is mapped separately to the selected directed member.
+    source_locator: /comments/1/reaction/reactionCrossReferences; /comments/1/reaction/evidences
+  - reference_id: RHEA:34948
+    source_assertion: Rhea master 34947 explicitly links directed member 34948; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/34947 rh:directionalReaction http://rdf.rhea-db.org/34948;
+      http://rdf.rhea-db.org/34948 rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:33839153
+    source_assertion: At 23°C RutC accelerated 3-aminoacrylate deamination in the RutB/YdfG coupled assay;
+      inactive R104A gave the spontaneous background rate.
+    source_locator: 'PMC8113886 Results: RutC is a 3-AA deaminase; Figure 2; Table 1; Assay for 3-AA deaminase
+      activity'
+  - reference_id: PMID:23143235
+    source_assertion: Gel filtration demonstrates a RutC trimer in solution; the crystal contains two
+      trimers. The paper's proposed peracid-reductase function is superseded by the 2021 direct deaminase
+      assays.
+    source_locator: PMC3515367 Results and discussion 3.1; Figure 2
+- id: rut-edge-038
+  subject: UniProtKB:P39831
+  predicate: part_of
+  object: MetaCyc:CPLX0-1962
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1962
+    source_assertion: The native YdfG complex contains four EG12345-MONOMER subunits and is annotated
+      to MG1655.
+    source_locator: Protein[@frameid='CPLX0-1962']/component/Protein; component/coefficient; species
+  - reference_id: MetaCyc:EG12345-MONOMER
+    source_assertion: Native EG12345-MONOMER carries the UniProt P39831 identity and component-of CPLX0-1962
+      relationship.
+    source_locator: Protein[@frameid='EG12345-MONOMER']/dblink; component-of
+  - reference_id: UniProtKB:P39831
+    source_assertion: The reviewed SUBUNIT annotation describes a homotetramer, a dimer of dimers, with
+      experimental references 12535615 and 21349860.
+    source_locator: /comments/7/texts
+- id: rut-edge-039
+  subject: MetaCyc:CPLX0-1962
+  predicate: catalyzes
+  object: RHEA:26440
+  description: Direct biochemical support is for YdfG reduction. Mutant growth defects support detoxification
+    under specified conditions; they do not measure universal wild-type pathway flux.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1962
+    source_assertion: The native complex catalyzes ENZRXN0-7359 linked to RXN-8974, the malonic semialdehyde
+      reductase reaction.
+    source_locator: Protein[@frameid='CPLX0-1962']/catalyzes/Enzymatic-Reaction[@frameid='ENZRXN0-7359']/reaction
+  - reference_id: UniProtKB:P39831
+    source_assertion: The reviewed YdfG reaction explicitly selects physiological RHEA:26440, right-to-left
+      reduction of 3-oxopropanoate using NADPH, with experimental PMID20400551.
+    source_locator: /comments/5/reaction; /comments/5/physiologicalReactions
+  - reference_id: RHEA:26440
+    source_assertion: Rhea master 26438 explicitly links directed member 26440; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/26438 rh:directionalReaction http://rdf.rhea-db.org/26440;
+      http://rdf.rhea-db.org/26440 rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:20400551
+    source_assertion: RutB and YdfG together converted synthetic ureidoacrylate to approximately one equivalent
+      of 3-hydroxypropionate while oxidizing NADPH; product was quantified by GC/MS.
+    source_locator: PMC2916427 Methods sec13; Results sec18; Table 4; Figure 5C
+- id: rut-edge-040
+  subject: UniProtKB:P75894
+  predicate: enables
+  object: RHEA:26440
+  description: Qualified genetic/annotation inference, not a purified RutE assay or established NADPH
+    specificity. YdfG directly grounds the displayed reduction chemistry.
+  evidence:
+  - reference_id: UniProtKB:P75894
+    source_assertion: The reviewed entry calls RutE a probable malonic semialdehyde reductase and supplies
+      RHEA:26438 without an experimental reaction evidence code. FUNCTION says it may reduce the toxic
+      intermediate.
+    source_locator: /proteinDescription/recommendedName; /comments/0/texts; /comments/1/reaction
+  - reference_id: RHEA:26440
+    source_assertion: Rhea master 26438 explicitly links directed member 26440; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/26438 rh:directionalReaction http://rdf.rhea-db.org/26440;
+      http://rdf.rhea-db.org/26440 rh:substrates; rh:products; rh:equation
+  - reference_id: PMID:20400551
+    source_assertion: Shared suppression of rutE and ydfG defects by nemR lesions leads to the postulate
+      that RutE also reduces malonic semialdehyde. The discussion explicitly calls for biochemical studies
+      of RutE.
+    source_locator: PMC2916427 Results sec24; Discussion sec26
+  - reference_id: PMID:33839153
+    source_assertion: Figure 1 distinguishes YdfG reduction demonstrated in vitro from the predicted physiologically
+      relevant RutE enzyme.
+    source_locator: PMC8113886 Figure 1 legend
+- id: rut-edge-041
+  subject: UniProtKB:P75894
+  predicate: has_cofactor
+  object: CHEBI:58210
+  description: Predicted FMN requirement retained with its original evidence tier.
+  evidence:
+  - reference_id: UniProtKB:P75894
+    source_assertion: RutE FMN cofactor annotation has ECO:0000305 curator inference, not a direct cofactor-binding
+      assay.
+    source_locator: /comments/2/cofactors/0
+- id: rut-edge-042
+  subject: RHEA:21622
+  predicate: part_of
+  object: MetaCyc:PWY0-1471
+  description: Modern biochemical reconstruction of the same uracil-to-3-hydroxypropionate boundary; native22.5
+    peracid and RutC/RutD assignments are superseded, not asserted equivalent elementary reactions.
+  evidence:
+  - reference_id: PMID:28661684
+    source_assertion: Figure 1 identifies RutF as the flavin reductase that supplies the reduced cofactor
+      for the first RutA step.
+    source_locator: PMC6040642 Figure 1 legend
+  - reference_id: RHEA:21622
+    source_assertion: Rhea master 21620 explicitly links directed member 21622; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/21620 rh:directionalReaction http://rdf.rhea-db.org/21622;
+      http://rdf.rhea-db.org/21622 rh:substrates; rh:products; rh:equation
+- id: rut-edge-043
+  subject: RHEA:31588
+  predicate: part_of
+  object: MetaCyc:PWY0-1471
+  description: Modern biochemical reconstruction of the same uracil-to-3-hydroxypropionate boundary; native22.5
+    peracid and RutC/RutD assignments are superseded, not asserted equivalent elementary reactions.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised Rut model covers ureidoacrylate formation, RutB cleavage, 3-aminoacrylate
+      deamination, carbamate decay and terminal malonate-semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend; Introduction; Results
+  - reference_id: RHEA:31588
+    source_assertion: Rhea master 31587 explicitly links directed member 31588; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/31587 rh:directionalReaction http://rdf.rhea-db.org/31588;
+      http://rdf.rhea-db.org/31588 rh:substrates; rh:products; rh:equation
+- id: rut-edge-044
+  subject: RHEA:31604
+  predicate: part_of
+  object: MetaCyc:PWY0-1471
+  description: Modern biochemical reconstruction of the same uracil-to-3-hydroxypropionate boundary; native22.5
+    peracid and RutC/RutD assignments are superseded, not asserted equivalent elementary reactions.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised Rut model covers ureidoacrylate formation, RutB cleavage, 3-aminoacrylate
+      deamination, carbamate decay and terminal malonate-semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend; Introduction; Results
+  - reference_id: RHEA:31604
+    source_assertion: Rhea master 31603 explicitly links directed member 31604; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/31603 rh:directionalReaction http://rdf.rhea-db.org/31604;
+      http://rdf.rhea-db.org/31604 rh:substrates; rh:products; rh:equation
+- id: rut-edge-045
+  subject: RHEA:15650
+  predicate: part_of
+  object: MetaCyc:PWY0-1471
+  description: Modern biochemical reconstruction of the same uracil-to-3-hydroxypropionate boundary; native22.5
+    peracid and RutC/RutD assignments are superseded, not asserted equivalent elementary reactions.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised Rut model covers ureidoacrylate formation, RutB cleavage, 3-aminoacrylate
+      deamination, carbamate decay and terminal malonate-semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend; Introduction; Results
+  - reference_id: RHEA:15650
+    source_assertion: Rhea master 15649 explicitly links directed member 15650; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/15649 rh:directionalReaction http://rdf.rhea-db.org/15650;
+      http://rdf.rhea-db.org/15650 rh:substrates; rh:products; rh:equation
+- id: rut-edge-046
+  subject: RHEA:34948
+  predicate: part_of
+  object: MetaCyc:PWY0-1471
+  description: Modern biochemical reconstruction of the same uracil-to-3-hydroxypropionate boundary; native22.5
+    peracid and RutC/RutD assignments are superseded, not asserted equivalent elementary reactions.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised Rut model covers ureidoacrylate formation, RutB cleavage, 3-aminoacrylate
+      deamination, carbamate decay and terminal malonate-semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend; Introduction; Results
+  - reference_id: RHEA:34948
+    source_assertion: Rhea master 34947 explicitly links directed member 34948; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/34947 rh:directionalReaction http://rdf.rhea-db.org/34948;
+      http://rdf.rhea-db.org/34948 rh:substrates; rh:products; rh:equation
+- id: rut-edge-047
+  subject: RHEA:26440
+  predicate: part_of
+  object: MetaCyc:PWY0-1471
+  description: Modern biochemical reconstruction of the same uracil-to-3-hydroxypropionate boundary; native22.5
+    peracid and RutC/RutD assignments are superseded, not asserted equivalent elementary reactions.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised Rut model covers ureidoacrylate formation, RutB cleavage, 3-aminoacrylate
+      deamination, carbamate decay and terminal malonate-semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend; Introduction; Results
+  - reference_id: RHEA:26440
+    source_assertion: Rhea master 26438 explicitly links directed member 26440; its substrates and products
+      define the selected pathway orientation.
+    source_locator: http://rdf.rhea-db.org/26438 rh:directionalReaction http://rdf.rhea-db.org/26440;
+      http://rdf.rhea-db.org/26440 rh:substrates; rh:products; rh:equation
+- id: rut-edge-048
+  subject: RHEA:21622
+  predicate: provides_input_for
+  object: RHEA:31588
+  description: Dependency inferred from the inspected pathway and matching current Rhea chemical identities;
+    no physical enzyme channeling is asserted.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised pathway diagram places FMN-dependent uracil opening before RutB cleavage,
+      branches carbamate decay from aminoacrylate deamination, and ends with semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend
+  - reference_id: RHEA:21622
+    source_assertion: The selected upstream reaction produces CHEBI:57618.
+    source_locator: http://rdf.rhea-db.org/21622 rh:products; corresponding rh:contains/rh:compound/rh:chebi
+  - reference_id: RHEA:31588
+    source_assertion: The selected downstream reaction consumes the same CHEBI:57618.
+    source_locator: http://rdf.rhea-db.org/31588 rh:substrates; corresponding rh:contains/rh:compound/rh:chebi
+- id: rut-edge-049
+  subject: RHEA:31588
+  predicate: provides_input_for
+  object: RHEA:21622
+  description: Dependency inferred from the inspected pathway and matching current Rhea chemical identities;
+    no physical enzyme channeling is asserted.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised pathway diagram places FMN-dependent uracil opening before RutB cleavage,
+      branches carbamate decay from aminoacrylate deamination, and ends with semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend
+  - reference_id: RHEA:31588
+    source_assertion: The selected upstream reaction produces CHEBI:58210.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products; corresponding rh:contains/rh:compound/rh:chebi
+  - reference_id: RHEA:21622
+    source_assertion: The selected downstream reaction consumes the same CHEBI:58210.
+    source_locator: http://rdf.rhea-db.org/21622 rh:substrates; corresponding rh:contains/rh:compound/rh:chebi
+- id: rut-edge-050
+  subject: RHEA:31588
+  predicate: provides_input_for
+  object: RHEA:31604
+  description: Dependency inferred from the inspected pathway and matching current Rhea chemical identities;
+    no physical enzyme channeling is asserted.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised pathway diagram places FMN-dependent uracil opening before RutB cleavage,
+      branches carbamate decay from aminoacrylate deamination, and ends with semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend
+  - reference_id: RHEA:31588
+    source_assertion: The selected upstream reaction produces CHEBI:59891.
+    source_locator: http://rdf.rhea-db.org/31588 rh:products; corresponding rh:contains/rh:compound/rh:chebi
+  - reference_id: RHEA:31604
+    source_assertion: The selected downstream reaction consumes the same CHEBI:59891.
+    source_locator: http://rdf.rhea-db.org/31604 rh:substrates; corresponding rh:contains/rh:compound/rh:chebi
+- id: rut-edge-051
+  subject: RHEA:31604
+  predicate: provides_input_for
+  object: RHEA:15650
+  description: Dependency inferred from the inspected pathway and matching current Rhea chemical identities;
+    no physical enzyme channeling is asserted.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised pathway diagram places FMN-dependent uracil opening before RutB cleavage,
+      branches carbamate decay from aminoacrylate deamination, and ends with semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend
+  - reference_id: RHEA:31604
+    source_assertion: The selected upstream reaction produces CHEBI:13941.
+    source_locator: http://rdf.rhea-db.org/31604 rh:products; corresponding rh:contains/rh:compound/rh:chebi
+  - reference_id: RHEA:15650
+    source_assertion: The selected downstream reaction consumes the same CHEBI:13941.
+    source_locator: http://rdf.rhea-db.org/15650 rh:substrates; corresponding rh:contains/rh:compound/rh:chebi
+- id: rut-edge-052
+  subject: RHEA:31604
+  predicate: provides_input_for
+  object: RHEA:34948
+  description: Dependency inferred from the inspected pathway and matching current Rhea chemical identities;
+    no physical enzyme channeling is asserted.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised pathway diagram places FMN-dependent uracil opening before RutB cleavage,
+      branches carbamate decay from aminoacrylate deamination, and ends with semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend
+  - reference_id: RHEA:31604
+    source_assertion: The selected upstream reaction produces CHEBI:59894.
+    source_locator: http://rdf.rhea-db.org/31604 rh:products; corresponding rh:contains/rh:compound/rh:chebi
+  - reference_id: RHEA:34948
+    source_assertion: The selected downstream reaction consumes the same CHEBI:59894.
+    source_locator: http://rdf.rhea-db.org/34948 rh:substrates; corresponding rh:contains/rh:compound/rh:chebi
+- id: rut-edge-053
+  subject: RHEA:34948
+  predicate: provides_input_for
+  object: RHEA:26440
+  description: Dependency inferred from the inspected pathway and matching current Rhea chemical identities;
+    no physical enzyme channeling is asserted.
+  evidence:
+  - reference_id: PMID:33839153
+    source_assertion: The revised pathway diagram places FMN-dependent uracil opening before RutB cleavage,
+      branches carbamate decay from aminoacrylate deamination, and ends with semialdehyde reduction.
+    source_locator: PMC8113886 Figure 1 and legend
+  - reference_id: RHEA:34948
+    source_assertion: The selected upstream reaction produces CHEBI:33190.
+    source_locator: http://rdf.rhea-db.org/34948 rh:products; corresponding rh:contains/rh:compound/rh:chebi
+  - reference_id: RHEA:26440
+    source_assertion: The selected downstream reaction consumes the same CHEBI:33190.
+    source_locator: http://rdf.rhea-db.org/26440 rh:substrates; corresponding rh:contains/rh:compound/rh:chebi
+references:
+- id: MetaCyc:PWY0-1471
+  title: uracil degradation III
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-1471
+  source_version: MetaCyc 22.5; original native XML retrieved 2026-10-11
+  source_sha256: fd49f4ee665e035d8de260dc725fc5af02580945b81f11a641a8a7820a98ea0f
+- id: MetaCyc:CPLX0-1962
+  title: 3-hydroxy acid dehydrogenase
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-1962
+  source_version: MetaCyc 22.5; original native XML retrieved 2026-10-11
+  source_sha256: ed00ac937d62cc9bc28620be2f1de65744d48c795af0a9efdd11a0c8685c78e6
+- id: MetaCyc:EG12345-MONOMER
+  title: YdfG native subunit identity
+  url: https://pathway.yeastgenome.org/getxml?META:EG12345-MONOMER
+  source_version: MetaCyc 22.5; original native XML retrieved 2026-10-11
+  source_sha256: 5722521e0fa986f6bd4846b2dc2fbb80324e3063c60d34cfc2de3b1af58f20ae
+- id: MetaCyc:RXN0-5222
+  title: spontaneous carbamate decomposition
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5222
+  source_version: MetaCyc 22.5; original native XML retrieved 2026-10-11
+  source_sha256: 079f6290beaaa757c83d0ef8fdf3e0eeef3ed2c02cd9aa37f8e469e068b21d36
+- id: MetaCyc:RXN-8974
+  title: 3-hydroxypropionate:NADP+ oxidoreductase
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-8974
+  source_version: MetaCyc 22.5; original native XML retrieved 2026-10-11
+  source_sha256: ddb5c15214b2047cc5aeae0076f7fc8783861858b628c566363887a83208a824
+- id: UniProtKB:P75893
+  title: FMN reductase (NADH) RutF
+  url: https://rest.uniprot.org/uniprotkb/P75893.json
+  source_version: Reviewed entry version 152, sequence version 3; retrieved 2026-10-11
+  source_sha256: 2bd36b7086bfe303be185ba74bf02c2564f4cc63facbc728f3615fe564281fd1
+- id: UniProtKB:P75898
+  title: Pyrimidine monooxygenase RutA
+  url: https://rest.uniprot.org/uniprotkb/P75898.json
+  source_version: Reviewed entry version 160, sequence version 3; retrieved 2026-10-11
+  source_sha256: d6dd57671d6b310fb05e9de37dfbbd180f6bf25ba48a0a86c28882549613622d
+- id: UniProtKB:P75897
+  title: Ureidoacrylate amidohydrolase RutB
+  url: https://rest.uniprot.org/uniprotkb/P75897.json
+  source_version: Reviewed entry version 153, sequence version 2; retrieved 2026-10-11
+  source_sha256: 691c608780c38a2e6404384ce0b6d4f1f46746674fa29605926204180c39f9e3
+- id: UniProtKB:P0AFQ5
+  title: 3-aminoacrylate deaminase RutC
+  url: https://rest.uniprot.org/uniprotkb/P0AFQ5.json
+  source_version: Reviewed entry version 120, sequence version 1; retrieved 2026-10-11
+  source_sha256: 97e829fb19861b20e28ec7b3d1baaff1ea6763393b46c1428bbdcc2300055457
+- id: UniProtKB:P39831
+  title: NADP-dependent 3-hydroxy acid dehydrogenase YdfG
+  url: https://rest.uniprot.org/uniprotkb/P39831.json
+  source_version: Reviewed entry version 171, sequence version 2; retrieved 2026-10-11
+  source_sha256: 9c9baf51126ddda9f5d627542c12c7737aed6f4f909e7d9453c71f00e752f528
+- id: UniProtKB:P75894
+  title: Probable malonic semialdehyde reductase RutE
+  url: https://rest.uniprot.org/uniprotkb/P75894.json
+  source_version: Reviewed entry version 150, sequence version 1; retrieved 2026-10-11
+  source_sha256: befb68c7eecba05a370124ec6b079306fd9fd71b1e3ac65e532520e5104170ee
+- id: PMID:20369853
+  title: Catalysis of a flavoenzyme-mediated amide hydrolysis
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2873085/
+  source_version: Complete primary article HTML retrieved 2026-10-11
+  source_sha256: 90d17c95672e67a431a030970ee81d5cca4e94723f85a8bc3aef998c3ea4d31d
+- id: PMID:20400551
+  title: 'The Rut Pathway for Pyrimidine Degradation: Novel Chemistry and Toxicity Problems'
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2916427/
+  source_version: Complete primary article HTML retrieved 2026-10-11
+  source_sha256: c60789961943bfc9ab58db4ef2315c2cb79aca20744dbbafe6371e551157feb8
+- id: PMID:28661684
+  title: RutA-Catalyzed Oxidative Cleavage of the Uracil Amide Involves Formation of a Flavin-N5-oxide
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6040642/
+  source_version: Complete primary article HTML retrieved 2026-10-11
+  source_sha256: 0af939b882d577ee4671ef678a2fac3582aa5edbc73a0616b811e944408c3d7c
+- id: PMID:33839153
+  title: The Rid family member RutC of Escherichia coli is a 3-aminoacrylate deaminase
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8113886/fullTextXML
+  source_version: Complete primary article XML retrieved 2026-10-11
+  source_sha256: 29c1e99ada2cc0b0b4119f3d734ed2bc155d80acd8ecb730a99c61017118ea34
+- id: PMID:23143235
+  title: Structure of Escherichia coli RutC, a member of the YjgF family and putative aminoacrylate peracid
+    reductase of the rut operon
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3515367/
+  source_version: Complete primary article HTML retrieved 2026-10-11
+  source_sha256: 925aff4917add679383419b8b1c39a1d4aa0bb6b93ace02fffa8289a01e352bf
+- id: RHEA:21622
+  title: FMN + NADH + 2 H(+) => FMNH2 + NAD(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:31588
+  title: uracil + FMNH2 + NADH + O2 => (Z)-3-ureidoacrylate + FMN + NAD(+) + H2O + H(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:31604
+  title: (Z)-3-ureidoacrylate + H2O => (Z)-3-aminoacrylate + carbamate + H(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:15650
+  title: carbamate + 2 H(+) => NH4(+) + CO2
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34948
+  title: (Z)-3-aminoacrylate + H2O + H(+) => 3-oxopropanoate + NH4(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:26440
+  title: 3-oxopropanoate + NADPH + H(+) => 3-hydroxypropanoate + NADP(+)
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf

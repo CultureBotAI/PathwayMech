@@ -1,0 +1,165 @@
+{
+  "status": "pass",
+  "exit_code": 0,
+  "completed_at": "2026-10-11T03:13:07.818453+00:00",
+  "target": "data/pathways/cmp-kdo-biosynthesis.yaml",
+  "target_sha256": "fb4d4f947db0402d7f109b96d85961d37812008e5c1c088d12afbad2127f108c",
+  "command": ".venv/bin/python research/pathway_additions/2026-10-11-next-184/kdo-replay.py",
+  "scope": "Author raw-source replay; independent review and full gates delegated to root.",
+  "rhea_sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf",
+  "native_sha256": "8712a91e2350672b9b08b4b80e08481f9af9e65549c0f80d44c3c4b43f88d0e3",
+  "counts": {
+    "participants": 20,
+    "reactions": 5,
+    "edges": 32,
+    "evidence": 64,
+    "references": 34,
+    "kgx_nodes": 27,
+    "chemical_sides": 17
+  },
+  "checks": [
+    "native and closed schema",
+    "all reference and artifact body hashes",
+    "GO exact native identity and ChEBI labels",
+    "all five native reaction members and layouts",
+    "15 full-RDF coefficient sides and four atom/charge balances",
+    "native spontaneous equilibrium and fifth atom/charge balance",
+    "native tetramer/component/UniProt crosswalks",
+    "current reviewed protein names and taxa",
+    "KdsC by-similarity evidence and BL21 exclusion",
+    "KdsA assembly conflict retained",
+    "KdsB primary beta versus formal alpha conflict on every affected edge",
+    "actual KGX evidence/description preservation and spontaneous reaction category"
+  ],
+  "reaction_replay": [
+    {
+      "reaction": "RHEA:23106",
+      "master": "23104",
+      "sides": {
+        "substrates": [
+          [
+            "CHEBI:58121",
+            1
+          ]
+        ],
+        "products": [
+          [
+            "CHEBI:57693",
+            1
+          ]
+        ]
+      },
+      "atom_charge_balance": "pass"
+    },
+    {
+      "reaction": "RHEA:14054",
+      "master": "14053",
+      "sides": {
+        "substrates": [
+          [
+            "CHEBI:57693",
+            1
+          ],
+          [
+            "CHEBI:58702",
+            1
+          ],
+          [
+            "CHEBI:15377",
+            1
+          ]
+        ],
+        "products": [
+          [
+            "CHEBI:85985",
+            1
+          ],
+          [
+            "CHEBI:43474",
+            1
+          ]
+        ]
+      },
+      "atom_charge_balance": "pass"
+    },
+    {
+      "reaction": "RHEA:11501",
+      "master": "11500",
+      "sides": {
+        "substrates": [
+          [
+            "CHEBI:85985",
+            1
+          ],
+          [
+            "CHEBI:15377",
+            1
+          ]
+        ],
+        "products": [
+          [
+            "CHEBI:85986",
+            1
+          ],
+          [
+            "CHEBI:43474",
+            1
+          ]
+        ]
+      },
+      "atom_charge_balance": "pass"
+    },
+    {
+      "reaction": "RHEA:23449",
+      "master": "23448",
+      "sides": {
+        "substrates": [
+          [
+            "CHEBI:85986",
+            1
+          ],
+          [
+            "CHEBI:37563",
+            1
+          ]
+        ],
+        "products": [
+          [
+            "CHEBI:85987",
+            1
+          ],
+          [
+            "CHEBI:33019",
+            1
+          ]
+        ]
+      },
+      "atom_charge_balance": "pass"
+    }
+  ],
+  "replay_script_sha256": "1eb1790323228648203f73976f1100002a0b4195b6928a243acf5ab9843e5fe4",
+  "other_checks": [
+    {
+      "command": ".venv/bin/ruff check research/pathway_additions/2026-10-11-next-184/kdo-replay.py",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/bin/ruff format --check research/pathway_additions/2026-10-11-next-184/kdo-replay.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "scope": "Tracked working diff; owned untracked additions separately scanned."
+    },
+    {
+      "command": "Recursive owned JSON metadata-key scan and owned text trailing-whitespace scan",
+      "exit_code": 0
+    }
+  ],
+  "superseded_author_attempts": [
+    "Initial draft schema check caught invalid bidirectional direction token and misuse of occurs_in for taxa; fixed to reversible, moved taxon evidence to pathway membership and retained taxa as scope. No shared schema changes.",
+    "Initial helper style check flagged three long lines; formatting corrected.",
+    "First full raw replay reached KGX comparison then stopped on helper assumption that export IDs equal local IDs. Corrected namespaced ID matching; exact frozen target rerun passed."
+  ]
+}
