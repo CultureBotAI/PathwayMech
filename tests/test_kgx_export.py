@@ -100,6 +100,43 @@ def test_kgx_nodes_category_panther_reactions() -> None:
     assert rows["PANTHER:R-TEST-67890"].category == "biolink:BiochemicalReaction"
 
 
+def test_kegg_reaction_class_and_explicit_generic_carriers_survive_export(tmp_path):
+    checked = replace(
+        record(), id="KEGG:M00374", label="Dicarboxylate-hydroxybutyrate cycle",
+        participants=[
+            {"id": "KEGG:C00138", "label": "Reduced ferredoxin", "category": "chemical_entity"},
+            {"id": "KEGG:C00139", "label": "Oxidized ferredoxin", "category": "chemical_entity"},
+            {"id": "KEGG:C00022", "label": "Pyruvate"},
+        ],
+        reactions=[{"id": "KEGG:R01196", "label": "Native reaction", "direction": "left_to_right"}],
+        gene_clusters=[], mechanistic_edges=[{
+            "id": "carrier", "subject": "KEGG:C00138", "predicate": "consumes",
+            "object": "KEGG:R01196", "description": "The native coefficient is 2.",
+            "evidence": [{"reference_id": "PMID:1", "quote": "Synthetic export test evidence."}],
+        }],
+    )
+    node_path, edge_path = write_kgx([checked], tmp_path)
+    with node_path.open() as stream:
+        nodes = {row["id"]: row for row in csv.DictReader(stream, delimiter="\t")}
+    assert nodes["KEGG:M00374"]["category"] == "biolink:Pathway"
+    assert nodes["KEGG:R01196"]["category"] == "biolink:BiochemicalReaction"
+    assert nodes["KEGG:R01196"]["direction"] == "left_to_right"
+    assert nodes["KEGG:C00022"]["category"] == "biolink:SmallMolecule"
+    for identifier in ("KEGG:C00138", "KEGG:C00139"):
+        assert nodes[identifier]["category"] == "biolink:ChemicalEntity"
+        assert nodes[identifier]["source_category"] == "chemical_entity"
+    with edge_path.open() as stream:
+        edge = next(csv.DictReader(stream, delimiter="\t"))
+    assert edge["description"] == checked.mechanistic_edges[0]["description"]
+    assert json.loads(edge["evidence"]) == checked.mechanistic_edges[0]["evidence"]
+    explicit = replace(checked, reactions=[{
+        **checked.reactions[0], "category": "molecular_activity",
+    }])
+    assert next(n for n in kgx_nodes([explicit]) if n.id == "KEGG:R01196").category == (
+        "biolink:MolecularActivity"
+    )
+
+
 @pytest.mark.parametrize("path, identifier", [
     ("epoxysqualene-biosynthesis", "gomodel:YeastPathways_PWY-5670-1/654d809000002591"),
     ("epoxysqualene-biosynthesis", "gomodel:YeastPathways_PWY-5670-1/654d809000002611"),

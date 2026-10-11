@@ -4,7 +4,8 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html and
-ncbi-protein-xml and rhea-components-rdf-gz. Source files are
+ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
+kegg-reaction-flatfile and kegg-compound-flatfile. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -29,7 +30,7 @@ import yaml
 SOURCE_NAMESPACES = frozenset(
     {
         "EC", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD", "UniProtKB",
-        "WikiPathways", "gomodel", "RHEA-COMP",
+        "WikiPathways", "gomodel", "RHEA-COMP", "KEGG",
     }
 )
 
@@ -332,7 +333,90 @@ def rhea_component_terms(path: Path) -> Iterator[tuple[str, str, list[str]]]:
             depth -= 1
 
 
-def source_terms(kind: str, path: Path) -> Iterator[tuple[str, str, list[str]]]:
+KEGG_SOURCE_TYPES = {
+    "kegg-module-flatfile": ("M", "Pathway Module"),
+    "kegg-reaction-flatfile": ("R", "Reaction"),
+    "kegg-compound-flatfile": ("C", "Compound"),
+}
+
+
+def kegg_terms(text: str, kind: str, url: str) -> list[tuple[str, str, list[str]]]:
+    """Read native ENTRY/NAME assertions, bound to an exact official REST request.
+
+    The whole homogeneous batch is validated before returning any terms. Module
+    cross-reference lists and KGML display names are not issuing authorities.
+    """
+    if kind not in KEGG_SOURCE_TYPES:
+        raise ValueError(f"unsupported KEGG source kind: {kind}")
+    prefix, entry_type = KEGG_SOURCE_TYPES[kind]
+    identifier_pattern = rf"{prefix}[0-9]{{5}}"
+    request = re.fullmatch(
+        rf"https://rest\.kegg\.jp/get/({identifier_pattern}(?:\+{identifier_pattern}){{0,9}})",
+        url,
+    )
+    if not request:
+        raise ValueError("KEGG source requires an official same-class flatfile get URL")
+    requested = request.group(1).split("+")
+    if len(set(requested)) != len(requested):
+        raise ValueError("KEGG request has duplicate identifiers")
+
+    terms: list[tuple[str, str, list[str]]] = []
+    seen: set[str] = set()
+    fields: dict[str, list[str]] = {}
+    current = ""
+    for line in text.splitlines():
+        if not line.strip():
+            continue
+        if line.rstrip() == "///":
+            entry = " ".join(" ".join(fields.get("ENTRY", [])).split())
+            match = re.fullmatch(rf"({identifier_pattern})\s+{entry_type}", entry)
+            if not match:
+                raise ValueError("KEGG ENTRY identity and class do not match source kind")
+            identifier = match.group(1)
+            if identifier in seen:
+                raise ValueError(f"KEGG source has duplicate ENTRY: {identifier}")
+            name = " ".join(" ".join(fields.get("NAME", [])).split())
+            names = [part.strip() for part in name.removesuffix(";").split(";")]
+            if not all(names) or any(
+                value in {identifier, f"KEGG:{identifier}"} for value in names
+            ):
+                raise ValueError(f"KEGG ENTRY {identifier} lacks a native biological NAME")
+            terms.append((f"KEGG:{identifier}", names[0], sorted(set(names[1:]) - {names[0]})))
+            seen.add(identifier)
+            fields = {}
+            current = ""
+            continue
+        column, value = line[:12], line[12:].strip()
+        tag = column.strip()
+        if "\t" in line or not fields and tag != "ENTRY":
+            raise ValueError("KEGG flatfile has an orphan field or malformed field columns")
+        if not tag:
+            if not current or not value:
+                raise ValueError("KEGG flatfile has an orphan continuation")
+            fields[current].append(value)
+        elif not re.fullmatch(r"[A-Z][A-Z0-9_]*", tag):
+            raise ValueError("KEGG flatfile has a malformed field")
+        elif column.startswith(" "):
+            # Indented AUTHORS/TITLE/JOURNAL belong to REFERENCE, not NAME.
+            if current != "REFERENCE" or tag not in {"AUTHORS", "TITLE", "JOURNAL"}:
+                raise ValueError("KEGG flatfile has an unsupported nested field")
+        else:
+            if tag in {"ENTRY", "NAME"} and tag in fields:
+                raise ValueError(f"KEGG flatfile has duplicate {tag} fields")
+            if not value:
+                raise ValueError(f"KEGG flatfile has an empty {tag} field")
+            fields.setdefault(tag, []).append(value)
+            current = tag
+    if fields:
+        raise ValueError("KEGG flatfile has an unterminated ENTRY")
+    if not terms or seen != set(requested):
+        raise ValueError("KEGG ENTRY identities do not equal the requested identifiers")
+    return terms
+
+
+def source_terms(
+    kind: str, path: Path, *, url: str | None = None,
+) -> Iterator[tuple[str, str, list[str]]]:
     if kind in {"gocam-tar", "mibig-tar"}:
         parser = gocam_terms if kind == "gocam-tar" else mibig_terms
         with tarfile.open(path, "r:gz") as archive:
@@ -355,6 +439,8 @@ def source_terms(kind: str, path: Path) -> Iterator[tuple[str, str, list[str]]]:
         yield from rhea_component_terms(path)
     elif kind == "metacyc-html":
         yield from metacyc_terms(path.read_text(encoding="utf-8"))
+    elif kind in KEGG_SOURCE_TYPES:
+        yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
     elif kind == "ncbi-protein-xml":
         for protein in ElementTree.parse(path).getroot().findall("GBSeq"):
             accession = protein.findtext("GBSeq_accession-version")
@@ -376,13 +462,16 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     wanted = corpus_ids(records)
     terms: dict[str, Any] = {}
     sources: dict[str, Any] = {}
+    source_keys: set[str] = set()
+    kegg_assertions: dict[str, tuple[str, tuple[str, ...]]] = {}
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
     for entry in entries:
         key = entry["key"]
-        if key in sources:
+        if key in source_keys:
             raise ValueError(f"duplicate source key: {key}")
+        source_keys.add(key)
         artifact = Path(entry["path"])
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
@@ -395,7 +484,12 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         metadata["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
-        for identifier, label, synonyms in source_terms(entry["kind"], path):
+        for identifier, label, synonyms in source_terms(entry["kind"], path, url=entry["url"]):
+            if entry["kind"] in KEGG_SOURCE_TYPES:
+                assertion = (label, tuple(sorted(set(synonyms))))
+                if identifier in kegg_assertions and kegg_assertions[identifier] != assertion:
+                    raise ValueError(f"conflicting KEGG native names for {identifier}")
+                kegg_assertions[identifier] = assertion
             if identifier not in wanted:
                 continue
             if identifier in terms:
