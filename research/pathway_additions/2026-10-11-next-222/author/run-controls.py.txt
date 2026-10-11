@@ -1,0 +1,45 @@
+"""Seed meaningful negative changes in external copies; never modify originals."""
+import sys
+sys.dont_write_bytecode=True
+import json,yaml,hashlib,subprocess,copy,shutil
+from pathlib import Path
+from datetime import datetime,timezone
+A=Path('/private/tmp/pathwaymech-next-222-author-20261011');C=A/'controls';C.mkdir(exist_ok=True);PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';HELPER=A/'replay-author.py';base=json.loads((A/'replay-manifest.json').read_text());doc=yaml.safe_load(Path(base['inputs']['record']['path']).read_text());results=[]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def put(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
+def copied(role,m,d):
+ p=Path(m['inputs'][role]['path']);q=d/p.name;shutil.copy2(p,q);m['inputs'][role]['path']=str(q);return q
+def bind(role,m,p):m['inputs'][role]={'path':str(p),'sha256':sha(p)}
+def run(name,expected,mutator,wrapper=None):
+ d=C/name;d.mkdir();m=copy.deepcopy(base);mutator(m,d);mp=d/'manifest.json';put(mp,m);out=d/'result';log=d/'terminal.log'
+ cmd=[PY,'-B',str(HELPER),'--manifest',str(mp),'--output',str(out)]
+ if wrapper:cmd=[PY,'-B',str(wrapper),str(mp),str(out)]
+ start=datetime.now(timezone.utc).isoformat()
+ with log.open('w') as f:p=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)
+ txt=log.read_text();ok=p.returncode!=0 and expected in txt and not (out/'accepted').exists();r={'name':name,'command':cmd,'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':p.returncode,'expected_diagnostic':expected,'diagnostic_found':expected in txt,'accepted_directory_absent':not (out/'accepted').exists(),'passed':ok,'log_sha256':sha(log),'manifest_sha256':sha(mp)};results.append(r);put(C/'results.json',results);print(json.dumps(r),flush=True);assert ok,(name,txt[-1000:])
+for rid in ['RHEA:27644','RHEA:24409','RHEA:21141']:
+ def mutate(m,d,rid=rid):
+  q=copied('record',m,d);r=copy.deepcopy(doc);n=next(x for x in r['reactions'] if x['id']==rid);n['direction']='left_to_right' if n['direction']=='right_to_left' else 'right_to_left';q.write_text(yaml.safe_dump(r,sort_keys=False));bind('record',m,q)
+ run('direction-'+rid.split(':')[1],'NATIVE_DIRECTION_MISMATCH',mutate)
+def missing_transport(m,d):
+ q=copied('record',m,d);r=copy.deepcopy(doc);r['mechanistic_edges']=[e for e in r['mechanistic_edges'] if not(e['subject'].endswith('/Transports/505') and e['predicate']=='has_input' and 'PW_C040034_' in e['object'])];q.write_text(yaml.safe_dump(r,sort_keys=False));bind('record',m,q)
+run('missing-native-transport-proton','COMPLETE_TRANSPORT_SIDE',missing_transport)
+def wrong_interface(m,d):
+ q=copied('record',m,d);r=copy.deepcopy(doc);next(x for x in r['reactions'] if x['id']=='PathBank:SMP0000809')['direction']='left_to_right';q.write_text(yaml.safe_dump(r,sort_keys=False));bind('record',m,q)
+run('opaque-interface-false-equation','OPAQUE_INTERFACE_TYPE',wrong_interface)
+def wrong_side(m,d):
+ q=copied('record',m,d);r=copy.deepcopy(doc);next(e for e in r['mechanistic_edges'] if e['subject']=='RHEA:21141' and e['predicate']=='produces' and e['object']=='CHEBI:58053')['object']='CHEBI:16708';q.write_text(yaml.safe_dump(r,sort_keys=False));bind('record',m,q)
+run('terminal-chemical-substitution','NATIVE_CHEMICAL_SIDE_MISMATCH',wrong_side)
+def wrong_projection(m,d):
+ q=copied('projection',m,d);r=json.loads(q.read_text());r['rhea'][0]['direction']='left_to_right';put(q,r);bind('projection',m,q)
+run('edited-derived-direction-projection','DERIVED_CHEMISTRY_PROJECTION_MISMATCH',wrong_projection)
+def badsource(m,d):
+ q=copied('pathbank',m,d);q.write_bytes(q.read_bytes()+b'\n<!-- corruption after binding -->\n')
+run('changed-native-source-bytes','INPUT_HASH_MISMATCH',badsource)
+def badruntime(m,d):
+ q=copied('runtime_binding',m,d);j=json.loads(q.read_text());entry=next(x for x in j['files'] if x['path'].endswith('/schema.py'));z=d/'schema.py';shutil.copy2(entry['path'],z);entry['path']=str(z);z.write_text(z.read_text()+'\n# mutated runtime bytes\n');put(q,j);bind('runtime_binding',m,q)
+run('changed-runtime-source-bytes','INPUT_HASH_MISMATCH',badruntime)
+def badref(m,d):
+ q=copied('references',m,d);j=json.loads(q.read_text());rid='PMID:21572102';entry=j[rid];z=d/'PMC3159470.html';shutil.copy2(entry['path'],z);entry['path']=str(z);z.write_bytes(z.read_bytes()+b'\n<!-- changed article -->\n');put(q,j);bind('references',m,q)
+run('changed-primary-reference-bytes','INPUT_HASH_MISMATCH',badref)
+print('All early controls passed',len(results),flush=True)

@@ -1,0 +1,142 @@
+"""Reviewer-owned native RDF/BioPAX traversal; no author projections imported."""
+import sys
+sys.dont_write_bytecode = True
+import copy, gzip, hashlib, json, re, xml.etree.ElementTree as E
+from pathlib import Path
+from datetime import datetime, timezone
+import yaml
+
+D=Path(__file__).parent
+A=Path('/private/tmp/pathwaymech-next-222-author-20261011')
+P=Path('/private/tmp/pathwaymech-next-222-preflight-20261011/raw')
+RDF='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+RH='http://rdf.rhea-db.org/'
+BP='http://www.biopax.org/release/biopax-level3.owl#'
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1048576),b''):h.update(b)
+ return h.hexdigest()
+def props(e):
+ d={}
+ for c in e:
+  d.setdefault(c.tag,[]).append(c.get('{'+RDF+'}resource') or c.text)
+ return d
+refs=json.loads((A/'reference-bindings.json').read_text())
+rp=Path(refs['RHEA:27644']['path'])
+assert sha(rp)==refs['RHEA:27644']['sha256']
+record=yaml.safe_load((A/'draft/adenine-and-adenosine-salvage-ii.yaml').read_text())
+initial=sha(A/'draft/adenine-and-adenosine-salvage-ii.yaml')
+started=datetime.now(timezone.utc).isoformat()
+uris={RH+r['id'].split(':')[1] for r in record['reactions'] if r['id'].startswith('RHEA:')}
+objects={}; reverse={u:[] for u in uris}
+def scan(wanted,masters=False):
+ with gzip.open(rp,'rb') as stream:
+  for event,e in E.iterparse(stream,events=('end',)):
+   if e.tag!='{'+RDF+'}Description':continue
+   u=e.get('{'+RDF+'}about'); ps=props(e)
+   if u in wanted:
+    dest=objects.setdefault(u,{})
+    for k,vs in ps.items():dest.setdefault(k,[]).extend(v for v in vs if v not in dest.get(k,[]))
+   if masters:
+    for v in ps.get('{'+RH+'}directionalReaction',[]):
+     if v in uris and u not in reverse[v]:reverse[v].append(u)
+   e.clear()
+scan(uris,True)
+masters={v[0] for v in reverse.values() if len(v)==1}
+assert len(masters)==3 and all(len(v)==1 for v in reverse.values())
+scan(masters | {x for u in uris for k in ['substrates','products'] for x in objects[u]['{'+RH+'}'+k]})
+sideuris={x for u in uris for k in ['substrates','products'] for x in objects[u]['{'+RH+'}'+k]}
+parts={v for s in sideuris for v in objects[s]['{'+RH+'}contains']}
+scan(parts)
+compounds={v for p in parts for v in objects[p]['{'+RH+'}compound']}
+scan(compounds)
+chem=[]
+for u in sorted(uris):
+ m=reverse[u][0]; p=objects[u]
+ left,right=m+'_L',m+'_R'
+ assert set(objects[m]['{'+RH+'}side'])=={left,right}
+ pair=(p['{'+RH+'}substrates'],p['{'+RH+'}products'])
+ assert pair in [([left],[right]),([right],[left])]
+ row={'id':'RHEA:'+u.split('/')[-1],'master':m,'direction':'left_to_right' if pair==([left],[right]) else 'right_to_left','label':p['{'+RH+'}equation'][0],'sides':{}}
+ for side in ['substrates','products']:
+  vals={}
+  for s in p['{'+RH+'}'+side]:
+   for participant in objects[s]['{'+RH+'}contains']:
+    coefficients=[int(k.split('}')[-1][8:]) for k,vs in objects[s].items() if re.fullmatch(r'contains\d+',k.split('}')[-1]) and participant in vs]
+    assert len(coefficients)==1
+    c=objects[participant]['{'+RH+'}compound'];assert len(c)==1
+    cid=objects[c[0]]['{'+RH+'}accession'];assert len(cid)==1 and cid[0].startswith('CHEBI:')
+    assert cid[0] not in vals; vals[cid[0]]=coefficients[0]
+  row['sides'][side]=vals
+ chem.append(row)
+def owl(p):
+ r=E.parse(p).getroot(); d={}
+ for n in r:
+  k=n.get('{'+RDF+'}ID') or n.get('{'+RDF+'}about')
+  if k:
+   assert k not in d;d[k]={'type':n.tag,'properties':props(n)}
+ return d
+pb=owl(P/'SMP0002083-current.owl');other=owl(P/'SMP0000809-current.owl')
+root='http://identifiers.org/smpdb/SMP0002083';stub='http://identifiers.org/smpdb/SMP0000809'
+assert pb[root]['properties']['{'+BP+'}displayName']==[record['label']]
+assert other[stub]['properties']['{'+BP+'}displayName']==['Aspartate Metabolism']
+assert '#Reference/SMPDB_SMP0002083' in pb[root]['properties']['{'+BP+'}xref']
+assert pb['Reference/SMPDB_SMP0002083']['properties']=={'{'+BP+'}id':['SMP0002083'],'{'+BP+'}db':['SMPDB']}
+members=pb[root]['properties']['{'+BP+'}pathwayComponent']
+bytype={}
+for k in members:
+ o=pb[k.removeprefix('#')];bytype.setdefault(o['type'].split('#')[-1],[]).append(k)
+assert {k:len(v) for k,v in bytype.items()}=={'Pathway':1,'BiochemicalReaction':3,'Transport':1,'Catalysis':4}
+mapped={'#Reactions/6047':'RHEA:27644','#Reactions/6049':'RHEA:24409','#Reactions/6053':'RHEA:21141','#Transports/505':'PathBank:SMP0002083/Transports/505',stub:'PathBank:SMP0000809'}
+transport=pb['Transports/505']['properties']
+assert transport['{'+BP+'}conversionDirection']==['LEFT_TO_RIGHT']
+assert pb[stub]['properties']['{'+BP+'}pathwayComponent']==['#SubPathwayInteractions/581268']
+assert pb['SubPathwayInteractions/581268']['properties']['{'+BP+'}participant']==['#Compound/PW_C000114_Cytoplasm']
+text=(P/'SMP0002083-current.pwml').read_text(); frag=re.search(r'<sub-pathways>.*?</sub-pathways>',text,re.S)
+sub=E.fromstring(frag[0]);assert sub.findtext('sub-pathway/sub-pathway-inputs/sub-pathway-input/element-id')=='114'
+assert sub.findtext('sub-pathway/reference-pathway-id')=='551'
+def check(doc):
+ rx={r['id']:r for r in doc['reactions']};edges=doc['mechanistic_edges'];triples={(e['subject'],e['predicate'],e['object']) for e in edges}
+ assert set(rx)==set(mapped.values()),'native boundary'
+ assert {o for s,p,o in triples if s==doc['id'] and p=='has_part'}==set(rx),'membership'
+ for c in chem:
+  assert rx[c['id']]['direction']==c['direction'],'direction '+c['id']
+  assert rx[c['id']]['label']==c['label'],'equation'
+  for side,predicate in [('substrates','consumes'),('products','produces')]:
+   actual={}
+   for e in edges:
+    if e['predicate']==predicate and e['object' if predicate=='consumes' else 'subject']==c['id']:
+     cid=e['subject' if predicate=='consumes' else 'object'];assert cid not in actual
+     actual[cid]=int(re.fullmatch(r'Stoichiometric coefficient (\d+)\.',e['description'])[1])
+   assert actual==c['sides'][side],'chemical side '+c['id']
+ t=mapped['#Transports/505'];assert rx[t]['direction']=='left_to_right'
+ for side,pred in [('left','has_input'),('right','has_output')]:
+  expected={doc['id']+'/'+v.removeprefix('#') for v in transport['{'+BP+'}'+side]}
+  assert {o for s,p,o in triples if s==t and p==pred}==expected,'transport side'
+ interface=mapped[stub];assert rx[interface]['category']=='biological_process' and 'direction' not in rx[interface],'interface typing'
+ assert (interface,'has_input',doc['id']+'/Compound/PW_C000114_Cytoplasm') in triples,'interface input'
+ assert not any(interface in [s,o] and p in ['consumes','produces','provides_input_for'] for s,p,o in triples),'unsupported interface chemistry'
+ assert not any('MetaCyc:PC00033'==s and o in ['Entrez:945851','UniProtKB:P22333'] and p in ['inhibits','regulates'] for s,p,o in triples),'PurR scope'
+check(record)
+controls=[]
+for rid in sorted(uris):
+ x=copy.deepcopy(record); cid='RHEA:'+rid.split('/')[-1]
+ for r in x['reactions']:
+  if r['id']==cid:r['direction']='right_to_left' if r['direction']=='left_to_right' else 'left_to_right'
+ try:check(x)
+ except AssertionError as ex:controls.append({'mutation':'reverse '+cid,'rejected':True,'reason':str(ex)})
+ else:raise RuntimeError('direction negative passed')
+for key in ['coefficient','transport','interface','PurR']:
+ x=copy.deepcopy(record)
+ if key=='coefficient':x['mechanistic_edges'][0]['description']='Stoichiometric coefficient 2.'
+ if key=='transport':x['mechanistic_edges']=[e for e in x['mechanistic_edges'] if e['id']!='aas2-020']
+ if key=='interface':x['reactions'][-1]['direction']='left_to_right'
+ if key=='PurR':x['mechanistic_edges'].append({'subject':'MetaCyc:PC00033','predicate':'inhibits','object':'Entrez:945851'})
+ try:check(x)
+ except AssertionError as ex:controls.append({'mutation':key,'rejected':True,'reason':str(ex)})
+ else:raise RuntimeError('negative passed '+key)
+assert sha(rp)==refs['RHEA:27644']['sha256'] and sha(A/'draft/adenine-and-adenosine-salvage-ii.yaml')==initial
+report={'status':'pass','started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'target_sha256':initial,'original_rhea_sha256':sha(rp),'chemistry':chem,'sides':sum(len(v) for c in chem for v in c['sides'].values()),'native_member_types':bytype,'controls':controls,'method':'Four fresh streaming XML scans of complete original Rhea gzip; reverse master links and explicit substrate/product resources; complete native BioPAX membership and bounded original PWML interface. No author projection imported.'}
+(D/'independent-native-result.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))

@@ -1,0 +1,13 @@
+# Independent Salvage II integration preparation review
+
+No actionable finding was identified in the sealed preparation. This is not final maintained-state acceptance.
+
+The source-authority changes bind requested PathBank roots to official request/native SMPDB identity, support only attached interface stubs, and retain distinct source-local transport and compartment nodes. Entrez authority uses direct native gene identity and locus/taxon/status checks; aliases remain native, explicit non-live or redirected records fail, duplicate native assertions are compared before corpus selection, and the official external DTD is not resolved. Existing source selection and namespace policy remain bounded. I read the implementation and both test additions independently; no duplicated test-suite result is asserted here.
+
+The package audit independently rehashed all 178 sealed artifacts and 160 mapped originals, verified all 165 proposed maintained paths using an ignored/hidden/symlink-followed inventory, and recovered original bytes from all 53 log wrappers. No proposed path is gitignored. The original scientific review and resolved successor remain separate. Parsed record comparison confirms that only aas2-032 evidence[1]'s assertion and locator changed. The README clearly describes an external preparation, preserves scope and limitations, and makes no premature gate, licensing or source-exhaustion claim.
+
+The helpers require the accepted record and implementation hashes and actual base. The graph audit covers every declared component, edge triple, evidence text/locator, anchor and source direction; its programmatic scope is explicit. The preservation helper checks old record/page bytes, complete old edge rows and all source contexts, while reporting shared global display changes for separate interpretation. Fresh export/manifest equality complements that check. The post-gate archiver preserves logs losslessly and emits a successor instead of changing captured preparation claims. History is planned through the native scaffold and carries truthful pending-gate text.
+
+Final review remains necessary after authority adoption, actual maintained gates and canonical review. In particular, inspect the exact authority additions and historical term preservation, shared global node changes, rendered target, native history and immutable review lineage. No new whole-record scientific review or browser inspection was performed by this preparation review.
+
+The first package-check attempt rejected a documented supplemental copy-mode spelling; an immutable successor permits that exact byte-copy mode and still compares source/archive bytes. This reviewer assumption and terminal failure are preserved in attempt1.json. No product defect resulted.

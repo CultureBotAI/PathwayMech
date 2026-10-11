@@ -1,0 +1,53 @@
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+from datetime import datetime,timezone
+from lxml import etree as E
+import yaml,json,hashlib,re,copy
+D=Path(__file__).parent
+A=Path('/private/tmp/pathwaymech-next-222-author-20261011')
+C=Path('/private/tmp/pathwaymech-next-222-correction-20261011')
+P=Path('/private/tmp/pathwaymech-next-222-preflight-20261011/raw/SMP0002083-current.pwml')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+original=A/'draft/adenine-and-adenosine-salvage-ii.yaml'
+corrected=C/'draft/adenine-and-adenosine-salvage-ii.yaml'
+assert sha(original)=='11ceb3fe99f2ed2966bb8a68faf8fa836a6a4a9e94b2bc0c499bb1119fd3cddd'
+assert sha(corrected)=='8b8eb42ace01b8d663ecff30a85e47d6de7b25e7cde785b268655ab281153157'
+assert sha(P)=='4ab166de57f7a201ae2d5eb9fd569da9bd37d2d18c7d4abd0207fafd87e21d53'
+o=yaml.safe_load(original.read_text());c=yaml.safe_load(corrected.read_text())
+differences=[]
+def compare(a,b,p=''):
+ assert type(a)==type(b),p
+ if isinstance(a,dict):
+  assert set(a)==set(b),p
+  for k in a:compare(a[k],b[k],p+'.'+k)
+ elif isinstance(a,list):
+  assert len(a)==len(b),p
+  for i,(x,y) in enumerate(zip(a,b)):compare(x,y,p+'['+str(i)+']')
+ elif a!=b:differences.append({'field':p,'before':a,'after':b})
+compare(o,c)
+assert {x['field'] for x in differences}=={'.mechanistic_edges[31].evidence[1].source_assertion','.mechanistic_edges[31].evidence[1].source_locator'}
+assert c['mechanistic_edges'][31]['id']=='aas2-032'
+text=P.read_text();sub=E.fromstring(re.search(r'<sub-pathways>.*?</sub-pathways>',text,re.S)[0].encode());vis=E.fromstring(re.search(r'<sub-pathway-visualizations>.*?</sub-pathway-visualizations>',text,re.S)[0].encode())
+actual={'sub_id':sub.xpath('sub-pathway/id/text()'),'reference':sub.xpath('sub-pathway/reference-pathway-id/text()'),'input':sub.xpath('sub-pathway/sub-pathway-inputs/sub-pathway-input/element-id/text()'),'type':sub.xpath('sub-pathway/sub-pathway-inputs/sub-pathway-input/element-type/text()'),'visualization':vis.xpath('sub-pathway-visualization/id/text()'),'visual_sub_id':vis.xpath('sub-pathway-visualization/sub-pathway-id/text()'),'side':vis.xpath('sub-pathway-visualization/sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side/text()')}
+expected={'sub_id':['581268'],'reference':['551'],'input':['114'],'type':['Compound'],'visualization':['595297'],'visual_sub_id':['581268'],'side':['Left']}
+assert actual==expected
+ev=c['mechanistic_edges'][31]['evidence'][1]
+assert 'names Aspartate Metabolism' not in ev['source_assertion'] and 'connector-type' not in ev['source_locator']
+assert all(s in ev['source_assertion'] for s in ['581268','551','114','595297','side Left'])
+assert 'sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side=Left' in ev['source_locator']
+assert 0<len(ev['source_assertion'])<=400
+# This guard targets the actual provenance defect, which generic graph replay
+# cannot detect. Reintroducing either original text field must be rejected.
+def evidence_guard(v):
+ assert 'names Aspartate Metabolism' not in v['source_assertion'],'misattributed title'
+ assert all(s in v['source_assertion'] for s in ['581268','551','114','595297','side Left']),'native IDs and side'
+ assert 'sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side=Left' in v['source_locator'],'exact native side locator'
+evidence_guard(ev);negative=[]
+for field in ['source_assertion','source_locator']:
+ bad=copy.deepcopy(ev);bad[field]=o['mechanistic_edges'][31]['evidence'][1][field]
+ try:evidence_guard(bad)
+ except AssertionError as ex:negative.append({'mutation':'restore original '+field,'rejected':True,'reason':str(ex)})
+ else:raise RuntimeError('restored defect passed')
+result={'status':'pass','finished_at':datetime.now(timezone.utc).isoformat(),'original_sha256':sha(original),'corrected_sha256':sha(corrected),'native_PWML_sha256':sha(P),'semantic_changes':differences,'native_values':actual,'negative_controls':negative,'all_other_record_fields_unchanged':True,'prior_scientific_review_inherited':'/private/tmp/pathwaymech-next-222-scientific-review-20261011/review.json','scope':'Exact two-field issue422 disposition, not a new full scientific review. Bounded original PWML fragments parsed without modifying invalid full document.'}
+(D/'delta-result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

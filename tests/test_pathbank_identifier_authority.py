@@ -203,3 +203,158 @@ def test_production_pathbank_policy_is_contextual_only_in_declared_slots(tmp_pat
         assert any(code in error for error in errors), errors
     else:
         assert errors == []
+
+
+DOWNLOAD = "https://pathbank.org/view/SMP9999999/download?type=owl_markup"
+
+
+def add_stub(root, accession="SMP9999998"):
+    primary = root.find(BP + "Pathway")
+    uri = "http://identifiers.org/smpdb/" + accession
+    stub = ET.SubElement(root, BP + "Pathway", {RDF + "about": uri})
+    ET.SubElement(stub, BP + "displayName").text = "Adjacent native pathway"
+    ET.SubElement(stub, BP + "name").text = "SubPathway"
+    ET.SubElement(stub, BP + "xref", {RDF + "resource": "#xref-" + accession})
+    xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": "xref-" + accession})
+    ET.SubElement(xref, BP + "db").text = "SMPDB"
+    ET.SubElement(xref, BP + "id").text = accession
+    interaction_id = "SubPathwayInteractions/" + accession
+    ET.SubElement(stub, BP + "pathwayComponent", {RDF + "resource": "#" + interaction_id})
+    interaction = ET.SubElement(root, BP + "Interaction", {RDF + "ID": interaction_id})
+    ET.SubElement(interaction, BP + "participant", {RDF + "resource": "#Compound/native"})
+    ET.SubElement(primary, BP + "pathwayComponent", {RDF + "resource": uri})
+    return stub
+
+
+@pytest.mark.parametrize("position", [0, 1, 2, 3])
+def test_exact_requested_root_selected_independently_of_pathway_order(position):
+    root = native_source()
+    primary = root.find(BP + "Pathway")
+    for accession in ["SMP9999998", "SMP9999997", "SMP9999996"]:
+        add_stub(root, accession)
+    root.remove(primary)
+    root.insert(position, primary)
+    terms = list(pathbank_terms(root, url=DOWNLOAD))
+    assert terms[0] == (PATHWAY, "Native pathway title", [])
+    assert all(identifier == PATHWAY or identifier.startswith(PATHWAY + "/")
+               for identifier, _, _ in terms)
+    assert not any("SubPathwayInteractions" in identifier for identifier, _, _ in terms)
+
+
+def test_transport_and_compartment_scopes_are_native_contexts(tmp_path):
+    manifest, records, record, record_path = authority_fixture(tmp_path)
+    root = native_source()
+    add_stub(root)
+    transport = ET.SubElement(root, BP + "Transport", {RDF + "ID": "Transports/505"})
+    ET.SubElement(transport, BP + "displayName").text = "Transport505"
+    ET.SubElement(root.find(BP + "Pathway"), BP + "pathwayComponent", {
+        RDF + "resource": "#Transports/505",
+    })
+    native_ids = [
+        f"Compound/{compound}_{compartment}"
+        for compound, compartments in [
+            ("adenine", ["Periplasmic_Space", "Cytosol"]),
+            ("hydrogen", ["Periplasmic_Space", "Cytosol"]),
+            ("IMP", ["Cytosol", "Cytoplasm"]),
+        ] for compartment in compartments
+    ]
+    for native in native_ids:
+        node = ET.SubElement(root, BP + "SmallMolecule", {RDF + "ID": native})
+        ET.SubElement(node, BP + "displayName").text = "Same chemical name"
+        record["participants"].append({"id": PATHWAY + "/" + native, "label": "Scoped instance"})
+    record["reactions"].append({"id": PATHWAY + "/Transports/505", "label": "Native transport"})
+    record_path.write_text(yaml.safe_dump(record))
+    entries = json.loads(manifest.read_text())
+    source = tmp_path / entries[0]["path"]
+    source.write_bytes(ET.tostring(root))
+    entries[0].update(url=DOWNLOAD, sha256=hashlib.sha256(source.read_bytes()).hexdigest())
+    manifest.write_text(json.dumps(entries))
+    result = build_snapshot(manifest, records, tmp_path)
+    for native in [*native_ids, "Transports/505"]:
+        assert result["terms"][PATHWAY + "/" + native]["label_kind"] == "source_context"
+    assert result["terms"][PATHWAY + "/Transports/505"]["label"] == "Transport505"
+
+
+@pytest.mark.parametrize("url", [
+    DOWNLOAD.replace("https:", "http:"), DOWNLOAD.replace("pathbank.org", "elsewhere.org"),
+    DOWNLOAD.replace("pathbank.org", "pathbank.org.example.com"),
+    DOWNLOAD.replace("pathbank.org", "user@pathbank.org"),
+    DOWNLOAD.replace("pathbank.org", "pathbank.org:443"), DOWNLOAD + "#fragment",
+    DOWNLOAD + "&type=owl_markup", DOWNLOAD + "&extra=1", DOWNLOAD.replace("SMP9999999", "PW1"),
+    DOWNLOAD.replace("SMP9999999", "SMP9999998"), DOWNLOAD.replace("owl_markup", "pwml_markup"),
+    DOWNLOAD.replace("?type=owl_markup", ""), DOWNLOAD + " ",
+])
+def test_invalid_or_mismatched_native_download_request_fails(url):
+    with pytest.raises(ValueError):
+        list(pathbank_terms(native_source(), url=url))
+
+
+@pytest.mark.parametrize("about", ["#local-pathway", "https://other.example/SMP9999999", ""])
+def test_requested_definition_requires_its_issuing_native_uri(about):
+    root = native_source()
+    root.find(BP + "Pathway").set(RDF + "about", about)
+    with pytest.raises(ValueError, match="PathBank"):
+        list(pathbank_terms(root, url=DOWNLOAD))
+
+
+@pytest.mark.parametrize("problem", [
+    "unattached", "expanded", "wrong-xref", "missing-xref", "requested-stub",
+    "dangling-step", "wrong-step-class", "duplicate-accession", "no-primary-definition",
+])
+def test_only_attached_verified_interface_stubs_are_supported(problem):
+    root = native_source()
+    primary = root.find(BP + "Pathway")
+    stub = add_stub(root)
+    if problem == "unattached":
+        primary.remove(primary.findall(BP + "pathwayComponent")[-1])
+    elif problem == "expanded":
+        root.find(BP + "Interaction").tag = BP + "BiochemicalReaction"
+    elif problem == "wrong-xref":
+        root.findall(BP + "UnificationXref")[-1].find(BP + "id").text = "SMP9999997"
+    elif problem == "missing-xref":
+        stub.remove(stub.find(BP + "xref"))
+    elif problem == "requested-stub":
+        with pytest.raises(ValueError, match="primary"):
+            list(pathbank_terms(root, url=DOWNLOAD.replace("SMP9999999", "SMP9999998")))
+        return
+    elif problem == "dangling-step":
+        ET.SubElement(primary, BP + "pathwayOrder", {RDF + "resource": "#missing-step"})
+    elif problem == "wrong-step-class":
+        ET.SubElement(primary, BP + "pathwayOrder", {RDF + "resource": "#Reactions/7"})
+    elif problem == "duplicate-accession":
+        duplicate = copy.deepcopy(primary)
+        duplicate.set(RDF + "about", "#different-subject")
+        root.append(duplicate)
+    elif problem == "no-primary-definition":
+        primary.remove(primary.findall(BP + "pathwayComponent")[0])
+    with pytest.raises(ValueError, match="PathBank"):
+        list(pathbank_terms(root, url=DOWNLOAD))
+
+
+def test_pathway_step_attachment_does_not_invent_an_interaction_authority():
+    root = native_source()
+    primary = root.find(BP + "Pathway")
+    stub = add_stub(root)
+    primary.remove(primary.findall(BP + "pathwayComponent")[-1])
+    ET.SubElement(primary, BP + "pathwayOrder", {RDF + "resource": "#interface-step"})
+    step = ET.SubElement(root, BP + "PathwayStep", {RDF + "ID": "interface-step"})
+    ET.SubElement(step, BP + "stepProcess", {RDF + "resource": stub.get(RDF + "about")})
+    assert list(pathbank_terms(root, url=DOWNLOAD)) == list(pathbank_terms(native_source()))
+
+
+@pytest.mark.parametrize("existing", [True, False])
+def test_wrong_native_root_cannot_write_or_replace_output(tmp_path, monkeypatch, existing):
+    manifest, records, _, _ = authority_fixture(tmp_path)
+    entries = json.loads(manifest.read_text())
+    entries[0]["url"] = DOWNLOAD.replace("SMP9999999", "SMP9999998")
+    manifest.write_text(json.dumps(entries))
+    output = tmp_path / "output.json"
+    if existing:
+        output.write_bytes(b"prior authority\n")
+    monkeypatch.setattr(sys, "argv", [
+        "builder", "--manifest", str(manifest), "--records", str(records),
+        "--cache-dir", str(tmp_path), "--output", str(output),
+    ])
+    with pytest.raises(ValueError, match="PathBank"):
+        main()
+    assert output.read_bytes() == b"prior authority\n" if existing else not output.exists()

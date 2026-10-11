@@ -1,0 +1,946 @@
+id: PathBank:SMP0002083
+label: Adenine and Adenosine Salvage II
+description: This complete current PathBank definition couples AdeP-mediated adenine uptake to DeoD-dependent adenosine
+  synthesis, Add deamination and Gsk-dependent inosine phosphorylation to IMP. It contains four elementary events
+  and the native, non-elementary Aspartate Metabolism input interface; the latter does not import the entire connected
+  pathway. E. coli K-12 protein evidence, MG1655 regulatory experiments and specific transport-assay strains remain
+  distinct. PathBank labels its protein BioSource K-12 but links BW25113; that conflicting annotation is not adopted
+  as universal strain identity. The native 1:1 proton/adenine transport ratio is a database assertion, not a measured
+  coupling ratio in the inspected papers. Rhea gives the balanced charged chemistry; native neutral IMP_Cytosol
+  and IMP_Cytoplasm remain separate source-view instances, with no invented transport or protonation reaction between
+  them. DeoD is a hexamer and Gsk an active dimer; GDP/ppGpp promote concentration-dependent tetramerization, with
+  ppGpp-bound tetramers less active than bound dimers. No issuing identifier was established for that conditional
+  tetramer, so its state is retained in evidence. A crystallographic octamer is not assigned physiological status.
+  PurR represses adeP transcription; adenine increases add transcription without direct PurR regulation of add.
+  Older GTP-inhibition annotation conflicts with the 2020 GDP-not-GTP result. Native MetaCyc PWY-6611 is the related
+  three-reaction core, not an exact alias for this transport/interface-inclusive record.
+pathway_type: purine-nucleotide-salvage
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:57720
+  label: alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:16708
+  label: adenine
+  category: small_molecule
+- id: CHEBI:16335
+  label: adenosine
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:17596
+  label: inosine
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:58053
+  label: IMP(2-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:58189
+  label: GDP(3-)
+  category: small_molecule
+- id: CHEBI:77828
+  label: guanosine 3',5'-bis(diphosphate)(5-)
+  category: small_molecule
+- id: CHEBI:17368
+  label: hypoxanthine
+  category: small_molecule
+- id: CHEBI:16235
+  label: guanine
+  category: small_molecule
+- id: CHEBI:29103
+  label: potassium(1+)
+  category: small_molecule
+- id: CHEBI:29036
+  label: copper(2+)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P0ABP8
+  label: Purine nucleoside phosphorylase DeoD-type
+  category: protein
+- id: UniProtKB:P22333
+  label: Adenosine deaminase
+  category: protein
+- id: UniProtKB:P0AEW6
+  label: Guanosine-inosine kinase
+  category: protein
+- id: UniProtKB:P31466
+  label: Adenine permease AdeP
+  category: protein
+- id: UniProtKB:P0ACP7
+  label: HTH-type transcriptional repressor PurR
+  category: protein
+- id: MetaCyc:DEOD-CPLX
+  label: purine nucleoside phosphorylase
+  category: complex
+- id: MetaCyc:CPLX0-322
+  label: inosine/guanosine kinase
+  category: complex
+- id: MetaCyc:PC00033
+  label: DNA-binding transcriptional repressor PurR
+  category: complex
+- id: Entrez:948224
+  label: adeP
+  category: gene
+- id: Entrez:945851
+  label: add
+  category: gene
+- id: PathBank:SMP0002083/Compound/PW_C000024_Periplasmic_Space
+  label: Adenine
+  category: small_molecule
+- id: PathBank:SMP0002083/Compound/PW_C000024_Cytosol
+  label: Adenine
+  category: small_molecule
+- id: PathBank:SMP0002083/Compound/PW_C040034_Periplasmic_Space
+  label: Hydrogen Ion
+  category: small_molecule
+- id: PathBank:SMP0002083/Compound/PW_C040034_Cytosol
+  label: Hydrogen Ion
+  category: small_molecule
+- id: PathBank:SMP0002083/Compound/PW_C000114_Cytosol
+  label: Inosinic acid
+  category: small_molecule
+- id: PathBank:SMP0002083/Compound/PW_C000114_Cytoplasm
+  label: Inosinic acid
+  category: small_molecule
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0042597
+  label: periplasmic space
+  category: cellular_component
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+- id: GO:0005886
+  label: plasma membrane
+  category: cellular_component
+reactions:
+- id: RHEA:27644
+  label: alpha-D-ribose 1-phosphate + adenine => adenosine + phosphate
+  direction: right_to_left
+- id: RHEA:24409
+  label: adenosine + H2O + H(+) => inosine + NH4(+)
+  direction: left_to_right
+- id: RHEA:21141
+  label: inosine + ATP => IMP + ADP + H(+)
+  direction: left_to_right
+- id: PathBank:SMP0002083/Transports/505
+  label: Transport505
+  category: molecular_activity
+  direction: left_to_right
+- id: PathBank:SMP0000809
+  label: Aspartate Metabolism
+  category: biological_process
+mechanistic_edges:
+- id: aas2-001
+  subject: CHEBI:57720
+  predicate: consumes
+  object: RHEA:27644
+  evidence:
+  - reference_id: RHEA:27644
+    source_assertion: The original directional Rhea reaction places CHEBI:57720 on its substrates side with coefficient
+      1; its master-relative orientation is right_to_left.
+    source_locator: rhea.rdf.gz; rh:27644 rh:substrates rh:27642_R; rh:27642_R rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_2276>;
+      rh:compound <http://rdf.rhea-db.org/Compound_2276> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-002
+  subject: CHEBI:16708
+  predicate: consumes
+  object: RHEA:27644
+  evidence:
+  - reference_id: RHEA:27644
+    source_assertion: The original directional Rhea reaction places CHEBI:16708 on its substrates side with coefficient
+      1; its master-relative orientation is right_to_left.
+    source_locator: rhea.rdf.gz; rh:27644 rh:substrates rh:27642_R; rh:27642_R rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_4174>;
+      rh:compound <http://rdf.rhea-db.org/Compound_4174> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-003
+  subject: RHEA:27644
+  predicate: produces
+  object: CHEBI:16335
+  evidence:
+  - reference_id: RHEA:27644
+    source_assertion: The original directional Rhea reaction places CHEBI:16335 on its products side with coefficient
+      1; its master-relative orientation is right_to_left.
+    source_locator: rhea.rdf.gz; rh:27644 rh:products rh:27642_L; rh:27642_L rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_2547>;
+      rh:compound <http://rdf.rhea-db.org/Compound_2547> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-004
+  subject: RHEA:27644
+  predicate: produces
+  object: CHEBI:43474
+  evidence:
+  - reference_id: RHEA:27644
+    source_assertion: The original directional Rhea reaction places CHEBI:43474 on its products side with coefficient
+      1; its master-relative orientation is right_to_left.
+    source_locator: rhea.rdf.gz; rh:27644 rh:products rh:27642_L; rh:27642_L rh:contains1 <http://rdf.rhea-db.org/Participant_27642_compound_5518>;
+      rh:compound <http://rdf.rhea-db.org/Compound_5518> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-005
+  subject: CHEBI:16335
+  predicate: consumes
+  object: RHEA:24409
+  evidence:
+  - reference_id: RHEA:24409
+    source_assertion: The original directional Rhea reaction places CHEBI:16335 on its substrates side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:24409 rh:substrates rh:24408_L; rh:24408_L rh:contains1 <http://rdf.rhea-db.org/Participant_24408_compound_2547>;
+      rh:compound <http://rdf.rhea-db.org/Compound_2547> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-006
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:24409
+  evidence:
+  - reference_id: RHEA:24409
+    source_assertion: The original directional Rhea reaction places CHEBI:15377 on its substrates side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:24409 rh:substrates rh:24408_L; rh:24408_L rh:contains1 <http://rdf.rhea-db.org/Participant_24408_compound_1283>;
+      rh:compound <http://rdf.rhea-db.org/Compound_1283> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-007
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:24409
+  evidence:
+  - reference_id: RHEA:24409
+    source_assertion: The original directional Rhea reaction places CHEBI:15378 on its substrates side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:24409 rh:substrates rh:24408_L; rh:24408_L rh:contains1 <http://rdf.rhea-db.org/Participant_24408_compound_3249>;
+      rh:compound <http://rdf.rhea-db.org/Compound_3249> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-008
+  subject: RHEA:24409
+  predicate: produces
+  object: CHEBI:17596
+  evidence:
+  - reference_id: RHEA:24409
+    source_assertion: The original directional Rhea reaction places CHEBI:17596 on its products side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:24409 rh:products rh:24408_R; rh:24408_R rh:contains1 <http://rdf.rhea-db.org/Participant_24408_compound_1231>;
+      rh:compound <http://rdf.rhea-db.org/Compound_1231> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-009
+  subject: RHEA:24409
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:24409
+    source_assertion: The original directional Rhea reaction places CHEBI:28938 on its products side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:24409 rh:products rh:24408_R; rh:24408_R rh:contains1 <http://rdf.rhea-db.org/Participant_24408_compound_1012>;
+      rh:compound <http://rdf.rhea-db.org/Compound_1012> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-010
+  subject: CHEBI:17596
+  predicate: consumes
+  object: RHEA:21141
+  evidence:
+  - reference_id: RHEA:21141
+    source_assertion: The original directional Rhea reaction places CHEBI:17596 on its substrates side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:21141 rh:substrates rh:21140_L; rh:21140_L rh:contains1 <http://rdf.rhea-db.org/Participant_21140_compound_1231>;
+      rh:compound <http://rdf.rhea-db.org/Compound_1231> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-011
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:21141
+  evidence:
+  - reference_id: RHEA:21141
+    source_assertion: The original directional Rhea reaction places CHEBI:30616 on its substrates side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:21141 rh:substrates rh:21140_L; rh:21140_L rh:contains1 <http://rdf.rhea-db.org/Participant_21140_compound_6372>;
+      rh:compound <http://rdf.rhea-db.org/Compound_6372> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-012
+  subject: RHEA:21141
+  predicate: produces
+  object: CHEBI:58053
+  evidence:
+  - reference_id: RHEA:21141
+    source_assertion: The original directional Rhea reaction places CHEBI:58053 on its products side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:21141 rh:products rh:21140_R; rh:21140_R rh:contains1 <http://rdf.rhea-db.org/Participant_21140_compound_1663>;
+      rh:compound <http://rdf.rhea-db.org/Compound_1663> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-013
+  subject: RHEA:21141
+  predicate: produces
+  object: CHEBI:456216
+  evidence:
+  - reference_id: RHEA:21141
+    source_assertion: The original directional Rhea reaction places CHEBI:456216 on its products side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:21141 rh:products rh:21140_R; rh:21140_R rh:contains1 <http://rdf.rhea-db.org/Participant_21140_compound_2710>;
+      rh:compound <http://rdf.rhea-db.org/Compound_2710> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-014
+  subject: RHEA:21141
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:21141
+    source_assertion: The original directional Rhea reaction places CHEBI:15378 on its products side with coefficient
+      1; its master-relative orientation is left_to_right.
+    source_locator: rhea.rdf.gz; rh:21141 rh:products rh:21140_R; rh:21140_R rh:contains1 <http://rdf.rhea-db.org/Participant_21140_compound_3249>;
+      rh:compound <http://rdf.rhea-db.org/Compound_3249> / rh:chebi
+  description: Stoichiometric coefficient 1.
+- id: aas2-015
+  subject: PathBank:SMP0002083
+  predicate: has_part
+  object: RHEA:27644
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The primary Pathway's pathwayComponent explicitly contains Reactions/6047; the complete local
+      biochemical event is represented by its independently grounded directional Rhea chemistry.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002083']/bp:pathwayComponent[@rdf:resource='#Reactions/6047'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6047']
+- id: aas2-016
+  subject: PathBank:SMP0002083
+  predicate: has_part
+  object: RHEA:24409
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The primary Pathway's pathwayComponent explicitly contains Reactions/6049; the complete local
+      biochemical event is represented by its independently grounded directional Rhea chemistry.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002083']/bp:pathwayComponent[@rdf:resource='#Reactions/6049'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6049']
+- id: aas2-017
+  subject: PathBank:SMP0002083
+  predicate: has_part
+  object: RHEA:21141
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The primary Pathway's pathwayComponent explicitly contains Reactions/6053; the complete local
+      biochemical event is represented by its independently grounded directional Rhea chemistry.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002083']/bp:pathwayComponent[@rdf:resource='#Reactions/6053'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6053']
+- id: aas2-018
+  subject: PathBank:SMP0002083
+  predicate: has_part
+  object: PathBank:SMP0002083/Transports/505
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The native primary Pathway explicitly includes Transport505, separate from its three biochemical
+      reactions.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002083']/bp:pathwayComponent[@rdf:resource='#Transports/505']
+- id: aas2-019
+  subject: PathBank:SMP0002083
+  predicate: has_part
+  object: PathBank:SMP0000809
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The primary Pathway includes SMP0000809 as a Pathway component; its local SubPathway instance
+      contains only the IMP interface interaction, not a reaction list.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002083']/bp:pathwayComponent; bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0000809']/bp:pathwayComponent
+  description: Native non-elementary downstream interface; whole Aspartate Metabolism is not expanded into this
+    record.
+- id: aas2-020
+  subject: PathBank:SMP0002083/Transports/505
+  predicate: has_input
+  object: PathBank:SMP0002083/Compound/PW_C040034_Periplasmic_Space
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Transport505 lists Compound/PW_C040034_Periplasmic_Space on bp:left, with native coefficient
+      1.0 and LEFT_TO_RIGHT conversionDirection. The exact proton ratio is a source assertion, not a primary coupling
+      measurement.
+    source_locator: bp:Transport[@rdf:ID='Transports/505']/bp:left[@rdf:resource='#Compound/PW_C040034_Periplasmic_Space'];
+      bp:Stoichiometry[@rdf:ID='Compound/PW_C040034_Periplasmic_Space/Stoichiometry/1.0']
+- id: aas2-021
+  subject: PathBank:SMP0002083/Transports/505
+  predicate: has_input
+  object: PathBank:SMP0002083/Compound/PW_C000024_Periplasmic_Space
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Transport505 lists Compound/PW_C000024_Periplasmic_Space on bp:left, with native coefficient
+      1.0 and LEFT_TO_RIGHT conversionDirection. The exact proton ratio is a source assertion, not a primary coupling
+      measurement.
+    source_locator: bp:Transport[@rdf:ID='Transports/505']/bp:left[@rdf:resource='#Compound/PW_C000024_Periplasmic_Space'];
+      bp:Stoichiometry[@rdf:ID='Compound/PW_C000024_Periplasmic_Space/Stoichiometry/1.0']
+- id: aas2-022
+  subject: PathBank:SMP0002083/Transports/505
+  predicate: has_output
+  object: PathBank:SMP0002083/Compound/PW_C000024_Cytosol
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Transport505 lists Compound/PW_C000024_Cytosol on bp:right, with native coefficient 1.0 and
+      LEFT_TO_RIGHT conversionDirection. The exact proton ratio is a source assertion, not a primary coupling measurement.
+    source_locator: bp:Transport[@rdf:ID='Transports/505']/bp:right[@rdf:resource='#Compound/PW_C000024_Cytosol'];
+      bp:Stoichiometry[@rdf:ID='Compound/PW_C000024_Cytosol/Stoichiometry/1.0']
+- id: aas2-023
+  subject: PathBank:SMP0002083/Transports/505
+  predicate: has_output
+  object: PathBank:SMP0002083/Compound/PW_C040034_Cytosol
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Transport505 lists Compound/PW_C040034_Cytosol on bp:right, with native coefficient 1.0 and
+      LEFT_TO_RIGHT conversionDirection. The exact proton ratio is a source assertion, not a primary coupling measurement.
+    source_locator: bp:Transport[@rdf:ID='Transports/505']/bp:right[@rdf:resource='#Compound/PW_C040034_Cytosol'];
+      bp:Stoichiometry[@rdf:ID='Compound/PW_C040034_Cytosol/Stoichiometry/1.0']
+- id: aas2-024
+  subject: PathBank:SMP0002083/Compound/PW_C000024_Periplasmic_Space
+  predicate: located_in
+  object: GO:0042597
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: 'The native compartment-specific molecule points to #CellularLocation/Periplasmic_Space; its
+      location is preserved separately from the unlocalized Rhea chemical form.'
+    source_locator: bp:SmallMolecule[@rdf:ID='Compound/PW_C000024_Periplasmic_Space']/bp:cellularLocation; bp:CellularLocationVocabulary[@rdf:ID='CellularLocation/Periplasmic_Space']
+- id: aas2-025
+  subject: PathBank:SMP0002083/Compound/PW_C040034_Periplasmic_Space
+  predicate: located_in
+  object: GO:0042597
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: 'The native compartment-specific molecule points to #CellularLocation/Periplasmic_Space; its
+      location is preserved separately from the unlocalized Rhea chemical form.'
+    source_locator: bp:SmallMolecule[@rdf:ID='Compound/PW_C040034_Periplasmic_Space']/bp:cellularLocation; bp:CellularLocationVocabulary[@rdf:ID='CellularLocation/Periplasmic_Space']
+- id: aas2-026
+  subject: PathBank:SMP0002083/Compound/PW_C000024_Cytosol
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: 'The native compartment-specific molecule points to #CellularLocation/Cytosol; its location
+      is preserved separately from the unlocalized Rhea chemical form.'
+    source_locator: bp:SmallMolecule[@rdf:ID='Compound/PW_C000024_Cytosol']/bp:cellularLocation; bp:CellularLocationVocabulary[@rdf:ID='CellularLocation/Cytosol']
+- id: aas2-027
+  subject: PathBank:SMP0002083/Compound/PW_C040034_Cytosol
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: 'The native compartment-specific molecule points to #CellularLocation/Cytosol; its location
+      is preserved separately from the unlocalized Rhea chemical form.'
+    source_locator: bp:SmallMolecule[@rdf:ID='Compound/PW_C040034_Cytosol']/bp:cellularLocation; bp:CellularLocationVocabulary[@rdf:ID='CellularLocation/Cytosol']
+- id: aas2-028
+  subject: PathBank:SMP0002083/Compound/PW_C000114_Cytosol
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: 'The native compartment-specific molecule points to #CellularLocation/Cytosol; its location
+      is preserved separately from the unlocalized Rhea chemical form.'
+    source_locator: bp:SmallMolecule[@rdf:ID='Compound/PW_C000114_Cytosol']/bp:cellularLocation; bp:CellularLocationVocabulary[@rdf:ID='CellularLocation/Cytosol']
+- id: aas2-029
+  subject: PathBank:SMP0002083/Compound/PW_C000114_Cytoplasm
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: 'The native compartment-specific molecule points to #CellularLocation/Cytoplasm; its location
+      is preserved separately from the unlocalized Rhea chemical form.'
+    source_locator: bp:SmallMolecule[@rdf:ID='Compound/PW_C000114_Cytoplasm']/bp:cellularLocation; bp:CellularLocationVocabulary[@rdf:ID='CellularLocation/Cytoplasm']
+- id: aas2-030
+  subject: RHEA:27644
+  predicate: has_input
+  object: PathBank:SMP0002083/Compound/PW_C000024_Cytosol
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Reactions/6047 uses Compound/PW_C000024_Cytosol (adenine). This is its compartment-specific
+      source view, corresponding to the separately balanced adenine substrate.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6047']/bp:left[@rdf:resource='#Compound/PW_C000024_Cytosol'];
+      bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000024']/bp:xref
+  description: Native compartment view of adenine; not an additional stoichiometric substrate.
+- id: aas2-031
+  subject: RHEA:21141
+  predicate: has_output
+  object: PathBank:SMP0002083/Compound/PW_C000114_Cytosol
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Reactions/6053 outputs Compound/PW_C000114_Cytosol, whose reference is neutral inosinic
+      acid CHEBI:17202. This source-view output is distinct from balanced Rhea IMP(2-).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6053']/bp:right[@rdf:resource='#Compound/PW_C000114_Cytosol'];
+      bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000114']
+  description: Native generic output view; no extra product coefficient or protonation reaction is asserted.
+- id: aas2-032
+  subject: PathBank:SMP0000809
+  predicate: has_input
+  object: PathBank:SMP0002083/Compound/PW_C000114_Cytoplasm
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The SMP0000809 SubPathway contains Interaction581268 with participant Compound/PW_C000114_Cytoplasm,
+      named SubPathwayInput.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0000809']/bp:pathwayComponent; bp:Interaction[@rdf:ID='SubPathwayInteractions/581268']/bp:participant;
+      bp:SmallMolecule[@rdf:ID='Compound/PW_C000114_Cytoplasm']/bp:name
+  - reference_id: PathBank:SMP0002083/PWML
+    source_assertion: Sub-pathway581268 names Aspartate Metabolism and explicitly declares Compound114 as its sub-pathway-input;
+      the visual connection is Left/input.
+    source_locator: 'Original PWML lines24-38: sub-pathway id581268, sub-pathway-input; lines8627-8645: visual-element/connector-type
+      Left'
+  description: Opaque native input interface, without an elementary equation or invented Cytosol-to-Cytoplasm transfer.
+- id: aas2-033
+  subject: PathBank:SMP0002083/Transports/505
+  predicate: provides_input_for
+  object: RHEA:27644
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Transport505 has cytosolic adenine as its output, and Reactions/6047 has the exact same native
+      molecule instance as input.
+    source_locator: 'bp:Transport[@rdf:ID=''Transports/505'']/bp:right; bp:BiochemicalReaction[@rdf:ID=''Reactions/6047'']/bp:left:
+      #Compound/PW_C000024_Cytosol'
+  - reference_id: RHEA:27644
+    source_assertion: The directional reaction consumes adenine CHEBI:16708.
+    source_locator: rhea.rdf.gz; rh:27644 rh:substrates rh:27642_R; Compound_4174 rh:chebi CHEBI:16708
+- id: aas2-034
+  subject: RHEA:27644
+  predicate: provides_input_for
+  object: RHEA:24409
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Reactions/6047 supplies the nucleoside used by Reactions/6049; both reference the same
+      compartment-specific molecule.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6047']/bp:right; bp:BiochemicalReaction[@rdf:ID='Reactions/6049']/bp:left
+  - reference_id: RHEA:27644
+    source_assertion: The directional upstream reaction produces CHEBI:16335.
+    source_locator: rhea.rdf.gz; rh:27644 rh:products / rh:contains / rh:compound / rh:chebi CHEBI:16335
+  - reference_id: RHEA:24409
+    source_assertion: The directional downstream reaction consumes CHEBI:16335.
+    source_locator: rhea.rdf.gz; rh:24409 rh:substrates / rh:contains / rh:compound / rh:chebi CHEBI:16335
+- id: aas2-035
+  subject: RHEA:24409
+  predicate: provides_input_for
+  object: RHEA:21141
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Reactions/6049 supplies the nucleoside used by Reactions/6053; both reference the same
+      compartment-specific molecule.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6049']/bp:right; bp:BiochemicalReaction[@rdf:ID='Reactions/6053']/bp:left
+  - reference_id: RHEA:24409
+    source_assertion: The directional upstream reaction produces CHEBI:17596.
+    source_locator: rhea.rdf.gz; rh:24409 rh:products / rh:contains / rh:compound / rh:chebi CHEBI:17596
+  - reference_id: RHEA:21141
+    source_assertion: The directional downstream reaction consumes CHEBI:17596.
+    source_locator: rhea.rdf.gz; rh:21141 rh:substrates / rh:contains / rh:compound / rh:chebi CHEBI:17596
+- id: aas2-036
+  subject: MetaCyc:DEOD-CPLX
+  predicate: has_part
+  object: UniProtKB:P0ABP8
+  evidence:
+  - reference_id: MetaCyc:DEOD-CPLX
+    source_assertion: The META27 complex has 6 copies of DEOD-MONOMER; its component identity is independently grounded
+      to P0ABP8.
+    source_locator: /ptools-xml/Protein[@frameid='DEOD-CPLX']/component[Protein/@frameid='DEOD-MONOMER']/coefficient
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: The reviewed record specifies a homohexamer, a trimer of homodimers (ECO:0000269 and HAMAP
+      inference).
+    source_locator: /primaryAccession; /comments/10
+  - reference_id: PMID:30337572
+    source_assertion: The crystallographic structures are homohexamers of six identical 238-residue chains. The
+      current reviewed sequence is 239 residues; processing is not inferred.
+    source_locator: BioC document/passages, passage40 Results assembly; passage63 Methods preparation
+  - reference_id: PathBank:SMP0002083
+    source_assertion: The native DeoD complex has six copies of Protein6182; its protein reference contains the
+      UniProt P0ABP8 unification xref.
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/4056_Cytosol']/bp:componentStoichiometry; bp:ProteinReference[@rdf:ID='ProteinReference/6182']/bp:xref
+  description: Native 6-copy assembly; has_part does not encode stoichiometry in a separate scalar field.
+- id: aas2-037
+  subject: MetaCyc:CPLX0-322
+  predicate: has_part
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: MetaCyc:CPLX0-322
+    source_assertion: The META27 complex has 2 copies of GSK-MONOMER; its component identity is independently grounded
+      to P0AEW6.
+    source_locator: /ptools-xml/Protein[@frameid='CPLX0-322']/component[Protein/@frameid='GSK-MONOMER']/coefficient
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: The reviewed record specifies a homodimer (ECO:0000269, PMID10879466).
+    source_locator: /primaryAccession; /comments/8
+  - reference_id: PMID:32857952
+    source_assertion: Gsk is dimeric without ppGpp in SEC-MALS; ppGpp shifts it toward a tetramer in a concentration-dependent
+      manner. Dimer-interface mutants lose activity.
+    source_locator: section#S3; section#S4; figure#F1; figure#F2
+  - reference_id: MetaCyc:GSK-MONOMER
+    source_assertion: The native GSK-MONOMER has a UniProt unification link to P0AEW6, bridging the complex subunit
+      to the reviewed protein.
+    source_locator: /ptools-xml/Protein[@frameid="GSK-MONOMER"]/dblink[dblink-db="UNIPROT"]; /ptools-xml/Protein/component-of
+  description: Native 2-copy assembly; has_part does not encode stoichiometry in a separate scalar field.
+- id: aas2-038
+  subject: MetaCyc:PC00033
+  predicate: has_part
+  object: UniProtKB:P0ACP7
+  evidence:
+  - reference_id: MetaCyc:PC00033
+    source_assertion: The META27 complex has 2 copies of PD00219; its component identity is independently grounded
+      to P0ACP7.
+    source_locator: /ptools-xml/Protein[@frameid='PC00033']/component[Protein/@frameid='PD00219']/coefficient
+  - reference_id: UniProtKB:P0ACP7
+    source_assertion: The reviewed record specifies a homodimer supported by experimental literature (ECO:0000269).
+    source_locator: /primaryAccession; /comments/2
+  - reference_id: MetaCyc:PD00219
+    source_assertion: Native PurR monomer PD00219 has UniProt unification link P0ACP7 and component-of PC00033.
+    source_locator: /ptools-xml/Protein[@frameid="PD00219"]/dblink[dblink-db="UNIPROT"]; /ptools-xml/Protein/component-of
+  description: Native 2-copy assembly; has_part does not encode stoichiometry in a separate scalar field.
+- id: aas2-039
+  subject: MetaCyc:DEOD-CPLX
+  predicate: catalyzes
+  object: RHEA:27644
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: ReactionCatalysis6011 controls adenine-to-adenosine Reactions/6047 through Complex4056, which
+      explicitly contains six Protein6182 (P0ABP8) copies.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6011']; bp:Complex[@rdf:ID='ProteinComplex/4056_Cytosol'];
+      bp:ProteinReference[@rdf:ID='ProteinReference/6182']
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: Reviewed DeoD catalyzes reversible adenosine phosphorolysis; the selected synthesis direction
+      is the native pathway orientation (experimental ECO:0000269).
+    source_locator: /comments/0; /comments/4; /comments/10
+- id: aas2-040
+  subject: UniProtKB:P22333
+  predicate: catalyzes
+  object: RHEA:24409
+  evidence:
+  - reference_id: UniProtKB:P22333
+    source_assertion: The reviewed adenosine deaminase explicitly lists physiological RHEA:24409, converting adenosine
+      to inosine and ammonium; ECO:0000269 and HAMAP ECO:0000255 are preserved.
+    source_locator: /comments/1/physiologicalReactions; /primaryAccession
+  - reference_id: PathBank:SMP0002083
+    source_assertion: ReactionCatalysis6013 connects Add Protein6409 to Reactions/6049.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6013']; bp:ProteinReference[@rdf:ID='ProteinReference/6409']
+- id: aas2-041
+  subject: MetaCyc:CPLX0-322
+  predicate: catalyzes
+  object: RHEA:21141
+  evidence:
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: The reviewed protein lists physiological RHEA:21141 and a homodimer assembly, with experimental
+      ECO:0000269 evidence.
+    source_locator: /comments/2/physiologicalReactions; /comments/8
+  - reference_id: PMID:32857952
+    source_assertion: Purified Gsk was assayed with inosine and ATP-Mg; IMP formation was coupled to IMP dehydrogenase
+      and NADH readout. The dimer interface is required for activity.
+    source_locator: section#S3; section#S4; section#S48
+  - reference_id: PMID:765747
+    source_assertion: In the specified K-12 mutant comparison, adding the gsk lesion reduced guanosine kinase activity
+      and also lowered measured inosine kinase activity; adenosine kinase activity was unchanged. No complete-route
+      flux is inferred.
+    source_locator: Original seven-page PDF, printed p89 Table4; strain definitions p87 Table1
+- id: aas2-042
+  subject: UniProtKB:P31466
+  predicate: catalyzes
+  object: PathBank:SMP0002083/Transports/505
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: TransportCatalysis436 controls Transport505 through Protein7110, whose reference identifies
+      UniProt P31466.
+    source_locator: bp:Catalysis[@rdf:ID='TransportCatalysis/436']; bp:ProteinReference[@rdf:ID='ProteinReference/7110']
+  - reference_id: PMID:24214977
+    source_assertion: PurP was directly identified as a high-affinity adenine transporter (Km about 1 micromolar).
+      Constructs came from T184; uptake hosts were specified mutant strains. This does not measure proton stoichiometry.
+    source_locator: section#sec2; section#sec12; section#T1
+  - reference_id: PMID:6198438
+    source_assertion: The indexed abstract reports proton-motive-force dependence and metabolic trapping of adenine
+      uptake. Only the abstract was inspected.
+    source_locator: Europe PMC core resultList/result[id=6198438]/abstractText
+- id: aas2-043
+  subject: UniProtKB:P31466
+  predicate: located_in
+  object: GO:0005886
+  evidence:
+  - reference_id: UniProtKB:P31466
+    source_assertion: Reviewed AdeP is a multipass cell-inner-membrane protein (ECO:0000269).
+    source_locator: /comments/3/subcellularLocations
+- id: aas2-044
+  subject: UniProtKB:P22333
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P22333
+    source_assertion: One Zn(2+) per Add subunit is annotated from HAMAP MF_00540 with ECO:0000255; this is an inference,
+      not a directly inspected metal-occupancy experiment.
+    source_locator: /comments/3/cofactors; /comments/3/note
+- id: aas2-045
+  subject: MetaCyc:CPLX0-322
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: Mg(2+) is the annotated cofactor. Free Mg(2+) in addition to Mg-ATP is described as probable;
+      experimental ECO:0000269 and HAMAP ECO:0000255 are retained.
+    source_locator: /comments/3
+  - reference_id: PMID:32857952
+    source_assertion: The inosine kinase assay used 5 mM ATP-Mg and 5 mM MgCl2; these are measured assay conditions,
+      not resolved microscopic occupancy.
+    source_locator: section#S48
+- id: aas2-046
+  subject: CHEBI:58189
+  predicate: inhibits
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: PMID:32857952
+    source_assertion: GDP binds and inhibits Gsk; ligands shift the dimer/tetramer equilibrium. ppGpp-bound tetramers
+      are less active than ppGpp-bound dimers. Charged ChEBI forms identify the ligand, not measured assay protonation.
+    source_locator: section#S3; section#S5; figure#F1; figure#F3
+  description: Condition-dependent Gsk population; this edge does not assert an isolated monomer or an obligate
+    tetramer.
+- id: aas2-047
+  subject: CHEBI:77828
+  predicate: inhibits
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: PMID:32857952
+    source_assertion: ppGpp binds and inhibits Gsk; ligands shift the dimer/tetramer equilibrium. ppGpp-bound tetramers
+      are less active than ppGpp-bound dimers. Charged ChEBI forms identify the ligand, not measured assay protonation.
+    source_locator: section#S3; section#S5; figure#F1; figure#F3
+  description: Condition-dependent Gsk population; this edge does not assert an isolated monomer or an obligate
+    tetramer.
+- id: aas2-048
+  subject: CHEBI:29103
+  predicate: activates
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: K(+) stimulates kinase activity in the reviewed activity-regulation comment (ECO:0000269,
+      PMID7665468). The cited original was accessible only as an abstract; quantitative conditions are not asserted.
+    source_locator: /comments/4
+  description: Database-reported assay regulation; no physiological ion concentration or cofactor role is inferred.
+- id: aas2-049
+  subject: CHEBI:29036
+  predicate: inhibits
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: Cu(2+) inhibits both guanosine and inosine kinase activities in the reviewed activity-regulation
+      comment (ECO:0000269, PMID7665468). The cited original was accessible only as an abstract; quantitative conditions
+      are not asserted.
+    source_locator: /comments/4
+  description: Database-reported assay regulation; no physiological ion concentration or cofactor role is inferred.
+- id: aas2-050
+  subject: CHEBI:29105
+  predicate: inhibits
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: Zn(2+) inhibits both guanosine and inosine kinase activities in the reviewed activity-regulation
+      comment (ECO:0000269, PMID7665468). The cited original was accessible only as an abstract; quantitative conditions
+      are not asserted.
+    source_locator: /comments/4
+  description: Database-reported assay regulation; no physiological ion concentration or cofactor role is inferred.
+- id: aas2-051
+  subject: CHEBI:17368
+  predicate: activates
+  object: MetaCyc:PC00033
+  evidence:
+  - reference_id: UniProtKB:P0ACP7
+    source_assertion: hypoxanthine is an alternative purine corepressor that allosterically activates homodimeric
+      PurR DNA binding (ECO:0000269). Hypoxanthine and guanine are alternatives, not both obligatorily present.
+    source_locator: /comments/0; /comments/2
+  description: Activation of repressor DNA binding, which enables transcriptional repression.
+- id: aas2-052
+  subject: CHEBI:16235
+  predicate: activates
+  object: MetaCyc:PC00033
+  evidence:
+  - reference_id: UniProtKB:P0ACP7
+    source_assertion: guanine is an alternative purine corepressor that allosterically activates homodimeric PurR
+      DNA binding (ECO:0000269). Hypoxanthine and guanine are alternatives, not both obligatorily present.
+    source_locator: /comments/0; /comments/2
+  description: Activation of repressor DNA binding, which enables transcriptional repression.
+- id: aas2-053
+  subject: MetaCyc:PC00033
+  predicate: inhibits
+  object: Entrez:948224
+  evidence:
+  - reference_id: PMID:21572102
+    source_assertion: Combined ChIP-chip and transcription analysis identifies yieG among directly PurR-repressed
+      genes in MG1655. Direct repression is assigned to adeP transcription, not transport-protein catalytic activity.
+    source_locator: section#sec12
+  - reference_id: UniProtKB:P31466
+    source_assertion: The reviewed AdeP protein lists adeP, purP and yieG as gene names/synonyms, grounding the
+      primary paper gene name.
+    source_locator: /genes/0
+  - reference_id: Entrez:948224
+    source_assertion: NCBI Gene948224 is adeP, locus b3714, MG1655 taxon511145, with Swiss-Prot P31466 cross-reference.
+    source_locator: /Entrezgene-Set/Entrezgene/Entrezgene_gene/Gene-ref; //Dbtag[Dbtag_db="UniProtKB/Swiss-Prot"];
+      //Org-ref_db/Dbtag[Dbtag_db="taxon"]
+  description: PurR represses adeP/yieG gene expression; no encoding edge is fabricated in the current predicate
+    vocabulary.
+- id: aas2-054
+  subject: CHEBI:16708
+  predicate: activates
+  object: Entrez:945851
+  evidence:
+  - reference_id: PMID:21572102
+    source_assertion: Adenine supplementation increased add transcript abundance 17.61-fold in the measured MG1655
+      comparison. The study explicitly finds add not directly regulated by PurR; this is an expression response,
+      not direct ligand binding.
+    source_locator: section#sec9; section#sec13
+  - reference_id: Entrez:945851
+    source_assertion: NCBI Gene945851 is add, locus b1623, MG1655 taxon511145, with Swiss-Prot P22333 cross-reference.
+    source_locator: /Entrezgene-Set/Entrezgene/Entrezgene_gene/Gene-ref; //Dbtag[Dbtag_db="UniProtKB/Swiss-Prot"];
+      //Org-ref_db/Dbtag[Dbtag_db="taxon"]
+  description: Adenine-induced add transcription under the measured culture conditions; no direct Add enzyme activation
+    is asserted.
+- id: aas2-055
+  subject: UniProtKB:P0ABP8
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Protein/6182_Cytosol has cellularLocation Cytosol; its entityReference identifies P0ABP8.
+    source_locator: bp:Protein[@rdf:ID='Protein/6182_Cytosol']/bp:cellularLocation; bp:Protein[@rdf:ID='Protein/6182_Cytosol']/bp:entityReference
+- id: aas2-056
+  subject: UniProtKB:P22333
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Protein/6409_Cytosol has cellularLocation Cytosol; its entityReference identifies P22333.
+    source_locator: bp:Protein[@rdf:ID='Protein/6409_Cytosol']/bp:cellularLocation; bp:Protein[@rdf:ID='Protein/6409_Cytosol']/bp:entityReference
+- id: aas2-057
+  subject: UniProtKB:P0AEW6
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PathBank:SMP0002083
+    source_assertion: Native Protein/6254_Cytosol has cellularLocation Cytosol; its entityReference identifies P0AEW6.
+    source_locator: bp:Protein[@rdf:ID='Protein/6254_Cytosol']/bp:cellularLocation; bp:Protein[@rdf:ID='Protein/6254_Cytosol']/bp:entityReference
+references:
+- id: UniProtKB:P0ABP8
+  title: Purine nucleoside phosphorylase DeoD-type
+  url: https://rest.uniprot.org/uniprotkb/P0ABP8.json
+  source_version: Reviewed entry 149; sequence 2; annotation 2026-09-02
+  source_sha256: 261a1c1e34fcc0af42d3a3b4a16c27a01ecba13eee2437d3f4d8c51e422eed02
+- id: UniProtKB:P22333
+  title: Adenosine deaminase
+  url: https://rest.uniprot.org/uniprotkb/P22333.json
+  source_version: Reviewed entry 183; sequence 2; annotation 2026-09-02
+  source_sha256: 23e32e2f4a9fc0b04d71ef7ccef5441c01b1b100951453b1f47d623fe4782181
+- id: UniProtKB:P0AEW6
+  title: Guanosine-inosine kinase
+  url: https://rest.uniprot.org/uniprotkb/P0AEW6.json
+  source_version: Reviewed entry 135; sequence 1; annotation 2026-09-02
+  source_sha256: b2f56a5134caa015884e5b6571e050c4b2e8f24e0e6b069bb20145a733d091a9
+- id: UniProtKB:P31466
+  title: Adenine permease AdeP
+  url: https://rest.uniprot.org/uniprotkb/P31466.json
+  source_version: Reviewed entry 161; sequence 2; annotation 2026-01-28
+  source_sha256: 3c3caa6cb28dff5457051bcff75b2b7a70e225c8eaa2ca52dd9dfdd7fcaf5ee8
+- id: UniProtKB:P0ACP7
+  title: HTH-type transcriptional repressor PurR
+  url: https://rest.uniprot.org/uniprotkb/P0ACP7.json
+  source_version: Reviewed entry 145; sequence 2; annotation 2026-09-02
+  source_sha256: 29ff164a3ab6b1e39aa336d894091a78fa9262a1a0d18dc72066b4bc6e8420ce
+- id: MetaCyc:DEOD-CPLX
+  title: purine nucleoside phosphorylase
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:DEOD-CPLX
+  source_version: META PGDB 27.0; acquired 2026-10-11
+  source_sha256: 80d6e6f1039ffdb9a535eeb3b20bce075340c5527fcf30406bcc7fff25a70816
+- id: MetaCyc:CPLX0-322
+  title: inosine/guanosine kinase
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX0-322
+  source_version: META PGDB 27.0; acquired 2026-10-11
+  source_sha256: 0017a2bc1d9d212455392b60f542e75c9a897312a2f5f5c1fd6eea0b8d8bfb0c
+- id: MetaCyc:PC00033
+  title: DNA-binding transcriptional repressor PurR
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PC00033
+  source_version: META PGDB 27.0; acquired 2026-10-11
+  source_sha256: d784e0accbf4cfb6eedb5065659d7e33d2e25dc18e81d3f98ff8d0b22026e8dc
+- id: Entrez:948224
+  title: adeP
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=948224&rettype=xml
+  source_version: NCBI Gene original fetched 2026-10-11; update 2026-09-03
+  source_sha256: e1238369684239710e2417e5b7a0923a9eaa0504d15c27059274a255f4848317
+- id: Entrez:945851
+  title: add
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=945851&rettype=xml
+  source_version: NCBI Gene original fetched 2026-10-11; update 2026-09-03
+  source_sha256: 9743f5cf40e9bada0c584472b0b7000174a5918e39c184d37bd03be2693e0757
+- id: PathBank:SMP0002083
+  title: Adenine and Adenosine Salvage II
+  url: https://pathbank.org/view/SMP0002083/download?type=owl_markup
+  source_version: Current original acquired 2026-10-11; source page updated 2026-08-11 (not a global release)
+  source_sha256: fc1ce4f334bc0f7a5fe7311bcb823e4dee14ea145ed1082c56c1a2b55e12f552
+- id: RHEA:27644
+  title: alpha-D-ribose 1-phosphate + adenine => adenosine + phosphate
+  url: https://www.rhea-db.org/rhea/27644
+  source_version: Rhea 142 / 2026-09-02; retained original rehashed; hash covers complete original gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:24409
+  title: adenosine + H2O + H(+) => inosine + NH4(+)
+  url: https://www.rhea-db.org/rhea/24409
+  source_version: Rhea 142 / 2026-09-02; retained original rehashed; hash covers complete original gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:21141
+  title: inosine + ATP => IMP + ADP + H(+)
+  url: https://www.rhea-db.org/rhea/21141
+  source_version: Rhea 142 / 2026-09-02; retained original rehashed; hash covers complete original gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PathBank:SMP0002083/PWML
+  title: Current native pathway diagram markup
+  url: https://pathbank.org/view/SMP0002083/download?type=pwml
+  source_version: Original fetched 2026-10-11; strict XML fails at unbound option prefix line 8275; bounded raw-text
+    interface inspected
+  source_sha256: 4ab166de57f7a201ae2d5eb9fd569da9bd37d2d18c7d4abd0207fafd87e21d53
+- id: PMID:32857952
+  title: ppGpp Coordinates Nucleotide and Amino-Acid Synthesis in E. coli During Starvation.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8362273/
+  source_version: Relevant primary Results S3-S5, F1-F3 and methods S45/S48 inspected; complete original retained;
+    original hash
+  source_sha256: d56d5330f10f96ad3c28ecdd10d26c0a7d5a8bf22ec05bb26dae7ef0e95845db
+- id: PMID:24214977
+  title: Functional Identification of the Hypoxanthine/Guanine Transporters YjcD and YgfQ and the Adenine Transporters
+    PurP and YicO of Escherichia coli K-12
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3873542/
+  source_version: Relevant primary introduction, methods, transport results and discussion inspected; complete original
+    retained; original hash
+  source_sha256: ae028a3fc27e0e73ad8121742cf8de09226ffae6593135df287aca0c7fbac58b
+- id: PMID:21572102
+  title: The PurR regulon in Escherichia coli K-12 MG1655
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3159470/
+  source_version: Relevant primary Results sec9-sec13 and Discussion sec14 inspected; complete original retained;
+    original hash
+  source_sha256: 6894d332e33b1779d56624171bb0c65fa765c512f806b4e1580d97b51378a1aa
+- id: PMID:30337572
+  title: Crystallographic snapshots of ligand binding to hexameric purine nucleoside phosphorylase and kinetic studies
+    give insight into the mechanism of catalysis
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6193948/
+  source_version: Retained complete BioC XML; relevant passages 40-52 and 63 inspected; original hash
+  source_sha256: 1218e2d0107c64412a92a0e365c4bedfa2011eabc73008e9aa8399f20e5b821d
+- id: PMID:765747
+  title: Location on the chromosome of Escherichia coli of genes governing purine metabolism. Adenosine deaminase
+    (add), guanosine kinase (gsk) and hypoxanthine phosphoribosyltransferase (hpt).
+  url: https://pubmed.ncbi.nlm.nih.gov/765747/
+  source_version: Retained 7-page primary PDF; all pages extracted; pp85,87,89,90 figures/tables visually inspected;
+    original hash
+  source_sha256: a94c9a8e77e5d839c8bbf07444e21bfbf187347f085d99d5f89745e0043bca0f
+- id: PMID:6198438
+  title: Transport of nucleic acid bases into Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/6198438/
+  source_version: Indexed primary abstract only; requested full PDF access failed; original hash
+  source_sha256: ed33f66c8fa4d80c9107527a345b81586b20c61f937e6fede78c64405bd20f94
+- id: MetaCyc:GSK-MONOMER
+  title: inosine/guanosine kinase
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:GSK-MONOMER
+  source_version: META PGDB 27.0; original fetched 2026-10-11
+  source_sha256: 3ffc581681db632933d22f4ac7f96e19f41bc04a9783fba9e8cc2a9c072e4687
+- id: MetaCyc:PD00219
+  title: DNA-binding transcriptional repressor PurR
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PD00219
+  source_version: META PGDB 27.0; original fetched 2026-10-11
+  source_sha256: 8f062333f5da667a478cd064078a3d82c6e54a0b55ae7cd01d4b0a8a4abd7752

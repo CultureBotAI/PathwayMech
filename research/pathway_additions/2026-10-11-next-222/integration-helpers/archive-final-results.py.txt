@@ -1,0 +1,45 @@
+"""After root gates, prepare an immutable external successor archive; never adopt it."""
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+HERE = Path(__file__).parent
+OUT = HERE / 'prepared-final-results'
+DEST = Path('research/pathway_additions/2026-10-11-next-222/maintained-validation')
+assert __debug__
+assert not OUT.exists(), 'Use an explicit successor directory for subsequent runs'
+gate = json.loads((HERE / 'gates/execution.json').read_text())
+assert gate['all_requested_ran'] and gate['all_passed']
+for name in ['graph-audit.json', 'preservation.json']:
+    assert json.loads((HERE / name).read_text())['status'] == 'passed'
+names = ['gates/execution.json', 'graph-audit.json', 'preservation.json']
+for check in gate['checks']:
+    assert check['exit_code'] == 0
+    log = Path(check['log'])
+    assert log.parent == HERE / 'gates'
+    assert hashlib.sha256(log.read_bytes()).hexdigest() == check['log_sha256']
+    names += [str(log.relative_to(HERE)), 'gates/' + check['name'] + '-receipt.json']
+mapping = []
+for name in names:
+    source = HERE / name
+    raw = source.read_bytes()
+    relative = Path(name + '.json' if name.endswith('.log') else name)
+    target = OUT / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    sha = hashlib.sha256(raw).hexdigest()
+    if name.endswith('.log'):
+        wrapper = {'format': 'lossless-log-wrapper-v1', 'source_path': str(source), 'source_sha256': sha, 'source_bytes': len(raw), 'encoding': 'utf-8', 'text': raw.decode('utf-8')}
+        with target.open('x') as stream:
+            json.dump(wrapper, stream, indent=2)
+            stream.write('\n')
+        assert json.loads(target.read_text())['text'].encode('utf-8') == raw
+    else:
+        with target.open('xb') as stream:
+            stream.write(raw)
+    mapping.append({'original_path': str(source), 'original_sha256': sha, 'prepared_path': str(target), 'maintained_path': str(DEST / relative), 'archive_sha256': hashlib.sha256(target.read_bytes()).hexdigest(), 'mode': 'lossless_utf8_log_json_wrapper' if name.endswith('.log') else 'exact_bytes'})
+receipt = {'status': 'maintained_gate_results_prepared_for_root_review_not_adopted', 'at': datetime.now(timezone.utc).isoformat(), 'supersedes_only_pending_gate_status_in': 'research/pathway_additions/2026-10-11-next-222/README.md', 'captured_readme_unchanged': True, 'mapping': mapping, 'canonical_review_or_pr_status': 'not asserted by this helper', 'script_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+with (OUT / 'successor-status.json').open('x') as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write('\n')
+print(json.dumps(receipt, indent=2))

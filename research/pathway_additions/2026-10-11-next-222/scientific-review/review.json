@@ -1,0 +1,1542 @@
+{
+  "format": "PathwayMech external independent scientific assessment; canonical native saver required upon maintained integration",
+  "reviewer": "/root/salvage_scientific_review",
+  "independent_of_author": true,
+  "first_recorded_integrity_at": "2026-10-11T21:52:15.770162+00:00",
+  "timing_limit": "First recorded integrity artifact time is retained; earlier conversational reading time was not explicitly timestamped.",
+  "finished_at": "2026-10-11T21:58:03.423102+00:00",
+  "target": {
+    "id": "PathBank:SMP0002083",
+    "path": "/private/tmp/pathwaymech-next-222-author-20261011/draft/adenine-and-adenosine-salvage-ii.yaml",
+    "sha256": "11ceb3fe99f2ed2966bb8a68faf8fa836a6a4a9e94b2bc0c499bb1119fd3cddd"
+  },
+  "base": {
+    "reviewed_feature_commit": "0227eb43e306d989240369c083b717230ef2ede1",
+    "tree": "929b9b0578a280aed04e20cf33d412b13ba0d822",
+    "author_runtime_root": "/private/tmp/pathwaymech-next-220-20261011",
+    "parent_reported_merge": "d8e3888528088e7bba468df57056f9f0e588b463",
+    "git_commands_by_reviewer": false
+  },
+  "verdict": "changes_requested_minor_provenance",
+  "counts": {
+    "named_ids": 47,
+    "participants": 39,
+    "reaction_process_nodes": 5,
+    "elementary_events": 4,
+    "opaque_interfaces": 1,
+    "edges": 57,
+    "evidence_items": 81,
+    "references": 23
+  },
+  "findings": [
+    {
+      "key": "salvage-ii-pwml-interface-evidence-locator",
+      "severity": "minor",
+      "status": "open",
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/422",
+      "field": "mechanistic_edges[id=aas2-032].evidence[1]",
+      "summary": "PWML evidence attributes an external canonical title to an ID-only fragment and names the wrong visual side element.",
+      "observed": "Original lines 24–38 contain id 581268, reference-pathway-id 551 and Compound 114 input, with no Aspartate Metabolism name. Lines 8627–8645 contain sub-pathway-visualization/sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side = Left, not visual-element/connector-type.",
+      "impact": "The biological interface is independently supported, but the source assertion and locator are not faithful enough to reproduce directly.",
+      "proposed_action": "In an immutable successor, change only the PWML source_assertion and source_locator to the observed native IDs, input and side path. Retain the independently named Aspartate Metabolism interface and all biological scope.",
+      "acceptance_checks": [
+        "Read the same original PWML lines and verify the corrected field values against them.",
+        "Require a semantic diff limited to these two evidence fields; retain original record/hash and finding lineage.",
+        "Replay the corrected draft with exact bound original sources/runtime; regenerate later maintained outputs through native integration."
+      ]
+    }
+  ],
+  "assessments": [
+    {
+      "dimension": "identity_and_boundary",
+      "verdict": "supported",
+      "detail": "Current selected SMP0002083 is four elementary events plus one opaque SMP0000809 input interface. Original membership has three BiochemicalReaction, one Transport, four Catalysis and one Pathway object; it is not the three-reaction MetaCyc PWY-6611 salvage V core. Independent SMP0000809 export supplies canonical Aspartate Metabolism name. Full connected pathway is deliberately not expanded."
+    },
+    {
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "detail": "Independent complete-original XML scans recovered reverse master links and native substrate/product resources. RHEA27644 is right_to_left relative to 27642; 24409 and 21141 are left_to_right. All 14 balanced material sides and coefficients agree. Three direction mutations and a coefficient mutation were rejected."
+    },
+    {
+      "dimension": "transport_and_compartments",
+      "verdict": "supported_with_minor_provenance_finding",
+      "detail": "Native transport has adenine and proton as periplasmic inputs and cytosolic outputs, coefficient 1 each. Exact coupling ratio remains database-only. All six compartment instances are preserved. Native GO0005620 has issuing replacement GO0042597. Neutral PathBank IMP_Cytosol and IMP_Cytoplasm are distinct from Rhea IMP2-; no connecting transport/protonation reaction is asserted. aas2-032 PWML text/locator needs finding422 correction."
+    },
+    {
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "detail": "Five reviewed UniProt identities, sequence versions, lengths and K12 taxonomy agree. Native DeoD hexamer and Gsk/PurR dimers agree with MetaCyc components; Gsk and PurR have explicit monomer UniProt bridges. DeoD 238-residue crystallographic chains are not silently equated to 239-residue current sequence. Gsk 434-residue sequence is distinguished from assay/crystal constructs. Conditional tetramer remains evidence because no exact issuing assembly ID was established."
+    },
+    {
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "detail": "Add zinc is explicitly HAMAP inference. Gsk Mg2+ retains probable additional free Mg and actual ATP-Mg/MgCl2 assay conditions. K+ stimulation and Cu2+/Zn2+ inhibition remain database annotations whose cited 1995 primary was abstract-only. GDP/ppGpp inhibition, concentration-dependent tetramers and lower ppGpp-tetramer activity agree with 2020 Results S3-S5. Crystallographic octamer is not physiological; older GTP annotation conflict remains visible."
+    },
+    {
+      "dimension": "taxa_and_transcription",
+      "verdict": "supported",
+      "detail": "PurR direct repression of yieG/adeP is supported by combined MG1655 ChIP-chip/transcription evidence. add induction 17.61-fold is an adenine supplementation response, not direct PurR-add regulation or direct enzyme activation. Exact NCBI Gene948224/945851 agree with adeP/add, loci, MG1655 taxon511145 and Swiss-Prot bridges. PathBank K12 name/BW25113 taxon mismatch remains explicit; uptake constructs from T184 and JW3692/JW4025 assay hosts are not generalized to MG1655."
+    },
+    {
+      "dimension": "primary_sources_and_limits",
+      "verdict": "supported",
+      "detail": "Read original 2020 Gsk sections S3-S5/S45/S48, 2013 transport methods/results/table1, 2011 PurR sec9/sec12/sec13/sec14, and 2018 DeoD BioC passages40-52/63. Independently extracted all seven 1975 PDF pages and rendered pp87/89: SO312 vs SO445 has guanosine0.70 to<0.01, inosine0.05 to0.02 and adenosine0.11 unchanged. No full-route flux inferred. 1983/1994/1995 abstracts are labeled; kinetic internal-adenine feedback is appropriately omitted as a model/may annotation."
+    },
+    {
+      "dimension": "identifiers_and_evidence",
+      "verdict": "supported_except_finding422",
+      "detail": "All47 declared named IDs checked through originals/issuing SQL and independent 76-input positive replay;25 ontology names separately queried by reviewer. All57 edges and81 evidence items read, with23 reference bindings. Stable external IDs retained; no invented tetramer or encoding predicate. PWML failure is preserved, not silently repaired. Source-version labels distinguish current export acquisition, older archive and specific database releases."
+    },
+    {
+      "dimension": "helper_and_fail_closed_controls",
+      "verdict": "supported_with_bounded_scope",
+      "detail": "Read full author replay implementation. It resolves native directions from original RDF, binds source/projection/runtime/reference hashes before use and rechecks before publishing accepted outputs, checks imported PathwayMech runtime files and outputs. Reviewer-executed positive run passed76inputs/17outputs; all17 output hashes independently checked. Reviewer-seeded reversed RHEA27644 failed with NATIVE_DIRECTION_MISMATCH and no accepted result. Reviewer-owned seven semantic controls passed. Native-helper checks are not a substitute for source reading; they did not detect finding422."
+    }
+  ],
+  "edges": [
+    {
+      "id": "aas2-001",
+      "subject": "CHEBI:57720",
+      "predicate": "consumes",
+      "object": "RHEA:27644",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:27644"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-002",
+      "subject": "CHEBI:16708",
+      "predicate": "consumes",
+      "object": "RHEA:27644",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:27644"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-003",
+      "subject": "RHEA:27644",
+      "predicate": "produces",
+      "object": "CHEBI:16335",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:27644"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-004",
+      "subject": "RHEA:27644",
+      "predicate": "produces",
+      "object": "CHEBI:43474",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:27644"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-005",
+      "subject": "CHEBI:16335",
+      "predicate": "consumes",
+      "object": "RHEA:24409",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:24409"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-006",
+      "subject": "CHEBI:15377",
+      "predicate": "consumes",
+      "object": "RHEA:24409",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:24409"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-007",
+      "subject": "CHEBI:15378",
+      "predicate": "consumes",
+      "object": "RHEA:24409",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:24409"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-008",
+      "subject": "RHEA:24409",
+      "predicate": "produces",
+      "object": "CHEBI:17596",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:24409"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-009",
+      "subject": "RHEA:24409",
+      "predicate": "produces",
+      "object": "CHEBI:28938",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:24409"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-010",
+      "subject": "CHEBI:17596",
+      "predicate": "consumes",
+      "object": "RHEA:21141",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:21141"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-011",
+      "subject": "CHEBI:30616",
+      "predicate": "consumes",
+      "object": "RHEA:21141",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:21141"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-012",
+      "subject": "RHEA:21141",
+      "predicate": "produces",
+      "object": "CHEBI:58053",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:21141"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-013",
+      "subject": "RHEA:21141",
+      "predicate": "produces",
+      "object": "CHEBI:456216",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:21141"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-014",
+      "subject": "RHEA:21141",
+      "predicate": "produces",
+      "object": "CHEBI:15378",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "RHEA:21141"
+      ],
+      "dimension": "chemical_sides_and_direction",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-015",
+      "subject": "PathBank:SMP0002083",
+      "predicate": "has_part",
+      "object": "RHEA:27644",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "identity_and_boundary",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-016",
+      "subject": "PathBank:SMP0002083",
+      "predicate": "has_part",
+      "object": "RHEA:24409",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "identity_and_boundary",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-017",
+      "subject": "PathBank:SMP0002083",
+      "predicate": "has_part",
+      "object": "RHEA:21141",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "identity_and_boundary",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-018",
+      "subject": "PathBank:SMP0002083",
+      "predicate": "has_part",
+      "object": "PathBank:SMP0002083/Transports/505",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "identity_and_boundary",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-019",
+      "subject": "PathBank:SMP0002083",
+      "predicate": "has_part",
+      "object": "PathBank:SMP0000809",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "identity_and_boundary",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-020",
+      "subject": "PathBank:SMP0002083/Transports/505",
+      "predicate": "has_input",
+      "object": "PathBank:SMP0002083/Compound/PW_C040034_Periplasmic_Space",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-021",
+      "subject": "PathBank:SMP0002083/Transports/505",
+      "predicate": "has_input",
+      "object": "PathBank:SMP0002083/Compound/PW_C000024_Periplasmic_Space",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-022",
+      "subject": "PathBank:SMP0002083/Transports/505",
+      "predicate": "has_output",
+      "object": "PathBank:SMP0002083/Compound/PW_C000024_Cytosol",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-023",
+      "subject": "PathBank:SMP0002083/Transports/505",
+      "predicate": "has_output",
+      "object": "PathBank:SMP0002083/Compound/PW_C040034_Cytosol",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-024",
+      "subject": "PathBank:SMP0002083/Compound/PW_C000024_Periplasmic_Space",
+      "predicate": "located_in",
+      "object": "GO:0042597",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-025",
+      "subject": "PathBank:SMP0002083/Compound/PW_C040034_Periplasmic_Space",
+      "predicate": "located_in",
+      "object": "GO:0042597",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-026",
+      "subject": "PathBank:SMP0002083/Compound/PW_C000024_Cytosol",
+      "predicate": "located_in",
+      "object": "GO:0005829",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-027",
+      "subject": "PathBank:SMP0002083/Compound/PW_C040034_Cytosol",
+      "predicate": "located_in",
+      "object": "GO:0005829",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-028",
+      "subject": "PathBank:SMP0002083/Compound/PW_C000114_Cytosol",
+      "predicate": "located_in",
+      "object": "GO:0005829",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-029",
+      "subject": "PathBank:SMP0002083/Compound/PW_C000114_Cytoplasm",
+      "predicate": "located_in",
+      "object": "GO:0005737",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-030",
+      "subject": "RHEA:27644",
+      "predicate": "has_input",
+      "object": "PathBank:SMP0002083/Compound/PW_C000024_Cytosol",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-031",
+      "subject": "RHEA:21141",
+      "predicate": "has_output",
+      "object": "PathBank:SMP0002083/Compound/PW_C000114_Cytosol",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-032",
+      "subject": "PathBank:SMP0000809",
+      "predicate": "has_input",
+      "object": "PathBank:SMP0002083/Compound/PW_C000114_Cytoplasm",
+      "evidence_items_read": 2,
+      "reference_ids": [
+        "PathBank:SMP0002083",
+        "PathBank:SMP0002083/PWML"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "minor_provenance_correction",
+      "finding_keys": [
+        "salvage-ii-pwml-interface-evidence-locator"
+      ]
+    },
+    {
+      "id": "aas2-033",
+      "subject": "PathBank:SMP0002083/Transports/505",
+      "predicate": "provides_input_for",
+      "object": "RHEA:27644",
+      "evidence_items_read": 2,
+      "reference_ids": [
+        "PathBank:SMP0002083",
+        "RHEA:27644"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-034",
+      "subject": "RHEA:27644",
+      "predicate": "provides_input_for",
+      "object": "RHEA:24409",
+      "evidence_items_read": 3,
+      "reference_ids": [
+        "PathBank:SMP0002083",
+        "RHEA:24409",
+        "RHEA:27644"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-035",
+      "subject": "RHEA:24409",
+      "predicate": "provides_input_for",
+      "object": "RHEA:21141",
+      "evidence_items_read": 3,
+      "reference_ids": [
+        "PathBank:SMP0002083",
+        "RHEA:21141",
+        "RHEA:24409"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-036",
+      "subject": "MetaCyc:DEOD-CPLX",
+      "predicate": "has_part",
+      "object": "UniProtKB:P0ABP8",
+      "evidence_items_read": 4,
+      "reference_ids": [
+        "MetaCyc:DEOD-CPLX",
+        "PMID:30337572",
+        "PathBank:SMP0002083",
+        "UniProtKB:P0ABP8"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-037",
+      "subject": "MetaCyc:CPLX0-322",
+      "predicate": "has_part",
+      "object": "UniProtKB:P0AEW6",
+      "evidence_items_read": 4,
+      "reference_ids": [
+        "MetaCyc:CPLX0-322",
+        "MetaCyc:GSK-MONOMER",
+        "PMID:32857952",
+        "UniProtKB:P0AEW6"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-038",
+      "subject": "MetaCyc:PC00033",
+      "predicate": "has_part",
+      "object": "UniProtKB:P0ACP7",
+      "evidence_items_read": 3,
+      "reference_ids": [
+        "MetaCyc:PC00033",
+        "MetaCyc:PD00219",
+        "UniProtKB:P0ACP7"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-039",
+      "subject": "MetaCyc:DEOD-CPLX",
+      "predicate": "catalyzes",
+      "object": "RHEA:27644",
+      "evidence_items_read": 2,
+      "reference_ids": [
+        "PathBank:SMP0002083",
+        "UniProtKB:P0ABP8"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-040",
+      "subject": "UniProtKB:P22333",
+      "predicate": "catalyzes",
+      "object": "RHEA:24409",
+      "evidence_items_read": 2,
+      "reference_ids": [
+        "PathBank:SMP0002083",
+        "UniProtKB:P22333"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-041",
+      "subject": "MetaCyc:CPLX0-322",
+      "predicate": "catalyzes",
+      "object": "RHEA:21141",
+      "evidence_items_read": 3,
+      "reference_ids": [
+        "PMID:32857952",
+        "PMID:765747",
+        "UniProtKB:P0AEW6"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-042",
+      "subject": "UniProtKB:P31466",
+      "predicate": "catalyzes",
+      "object": "PathBank:SMP0002083/Transports/505",
+      "evidence_items_read": 3,
+      "reference_ids": [
+        "PMID:24214977",
+        "PMID:6198438",
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-043",
+      "subject": "UniProtKB:P31466",
+      "predicate": "located_in",
+      "object": "GO:0005886",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P31466"
+      ],
+      "dimension": "proteins_and_assemblies",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-044",
+      "subject": "UniProtKB:P22333",
+      "predicate": "has_cofactor",
+      "object": "CHEBI:29105",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P22333"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-045",
+      "subject": "MetaCyc:CPLX0-322",
+      "predicate": "has_cofactor",
+      "object": "CHEBI:18420",
+      "evidence_items_read": 2,
+      "reference_ids": [
+        "PMID:32857952",
+        "UniProtKB:P0AEW6"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-046",
+      "subject": "CHEBI:58189",
+      "predicate": "inhibits",
+      "object": "UniProtKB:P0AEW6",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PMID:32857952"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-047",
+      "subject": "CHEBI:77828",
+      "predicate": "inhibits",
+      "object": "UniProtKB:P0AEW6",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PMID:32857952"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-048",
+      "subject": "CHEBI:29103",
+      "predicate": "activates",
+      "object": "UniProtKB:P0AEW6",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P0AEW6"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-049",
+      "subject": "CHEBI:29036",
+      "predicate": "inhibits",
+      "object": "UniProtKB:P0AEW6",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P0AEW6"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-050",
+      "subject": "CHEBI:29105",
+      "predicate": "inhibits",
+      "object": "UniProtKB:P0AEW6",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P0AEW6"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-051",
+      "subject": "CHEBI:17368",
+      "predicate": "activates",
+      "object": "MetaCyc:PC00033",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P0ACP7"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-052",
+      "subject": "CHEBI:16235",
+      "predicate": "activates",
+      "object": "MetaCyc:PC00033",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "UniProtKB:P0ACP7"
+      ],
+      "dimension": "cofactors_and_regulation",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-053",
+      "subject": "MetaCyc:PC00033",
+      "predicate": "inhibits",
+      "object": "Entrez:948224",
+      "evidence_items_read": 3,
+      "reference_ids": [
+        "Entrez:948224",
+        "PMID:21572102",
+        "UniProtKB:P31466"
+      ],
+      "dimension": "taxa_and_transcription",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-054",
+      "subject": "CHEBI:16708",
+      "predicate": "activates",
+      "object": "Entrez:945851",
+      "evidence_items_read": 2,
+      "reference_ids": [
+        "Entrez:945851",
+        "PMID:21572102"
+      ],
+      "dimension": "taxa_and_transcription",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-055",
+      "subject": "UniProtKB:P0ABP8",
+      "predicate": "located_in",
+      "object": "GO:0005829",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-056",
+      "subject": "UniProtKB:P22333",
+      "predicate": "located_in",
+      "object": "GO:0005829",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    },
+    {
+      "id": "aas2-057",
+      "subject": "UniProtKB:P0AEW6",
+      "predicate": "located_in",
+      "object": "GO:0005829",
+      "evidence_items_read": 1,
+      "reference_ids": [
+        "PathBank:SMP0002083"
+      ],
+      "dimension": "transport_and_compartments",
+      "verdict": "supported",
+      "finding_keys": []
+    }
+  ],
+  "checks": [
+    {
+      "name": "upstream-artifact-integrity",
+      "result": "pass",
+      "counts": {
+        "author": 150,
+        "preflight": 104
+      },
+      "receipt": "upstream-integrity.json",
+      "terminal": "bd1ee6/0",
+      "final_rehash": "All254 artifacts rehashed again by finalizer."
+    },
+    {
+      "name": "author-positive-replay-executed-by-reviewer",
+      "result": "pass",
+      "session": 22002,
+      "terminal": "4bac1c/0",
+      "receipt": "author-positive/accepted/success-receipt.json",
+      "inputs": 76,
+      "outputs": 17
+    },
+    {
+      "name": "reviewer-seeded-author-negative",
+      "result": "pass",
+      "session": 11174,
+      "terminal": "9156a5/0",
+      "child_exit": 1,
+      "receipt": "negative-wrong-direction-receipt.json"
+    },
+    {
+      "name": "independent-original-RDF-and-native-boundary",
+      "result": "pass",
+      "session": 43410,
+      "terminal": "7fb47c/0",
+      "receipt": "independent-native-result.json",
+      "controls": 7
+    },
+    {
+      "name": "issuing-ontology-label-queries",
+      "result": "pass",
+      "terminal": "e033f5/0",
+      "receipt": "independent-ontology-labels.json",
+      "count": 25
+    },
+    {
+      "name": "independent-PDF-extraction-rendering",
+      "result": "pass",
+      "terminal": "6a3e94/0",
+      "scope": "All7pages extracted, printed pp87/89 rendered and visually inspected"
+    },
+    {
+      "name": "whole-corpus-native-gates",
+      "result": "not_run",
+      "reason": "Explicit task scope is external scientific draft/helper review; maintained canonical integration and full gates are parent-owned."
+    },
+    {
+      "name": "canonical-review-saver",
+      "result": "not_run",
+      "reason": "No maintained data/pathways target exists in reviewer scope; this is sealed external independent assessment, not a canonical maintained review bundle."
+    }
+  ],
+  "incidents": [
+    {
+      "name": "pdftotext-command",
+      "terminal": "15cb2d/127",
+      "detail": "Command unavailable in PATH. No dependency installed. Existing read-only pypdfium2/Pillow cache used through195interpreter."
+    },
+    {
+      "name": "PDF-tool-discovery",
+      "session": 61337,
+      "terminal": "73897c/130",
+      "detail": "Broad ignored-inclusive /private/tmp file search interrupted after existing pypdfium2 path was identified; no absence claim rests on it."
+    },
+    {
+      "name": "native-review-attempt1",
+      "session": 60419,
+      "terminal": "57310e/1",
+      "detail": "Reviewer harness wrongly required only SMPDB xref; original also has valid PathWhiz xref. Original script/log retained. Original draft/source unchanged."
+    },
+    {
+      "name": "native-review-attempt2",
+      "session": 4497,
+      "terminal": "f66efe/1",
+      "detail": "Reviewer harness QName splitting retained closing brace. Corrected successor uses XML localname boundary; original script/log retained."
+    }
+  ],
+  "limitations": [
+    "One open minor finding422; no major or blocker findings. Original target is not approved for maintained adoption until this is corrected.",
+    "Current review is external and independent of authorship; production PathBank/Entrez authority implementation is separately reviewed.",
+    "Canonical authority regeneration, current merged-corpus dedup, history, native saved review, complete rendering/validation/tests/lint/KGX and PR workflow are integration requirements, not outcomes of this external review.",
+    "Whole-ontology SQL files were fully hash-bound before use and before publication in reviewer-executed author replay; reviewer subsequently rechecked small originals/runtime and upstream artifacts. Filesystem checks are bounded and do not claim an atomic snapshot.",
+    "No newly retrieved broad literature search or iModulon adapter run; exact retained primary/native sources were inspected. No negative biological conclusion from missing expression-module data.",
+    "Programmatic SVG/KGX checks passed through replay; no browser visual inspection claimed.",
+    "No public-release licensing disposition or global source-exhaustion claim."
+  ],
+  "source_and_runtime_bindings": [
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/replay-author.py",
+      "sha256": "f5f4843219fbaf89c68bc14873857f99db6d7e868c0002fc213871c707705ce3",
+      "roles": [
+        "helper"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/draft/adenine-and-adenosine-salvage-ii.yaml",
+      "sha256": "11ceb3fe99f2ed2966bb8a68faf8fa836a6a4a9e94b2bc0c499bb1119fd3cddd",
+      "roles": [
+        "record"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/runtime-binding.json",
+      "sha256": "d2c38595b6050cbd524e9446acdad7f4d8b023644747bdd3ced10760369141b1",
+      "roles": [
+        "runtime_binding"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/authority-proposal.json",
+      "sha256": "5b0eb5427328cd66a8ff152ca47430e063ea3f76217f6b766bb7d1a4aff65f62",
+      "roles": [
+        "authority_proposal"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/authority-inputs.json",
+      "sha256": "c1ba9f4366d7c9928b46a6253afece405476b961510eaa4e83ac6a9bb5c15678",
+      "roles": [
+        "authority_inputs"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/native-projection.json",
+      "sha256": "c1bc8b6ae5f87482a1c594225dfd4f6cd40b300cd4ac7b195f236eadeb2c2256",
+      "roles": [
+        "projection"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/reference-bindings.json",
+      "sha256": "b72cb3222f16b856a49646cc97b873ed2aa092072595bb8b88808544205b77df",
+      "roles": [
+        "references"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/SMP0002083-current.owl",
+      "sha256": "fc1ce4f334bc0f7a5fe7311bcb823e4dee14ea145ed1082c56c1a2b55e12f552",
+      "roles": [
+        "pathbank",
+        "reference:PathBank:SMP0002083",
+        "authority:pathbank-SMP0002083"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/SMP0000809-current.owl",
+      "sha256": "abcc36a8700faf71c295b987b5b9d63c1a86cb80fee8ad4d1154750b6e0ab192",
+      "roles": [
+        "linked_pathbank",
+        "authority:pathbank-SMP0000809"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/SMP0002083-current.pwml",
+      "sha256": "4ab166de57f7a201ae2d5eb9fd569da9bd37d2d18c7d4abd0207fafd87e21d53",
+      "roles": [
+        "pwml",
+        "reference:PathBank:SMP0002083/PWML"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/pages/style.css",
+      "sha256": "e4516964a76d665e2b4f098764656866bc5f673b72ab67badb1def724fb3e44c",
+      "roles": [
+        "style"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/handoff.json",
+      "sha256": "ef9ed8b185a27dac4e1af2a8443573e6aa4e88ba18233d8dfd4013d33f9655c9",
+      "roles": [
+        "preflight"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/author-assessment.md",
+      "sha256": "b34c322c76d9a568f416e8e5a520592affd00521f4977834b0eb1e9ad09af81f",
+      "roles": [
+        "assessment"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz",
+      "sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf",
+      "roles": [
+        "rhea",
+        "reference:RHEA:27644",
+        "reference:RHEA:24409",
+        "reference:RHEA:21141",
+        "authority:rhea-142"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/__init__.py",
+      "sha256": "b1ad4cb23cde7bf7293793335f883ed1b27fe5e2dcf6d3e39ba530fc7347e9bb",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/assets/pathway-network.css",
+      "sha256": "ffe62865f9ede1d8ae7c361a5576823921c850542cf03d2ca7b3c945d63d7645",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/assets/pathway-network.js",
+      "sha256": "23b6fc25a1522c945cf61b7c269dadf93a90b8c78c357652e6653a05bcb97eac",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/bigg.py",
+      "sha256": "2f07157dda9ae355e55cc87a4c7e8bf11926842eea8ea4976f60b71f81f84c88",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/biopax.py",
+      "sha256": "e99c9d9dadc8f5fdf8006f03a94685c827ec6cba08812fb43541f90b90f07e09",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/brenda.py",
+      "sha256": "3cb7c4ed7b9c0ec983a4f5c35655b0952223d915fc740a47397eb850bb428305",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/bvbrc.py",
+      "sha256": "d49b2dc06387792af183e977a165cfd0ee9322d1605c98eabbc17d1ac0bc471c",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/chebi.py",
+      "sha256": "4a47516a6236f8ac35c2a9aa1d03413640e3beddab57543ec803d5aafe986c1f",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/cli.py",
+      "sha256": "ab045fb947cfb93323886079abc2e7632d292679b2866fa7a0e39719310cc738",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/cross_mech.py",
+      "sha256": "0dc817dc304e2e661fc922bbad33be53547c77459bcce80369411a844ae67ee8",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/curation.py",
+      "sha256": "e86a2581cacb4f650070ef1dfe4641429fd241304e5d470cb9484489ed90d41b",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/dbcan.py",
+      "sha256": "536f08fc646f00953ad9e8e77e314055c5bac3fae56c819e906034a0557380c1",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/dram.py",
+      "sha256": "0f0f50d6f1e55497091faa9eabd95efe94be563b4cabea8561db1042515b594a",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/gapmind.py",
+      "sha256": "3a482bb59483afed222804bb600563c88f92a0a2825b2bb77309311fcba6601a",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/go.py",
+      "sha256": "953ad37ad21ec37895b289cfb0d102ffdd63162814f944e76d18bd5af53a6010",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/gocam.py",
+      "sha256": "68265e2ee19ec42d88d0a1605ff1fbc4745e2d45e25cdf7006dc9effa83cf1ed",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/gocam_native.py",
+      "sha256": "0aa3df778ce6d69c6d24b6324f976444c55d1c7faf6513873a3c14294be2abbc",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/graph_view.py",
+      "sha256": "3f133d2251dd965a4152cdc91b9169e75776c3615bd80c7a5a679abe27e4f86a",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/hadeg.py",
+      "sha256": "dbae6b34896ce55baf3cb2028247288dc842082e310a41e4e838e0839a03226e",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/identifiers.py",
+      "sha256": "51d1eb0c4c02657ef5311ca8f3e9bfbd63f9cec5c1db8080b9abcde7703ce6e5",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/kegg.py",
+      "sha256": "3a6c367838c51b06de7ca846f9a94aebff7ac5667db2473f037101107740263b",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/kgx.py",
+      "sha256": "b2725526a658aa3d54e2ac3398fd499b71f0081ae2b3ed18c84f5872ee6f1af4",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/mibig.py",
+      "sha256": "cd74aee3c22211ebe64838373a08c5ef22fbf5a21bc92f5d6b1c3cafe9b6d7fe",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/modelseed.py",
+      "sha256": "04333a54e6950686458ea6737d80a35351764cd67958cc9335465c1e8dd4bb73",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/pathway_tools.py",
+      "sha256": "c4a72139501d23bb988fe7257537004ab001dffcd3b251ee912ffea3f5a07d06",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/rhea.py",
+      "sha256": "acd6c1cf4bdfd098470b6e58416749fc8d63ebc59c9a1c81fee896de62bf0c11",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/rhea_directions.py",
+      "sha256": "b92c997929c312ecaf1c384c226120456ab9b091c2373b3f0e9c2919c9a8afcd",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/schema/history.yaml",
+      "sha256": "b01b06f1b9a37db205c26c31ec0fd910690848507c7e1bfb73b424ac0829c52d",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/schema/mech_shared.yaml",
+      "sha256": "c2e7054fd32635e380c698282bd886a9105861009b9f0474f02bb1b80865e895",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/schema/pathwaymech.yaml",
+      "sha256": "5e4a0bcb5b4901b603e9e0e89ce8b2172efbd8fcbe5e68cac7283555c6a1c056",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/schema.py",
+      "sha256": "e81f95da70943090d470b1837d248fec2a592c5f4b53fc6587bc4214adbf35f3",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/seed_subsystems.py",
+      "sha256": "ab462128d831ee59570c9872a8ccc711caf1e5bd92fb767ff6bcf92d84e1bf4c",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/site_display.py",
+      "sha256": "f70d143af1d9be9c72e73c736ae4ce3e0b7abfbf24f82b814235f7a9670e9a73",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/source_mapping.py",
+      "sha256": "502f22b15f55bea61c077b8b810b39cff02f4e719d99afef4d1ed679b46da599",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/sources.py",
+      "sha256": "fcfb130e7419df76e30c5ad84789c226873894c750c9ea04f755c7936e352f97",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/sssom.py",
+      "sha256": "dbbd5284896068beb4429239d39eba1e07a43a9bca3d70115d76208e89456890",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/strict.py",
+      "sha256": "2f6a7edf501952ee4aaa41be2f9512d20e1edb2dd87a22b6add6d26928c0dc84",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/unipathway.py",
+      "sha256": "ae542637c6e80be3ee4318c5c0fabea0dbec89188b177609a848d276725f4a92",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/veupathdb.py",
+      "sha256": "90dfac3f931ad9b53d95a54479e2b92ba0a51a3db14aad2307329603adc88b47",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/wikipathways.py",
+      "sha256": "d242b71f2f9b336a66469dfde04aca9e9071c482ef7b5b29169a57df05b08128",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-220-20261011/src/pathwaymech/yaml_io.py",
+      "sha256": "56a5ffc563317950da7d524cd05302903413bea8a42ecf2f05fc12fff911dae6",
+      "roles": [
+        "runtime"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/P0ABP8.json",
+      "sha256": "261a1c1e34fcc0af42d3a3b4a16c27a01ecba13eee2437d3f4d8c51e422eed02",
+      "roles": [
+        "reference:UniProtKB:P0ABP8",
+        "authority:uniprot-P0ABP8"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/P22333.json",
+      "sha256": "23e32e2f4a9fc0b04d71ef7ccef5441c01b1b100951453b1f47d623fe4782181",
+      "roles": [
+        "reference:UniProtKB:P22333",
+        "authority:uniprot-P22333"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/P0AEW6.json",
+      "sha256": "b2f56a5134caa015884e5b6571e050c4b2e8f24e0e6b069bb20145a733d091a9",
+      "roles": [
+        "reference:UniProtKB:P0AEW6",
+        "authority:uniprot-P0AEW6"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/P31466.json",
+      "sha256": "3c3caa6cb28dff5457051bcff75b2b7a70e225c8eaa2ca52dd9dfdd7fcaf5ee8",
+      "roles": [
+        "reference:UniProtKB:P31466",
+        "authority:uniprot-P31466"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/raw/P0ACP7.json",
+      "sha256": "29ff164a3ab6b1e39aa336d894091a78fa9262a1a0d18dc72066b4bc6e8420ce",
+      "roles": [
+        "reference:UniProtKB:P0ACP7",
+        "authority:uniprot-P0ACP7"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/DEOD-CPLX.xml",
+      "sha256": "80d6e6f1039ffdb9a535eeb3b20bce075340c5527fcf30406bcc7fff25a70816",
+      "roles": [
+        "reference:MetaCyc:DEOD-CPLX",
+        "authority:metacyc-DEOD-CPLX"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/CPLX0-322.xml",
+      "sha256": "0017a2bc1d9d212455392b60f542e75c9a897312a2f5f5c1fd6eea0b8d8bfb0c",
+      "roles": [
+        "reference:MetaCyc:CPLX0-322",
+        "authority:metacyc-CPLX0-322"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/raw/PC00033.xml",
+      "sha256": "d784e0accbf4cfb6eedb5065659d7e33d2e25dc18e81d3f98ff8d0b22026e8dc",
+      "roles": [
+        "reference:MetaCyc:PC00033",
+        "authority:metacyc-PC00033"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/raw/gene948224.xml",
+      "sha256": "e1238369684239710e2417e5b7a0923a9eaa0504d15c27059274a255f4848317",
+      "roles": [
+        "reference:Entrez:948224",
+        "authority:ncbi-gene-948224"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/raw/gene945851.xml",
+      "sha256": "9743f5cf40e9bada0c584472b0b7000174a5918e39c184d37bd03be2693e0757",
+      "roles": [
+        "reference:Entrez:945851",
+        "authority:ncbi-gene-945851"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-186-evidence/guanine/PMC8362273.html",
+      "sha256": "d56d5330f10f96ad3c28ecdd10d26c0a7d5a8bf22ec05bb26dae7ef0e95845db",
+      "roles": [
+        "reference:PMID:32857952"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/PMC3873542.html",
+      "sha256": "ae028a3fc27e0e73ad8121742cf8de09226ffae6593135df287aca0c7fbac58b",
+      "roles": [
+        "reference:PMID:24214977"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/PMC3159470.html",
+      "sha256": "6894d332e33b1779d56624171bb0c65fa765c512f806b4e1580d97b51378a1aa",
+      "roles": [
+        "reference:PMID:21572102"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-189-evidence/adenine-salvage/PMC6193948.xml",
+      "sha256": "1218e2d0107c64412a92a0e365c4bedfa2011eabc73008e9aa8399f20e5b821d",
+      "roles": [
+        "reference:PMID:30337572"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/PMID6198438.json",
+      "sha256": "ed33f66c8fa4d80c9107527a345b81586b20c61f937e6fede78c64405bd20f94",
+      "roles": [
+        "reference:PMID:6198438"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/GSK-MONOMER.xml",
+      "sha256": "3ffc581681db632933d22f4ac7f96e19f41bc04a9783fba9e8cc2a9c072e4687",
+      "roles": [
+        "reference:MetaCyc:GSK-MONOMER"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-222-author-20261011/raw/PD00219.xml",
+      "sha256": "8f062333f5da667a478cd064078a3d82c6e54a0b55ae7cd01d4b0a8a4abd7752",
+      "roles": [
+        "reference:MetaCyc:PD00219"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-189-evidence/adenine-salvage/PMID765747.pdf",
+      "sha256": "a94c9a8e77e5d839c8bbf07444e21bfbf187347f085d99d5f89745e0043bca0f",
+      "roles": [
+        "reference:PMID:765747"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-curation-authorities/chebi.db",
+      "sha256": "26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f",
+      "roles": [
+        "authority:chebi-255"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-curation-authorities/go.db",
+      "sha256": "018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd",
+      "roles": [
+        "authority:go-2026-07-26"
+      ]
+    },
+    {
+      "path": "/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+      "sha256": "89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d",
+      "roles": [
+        "authority:ncbitaxon-2026-07-12"
+      ]
+    }
+  ],
+  "guidance": [
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/CLAUDE.md",
+      "sha256": "c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/docs/CURATION.md",
+      "sha256": "408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/docs/HARMONIZATION.md",
+      "sha256": "3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/docs/CAUSAL_GRAPHS.md",
+      "sha256": "c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/docs/record-review-profile.md",
+      "sha256": "f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/.claude/skills/add-pathway/SKILL.md",
+      "sha256": "296ab1a206afa3aa9b487eae7f5f8d836c09001a4ce9ee8016c36abe198cdc0d"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-221-20261011/.claude/skills/review-yaml-record/SKILL.md",
+      "sha256": "6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f"
+    }
+  ]
+}
