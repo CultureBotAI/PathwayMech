@@ -1,0 +1,15 @@
+from pathlib import Path
+import json,sys
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+p=json.loads(Path(sys.argv[1]).read_text())
+c=Chem.MolFromInchi(p["cyclic_inchi"])
+l=Chem.MolFromInchi(p["linear_inchi"])
+q=Chem.MolFromSmiles(p["si_transcription"])
+assert all(x is not None for x in [c,l,q])
+assert Chem.MolToInchi(c)==Chem.MolToInchi(q)
+assert Chem.MolToInchi(c)!=Chem.MolToInchi(l)
+assert rdMolDescriptors.CalcNumRings(c)==1 and rdMolDescriptors.CalcNumRings(l)==0
+assert len([v for _,v in Chem.FindMolChiralCenters(c,includeUnassigned=True) if v=="?"])==1
+r=dict(rdkit_version=rdBase.rdkitVersion,cyclic_inchi=Chem.MolToInchi(c),linear_inchi=Chem.MolToInchi(l),cyclic_ring_count=1,linear_ring_count=0,cyclic_cip=Chem.FindMolChiralCenters(c,includeUnassigned=True),query_exact_structure_match=True,scope="Exact source cyclic structure versus current linear form and prior SI drawing transcription. The transcription is research input, not an issuing authority; no physiological microstate proof.")
+with Path(sys.argv[2]).open("x") as f: json.dump(r,f,indent=2);f.write("\n")

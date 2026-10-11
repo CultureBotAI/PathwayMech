@@ -1,0 +1,75 @@
+"""Check original PDF locators without copying full primary texts into the dossier."""
+
+import argparse
+import hashlib
+import json
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+p = argparse.ArgumentParser(description=__doc__)
+p.add_argument("--source-manifest", required=True, type=Path)
+p.add_argument("--output", required=True, type=Path)
+a = p.parse_args()
+if a.output.exists():
+    raise FileExistsError(a.output)
+import pypdfium2 as pdf  # noqa: E402
+
+m = json.loads(a.source_manifest.read_text())
+
+
+def sha(path):
+    with Path(path).open("rb") as f:
+        return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def norm(t):
+    return " ".join(t.split()).lower()
+
+
+t = Path(m["roles"]["thesis_pdf"])
+s = next(Path(x["path"]) for x in m["sources"] if x["path"].endswith("ja5b04557_si_001.pdf"))
+thesis = pdf.PdfDocument(t)
+si = pdf.PdfDocument(s)
+assert len(thesis) == 211 and len(si) == 69
+checks = []
+for source, doc, pages, terms in [
+    (t, thesis, [58], ["2.3.2", "newman", "sbna"]),
+    (t, thesis, [59], ["2.3.3", "newman", "sbnb"]),
+    (t, thesis, [111, 112], ["acega", "glutamate", "ops"]),
+    (t, thesis, [114, 115], ["reverse", "nadh", "acega"]),
+    (t, thesis, [119], ["dimer", "81", "71"]),
+    (s, si, [6], ["staphyloferrin b", "1:1", "epimers", "equilibrating lactamization"]),
+    (s, si, [37, 38, 41], ["table s3", "table s4", "figure s2", "sb 1"]),
+]:
+    text = norm(" ".join(doc[i].get_textpage().get_text_range() for i in pages))
+    assert all(word in text for word in terms), (source.name, pages, terms)
+    checks.append(
+        dict(
+            path=str(source),
+            source_sha256=sha(source),
+            pdf_pages=[i + 1 for i in pages],
+            literal_terms=terms,
+            text_sha256=hashlib.sha256(text.encode()).hexdigest(),
+        )
+    )
+result = dict(
+    checked_at=datetime.now(UTC).isoformat(),
+    status="passed",
+    manifest_sha256=sha(a.source_manifest),
+    pdf_interpreter=sys.executable,
+    thesis_pages=len(thesis),
+    supplement_pages=len(si),
+    checks=checks,
+    limits=[
+        "Fresh text/locator replay complements the prior visually inspected original drawings. "
+        "It does not newly assign the cyclic stereocenter or establish the Newman cellular "
+        "molecular-state distribution.",
+        "Thesis is cited under its own DOI; its Chapter 4 is not misrepresented as downloaded "
+        "journal full text.",
+    ],
+)
+with a.output.open("x") as f:
+    json.dump(result, f, indent=2)
+    f.write("\n")
+print(json.dumps({"status": "passed", "checks": len(checks)}, indent=2))

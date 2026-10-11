@@ -1,0 +1,45 @@
+{
+  "issue_key": "staphyloferrin-b-uniprot-batch-sequence-locators",
+  "severity": "minor",
+  "status": "open",
+  "target_sha256": "891ce5a5ba08bfae8fdedbd7709f14097f4bd04749c7755fce6d6a51841c840a",
+  "title": "Two assembly evidence locators point outside the retained UniProt batch",
+  "source_path": "/private/tmp/pathwaymech-staphyloferrin-b-scout-20261011/originals/UniProt-sbn-NCTC8325.json",
+  "source_sha256": "15afa127c1bc378d3cf2fc5335160aa03afb08136150d15386a22d9b6951ee6e",
+  "observed_root_keys": [
+    "results"
+  ],
+  "affected": [
+    {
+      "edge_id": "sbn-edge-056",
+      "evidence_index": 1,
+      "field": "mechanistic_edges[id=sbn-edge-056].evidence[1].source_locator",
+      "old": "/results/0/comments (CATALYTIC ACTIVITY; SUBUNIT); /sequence/value",
+      "supported_replacement": "/results/0/comments (CATALYTIC ACTIVITY; SUBUNIT); /results/0/sequence/value",
+      "source_entry": "Q2G1M5",
+      "sequence_length": 254,
+      "sequence_sha256": "22a7f9fafd241b687178c976b2c893df6e2a1b58524ac89e54ed17cfddbadf18",
+      "old_path_rejected": true,
+      "new_path_resolves": true
+    },
+    {
+      "edge_id": "sbn-edge-058",
+      "evidence_index": 1,
+      "field": "mechanistic_edges[id=sbn-edge-058].evidence[1].source_locator",
+      "old": "/results/1/comments (CATALYTIC ACTIVITY; SUBUNIT); /sequence/value",
+      "supported_replacement": "/results/1/comments (CATALYTIC ACTIVITY; SUBUNIT); /results/1/sequence/value",
+      "source_entry": "Q2G1N2",
+      "sequence_length": 336,
+      "sequence_sha256": "cebe53926a46e6a5666972d57f6b058bec942f56b5775ebfee29dec643fbc0bb",
+      "old_path_rejected": true,
+      "new_path_resolves": true
+    }
+  ],
+  "impact": "The described native sequence evidence exists, but its two absolute pointers cannot be resolved against the exact cited body. This is a provenance locator defect, not an unsupported chemistry or protein identity conclusion.",
+  "acceptance": [
+    "Preserve initial draft and finding bytes before correction.",
+    "Correct only the two sequence pointers (with any synchronized projected copies) to the exact batch entries.",
+    "Add meaningful locator guards that reject the old pointers and check entry accession plus actual sequence.",
+    "Reassess the exact changes independently; retain all seven native transformations and existing source/strain/endpoint limitations."
+  ]
+}

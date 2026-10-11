@@ -1,0 +1,31 @@
+# Complete staphyloferrin B biosynthesis
+
+This record represents all seven transformations in MetaCyc:PWY-8008, corroborated by KEGG:M00875. SbnI/A/B supply two L-2,3-diaminopropionate units; SbnE/H/F/C assemble the formal siderophore product using supplied citrate. The record has 34 participants, seven reactions, two scope taxa, 72 edges, 129 evidence blocks and 53 references. Its 44 named KGX nodes include the two taxa; the SVG renderer includes the 42 nodes incident to mechanistic edges. SbnG citrate supply, transport, iron loading, receptor recognition and regulation remain outside this native pathway boundary.
+
+The seven selected current Rhea equations retain all 40 chemical sides and balance independently. The five-ATP total is a net stoichiometric derivation, not a measured cellular yield. Native protonation and stereochemical granularity differ from selected current chemical authorities. The formal terminal RHEA:59133/CHEBI:136993 product is an open-chain dianion; the official 2015 supplement characterizes cyclic hemiaminal epimers and equilibrating lactamization. This record does not claim an exclusively linear physiological product, exact equivalence to the cyclic PubChem reference, or an invented eighth reaction.
+
+Versioned Newman proteins, NCTC 8325 native assemblies and experimental constructs retain separate scopes. Seven original genome/protein sequence bridges support comparison without renaming a source strain. The historical SbnF construct-length difference remains unresolved. Qualified native magnesium annotations do not establish individual ligase metal specificity or binding stoichiometry. Primary assembly observations do not establish a unique sufficient oligomer for every protein. The thesis remains an independent 2016 source, the 2015 supplement is distinct from its inaccessible main article, and the 2009 article was inspected through web access without a fabricated local full-body hash. Expression context does not establish Newman regulation, catalytic chemistry or biological absence.
+
+The original author handoff and initial partial scientific review are preserved. Issue [393](https://github.com/CultureBotAI/PathwayMech/issues/393) corrects only two UniProt batch sequence locators, at edges 056 and 058, to their accession-indexed `/results/0/sequence/value` and `/results/1/sequence/value` paths. The current record hash is `742930db9f8be218e6d69bf81c8b5d5ab3f460ed36d22d1660a4f18be6db26c1`. Original review inputs and the historical projection remain unchanged; the executable replay uses the corrected projection under `portable-replay/`.
+
+Issue [396](https://github.com/CultureBotAI/PathwayMech/issues/396) addresses a startup input-capture race in the original external replay helper. Its original evidence and root successors are retained separately. The maintained helper captures inputs before parsing, cached reads and probes, then rehashes them before writing its result. Independent successor review exercised the full positive replay, source and locator controls, output collision, and real startup mutations. `portable-reviews-root-adoption.json` records exact archive mappings, reviewer attribution and the two historical issue-key spellings. Neither initial finding is erased by a later passing result.
+
+From the repository root, retain original source bodies at their hash-bound manifest locations and supply a new external output path:
+
+```bash
+.venv/bin/python research/pathway_additions/2026-10-11-next-215/portable-replay/staphyloferrin-b-replay.py \
+  --repo-root . \
+  --record data/pathways/staphyloferrin-b-biosynthesis.yaml \
+  --source-manifest research/pathway_additions/2026-10-11-next-215/staphyloferrin-b-source-manifest.json \
+  --source-projection research/pathway_additions/2026-10-11-next-215/portable-replay/staphyloferrin-b-source-projection.json \
+  --authority-root . \
+  --pdf-python /absolute/path/to/python-with-pypdf \
+  --stereo-python /absolute/path/to/python-with-rdkit \
+  --output /private/tmp/staphyloferrin-b-new-replay.json
+```
+
+The integrated replay verified 62 original bodies, all seven native transformations, sequence and source locators, and the actual 44-node/72-edge/129-evidence KGX export. `integrated-replay-root-adoption.json` binds its observed terminal execution, freshly rehashed inputs and byte-identical retained outputs. Its one-record identifier sandbox reads the maintained authorities and unchanged policy; whole-corpus validation remains a separate check. Raw source bodies remain external.
+
+Authority integration added five original source inputs, 14 ontology terms and 12 source terms. The resulting catalog has 524 manifest inputs, 1821 ontology terms and 2134 source terms. All prior manifest entries, terms and source metadata were preserved. Root independently verified the preparer's selected original-source facts, authority labels and corrected integration helper before apply. `authority-evidence-root-adoption.json` maps the retained preparation, original failed driver, corrected dry run, root acceptance and actual apply logs; duplicate full prospective catalogs remain external. The root archive helper's initial list/object assumption failure occurred before writes and is also retained with its correction.
+
+The actual merged baseline is `6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa`. `merged-baseline-transition.json` preserves the earlier preparation lineage and proves byte preservation across the transition. Record history was completed before final rendering. All seven full-corpus gates passed: 1256 tests passed, 3 skipped, with 3 warnings in 473.69 seconds. All 22 governed artifacts match the pinned canonical revision. Independent graph inspection verified every target node, edge, evidence block and anchor; all 215 prior records, 946 record/history/review/page files, 10175 prior exported edges and 6758 prior record-scoped node contexts were preserved. This was programmatic artifact inspection, not browser interaction. The exact observations are bound by `full-gates-root-adoption.json`, lossless `console-transcripts.json` and `graph-review-root-adoption.json`. Final scientific successor, remote PR review, merge and publication remain separate subsequent gates. More pathway candidates remain.

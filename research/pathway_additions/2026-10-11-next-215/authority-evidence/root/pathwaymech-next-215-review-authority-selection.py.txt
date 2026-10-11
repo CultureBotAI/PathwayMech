@@ -1,0 +1,125 @@
+"""Independent root comparison of proposed labels with the original issuing data."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import html
+import json
+import re
+import sqlite3
+from xml.etree import ElementTree as ET
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-215-20261011')
+base = Path('/private/tmp/pathwaymech-next-215-authority-selection')
+selection = base / 'selection.json'
+def sha(path):
+    with path.open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+assert sha(selection) == '69772b8dcf0eb3ed01759c90736cfc43bf79b2bf1723974aeb1660f7ab68f22b'
+s = json.loads(selection.read_text())
+assert sha(Path(s['target']['path'])) == s['target']['sha256'] == '742930db9f8be218e6d69bf81c8b5d5ab3f460ed36d22d1660a4f18be6db26c1'
+for name, digest in s['baseline_inputs_unchanged'].items():
+    assert sha(root / name) == digest, name
+raw = yaml.safe_load(Path(s['target']['path']).read_text())
+named = {raw['id']} | {x['id'] for key in ['taxa', 'participants', 'reactions'] for x in raw[key]}
+assert len(named) == 44
+assert set(s['selected_source_terms']) | set(s['selected_ontology_terms']) == named
+
+source_facts = {}
+proof_hashes = {}
+for row in s['selected_new_inputs']:
+    p = Path(row['original_path'])
+    assert sha(p) == row['sha256'] and p.stat().st_size == row['bytes']
+    for proof in row['acquisition_proof']:
+        q = Path(proof['path'])
+        assert sha(q) == proof['sha256']
+        proof_hashes[str(q)] = sha(q)
+    facts = {}
+    if row['kind'] == 'metacyc-html':
+        text = p.read_bytes().decode('utf-8', errors='surrogateescape')
+        match = re.search(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'", text)
+        title = re.search(r'<TITLE>MetaCyc (.*?)</TITLE>', text, re.I | re.S)
+        assert match and title
+        identifier = 'MetaCyc:' + match[1]
+        label = ' '.join(html.unescape(re.sub('<[^>]+>', '', title[1])).split())
+        facts[identifier] = {'label': label, 'synonyms': []}
+    elif row['kind'] == 'ncbi-protein-xml':
+        for protein in ET.fromstring(p.read_bytes()).findall('GBSeq'):
+            identifier = 'NCBIProtein:' + protein.findtext('GBSeq_accession-version')
+            names = {q.findtext('GBQualifier_value') for q in protein.findall('.//GBQualifier')
+                     if q.findtext('GBQualifier_name') in {'gene', 'product', 'locus_tag'}}
+            assert protein.findtext('GBSeq_organism') == 'Staphylococcus aureus subsp. aureus str. Newman'
+            label = protein.findtext('GBSeq_definition')
+            facts[identifier] = {'label': label, 'synonyms': sorted(x for x in names if x and x != label)}
+    elif row['kind'] == 'uniprot':
+        for item in json.loads(p.read_text())['results']:
+            identifier = 'UniProtKB:' + item['primaryAccession']
+            description = item['proteinDescription']
+            names = []
+            for name in [description.get('recommendedName', {}), *description.get('submissionNames', []), *description.get('alternativeNames', [])]:
+                if name.get('fullName', {}).get('value'):
+                    names.append(name['fullName']['value'])
+                names.extend(x['value'] for x in name.get('shortNames', []))
+            facts[identifier] = {'label': names[0], 'synonyms': sorted(set(names[1:]) - {names[0]})}
+            if identifier in row['selected_ids']:
+                assert item['organism']['taxonId'] == 93061
+    else:
+        raise AssertionError(row['kind'])
+    for identifier in row['selected_ids']:
+        expected = {**facts[identifier], 'source': row['proposal_key']}
+        assert expected == s['selected_source_terms'][identifier], identifier
+        source_facts[identifier] = expected
+assert len(source_facts) == 12
+
+ontology_facts = {}
+database_checks = []
+for check in s['ontology_checks']:
+    p = Path(check['path'])
+    assert sha(p) == check['metadata']['sha256']
+    with sqlite3.connect('file:' + str(p) + '?mode=ro', uri=True) as connection:
+        for identifier in check['selected_ids']:
+            rows = list(connection.execute('SELECT predicate,value FROM statements WHERE subject=? AND predicate IN (?,?)',
+                                           (identifier, 'rdfs:label', 'oio:hasExactSynonym')))
+            labels = {v for k, v in rows if k == 'rdfs:label' and v}
+            assert len(labels) == 1
+            label = labels.pop()
+            fact = {'label': label, 'synonyms': sorted({v for k, v in rows if k == 'oio:hasExactSynonym' and v and v != label}),
+                    'source': check['existing_source_owner']}
+            assert fact == s['selected_ontology_terms'][identifier], identifier
+            ontology_facts[identifier] = fact
+    database_checks.append({'path': str(p), 'whole_database_sha256': check['metadata']['sha256'], 'selected_terms': len(check['selected_ids'])})
+assert len(ontology_facts) == 32
+
+preservation = []
+for name, prospective in [('ontology', 'prospective-ontology.json'), ('sources', 'prospective-sources.json')]:
+    before = json.loads((root / f'data/identifier_authorities/{name}.json').read_text())
+    after = json.loads((base / prospective).read_text())
+    for field in before:
+        if field in ['terms', 'sources']:
+            for key, value in before[field].items():
+                assert after[field][key] == value, (name, field, key)
+        else:
+            assert before[field] == after[field], (name, field)
+    expected_terms = ontology_facts if name == 'ontology' else source_facts
+    for key, value in expected_terms.items():
+        assert after['terms'][key] == value
+    new = set(after['terms']) - set(before['terms'])
+    assert new <= set(expected_terms)
+    assert len(new) == (14 if name == 'ontology' else 12)
+    preservation.append({'snapshot': name, 'old_terms': len(before['terms']), 'new_terms': len(after['terms']), 'added_ids': sorted(new)})
+manifest = json.loads((root / 'conf/identifier_sources.json').read_text())
+prospective = json.loads((base / 'prospective-identifier-sources.json').read_text())
+assert prospective[:len(manifest)] == manifest and len(prospective) - len(manifest) == 5
+assert prospective[len(manifest):] == [x['manifest_entry'] for x in s['selected_new_inputs']]
+out = Path('/private/tmp/pathwaymech-next-215-authority-selection-root-review.json')
+report = {'status': 'selection_accepted_helper_and_integration_separate', 'reviewed_at': datetime.now(timezone.utc).isoformat(),
+          'selection_sha256': sha(selection), 'target_sha256': s['target']['sha256'],
+          'independent_source_terms': source_facts, 'independent_ontology_terms': ontology_facts,
+          'database_checks': database_checks, 'acquisition_proofs_rehashed': proof_hashes,
+          'preservation': preservation, 'manifest_inputs_added': 5,
+          'scope': 'Direct original HTML native IDs/titles, original GenPept accessions/definitions/qualifiers, original UniProt names/taxon and direct read-only SQL label/exact-synonym queries. No prepared selection helper used for these facts.',
+          'limits': ['Identity labels do not prove biological activity or exact chemical/strain equivalence.', 'Pinned Rhea139 naming and separately reviewed Rhea142 chemistry keep distinct source scopes.', 'No final scientific approval or completed maintained integration is claimed.']}
+with out.open('x') as f:
+    json.dump(report, f, indent=2)
+    f.write('\n')
+print(json.dumps({'status': report['status'], 'source_terms': len(source_facts), 'ontology_terms': len(ontology_facts), 'receipt_sha256': sha(out)}))

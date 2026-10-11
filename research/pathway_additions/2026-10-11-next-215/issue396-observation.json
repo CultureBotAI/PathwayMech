@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-11T15:11:02.931453+00:00",
+  "issue": {
+    "body": "Independent adversarial review reproduced a stale-input attestation in the prepared Staphyloferrin B portable replay helper (SHA256 `1d5cd54c95f0116aba72de253ec421db47ec389b091ddec7269f003bd92726f2`). The helper initially reads and caches the target hash, then runs interpreter probes, and only later captures its input baseline. Changing an isolated target copy during the PDF interpreter probe lets the helper exit successfully with different reported and captured target hashes.\n\nThe actual subprocess exited 0 and reported target `891ce5a5ba08bfae8fdedbd7709f14097f4bd04749c7755fce6d6a51841c840a`, while its captured and actual target was `394ff752db50641cd01e828ae1e354923fb5aaf5212e73cfc2b27525dbc39fb8`. The immutable source bodies and maintained candidate were untouched. This is a replay-integrity defect, not evidence of an incorrect biological pathway.\n\nAcceptance:\n\n- Capture each input identity before consuming or caching it, including target, manifest, projection and policy; retain final fresh rechecks.\n- Independently repeat the controlled real subprocess race and require failure without a success receipt.\n- Retain a passing unchanged-input replay, source preservation, CLI misuse controls, and exclusive-output collision checks.\n- Preserve the original helper and failed attestation as immutable evidence, with an explicit successor and independent technical acceptance.\n\nThe locator-only successor inherits this defect and is not accepted. Check related helpers for the same ordering before assigning broader scope; do not assume all share it.\n\nStable issue key: `staphyloferrin-b-portable-pre-capture-input-race`.\n",
+    "closedAt": null,
+    "number": 396,
+    "state": "OPEN",
+    "title": "Capture Staphyloferrin B replay inputs before cached reads",
+    "url": "https://github.com/CultureBotAI/PathwayMech/issues/396"
+  },
+  "body_sha256": "d747b56e637772048acacff817e52bd30b33b0fb506f74e6b415fdb8ec77295d"
+}

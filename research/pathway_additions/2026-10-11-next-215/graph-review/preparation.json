@@ -1,0 +1,113 @@
+{
+  "status": "prepared_not_executed_on_generated_artifacts",
+  "created_at": "2026-10-11T15:21:37.505354+00:00",
+  "helper": "/private/tmp/pathwaymech-next-215-independent-graph-review/graph-audit.py",
+  "helper_sha256": "22599e08b17c7d6258bcdfad2969e0f1135ba0fe16a0c2e7b6db137b34db4a16",
+  "adaptation": "/private/tmp/pathwaymech-next-215-independent-graph-review/adaptation.json",
+  "adaptation_sha256": "e88f31c805d5bc124d1833d1c5ced5366176be5f82c5d507416be915bdc5cb3a",
+  "base": "6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa",
+  "target": "data/pathways/staphyloferrin-b-biosynthesis.yaml",
+  "target_sha256": "742930db9f8be218e6d69bf81c8b5d5ab3f460ed36d22d1660a4f18be6db26c1",
+  "expected": {
+    "prior_records": 215,
+    "current_records": 216,
+    "named_KGX_nodes": 44,
+    "SVG_nodes": 42,
+    "scope_only_taxa": [
+      "NCBITaxon:426430",
+      "NCBITaxon:93061"
+    ],
+    "reactions": 7,
+    "participants": 34,
+    "edges": 72,
+    "evidence": 129,
+    "references": 53
+  },
+  "checks": [
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "/private/tmp/pathwaymech-next-215-independent-graph-review/graph-audit.py"
+      ],
+      "started_at": "2026-10-11T15:21:36.749450+00:00",
+      "finished_at": "2026-10-11T15:21:36.797796+00:00",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "log": "/private/tmp/pathwaymech-next-215-independent-graph-review/preparation-check-1.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "/private/tmp/pathwaymech-next-215-independent-graph-review/graph-audit.py"
+      ],
+      "started_at": "2026-10-11T15:21:36.797881+00:00",
+      "finished_at": "2026-10-11T15:21:36.834402+00:00",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "log": "/private/tmp/pathwaymech-next-215-independent-graph-review/preparation-check-2.log",
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "/private/tmp/pathwaymech-next-215-independent-graph-review/graph-audit.py",
+        "--help"
+      ],
+      "started_at": "2026-10-11T15:21:36.834450+00:00",
+      "finished_at": "2026-10-11T15:21:37.114187+00:00",
+      "exit_code": 0,
+      "expected_exit": 0,
+      "log": "/private/tmp/pathwaymech-next-215-independent-graph-review/preparation-check-3.log",
+      "sha256": "381069a4685edcc08f941808081c5fbd77226fd0a0292d5244e6c45a3a6ceadc",
+      "stdout": "usage: graph-audit.py [-h] [--root ROOT]\n                      --comparison-kgx-dir COMPARISON_KGX_DIR\n                      --receipt RECEIPT --base BASE\n                      --gate-receipts GATE_RECEIPTS\n                      [--target-sha256 TARGET_SHA256]\n                      [--expected-baseline-records EXPECTED_BASELINE_RECORDS]\n\nAudit actual generated PathwayMech SVG pages and KGX artifacts against final\nYAML.\n\noptions:\n  -h, --help            show this help message and exit\n  --root ROOT\n  --comparison-kgx-dir COMPARISON_KGX_DIR\n  --receipt RECEIPT\n  --base BASE           Exact reviewed baseline commit; record whether actual\n                        merge is still pending\n  --gate-receipts GATE_RECEIPTS\n  --target-sha256 TARGET_SHA256\n  --expected-baseline-records EXPECTED_BASELINE_RECORDS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "-O",
+        "/private/tmp/pathwaymech-next-215-independent-graph-review/graph-audit.py",
+        "--base",
+        "6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa",
+        "--comparison-kgx-dir",
+        "/not-read",
+        "--receipt",
+        "/private/tmp/pathwaymech-next-215-independent-graph-review/must-not-exist.json",
+        "--gate-receipts",
+        "/not-read"
+      ],
+      "started_at": "2026-10-11T15:21:37.114247+00:00",
+      "finished_at": "2026-10-11T15:21:37.505201+00:00",
+      "exit_code": 1,
+      "expected_exit": 1,
+      "log": "/private/tmp/pathwaymech-next-215-independent-graph-review/preparation-check-4.log",
+      "sha256": "4a2b79d94978e0e9fdd9d6447d42a501f2c3c9257d20991e52345b3c4673f9e5",
+      "stdout": "",
+      "stderr": "Assertions are required; optimized Python is unsupported\n"
+    }
+  ],
+  "required_before_actual_run": [
+    "Root final render/export freeze signal",
+    "Actual terminal KGX command/log receipt and separate exported TSV paths"
+  ],
+  "scope": [
+    "Every target SVG edge/node/evidence/reference anchor and source direction metadata",
+    "Every target KGX field, full evidence array/reference metadata and shared per-record node context",
+    "Every baseline maintained record/history/review/page byte plus every prior KGX edge and per-record node context",
+    "Stable target/record/page/download/comparison/gate/protected-owner hashes during audit",
+    "Exclusive external output; no render, export, browser or repository mutation"
+  ],
+  "limits": [
+    "Compilation/help/lint/optimized-mode rejection only; no graph or baseline audit pass claimed yet.",
+    "Authority preparation and parser contributions are disclosed; root separately independently accepted those implementations.",
+    "This is a programmatic structural audit, not browser inspection or scientific approval."
+  ]
+}

@@ -1,0 +1,46 @@
+from pathlib import Path
+from datetime import datetime, UTC
+from concurrent.futures import ThreadPoolExecutor
+import hashlib, json, os, shutil, subprocess, time
+import yaml
+O=Path(__file__).parent
+R=Path('/private/tmp/pathwaymech-next-215-20261011')
+D=R/'research/pathway_additions/2026-10-11-next-215'
+H=D/'portable-replay/staphyloferrin-b-replay.py'
+A=Path('/private/tmp/pathwaymech-staphyloferrin-b-author-20261011/authority-sandbox')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+assert sha(H)=='53d50e36b992dbca3a9d5c82eab268c65828df78c93d3b87bd1c183ac7da4576'
+real='/private/tmp/pathwaymech-curation-uv-cache/archive-v0/72U0-9MM3QESIENlwcOMR/bin/python'
+def case(name):
+ C=O/('startup-'+name);C.mkdir();I=C/'inputs';I.mkdir();W=C/'wrapper';W.mkdir()
+ T=I/'target.yaml';T.write_bytes((R/'data/pathways/staphyloferrin-b-biosynthesis.yaml').read_bytes())
+ M=I/'manifest.json';M.write_bytes((D/'staphyloferrin-b-source-manifest.json').read_bytes())
+ P=I/'projection.json';P.write_bytes((D/'portable-replay/staphyloferrin-b-source-projection.json').read_bytes())
+ ac=A;rc=R
+ if name in ['authority-policy','authority-snapshot']:
+  ac=C/'authority';shutil.copytree(A,ac)
+ if name=='repo-policy':
+  rc=C/'repo';rc.mkdir();shutil.copytree(R/'src',rc/'src',ignore=shutil.ignore_patterns('__pycache__'));(rc/'conf').mkdir();shutil.copyfile(R/'conf/identifier_policy.yaml',rc/'conf/identifier_policy.yaml')
+ edited={'target':T,'manifest':M,'projection':P,'authority-policy':ac/'conf/identifier_policy.yaml','repo-policy':rc/'conf/identifier_policy.yaml','authority-snapshot':ac/'data/identifier_authorities/ontology.json'}[name]
+ old=sha(edited);wrapper=W/'pdf-python'
+ wrapper.write_text('#!/usr/bin/env python3\nimport os,sys,time\nfrom pathlib import Path\np=Path('+repr(str(W))+')\nif "-c" in sys.argv:\n (p/"ready").write_text("ready")\n while not (p/"release").exists():time.sleep(.05)\nos.execv('+repr(real)+',['+repr(real)+']+sys.argv[1:])\n');wrapper.chmod(0o755)
+ out=C/'result.json';argv=[str(R/'.venv/bin/python'),'-B',str(H),'--repo-root',str(rc),'--record',str(T),'--source-manifest',str(M),'--source-projection',str(P),'--authority-root',str(ac),'--pdf-python',str(wrapper),'--stereo-python','/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python','--output',str(out)]
+ started=datetime.now(UTC).isoformat();log=C/'execution.log'
+ with log.open('x') as f:
+  child=subprocess.Popen(argv,cwd=R,env={**os.environ,'PYTHONPATH':str(rc/'src'),'PYTHONDONTWRITEBYTECODE':'1'},stdout=f,stderr=subprocess.STDOUT)
+  deadline=time.monotonic()+60
+  while not (W/'ready').exists():
+   assert child.poll() is None,log.read_text();assert time.monotonic()<deadline;time.sleep(.05)
+  if name=='target':
+   d=yaml.safe_load(T.read_text());d['description']+=' Isolated startup race control.';T.write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=100))
+  elif name.endswith('policy'):edited.write_bytes(edited.read_bytes()+b'\n# isolated startup race control\n')
+  else:edited.write_bytes(edited.read_bytes()+b'\n ')
+  new=sha(edited);assert old!=new;(W/'release').write_text('release');code=child.wait(timeout=60)
+ assert code!=0 and 'Input changed during startup: '+str(edited) in log.read_text(),log.read_text()
+ assert not out.exists() and not out.with_suffix('.artifacts').exists()
+ result={'name':name,'started_at':started,'finished_at':datetime.now(UTC).isoformat(),'argv':argv,'exit_code':code,'changed_only_external_copy':str(edited),'old_sha256':old,'new_sha256':new,'log':str(log),'log_sha256':sha(log),'rejected_at':'Input changed during startup','output_created':False,'artifacts_created':False}
+ (C/'probe.json').write_text(json.dumps(result,indent=2)+'\n');return result
+with ThreadPoolExecutor(max_workers=3) as pool:cases=list(pool.map(case,['target','manifest','projection','authority-policy','repo-policy','authority-snapshot']))
+report={'status':'passed','finished_at':datetime.now(UTC).isoformat(),'helper_sha256':sha(H),'cases':cases,'method':'Real CLI processes paused in the genuine explicit PDF interpreter import probe, isolated input changed, then original interpreter resumed; no owner mutations.'}
+with (O/'startup-races.json').open('x') as f:json.dump(report,f,indent=2);f.write('\n')
+print(json.dumps({'status':'passed','cases':len(cases)}))

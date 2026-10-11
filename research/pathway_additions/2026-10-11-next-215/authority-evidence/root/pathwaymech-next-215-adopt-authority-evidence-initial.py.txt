@@ -1,0 +1,111 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-215-20261011')
+PREP = Path('/private/tmp/pathwaymech-next-215-authority-selection')
+APPLY = Path('/private/tmp/pathwaymech-next-215-authority-integration-20261011')
+DOSSIER = ROOT / 'research/pathway_additions/2026-10-11-next-215'
+DEST = DOSSIER / 'authority-evidence'
+BASE = '6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa'
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+def save(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+assert not DEST.exists()
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip() == BASE
+assert sha(PREP / 'handoff.json') == '28210eb0f8c28f39bb0db5be81fb873360e6adbf39016e7b8194874d9d081feb'
+assert sha(APPLY / 'receipt.json') == '797f1a1bed598d97627fa6116c5f29ac5b63025af2ff4677f185875b11bb57dc'
+handoff = read(PREP / 'handoff.json')
+receipt = read(APPLY / 'receipt.json')
+assert receipt['status'] == 'passed_root_accepted_integration'
+assert receipt['all_baseline_terms_and_source_metadata_preserved']
+assert receipt['one_record_identifier_errors'] == []
+assert receipt['base_commit'] == BASE
+assert sha(ROOT / 'data/pathways/staphyloferrin-b-biosynthesis.yaml') == handoff['target']['sha256']
+for entry in handoff['files'] + handoff['minimal_inputs']:
+    assert sha(entry['path']) == entry['sha256'], entry['path']
+
+prior_preservation = {}
+for kind in ['ontology', 'sources']:
+    rel = f'data/identifier_authorities/{kind}.json'
+    current = read(ROOT / rel)
+    baseline = json.loads(subprocess.check_output(['git', 'show', f'{BASE}:{rel}'], cwd=ROOT))
+    assert sha(ROOT / rel) == receipt['snapshots'][kind]['sha256']
+    assert sha(ROOT / rel) == sha(APPLY / f'{kind}.json')
+    for owner in ['terms', 'sources']:
+        assert all(current[owner].get(key) == value for key, value in baseline[owner].items())
+    prior_preservation[kind] = {'prior_terms': len(baseline['terms']), 'current_terms': len(current['terms']), 'all_prior_terms_and_sources_exact': True}
+manifest_rel = 'conf/identifier_sources.json'
+baseline_manifest = json.loads(subprocess.check_output(['git', 'show', f'{BASE}:{manifest_rel}'], cwd=ROOT))
+current_manifest = read(ROOT / manifest_rel)
+assert current_manifest == read(PREP / 'prospective-identifier-sources.json')
+assert sha(ROOT / manifest_rel) == sha(APPLY / 'identifier_sources.json')
+assert current_manifest['inputs'][:len(baseline_manifest['inputs'])] == baseline_manifest['inputs']
+assert {key: value for key, value in current_manifest.items() if key != 'inputs'} == {key: value for key, value in baseline_manifest.items() if key != 'inputs'}
+assert sha(DOSSIER / 'authority-integration.json') == sha(APPLY / 'receipt.json')
+assert sha(DOSSIER / 'authority-selection.json') == sha(PREP / 'selection.json')
+
+copied = []
+external = []
+mapped = []
+
+def adopt(source, relative):
+    source = Path(source)
+    dest = DEST / relative
+    body = source.read_bytes()
+    encoding = 'byte-identical'
+    if source.suffix in ['.log', '.diff']:
+        dest = dest.with_name(dest.name + '.json')
+        save(dest, {'original_path': str(source), 'original_sha256': sha(source), 'encoding': 'lossless UTF-8 text', 'text': body.decode('utf-8')})
+        assert read(dest)['text'].encode('utf-8') == body
+        encoding = 'lossless UTF-8 text in JSON'
+    else:
+        if dest.suffix == '.py':
+            dest = dest.with_name(dest.name + '.txt')
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with dest.open('xb') as stream:
+            stream.write(body)
+        assert dest.read_bytes() == body
+    copied.append({'original_path': str(source), 'original_sha256': sha(source), 'maintained_path': str(dest.relative_to(ROOT)), 'maintained_sha256': sha(dest), 'encoding': encoding})
+
+canonical_map = {'ontology.json': 'data/identifier_authorities/ontology.json', 'sources.json': 'data/identifier_authorities/sources.json', 'identifier_sources.json': 'conf/identifier_sources.json'}
+for entry in handoff['files']:
+    path = Path(entry['path'])
+    rel = path.relative_to(PREP)
+    if path.name.startswith('prospective-'):
+        external.append({**entry, 'reason': 'Full prospective catalog retained externally; selected additions, exact hashes, canonical output mapping and preservation checks are maintained.'})
+    elif rel.parts[0] == 'canonical-dry-run-corrected' and path.name in canonical_map:
+        maintained = ROOT / canonical_map[path.name]
+        assert sha(maintained) == entry['sha256']
+        mapped.append({**entry, 'maintained_path': str(maintained.relative_to(ROOT)), 'byte_identical': True})
+    elif path.name == 'selection.json':
+        mapped.append({**entry, 'maintained_path': str((DOSSIER / 'authority-selection.json').relative_to(ROOT)), 'byte_identical': True})
+    else:
+        adopt(path, Path('preparation') / rel)
+adopt(PREP / 'handoff.json', Path('preparation/handoff.json'))
+for directory in [PREP / 'canonical-dry-run', PREP / 'canonical-dry-run-corrected']:
+    for check in read(directory / 'execution.json'):
+        assert sha(check['log']) == check['log_sha256']
+        adopt(check['log'], Path('preparation') / Path(check['log']).relative_to(PREP))
+for check in receipt['checks']:
+    assert check['exit_code'] == 0
+    assert sha(check['log']) == check['log_sha256']
+    adopt(check['log'], Path('apply') / Path(check['log']).name)
+for name in ['pathwaymech-next-215-authority-selection-root-review.json', 'pathwaymech-next-215-authority-root-acceptance.json', 'pathwaymech-next-215-review-authority-selection.py']:
+    adopt(Path('/private/tmp') / name, Path('root') / name)
+save(DEST / 'apply/execution.json', {'actual_session': 89414, 'observed_terminal_exit': 0, 'terminal_chunk': 'df36e5', 'receipt_sha256': sha(APPLY / 'receipt.json'), 'scope': 'Root observed actual completed apply; independent source-selection and helper acceptance preceded this mutation.'})
+out = DOSSIER / 'authority-evidence-root-adoption.json'
+save(out, {'adopted_at': datetime.now(timezone.utc).isoformat(), 'status': 'root_accepted_authority_integration_and_rehashed_preparation_evidence', 'base': BASE, 'target_sha256': handoff['target']['sha256'], 'prior_preservation': prior_preservation, 'manifest_inputs': {'before': len(baseline_manifest['inputs']), 'after': len(current_manifest['inputs']), 'all_prior_exact': True}, 'all_twenty_preparation_files_and_five_original_inputs_rehashed': True, 'copied': copied, 'mapped_to_identical_maintained_files': mapped, 'external_full_snapshots': external, 'apply_receipt': {'path': str((DOSSIER / 'authority-integration.json').relative_to(ROOT)), 'sha256': sha(APPLY / 'receipt.json')}, 'attribution': 'Literature reviewer prepared selection/helper. Root independently verified original-source facts, authority labels, exact helper correction and canonical builders before authorizing and executing apply. This is not self-approval by the preparer.', 'limits': ['Initial failed driver attempt and original helper are preserved with corrected successor.', 'Full-corpus gates, final scientific review, PR review and publication remain pending.', 'Original source bodies remain external; no public redistribution clearance asserted.']})
+print(json.dumps({'status': 'passed', 'receipt': str(out), 'sha256': sha(out), 'copied': len(copied), 'mapped': len(mapped), 'external_full_snapshots': len(external), 'prior_preservation': prior_preservation}))

@@ -1,0 +1,293 @@
+"Create bounded selected-fact author receipts; never copies original article bodies."
+
+import hashlib
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+
+from lxml import etree as ET
+
+B = Path(__file__).resolve().parent
+D = B / "draft"
+S = Path("/private/tmp/pathwaymech-staphyloferrin-b-scout-20261011")
+A = Path("/private/tmp/pathwaymech-staphyloferrin-b-endpoint-20261011")
+C = Path("/private/tmp/pathwaymech-curation-authorities")
+
+
+def read(p):
+    return json.loads(Path(p).read_text())
+
+
+def sha(p):
+    with Path(p).open("rb") as f:
+        return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def save(n, v):
+    (D / n).write_text(json.dumps(v, indent=2) + "\n")
+
+
+acq = (
+    read(S / "source-manifest.json")["attempts"]
+    + read(A / "source-manifest.json")["acquisitions"]
+    + read(B / "acquisition1.json")
+)
+accepted = {x["path"]: x for x in acq if x.get("accepted") and x.get("path")}
+paths = set(read(D / "staphyloferrin-b-reference-paths.json").values())
+extra = [
+    "PWY-8008.html",
+    "NCBI-Newman-genome.xml",
+    "G1I0R-73-MONOMER.xml",
+    "G1I0R-74-MONOMER.xml",
+    "G1I0R-71-MONOMER.xml",
+    "CPD-19754.xml",
+    "primary-search.json",
+]
+paths |= {str(S / "originals" / n) for n in extra}
+for source_row in read(S / "native-reaction-projection.json"):
+    for side in source_row["sides"].values():
+        paths |= {str(S / "originals" / (item["id"] + ".xml")) for item in side}
+paths |= {
+    str(A / "originals" / n)
+    for n in [
+        "PubChem-122234488.json",
+        "PubChem-122234488-structure.json",
+        "PubChem-SID318735782.json",
+        "thesis-datacite.json",
+    ]
+}
+paths |= {x["path"] for x in read(B / "authority-inputs.json")["inputs"]}
+rows = []
+for p in sorted(paths):
+    z = accepted.get(p, {})
+    if z:
+        assert sha(p) == z["sha256"]
+    row = {k: z[k] for k in ["url", "retrieved_at", "content_type", "status"] if k in z}
+    row.update(
+        path=p,
+        sha256=sha(p),
+        bytes=Path(p).stat().st_size,
+        hash_scope="Complete retained original response bytes",
+    )
+    if p.endswith("Kobylarz2016-embedded.pdf"):
+        row.update(
+            url=(
+                "https://www.collectionscanada.gc.ca/obj/thesescanada/vol2/BVAU/TC-BVAU-57023.pdf"
+            ),
+            hash_scope=(
+                "Exact PDF payload, bytes 822 onward of retained original HTTP-en"
+                "velope container; no transcoding"
+            ),
+            container_path=str(A / "originals/Kobylarz-thesis2016.pdf"),
+            container_sha256=sha(A / "originals/Kobylarz-thesis2016.pdf"),
+        )
+    elif p.endswith("rhea.rdf.gz"):
+        row.update(
+            url="https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz",
+            version="Rhea 142, 2026-09-02",
+            hash_scope="Entire original gzip RDF",
+        )
+    elif p.endswith("chebi.db"):
+        row.update(
+            url="https://github.com/biopragmatics/obo-db-ingest",
+            version="ChEBI 255 Semantic SQL",
+            hash_scope="Entire original uncompressed Semantic SQL database",
+        )
+    assert row.get("url"), p
+    rows.append(row)
+roles = {
+    "native_originals": str(S / "originals"),
+    "endpoint_originals": str(A / "originals"),
+    "thesis_pdf": str(A / "Kobylarz2016-embedded.pdf"),
+    "thesis_text": str(A / "Kobylarz2016-text.txt"),
+    "rhea": str(C / "rhea.rdf.gz"),
+    "chebi": str(C / "chebi.db"),
+}
+save(
+    "staphyloferrin-b-source-manifest.json",
+    dict(
+        created_at=datetime.now(UTC).isoformat(),
+        sources=rows,
+        roles=roles,
+        reference_original_paths=read(D / "staphyloferrin-b-reference-paths.json"),
+        external_acquisition_receipts=[
+            dict(path=str(p), sha256=sha(p))
+            for p in [
+                S / "source-manifest.json",
+                A / "source-manifest.json",
+                A / "body-content-validation.json",
+                A / "thesis-extraction.json",
+                B / "acquisition1.json",
+            ]
+        ],
+        web_only=[
+            dict(
+                id="PMID:19775248",
+                url="https://onlinelibrary.wiley.com/doi/10.1111/j.1365-2958.2009.06880.x",
+                inspected_at=datetime.now(UTC).isoformat(),
+                scope=(
+                    "Complete publisher article reopened and read; no retained origin"
+                    "al local full-body bytes or digest. Selected source assertions p"
+                    "reserve this limit."
+                ),
+            )
+        ],
+        license=(
+            "Primary publications, supplements and native databases retain th"
+            "eir original terms. Public accessibility does not imply redistri"
+            "bution permission. Originals remain external; maintained project"
+            "ions contain selected facts and locators only."
+        ),
+    ),
+)
+save(
+    "staphyloferrin-b-protein-projection.json",
+    dict(
+        target_sha256=sha(D / "staphyloferrin-b-biosynthesis.yaml"),
+        exact_sequence_bridges=read(S / "protein-sequence-crosswalk.json"),
+        author_primary_scope=read(S / "primary-evidence-assessment.json"),
+        limits=[
+            (
+                "All seven Newman proteins are versioned NCBI identities, not rel"
+                "abeled NCTC 8325 UniProt entries."
+            ),
+            (
+                "Exact native sequence equality does not assert engineered constr"
+                "uct equality. SbnI initiator codon change, tags and truncation a"
+                "re explicit primary limitations."
+            ),
+            (
+                "Native SbnI/B complexes and their selected UniProt components re"
+                "tain NCTC 8325 identity."
+            ),
+            (
+                "Other experimentally observed oligomers have no newly invented p"
+                "hysical assembly identifiers."
+            ),
+        ],
+    ),
+)
+save(
+    "staphyloferrin-b-identity-conflicts.json",
+    dict(
+        target_sha256=sha(D / "staphyloferrin-b-biosynthesis.yaml"),
+        native_conflicts=read(S / "chemical-identity-conflicts.json")["conflicts"],
+        endpoint=read(A / "assessment.json")["endpoint_sources"],
+        derivation=read(A / "assessment.json")["whole_route_preservation"],
+        acceptance_guards=read(A / "assessment.json")["acceptance_guards"],
+        scope=(
+            "Selected facts; original articles/database commentary are not re"
+            "produced. No exact-match assertion between cyclic/linear or ster"
+            "eospecific/unspecified forms."
+        ),
+    ),
+)
+x = read(D / "staphyloferrin-b-dedup.json")
+x.pop("comparison_pending", None)
+x["reviewed_dispositions"] = [
+    {
+        "match": "conf/rhea_directions.json",
+        "disposition": "Directed-to-master metadata for 59133; not a pathway record.",
+    },
+    {
+        "match": "research/cross_mech/2026-10-05/inputs/uniprot_annotations.json",
+        "disposition": (
+            "Q2G1N1 source annotation and PMID19775248; supports discovery, n"
+            "ot a maintained mechanism."
+        ),
+    },
+    {
+        "match": (
+            "research/pathway_additions/2026-10-10-citrate-sbm/citrate-source-projection.json"
+        ),
+        "disposition": (
+            "ENZRXN-19819 is the distinct citrate-ligase object CITC-RXN; sub"
+            "string overlap is not SB RXN-19819."
+        ),
+    },
+    {
+        "match": "ignored reports DRAM ingested-native.tsv/module_step_form.tsv",
+        "disposition": (
+            "M00875 native module inventory/definition; no existing maintained SB network."
+        ),
+    },
+    {
+        "match": "ignored SEED subsystem_select.body",
+        "disposition": (
+            "Source subsystem name list contains staphylobactin; not an evide"
+            "nce-backed maintained mechanism."
+        ),
+    },
+]
+x["result"] = (
+    "No maintained matching pathway in any listed checkout after revi"
+    "ewing all matched files, including hidden and ignored inventory/"
+    "reference hits. Frozen staphyloferrin A, DFO, bacillibactin and "
+    "petrobactin are distinct complete pathways."
+)
+save("staphyloferrin-b-dedup.json", x)
+print(json.dumps({"original_bodies": len(rows), "draft": str(D)}, indent=2))
+
+# Full native/current chemical mapping, including acid-base and stereochemical differences.
+chemical_map = dict(
+    SER="33384",
+    ATP="30616",
+    **{"3-P-SERINE": "57524"},
+    ADP="456216",
+    PROTON="15378",
+    GLT="29985",
+    **{"CPD-19754": "134610"},
+    Pi="43474",
+    NAD="57540",
+    WATER="15377",
+    **{"L-23-DIAMINOPROPANOATE": "57721", "2-KETOGLUTARATE": "16810"},
+    NADH="57945",
+    CIT="16947",
+    **{"CPD-21431": "142969"},
+    AMP="456215",
+    PPI="33019",
+    **{
+        "CPD-21432": "142970",
+        "CARBON-DIOXIDE": "16526",
+        "CPD-21433": "142971",
+        "CPD-12590": "136993",
+    },
+)
+chem = read(S / "chemistry-replay.json")["chemicals"]
+bridge = []
+for frame, number in chemical_map.items():
+    original = ET.parse(str(S / "originals" / (frame + ".xml"))).find("Compound")
+    native = original.findtext("inchi")
+    cid = "CHEBI:" + number
+    current = chem[cid]["chemrof:inchi_string"]
+    kind = (
+        "exact InChI"
+        if native == current
+        else "broader native stereochemistry"
+        if frame in ["CPD-21431", "CPD-21432", "CPD-21433", "CPD-12590"]
+        else "different protonation"
+    )
+    bridge.append(
+        dict(
+            native=frame,
+            selected=cid,
+            native_inchi=native,
+            current_inchi=current,
+            identity_relation=kind,
+            native_chebi_xrefs=original.xpath('dblink[dblink-db="CHEBI"]/dblink-oid/text()'),
+            exact_equivalence_asserted=native == current,
+        )
+    )
+save(
+    "staphyloferrin-b-native-chemical-bridges.json",
+    dict(
+        target_sha256=sha(D / "staphyloferrin-b-biosynthesis.yaml"),
+        bridges=bridge,
+        scope=(
+            "Exact original structures and current chemical authority; no inf"
+            "erred exactMatch for broader stereo or protonation alternatives."
+            " Legacy ChEBI xrefs can resolve through aliases; strings are ret"
+            "ained unchanged."
+        ),
+    ),
+)

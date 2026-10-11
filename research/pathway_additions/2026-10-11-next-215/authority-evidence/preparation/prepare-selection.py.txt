@@ -1,0 +1,120 @@
+"""External original-source selection against an exact reviewed preparation tree."""
+from pathlib import Path
+from datetime import datetime, UTC
+import copy, hashlib, json, sqlite3, subprocess, sys, unicodedata
+from xml.etree import ElementTree as ET
+import yaml
+R=Path('/private/tmp/pathwaymech-next-214-20261011')
+W=Path('/private/tmp/pathwaymech-next-215-20261011')
+D=W/'research/pathway_additions/2026-10-11-next-215'
+P=D/'staphyloferrin-b-authority-proposal.json';T=W/'data/pathways/staphyloferrin-b-biosynthesis.yaml'
+O=Path(__file__).parent;CACHE=Path('/private/tmp/pathwaymech-curation-authorities')
+BASE='775e7166a179529bf9f00d84a54799947eb6e8b8';TREE='20899b352af5d2c3c2c397d4caf851d40b231fa7'
+sys.path.insert(0,str(R))
+from scripts import build_source_identifier_snapshot as source
+from scripts import build_ontology_identifier_snapshot as ontology
+
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def read(p):return json.loads(Path(p).read_text())
+def save(name,data):
+ with (O/name).open('x') as f:json.dump(data,f,indent=2);f.write('\n')
+def git(*args):return subprocess.check_output(['git',*args],cwd=R)
+started=datetime.now(UTC).isoformat();assert git('rev-parse',BASE+'^{tree}').decode().strip()==TREE
+assert sha(T)=='742930db9f8be218e6d69bf81c8b5d5ab3f460ed36d22d1660a4f18be6db26c1'
+proposal=read(P);proposal_sha=sha(P);target_sha=sha(T)
+rels=['conf/identifier_sources.json','conf/identifier_policy.yaml','conf/rhea_identifier_updates.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','scripts/build_source_identifier_snapshot.py','scripts/build_ontology_identifier_snapshot.py']
+before={p:sha(R/p) for p in rels}
+for p in rels:assert (R/p).read_bytes()==git('show',BASE+':'+p),p
+manifest=read(R/rels[0]);policy=yaml.safe_load((R/rels[1]).read_text());snap=read(R/rels[3]);ont=read(R/rels[4])
+assert len(manifest)==519 and len(snap['terms'])==2122 and len(ont['terms'])==1807
+raw=yaml.safe_load(T.read_text());declared={raw['id']:raw['label']};sections={raw['id']:'record'}
+for group in ['taxa','participants','reactions','gene_clusters']:
+ for item in raw.get(group,[]):
+  assert item['id'] not in declared
+  declared[item['id']]=item['label'];sections[item['id']]=group
+assert len(declared)==44 and set(declared)==set(proposal['named_ids'])
+prefixes={'GO','CHEBI','RHEA','NCBITaxon'};all_ontology=ontology.walk_identifiers(raw,prefixes);named_ontology={i for i in declared if i.partition(':')[0] in prefixes}
+labels=[]
+def check_label(ident,label,synonyms):
+ if ident not in declared:return
+ norm=lambda x:' '.join(unicodedata.normalize('NFKC',x).split()).casefold()
+ prefix=ident.partition(':')[0];rules=[r for r in policy['contextual_labels'] if r['namespace']==prefix and sections[ident] in r['sections'] and raw['id'].partition(':')[0] in r['record_prefixes']]
+ if not rules:
+  candidates=[label]+(synonyms if policy['namespaces'][prefix]['policy']=='canonical_or_synonym' else [])
+  assert norm(declared[ident]) in {norm(x) for x in candidates},(ident,declared[ident],label)
+ labels.append({'id':ident,'section':sections[ident],'record_label':declared[ident],'canonical_label':label,'source_synonyms':synonyms,'existing_contextual_policy':rules,'no_label_or_policy_change':True})
+acquisitions=[]
+for folder in ['pathwaymech-staphyloferrin-b-scout-20261011','pathwaymech-staphyloferrin-b-author-20261011']:
+ for p in (Path('/private/tmp')/folder).glob('acquisition*.json'):
+  def walk(v):
+   if isinstance(v,dict):
+    if all(k in v for k in ['path','sha256','url']):acquisitions.append((p,v))
+    for x in v.values():walk(x)
+   elif isinstance(v,list):
+    for x in v:walk(x)
+  walk(read(p))
+new=[];reuse=[];checks=[];terms={};keys={e['key'] for e in manifest};paths={e['path'] for e in manifest}
+for entry in proposal['source_manifest_additions']:
+ p=Path(entry['raw_path']);assert sha(p)==entry['sha256'];parsed=list(source.source_terms(entry['kind'],p,url=entry['url']))
+ assert set(entry['native_terms']) <= {r[0] for r in parsed}
+ selected=[r for r in parsed if r[0] in declared];assert selected
+ obs=[(q,v) for q,v in acquisitions if v['path']==str(p) and v['sha256']==entry['sha256'] and v['url']==entry['url']]
+ assert obs,(entry['key'],'missing acquisition receipt')
+ proof=[]
+ for q,v in obs:
+  assert v['status']==200 and v['accepted'] and v['bytes']==p.stat().st_size
+  proof.append({'path':str(q),'sha256':sha(q),'retrieved_at':v['retrieved_at'],'status':v['status'],'content_type':v['content_type']})
+ if entry['kind']=='metacyc-html':assert b'MetaCyc version 22.5.' in p.read_bytes()
+ if entry['kind']=='ncbi-protein-xml':
+  proteins=ET.parse(p).getroot().findall('GBSeq');assert len(proteins)==7
+  assert {x.findtext('GBSeq_accession-version') for x in proteins}=={r[0].split(':',1)[1] for r in selected}
+  for protein in proteins:
+   quals={}
+   for q in protein.findall('.//GBFeature[GBFeature_key="source"]/GBFeature_quals/GBQualifier'):quals.setdefault(q.findtext('GBQualifier_name'),[]).append(q.findtext('GBQualifier_value'))
+   assert 'taxon:426430' in quals['db_xref'] and 'Newman' in quals['strain']
+ if entry['kind']=='uniprot':
+  data=read(p);assert len(data['results'])==9
+  for row in data['results']:assert row['organism']['taxonId']==93061
+ matches=[m for m in manifest if m['sha256']==entry['sha256'] and m['kind']==entry['kind']]
+ urlmatches=[m for m in manifest if m['url']==entry['url']]
+ if matches:
+  assert len(matches)==1 and urlmatches==matches;owner=matches[0]['key']
+ else:assert not urlmatches;owner=entry['key']
+ for ident,label,synonyms in selected:
+  term={'label':label,'synonyms':sorted(set(synonyms)-{label}),'source':owner};check_label(ident,label,term['synonyms'])
+  if ident in snap['terms']:assert snap['terms'][ident]==term,(ident,'existing term drift')
+  assert ident not in terms;terms[ident]=term
+ common={'proposal_key':entry['key'],'original_path':str(p),'sha256':entry['sha256'],'bytes':p.stat().st_size,'kind':entry['kind'],'url':entry['url'],'parsed_terms':[{'id':i,'label':l,'synonyms':s} for i,l,s in parsed],'selected_ids':[r[0] for r in selected],'unselected_ids':[r[0] for r in parsed if r[0] not in declared],'acquisition_proof':proof}
+ checks.append(common)
+ if matches:
+  assert sha(CACHE/'sources'/matches[0]['path'])==entry['sha256'];reuse.append({**common,'existing_entry_preserved':matches[0]});continue
+ assert entry['key'] not in keys and entry['path'] not in paths
+ path=Path(entry['path']);assert not path.is_absolute() and '..' not in path.parts
+ m={k:entry[k] for k in ['key','kind','path','url','version','license','sha256']};cache=CACHE/'sources'/path
+ state='absent_no_copy'
+ if cache.exists():assert sha(cache)==entry['sha256'];state='existing_exact_original_not_modified'
+ new.append({**common,'manifest_entry':m,'prospective_cache_path':str(cache),'current_cache_state':state})
+ont_terms={};ont_checks=[]
+for entry in proposal['ontology_inputs']:
+ selected=sorted(i for i in all_ontology if i.partition(':')[0]==entry['prefix']);p=Path(entry['path'])
+ conn=sqlite3.connect('file:'+str(p)+'?mode=ro',uri=True);metadata=ontology.read_source(conn,p)
+ assert metadata==entry['source_metadata'] and metadata['sha256']==entry['sha256']
+ owners=[key for key,v in ont['sources'].items() if v==metadata];assert len(owners)==1
+ extracted,missing=ontology.extract_terms(conn,selected,owners[0]);conn.close();assert not missing
+ for ident,term in extracted.items():
+  check_label(ident,term['label'],term['synonyms'])
+  if ident in ont['terms']:assert ont['terms'][ident]==term,(ident,'baseline ontology drift')
+ ont_terms.update(extracted);ont_checks.append({'path':str(p),'whole_database_stream_hash_verified':True,'metadata':metadata,'existing_source_owner':owners[0],'selected_ids':selected,'new_ids':sorted(set(extracted)-set(ont['terms']))})
+assert set(ont_terms)==all_ontology and set(terms)|set(ont_terms)==set(declared)
+for p,h in before.items():assert sha(R/p)==h,p
+assert sha(T)==target_sha and sha(P)==proposal_sha
+merged_ont=copy.deepcopy(ont);merged_ont['terms'].update(ont_terms);merged_src=copy.deepcopy(snap);merged_src['terms'].update(terms)
+for e in new:
+ m=e['manifest_entry'];merged_src['sources'][m['key']]={k:m[k] for k in ['url','version','license','sha256']}
+for prior,after in [(ont,merged_ont),(snap,merged_src)]:
+ for field in ['terms','sources']:assert all(after[field][k]==v for k,v in prior[field].items())
+counts={'declared_graph_ids':len(declared),'selected_ontology_ids_including_references':len(all_ontology),'new_ontology_terms':len(set(ont_terms)-set(ont['terms'])),'new_source_terms':len(set(terms)-set(snap['terms'])),'new_manifest_inputs':len(new),'prospective_manifest_inputs':len(manifest)+len(new),'prospective_ontology_terms':len(merged_ont['terms']),'prospective_source_terms':len(merged_src['terms'])}
+selection={'status':'prepared_for_independent_root_review','started_at':started,'finished_at':datetime.now(UTC).isoformat(),'scope':'External original-source selection only; no shared cache/manifest/snapshot/record/history/Git mutation.','preparation_baseline':{'checkout':str(R),'reviewed_commit':BASE,'reviewed_tree':TREE,'observed_head_at_finish':git('rev-parse','HEAD').decode().strip(),'state':'reviewed staphyloferrin A PR head; actual merge not asserted','manifest_inputs':len(manifest),'ontology_terms':len(ont['terms']),'source_terms':len(snap['terms'])},'proposal':{'path':str(P),'sha256':proposal_sha,'historical_target_sha256':proposal['target_sha256'],'historical_final_author_target_sha256':proposal['current_record_replay']['target_sha256'],'disposition':'Historical proposal preserved unchanged. Current node IDs were read from the corrected maintained target and exactly match its 44 named IDs. Only the two known evidence locators differ from frozen initial target; proposal is not represented as a current record validation.'},'target':{'path':str(T),'sha256':target_sha,'id':raw['id']},'counts':counts,'selected_new_inputs':new,'reused_inputs':reuse,'original_source_checks':checks,'ontology_checks':ont_checks,'selected_source_terms':terms,'selected_ontology_terms':ont_terms,'all_recursive_ontology_ids':sorted(all_ontology),'reference_only_ontology_ids':sorted(all_ontology-named_ontology),'label_policy_checks':labels,'baseline_inputs_unchanged':before,'source_selection_scope':'Canonical source corpus_ids selects named graph entities; full original batch remains hashed, but only Q2G1M5/Q2G1N2 are selected UniProt nodes. Seven other batch entries are not new source terms.','limits':['Preparation at reviewed A head, not a claim of actual merge or complete corpus validation. Root must independently inspect and accept this preparer-authored selection/helper before maintained integration.','Authority labels establish issued identity only, not protein activity, physical assembly, exact strain transfer or chemical equivalence.','Full Rhea142 scientific equations remain distinct from pinned Rhea139 label provenance; no equation-label update or namespace/policy change is proposed.','Preserve current original source licenses/access restrictions; no redistribution clearance is inferred.']}
+save('selection.json',selection);save('proposed-manifest-additions.json',[i['manifest_entry'] for i in new]);save('prospective-identifier-sources.json',manifest+[i['manifest_entry'] for i in new]);save('prospective-ontology.json',merged_ont);save('prospective-sources.json',merged_src)
+print(json.dumps({'status':selection['status'],'selection_sha256':sha(O/'selection.json'),'counts':counts},indent=2))

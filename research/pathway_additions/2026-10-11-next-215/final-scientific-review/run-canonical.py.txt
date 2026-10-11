@@ -1,0 +1,15 @@
+from pathlib import Path
+from datetime import datetime,UTC
+import subprocess,os,json,hashlib,sys
+R=Path('/private/tmp/pathwaymech-next-215-20261011');O=Path('/private/tmp/pathwaymech-next-215-staphyloferrin-b-final-review')
+step=sys.argv[1];assert step in ['validate','save','check']
+cmd=[str(R/'.venv/bin/python'),'scripts/record_review.py']
+if step=='validate':cmd+=['validate',str(O/'final-review.yaml')]
+elif step=='save':cmd+=['save','--content',str(O/'final-review.yaml')]
+else:cmd+=['check','--base','6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa','--require-reviews']
+env=dict(os.environ,PYTHONPATH='src',UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache')
+start=datetime.now(UTC).isoformat();log=O/('canonical-'+step+'.log')
+with log.open('xb') as out:res=subprocess.run(cmd,cwd=R,env=env,stdout=out,stderr=subprocess.STDOUT)
+r={'command':cmd,'cwd':str(R),'environment':{k:env[k] for k in ['PYTHONPATH','UV_NO_SYNC','UV_CACHE_DIR']},'started_at':start,'finished_at':datetime.now(UTC).isoformat(),'exit_code':res.returncode,'log':str(log),'log_sha256':hashlib.sha256(log.read_bytes()).hexdigest()}
+with (O/('canonical-'+step+'-execution.json')).open('x') as f:json.dump(r,f,indent=2);f.write('\n')
+print(json.dumps(r));print(log.read_text());raise SystemExit(res.returncode)

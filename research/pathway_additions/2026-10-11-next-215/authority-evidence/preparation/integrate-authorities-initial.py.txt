@@ -1,0 +1,343 @@
+"""Default: canonical authority dry run outside the repository; --apply needs root acceptance."""
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
+from pathlib import Path
+
+import yaml
+
+
+def sha(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+
+def save(path, value):
+    with path.open("x") as stream:
+        json.dump(value, stream, indent=2)
+        stream.write("\n")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for arg in ["repo-root", "selection", "output-dir"]:
+        parser.add_argument("--" + arg, required=True, type=Path)
+    parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--acceptance", type=Path)
+    parser.add_argument("--acceptance-sha256")
+    args = parser.parse_args()
+    root = args.repo_root.resolve(strict=True)
+    selection_path = args.selection.resolve(strict=True)
+    output = args.output_dir.absolute()
+    cache = Path("/private/tmp/pathwaymech-curation-authorities")
+    base = "6bdd43b77ade4ceb6ffa4e4b486d1f42e096e9aa"
+    tree = "20899b352af5d2c3c2c397d4caf851d40b231fa7"
+    assert not output.exists() and not output.is_symlink()
+    output = output.resolve()
+    assert not output.is_relative_to(root) and not output.is_relative_to(cache)
+    git = lambda *a: subprocess.check_output(["git", *a], cwd=root).decode().strip()
+    assert git("rev-parse", "HEAD") == base and git("rev-parse", "HEAD^{tree}") == tree
+    selection = read(selection_path)
+    selection_sha = sha(selection_path)
+    helper_sha = sha(Path(__file__))
+    assert selection["preparation_baseline"]["reviewed_tree"] == tree
+    target = root / "data/pathways/staphyloferrin-b-biosynthesis.yaml"
+    assert sha(target) == selection["target"]["sha256"]
+    baseline = selection["baseline_inputs_unchanged"]
+    for rel, digest in baseline.items():
+        assert sha(root / rel) == digest, (rel, "changed baseline")
+        assert (
+            hashlib.sha256(
+                subprocess.check_output(["git", "show", base + ":" + rel], cwd=root)
+            ).hexdigest()
+            == digest
+        )
+    acceptance = None
+    if args.apply:
+        assert args.acceptance and args.acceptance_sha256, (
+            "Independent root acceptance required"
+        )
+        assert sha(args.acceptance) == args.acceptance_sha256
+        acceptance = read(args.acceptance)
+        assert (
+            acceptance["status"] == "passed_independent_root_authority_selection_review"
+        )
+        for key, value in [
+            ("selection_sha256", selection_sha),
+            ("integration_helper_sha256", helper_sha),
+            ("target_sha256", sha(target)),
+            ("base_commit", base),
+        ]:
+            assert acceptance[key] == value, key
+    before = {
+        name: read(root / f"data/identifier_authorities/{name}.json")
+        for name in ["ontology", "sources"]
+    }
+    prior = read(root / "conf/identifier_sources.json")
+    entries = [x["manifest_entry"] for x in selection["selected_new_inputs"]]
+    assert len(prior) == selection["preparation_baseline"]["manifest_inputs"]
+    assert not {e["key"] for e in prior} & {e["key"] for e in entries}
+    assert not {e["path"] for e in prior} & {e["path"] for e in entries}
+    inputs = {}
+    for e in prior:
+        p = cache / "sources" / e["path"]
+        assert p.is_file()
+        inputs[e["path"]] = p
+    for item in selection["selected_new_inputs"]:
+        e = item["manifest_entry"]
+        p = Path(item["original_path"])
+        assert sha(p) == e["sha256"]
+        for proof in item["acquisition_proof"]:
+            assert sha(proof["path"]) == proof["sha256"]
+        inputs[e["path"]] = p
+    for item in selection["reused_inputs"]:
+        assert item["existing_entry_preserved"] in prior
+    # All outputs and cache links remain beneath this fresh external directory.
+    output.mkdir()
+    overlay = output / "source-cache"
+    overlay.mkdir()
+    manifest = prior + entries
+    for entry in manifest:
+        rel = Path(entry["path"])
+        assert not rel.is_absolute() and ".." not in rel.parts
+        dest = overlay / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if dest.is_symlink():
+            assert dest.resolve() == inputs[entry["path"]].resolve()
+        else:
+            assert not dest.exists()
+            dest.symlink_to(inputs[entry["path"]])
+    mpath = output / "identifier_sources.json"
+    save(mpath, manifest)
+    ids = (
+        set(before["ontology"]["terms"])
+        | set(before["sources"]["terms"])
+        | set(selection["selected_ontology_terms"])
+        | set(selection["selected_source_terms"])
+    )
+    selected = output / "selected-identifiers"
+    selected.mkdir()
+    (selected / "ids.yaml").write_text(
+        yaml.safe_dump(
+            {"id": "GO:0008150", "participants": [{"id": i} for i in sorted(ids)]},
+            sort_keys=False,
+        )
+    )
+    commands = {}
+    oc = [sys.executable, str(root / "scripts/build_ontology_identifier_snapshot.py")]
+    for prefix, name in [
+        ("GO", "go"),
+        ("CHEBI", "chebi"),
+        ("NCBITaxon", "ncbitaxon"),
+        ("RHEA", "rhea"),
+    ]:
+        oc += ["--source", prefix + "=" + str(cache / (name + ".db"))]
+    oc += [
+        "--corpus",
+        str(selected),
+        "--rhea-updates",
+        str(root / "conf/rhea_identifier_updates.json"),
+        "--cache-dir",
+        str(overlay),
+        "--output",
+        str(output / "ontology.json"),
+    ]
+    commands["ontology"] = oc
+    commands["sources"] = [
+        sys.executable,
+        str(root / "scripts/build_source_identifier_snapshot.py"),
+        "--manifest",
+        str(mpath),
+        "--cache-dir",
+        str(overlay),
+        "--records",
+        str(selected),
+        "--output",
+        str(output / "sources.json"),
+    ]
+
+    def run(pair):
+        name, command = pair
+        log = output / (name + ".log")
+        start = datetime.now(UTC).isoformat()
+        with log.open("x") as f:
+            process = subprocess.run(
+                command,
+                check=False,
+                cwd=root,
+                env={
+                    **os.environ,
+                    "PYTHONPATH": str(root / "src"),
+                    "UV_NO_SYNC": "1",
+                    "UV_CACHE_DIR": "/private/tmp/pathwaymech-curation-uv-cache",
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                },
+                stdout=f,
+                stderr=subprocess.STDOUT,
+            )
+        return {
+            "name": name,
+            "command": command,
+            "started_at": start,
+            "finished_at": datetime.now(UTC).isoformat(),
+            "exit_code": process.returncode,
+            "log": str(log),
+            "log_sha256": sha(log),
+        }
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        checks = list(pool.map(run, commands.items()))
+    save(output / "execution.json", checks)
+    assert all(c["exit_code"] == 0 for c in checks), (
+        "Builder failure; nothing maintained"
+    )
+    deltas = {}
+    for name in before:
+        after = read(output / (name + ".json"))
+        delta = {}
+        for field in ["terms", "sources"]:
+            assert before[name][field].keys() <= after[field].keys()
+            assert all(after[field][k] == v for k, v in before[name][field].items()), (
+                name,
+                field,
+                "baseline drift",
+            )
+            delta[field] = {
+                "before": len(before[name][field]),
+                "after": len(after[field]),
+                "added": sorted(after[field].keys() - before[name][field].keys()),
+                "removed": [],
+                "changed_existing": [],
+            }
+        expected = set(
+            selection[
+                "selected_ontology_terms"
+                if name == "ontology"
+                else "selected_source_terms"
+            ]
+        ) - set(before[name]["terms"])
+        assert set(delta["terms"]["added"]) == expected, (name, "unexpected additions")
+        for key, value in selection[
+            "selected_ontology_terms" if name == "ontology" else "selected_source_terms"
+        ].items():
+            assert after["terms"][key] == value, (name, key)
+        deltas[name] = {"sha256": sha(output / (name + ".json")), **delta}
+    # Actual unchanged identifier policy, with only externally generated resolver snapshots.
+    sandbox = output / "one-record-validation"
+    (sandbox / "data/pathways").mkdir(parents=True)
+    (sandbox / "conf").mkdir()
+    (sandbox / "data/identifier_authorities").mkdir()
+    shutil.copyfile(target, sandbox / "data/pathways" / target.name)
+    shutil.copyfile(
+        root / "conf/identifier_policy.yaml", sandbox / "conf/identifier_policy.yaml"
+    )
+    for name in before:
+        shutil.copyfile(
+            output / (name + ".json"),
+            sandbox / f"data/identifier_authorities/{name}.json",
+        )
+    sys.path.insert(0, str(root / "src"))
+    from pathwaymech.identifiers import identifier_errors
+
+    errors = identifier_errors([sandbox / "data/pathways" / target.name], sandbox)
+    assert not errors, errors
+    for rel, digest in baseline.items():
+        assert sha(root / rel) == digest
+    assert (
+        sha(target) == selection["target"]["sha256"]
+        and sha(selection_path) == selection_sha
+    )
+    report = {
+        "status": "passed_external_canonical_dry_run"
+        if not args.apply
+        else "passed_root_accepted_integration",
+        "completed_at": datetime.now(UTC).isoformat(),
+        "base_commit": base,
+        "baseline_tree": tree,
+        "selection_sha256": selection_sha,
+        "helper_sha256": helper_sha,
+        "mode": "apply" if args.apply else "external-dry-run",
+        "root_acceptance_sha256": args.acceptance_sha256 if args.apply else None,
+        "manifest_inputs": {
+            "before": len(prior),
+            "after": len(manifest),
+            "added": entries,
+        },
+        "checks": checks,
+        "snapshots": deltas,
+        "one_record_identifier_errors": errors,
+        "all_baseline_terms_and_source_metadata_preserved": True,
+        "maintained_writes": [],
+        "limits": [
+            "Preparer-authored replay, not independent acceptance or scientific approval.",
+            "Full cohort validation and scientific review remain separate requirements.",
+            "No raw bodies are committed; dry-run cache consists only of external links to original input bytes.",
+        ],
+    }
+    if args.apply:
+        dossier = root / "research/pathway_additions/2026-10-11-next-215"
+        for name in [
+            "authority-selection.json",
+            "authority-selection-independent-review.json",
+            "authority-integration.json",
+        ]:
+            assert not (dossier / name).exists()
+        for item in selection["selected_new_inputs"]:
+            e = item["manifest_entry"]
+            dest = cache / "sources" / e["path"]
+            original = Path(item["original_path"])
+            assert sha(original) == e["sha256"]
+            if dest.exists():
+                assert sha(dest) == e["sha256"]
+            else:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                with dest.open("xb") as stream, original.open("rb") as source:
+                    shutil.copyfileobj(source, stream)
+                assert sha(dest) == e["sha256"]
+        for name in before:
+            (root / f"data/identifier_authorities/{name}.json").write_bytes(
+                (output / (name + ".json")).read_bytes()
+            )
+        (root / "conf/identifier_sources.json").write_bytes(mpath.read_bytes())
+        for source, dest in [
+            (selection_path, dossier / "authority-selection.json"),
+            (args.acceptance, dossier / "authority-selection-independent-review.json"),
+        ]:
+            with dest.open("xb") as stream:
+                stream.write(source.read_bytes())
+        report["maintained_writes"] = [
+            "conf/identifier_sources.json",
+            "data/identifier_authorities/ontology.json",
+            "data/identifier_authorities/sources.json",
+            "research/pathway_additions/2026-10-11-next-215/authority-selection.json",
+            "research/pathway_additions/2026-10-11-next-215/authority-selection-independent-review.json",
+            "research/pathway_additions/2026-10-11-next-215/authority-integration.json",
+        ]
+        save(dossier / "authority-integration.json", report)
+    save(output / "receipt.json", report)
+    print(
+        json.dumps(
+            {
+                "status": report["status"],
+                "receipt": str(output / "receipt.json"),
+                "sha256": sha(output / "receipt.json"),
+                "deltas": deltas,
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

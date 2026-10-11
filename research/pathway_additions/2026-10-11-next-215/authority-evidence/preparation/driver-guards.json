@@ -1,0 +1,96 @@
+{
+  "status": "passed",
+  "helper_sha256": "d555221f9b6cd588ef2a46d4524aac9b29ba89197c5925139e4eb6cda0331569",
+  "checks": [
+    {
+      "name": "optimized",
+      "command": [
+        "/private/tmp/pathwaymech-next-215-20261011/.venv/bin/python",
+        "-O",
+        "-B",
+        "/private/tmp/pathwaymech-next-215-authority-selection/integrate-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-next-215-authority-selection/selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-next-215-authority-selection/guard-never-optimized"
+      ],
+      "started_at": "2026-10-11T15:15:12.876200+00:00",
+      "finished_at": "2026-10-11T15:15:13.156149+00:00",
+      "exit_code": 1,
+      "expected_rejection": "Assertions must be enabled",
+      "log": "/private/tmp/pathwaymech-next-215-authority-selection/optimized-guard.log",
+      "log_sha256": "b5fd449f2ed657b34d1e8547ca193f2cf41a2d0942bfeff1b00fbdfdeffa021c",
+      "existing_outputs_unchanged": false,
+      "new_output_absent": true
+    },
+    {
+      "name": "unaccepted-apply",
+      "command": [
+        "/private/tmp/pathwaymech-next-215-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-215-authority-selection/integrate-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-next-215-authority-selection/selection.json",
+        "--apply",
+        "--output-dir",
+        "/private/tmp/pathwaymech-next-215-authority-selection/guard-never-apply"
+      ],
+      "started_at": "2026-10-11T15:15:13.156407+00:00",
+      "finished_at": "2026-10-11T15:15:14.165734+00:00",
+      "exit_code": 1,
+      "expected_rejection": "Independent root acceptance required",
+      "log": "/private/tmp/pathwaymech-next-215-authority-selection/unaccepted-apply-guard.log",
+      "log_sha256": "3fdcee48d82e10096763d208f3298fd71dc8268e69109861c97684266af2a645",
+      "existing_outputs_unchanged": false,
+      "new_output_absent": true
+    },
+    {
+      "name": "existing-output",
+      "command": [
+        "/private/tmp/pathwaymech-next-215-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-215-authority-selection/integrate-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-next-215-authority-selection/selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-next-215-authority-selection/canonical-dry-run"
+      ],
+      "started_at": "2026-10-11T15:15:14.215647+00:00",
+      "finished_at": "2026-10-11T15:15:14.469175+00:00",
+      "exit_code": 1,
+      "expected_rejection": "AssertionError",
+      "log": "/private/tmp/pathwaymech-next-215-authority-selection/existing-output-guard.log",
+      "log_sha256": "d1b552bd9be373db9921e3dbaed44f4f87ce60edca6a8e85cb2b5a6243c9a0b7",
+      "existing_outputs_unchanged": true,
+      "new_output_absent": false
+    },
+    {
+      "name": "stale-target",
+      "command": [
+        "/private/tmp/pathwaymech-next-215-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-215-authority-selection/integrate-authorities.py",
+        "--repo-root",
+        "/private/tmp/pathwaymech-next-215-20261011",
+        "--selection",
+        "/private/tmp/pathwaymech-next-215-authority-selection/wrong-target-selection.json",
+        "--output-dir",
+        "/private/tmp/pathwaymech-next-215-authority-selection/guard-never-stale"
+      ],
+      "started_at": "2026-10-11T15:15:14.469422+00:00",
+      "finished_at": "2026-10-11T15:15:14.819675+00:00",
+      "exit_code": 1,
+      "expected_rejection": "AssertionError",
+      "log": "/private/tmp/pathwaymech-next-215-authority-selection/stale-target-guard.log",
+      "log_sha256": "75e8b04da610ca2f2c6080cba2f44da23ce07e154b2f7b1eae966a906c94fd29",
+      "existing_outputs_unchanged": false,
+      "new_output_absent": true
+    }
+  ]
+}
