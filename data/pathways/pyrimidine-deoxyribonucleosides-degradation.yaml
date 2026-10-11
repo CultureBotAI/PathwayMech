@@ -1,0 +1,510 @@
+id: MetaCyc:PWY-7181
+label: pyrimidine deoxyribonucleosides degradation
+description: The complete three-reaction MetaCyc route annotated for Escherichia coli K-12 MG1655 deaminates
+  2'-deoxycytidine to 2'-deoxyuridine through the zinc-containing Cdd homodimer, then cleaves 2'-deoxyuridine
+  to uracil and 2-deoxy-alpha-D-ribose 1-phosphate through the DeoA homodimer. A parallel DeoA branch
+  cleaves thymidine to thymine and the same sugar phosphate. The graph selects degradation-directed chemistry
+  for both reversible phosphorolyses. This native boundary ends at the free bases and sugar phosphate;
+  nucleoside uptake, subsequent sugar or ring degradation, and nucleotide salvage are separate processes.
+  Primary enzyme assays and K-12 mutant studies support the functions, while the MG1655 scope follows
+  native database annotation; mutant thymidylate-salvage phenotypes do not quantify wild-type pathway
+  flux.
+pathway_type: pyrimidine-deoxyribonucleoside-catabolism
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:15698
+  label: 2'-deoxycytidine
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16450
+  label: 2'-deoxyuridine
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57259
+  label: 2-deoxy-alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:17568
+  label: uracil
+  category: small_molecule
+- id: CHEBI:17748
+  label: thymidine
+  category: small_molecule
+- id: CHEBI:17821
+  label: thymine
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: UniProtKB:P0ABF6
+  label: Cytidine deaminase
+  category: protein
+- id: UniProtKB:P07650
+  label: Thymidine phosphorylase
+  category: protein
+- id: MetaCyc:CYTIDEAM-CPLX
+  label: cytidine/deoxycytidine deaminase
+  category: complex
+- id: MetaCyc:DEOA-CPLX
+  label: thymidine phosphorylase / uracil phosphorylase
+  category: complex
+reactions:
+- id: RHEA:13434
+  label: 2'-deoxycytidine + H2O + H(+) => 2'-deoxyuridine + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:22825
+  label: 2'-deoxyuridine + phosphate => 2-deoxy-alpha-D-ribose 1-phosphate + uracil
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:16038
+  label: thymidine + phosphate => 2-deoxy-alpha-D-ribose 1-phosphate + thymine
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: pyrimidine-edge-001
+  subject: CHEBI:15698
+  predicate: consumes
+  object: RHEA:13434
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea RHEA:13434 assigns CHEBI:15698 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_5580'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:13434
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea RHEA:13434 assigns CHEBI:15377 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_1283'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:13434
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea RHEA:13434 assigns CHEBI:15378 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_3249'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-004
+  subject: RHEA:13434
+  predicate: produces
+  object: CHEBI:16450
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea RHEA:13434 assigns CHEBI:16450 to products with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_5154'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-005
+  subject: RHEA:13434
+  predicate: produces
+  object: CHEBI:28938
+  evidence:
+  - reference_id: RHEA:13434
+    source_assertion: Rhea RHEA:13434 assigns CHEBI:28938 to products with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13433_compound_1012'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-006
+  subject: CHEBI:16450
+  predicate: consumes
+  object: RHEA:22825
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea RHEA:22825 assigns CHEBI:16450 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_5154'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-007
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:22825
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea RHEA:22825 assigns CHEBI:43474 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_5518'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-008
+  subject: RHEA:22825
+  predicate: produces
+  object: CHEBI:57259
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea RHEA:22825 assigns CHEBI:57259 to products with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_3098'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-009
+  subject: RHEA:22825
+  predicate: produces
+  object: CHEBI:17568
+  evidence:
+  - reference_id: RHEA:22825
+    source_assertion: Rhea RHEA:22825 assigns CHEBI:17568 to products with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22824_compound_4063'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-010
+  subject: CHEBI:17748
+  predicate: consumes
+  object: RHEA:16038
+  evidence:
+  - reference_id: RHEA:16038
+    source_assertion: Rhea RHEA:16038 assigns CHEBI:17748 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16038']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_4636'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-011
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:16038
+  evidence:
+  - reference_id: RHEA:16038
+    source_assertion: Rhea RHEA:16038 assigns CHEBI:43474 to substrates with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16038']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_5518'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-012
+  subject: RHEA:16038
+  predicate: produces
+  object: CHEBI:57259
+  evidence:
+  - reference_id: RHEA:16038
+    source_assertion: Rhea RHEA:16038 assigns CHEBI:57259 to products with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16038']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_3098'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-013
+  subject: RHEA:16038
+  predicate: produces
+  object: CHEBI:17821
+  evidence:
+  - reference_id: RHEA:16038
+    source_assertion: Rhea RHEA:16038 assigns CHEBI:17821 to products with coefficient 1; the compound
+      resolves to this exact ChEBI species.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16038']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16037_compound_2794'];
+      rh:compound/rh:chebi
+- id: pyrimidine-edge-014
+  subject: UniProtKB:P0ABF6
+  predicate: part_of
+  object: MetaCyc:CYTIDEAM-CPLX
+  evidence:
+  - reference_id: MetaCyc:CYTIDEAM-CPLX
+    source_assertion: The native complex contains two copies of CYTIDEAM-MONOMER.
+    source_locator: Protein[@frameid='CYTIDEAM-CPLX']/component/Protein; component/coefficient
+  - reference_id: MetaCyc:CYTIDEAM-MONOMER
+    source_assertion: The component has an explicit UNIPROT unification cross-reference to P0ABF6.
+    source_locator: Protein[@frameid='CYTIDEAM-MONOMER']/dblink[dblink-db='UNIPROT'][dblink-relationship='unification']/dblink-oid
+  - reference_id: PMID:8289286
+    source_assertion: The primary abstract describes the E. coli cytidine deaminase alpha2 dimer and active
+      sites formed across its subunit interface.
+    source_locator: Primary abstract; full publisher article was not available locally.
+  description: Homodimer membership; the protein component is not represented as an independently active
+    monomer.
+- id: pyrimidine-edge-015
+  subject: UniProtKB:P07650
+  predicate: part_of
+  object: MetaCyc:DEOA-CPLX
+  evidence:
+  - reference_id: MetaCyc:DEOA-CPLX
+    source_assertion: The native complex contains two copies of DEOA-MONOMER.
+    source_locator: Protein[@frameid='DEOA-CPLX']/component/Protein; component/coefficient
+  - reference_id: MetaCyc:DEOA-MONOMER
+    source_assertion: The component has an explicit UNIPROT unification cross-reference to P07650.
+    source_locator: Protein[@frameid='DEOA-MONOMER']/dblink[dblink-db='UNIPROT'][dblink-relationship='unification']/dblink-oid
+  - reference_id: PMID:2199449
+    source_assertion: The primary abstract reports an E. coli thymidine phosphorylase crystal dimer and
+      the deoA-derived amino-acid sequence.
+    source_locator: Primary abstract; full publisher article was not available locally.
+  description: Homodimer membership; the protein component is not represented as an independently active
+    monomer.
+- id: pyrimidine-edge-016
+  subject: MetaCyc:CYTIDEAM-CPLX
+  predicate: catalyzes
+  object: RHEA:13434
+  evidence:
+  - reference_id: MetaCyc:CYTIDEAM-RXN
+    source_assertion: CYTIDEAM-ENZRXN assigns CYTIDEAM-CPLX to deoxycytidine deamination and the reaction
+      has an exact RHEA:13434 unification link.
+    source_locator: Reaction[@frameid='CYTIDEAM-RXN']/enzymatic-reaction/Enzymatic-Reaction[@frameid='CYTIDEAM-ENZRXN']/enzyme;
+      dblink[dblink-db='RHEA']
+  - reference_id: PMID:4202859
+    source_assertion: Partially purified enzyme from E. coli Y-70-272 deaminates deoxycytidine; the assay
+      identifies deoxyuridine and substrate-specificity measurements include deoxycytidine.
+    source_locator: Materials and Methods, pp.797-798; Results, Substrate Specificity and Table VI, p.802.
+  - reference_id: PMID:17827303
+    source_assertion: In a K-12 dcd deoA background, cdd mutation strongly increased thymidine dependence;
+      this supports the deoxycytidine-to-deoxyuridine step in that mutant context.
+    source_locator: Results, From dCMP to dCyd; Figure 3; Table 1 footnote a.
+  description: Direct biochemical support is from a constitutive E. coli mutant, and genetic support is
+    from K-12 mutant derivatives; the native complex annotation supplies MG1655 scope.
+- id: pyrimidine-edge-017
+  subject: MetaCyc:DEOA-CPLX
+  predicate: catalyzes
+  object: RHEA:22825
+  evidence:
+  - reference_id: MetaCyc:URA-PHOSPH-RXN
+    source_assertion: The native URA-PHOSPH-RXN enzymatic-reaction assigns DEOA-CPLX to deoxyuridine phosphorolysis,
+      and its Rhea unification link is the reversible family member 22827.
+    source_locator: Reaction[@frameid='URA-PHOSPH-RXN']/enzymatic-reaction; reaction-direction; dblink[dblink-db='RHEA']
+  - reference_id: RHEA:22825
+    source_assertion: Rhea master 22824 has bidirectionalReaction 22827 and directionalReaction 22825;
+      22825 is the left-to-right degradation equation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824']/rh:bidirectionalReaction;
+      rh:directionalReaction; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates;
+      rh:products; rh:equation
+  - reference_id: PMID:8157589
+    source_assertion: The primary abstract reports that a deoA mutation spares deoxyuridine from catabolism
+      in E. coli dcd mutants; the work does not quantify this flux in wild-type cells.
+    source_locator: Primary abstract, results and final scope statement.
+  description: Degradation direction selected from a reversible phosphorolysis. This is the native DeoA
+    complex, not a separate Udp enzyme.
+- id: pyrimidine-edge-018
+  subject: MetaCyc:DEOA-CPLX
+  predicate: catalyzes
+  object: RHEA:16038
+  evidence:
+  - reference_id: MetaCyc:THYM-PHOSPH-RXN
+    source_assertion: The native THYM-PHOSPH-RXN enzymatic-reaction assigns DEOA-CPLX to thymidine phosphorolysis,
+      and its Rhea unification link is the reversible family member 16040.
+    source_locator: Reaction[@frameid='THYM-PHOSPH-RXN']/enzymatic-reaction; reaction-direction; dblink[dblink-db='RHEA']
+  - reference_id: RHEA:16038
+    source_assertion: Rhea master 16037 has bidirectionalReaction 16040 and directionalReaction 16038;
+      16038 is the left-to-right degradation equation.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037']/rh:bidirectionalReaction;
+      rh:directionalReaction; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16038']/rh:substrates;
+      rh:products; rh:equation
+  - reference_id: UniProtKB:P07650
+    source_assertion: Reviewed P07650 catalytic activity names thymidine plus phosphate yielding sugar
+      phosphate and thymine, with RHEA:16037; the function describes reversible phosphorolysis.
+    source_locator: /comments/0 (FUNCTION); /comments/1/reaction (CATALYTIC ACTIVITY).
+  description: Degradation direction selected from a reversible phosphorolysis. This is the native DeoA
+    complex, not a separate Udp enzyme.
+- id: pyrimidine-edge-019
+  subject: UniProtKB:P0ABF6
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: UniProtKB:P0ABF6
+    source_assertion: Reviewed P0ABF6 explicitly annotates Zn(2+) CHEBI:29105 as cofactor, supported by
+      three experimental structural publications; the note states one zinc ion.
+    source_locator: /comments/3/cofactors/0; /comments/3/note.
+  - reference_id: PMID:8289286
+    source_assertion: The E. coli cytidine deaminase structural abstract places zinc in the active-site
+      pocket formed by the dimer.
+    source_locator: Primary abstract, zinc-binding pocket and coordination description.
+  description: Bound catalytic zinc is distinguished from inhibition by added free zinc in the 1973 assay.
+    No zinc-consumption reaction is asserted.
+- id: pyrimidine-edge-020
+  subject: UniProtKB:P0ABF6
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: MetaCyc:CYTIDEAM-MONOMER
+    source_assertion: The native component CYTIDEAM-MONOMER, unified with UniProtKB:P0ABF6, is explicitly
+      located in CCO-CYTOSOL.
+    source_locator: Protein[@frameid='CYTIDEAM-MONOMER']/location/cco[@frameid='CCO-CYTOSOL']; dblink[dblink-db='UNIPROT']
+  description: Native MG1655 component-location annotation; not inferred from osmotic-shock recovery in
+    a different strain.
+- id: pyrimidine-edge-021
+  subject: UniProtKB:P07650
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: MetaCyc:DEOA-MONOMER
+    source_assertion: The native component DEOA-MONOMER, unified with UniProtKB:P07650, is explicitly
+      located in CCO-CYTOSOL.
+    source_locator: Protein[@frameid='DEOA-MONOMER']/location/cco[@frameid='CCO-CYTOSOL']; dblink[dblink-db='UNIPROT']
+  description: Native MG1655 component-location annotation; not inferred from osmotic-shock recovery in
+    a different strain.
+- id: pyrimidine-edge-022
+  subject: RHEA:13434
+  predicate: part_of
+  object: MetaCyc:PWY-7181
+  evidence:
+  - reference_id: MetaCyc:PWY-7181
+    source_assertion: The complete native reaction-list includes CYTIDEAM-RXN; its reaction-layout selects
+      L2R toward degradation products.
+    source_locator: Pathway[@frameid='PWY-7181']/reaction-list/Reaction[@frameid='CYTIDEAM-RXN']; reaction-layout[Reaction/@frameid='CYTIDEAM-RXN']/direction
+  - reference_id: MetaCyc:CYTIDEAM-RXN
+    source_assertion: The native reaction explicitly links PWY-7181 and its exact Rhea family; independent
+      Rhea triples select RHEA:13434.
+    source_locator: Reaction[@frameid='CYTIDEAM-RXN']/in-pathway; dblink[dblink-db='RHEA']
+  - reference_id: RHEA:13434
+    source_assertion: Rhea family 13433 explicitly assigns 13434 as the left-to-right directional member.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/13433']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/13434']/rh:substrates; rh:products; rh:equation
+- id: pyrimidine-edge-023
+  subject: RHEA:22825
+  predicate: part_of
+  object: MetaCyc:PWY-7181
+  evidence:
+  - reference_id: MetaCyc:PWY-7181
+    source_assertion: The complete native reaction-list includes URA-PHOSPH-RXN; its reaction-layout selects
+      L2R toward degradation products.
+    source_locator: Pathway[@frameid='PWY-7181']/reaction-list/Reaction[@frameid='URA-PHOSPH-RXN']; reaction-layout[Reaction/@frameid='URA-PHOSPH-RXN']/direction
+  - reference_id: MetaCyc:URA-PHOSPH-RXN
+    source_assertion: The native reaction explicitly links PWY-7181 and its exact Rhea family; independent
+      Rhea triples select RHEA:22825.
+    source_locator: Reaction[@frameid='URA-PHOSPH-RXN']/in-pathway; dblink[dblink-db='RHEA']
+  - reference_id: RHEA:22825
+    source_assertion: Rhea family 22824 explicitly assigns 22825 as the left-to-right directional member.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22824']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/22825']/rh:substrates; rh:products; rh:equation
+- id: pyrimidine-edge-024
+  subject: RHEA:16038
+  predicate: part_of
+  object: MetaCyc:PWY-7181
+  evidence:
+  - reference_id: MetaCyc:PWY-7181
+    source_assertion: The complete native reaction-list includes THYM-PHOSPH-RXN; its reaction-layout
+      selects L2R toward degradation products.
+    source_locator: Pathway[@frameid='PWY-7181']/reaction-list/Reaction[@frameid='THYM-PHOSPH-RXN']; reaction-layout[Reaction/@frameid='THYM-PHOSPH-RXN']/direction
+  - reference_id: MetaCyc:THYM-PHOSPH-RXN
+    source_assertion: The native reaction explicitly links PWY-7181 and its exact Rhea family; independent
+      Rhea triples select RHEA:16038.
+    source_locator: Reaction[@frameid='THYM-PHOSPH-RXN']/in-pathway; dblink[dblink-db='RHEA']
+  - reference_id: RHEA:16038
+    source_assertion: Rhea family 16037 explicitly assigns 16038 as the left-to-right directional member.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16037']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/16038']/rh:substrates; rh:products; rh:equation
+- id: pyrimidine-edge-025
+  subject: RHEA:13434
+  predicate: provides_input_for
+  object: RHEA:22825
+  evidence:
+  - reference_id: MetaCyc:PWY-7181
+    source_assertion: URA-PHOSPH-RXN has CYTIDEAM-RXN as a predecessor; their selected layouts produce
+      and consume DEOXYURIDINE, respectively.
+    source_locator: Pathway[@frameid='PWY-7181']/reaction-ordering[Reaction/@frameid='URA-PHOSPH-RXN']/predecessor-reactions/Reaction[@frameid='CYTIDEAM-RXN'];
+      reaction-layout
+  - reference_id: RHEA:13434
+    source_assertion: The selected deamination produces CHEBI:16450, the exact deoxyuridine species consumed
+      by RHEA:22825.
+    source_locator: rh:products => 13433_R; Participant_13433_compound_5154/rh:compound/rh:chebi
+  - reference_id: RHEA:22825
+    source_assertion: The selected phosphorolysis consumes CHEBI:16450, the output of RHEA:13434.
+    source_locator: rh:substrates => 22824_L; Participant_22824_compound_5154/rh:compound/rh:chebi
+  description: Shared-intermediate flow only. The separate thymidine branch is not chained to deoxyuridine
+    phosphorolysis merely because the native layout also lists it as a predecessor.
+references:
+- id: MetaCyc:PWY-7181
+  title: MetaCyc pyrimidine deoxyribonucleosides degradation
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-7181
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 358a78be26db295045230b3dfead93293a203f836e88d67f7d28d055b58ead62
+- id: MetaCyc:CYTIDEAM-RXN
+  title: MetaCyc native CYTIDEAM-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 7897d52befade144490b11bcb4a988ef0ae6c399aaac366cb0df8ba47906e425
+- id: MetaCyc:URA-PHOSPH-RXN
+  title: MetaCyc native URA-PHOSPH-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:URA-PHOSPH-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: f30864c9da2d9dbef16400db8f9faa248955cdb76bb11267e98a982400215ff8
+- id: MetaCyc:THYM-PHOSPH-RXN
+  title: MetaCyc native THYM-PHOSPH-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:THYM-PHOSPH-RXN
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 204139aae73f875ab995c9c129397b011527eafe9d26aeb542e2d584809be854
+- id: MetaCyc:CYTIDEAM-CPLX
+  title: MetaCyc native CYTIDEAM-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM-CPLX
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: a83540fb3c9887be2fb004b2e00f43bc920bf5c6e811704143f9d4025d8f879d
+- id: MetaCyc:DEOA-CPLX
+  title: MetaCyc native DEOA-CPLX
+  url: https://pathway.yeastgenome.org/getxml?META:DEOA-CPLX
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 1b414dc3564b266b9e990fd5ae7486e6dbb8cca4e857045320da94e2627028c2
+- id: MetaCyc:CYTIDEAM-MONOMER
+  title: MetaCyc native CYTIDEAM-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:CYTIDEAM-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: 135aeade3641f73a1b1d7f4330f4f127facc3822af12e1a5dbc509db9f6836f6
+- id: MetaCyc:DEOA-MONOMER
+  title: MetaCyc native DEOA-MONOMER
+  url: https://pathway.yeastgenome.org/getxml?META:DEOA-MONOMER
+  source_version: MetaCyc 22.5 public SGD-hosted native XML
+  source_sha256: cfcac422af04caa24451e2d09f17ff6c91399bc3344a4061de5c160633277d75
+- id: UniProtKB:P0ABF6
+  title: Reviewed UniProtKB P0ABF6
+  url: https://rest.uniprot.org/uniprotkb/P0ABF6.json
+  source_version: UniProt release 2026_03; response header dated 02-September-2026
+  source_sha256: ecffd6fea9810f3756dfa4dd7c17be85954ab1f19b73ad98660394b2c20a0637
+- id: UniProtKB:P07650
+  title: Reviewed UniProtKB P07650
+  url: https://rest.uniprot.org/uniprotkb/P07650.json
+  source_version: UniProt release 2026_03; response header dated 02-September-2026
+  source_sha256: 6457feb8ab1f827190467c8c6bc37cc1a397f101f6dbda9e7ae0e2aa81bc1c1c
+- id: RHEA:13434
+  title: Rhea exact directed reaction 13434
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:22825
+  title: Rhea exact directed reaction 22825
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:16038
+  title: Rhea exact directed reaction 16038
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142; complete native RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:4202859
+  title: The purification and properties of cytidine deaminase from Escherichia coli.
+  url: https://www.jstage.jst.go.jp/article/biochemistry1922/74/4/74_4_797/_pdf
+  source_version: 1973 primary full text, pp.797-803
+  source_sha256: d094077fc2c51687a68d397866a9bc3f54aff1c42ea120a602b9b1dcb0f7aed4
+- id: PMID:17827303
+  title: The Deoxycytidine Pathway for Thymidylate Synthesis in Escherichia coli
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2168750/
+  source_version: 2007 primary full text
+  source_sha256: 0638bb23989b09ca9057114d65e818c8848547e268d2181a69eea7efa68d424f
+- id: PMID:8157589
+  title: De novo synthesis of thymidylate via deoxycytidine in dcd mutants of Escherichia coli.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:8157589%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract inspected; full-text acquisition unavailable
+  source_sha256: 814e42ec6f6abb9199d43428efe36f8441e582d121904abd027a230c831a9c49
+- id: PMID:8289286
+  title: 'Cytidine deaminase. The 2.3 A crystal structure of an enzyme: transition-state analog complex.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:8289286%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract inspected; no full-text claim
+  source_sha256: 7070f1230543d24d3d26a7e26f40d157a88b1696f3d1e2271fadb6b823883b8e
+- id: PMID:2199449
+  title: Three-dimensional structure of thymidine phosphorylase from Escherichia coli at 2.8 A resolution.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:2199449%20AND%20SRC:MED&format=json&resultType=core
+  source_version: Primary abstract inspected; no full-text claim
+  source_sha256: 1bed3f0ec9b3f64ba5e9b1fcc5a543aeaffcca7cc476c31f8f090388a5f1050d
+curation_history:
+- timestamp: '2026-10-11T00:38:21Z'
+  curator: Codex
+  action: add-pathway
+  changes: Curated the full three-reaction PWY-7181 boundary after ignored-inclusive semantic deduplication;
+    verified exact Rhea species/directions, native Cdd and DeoA dimers, source-specific locations and
+    zinc evidence, with primary strain and access limitations retained.
+  llm_assisted: true
