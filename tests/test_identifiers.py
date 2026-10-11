@@ -185,6 +185,47 @@ def test_cross_reference_label_cannot_be_used_as_a_canonical_authority(corpus):
     assert identifier_errors(corpus["root"])
 
 
+@pytest.mark.parametrize("case", ["verified", "missing", "reaction", "taxon", "other_record"])
+def test_metacyc_pathbank_participant_policy_preserves_existence_and_scope(corpus, case):
+    """Apply the real policy to independent fixture identities, not corpus labels."""
+    policy_path = Path(__file__).resolve().parents[1] / "conf/identifier_policy.yaml"
+    policy = yaml.safe_load(policy_path.read_text())
+    corpus["config"]["contextual_labels"] = [
+        rule for rule in policy["contextual_labels"] if rule["namespace"] == "PathBank"
+    ]
+    for prefix in ("MetaCyc", "PathBank"):
+        corpus["config"]["namespaces"][prefix] = {
+            "snapshot": "data/identifier_authorities/test.json", "policy": "canonical",
+        }
+    corpus["snapshot"]["terms"].update({
+        "MetaCyc:TEST-PWY": {
+            "label": "independent pathway", "synonyms": [], "source": "fixture",
+        },
+        "PathBank:SMPTEST/ProteinComplex/1": {
+            "label": "native assembly", "synonyms": [], "source": "fixture",
+            "label_kind": "source_context",
+        },
+    })
+    corpus["record"].update(id="MetaCyc:TEST-PWY", label="independent pathway")
+    participant = {"id": "PathBank:SMPTEST/ProteinComplex/1", "label": "scoped assembly"}
+    section = {"reaction": "reactions", "taxon": "taxa"}.get(case, "participants")
+    if case == "missing":
+        participant["id"] = "PathBank:SMPTEST/ProteinComplex/missing"
+    elif case == "other_record":
+        corpus["record"].update(id="GO:0000001", label="example biological process")
+    corpus["record"][section] = [participant]
+    _write_record(corpus)
+    _write_config(corpus)
+    _write_snapshot(corpus)
+
+    errors = identifier_errors(corpus["root"])
+    if case == "verified":
+        assert errors == []
+    else:
+        assert errors
+        assert any(participant["id"] in error for error in errors)
+
+
 @pytest.mark.parametrize("outside_scope", ["record_prefix", "section", "namespace"])
 def test_contextual_waiver_cannot_escape_its_declared_scope(corpus, outside_scope):
     _contextual_reaction(corpus)

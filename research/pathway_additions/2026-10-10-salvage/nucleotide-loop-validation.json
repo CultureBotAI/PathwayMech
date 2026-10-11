@@ -1,0 +1,78 @@
+{
+  "started_at": "2026-10-11T00:13:44.573318+00:00",
+  "finished_at": "2026-10-11T00:13:53.810229+00:00",
+  "target": "data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml",
+  "target_sha256": "8453146fc5cc438fd95be5acc623ba0f6fbe52e647ad21f1fa2dc535ee619184",
+  "counts": {
+    "participants": 17,
+    "reactions": 3,
+    "edges": 25,
+    "evidence": 45,
+    "references": 21
+  },
+  "checks": [
+    {
+      "command": [
+        "/private/tmp/pathwaymech-salvage-next-20261010/.venv/bin/python",
+        "/private/tmp/pathwaymech-salvage-next-20261010/research/pathway_additions/2026-10-10-salvage/nucleotide-loop-replay.py"
+      ],
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-salvage-evidence/nucleotide-loop/final-source-replay.log",
+      "outcome": "passed"
+    },
+    {
+      "check": "Native schema, exact14chemical sides,3directions,3atom/chargebalances,45assertion bounds, issue provenance correction",
+      "outcome": "passed",
+      "details": "Exact nativeRhea replay and JSON projection; everyside coefficient1. Native30370 and Rhea30367family attribution remain separate."
+    },
+    {
+      "command": [
+        "/private/tmp/pathwaymech-salvage-next-20261010/.venv/bin/pathwaymech-validate-strict",
+        "/private/tmp/pathwaymech-salvage-next-20261010/data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml"
+      ],
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-salvage-evidence/nucleotide-loop/final-strict.log",
+      "outcome": "passed"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml"
+      ],
+      "exit_code": 0,
+      "log": "/private/tmp/pathwaymech-salvage-evidence/nucleotide-loop/final-diff-check.log",
+      "outcome": "passed"
+    }
+  ],
+  "scientific_review": false,
+  "full_gates": "Full validate/test/lint/render/identifier gates delegated to root after frozen integration; not certified by this author receipt.",
+  "known_prior_check": "An accidental pathwaymech-validate --help invocation validated the then-in-progress corpus and failed on another draft edge[35] occurs_in category. This target has25edges. Root was notified; no corpuspass inferred.",
+  "initial_author_hash": "2a82f923d5d81a82030bf680396c17842c71e1005f1fd37c0ef4d10aed0d2b99",
+  "pre_review_fix_hash": "6ffc41e8827aab8bd22242b568233e1c0361e18104e31469188ec68d5937afec",
+  "review_fix": "nla-edge-023 separates native RXN8770bidirectional30370/physiologicalLTR from Rhea master30367/directional30368 triples; graphnodes/endpoints/chemistry unchanged. Issue number supplied in curation receipt.",
+  "iModulon_context": "Shared root receipt e_coli/precise_mg1655: cobT b1991,cobS b1992,cobC b0638 each one gene hit and zero module-namehits. No membership absence or catalytic inference; no summarize applicable.",
+  "review_fix_issue": "https://github.com/CultureBotAI/PathwayMech/issues/329",
+  "review_fix_before_assertion": "RXN-8770 supplies the same hydrolysis sides and a bidirectional RHEA:30370 cross-reference. Its physiological L2R direction and the Rhea 30367 family select directional RHEA:30368.",
+  "review_fix_after_assertions": [
+    "PWY-5509 lists RXN-8770 as a member and selects L2R in reaction-layout.",
+    "RXN-8770 supplies the hydrolysis sides, a bidirectional RHEA:30370 cross-reference and a PHYSIOL-LEFT-TO-RIGHT direction. Selection of RHEA:30368 additionally uses the separately cited Rhea family.",
+    "Rhea master 30367 links bidirectional reaction 30370 and directional reaction 30368. Reaction 30368 consumes master side 30367_L and produces 30367_R, selecting the hydrolysis direction that matches native RXN-8770."
+  ],
+  "post_lint_replay": {
+    "observed_at": "2026-10-11T00:17:57.367122+00:00",
+    "command": ".venv/bin/python research/pathway_additions/2026-10-10-salvage/nucleotide-loop-replay.py",
+    "exit_code": 0,
+    "execution_session": 37721,
+    "changes": "Ruff formatting and import cleanup; strict four-column zip; unused variable renamed. Record and raw source bodies unchanged.",
+    "script_sha256": "068f036b2c5bde75c67b76048e428d2ba93f9fadb98c9f5f155e082baa27fe48",
+    "log": "/private/tmp/pathwaymech-salvage-loop-replay-post-lint.log",
+    "log_sha256": "77d0f174298b98202754db31b1a8b63717f08d438fb41227607d83d794fc9231",
+    "output": "/private/tmp/pathwaymech-salvage-evidence/nucleotide-loop/source-replay.json",
+    "output_sha256": "17fdd8122086fdd0b043bfef916e0a6265e7c421ba65b4623fef08d4ac8e5e5e",
+    "side_occurrences": 14,
+    "balanced_reactions": 3
+  }
+}

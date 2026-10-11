@@ -1,0 +1,39 @@
+{
+  "review_type": "bounded independent technical policy review; not scientific target review",
+  "reviewer": "codex /root/pathway_literature_candidates",
+  "author_independence": "Reviewer did not author policy/docs/tests changes. Reviewer authored distinct allantoin record, which uses no PathBank participant and is excluded from this review.",
+  "date_utc": "2026-10-11T00:11:13.072577+00:00",
+  "base": "83c2c597b300b8c716a32b96b6cbe8fb2a6ccb0a",
+  "inputs": [
+    {
+      "path": "conf/identifier_policy.yaml",
+      "sha256": "3e19ecbbe980e44198405ae0cf37b5fd17ae4c88c05dbf36fab482b2ddd38bd1"
+    },
+    {
+      "path": "docs/IDENTIFIERS.md",
+      "sha256": "dba50be9c2a6cf7a166790f3bab4d86fd89dbc3bea042a0f8e013e9586624328"
+    },
+    {
+      "path": "tests/test_identifiers.py",
+      "sha256": "bbfd0cf78bae77e684032bea073928f18eab5b1c74cdd6a568c5b854474de4d2"
+    },
+    {
+      "path": "src/pathwaymech/identifiers.py",
+      "sha256": "51d1eb0c4c02657ef5311ca8f3e9bfbd63f9cec5c1db8080b9abcde7703ce6e5"
+    }
+  ],
+  "assessment": "PASS: new contextual-label rule is confined to namespacePathBank, sectionparticipants, recordprefixMetaCyc; independent identifier lookup occurs first and remains mandatory. Source-context authority is not upgraded to canonical. No reaction/taxon/pathway-label or other-record-prefix waiver introduced. Docs accurately separate native identity from biological membership/activity evidence.",
+  "checks": [
+    {
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 .venv/bin/python -m pytest tests/test_identifiers.py -k metacyc_pathbank_participant_policy_preserves_existence_and_scope -q",
+      "result": "pass",
+      "exit_code": 0,
+      "summary": "5 passed, 56 deselected in 0.42s"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Contextual-label policy validates declared section/prefix/existence, not biological component roles. Native-source and edge-evidence scientific review remains required.",
+    "Full required corpus gates are pending and not claimed by this bounded check."
+  ]
+}

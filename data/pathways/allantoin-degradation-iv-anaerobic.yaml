@@ -1,0 +1,1167 @@
+id: MetaCyc:PWY0-41
+label: allantoin degradation IV (anaerobic)
+description: The Escherichia coli K-12 MG1655 anaerobic route converts S-allantoin through allantoate,
+  S-ureidoglycine, S-ureidoglycolate and oxalurate to oxamate, with carbamoyl phosphate supporting ATP
+  formation by AllK and subsequent spontaneous carbamate breakdown. The formal native endpoint is CO2,
+  not a claim that dissolved inorganic carbon occurs exclusively as CO2. AllB, AllC and AllD have independently
+  identified homomeric assemblies. AllF, AllG and AllH jointly supply OXTCase function; their enables
+  edges preserve component roles without claiming individual sufficiency, a resolved whole-complex stoichiometry,
+  or a formal AND relation. The Mg2+ context node refers to whole-OXTCase assay dependence and AllK assay
+  conditions, not subunit-specific binding. The native mirror predates the 2024 AllFGH assignment and
+  carries a stale AllC Rhea link; current protein and primary evidence resolve those limits. AllD uses
+  NAD+, and alternative metal preparations are qualified at their edges. The separate glyoxylate branch,
+  urea-producing yeast routes, transport, regulation, NADP substitution, bicarbonate hydration, and duplicate
+  combined kinase/decomposition nets are outside this record.
+pathway_type: allantoin-degradation
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:15678
+  label: (S)-(+)-allantoin
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:17536
+  label: allantoate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:59947
+  label: (S)-2-ureidoglycine zwitterion
+  category: small_molecule
+- id: CHEBI:28938
+  label: ammonium
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:57296
+  label: (-)-ureidoglycolate
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57824
+  label: oxalurate
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:58363
+  label: oxamate
+  category: small_molecule
+- id: CHEBI:58228
+  label: carbamoyl phosphate(2-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:13941
+  label: carbamate
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: UniProtKB:P77671
+  label: Allantoinase
+  category: protein
+- id: UniProtKB:P77425
+  label: Allantoate amidohydrolase
+  category: protein
+- id: UniProtKB:P75713
+  label: (S)-ureidoglycine aminohydrolase
+  category: protein
+- id: UniProtKB:P77555
+  label: Ureidoglycolate dehydrogenase (NAD(+))
+  category: protein
+- id: UniProtKB:Q47208
+  label: Oxamate carbamoyltransferase subunit AllF
+  category: protein
+- id: UniProtKB:P77129
+  label: Oxamate carbamoyltransferase subunit AllG
+  category: protein
+- id: UniProtKB:P0AAS5
+  label: Oxamate carbamoyltransferase subunit AllH
+  category: protein
+- id: UniProtKB:P37306
+  label: Carbamate kinase
+  category: protein
+- id: MetaCyc:CPLX-64
+  label: allantoinase
+  category: complex
+- id: MetaCyc:CPLX-7524
+  label: allantoate amidohydrolase
+  category: complex
+- id: MetaCyc:CPLX0-7993
+  label: ureidoglycolate dehydrogenase
+  category: complex
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:17030
+  label: (S)-allantoin + H2O => allantoate + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:27486
+  label: allantoate + H2O + 2 H(+) => (S)-2-ureidoglycine + NH4(+) + CO2
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:25242
+  label: (S)-2-ureidoglycine + H2O => (S)-ureidoglycolate + NH4(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:15330
+  label: (S)-ureidoglycolate + NAD(+) => N-carbamoyl-2-oxoglycine + NADH + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:22986
+  label: N-carbamoyl-2-oxoglycine + phosphate => oxamate + carbamoyl phosphate
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:30757
+  label: carbamoyl phosphate + ADP => carbamate + ATP
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:15650
+  label: carbamate + 2 H(+) => NH4(+) + CO2
+  direction: left_to_right
+mechanistic_edges:
+- id: allantoin-anaerobic-edge-001
+  subject: CHEBI:15678
+  predicate: consumes
+  object: RHEA:17030
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 substrates contain CHEBI:15678 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:substrates; http://rdf.rhea-db.org/17029_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_2545; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17030
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:substrates; http://rdf.rhea-db.org/17029_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_1283; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-003
+  subject: RHEA:17030
+  predicate: produces
+  object: CHEBI:17536
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 products contain CHEBI:17536 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:products; http://rdf.rhea-db.org/17029_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_4604; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-004
+  subject: RHEA:17030
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17030 products contain CHEBI:15378 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17030 rh:products; http://rdf.rhea-db.org/17029_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17029_compound_3249; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-005
+  subject: CHEBI:17536
+  predicate: consumes
+  object: RHEA:27486
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 substrates contain CHEBI:17536 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates; http://rdf.rhea-db.org/27485_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_4604; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-006
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:27486
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates; http://rdf.rhea-db.org/27485_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_1283; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-007
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27486
+  description: Coefficient 2 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 substrates contain CHEBI:15378 with coefficient 2.
+    source_locator: http://rdf.rhea-db.org/27486 rh:substrates; http://rdf.rhea-db.org/27485_L rh:contains2
+      http://rdf.rhea-db.org/Participant_27485_compound_3249; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-008
+  subject: RHEA:27486
+  predicate: produces
+  object: CHEBI:59947
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 products contain CHEBI:59947 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products; http://rdf.rhea-db.org/27485_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_6148; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-009
+  subject: RHEA:27486
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 products contain CHEBI:28938 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products; http://rdf.rhea-db.org/27485_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_1012; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-010
+  subject: RHEA:27486
+  predicate: produces
+  object: CHEBI:16526
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27486 products contain CHEBI:16526 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27486 rh:products; http://rdf.rhea-db.org/27485_R rh:contains1
+      http://rdf.rhea-db.org/Participant_27485_compound_4391; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-011
+  subject: CHEBI:59947
+  predicate: consumes
+  object: RHEA:25242
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 substrates contain CHEBI:59947 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:substrates; http://rdf.rhea-db.org/25241_L rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_6148; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-012
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:25242
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 substrates contain CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:substrates; http://rdf.rhea-db.org/25241_L rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_1283; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-013
+  subject: RHEA:25242
+  predicate: produces
+  object: CHEBI:57296
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 products contain CHEBI:57296 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:products; http://rdf.rhea-db.org/25241_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_4140; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-014
+  subject: RHEA:25242
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25242 products contain CHEBI:28938 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/25242 rh:products; http://rdf.rhea-db.org/25241_R rh:contains1
+      http://rdf.rhea-db.org/Participant_25241_compound_1012; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-015
+  subject: CHEBI:57296
+  predicate: consumes
+  object: RHEA:15330
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15329
+    source_assertion: RHEA:15330 substrates contain CHEBI:57296 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15330 rh:substrates; http://rdf.rhea-db.org/15329_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15329_compound_4140; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-016
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:15330
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15329
+    source_assertion: RHEA:15330 substrates contain CHEBI:57540 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15330 rh:substrates; http://rdf.rhea-db.org/15329_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15329_compound_3484; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-017
+  subject: RHEA:15330
+  predicate: produces
+  object: CHEBI:57824
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15329
+    source_assertion: RHEA:15330 products contain CHEBI:57824 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15330 rh:products; http://rdf.rhea-db.org/15329_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15329_compound_1605; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-018
+  subject: RHEA:15330
+  predicate: produces
+  object: CHEBI:57945
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15329
+    source_assertion: RHEA:15330 products contain CHEBI:57945 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15330 rh:products; http://rdf.rhea-db.org/15329_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15329_compound_1650; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-019
+  subject: RHEA:15330
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15329
+    source_assertion: RHEA:15330 products contain CHEBI:15378 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15330 rh:products; http://rdf.rhea-db.org/15329_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15329_compound_3249; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-020
+  subject: CHEBI:57824
+  predicate: consumes
+  object: RHEA:22986
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:22984
+    source_assertion: RHEA:22986 substrates contain CHEBI:57824 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22986 rh:substrates; http://rdf.rhea-db.org/22984_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22984_compound_1605; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-021
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:22986
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:22984
+    source_assertion: RHEA:22986 substrates contain CHEBI:43474 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22986 rh:substrates; http://rdf.rhea-db.org/22984_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22984_compound_5518; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-022
+  subject: RHEA:22986
+  predicate: produces
+  object: CHEBI:58363
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:22984
+    source_assertion: RHEA:22986 products contain CHEBI:58363 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22986 rh:products; http://rdf.rhea-db.org/22984_L rh:contains1
+      http://rdf.rhea-db.org/Participant_22984_compound_1815; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-023
+  subject: RHEA:22986
+  predicate: produces
+  object: CHEBI:58228
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:22984
+    source_assertion: RHEA:22986 products contain CHEBI:58228 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/22986 rh:products; http://rdf.rhea-db.org/22984_L rh:contains1
+      http://rdf.rhea-db.org/Participant_22984_compound_4600; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-024
+  subject: CHEBI:58228
+  predicate: consumes
+  object: RHEA:30757
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:30755
+    source_assertion: RHEA:30757 substrates contain CHEBI:58228 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30757 rh:substrates; http://rdf.rhea-db.org/30755_R rh:contains1
+      http://rdf.rhea-db.org/Participant_30755_compound_4600; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-025
+  subject: CHEBI:456216
+  predicate: consumes
+  object: RHEA:30757
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:30755
+    source_assertion: RHEA:30757 substrates contain CHEBI:456216 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30757 rh:substrates; http://rdf.rhea-db.org/30755_R rh:contains1
+      http://rdf.rhea-db.org/Participant_30755_compound_2710; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-026
+  subject: RHEA:30757
+  predicate: produces
+  object: CHEBI:13941
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:30755
+    source_assertion: RHEA:30757 products contain CHEBI:13941 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30757 rh:products; http://rdf.rhea-db.org/30755_L rh:contains1
+      http://rdf.rhea-db.org/Participant_30755_compound_4239; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-027
+  subject: RHEA:30757
+  predicate: produces
+  object: CHEBI:30616
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:30755
+    source_assertion: RHEA:30757 products contain CHEBI:30616 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30757 rh:products; http://rdf.rhea-db.org/30755_L rh:contains1
+      http://rdf.rhea-db.org/Participant_30755_compound_6372; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-028
+  subject: CHEBI:13941
+  predicate: consumes
+  object: RHEA:15650
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15649
+    source_assertion: RHEA:15650 substrates contain CHEBI:13941 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15650 rh:substrates; http://rdf.rhea-db.org/15649_L rh:contains1
+      http://rdf.rhea-db.org/Participant_15649_compound_4239; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-029
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:15650
+  description: Coefficient 2 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15649
+    source_assertion: RHEA:15650 substrates contain CHEBI:15378 with coefficient 2.
+    source_locator: http://rdf.rhea-db.org/15650 rh:substrates; http://rdf.rhea-db.org/15649_L rh:contains2
+      http://rdf.rhea-db.org/Participant_15649_compound_3249; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-030
+  subject: RHEA:15650
+  predicate: produces
+  object: CHEBI:28938
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15649
+    source_assertion: RHEA:15650 products contain CHEBI:28938 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15650 rh:products; http://rdf.rhea-db.org/15649_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15649_compound_1012; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-031
+  subject: RHEA:15650
+  predicate: produces
+  object: CHEBI:16526
+  description: Coefficient 1 in the selected directed Rhea equation; formal stereochemistry and charge
+    are retained.
+  evidence:
+  - reference_id: RHEA:15649
+    source_assertion: RHEA:15650 products contain CHEBI:16526 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15650 rh:products; http://rdf.rhea-db.org/15649_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15649_compound_4391; rh:compound/rh:accession
+- id: allantoin-anaerobic-edge-032
+  subject: RHEA:17030
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Native pathway reaction, with the directed current Rhea chemistry independently resolved.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 contains the ammonia-producing upstream subpathway PWY-5698.
+    source_locator: Pathway[@frameid="PWY0-41"]/sub-pathways; reaction-list
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: PWY-5698 includes native reaction ALLANTOINASE-RXN.
+    source_locator: Pathway[@frameid="PWY-5698"]/reaction-list
+  - reference_id: MetaCyc:ALLANTOINASE-RXN
+    source_assertion: The native reaction links to RHEA:17030; its participants agree with the selected
+      physiological transformation.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: RHEA:17029
+    source_assertion: RHEA:17029 has directional reaction RHEA:17030.
+    source_locator: http://rdf.rhea-db.org/17029 rh:directionalReaction
+- id: allantoin-anaerobic-edge-033
+  subject: RHEA:27486
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Native pathway reaction, with the directed current Rhea chemistry independently resolved.
+    The obsolete native cross-reference is rejected rather than silently reused.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 contains the ammonia-producing upstream subpathway PWY-5698.
+    source_locator: Pathway[@frameid="PWY0-41"]/sub-pathways; reaction-list
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: PWY-5698 includes native reaction ALLANTOATE-DEIMINASE-RXN.
+    source_locator: Pathway[@frameid="PWY-5698"]/reaction-list
+  - reference_id: MetaCyc:ALLANTOATE-DEIMINASE-RXN
+    source_assertion: Native sides produce S-ureidoglycine, ammonium and carbon dioxide from allantoate;
+      the old Rhea13594 link is not accepted as the current mapping.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: UniProtKB:P77425
+    source_assertion: 'Current AllC catalytic annotation identifies the ureidoglycine-producing reaction
+      as RHEA:27485, supported by PMID:20038185. Evidence: ECO:0000269.'
+    source_locator: comments[1].reaction.reactionCrossReferences; evidences
+  - reference_id: RHEA:27485
+    source_assertion: RHEA:27485 has directional reaction RHEA:27486.
+    source_locator: http://rdf.rhea-db.org/27485 rh:directionalReaction
+- id: allantoin-anaerobic-edge-034
+  subject: RHEA:25242
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Native pathway reaction, with the directed current Rhea chemistry independently resolved.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 contains the ammonia-producing upstream subpathway PWY-5698.
+    source_locator: Pathway[@frameid="PWY0-41"]/sub-pathways; reaction-list
+  - reference_id: MetaCyc:PWY-5698
+    source_assertion: PWY-5698 includes native reaction URUR-RXN.
+    source_locator: Pathway[@frameid="PWY-5698"]/reaction-list
+  - reference_id: MetaCyc:URUR-RXN
+    source_assertion: The native reaction links to RHEA:25242; its participants agree with the selected
+      physiological transformation.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: RHEA:25241
+    source_assertion: RHEA:25241 has directional reaction RHEA:25242.
+    source_locator: http://rdf.rhea-db.org/25241 rh:directionalReaction
+- id: allantoin-anaerobic-edge-035
+  subject: RHEA:15330
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Native pathway reaction, with the directed current Rhea chemistry independently resolved.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 includes native reaction RXN0-7024.
+    source_locator: Pathway[@frameid="PWY0-41"]/reaction-list
+  - reference_id: MetaCyc:RXN0-7024
+    source_assertion: The native reaction links to RHEA:15330; its participants agree with the selected
+      physiological transformation.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: RHEA:15329
+    source_assertion: RHEA:15329 has directional reaction RHEA:15330.
+    source_locator: http://rdf.rhea-db.org/15329 rh:directionalReaction
+- id: allantoin-anaerobic-edge-036
+  subject: RHEA:22986
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Native pathway reaction, with the directed current Rhea chemistry independently resolved.
+    The mirror still marks the enzyme hypothetical; the 2024 AllFGH study supplies experimental support.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 includes native reaction OXAMATE-CARBAMOYLTRANSFERASE-RXN.
+    source_locator: Pathway[@frameid="PWY0-41"]/reaction-list
+  - reference_id: MetaCyc:OXAMATE-CARBAMOYLTRANSFERASE-RXN
+    source_assertion: The native reaction links to RHEA:22986; its participants agree with the selected
+      physiological transformation.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: RHEA:22984
+    source_assertion: RHEA:22984 has directional reaction RHEA:22986.
+    source_locator: http://rdf.rhea-db.org/22984 rh:directionalReaction
+- id: allantoin-anaerobic-edge-037
+  subject: RHEA:30757
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Native pathway reaction, with the directed current Rhea chemistry independently resolved.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 includes native reaction RXN-14196.
+    source_locator: Pathway[@frameid="PWY0-41"]/reaction-list
+  - reference_id: MetaCyc:RXN-14196
+    source_assertion: The native reaction links to RHEA:30758; its participants agree with the selected
+      physiological transformation.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: RHEA:30755
+    source_assertion: RHEA:30755 has directional reaction RHEA:30757; native cross-reference RHEA:30758
+      is its bidirectional reaction.
+    source_locator: http://rdf.rhea-db.org/30755 rh:directionalReaction; rh:bidirectionalReaction
+- id: allantoin-anaerobic-edge-038
+  subject: RHEA:15650
+  predicate: part_of
+  object: MetaCyc:PWY0-41
+  description: Spontaneous carbamate decomposition with the native CO2 endpoint; no enzyme is assigned.
+    The bicarbonate alternative and combined kinase net are excluded to avoid duplicate chemistry.
+  evidence:
+  - reference_id: MetaCyc:PWY0-41
+    source_assertion: PWY0-41 includes native reaction RXN0-5222.
+    source_locator: Pathway[@frameid="PWY0-41"]/reaction-list
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: The native reaction links to RHEA:15650; its participants agree with the selected
+      physiological transformation.
+    source_locator: Reaction/left; Reaction/right; Reaction/dblink
+  - reference_id: RHEA:15649
+    source_assertion: RHEA:15649 has directional reaction RHEA:15650.
+    source_locator: http://rdf.rhea-db.org/15649 rh:directionalReaction
+  - reference_id: MetaCyc:RXN0-5222
+    source_assertion: RXN0-5222 is marked spontaneous and converts carbamate plus two protons to ammonium
+      and carbon dioxide.
+    source_locator: Reaction/spontaneous; left; right; reaction-direction
+- id: allantoin-anaerobic-edge-039
+  subject: UniProtKB:P77671
+  predicate: part_of
+  object: MetaCyc:CPLX-64
+  description: 4 identical P77671 subunits form this native assembly; the protein is not separately assigned
+    isolated-subunit catalysis.
+  evidence:
+  - reference_id: MetaCyc:CPLX-64
+    source_assertion: The native complex contains 4 copies of its protein monomer.
+    source_locator: Protein/component/Protein; Protein/component/coefficient
+  - reference_id: UniProtKB:P77671
+    source_assertion: 'Homotetramer annotation supports the assembly; its BioCyc monomer cross-reference
+      grounds the component identity. Evidence: ECO:0000269.'
+    source_locator: comments[6] SUBUNIT; uniProtKBCrossReferences[database=BioCyc]
+  - reference_id: PMID:11092864
+    source_assertion: The experimentally characterized protein is tetrameric.
+    source_locator: Results, purification and native molecular-mass determination
+- id: allantoin-anaerobic-edge-040
+  subject: UniProtKB:P77425
+  predicate: part_of
+  object: MetaCyc:CPLX-7524
+  description: 2 identical P77425 subunits form this native assembly; the protein is not separately assigned
+    isolated-subunit catalysis.
+  evidence:
+  - reference_id: MetaCyc:CPLX-7524
+    source_assertion: The native complex contains 2 copies of its protein monomer.
+    source_locator: Protein/component/Protein; Protein/component/coefficient
+  - reference_id: UniProtKB:P77425
+    source_assertion: 'Homodimer annotation supports the assembly; its BioCyc monomer cross-reference
+      grounds the component identity. Evidence: ECO:0000269.'
+    source_locator: comments[6] SUBUNIT; uniProtKBCrossReferences[database=BioCyc]
+  - reference_id: PMID:17362992
+    source_assertion: The AllC structural study describes its dimerization domain.
+    source_locator: Abstract, dimerization domain and overall assembly
+- id: allantoin-anaerobic-edge-041
+  subject: UniProtKB:P77555
+  predicate: part_of
+  object: MetaCyc:CPLX0-7993
+  description: 2 identical P77555 subunits form this native assembly; the protein is not separately assigned
+    isolated-subunit catalysis.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-7993
+    source_assertion: The native complex contains 2 copies of its protein monomer.
+    source_locator: Protein/component/Protein; Protein/component/coefficient
+  - reference_id: UniProtKB:P77555
+    source_assertion: 'Homodimer annotation supports the assembly; its BioCyc monomer cross-reference
+      grounds the component identity. Evidence: ECO:0000269.'
+    source_locator: comments[4] SUBUNIT; uniProtKBCrossReferences[database=BioCyc]
+  - reference_id: PMID:23284870
+    source_assertion: The experimentally characterized protein is dimeric.
+    source_locator: Results/Overall Structure (s2a), size-exclusion chromatography and dimer interface
+- id: allantoin-anaerobic-edge-042
+  subject: MetaCyc:CPLX-64
+  predicate: catalyzes
+  object: RHEA:17030
+  description: Purified E. coli AllB hydrolyzes allantoin; the native tetramer is used as the catalyst.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: 'Catalytic activity identifies RHEA:17029 for this experimentally characterized
+      protein. Evidence: ECO:0000269.'
+    source_locator: comments[1].reaction; evidences
+  - reference_id: PMID:11092864
+    source_assertion: Purified E. coli AllB hydrolyzes allantoin; the native tetramer is used as the catalyst.
+    source_locator: Results, allantoinase purification and activity
+  - reference_id: MetaCyc:CPLX-64
+    source_assertion: The native assembly is linked to the corresponding enzymatic reaction.
+    source_locator: Protein/catalyzes
+- id: allantoin-anaerobic-edge-043
+  subject: MetaCyc:CPLX-7524
+  predicate: catalyzes
+  object: RHEA:27486
+  description: AllC produces S-ureidoglycine; separate AllE activity is needed for subsequent ureidoglycolate
+    formation.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: 'Catalytic activity identifies RHEA:27485 for this experimentally characterized
+      protein. Evidence: ECO:0000269.'
+    source_locator: comments[1].reaction; evidences
+  - reference_id: PMID:20038185
+    source_assertion: AllC produces S-ureidoglycine; separate AllE activity is needed for subsequent ureidoglycolate
+      formation.
+    source_locator: Abstract, reassignment of two successive bacterial reactions
+  - reference_id: MetaCyc:CPLX-7524
+    source_assertion: The native assembly is linked to the corresponding enzymatic reaction.
+    source_locator: Protein/catalyzes
+- id: allantoin-anaerobic-edge-044
+  subject: MetaCyc:CPLX0-7993
+  predicate: catalyzes
+  object: RHEA:15330
+  description: AllD is an NAD-dependent ureidoglycolate dehydrogenase; the dimer is supported by structure
+    and solution size exclusion.
+  evidence:
+  - reference_id: UniProtKB:P77555
+    source_assertion: 'Catalytic activity identifies RHEA:15329 for this experimentally characterized
+      protein. Evidence: ECO:0000269.'
+    source_locator: comments[1].reaction; evidences
+  - reference_id: PMID:23284870
+    source_assertion: AllD is an NAD-dependent ureidoglycolate dehydrogenase; the dimer is supported by
+      structure and solution size exclusion.
+    source_locator: Results s2a; Introduction, cofactor specificity; Figure S2
+  - reference_id: MetaCyc:CPLX0-7993
+    source_assertion: The native assembly is linked to the corresponding enzymatic reaction.
+    source_locator: Protein/catalyzes
+- id: allantoin-anaerobic-edge-045
+  subject: UniProtKB:P75713
+  predicate: catalyzes
+  object: RHEA:25242
+  description: AllE catalyzes the second, distinct hydrolysis to S-ureidoglycolate. Current monomer assignment
+    is curator inference, not an experimental oligomerization claim.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: AllE catalytic activity is RHEA:25241 (experimental evidence PMID:19935661; curator
+      inference PMID:20038185); SUBUNIT is monomer by curator inference.
+    source_locator: comments[1].reaction; comments[3] SUBUNIT
+  - reference_id: PMID:19935661
+    source_assertion: Ureidoglycine aminohydrolase catalyzes formation of ureidoglycolate in the characterized
+      ureide-degradation system.
+    source_locator: Abstract
+  - reference_id: PMID:20038185
+    source_assertion: Bacterial AllE catalyzes the step after AllC produces S-ureidoglycine.
+    source_locator: Abstract
+- id: allantoin-anaerobic-edge-046
+  subject: UniProtKB:Q47208
+  predicate: enables
+  object: RHEA:22986
+  description: Functional component of jointly required AllF/AllG/AllH oxamate carbamoyltransferase. No
+    single-subunit sufficiency, resolved assembly stoichiometry, or formal graph AND gate is asserted.
+    Purified reverse-direction assays used coexpressed protein and Mg2+; catabolic direction is supported
+    by genetics and current annotation.
+  evidence:
+  - reference_id: UniProtKB:Q47208
+    source_assertion: AllF/G/H are the three OXTCase component types (ECO:0000269); physiological RHEA:22986
+      direction is curator inference (ECO:0000305) from PMID:38888336.
+    source_locator: comments[0] FUNCTION; comments[1].physiologicalReactions; comments[5] SUBUNIT
+  - reference_id: PMID:38888336
+    source_assertion: 'All three gene products jointly restore oxamate formation; coexpressed purified
+      protein catalyzes the reverse oxamate-plus-carbamoyl-phosphate assay. Whole-assembly stoichiometry
+      remains unresolved. Evidence: ECO:0000269.'
+    source_locator: Results s2-1 to s2-5; Tables 1-3; Discussion s3
+  - reference_id: PMID:38888336
+    source_assertion: Mg2+ dependence was tested on the enzyme preparation; purified assays used 10 mM
+      MgCl2. This does not assign a metal-binding site to an isolated subunit.
+    source_locator: Results s2-4, Figure 4C; Methods s4-5
+- id: allantoin-anaerobic-edge-047
+  subject: UniProtKB:P77129
+  predicate: enables
+  object: RHEA:22986
+  description: Functional component of jointly required AllF/AllG/AllH oxamate carbamoyltransferase. No
+    single-subunit sufficiency, resolved assembly stoichiometry, or formal graph AND gate is asserted.
+    Purified reverse-direction assays used coexpressed protein and Mg2+; catabolic direction is supported
+    by genetics and current annotation.
+  evidence:
+  - reference_id: UniProtKB:P77129
+    source_assertion: AllF/G/H are the three OXTCase component types (ECO:0000269); physiological RHEA:22986
+      direction is curator inference (ECO:0000305) from PMID:38888336.
+    source_locator: comments[0] FUNCTION; comments[1].physiologicalReactions; comments[5] SUBUNIT
+  - reference_id: PMID:38888336
+    source_assertion: 'All three gene products jointly restore oxamate formation; coexpressed purified
+      protein catalyzes the reverse oxamate-plus-carbamoyl-phosphate assay. Whole-assembly stoichiometry
+      remains unresolved. Evidence: ECO:0000269.'
+    source_locator: Results s2-1 to s2-5; Tables 1-3; Discussion s3
+  - reference_id: PMID:38888336
+    source_assertion: Mg2+ dependence was tested on the enzyme preparation; purified assays used 10 mM
+      MgCl2. This does not assign a metal-binding site to an isolated subunit.
+    source_locator: Results s2-4, Figure 4C; Methods s4-5
+- id: allantoin-anaerobic-edge-048
+  subject: UniProtKB:P0AAS5
+  predicate: enables
+  object: RHEA:22986
+  description: Functional component of jointly required AllF/AllG/AllH oxamate carbamoyltransferase. No
+    single-subunit sufficiency, resolved assembly stoichiometry, or formal graph AND gate is asserted.
+    Purified reverse-direction assays used coexpressed protein and Mg2+; catabolic direction is supported
+    by genetics and current annotation.
+  evidence:
+  - reference_id: UniProtKB:P0AAS5
+    source_assertion: AllF/G/H are the three OXTCase component types (ECO:0000269); physiological RHEA:22986
+      direction is curator inference (ECO:0000305) from PMID:38888336.
+    source_locator: comments[0] FUNCTION; comments[1].physiologicalReactions; comments[5] SUBUNIT
+  - reference_id: PMID:38888336
+    source_assertion: 'All three gene products jointly restore oxamate formation; coexpressed purified
+      protein catalyzes the reverse oxamate-plus-carbamoyl-phosphate assay. Whole-assembly stoichiometry
+      remains unresolved. Evidence: ECO:0000269.'
+    source_locator: Results s2-1 to s2-5; Tables 1-3; Discussion s3
+  - reference_id: PMID:38888336
+    source_assertion: Mg2+ dependence was tested on the enzyme preparation; purified assays used 10 mM
+      MgCl2. This does not assign a metal-binding site to an isolated subunit.
+    source_locator: Results s2-4, Figure 4C; Methods s4-5
+- id: allantoin-anaerobic-edge-049
+  subject: UniProtKB:P37306
+  predicate: enables
+  object: RHEA:30757
+  description: AllK (YbcF) supplies ATP-forming carbamate kinase activity; no unverified oligomeric state
+    is imposed. The assay used 30 mM MgCl2 without establishing an isolated enzyme-metal binding requirement.
+    Carbamate decomposition is represented separately.
+  evidence:
+  - reference_id: UniProtKB:P37306
+    source_assertion: 'The component kinase reaction RHEA:30755 and physiological direction RHEA:30757
+      have ECO:0000305 evidence from PMID:36384810; the combined bicarbonate net is a separate annotation.
+      Evidence: ECO:0000305.'
+    source_locator: comments[2].reaction; comments[2].physiologicalReactions
+  - reference_id: PMID:36384810
+    source_assertion: 'Purified YbcF generated ATP from carbamoyl phosphate and ADP; substrate-dependent
+      kinetics establish catabolic carbamate kinase activity. Evidence: ECO:0000269.'
+    source_locator: Results sec15, Figures 4-6; Methods, Carbamate Kinase Assay
+- id: allantoin-anaerobic-edge-050
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: AllB metal alternative supported by current annotation. Zinc, nickel, cobalt and manganese
+    are not four simultaneous requirements; measured metal occupancy and stereoselectivity depend on preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB uses Zn2+ and can also use Ni2+, Co2+ or Mn2+; the annotation combines experimental
+      and curator-inference evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted E. coli allantoinase preparations differ in activity and substrate
+      stereoselectivity; measured metal occupancy is preparation dependent.
+    source_locator: Abstract; Results, metal analyses and substrate specificity
+- id: allantoin-anaerobic-edge-051
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: AllB metal alternative supported by current annotation. Zinc, nickel, cobalt and manganese
+    are not four simultaneous requirements; measured metal occupancy and stereoselectivity depend on preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB uses Zn2+ and can also use Ni2+, Co2+ or Mn2+; the annotation combines experimental
+      and curator-inference evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted E. coli allantoinase preparations differ in activity and substrate
+      stereoselectivity; measured metal occupancy is preparation dependent.
+    source_locator: Abstract; Results, metal analyses and substrate specificity
+- id: allantoin-anaerobic-edge-052
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: AllB metal alternative supported by current annotation. Zinc, nickel, cobalt and manganese
+    are not four simultaneous requirements; measured metal occupancy and stereoselectivity depend on preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB uses Zn2+ and can also use Ni2+, Co2+ or Mn2+; the annotation combines experimental
+      and curator-inference evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted E. coli allantoinase preparations differ in activity and substrate
+      stereoselectivity; measured metal occupancy is preparation dependent.
+    source_locator: Abstract; Results, metal analyses and substrate specificity
+- id: allantoin-anaerobic-edge-053
+  subject: MetaCyc:CPLX-64
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: AllB metal alternative supported by current annotation. Zinc, nickel, cobalt and manganese
+    are not four simultaneous requirements; measured metal occupancy and stereoselectivity depend on preparation.
+  evidence:
+  - reference_id: UniProtKB:P77671
+    source_assertion: AllB uses Zn2+ and can also use Ni2+, Co2+ or Mn2+; the annotation combines experimental
+      and curator-inference evidence.
+    source_locator: comments[2] COFACTOR; cofactors; note
+  - reference_id: PMID:12486048
+    source_assertion: Metal-substituted E. coli allantoinase preparations differ in activity and substrate
+      stereoselectivity; measured metal occupancy is preparation dependent.
+    source_locator: Abstract; Results, metal analyses and substrate specificity
+- id: allantoin-anaerobic-edge-054
+  subject: MetaCyc:CPLX-7524
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: The earlier AllC structure reports two Zn2+ ions per subunit; this bound-metal annotation
+    does not establish zinc as the unique physiological metal.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: 'The earlier AllC structure reports two Zn2+ ions per subunit; this bound-metal
+      annotation does not establish zinc as the unique physiological metal. Evidence: ECO:0000269.'
+    source_locator: comments[2] COFACTOR; note
+  - reference_id: PMID:17362992
+    source_assertion: The study supports the binuclear zinc-containing AllC active center.
+    source_locator: Abstract
+- id: allantoin-anaerobic-edge-055
+  subject: MetaCyc:CPLX-7524
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: AllC can bind Mn2+; subsequent functional work characterizes manganese-dependent chemistry.
+    Metal selection is source- and preparation-dependent.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: 'AllC can bind Mn2+; subsequent functional work characterizes manganese-dependent
+      chemistry. Metal selection is source- and preparation-dependent. Evidence: ECO:0000269.'
+    source_locator: comments[2] COFACTOR; note
+  - reference_id: PMID:20038185
+    source_assertion: The study supports manganese-dependent activity in the bacterial AllC/AllE degradation
+      sequence.
+    source_locator: Abstract
+- id: allantoin-anaerobic-edge-056
+  subject: UniProtKB:P75713
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: AllE uses manganese and can alternatively use cobalt; these are alternatives, not simultaneous
+    requirements.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: 'AllE has Mn2+ as cofactor and can also use Co2+, with experimental evidence from
+      PMID:20038185. Evidence: ECO:0000269.'
+    source_locator: comments[2] COFACTOR; note
+- id: allantoin-anaerobic-edge-057
+  subject: UniProtKB:P75713
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: AllE uses manganese and can alternatively use cobalt; these are alternatives, not simultaneous
+    requirements.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: 'AllE has Mn2+ as cofactor and can also use Co2+, with experimental evidence from
+      PMID:20038185. Evidence: ECO:0000269.'
+    source_locator: comments[2] COFACTOR; note
+- id: allantoin-anaerobic-edge-058
+  subject: UniProtKB:P77425
+  predicate: located_in
+  object: GO:0005737
+  description: Protein-level cytoplasmic localization; the cited annotation evidence grade is retained
+    and not extended to unannotated partners.
+  evidence:
+  - reference_id: UniProtKB:P77425
+    source_assertion: 'The protein is annotated in the cytoplasm (SL-0086). Evidence: ECO:0000305.'
+    source_locator: comments[7] SUBCELLULAR LOCATION
+- id: allantoin-anaerobic-edge-059
+  subject: UniProtKB:P75713
+  predicate: located_in
+  object: GO:0005737
+  description: Protein-level cytoplasmic localization; the cited annotation evidence grade is retained
+    and not extended to unannotated partners.
+  evidence:
+  - reference_id: UniProtKB:P75713
+    source_assertion: 'The protein is annotated in the cytoplasm (SL-0086). Evidence: ECO:0000269.'
+    source_locator: comments[4] SUBCELLULAR LOCATION
+- id: allantoin-anaerobic-edge-060
+  subject: UniProtKB:P77555
+  predicate: located_in
+  object: GO:0005737
+  description: Protein-level cytoplasmic localization; the cited annotation evidence grade is retained
+    and not extended to unannotated partners.
+  evidence:
+  - reference_id: UniProtKB:P77555
+    source_assertion: 'The protein is annotated in the cytoplasm (SL-0086). Evidence: ECO:0000305.'
+    source_locator: comments[5] SUBCELLULAR LOCATION
+- id: allantoin-anaerobic-edge-061
+  subject: UniProtKB:P37306
+  predicate: located_in
+  object: GO:0005737
+  description: Protein-level cytoplasmic localization; the cited annotation evidence grade is retained
+    and not extended to unannotated partners.
+  evidence:
+  - reference_id: UniProtKB:P37306
+    source_assertion: 'The protein is annotated in the cytoplasm (SL-0086). Evidence: ECO:0000305.'
+    source_locator: comments[6] SUBCELLULAR LOCATION
+references:
+- id: MetaCyc:PWY0-41
+  title: MetaCyc PWY0-41
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-41
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: c971c13063eaec46162a49000ceffb4c3d6fbfbc1e04ebf9f5ae4f3537065a93
+- id: MetaCyc:PWY-5698
+  title: MetaCyc PWY-5698
+  url: https://pathway.yeastgenome.org/getxml?META:PWY-5698
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: a89a140f3dc86e1e05cc22c7cd90fed3cd3e20cfe15ad041961fa6a6c45a4071
+- id: MetaCyc:CPLX-64
+  title: MetaCyc CPLX-64
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX-64
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 77ce25b4f49e54caa1b24ea6d316fade6124713adc17cbc0371a52ca62bbbf44
+- id: MetaCyc:CPLX-7524
+  title: MetaCyc CPLX-7524
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX-7524
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 4bcbfbc55456c65eb5dd44811a3028b7124cf4ecc12c5424e6a9f4d1fd5e3cde
+- id: MetaCyc:CPLX0-7993
+  title: MetaCyc CPLX0-7993
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-7993
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: ff02c7f27c5d12c3421819120b1a4baaddc0206e60196eb2fc211f0c48de3cb6
+- id: MetaCyc:ALLANTOINASE-RXN
+  title: MetaCyc ALLANTOINASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:ALLANTOINASE-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: ffde639061cf1091bc7e1b70dab1bc42217e3fb47dd85382e48a4581e802fdf2
+- id: MetaCyc:ALLANTOATE-DEIMINASE-RXN
+  title: MetaCyc ALLANTOATE-DEIMINASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:ALLANTOATE-DEIMINASE-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 508bed1d9de239993214c5e6d32a3e73e4396aad76a0202d7e088eac35d10300
+- id: MetaCyc:URUR-RXN
+  title: MetaCyc URUR-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:URUR-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 8aae4d1274bd5fe140d9f6678e153ffce7ca59d8ca777c9e2122f50c5bbde746
+- id: MetaCyc:RXN0-7024
+  title: MetaCyc RXN0-7024
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-7024
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: b303a9a4e7386127917169e42e0f92e3dc56e39fc3e7ee0563eb431fe8909d66
+- id: MetaCyc:OXAMATE-CARBAMOYLTRANSFERASE-RXN
+  title: MetaCyc OXAMATE-CARBAMOYLTRANSFERASE-RXN
+  url: https://pathway.yeastgenome.org/getxml?META:OXAMATE-CARBAMOYLTRANSFERASE-RXN
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 7987b877bedd38fa20216c401f58a270e208b4b3ed4ab451ab49b09329c81a59
+- id: MetaCyc:RXN-14196
+  title: MetaCyc RXN-14196
+  url: https://pathway.yeastgenome.org/getxml?META:RXN-14196
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: e1b24a3c1324b21eb0c3172cd7d21ca362071acdc20879a42dab77022356fccf
+- id: MetaCyc:RXN0-5222
+  title: MetaCyc RXN0-5222
+  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5222
+  source_version: 22.5; official mirror retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 079f6290beaaa757c83d0ef8fdf3e0eeef3ed2c02cd9aa37f8e469e068b21d36
+- id: UniProtKB:P77671
+  title: Reviewed UniProtKB P77671
+  url: https://rest.uniprot.org/uniprotkb/P77671.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: d506ba7a7bd21613ad6dbdc1bd67b1dfeb06d55ac7558ece69ca48ca6cc39fd8
+- id: UniProtKB:P77425
+  title: Reviewed UniProtKB P77425
+  url: https://rest.uniprot.org/uniprotkb/P77425.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: 880e9d42e786beb498bf8e2e71c59fb0e4c769e06423a5ba3d15594ee0827907
+- id: UniProtKB:P75713
+  title: Reviewed UniProtKB P75713
+  url: https://rest.uniprot.org/uniprotkb/P75713.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: 157e35398d7aa8c6c0962b8b39458433bbc82489b78df0b9ce316183042cac5a
+- id: UniProtKB:P77555
+  title: Reviewed UniProtKB P77555
+  url: https://rest.uniprot.org/uniprotkb/P77555.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: 57cc1f66190ec48c86a6169c71164adbba4e3a0270b9f63b83bee3fcaafd68e5
+- id: UniProtKB:Q47208
+  title: Reviewed UniProtKB Q47208
+  url: https://rest.uniprot.org/uniprotkb/Q47208.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: eb9f92309e0d0674eaa348c79d9a88c52fb6c46a54fdc4e857a5f63daf9fd83a
+- id: UniProtKB:P77129
+  title: Reviewed UniProtKB P77129
+  url: https://rest.uniprot.org/uniprotkb/P77129.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: 180bbf89c1261d225c5cbc2ff72d422c6fadfb2e73c98a6a05ec06c89dcc3cfb
+- id: UniProtKB:P0AAS5
+  title: Reviewed UniProtKB P0AAS5
+  url: https://rest.uniprot.org/uniprotkb/P0AAS5.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: cc018efb39ebb4354bf3b10321ae501c835bcda101256d3d04b726e37fa2b04d
+- id: UniProtKB:P37306
+  title: Reviewed UniProtKB P37306
+  url: https://rest.uniprot.org/uniprotkb/P37306.json
+  source_version: 2026_03 (2026-09-02); retrieved 2026-10-10
+  source_sha256: 2ec54b5434cef9677b0bb0b68c48d051dcad0d7b5634882c8276c7a0a243697f
+- id: PMID:11092864
+  title: Functional expression and characterization of the two cyclic amidohydrolase enzymes, allantoinase
+    and a novel phenylhydantoinase, from Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC94829/
+  source_version: full article HTML; retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: 2f4e068944272532911d29449d7a133e5b995b1db7fa27984219f82364fb8304
+- id: PMID:12486048
+  title: Metal ion dependence of recombinant Escherichia coli allantoinase.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC141845/
+  source_version: full article HTML; retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: b10a113c20794a750b2c58a1fdae1278800153b085f1d18b329f258b0b0665b4
+- id: PMID:17362992
+  title: Structural analysis of a ternary complex of allantoate amidohydrolase from Escherichia coli reveals
+    its mechanics.
+  url: https://pubmed.ncbi.nlm.nih.gov/17362992/
+  source_version: Europe PMC core batch JSON; whole-response digest; abstract inspected; retrieved 2026-10-10
+    (America/Los_Angeles)
+  source_sha256: 8752189e192ffec0125e1750211c19a9973e72313c508ffd76811bb5b1345a29
+- id: PMID:20038185
+  title: 'Chemical basis of nitrogen recovery through the ureide pathway: formation and hydrolysis of
+    S-ureidoglycine in plants and bacteria.'
+  url: https://pubmed.ncbi.nlm.nih.gov/20038185/
+  source_version: Europe PMC core batch JSON; whole-response digest; abstract inspected; retrieved 2026-10-10
+    (America/Los_Angeles)
+  source_sha256: 8752189e192ffec0125e1750211c19a9973e72313c508ffd76811bb5b1345a29
+- id: PMID:19935661
+  title: Ureide catabolism in Arabidopsis thaliana and Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/19935661/
+  source_version: Europe PMC core batch JSON; whole-response digest; abstract inspected; retrieved 2026-10-10
+    (America/Los_Angeles)
+  source_sha256: 8752189e192ffec0125e1750211c19a9973e72313c508ffd76811bb5b1345a29
+- id: PMID:23284870
+  title: Structural and Functional Insights into (S)-Ureidoglycolate Dehydrogenase, a Metabolic Branch
+    Point Enzyme in Nitrogen Utilization
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3527362/fullTextXML
+  source_version: full article XML; supplemental Figure S2 independently inspected; retrieved 2026-10-10
+    (America/Los_Angeles)
+  source_sha256: 91a6d0ba2ff55fd60682255cc01d735412d8bca0b8f83b235b5717cdd0b70003
+- id: PMID:38888336
+  title: 'Oxamic transcarbamylase of Escherichia coli is
+
+    encoded by the three genes allFGH (formerly fdrA,
+
+    ylbE, and ylbF)'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11326118/fullTextXML
+  source_version: full article XML; retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: d61a5108373317363b296122cf150a497ddc11e657f0c4074d559c999bc06fb4
+- id: PMID:36384810
+  title: The ybcF Gene of Escherichia coli Encodes a Local Orphan Enzyme, Catabolic Carbamate Kinase
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9843812/fullTextXML
+  source_version: full article XML; retrieved 2026-10-10 (America/Los_Angeles)
+  source_sha256: cba5edd372681424c8d07a74240169c3ebd714670ff106702d148909314525da
+- id: RHEA:17029
+  title: Rhea 17029 reaction family, selected direction 17030
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27485
+  title: Rhea 27485 reaction family, selected direction 27486
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:25241
+  title: Rhea 25241 reaction family, selected direction 25242
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:15329
+  title: Rhea 15329 reaction family, selected direction 15330
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:22984
+  title: Rhea 22984 reaction family, selected direction 22986
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:30755
+  title: Rhea 30755 reaction family, selected direction 30757
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:15649
+  title: Rhea 15649 reaction family, selected direction 15650
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 is the complete compressed RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
