@@ -1,0 +1,18 @@
+import hashlib,json,runpy,sys
+from pathlib import Path
+from datetime import datetime,timezone
+import pathwaymech.kgx as kgx
+b=Path(__file__).parent
+original=kgx.write_kgx
+def mutate_then_export(*args,**kwargs):
+    changes=[]
+    for name in ['pyochelin-source-manifest.json','pyochelin-source-projection.json']:
+        p=b/name; before=p.read_bytes(); v=json.loads(before);v['target_sha256']='f'*64
+        if name.endswith('projection.json'):v['graph_to_source']=[]
+        p.write_text(json.dumps(v,indent=2)+'\n')
+        changes.append({'path':str(p),'before_sha256':hashlib.sha256(before).hexdigest(),'after_sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+    (b/'mutation.json').write_text(json.dumps({'at':datetime.now(timezone.utc).isoformat(),'hook':'write_kgx entry, after all source/reactive checks','changes':changes},indent=2)+'\n')
+    return original(*args,**kwargs)
+kgx.write_kgx=mutate_then_export
+sys.argv=[str(b/'pyochelin-replay.py'),'--repo-root','/private/tmp/pathwaymech-next-215-20261011','--record',str(b/'pyochelin-biosynthesis.yaml'),'--source-manifest',str(b/'pyochelin-source-manifest.json'),'--source-projection',str(b/'pyochelin-source-projection.json'),'--authority-root','/private/tmp/pathwaymech-pyochelin-author-20261011/authority-sandbox','--reactive-helper',str(b/'pyochelin-reactive-check.py'),'--rdkit-python','/private/tmp/pathwaymech-curation-uv-cache/archive-v0/kFu0y5KhWWeJTMGjryT1h/bin/python','--output',str(b/'result.json')]
+runpy.run_path(sys.argv[0],run_name='__main__')

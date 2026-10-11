@@ -1,0 +1,59 @@
+from pathlib import Path
+import json,hashlib,datetime
+out=Path(__file__).parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+p=out/'input-manifest.json';m=json.loads(p.read_text())
+for row in m['original_sources_inspected']:
+ row['original_acquisition']=[{k:v for k,v in x.items() if k in ('name','url','retrieved_at','status','content_type','path','bytes','sha256','semantic_accepted','semantic_disposition','acquisition_receipt','acquisition_receipt_sha256')} for x in row['original_acquisition']]
+p.write_text(json.dumps(m,indent=2)+'\n')
+access={'at':now,'scope':'Actual web-reader observations; no local original publisher-body digest invented','observations':[
+ {'url':'https://journals.asm.org/doi/full/10.1128/jb.183.3.813-820.2001','outcome':'Full original publisher article read through web reader','locations':['Methods: Identification of salicylate, Dha, and pyochelin in culture supernatants','Methods: Production and detection of salicylate-containing compounds','Results: PchG is required for pyochelin formation in vitro','Figure 2 and its legend','Discussion and Figure 3'],'local_original_body':None},
+ {'url':'https://pubmed.ncbi.nlm.nih.gov/17938167/','outcome':'Direct open incomplete; indexed original abstract independently accessible. Same abstract inspected in retained original Europe PMC XML.','local_abstract_source':'/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/pubmed-primary.xml','full_2007_paper_claimed':False},
+ {'url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC94946/','outcome':'Direct open CAPTCHA; later publisher full text succeeded'},
+ {'url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC8807600/','outcome':'Direct open CAPTCHA; retained original JATS and institutional article/SI PDFs inspected'},
+ {'url':'https://pubmed.ncbi.nlm.nih.gov/11208777/','outcome':'Indexed abstract/figure text accessible; later direct open error; original publisher full text succeeded'}],
+ 'rejected_retained_downloads':[{'path':'/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMID17938167-jbc.pdf','reason':'HTML challenge, not an original PDF; not relied upon as full text'},{'path':'/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/PMC94946-bioc.xml','reason':'No-result XML, not full article'}]}
+(out/'source-access.json').write_text(json.dumps(access,indent=2)+'\n')
+report={
+ 'sealed_at':now,'status':'supported_native_endpoint_projection_with_explicit_limits','whole_record_scientific_approval':False,
+ 'scope':'Independent endpoint representation assessment only; no owner, maintained repository, Git or GitHub mutations',
+ 'target':m['target'], 'native_pathway':'MetaCyc:PWY-6408','proposed_record_identity':'GO:0042864','native_member_count':11,'endpoint_edge':'pch-edge-037','reaction':'MetaCyc:RXN-11123','product':'MetaCyc:CPD-9992',
+ 'decision':'Retaining the issued pyochelin-I monoanion is defensible as the explicitly limited native reaction projection of one experimentally observed end-product stereoisomer. This is not an assertion of exclusive I biosynthesis, I-selective enzymatic release, an intracellular I/II ratio, or exact equivalence to a neutral compound/class.',
+ 'structure_evidence':{
+  'replay':'structure-replay.json','replay_sha256':sha(out/'structure-replay.json'),'actual_session':53861,'terminal_exit_code':0,'terminal_chunk':'58692a',
+  'checks':['Original CPD-9992 InChI is the I configuration and has net charge -1; neutralization matches CHEBI:67183 exactly.','CHEBI:29669 has net charge zero and leaves the interconverting thioaminal stereocenter unspecified; chirality-aware matching contains neutral I and II.','CHEBI:67183 and CHEBI:67185 are distinct stereoisomers, not exact chemical identities.','Neutralized MetaCyc:CPD-12093 is enantio-pyochelin and is not a member of the P. aeruginosa I/II class.'],
+  'limits':['No arbitrary InChI sign was interpreted as an R/S descriptor; the molecular graph was decoded independently.','Acid/base normalization is a derived comparison, not an exactMatch assertion or silent replacement of native reaction forms.']},
+ 'primary_evidence':[
+  {'reference':'PMID:11208777','url':'https://journals.asm.org/doi/full/10.1128/jb.183.3.813-820.2001','scope':'Original publisher full text, web inspected; no local original-body SHA claimed','locators':['Results: PchG is required for pyochelin formation in vitro; Figure 2','Methods: Production and detection of salicylate-containing compounds'],'assessment':'The reconstituted products match I/II chromatographic peaks and masses of the natural standard. Products were analyzed after acidification/extraction, and displayed peaks were normalized. These observations establish recovered I/II products, not release stereoselectivity or a physiological ratio.'},
+  {'reference':'PMID:17938167','url':'https://pubmed.ncbi.nlm.nih.gov/17938167/','scope':'Original indexed abstract, also retained Europe PMC original XML; full paper not claimed','locator':'responseWrapper/resultList/result[id="17938167"]/abstractText','assessment':'The abstract specifies interconvertible P. aeruginosa I and II configurations and distinguishes the P. fluorescens CHA0 enantio-pyochelin mixture. It supports stereochemical interpretation, not transferring CHA0 biosynthesis to PAO1.'},
+  {'reference':'DOI:10.1038/s41467-022-28284-x','url':'https://www.nature.com/articles/s41467-022-28284-x','scope':'Original full article and SI PDFs independently re-extracted; article pages 8/9 and SI pages 2/16/17 independently rendered and visually inspected','locator':'Article Methods p.9; Supplementary Figure 1 p.2, Figure 15 p.16 and Figure 16 p.17','assessment':'The pathway figure is a biosynthetic schematic. The reported PchD/PchE/SrfD reconstitution releases upstream salicylate-cysteine intermediates; it does not directly assay full PchF/G terminal I-selective release. No terminal stereoselectivity is transferred from the drawing.'}],
+ 'representation_requirements':[
+ 'Keep all eleven native member objects, the complete terminal release, and the declared salicylate-start boundary; do not substitute an early fragment.',
+ 'Keep the explicit I/II and release-selectivity limits in the pathway and terminal-edge descriptions.',
+ 'Treat the terminal I equation/net as native formal end-member bookkeeping, not a measured product ratio.',
+ 'Do not mint an epimerization reaction, relabel enantio-pyochelin, or claim neutral-class equivalence.',
+ 'A broader neutral CHEBI:29669 alternative would need explicit changed acid/base bookkeeping and native mapping qualification; endpoint evidence does not require that replacement.'],
+ 'endpoint_identity_or_boundary_findings':[],
+ 'source_locality_recommendation':{'location':'pch-edge-037 evidence[1] (MetaCyc:CPD-9992)','severity':'minor clarification before full review','observation':'The InChI locator supports structure; the same block also contains an experimentally observed I/II and curator-projection statement. The separate primary evidence and description already ground/qualify that interpretation.','recommendation':'Keep this native block literal, or clearly label the I assignment as a derived comparison. Keep I/II observations and the chosen projection in their primary evidence/description. Prefer experimentally observed I/II products where no intracellular equilibrium or ratio was measured.','requires_endpoint_or_reaction_change':False},
+ 'checks':{'input_manifest':'input-manifest.json','handoff_artifacts_rehashed':len(m['handoff_artifacts_verified']),'pdf_replay_session':50504,'pdf_replay_exit_code':0,'pdf_replay_terminal_chunk':'094220','additional_method_page_exit_code':0,'additional_method_page_chunk':'c16a1f','visual_pdf_pages':{'article':[8,9],'supplement':[2,16,17]},'original_author_files_edited':False},
+ 'remaining_scope':'Complete record identifiers, all other edges, exact construct/sequence bridges, assemblies, full schema/KGX and final independent scientific review remain separate. This endpoint assessment does not certify the unfinished record.'}
+(out/'endpoint-decision.json').write_text(json.dumps(report,indent=2)+'\n')
+md='''# Pyochelin endpoint assessment
+
+The issued **MetaCyc:CPD-9992 pyochelin-I monoanion can be retained** as the explicitly limited native endpoint projection. The proposal keeps all eleven native objects and already disclaims exclusive I production and I-selective release. This is an endpoint assessment, not complete-record approval.
+
+Independent original-structure replay establishes the acid/anion relationship with CHEBI:67183, distinguishes the neutral I/II class CHEBI:29669, and excludes enantio-pyochelin CPD-12093. No exactMatch or replacement was inferred. The actual replay passed (session 53861, exit 0); detailed structures, hashes and checks are in `structure-replay.json`.
+
+The original primary studies support recovered I/II products and their interconvertible configurations. They do not establish exclusive I release or an intracellular ratio. The 2022 pathway schematic is consistent context; its PchD/PchE/SrfD assays concern upstream intermediates, not terminal I selectivity. Exact source locators, access limits and independently inspected PDF pages are in `endpoint-decision.json` and `source-access.json`.
+
+One minor clarification is recommended before whole-record review: keep the CPD-9992 InChI evidence block restricted to native structure (with any derived I comparison identified), and leave the I/II observation and selected projection in the separate primary block/description. No endpoint, reaction, or boundary change is requested.
+
+A broad neutral endpoint is an alternative only with explicit acid/base normalization and qualified native mapping. It is not required by the observed mixture. No additional epimerization object should be invented.
+'''
+(out/'endpoint-decision.md').write_text(md)
+artifacts=[]
+for p in sorted(out.rglob('*')):
+ if p.is_file() and p.name!='completion.json':artifacts.append({'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size})
+(out/'completion.json').write_text(json.dumps({'sealed_at':now,'status':report['status'],'decision_sha256':sha(out/'endpoint-decision.json'),'artifacts':artifacts,'record_edited':False,'complete_record_review':False},indent=2)+'\n')
+for n in ['endpoint-decision.json','endpoint-decision.md','input-manifest.json','completion.json']:print(n,sha(out/n))

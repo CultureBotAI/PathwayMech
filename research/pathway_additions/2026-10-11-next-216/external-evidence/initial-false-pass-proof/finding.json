@@ -1,0 +1,93 @@
+{
+  "observed_at": "2026-10-11T15:33:01.492609+00:00",
+  "status": "confirmed_technical_input_binding_defect",
+  "issue_key": "pyochelin-replay-late-input-attestation",
+  "actual_session": 52421,
+  "actual_terminal_chunk": "9cff86",
+  "exit_code": 0,
+  "helper_sha256": "ced1468e0c51e2c3fe8cf51900c5b9e0cfedea82b29401ff014b957cd268dae6",
+  "target_sha256": "c72de0b065cf86ae43931868097237dd95ae2e3f5d2e326f3061c6d8b6d1ca0b",
+  "result_sha256": "1a822bcac83011d1ba40cdc97077b9df379b306d7325eae50894f6acb03469fd",
+  "log_sha256": "53b66a6755e9f57a7883b04c33b3b336af2eca96127e0b13a061e46db267ff16",
+  "mutation": {
+    "at": "2026-10-11T15:31:43.038525+00:00",
+    "hook": "write_kgx entry, after all source/reactive checks",
+    "changes": [
+      {
+        "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-source-manifest.json",
+        "before_sha256": "7044641ce0d3905772ff298e77f73b1d4edd12cafa36b601ae49e0f789319996",
+        "after_sha256": "5484e609ff2b45a0f93bff73d6d74da7c30e1d1983c37e35692d5f73342def58"
+      },
+      {
+        "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-source-projection.json",
+        "before_sha256": "a4c4d3b3363554678a9abcc865f85221b4ed1788ac6f74e7e096039198fa9ccf",
+        "after_sha256": "389db7305dd2a2594d1031c7b1ed1fe004c8e67584fc6728fdcb0c39b6da8314"
+      }
+    ]
+  },
+  "demonstrated_behavior": "Unchanged helper passed all original-source/reactive/KGX checks using original parsed metadata, then reported hashes of different manifest/projection bytes changed at write_kgx entry. The attested files deliberately have wrong target SHA and an empty graph_to_source.",
+  "expected": "Capture all validation inputs before parsing/imports/probes; use captured bytes or verify reads match captures; freshly rehash every bound input before exclusive output creation, rejecting drift without a success receipt.",
+  "probe_scope": "External copied inputs only; wrapper intercepts the real KGX call and delegates to the unchanged exporter. No owner/helper/scientific/source bytes modified.",
+  "files": [
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/before.json",
+      "sha256": "0d6496b921bf0753a6077d0d6dfd1b83221ee83452ed1dcd90bd95c8277d025c"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/mutation.json",
+      "sha256": "1e0e2090186e9ffaeb6ea0014dfb0234a9e361fbe6047076cc1897f3ba03ad15"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/probe.py",
+      "sha256": "106a6f9ef79f37d911729f41486fed0e3c045161356093ab39b8615321a42eac"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-biosynthesis.yaml",
+      "sha256": "c72de0b065cf86ae43931868097237dd95ae2e3f5d2e326f3061c6d8b6d1ca0b"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-biosynthesis.yaml.before",
+      "sha256": "c72de0b065cf86ae43931868097237dd95ae2e3f5d2e326f3061c6d8b6d1ca0b"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-reactive-check.py",
+      "sha256": "d8a000d6a970ce698f3db394056dcbf765c43066a0495b98f55faf76ce1c22f9"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-reactive-check.py.before",
+      "sha256": "d8a000d6a970ce698f3db394056dcbf765c43066a0495b98f55faf76ce1c22f9"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-replay.py",
+      "sha256": "ced1468e0c51e2c3fe8cf51900c5b9e0cfedea82b29401ff014b957cd268dae6"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-replay.py.before",
+      "sha256": "ced1468e0c51e2c3fe8cf51900c5b9e0cfedea82b29401ff014b957cd268dae6"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-source-manifest.json",
+      "sha256": "5484e609ff2b45a0f93bff73d6d74da7c30e1d1983c37e35692d5f73342def58"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-source-manifest.json.before",
+      "sha256": "7044641ce0d3905772ff298e77f73b1d4edd12cafa36b601ae49e0f789319996"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-source-projection.json",
+      "sha256": "389db7305dd2a2594d1031c7b1ed1fe004c8e67584fc6728fdcb0c39b6da8314"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/pyochelin-source-projection.json.before",
+      "sha256": "a4c4d3b3363554678a9abcc865f85221b4ed1788ac6f74e7e096039198fa9ccf"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/result.json",
+      "sha256": "1a822bcac83011d1ba40cdc97077b9df379b306d7325eae50894f6acb03469fd"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-pyochelin-independent-review-20261011/binding-probe/run.log",
+      "sha256": "53b66a6755e9f57a7883b04c33b3b336af2eca96127e0b13a061e46db267ff16"
+    }
+  ]
+}

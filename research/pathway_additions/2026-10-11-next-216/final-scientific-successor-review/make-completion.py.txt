@@ -1,0 +1,33 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib
+import json
+import sys
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+O = Path('/private/tmp/pathwaymech-next-216-packaging-scientific-review')
+sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+load = lambda p: json.loads(p.read_text())
+assert len(sys.argv)==2
+required_terminal=sys.argv[1]
+save=load(O/'save-result.json')
+check=load(O/'check-execution.json')
+required=load(O/'check-required-execution.json')
+assert check['exit_code']==required['exit_code']==0
+assert '--require-reviews' in required['command']
+for x in load(O/'inspect.json')['source']['inputs']:
+    assert sha(R/x['path'])==x['sha256']
+for x in load(O/'input-archive-manifest.json')['inputs']:
+    assert sha(Path(x['external_archive']))==x['sha256']
+for x in save['saved_files']:
+    assert sha(R/x['path'])==x['sha256']
+review=yaml.safe_load((R/save['saved_files'][0]['path']).read_text())
+proofs=[]
+for p in sorted(O.rglob('*')):
+    if p.is_file() and 'input-archive' not in p.relative_to(O).parts and p.name!='completion.json':
+        proofs.append({'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size})
+out={'status':'completed_independent_scientific_packaging_successor','at':datetime.now(UTC).isoformat().replace('+00:00','Z'),'base':review['source']['git_revision'],'target_sha256':'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b','scientific_review':review['scientific_review'],'verdict':review['verdict'],'findings':review['findings'],'review_id':review['review_id'],'saved_files':save['saved_files'],'artifacts':proofs,'formal_input_archive':{'manifest':str(O/'input-archive-manifest.json'),'manifest_sha256':sha(O/'input-archive-manifest.json'),'directory':str(O/'input-archive'),'count':121,'current_and_archive_bytes_rechecked':True},'actual_execution':{'initial_check':{'session':63027,'exit_code':0,'terminal_chunk':'39df43','valid_reviews':88},'preparation_initial':{'exit_code':1,'terminal_chunk':'51e920','scope':'External verifier historical wrapper-key assumption; preserved, no maintained product defect'},'preparation_successor':{'exit_code':0,'terminal_chunk':'dec8ad'},'inspect':{'session':84436,'exit_code':0,'terminal_chunk':'7237d8'},'final_reassessment':{'session':53022,'exit_code':0,'terminal_chunk':'99dd8c'},'validate_save':{'session':13742,'exit_code':0,'terminal_chunk':'7a6e9f'},'check':{'session':75017,'exit_code':0,'terminal_chunk':'ed209e','valid_reviews':89},'check_require_reviews':{'session':45363,'exit_code':0,'terminal_chunk':required_terminal,'valid_reviews':89}},'scope':{'formal_inputs':121,'current_sealed_dossier_files':384,'current_owners':17,'current_whitespace_files_before_saved_pair':402,'historical_integration_dossier_recoveries':323,'historical_copy_alias_formal_recoveries':616,'exact_wrappers':7,'exact_aliases':5,'prior_review_formal_archives':82,'native_reactions_freshly_parsed':11,'native_sides_freshly_parsed':54,'small_original_bodies_freshly_hashed':92,'current_runtime_bindings_freshly_hashed':47,'evidence_entries':24,'assessments':7},'independence':'This reviewer did not author the scientific target, packaging remedy, prior canonical review, authority integration, root acceptance or integration seal. Maintained writes were limited to the new canonical pair.','lineage':'Original canonical review and adoption are immutable; linked related review is retained. External issues 397/398/401 have no fabricated canonical finding predecessors.','limits':review['limitations'],'pending':['Root successor adoption and final staged whitespace admission','Actual PR head review, remote CI, merge, deployed-byte verification and branch cleanup']}
+with (O/'completion.json').open('x') as f:
+    f.write(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'status':out['status'],'completion_sha256':sha(O/'completion.json'),'artifacts':len(proofs),'saved_files':save['saved_files'],'required_check':out['actual_execution']['check_require_reviews']}))

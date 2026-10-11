@@ -1,0 +1,90 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import base64
+import hashlib
+import json
+import os
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+dossier = Path('research/pathway_additions/2026-10-11-next-216')
+prep = Path('/private/tmp/pathwaymech-pyochelin-maintained-copy-plan-20261011')
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def decode(path, mode):
+    data = Path(path).read_bytes()
+    if mode == 'lossless_json_wrapper':
+        wrapper = json.loads(data)
+        assert wrapper['format'] == 'lossless-console-or-artifact-v1'
+        data = wrapper['content'].encode('utf-8') if wrapper['encoding'] == 'utf-8' else base64.b64decode(wrapper['content'], validate=True)
+        assert hashlib.sha256(data).hexdigest() == wrapper['source']['sha256']
+    else:
+        assert mode == 'exact_bytes'
+    return data
+
+assert sha(prep / 'handoff.json') == 'e558f4ae9e1950141d42a59152a32d1a46f41b6015dbd281f54b951c2b34e7bf'
+h = json.loads((prep / 'handoff.json').read_text())
+assert sha(h['plan']['path']) == h['plan']['sha256'] == '7635d8bb6115491aeb598fd3d5b93ee1d3debadb2c44c219defc7e52df55d8f0'
+p = json.loads(Path(h['plan']['path']).read_text())
+bridge = json.loads((root / dossier / 'merged-baseline-transition.json').read_text())
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == bridge['actual_merged_base']
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=root, text=True).strip() == p['candidate_base']['tree']
+changed = subprocess.check_output(['git', 'diff', '--name-only'], cwd=root, text=True).splitlines()
+assert set(changed) == {x['path'] for x in p['expected_existing_tracked_changes']}
+for row in p['expected_existing_tracked_changes']:
+    assert sha(root / row['path']) == row['sha256']
+selection = json.loads(Path('/private/tmp/pathwaymech-pyochelin-authority-selection-20261011/selected-final/selection.json').read_text())
+for rel, digest in selection['preparation_baseline']['runtime_files'].items():
+    assert sha(root / rel) == digest
+for rel, digest in selection['preparation_baseline']['baseline_files'].items():
+    if rel not in changed:
+        assert sha(root / rel) == digest
+entries = [dict(row) for row in p['copy_entries']]
+for row in h['final_extra_plan_copies']:
+    entries.append({'path': row['source'], 'sha256': row['sha256'], 'copy_source': row['source'], 'destination': row['destination'], 'destination_sha256': row['sha256'], 'mode': 'exact_bytes'})
+extra = [
+    (prep / 'handoff.json', 'pyochelin-copy-handoff.json'),
+    (Path('/private/tmp/pathwaymech-pyochelin-root-successor-acceptance-20261011.json'), 'root-source-acceptance.json'),
+    (Path('/private/tmp/pathwaymech-pyochelin-root-successor-acceptance-20261011.py'), 'root-source-acceptance.py.txt'),
+    (Path('/private/tmp/pathwaymech-next-216-review-authorities.py'), 'root-authority-review.py.txt'),
+    (Path('/private/tmp/pathwaymech-next-216-adopt-authorities.py'), 'root-authority-adoption.py.txt'),
+    (Path('/private/tmp/pathwaymech-pyochelin-endpoint-root-adoption-20261011.json'), 'root-endpoint-adoption.json'),
+    (Path('/private/tmp/pathwaymech-pyochelin-findings-root-verification-20261011.json'), 'root-initial-findings-verification.json'),
+    (Path(__file__), 'root-apply-copy-plan.py.txt'),
+]
+for source, name in extra:
+    entries.append({'path': str(source), 'sha256': sha(source), 'copy_source': str(source), 'destination': str(dossier / name), 'destination_sha256': sha(source), 'mode': 'exact_bytes'})
+assert len({x['destination'] for x in entries}) == len(entries)
+assert len(p['copy_entries']) == 282 and len(p['exact_byte_aliases']) == 251 and len(p['formal_input_resolution']) == 83
+by_destination = {x['destination']: x for x in entries}
+for row in entries:
+    rel = Path(row['destination'])
+    assert not rel.is_absolute() and '..' not in rel.parts
+    assert rel == Path('data/pathways/pyochelin-biosynthesis.yaml') or rel.is_relative_to(dossier)
+    assert not os.path.lexists(root / rel), rel
+    assert (root / rel).resolve().is_relative_to(root.resolve())
+    assert '/originals/' not in row['copy_source']
+    assert sha(row['path']) == row['sha256']
+    assert sha(row['copy_source']) == row['destination_sha256']
+    assert hashlib.sha256(decode(row['copy_source'], row['mode'])).hexdigest() == row['sha256']
+for row in p['exact_byte_aliases']:
+    assert sha(row['path']) == row['sha256']
+    dest = by_destination[row['destination']]
+    assert hashlib.sha256(decode(dest['copy_source'], dest['mode'])).hexdigest() == row['sha256']
+for row in p['formal_input_resolution']:
+    dest = by_destination[row['recoverable_destination']]
+    assert hashlib.sha256(decode(dest['copy_source'], dest['mode'])).hexdigest() == row['sha256']
+for row in entries:
+    dest = root / row['destination']
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with dest.open('xb') as stream:
+        stream.write(Path(row['copy_source']).read_bytes())
+    assert sha(dest) == row['destination_sha256']
+receipt = {'status': 'accepted_record_and_preserved_evidence_copied', 'at': datetime.now(timezone.utc).isoformat(), 'actual_merged_base': bridge['actual_merged_base'], 'plan_sha256': h['plan']['sha256'], 'copies': entries, 'copy_count': len(entries), 'aliases_reverified': 251, 'formal_inputs_recoverable': 83, 'target_sha256': sha(root / 'data/pathways/pyochelin-biosynthesis.yaml'), 'authority_changes_preserved': p['expected_existing_tracked_changes'], 'root_review': 'Read copy-plan builder, README, wrapper contract and scope. Freshly verified every source/copy payload, exclusive destination, all aliases and formal input recovery before writes. Historical review/failed PASS preserved without invented canonical predecessor. Exact accepted target unchanged.', 'pending': ['History', 'Integrated source replay', 'Render and full corpus gates', 'Canonical independent scientific review', 'PR workflow and publication']}
+receipt_path = root / dossier / 'root-copy-adoption.json'
+with receipt_path.open('x') as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'status': receipt['status'], 'copies': len(entries), 'target_sha256': receipt['target_sha256'], 'receipt_sha256': sha(receipt_path)}), flush=True)

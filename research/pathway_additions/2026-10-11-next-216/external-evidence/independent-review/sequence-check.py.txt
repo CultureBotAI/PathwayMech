@@ -1,0 +1,34 @@
+from pathlib import Path
+import re,json,hashlib,itertools,datetime
+O=Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals')
+W=Path(__file__).parent
+code=dict(zip((''.join(c) for c in itertools.product('TCAG',repeat=3)),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG',strict=True))
+up=json.loads((O/'uniprot-pao1-pch.json').read_text())['results']
+byacc={v['primaryAccession']:v for v in up}
+rows=[]
+for file,expectedstrain,selection in [('AF184620.embl','PA14',{'pchD':('Q9RFM9','Q9HWG3',3)}),('AF184621.embl','PA14',{'pchE':('Q9RFM8','G3XCV2',14)}),('AF184622.embl','PA14',{'pchF':('Q9RFM7','Q9HWG4',19)}),('AF074705.embl','PAO1',{'pchE':(None,'G3XCV2',0),'pchF':(None,'Q9HWG4',6),'pchG':(None,'Q9HWG5',0)})]:
+ p=O/file;t=p.read_text();assert f'/strain="{expectedstrain}"' in t
+ body=t.split('\nSQ   ',1)[1].split('\n',1)[1]
+ dna=''.join(re.findall('[acgt]+',body)).upper()
+ feature='\n'.join(x[5:] for x in t.splitlines() if x.startswith('FT   '))
+ cds=re.findall(r'^CDS\s+(.*?)$(.*?)(?=^\S|\Z)',feature,re.S|re.M)
+ got=set()
+ for location,qual in cds:
+  gene=re.search('/gene="([^"]+)"',qual)
+  if not gene or gene[1] not in selection:continue
+  gene=gene[1];got.add(gene);old,acc,dif=selection[gene]
+  start,end=map(int,location.strip().split('..'));nuc=dna[start-1:end];assert len(nuc)%3==0
+  aa=''.join(code[nuc[i:i+3]] for i in range(0,len(nuc),3));assert aa.endswith('*')
+  aa=aa[:-1]
+  if nuc[:3] in ['GTG','TTG']:aa='M'+aa[1:]
+  literal=''.join(re.search('/translation="([^"]+)"',qual)[1].split());assert aa==literal
+  if old:assert aa==json.loads((O/f'uniprot-{old}.json').read_text())['sequence']['value']
+  current=byacc[acc]['sequence']['value'];assert len(aa)==len(current)
+  substitutions=[i+1 for i,(x,y) in enumerate(zip(aa,current,strict=True)) if x!=y];assert len(substitutions)==dif
+  rows.append({'source':str(p),'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'strain':expectedstrain,'gene':gene,'original_accession':old,'current_accession':acc,'length':len(aa),'substitution_positions':substitutions})
+ assert got==set(selection)
+pdb=json.loads((O/'RCSB-7EMY.json').read_text())
+seq=pdb['entity_poly']['pdbx_seq_one_letter_code_can'];current=byacc['G3XCV2']['sequence']['value'];assert current in seq and len(seq)-len(current)==17; offset=seq.index(current)
+out={'status':'passed','at':datetime.datetime.now(datetime.UTC).isoformat(),'scope':'Independent translation of original INSDC CDS; current UniProt and deposited PchE core comparison. Sequence differences remain scoped, not functional equivalence proof.','cds_checks':rows,'PchE_7EMY':{'N_tag':seq[:offset],'C_tag':seq[offset+len(current):],'core_exact':True,'current':'G3XCV2','source_sha256':hashlib.sha256((O/'RCSB-7EMY.json').read_bytes()).hexdigest()}}
+(W/'sequence-check.json').write_text(json.dumps(out,indent=2)+'\n')
+print('PASS',len(rows),'CDS translations and 7EMY core')

@@ -1,0 +1,9 @@
+# Initial external Pyochelin review
+
+The complete eleven-object route is scientifically supportable with the stated carrier, strain, endpoint and evidence limitations. This initial external review requires curation: issue397 is a minor PchF evidence-attribution problem; issue398 is a reproduced major verification defect in the replay input attestation. Neither finding changes the biological reaction set.
+
+Independent source checks covered all native members and54 chemical-side edges, the derived3ATP net, six original CDS translations, the exact deposited PchE core, current source identifiers, primary mechanism/construct evidence and bounded iMod context. Original2022 figures and supplementary carrier architecture were visually inspected in the separately preserved endpoint assessment. The record retains supplied-salicylate scope, native I monoanion as one observed product of an I/II mixture, covalent carrier-state classes, and historical sequence/analogue limits.
+
+The actual initial helper execution52421 returned0 after computing the expected source/schema/chemistry/KGX results. Its passed receipt is not accepted as a valid final attestation: the probe intentionally replaced only copied manifest/projection files after validation, and the helper reported their new invalid hashes without rejection. Exact original and replacement bytes are preserved under binding-probe.
+
+The reviewer previously contributed the bounded endpoint source-locality recommendation. This is disclosed separately from independent inspection of the implemented edge037 change; it does not constitute whole-record authorship or independent self-approval. No maintained record, shared authority, canonical review, Git or GitHub mutation was performed. Corrections and final independently observed replay remain pending.

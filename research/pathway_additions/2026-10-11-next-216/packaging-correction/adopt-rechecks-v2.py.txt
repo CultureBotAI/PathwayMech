@@ -1,0 +1,117 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import argparse
+import hashlib
+import json
+import shutil
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--terminal-chunk', required=True)
+args = parser.parse_args()
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-216'
+P = D / 'packaging-correction'
+E = Path('/private/tmp/pathwaymech-next-216-packaging-rechecks-20261011')
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def obj(path):
+    return json.loads(path.read_bytes())
+
+def describe(path):
+    data = path.read_bytes()
+    return {'path': str(path.relative_to(R)), 'sha256': sha(data), 'bytes': len(data)}
+
+execution = obj(E / 'execution.json')
+assert [x['name'] for x in execution] == ['render', 'validate']
+assert all(x['exit_code'] == 0 for x in execution)
+for x in execution:
+    assert sha(Path(x['log']).read_bytes()) == x['log_sha256']
+history = P / 'history-execution.json'
+history_receipt = obj(history)
+assert sha(history.read_bytes()) == '4bf98f6330609787ca9f41c2faa5b36509fef4fa97825dd0cf07319db0694dc5'
+history_path = R / 'history/infrastructure/pyochelin-evidence-packaging/2026-10-11T162855Z-codex-0c3408.yaml'
+assert datetime.fromtimestamp(history_path.stat().st_mtime, timezone.utc) < datetime.fromisoformat(execution[0]['started_at'])
+old_seal = obj(D / 'integration-receipt.json')
+assert sha((D / 'integration-receipt.json').read_bytes()) == 'b74214f9d1c6a17b5edd7e460f7c12cb7816011a16d5175ffef7cf884c749155'
+unchanged_owners = []
+for row in old_seal['owners']:
+    assert sha((R / row['path']).read_bytes()) == row['sha256'], row['path']
+    unchanged_owners.append(row)
+bindings = obj(D / 'integrated-replay/pyochelin-validation-integrated.json')['input_bindings']
+runtime = [x for x in bindings if x['scope'] == 'formal_or_runtime']
+assert len(runtime) == 47
+for x in runtime:
+    assert str(Path(x['path']).resolve()) == x['resolved_path']
+    assert sha(Path(x['path']).read_bytes()) == x['sha256'], x['path']
+map_rows = obj(P / 'successor-map.json')['mapping']
+mapping = {x['previous_maintained_path']: x for x in map_rows}
+archives = {x['path']: x for x in obj(D / 'final-scientific-review/final-input-manifest.json')['inputs']}
+historical = []
+for x in old_seal['sealed_dossier_inputs']:
+    path = x['path']
+    if path in mapping:
+        data = obj(R / mapping[path]['current_wrapper_path'])['text'].encode('utf-8')
+        via = mapping[path]['current_wrapper_path']
+    elif path.endswith('/README.md'):
+        source = Path(archives[path]['external_archive'])
+        data = source.read_bytes()
+        dest = P / 'pre-packaging-readme.md'
+        if dest.exists():
+            assert dest.read_bytes() == data
+        else:
+            dest.write_bytes(data)
+        via = str(dest.relative_to(R))
+    else:
+        data = (R / path).read_bytes()
+        via = path
+    assert sha(data) == x['sha256'], path
+    historical.append({'original_path': path, 'sha256': x['sha256'], 'current_recovery': via})
+assert len(historical) == 323
+code_check = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', 'src', 'tests', 'scripts', 'pyproject.toml', 'uv.lock', 'justfile', '.claude'], cwd=R)
+assert code_check.returncode == 0
+copied = []
+for source, name in [(E / 'execution.json', 'recheck-execution.json'), (Path('/private/tmp/pathwaymech-next-216-packaging-rechecks.py'), 'recheck-driver.py.txt'), (Path(__file__), 'adopt-rechecks-v2.py.txt')]:
+    dest = P / name
+    if dest.exists():
+        assert source.read_bytes() == dest.read_bytes()
+    else:
+        shutil.copyfile(source, dest)
+    copied.append(describe(dest))
+for x in execution:
+    raw = Path(x['log']).read_bytes()
+    dest = P / (x['name'] + '.log.json')
+    if not dest.exists():
+        with dest.open('x') as f:
+            json.dump({'encoding': 'utf-8', 'original_path': x['log'], 'original_sha256': sha(raw), 'content': raw.decode('utf-8')}, f, indent=2)
+            f.write('\n')
+    assert obj(dest)['content'].encode('utf-8') == raw
+    copied.append(describe(dest))
+scopes = [D, R / 'history/infrastructure/pyochelin-evidence-packaging', R / 'history/infrastructure/pyochelin-authority-integration', R / 'history/infrastructure/pyochelin-portable-replay', R / 'history/records/pyochelin-biosynthesis', R / 'reviews/structured/20261011T162143Z-pyochelin-independent-review']
+files = {R / x['path'] for x in unchanged_owners}
+for scope in scopes:
+    for path in scope.rglob('*'):
+        if path.is_file() and '__pycache__' not in path.parts:
+            assert not path.is_symlink()
+            files.add(path)
+control = subprocess.run(['git', 'diff', '--no-index', '--check', '/dev/null', map_rows[0]['external_archive']], cwd=R, capture_output=True)
+assert control.returncode == 3 and b'new blank line at EOF' in control.stdout
+checked = []
+for path in sorted(files):
+    result = subprocess.run(['git', 'diff', '--no-index', '--check', '/dev/null', str(path)], cwd=R, capture_output=True)
+    assert result.returncode == 1 and not result.stdout and not result.stderr, (str(path), result.returncode, result.stdout.decode(), result.stderr.decode())
+    checked.append(describe(path))
+whitespace = {'status': 'all_current_scoped_files_pass_including_untracked', 'method': 'git diff --no-index --check /dev/null <file>', 'inventory': 'Explicit dossier/history/review filesystem traversal includes hidden and ignored files; generated __pycache__ excluded. Also includes all14 integration owners.', 'positive_detection_control': {'path': map_rows[0]['external_archive'], 'exit_code': control.returncode, 'stdout': control.stdout.decode()}, 'files': checked, 'final_staged_gate_still_required': True}
+with (P / 'comprehensive-whitespace.json').open('x') as f:
+    json.dump(whitespace, f, indent=2)
+    f.write('\n')
+receipt = {'status': 'current_render_validate_and_comprehensive_whitespace_passed', 'at': datetime.now(timezone.utc).isoformat(), 'execution': {'session': 75225, 'observed_exit_code': 0, 'terminal_chunk': args.terminal_chunk}, 'history_before_render': describe(history_path), 'recheck_execution_sha256': sha((E / 'execution.json').read_bytes()), 'unchanged_scientific_authority_history_and_render_owners': unchanged_owners, 'fresh_unchanged_formal_runtime_bindings': runtime, 'historical_integration_dossier_recoveries': historical, 'code_and_test_tree_unchanged_from_base': code_check.returncode == 0, 'copied_proofs': copied, 'whitespace_receipt_sha256': sha((P / 'comprehensive-whitespace.json').read_bytes()), 'reused_gates': {'full_tests': 'Original actual84346 exit0:1256passed3skipped3warnings. Biological record, authorities, runtime/test tree unchanged; no new full test run claimed.', 'original_source_replay': 'Original actual53673 exit0:95originals/47formal-runtime/142finalbindings. All47 formal/runtime inputs freshly equal; manifests and prior acceptance unchanged. No new95source hash pass claimed.', 'graph': 'Original independent99962 exit0. All14 owners, including page and complete downloads, freshly equal after current render. Graph scope remains programmatic, not browser interaction.', 'lint_identifiers_KGX_vendored': 'Original passing bounded receipts preserved; current strict validate also passed. No broader rerun is claimed.'}, 'limits': ['New independent canonical successor and root adoption pending.', 'Final staged whitespace check required before commit.', 'No new scientific-content or current-code mutation.']}
+with (P / 'rechecks-root-adoption.json').open('x') as f:
+    json.dump(receipt, f, indent=2)
+    f.write('\n')
+for path in [P / 'comprehensive-whitespace.json', P / 'rechecks-root-adoption.json']:
+    result = subprocess.run(['git', 'diff', '--no-index', '--check', '/dev/null', str(path)], cwd=R, capture_output=True)
+    assert result.returncode == 1 and not result.stdout and not result.stderr
+print(json.dumps({'status': receipt['status'], 'sha256': sha((P / 'rechecks-root-adoption.json').read_bytes()), 'checked_files': len(checked), 'unchanged_owners': len(unchanged_owners), 'unchanged_runtime': len(runtime), 'historical_recoveries': len(historical)}))

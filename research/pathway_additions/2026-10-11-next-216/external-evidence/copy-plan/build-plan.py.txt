@@ -1,0 +1,291 @@
+"""Create an external-only explicit copy map; never apply it to a repository."""
+
+from pathlib import Path
+from datetime import datetime, timezone
+import base64
+import collections
+import hashlib
+import json
+import os
+
+HERE = Path(__file__).absolute().parent
+DEST = Path('/private/tmp/pathwaymech-next-216-20261011')
+DOSSIER = Path('research/pathway_additions/2026-10-11-next-216')
+FINAL = Path('/private/tmp/pathwaymech-pyochelin-successor-20261011')
+INITIAL = Path('/private/tmp/pathwaymech-pyochelin-author-20261011')
+REVIEW = Path('/private/tmp/pathwaymech-pyochelin-independent-review-20261011')
+AUTH = Path('/private/tmp/pathwaymech-pyochelin-authority-selection-20261011')
+ENDPOINT = Path('/private/tmp/pathwaymech-pyochelin-endpoint-independent-20261011')
+PREFLIGHT = Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011')
+IMOD = Path('/private/tmp/pathwaymech-pyochelin-imod-followup-20261011')
+IMOD411 = Path('/private/tmp/pathwaymech-pyochelin-imod-411-followup-20261011')
+DEDUP = Path('/private/tmp/pathwaymech-pyochelin-preintegration-dedup-20261011')
+paths = {}
+copies = []
+aliases = []
+external = []
+inventory = []
+canonical_by_hash = {}
+
+
+def sha(p):
+    with Path(p).open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+
+def read(p):
+    return json.loads(Path(p).read_text())
+
+
+def bind(p):
+    p = Path(p).absolute()
+    return {'path': str(p), 'sha256': sha(p), 'bytes': p.stat().st_size}
+
+
+def write_new(p, obj):
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open('x') as f:
+        json.dump(obj, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+
+
+def add(p, dest, role, *, unique=False, maintained_helper=False):
+    p = Path(p).absolute()
+    if str(p) in paths:
+        return paths[str(p)]
+    b = bind(p)
+    if b['sha256'] in canonical_by_hash and not unique:
+        entry = dict(b, disposition='exact-byte-alias', destination=canonical_by_hash[b['sha256']], role=role)
+        aliases.append(entry)
+        paths[str(p)] = entry
+        return entry
+    dest = Path(dest)
+    if not maintained_helper and '.py' in dest.name and not dest.name.endswith('.txt'):
+        dest = dest.with_name(dest.name + '.txt')
+    mode = 'exact_bytes'
+    copy_source = p
+    # JSON string escaping preserves inert transcript whitespace without changing
+    # its recoverable bytes or making captured output a maintained source file.
+    if p.suffix in {'.log', '.diff', '.tsv'} or dest.suffix in {'.log', '.diff', '.tsv'} or (p.suffix == '.txt' and '.py' not in p.name):
+        data = p.read_bytes()
+        try:
+            content = data.decode('utf-8')
+            assert content.encode('utf-8') == data
+            payload = dict(format='lossless-console-or-artifact-v1', source=b, encoding='utf-8', content=content)
+        except UnicodeDecodeError:
+            payload = dict(format='lossless-console-or-artifact-v1', source=b, encoding='base64', content=base64.b64encode(data).decode('ascii'))
+        copy_source = HERE / 'payload' / (b['sha256'] + '.json')
+        if not copy_source.exists():
+            write_new(copy_source, payload)
+        dest = dest.with_name(dest.name + '.json')
+        mode = 'lossless_json_wrapper'
+    assert not dest.is_absolute() and '..' not in dest.parts
+    if any(x['destination'] == str(dest) for x in copies):
+        raise ValueError('destination collision: ' + str(dest))
+    entry = dict(b, disposition='planned-copy', destination=str(dest), copy_source=str(copy_source), destination_sha256=sha(copy_source), mode=mode, role=role)
+    copies.append(entry)
+    canonical_by_hash.setdefault(b['sha256'], str(dest))
+    paths[str(p)] = entry
+    return entry
+
+
+def retained(p, reason):
+    p = Path(p).absolute()
+    if str(p) in paths:
+        return
+    entry = dict(bind(p), disposition='retained-external', reason=reason)
+    external.append(entry)
+    paths[str(p)] = entry
+
+
+def archived(p, group, relative=None, *, unique=False):
+    return add(p, DOSSIER / 'external-evidence' / group / (relative or Path(p).name), 'immutable external observation; not a historical canonical review', unique=unique)
+
+
+target = FINAL / 'draft/pyochelin-biosynthesis.yaml'
+assert sha(target) == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+add(target, Path('data/pathways/pyochelin-biosynthesis.yaml'), 'accepted current scientific target', unique=True)
+author = read(FINAL / 'author-handoff.json')
+for row in author['files']:
+    p = Path(row['path'])
+    assert sha(p) == row['sha256']
+    rel = p.relative_to(FINAL)
+    if p == target:
+        continue
+    if rel.parts[0] == 'draft' and len(rel.parts) == 2:
+        add(p, DOSSIER / p.name, 'current accepted author dossier or helper', unique=True, maintained_helper=p.suffix == '.py')
+    else:
+        archived(p, 'author-successor', rel)
+for p in [FINAL / 'author-handoff.json', FINAL / 'handoff.json', FINAL / 'prepare_binding_fix.py']:
+    archived(p, 'author-successor')
+
+# Every original formally captured initial input is recoverable through this map.
+initial_manifest = INITIAL / 'initial-binding-review-inputs/manifest.json'
+for row in read(initial_manifest)['files']:
+    p = Path(row['archived'])
+    assert sha(p) == row['sha256']
+    archived(p, 'initial-author-inputs')
+archived(initial_manifest, 'initial-author-inputs')
+archived(INITIAL / 'initial-handoff.json', 'initial-author-inputs')
+review_initial = REVIEW / 'initial-handoff-inputs/manifest.json'
+for row in read(review_initial)['inputs']:
+    p = Path(row['archive'])
+    assert sha(p) == row['sha256']
+    # The digest-addressed original is copied with an extension derived from its
+    # recorded source only when no already planned exact-byte copy resolves it.
+    name = row['sha256'] + '-' + Path(row['path']).name
+    archived(p, 'initial-review-inputs', name)
+archived(review_initial, 'initial-review-inputs')
+
+for p in sorted(REVIEW.iterdir()):
+    if p.is_file():
+        archived(p, 'independent-review')
+for p in sorted((REVIEW / 'binding-probe').rglob('*')):
+    if p.is_file():
+        archived(p, 'initial-false-pass-proof', p.relative_to(REVIEW / 'binding-probe'))
+
+successor = REVIEW / 'successor-binding-review'
+for p in sorted(successor.rglob('*')):
+    if not p.is_file():
+        continue
+    rel = p.relative_to(successor)
+    if rel.parts[0] == 'focused-guards' and len(rel.parts) > 3:
+        retained(p, 'Generated isolated runtime/authority fixture. Reconstruct with archived guard-probes.py.txt, exact e61 baseline runtime, preserved candidate inputs, and external original authority sandbox. Per-file digest retained in this plan; narrowed fixtures do not establish full scientific success.')
+    else:
+        archived(p, 'independent-successor-controls', rel)
+final_manifest = REVIEW / 'final-handoff-inputs/manifest.json'
+archived(final_manifest, 'final-review-inputs')
+for row in read(final_manifest)['inputs']:
+    p = Path(row['archive'])
+    assert sha(p) == row['sha256']
+    archived(p, 'final-review-inputs', row['sha256'] + '-' + Path(row['path']).name)
+
+# Preserve source-access and discovery history, but no primary article, PDF
+# render/text extraction, native body, or full API body enters the repository.
+for root, group in [(PREFLIGHT, 'source-preflight'), (ENDPOINT, 'endpoint-review'), (IMOD, 'imodulondb'), (IMOD411, 'imodulondb-411'), (DEDUP, 'preintegration-dedup')]:
+    for p in sorted(root.iterdir()):
+        if p.is_file():
+            archived(p, group)
+for p in sorted((ENDPOINT / 'pdf-check').iterdir()):
+    if p.name in {'receipt.json', 'method-page-receipt.json'}:
+        archived(p, 'endpoint-review/pdf-check')
+    else:
+        retained(p, 'Original-paper page rendering or full text extraction remains external; exact receipt and source hashes are preserved.')
+for p in sorted(INITIAL.iterdir()):
+    if p.is_file():
+        archived(p, 'author-original-provenance')
+
+authority = read(AUTH / 'handoff.json')
+for row in authority['files']:
+    p = Path(row['path'])
+    assert sha(p) == row['sha256']
+    if p.name in {'ontology.json', 'sources.json', 'prospective-ontology.json', 'prospective-sources.json', 'identifier_sources.json', 'prospective-identifier-sources.json'}:
+        retained(p, 'Full prospective snapshot/manifest is external preparation only. Root independently applies exact additions with unchanged builders; selection and report preserve all proposed deltas and hashes.')
+    else:
+        archived(p, 'authority-preparation', p.relative_to(AUTH))
+archived(AUTH / 'handoff.json', 'authority-preparation')
+for row in authority['files']:
+    if row['path'].endswith('guard-controls/receipt.json'):
+        for case in read(row['path'])['cases']:
+            for item in case['command']:
+                p = Path(item)
+                if p.is_file() and p.is_relative_to(AUTH / 'guard-controls'):
+                    archived(p, 'authority-preparation', p.relative_to(AUTH))
+ind = Path('/private/tmp/pathwaymech-pyochelin-authority-independent-20261011/audit.json')
+assert sha(ind) == authority['independent_bounded_authority_audit']['sha256']
+archived(ind, 'authority-independent-review')
+followup = ind.with_name('coverage-followup.json')
+assert sha(followup) == '9b3852e7fc90f162dc07e2461b37d7818e07c90ffdcf79ffde95d9bf2c1d4b54'
+archived(followup, 'authority-independent-review')
+root_authority_review = Path('/private/tmp/pathwaymech-next-216-authority-root-review.json')
+root_authority_adoption = Path('/private/tmp/pathwaymech-next-216-authority-adoption-20261011/receipt.json')
+assert sha(root_authority_review) == 'f17e36a79f590398b31aaa162f834f82588cf34eb3e97b7d1367b7617f7e8ce3'
+assert sha(root_authority_adoption) == 'c14b52e89df969fa931346a92837e48d22ad5f5dadb567a09a0405a564fbdbab'
+archived(root_authority_review, 'root-authority-integration')
+archived(root_authority_adoption, 'root-authority-integration', 'adoption-receipt.json')
+
+# Census uses pathlib/os.walk rather than ignore-respecting Git searches.
+# Never descend original-body directories or symlinked cache/environment trees.
+roots = [FINAL, INITIAL, REVIEW, ENDPOINT, PREFLIGHT, IMOD, IMOD411, DEDUP, AUTH]
+excluded_trees = []
+for root in roots:
+    for directory, dirs, files in os.walk(root, followlinks=False):
+        directory = Path(directory)
+        for n in list(dirs):
+            p = directory / n
+            if p.is_symlink() or n in {'originals', '__pycache__', 'source-cache'}:
+                dirs.remove(n)
+                excluded_trees.append({'path': str(p), 'reason': 'External original source cache, interpreter artifact, or symlink tree; no maintained copy. Source bodies are bound separately by original-source manifests.'})
+        for name in files:
+            p = directory / name
+            if p.is_symlink():
+                inventory.append({'path': str(p), 'disposition': 'retained-external-symlink', 'target': os.readlink(p)})
+                continue
+            if str(p) not in paths:
+                retained(p, 'Historical support or generated external fixture not selected for maintained copy. Preserved unchanged externally with this exact hash; accepted formal inputs and essential positive/negative proof are separately mapped.')
+            inventory.append(paths[str(p)])
+
+for entry in copies:
+    dest = DEST / entry['destination']
+    assert not os.path.lexists(dest), 'prepared destination already exists: ' + str(dest)
+    assert sha(entry['copy_source']) == entry['destination_sha256']
+    if entry['mode'] == 'lossless_json_wrapper':
+        w = read(entry['copy_source'])
+        data = w['content'].encode('utf-8') if w['encoding'] == 'utf-8' else base64.b64decode(w['content'])
+        assert hashlib.sha256(data).hexdigest() == entry['sha256']
+    else:
+        assert entry['sha256'] == entry['destination_sha256']
+
+destinations = {x['destination'] for x in copies}
+assert all(x['destination'] in destinations for x in aliases)
+assert len([x for x in copies if x['destination'].startswith('data/pathways/')]) == 1
+helpers = [x for x in copies if x['destination'].endswith('.py')]
+assert {Path(x['destination']).name for x in helpers} == {'pyochelin-replay.py', 'pyochelin-reactive-check.py'}
+
+formal_resolution = []
+for label, rows in [('final-author-39', author['files']), ('initial-independent-23', read(review_initial)['inputs']), ('initial-author-21', read(initial_manifest)['files'])]:
+    for row in rows:
+        h = row['sha256']
+        assert h in canonical_by_hash, (label, row)
+        formal_resolution.append({'set': label, 'original_path': row.get('path', row.get('original')), 'sha256': h, 'recoverable_destination': canonical_by_hash[h]})
+
+plan = {
+    'at': datetime.now(timezone.utc).isoformat(),
+    'status': 'external_copy_plan_only_not_applied',
+    'destination_repo': str(DEST),
+    'destination_dossier': str(DOSSIER),
+    'candidate_base': {'commit': 'e61e31e38169a827096d5afd2fdcf741ef8e415e', 'tree': '7ccc3e13870da87e303f76839b068b97a5c3e726', 'actual_merged_baseline_transition_required': True},
+    'scientific_target': bind(target),
+    'authority_handoff': bind(AUTH / 'handoff.json'),
+    'root_authority_adoption': bind(root_authority_adoption),
+    'expected_existing_tracked_changes': [
+        {'path': 'conf/identifier_sources.json', 'sha256': sha(AUTH / 'canonical-dry-run/identifier_sources.json')},
+        {'path': 'data/identifier_authorities/ontology.json', 'sha256': sha(AUTH / 'canonical-dry-run/ontology.json')},
+        {'path': 'data/identifier_authorities/sources.json', 'sha256': sha(AUTH / 'canonical-dry-run/sources.json')},
+    ],
+    'fresh_dedup': bind(DEDUP / 'disposition.json'),
+    'copy_entries': copies,
+    'exact_byte_aliases': aliases,
+    'formal_input_resolution': formal_resolution,
+    'retained_external': external,
+    'excluded_trees': excluded_trees,
+    'inventory_scope': 'Filesystem walk includes dotfiles and Git-ignored files; raw original directories, symlink caches and interpreter caches are explicitly excluded from traversal and are not absence claims.',
+    'full_inventory': inventory,
+    'application_contract': [
+        'Root must inspect this plan before applying. This script has no apply mode and writes only its new external directory.',
+        'Before any future copy, recapture destination HEAD/tree and all locked B runtime hashes. Exactly three tracked authority files may already equal the explicitly adopted canonical outputs listed in expected_existing_tracked_changes; all other B baseline files remain exact. The isolated e61 tree permits preparation only; canonical review and commit require the actual B merged commit with full tree-equivalence proof.',
+        'Each listed destination must be absent, including dangling symlinks. Create it exclusively; rehash source immediately before and copied bytes immediately after. Never overwrite an existing conflicting path.',
+        'Copy current record bytes exactly. Preserve original projection/source-manifest external paths: they identify retained original bodies, not locations to rewrite. Integrated replay receives maintained target/manifest/projection/helper paths explicitly.',
+        'Only current replay and reactive-check helpers are executable Python under the maintained dossier. Historical scripts are inert .py.txt archives; their exact bytes are recoverable without treating them as current tests.',
+        'Lossless JSON wrappers preserve console/search/diff/TSV bytes and hashes. Reconstruct content by declared encoding before comparing to any historical transcript digest. Do not strip trailing whitespace from captured observations.',
+        'The exact-byte alias table resolves duplicate historical captures through a canonical maintained destination. This does not rewrite any old manifest or fabricate prior canonical review lineage.',
+        'External initial reviews, false-PASS observation, corrections and accepted successor remain external observations mirrored into research. Save a fresh governed current scientific review only after real maintained integration and gates.',
+        'Keep every original article/native/API response external. Copy only source manifests, selected-fact projections, assessment/proof receipts and source-code probes. Access is not redistribution clearance.',
+        'Root has already adopted the 23 original authority bodies and exact three canonical output files after separate independent source/SQL review. The root review and adoption receipts are included; no duplicate builder run or duplicate source acquisition is claimed. Recheck their exact output hashes before the integrated replay.',
+        'Generate new integrated validation receipts after application. Do not overwrite author or independent external success/failure receipts with integrated results.',
+        'Root owns creation history, shared authority integration, pages/KGX, corpus gates, review index and Git publication. No such file is authorized by this copy plan.'
+    ],
+    'validation': {'all_39_final_inputs_rehashed': True, 'all_23_initial_review_inputs_rehashed': True, 'all_21_initial_author_inputs_rehashed': True, 'all_formal_inputs_resolve': True, 'all_planned_destinations_absent_including_symlinks': True, 'all_lossless_wrappers_roundtrip': True, 'only_two_current_py_helpers': True, 'maintained_writes': []},
+}
+write_new(HERE / 'copy-plan.json', plan)
+print(json.dumps({'plan': bind(HERE / 'copy-plan.json'), 'copies': len(copies), 'aliases': len(aliases), 'external_files': len(external), 'source_bytes': sum(x['bytes'] for x in copies), 'counts_by_role': dict(collections.Counter(x['role'] for x in copies))}, indent=2))

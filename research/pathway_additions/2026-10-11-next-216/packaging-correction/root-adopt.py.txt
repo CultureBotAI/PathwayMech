@@ -1,0 +1,71 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import base64
+import hashlib
+import json
+import shutil
+import subprocess
+
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-216'
+P = D / 'packaging-correction'
+E = Path('/private/tmp/pathwaymech-next-216-remote-adversarial-review')
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+review = E / 'packaging-successor-review.json'
+assert digest(review.read_bytes()) == '44906636bfd23c2d8d1cf2ec60b53beee4b7a5166ff5cf37ae8a584959e378d4'
+a = read(review)
+m = read(P / 'successor-map.json')
+assert digest((P / 'successor-map.json').read_bytes()) == a['successor_map_sha256']
+assert not a['findings'] and a['resolved_bounded_finding'] == 401
+assert a['status'] == 'accepted_bounded_byte_preserving_packaging_remedy_pending_final_staged_gate'
+mapping = {x['previous_maintained_path']: x for x in m['mapping']}
+inventory = set(subprocess.check_output(['rg', '--files', '-uu', '--hidden', str(D)], cwd=R).decode().splitlines())
+assert all(str(R / old) not in inventory for old in mapping)
+initial = read(E / 'packaging-initial/assessment.json')
+independent_originals = {x['maintained_original_path']: x for x in initial['rows']}
+for old, row in mapping.items():
+    wrapper = R / row['current_wrapper_path']
+    assert digest(wrapper.read_bytes()) == row['current_wrapper_sha256']
+    payload = read(wrapper)['text'].encode('utf-8')
+    assert payload.endswith(b'\n\n')
+    assert digest(payload) == row['original_sha256'] and len(payload) == row['original_bytes']
+    for source in [row['original_path'], row['external_archive'], independent_originals[old]['raw_archive']]:
+        assert Path(source).read_bytes() == payload
+    for alias in row['aliases']:
+        assert Path(alias['path']).read_bytes() == payload
+for row in a['preserved_initial_staged_files']:
+    assert digest((R / row['path']).read_bytes()) == row['sha256'], row['path']
+plan = read(D / 'pyochelin-copy-plan.json')
+by_dest = {x['destination']: x for x in plan['copy_entries']}
+for row in a['all_copy_plan_input_recoveries']:
+    old = row['old_destination']
+    if old in mapping:
+        payload = read(R / mapping[old]['current_wrapper_path'])['text'].encode('utf-8')
+    else:
+        entry = by_dest[old]
+        payload = (R / old).read_bytes()
+        assert digest(payload) == entry['destination_sha256']
+        if entry['mode'] == 'lossless_json_wrapper':
+            data = json.loads(payload)
+            payload = data['content'].encode('utf-8') if data['encoding'] == 'utf-8' else base64.b64decode(data['content'], validate=True)
+    assert digest(payload) == row['recovered_sha256']
+    assert payload == Path(row['path']).read_bytes()
+assert len(mapping) == 7 and len(a['preserved_initial_staged_files']) == 368 and len(a['all_copy_plan_input_recoveries']) == 616
+copies = []
+for source, name in [(review, 'independent-successor-review.json'), (E / 'packaging-successor-check.py', 'independent-successor-check.py.txt'), (Path('/private/tmp/pathwaymech-next-216-stage-and-commit.py'), 'initial-stage-and-commit.py.txt'), (Path(__file__), 'root-adopt.py.txt')]:
+    dest = P / name
+    assert not dest.exists()
+    shutil.copyfile(source, dest)
+    assert source.read_bytes() == dest.read_bytes()
+    copies.append({'original_path': str(source), 'maintained_path': str(dest.relative_to(R)), 'sha256': digest(dest.read_bytes())})
+receipt = {'status': 'root_accepted_independent_byte_preserving_packaging_remedy', 'at': datetime.now(timezone.utc).isoformat(), 'issue': m['issue'], 'independent_review_sha256': digest(review.read_bytes()), 'independent_actual_terminal': {'chunk': 'fc5ae8', 'exit_code': 0}, 'successor_map_sha256': a['successor_map_sha256'], 'root_checks': {'exact_wrappers': 7, 'exact_aliases': 5, 'unchanged_prior_staged_files': 368, 'historical_input_recoveries': 616, 'hidden_and_ignored_inventory_included': True}, 'preserved_proofs': copies, 'limits': ['Prior receipts and canonical review are immutable observations of their earlier snapshot.', 'Current render/validation, new integration seal and canonical successor review are still required.', 'Final staged whitespace gate remains required; an empty index is not a passing gate.']}
+with (P / 'root-adoption.json').open('x') as f:
+    json.dump(receipt, f, indent=2)
+    f.write('\n')
+print(json.dumps({'status': receipt['status'], 'sha256': digest((P / 'root-adoption.json').read_bytes()), 'wrappers': 7, 'recoveries': 616}))

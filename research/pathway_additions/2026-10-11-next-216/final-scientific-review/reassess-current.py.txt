@@ -1,0 +1,84 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib,json,subprocess,yaml
+R=Path('/private/tmp/pathwaymech-next-216-20261011');O=Path('/private/tmp/pathwaymech-next-216-canonical-review');D=R/'research/pathway_additions/2026-10-11-next-216'
+now=lambda:datetime.now(UTC).isoformat().replace('+00:00','Z')
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def verify(x):
+ p=Path(x['path']);p=p if p.is_absolute() else R/p
+ assert sha(p)==x['sha256'],str(p)
+ return str(p)
+started=now();I=json.loads((O/'inspect.json').read_text());seal=json.loads((D/'integration-receipt.json').read_text())
+assert sha(D/'integration-receipt.json')=='b74214f9d1c6a17b5edd7e460f7c12cb7816011a16d5175ffef7cf884c749155'
+assert seal['base']==I['source']['git_revision']=='3fb840bf48d871bc37576cc669d23441c0206e66'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()==seal['base']
+for x in I['source']['inputs']:verify(x)
+for x in seal['owners']+seal['sealed_dossier_inputs']:verify(x)
+for x in seal['proofs'].values():verify(x)
+t=R/'data/pathways/pyochelin-biosynthesis.yaml';rec=yaml.safe_load(t.read_text());expected=Path('/private/tmp/pathwaymech-pyochelin-successor-20261011/draft/pyochelin-biosynthesis.yaml')
+assert t.read_bytes()==expected.read_bytes()
+proj=json.loads((D/'pyochelin-source-projection.json').read_text());assert proj['target_sha256']==sha(t);assert proj['graph_to_source']==rec['mechanistic_edges']
+initial=Path('/private/tmp/pathwaymech-pyochelin-author-20261011/draft/pyochelin-biosynthesis.yaml');assert sha(initial)=='c72de0b065cf86ae43931868097237dd95ae2e3f5d2e326f3061c6d8b6d1ca0b'
+old=yaml.safe_load(initial.read_text());changes=[]
+def diff(a,b,p=''):
+ if isinstance(a,dict) and isinstance(b,dict):
+  assert set(a)==set(b),p
+  for k in a:diff(a[k],b[k],p+'/'+str(k))
+ elif isinstance(a,list) and isinstance(b,list):
+  assert len(a)==len(b),p
+  for j,(x,y) in enumerate(zip(a,b)):diff(x,y,p+'/'+str(j))
+ elif a!=b:changes.append({'path':p,'old':a,'new':b})
+diff(old,rec)
+expected_delta=json.loads((D/'external-evidence/independent-review/provenance-successor-assessment.json').read_text())['delta'];assert changes==expected_delta
+# Actual integrated formal/runtime inputs are freshly rehashed; original source bodies
+# smaller than1GB are rehashed now. Large authority DB digests were fully verified by
+# the observed original-body replay; this pass does not invent another full DB hash.
+replay=json.loads((D/'integrated-replay/pyochelin-validation-integrated.json').read_text());assert replay['status']=='passed'
+formal=[]
+for x in replay['input_bindings']:
+ if x['scope']=='formal_or_runtime':verify(x);formal.append(x)
+assert len(formal)==47
+sources=json.loads((D/'pyochelin-source-manifest.json').read_text())['sources'];small=[];large=[]
+for x in sources:
+ p=Path(x['path']);assert p.exists()
+ if p.stat().st_size<1_000_000_000:verify(x);small.append({'path':str(p),'sha256':x['sha256']})
+ else:large.append({'path':str(p),'sha256_from_actual_integrated_full_replay':x['sha256'],'bytes':p.stat().st_size,'scope':'Not freshly hashed here; integrated observed replay rehashed this complete original before and after validation.'})
+assert len(small)+len(large)==95
+# Recheck changed UniProt identity pointers against exact original batch.
+u=json.loads(Path('/private/tmp/pathwaymech-pyochelin-preflight-20261011/originals/uniprot-pao1-pch.json').read_text())['results'][2]
+assert u['primaryAccession']=='Q9HWG4' and u['genes'][0]['geneName']['value']=='pchF' and u['organism']['taxonId']==208964 and len(u['sequence']['value'])==1809
+# Canonical authority baseline preservation is independently recomputed from Git.
+authorities=[]
+for name in ['data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json']:
+ a=json.loads(subprocess.check_output(['git','show',seal['base']+':'+name],cwd=R));b=json.loads((R/name).read_text())
+ assert set(a)==set(b),(name,a.keys(),b.keys())
+ for k,v in a.items():
+  if isinstance(v,dict):
+   for key,value in v.items():assert b[k][key]==value,(name,k,key)
+  else:assert b[k]==v,(name,k)
+ authorities.append({'path':name,'sha256':sha(R/name),'prior_terms':len(a['terms']),'current_terms':len(b['terms']),'prior_metadata_preserved':True})
+a=json.loads(subprocess.check_output(['git','show',seal['base']+':conf/identifier_sources.json'],cwd=R));b=json.loads((R/'conf/identifier_sources.json').read_text())
+# Preserve ordered manifest source ownership rather than dictionary-coalescing IDs.
+assert isinstance(a,list) and isinstance(b,list)
+assert b[:len(a)]==a;assert len(b)==547
+# Confirm actual process logs and lossless retained forms for all coordinated checks.
+gates=json.loads((D/'full-gate-receipts.json').read_text());vendor=json.loads((D/'vendored-gate-receipt.json').read_text());logs=json.loads((D/'console-transcripts.json').read_text())['logs']
+for x in gates+[vendor]:
+ assert x['exit_code']==0
+ p=Path(x['log']);assert sha(p)==x['log_sha256'];row=next(y for y in logs if y['name']==x['name']);assert row['text'].encode()==p.read_bytes();assert row['original_sha256']==x['log_sha256']
+assert '1256 passed, 3 skipped, 3 warnings in 536.71s' in Path(next(x for x in gates if x['name']=='test')['log']).read_text()
+# Every retained copy has current bytes matching its adoption scope, including wrappers.
+cp=json.loads((D/'root-copy-adoption.json').read_text())['copies']
+for x in cp:assert sha(R/x['destination'])==x['destination_sha256'],x['destination']
+# Preserve the independent graph result and all adopted execution bytes.
+for name in ['independent-graph-root-adoption.json','integrated-replay-root-adoption.json']:
+ ad=json.loads((D/name).read_text())
+ for x in ad.get('copied',[]):
+  p=x.get('maintained_path',x.get('path'));h=x.get('maintained_sha256',x.get('sha256'))
+  if p and h:assert sha(R/p)==h,p
+out={'status':'passed','started_at':started,'finished_at':now(),'target_sha256':sha(t),'inspect_sha256':sha(O/'inspect.json'),'formal_current_review_inputs':len(I['source']['inputs']),'sealed_dossier_files_rehashed':len(seal['sealed_dossier_inputs']),'sealed_owner_files_rehashed':len(seal['owners']),'root_copies_rehashed':len(cp),'current_integrated_formal_runtime_bindings_rehashed':len(formal),'original_sources_freshly_rehashed':len(small),'large_originals_scope':large,'exact_external_accepted_record_byte_parity':True,'current_projection_complete_graph_equality':True,'initial_record_sha256':sha(initial),'exact_five_field_source_correction':changes,'authority_preservation':authorities,'manifest_previous_inputs':len(a),'manifest_current_inputs':len(b),'current_gate_logs_rehashed':len(gates)+1,'gate_names':[x['name'] for x in gates+[vendor]],'issues':[397,398],'canonical_predecessor':None,'historical_scope':'Both original findings and corrections are external dated observations, not canonical predecessors. This is the first maintained scientific observation.','limitations':['This bounded final recheck reuses previously inspected unchanged full scientific evidence and actual positive/negative replay. No repeated whole suite or new source acquisition is claimed.','Programmatic graph inspection does not claim browser interaction.'],'findings':[]}
+(O/'current-reassessment.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({'status':out['status'],'inputs':out['formal_current_review_inputs'],'sealed':out['sealed_dossier_files_rehashed'],'owners':out['sealed_owner_files_rehashed'],'source_hashes':len(small),'receipt_sha256':sha(O/'current-reassessment.json')}))

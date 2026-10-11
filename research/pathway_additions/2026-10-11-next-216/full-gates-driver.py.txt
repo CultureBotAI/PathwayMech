@@ -1,0 +1,21 @@
+from pathlib import Path
+from datetime import datetime,timezone
+from concurrent.futures import ThreadPoolExecutor
+import subprocess,os,json,hashlib,sys
+root=Path('/private/tmp/pathwaymech-next-216-20261011');env=dict(os.environ,UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',UV_NO_SYNC='1',PYTHONPATH=str(root/'src'))
+receipt=Path('/private/tmp/pathwaymech-next-216-final-gate-receipts.json')
+assert not receipt.exists()
+bridge=json.loads((root/'research/pathway_additions/2026-10-11-next-216/merged-baseline-transition.json').read_text())
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()==bridge['actual_merged_base']
+assert subprocess.check_output(['git','branch','--show-current'],cwd=root,text=True).strip()=='feat/pathway-next-216-20261011'
+def run(item):
+ name,cmd=item;log=Path('/private/tmp/pathwaymech-next-216-final-'+name+'.log');start=datetime.now(timezone.utc).isoformat()
+ with log.open('x') as f:r=subprocess.run(cmd,cwd=root,env=env,stdout=f,stderr=subprocess.STDOUT)
+ out={'name':name,'command':cmd,'environment':{k:env[k] for k in ('PYTHONPATH','UV_NO_SYNC','UV_CACHE_DIR')},'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':r.returncode,'log':str(log),'log_sha256':hashlib.sha256(log.read_bytes()).hexdigest()}
+ print(json.dumps(out),flush=True);return out
+checks=[run(('render',['just','render-pages']))];receipt.write_text(json.dumps(checks,indent=2)+'\n')
+if checks[0]['exit_code']:sys.exit(checks[0]['exit_code'])
+commands=[('validate',['just','validate']),('test',['just','test']),('lint',['just','lint']),('identifiers',['just','check-identifiers']),('kgx',['just','kgx-export','--output-dir','/private/tmp/pathwaymech-next-216-final-kgx']),('diff',['git','diff','--check'])]
+with ThreadPoolExecutor(max_workers=3) as pool:checks+=list(pool.map(run,commands))
+receipt.write_text(json.dumps(checks,indent=2)+'\n')
+sys.exit(0 if all(x['exit_code']==0 for x in checks) else 1)

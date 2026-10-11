@@ -1,0 +1,85 @@
+from pathlib import Path
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+base = '3fb840bf48d871bc37576cc669d23441c0206e66'
+branch = 'feat/pathway-next-216-20261011'
+parser = argparse.ArgumentParser()
+parser.add_argument('--review-dir', required=True)
+parser.add_argument('--review-sha256', required=True)
+args = parser.parse_args()
+expected_review = args.review_sha256
+assert len(expected_review) == 64
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=root).decode().strip()
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+assert git('rev-parse', 'HEAD') == base
+assert git('branch', '--show-current') == branch
+assert not git('diff', '--cached', '--name-only')
+review_dir = args.review_dir
+assert review_dir.startswith('reviews/structured/') and len(Path(review_dir).parts) == 3
+assert 'pyochelin' in review_dir and '..' not in Path(review_dir).parts
+assert sha(root / review_dir / 'review.yaml') == expected_review
+adoption = json.loads((root / 'research/pathway_additions/2026-10-11-next-216/final-scientific-review-adoption.json').read_text())
+assert adoption['status'] == 'accepted_completed_independent_scientific_review'
+assert adoption['review_yaml_sha256'] == expected_review
+assert adoption['post_save_check_exit_code'] == 0
+subprocess.run(['git', 'fetch', 'origin', 'main'], cwd=root, check=True)
+assert git('rev-parse', 'origin/main') == base, 'Main advanced; assess the new base before staging.'
+scopes = [
+    'conf/identifier_sources.json',
+    'data/identifier_authorities/ontology.json',
+    'data/identifier_authorities/sources.json',
+    'data/pathways/pyochelin-biosynthesis.yaml',
+    'history/infrastructure/pyochelin-authority-integration',
+    'history/infrastructure/pyochelin-portable-replay',
+    'history/records/pyochelin-biosynthesis',
+    'pages/browse.html', 'pages/index.html', 'pages/pathway_index.json',
+    'pages/downloads/edges.tsv', 'pages/downloads/nodes.tsv', 'pages/downloads/manifest.json',
+    'pages/records/GO_0042864.html',
+    'research/pathway_additions/2026-10-11-next-216',
+    review_dir,
+]
+files = []
+for scope in scopes:
+    path = root / scope
+    assert path.exists() and not path.is_symlink(), scope
+    children = list(path.rglob('*')) if path.is_dir() else [path]
+    for item in children:
+        assert not item.is_symlink(), item
+        if item.is_file():
+            assert '__pycache__' not in item.parts and '.venv' not in item.parts
+            files.append(str(item.relative_to(root)))
+files = sorted(set(files))
+tracked_changed = set(git('diff', '--name-only').splitlines())
+assert tracked_changed <= set(files), tracked_changed - set(files)
+subprocess.run(['git', 'add', '--', *files], cwd=root, check=True)
+staged = git('diff', '--cached', '--name-only').splitlines()
+assert set(staged) == set(files), {'missing': sorted(set(files) - set(staged)), 'extra': sorted(set(staged) - set(files))}
+subprocess.run(['git', 'diff', '--cached', '--check'], cwd=root, check=True)
+manifest = {'captured_at': datetime.now(timezone.utc).isoformat(), 'base': base, 'branch': branch, 'review_yaml_sha256': expected_review, 'files': [{'path': path, 'sha256': sha(root / path), 'bytes': (root / path).stat().st_size, 'git_blob': git('rev-parse', ':' + path)} for path in staged]}
+manifest_path = Path('/private/tmp/pathwaymech-next-216-staged-files.json')
+save(manifest_path, manifest)
+assert len(staged) > 100
+subprocess.run(['git', 'commit', '-m', 'Add complete pyochelin biosynthesis with reviewed provenance'], cwd=root, check=True)
+head = git('rev-parse', 'HEAD')
+assert head != base
+assert not git('diff', '--name-only') and not git('diff', '--cached', '--name-only')
+for entry in manifest['files']:
+    assert git('rev-parse', head + ':' + entry['path']) == entry['git_blob']
+receipt = {'completed_at': datetime.now(timezone.utc).isoformat(), 'status': 'committed_exact_reviewed_scope', 'base': base, 'branch': branch, 'head': head, 'tree': git('rev-parse', 'HEAD^{tree}'), 'files': len(staged), 'staged_manifest': str(manifest_path), 'staged_manifest_sha256': sha(manifest_path), 'remaining_status': git('status', '--short')}
+save(Path('/private/tmp/pathwaymech-next-216-commit.json'), receipt)
+print(json.dumps(receipt), flush=True)

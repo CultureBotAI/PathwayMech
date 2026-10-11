@@ -1,0 +1,47 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib
+import json
+import os
+import subprocess
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+O = Path('/private/tmp/pathwaymech-next-216-packaging-scientific-review')
+now = lambda: datetime.now(UTC).isoformat().replace('+00:00','Z')
+sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+I = json.loads((O / 'inspect.json').read_text())
+env = dict(os.environ,PYTHONPATH=str(R / 'src'),UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-curation-uv-cache',PYTHONDONTWRITEBYTECODE='1')
+def verify():
+    for x in I['source']['inputs']:
+        assert sha(R / x['path']) == x['sha256'], x['path']
+verify()
+archive=[]
+for x in I['source']['inputs']:
+    p=O / 'input-archive' / x['path']
+    p.parent.mkdir(parents=True,exist_ok=True)
+    with p.open('xb') as stream:
+        stream.write((R / x['path']).read_bytes())
+    assert sha(p)==x['sha256']
+    archive.append(dict(x,external_archive=str(p)))
+(O / 'input-archive-manifest.json').write_text(json.dumps({'scope':'Exact independently inspected current formal bytes before canonical save; all current and archived inputs rechecked after save','inputs':archive},indent=2)+'\n')
+commands=[]
+for name,args in [('validate',['validate',str(O / 'review-draft.yaml')]),('save',['save','--content',str(O / 'review-draft.yaml')])]:
+    verify()
+    cmd=[str(R / '.venv/bin/python'),'scripts/record_review.py',*args]
+    started=now()
+    p=subprocess.run(cmd,cwd=R,env=env,capture_output=True)
+    (O / (name+'.stdout')).write_bytes(p.stdout)
+    (O / (name+'.stderr')).write_bytes(p.stderr)
+    commands.append({'name':name,'command':cmd,'started_at':started,'finished_at':now(),'exit_code':p.returncode,'stdout_sha256':sha(O / (name+'.stdout')),'stderr_sha256':sha(O / (name+'.stderr'))})
+    (O / 'save-execution.json').write_text(json.dumps({'commands':commands},indent=2)+'\n')
+    print(json.dumps(commands[-1]),flush=True)
+    assert p.returncode==0,p.stderr.decode()
+    verify()
+for x in archive:
+    assert sha(Path(x['external_archive']))==x['sha256']
+draft=yaml.safe_load((O / 'review-draft.yaml').read_text())
+bundle=R / 'reviews/structured' / draft['review_id']
+saved=[{'path':str(p.relative_to(R)),'sha256':sha(p)} for p in [bundle/'review.yaml',bundle/'review.md']]
+(O / 'save-result.json').write_text(json.dumps({'status':'saved_with_pre_and_post_current_input_checks','input_count':len(archive),'saved_files':saved,'archive_manifest_sha256':sha(O / 'input-archive-manifest.json')},indent=2)+'\n')
+print(json.dumps({'status':'saved','saved_files':saved}),flush=True)

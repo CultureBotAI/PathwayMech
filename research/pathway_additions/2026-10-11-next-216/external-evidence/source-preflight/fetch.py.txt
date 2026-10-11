@@ -1,0 +1,24 @@
+from pathlib import Path
+from datetime import datetime,UTC
+from concurrent.futures import ThreadPoolExecutor
+import urllib.request,urllib.error,json,hashlib,sys
+from xml.etree import ElementTree as E
+B=Path(__file__).absolute().parent;O=B/'originals';O.mkdir(exist_ok=True)
+requests=json.loads(Path(sys.argv[1]).read_text())
+def get(row):
+ out=dict(row,retrieved_at=datetime.now(UTC).isoformat());p=O/row['name'];assert not p.exists()
+ try:
+  req=urllib.request.Request(row['url'],headers={'User-Agent':'PathwayMech-source-research/1.0'})
+  with urllib.request.urlopen(req,timeout=40) as r:body=r.read();out.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+ except urllib.error.HTTPError as e:body=e.read();out.update(status=e.code,error=str(e),content_type=e.headers.get('Content-Type'))
+ except Exception as e:return dict(out,error=repr(e),accepted=False)
+ with p.open('xb') as f:f.write(body)
+ out.update(path=str(p),bytes=len(body),sha256=hashlib.sha256(body).hexdigest())
+ if row.get('frame'):
+  try:x=E.fromstring(body);out['accepted']=any(c.attrib.get('frameid')==row['frame'] and c.attrib.get('detail')=='full' for c in list(x)) and out['status']==200
+  except E.ParseError:out['accepted']=False
+ else:out['accepted']=out.get('status')==200
+ return out
+with ThreadPoolExecutor(max_workers=5) as ex:rows=list(ex.map(get,requests))
+with (B/sys.argv[2]).open('x') as f:json.dump(dict(at=datetime.now(UTC).isoformat(),sources=rows),f,indent=2);f.write('\n')
+print(json.dumps([(x['name'],x.get('status'),x['accepted']) for x in rows]))

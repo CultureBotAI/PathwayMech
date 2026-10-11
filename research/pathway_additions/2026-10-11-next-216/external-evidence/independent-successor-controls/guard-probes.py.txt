@@ -1,0 +1,60 @@
+from pathlib import Path
+import json,hashlib,shutil,subprocess,os,datetime
+B=Path(__file__).parent;PY='/private/tmp/pathwaymech-next-215-20261011/.venv/bin/python';R=Path('/private/tmp/pathwaymech-next-215-20261011');A=Path('/private/tmp/pathwaymech-pyochelin-successor-20261011/authority-sandbox')
+wrapper='''from pathlib import Path
+import sys,runpy,json,builtins,hashlib,datetime
+b=Path(__file__).parent;c=json.loads((b/'case.json').read_text());before={};events=[]
+helper=b/'pyochelin-replay.py';target=b/'pyochelin-biosynthesis.yaml';manifest=b/'pyochelin-source-manifest.json';projection=b/'pyochelin-source-projection.json';reactive=b/'pyochelin-reactive-check.py';repo=b/'repo';authority=b/'authority';out=b/'result.json'
+paths={'target':target,'manifest':manifest,'projection':projection,'helper':helper,'reactive':reactive,'policy':repo/'conf/identifier_policy.yaml','authority':next((authority/'data/identifier_authorities').glob('*.json')),'runtime':repo/'src/pathwaymech/strict.py','source':b/'original-source.xml'}
+def mutate():
+    if c['kind']=='inventory':
+        p=authority/'data/identifier_authorities/extra.json';p.write_text('{}\\n')
+    else:
+        p=paths[c['kind']];before[p.as_posix()]=hashlib.sha256(p.read_bytes()).hexdigest();p.write_bytes(p.read_bytes()+b'\\n')
+    events.append({'path':str(p),'after_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'at':datetime.datetime.now(datetime.UTC).isoformat()})
+oldimport=builtins.__import__;done=False
+def importing(name,*args,**kwargs):
+    global done
+    if name=='pathwaymech.identifiers' and not done and c['phase']=='early':
+        done=True;mutate()
+    return oldimport(name,*args,**kwargs)
+builtins.__import__=importing
+class Milestone(Exception):pass
+def trace(frame,event,arg):
+    if frame.f_code.co_filename==str(helper) and event=='line' and frame.f_lineno==c['milestone_line']:
+        sys.settrace(None)
+        if c['phase']=='late_guard':
+            mutate();frame.f_globals['verify_bindings']('before_receipt')
+        raise Milestone('unchanged startup capture and import guard reached')
+    return trace
+sys.settrace(trace)
+sys.argv=[str(helper),'--repo-root',str(repo),'--record',str(target),'--source-manifest',str(manifest),'--source-projection',str(projection),'--authority-root',str(authority),'--reactive-helper',str(reactive),'--rdkit-python',sys.executable,'--output',str(out)]
+status=None;error=None
+try:runpy.run_path(str(helper),run_name='__main__')
+except ValueError as e:
+    error=str(e);status='rejected' if 'input changed after capture' in error or 'input file inventory changed' in error else 'unexpected_error'
+except Milestone as e:status='control_reached' if c['phase']=='control' else 'missed_mutation';error=str(e)
+finally:sys.settrace(None);builtins.__import__=oldimport
+r={'case':c,'status':status,'error':error,'before':before,'events':events,'success_receipt_exists':out.exists()}
+(b/'probe.json').write_text(json.dumps(r,indent=2)+'\\n')
+assert status==('control_reached' if c['phase']=='control' else 'rejected'),r
+assert not out.exists()
+'''
+lines=(B/'pyochelin-replay.py').read_text().splitlines();milestone=next(i for i,t in enumerate(lines,1) if t=='raw = yaml.safe_load(captured(T))')
+cases=[('control','target')]+[(phase,kind) for phase in ['early','late_guard'] for kind in ['target','manifest','projection','helper','reactive','policy','authority','runtime','inventory']]+[('late_guard','source')]
+results=[]
+for phase,kind in cases:
+ c=B/'focused-guards'/f'{phase}-{kind}';c.mkdir(parents=True)
+ for n in ['pyochelin-replay.py','pyochelin-reactive-check.py','pyochelin-biosynthesis.yaml','pyochelin-source-manifest.json','pyochelin-source-projection.json']:shutil.copyfile(B/n,c/n)
+ shutil.copytree(R/'src/pathwaymech',c/'repo/src/pathwaymech',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+ (c/'repo/conf').mkdir();shutil.copyfile(R/'conf/identifier_policy.yaml',c/'repo/conf/identifier_policy.yaml')
+ shutil.copytree(A/'conf',c/'authority/conf');shutil.copytree(A/'data/identifier_authorities',c/'authority/data/identifier_authorities')
+ (c/'authority/data/pathways').mkdir();shutil.copyfile(B/'pyochelin-biosynthesis.yaml',c/'authority/data/pathways/pyochelin-biosynthesis.yaml')
+ source=c/'original-source.xml';source.write_text('<original/>\n')
+ m=json.loads((c/'pyochelin-source-manifest.json').read_text());m['sources']=[{'path':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()}];m['reference_paths']={};(c/'pyochelin-source-manifest.json').write_text(json.dumps(m)+'\n')
+ (c/'case.json').write_text(json.dumps({'phase':phase,'kind':kind,'milestone_line':milestone})+'\n');(c/'wrapper.py').write_text(wrapper)
+ env=dict(os.environ,PYTHONPATH=str(c/'repo/src'),PYTHONDONTWRITEBYTECODE='1')
+ p=subprocess.run([PY,str(c/'wrapper.py')],cwd=c,env=env,text=True,capture_output=True);(c/'run.log').write_text(p.stdout+p.stderr)
+ result=json.loads((c/'probe.json').read_text());result['exit_code']=p.returncode;results.append(result);print(phase,kind,p.returncode,result['status'],flush=True);assert p.returncode==0
+r={'status':'passed_focused_binding_guards','at':datetime.datetime.now(datetime.UTC).isoformat(),'helper_sha256':hashlib.sha256((B/'pyochelin-replay.py').read_bytes()).hexdigest(),'scope':'Unchanged helper startup/import capture with valid target and actual policy/runtime/snapshots copied. Manifest narrowed to one tiny synthetic source solely to isolate guard execution without repeating95-body/full chemistry work. Control reaches post-import milestone; early controls mutate through real repository-import interception. Late_guard cases call unchanged verify_bindings before_receipt from captured helper globals at that milestone. Separate real full end-of-run metadata probe provides end-to-end coverage. No full-source success claim from these fixtures.','cases':results}
+(B/'focused-guard-receipt.json').write_text(json.dumps(r,indent=2)+'\n')

@@ -1,0 +1,119 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import argparse
+import hashlib
+import json
+import subprocess
+import yaml
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--completion-sha256', required=True)
+parser.add_argument('--check-terminal', required=True)
+parser.add_argument('--check-name', default='check-required')
+args = parser.parse_args()
+root = Path('/private/tmp/pathwaymech-next-216-20261011')
+external = Path('/private/tmp/pathwaymech-next-216-packaging-scientific-review')
+dossier = root / 'research/pathway_additions/2026-10-11-next-216'
+base = '3fb840bf48d871bc37576cc669d23441c0206e66'
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+completion_path = external / 'completion.json'
+assert sha(completion_path) == args.completion_sha256
+completion = read(completion_path)
+assert completion['status'] == 'completed_canonical_independent_scientific_review'
+assert completion['scientific_review'] is True and completion['verdict'] == 'pass_with_limitations'
+assert completion['base'] == base and completion['findings'] == []
+assert completion['target_sha256'] == 'b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b'
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip() == base
+for row in completion['saved_files']:
+    assert sha(root / row['path']) == row['sha256']
+assert len(completion['saved_files']) == 2
+review = yaml.safe_load((root / completion['saved_files'][0]['path']).read_text())
+assert review['completion'] == 'completed' and review['scientific_review'] is True
+assert review['verdict'] == 'pass_with_limitations' and review['findings'] == []
+assert review['source'] == read(external / 'inspect.json')['source']
+assert review['source']['git_revision'] == base
+assert len(review['source']['inputs']) == 121
+for row in review['source']['inputs']:
+    assert sha(root / row['path']) == row['sha256'], row['path']
+for row in review['evidence']:
+    path = Path(row['reference'])
+    if not path.is_absolute():
+        path = root / path
+    assert sha(path) == row['snapshot_sha256'], row['evidence_id']
+integration_path = dossier / 'integration-successor-receipt.json'
+assert sha(integration_path) == 'c7cd06b50526f91c84ae3ef7349650aa060f57bcabaeea40152898a9e8256b41'
+integration = read(integration_path)
+for row in integration['owners'] + integration['sealed_dossier_inputs']:
+    assert sha(root / row['path']) == row['sha256'], row['path']
+assert sha(dossier / 'final-scientific-review-adoption.json') == '404509dccf4308d9a99c04049c89f28b95a444ed09237c4cc1ee855a1423d6e3'
+assert sha(root / 'reviews/structured/20261011T162143Z-pyochelin-independent-review/review.yaml') == '7ae312c8f385239849b4b8dac805d50297734e0225520297b604d028c57ccecd'
+save_execution = read(external / 'save-execution.json')
+save_result = read(external / 'save-result.json')
+assert save_result['status'] == 'saved_with_pre_and_post_current_input_checks'
+assert save_result['saved_files'] == completion['saved_files'] and save_result['input_count'] == 121
+assert [row['name'] for row in save_execution['commands']] == ['validate', 'save']
+for row in save_execution['commands']:
+    assert row['exit_code'] == 0
+    for stream in ['stdout', 'stderr']:
+        assert sha(external / (row['name'] + '.' + stream)) == row[stream + '_sha256']
+check = read(external / (args.check_name + '-execution.json'))
+assert check['exit_code'] == 0 and check['command'][-3:] == ['--base', base, '--require-reviews']
+for stream in ['stdout', 'stderr']:
+    assert sha(external / (args.check_name + '.' + stream)) == check[stream + '_sha256']
+assert read(external / (args.check_name + '.stdout'))['valid_reviews'] == 89
+assert completion['actual_execution']['base_aware_check_exit_code'] == 0
+assert args.check_terminal in completion['actual_execution'].values(), 'Strict-check terminal must be explicitly captured by completion.'
+proofs = list(completion['artifacts']) + [{'path': str(completion_path), 'sha256': sha(completion_path)}]
+for row in proofs:
+    assert sha(row['path']) == row['sha256']
+output = dossier / 'final-scientific-successor-review'
+archive = Path('/private/tmp/pathwaymech-next-216-final-successor-review-input-archive')
+assert not output.exists() and not archive.exists()
+output.mkdir()
+archive.mkdir()
+manifest = []
+for row in review['source']['inputs']:
+    src = root / row['path']
+    dest = archive / row['path']
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with dest.open('xb') as stream:
+        stream.write(src.read_bytes())
+    assert sha(dest) == row['sha256']
+    manifest.append({**row, 'external_archive': str(dest)})
+save(output / 'final-input-manifest.json', {'scope': 'Root post-check snapshot of all still-current successor inputs, not an earlier inspect-time archive.', 'inputs': manifest})
+copies = []
+for row in proofs:
+    src = Path(row['path'])
+    relative = src.relative_to(external)
+    dest = output / relative
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if src.suffix in {'.py', '.yaml'}:
+        dest = dest.with_name(dest.name + '.txt')
+    if src.suffix in {'.stdout', '.stderr', '.log'}:
+        dest = dest.with_name(dest.name + '.json')
+        save(dest, {'encoding': 'Lossless UTF-8; recover exact original bytes by encoding text as UTF-8.', 'original_path': str(src), 'original_sha256': row['sha256'], 'text': src.read_bytes().decode('utf-8')})
+        assert hashlib.sha256(read(dest)['text'].encode('utf-8')).hexdigest() == row['sha256']
+    else:
+        with dest.open('xb') as stream:
+            stream.write(src.read_bytes())
+        assert sha(dest) == row['sha256']
+    copies.append({**row, 'maintained_path': str(dest.relative_to(root)), 'maintained_sha256': sha(dest)})
+helper = output / 'root-adoption.py.txt'
+with helper.open('xb') as stream:
+    stream.write(Path(__file__).read_bytes())
+for row in manifest:
+    assert sha(root / row['path']) == sha(row['external_archive']) == row['sha256']
+receipt = {'status': 'accepted_completed_independent_scientific_review', 'accepted_at': datetime.now(timezone.utc).isoformat(), 'base': base, 'target_sha256': completion['target_sha256'], 'review_yaml_sha256': completion['saved_files'][0]['sha256'], 'review_markdown_sha256': completion['saved_files'][1]['sha256'], 'completion_sha256': sha(completion_path), 'post_save_check_exit_code': check['exit_code'], 'post_save_check_observed_terminal_chunk': args.check_terminal, 'valid_reviews': 89, 'current_and_archived_formal_inputs_rehashed': len(manifest), 'all_review_evidence_files_rehashed': len(review['evidence']), 'sealed_integration_inputs_rehashed': len(integration['owners']) + len(integration['sealed_dossier_inputs']), 'input_manifest_sha256': sha(output / 'final-input-manifest.json'), 'copied_artifacts': copies, 'helper_sha256': sha(helper), 'acceptance_basis': 'Root read the saved scope, independence, all assessments/evidence, limitations and bounded command claims; freshly checked current121 formal inputs and archives, each declared evidence file, all401 sealed integration inputs and actual validate/save/base-aware-check outputs. Independent successor reaffirms unchanged biology and checks complete packaging recoverability, without inventing a canonical finding for external issue401 or claiming repeated full tests/source replay.', 'archive_policy': 'Prior canonical review, adoption and integration receipts remain unchanged. Current inputs have a separate post-check external snapshot. All new proof artifacts remain exact or losslessly wrapped; source bodies remain external.', 'limitations': review['limitations'], 'pending': ['Final staged whitespace check and commit', 'Remote PR adversarial review and CI', 'Actual merge and deployed-byte verification', 'Branch cleanup']}
+save(dossier / 'final-scientific-successor-adoption.json', receipt)
+print(json.dumps({'status': receipt['status'], 'formal_inputs': len(manifest), 'evidence_files': len(review['evidence']), 'assessments': len(review['assessments']), 'proof_copies': len(copies), 'adoption_sha256': sha(dossier / 'final-scientific-successor-adoption.json')}))

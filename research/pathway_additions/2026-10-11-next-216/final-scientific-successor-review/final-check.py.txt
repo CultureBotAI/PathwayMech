@@ -1,0 +1,87 @@
+from pathlib import Path
+from datetime import datetime, UTC
+import hashlib
+import json
+import subprocess
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-216-20261011')
+D = R / 'research/pathway_additions/2026-10-11-next-216'
+O = Path('/private/tmp/pathwaymech-next-216-packaging-scientific-review')
+now = lambda: datetime.now(UTC).isoformat().replace('+00:00', 'Z')
+digest = lambda b: hashlib.sha256(b).hexdigest()
+sha = lambda p: digest(p.read_bytes())
+load = lambda p: json.loads(p.read_text())
+started = now()
+I = load(O / 'inspect.json')
+seal_path = D / 'integration-successor-receipt.json'
+assert sha(seal_path) == 'c7cd06b50526f91c84ae3ef7349650aa060f57bcabaeea40152898a9e8256b41'
+seal = load(seal_path)
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=R, text=True).strip() == seal['base'] == I['source']['git_revision']
+for item in I['source']['inputs'] + seal['owners'] + seal['sealed_dossier_inputs']:
+    assert sha(R / item['path']) == item['sha256'], item['path']
+previous = load(D / 'integration-receipt.json')
+mapping = load(D / 'packaging-correction/successor-map.json')
+remapped = {x['previous_maintained_path']: x for x in mapping['mapping']}
+old_owners, old_dossier = [], []
+for item in previous['owners']:
+    assert sha(R / item['path']) == item['sha256'], item['path']
+    old_owners.append(item)
+for item in previous['sealed_dossier_inputs']:
+    if item['path'] in remapped:
+        raw = load(R / remapped[item['path']]['current_wrapper_path'])['text'].encode('utf-8')
+        method = 'lossless mutation-payload wrapper'
+    elif item['path'] == str((D / 'README.md').relative_to(R)):
+        raw = (D / 'packaging-correction/pre-packaging-readme.md').read_bytes()
+        method = 'unchanged historical README retained separately'
+    else:
+        raw = (R / item['path']).read_bytes()
+        method = 'current exact bytes'
+    assert digest(raw) == item['sha256'], item['path']
+    old_dossier.append({'path': item['path'], 'sha256': item['sha256'], 'recovery': method})
+assert len(old_dossier) == 323 and len(old_owners) == 14
+
+rechecks = load(D / 'packaging-correction/recheck-execution.json')
+for command in rechecks:
+    raw = Path(command['log']).read_bytes()
+    archived = load(D / ('packaging-correction/' + command['name'] + '.log.json'))
+    assert raw == archived['content'].encode('utf-8')
+    assert digest(raw) == command['log_sha256'] == archived['original_sha256']
+    assert command['exit_code'] == 0
+    assert command['started_at'] < command['finished_at']
+history = R / 'history/infrastructure/pyochelin-evidence-packaging/2026-10-11T162855Z-codex-0c3408.yaml'
+history_data = yaml.safe_load(history.read_text())
+assert '401' in history.read_text()
+# The command receipt, rather than file mtime, attests history preceded render.
+history_execution = load(D / 'packaging-correction/history-execution.json')
+assert '2026-10-11T16:28' in json.dumps(history_execution)
+assert rechecks[0]['started_at'] > '2026-10-11T16:28:59'
+
+gate_logs = load(D / 'console-transcripts.json')['logs']
+original_gates = load(D / 'full-gate-receipts.json')
+for gate in original_gates:
+    log = next(x for x in gate_logs if x['name'] == gate['name'])
+    raw = log['text'].encode('utf-8')
+    assert raw == Path(gate['log']).read_bytes()
+    assert digest(raw) == gate['log_sha256'] == log['original_sha256']
+    assert gate['exit_code'] == 0
+test = next(x for x in gate_logs if x['name'] == 'test')
+assert '1256 passed, 3 skipped, 3 warnings in 536.71s' in test['text']
+runtime = [x for x in load(D / 'integrated-replay/pyochelin-validation-integrated.json')['input_bindings'] if x['scope'] == 'formal_or_runtime']
+for item in runtime:
+    assert sha(Path(item['path'])) == item['sha256']
+assert len(runtime) == 47
+
+# No-index semantics differ from ordinary git diff: clean added content exits1,
+# whitespace defects add bit2. Require the actual empty diagnostics as well.
+whitespace = []
+for item in seal['sealed_dossier_inputs'] + seal['owners'] + [{'path': str(seal_path.relative_to(R))}]:
+    path = R / item['path']
+    p = subprocess.run(['git', 'diff', '--no-index', '--check', '/dev/null', str(path)], cwd=R, capture_output=True)
+    assert p.returncode in (0, 1) and not p.stdout and not p.stderr, (item['path'], p.returncode, p.stdout, p.stderr)
+    whitespace.append({'path': item['path'], 'sha256': sha(path), 'exit_code': p.returncode})
+p = subprocess.run(['git', 'diff', '--check'], cwd=R, capture_output=True)
+assert p.returncode == 0 and not p.stdout and not p.stderr
+out = {'status': 'passed_current_packaging_scientific_successor_reassessment', 'started_at': started, 'finished_at': now(), 'actual_base': seal['base'], 'integration_successor_sha256': sha(seal_path), 'inspect_sha256': sha(O / 'inspect.json'), 'formal_inputs_rehashed': len(I['source']['inputs']), 'current_sealed_dossier_inputs_rehashed': len(seal['sealed_dossier_inputs']), 'current_owners_rehashed': len(seal['owners']), 'historical_dossier_recoveries': old_dossier, 'historical_owners_unchanged': old_owners, 'actual_current_render_validate': rechecks, 'fresh_runtime_bindings_unchanged': len(runtime), 'original_test_scope': '1256 passed, 3 skipped, 3 warnings; original actual command retained, no repeated suite claimed', 'no_index_whitespace': whitespace, 'tracked_diff_check_exit_code': p.returncode, 'history_before_successor_render': True, 'no_canonical_predecessor_finding_for_external401': True, 'prior_canonical_review_preserved': True, 'remaining': ['Final staged whitespace admission, actual PR head review, remote CI, merge and deployed-byte verification remain separate lifecycle gates.'], 'findings': []}
+(O / 'final-reassessment.json').write_text(json.dumps(out, indent=2) + '\n')
+print(json.dumps({'status': out['status'], 'sha256': sha(O / 'final-reassessment.json'), 'formal_inputs': out['formal_inputs_rehashed'], 'sealed_dossier': out['current_sealed_dossier_inputs_rehashed'], 'owners': out['current_owners_rehashed'], 'whitespace_files': len(whitespace)}))

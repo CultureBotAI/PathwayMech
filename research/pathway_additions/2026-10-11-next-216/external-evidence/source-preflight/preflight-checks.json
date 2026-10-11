@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-11T14:53:54.561503+00:00",
+  "checks": [
+    {
+      "check": "native net and product identity",
+      "command": "RDKit interpreter chemical-check.py",
+      "exit_code": 0,
+      "log": "chemical-check-final.log",
+      "scope": "All 11 source equations; repeated cysteine activation; original small-molecule InChIs; zero atom/charge residual. Individual carrier formulas not independently established."
+    },
+    {
+      "check": "PA14 source translations and PchE structural sequence",
+      "command": "retained195 .venv/bin/python sequence-check.py",
+      "exit_code": 0,
+      "log": "sequence-check.log"
+    },
+    {
+      "check": "PAO1 original submission",
+      "command": "retained195 .venv/bin/python pao1-submission-check.py",
+      "exit_code": 0,
+      "log": "pao1-submission-check.log"
+    },
+    {
+      "check": "PDF original/render inspection",
+      "exit_code": 0,
+      "manifest": "pdf-inspection/manifest.json",
+      "visual_pages": [
+        "2022 main p3 Figure1",
+        "2022 SI pp2-3 Figures1/2"
+      ],
+      "runtime": "pypdfium2 interpreter plus explicit existing RDKit-environment PIL package path; original PDF bytes unchanged"
+    },
+    {
+      "check": "expanded dedup",
+      "exit_codes": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "receipt": "dedup-expanded.json",
+      "interpretation": "Only ignored SEED subsystem inventory and its quoted copy in a staphB dedup receipt; read both hits. No complete matching maintained record in the four searched roots."
+    }
+  ],
+  "failed_preparatory_attempts": [
+    {
+      "scope": "chemical helper",
+      "exit_code": 1,
+      "reason": "Reserved class keyword in Python dict call",
+      "log": "chemical-check.log",
+      "preserved_script": "chemical-check-initial-invalid.py.txt",
+      "resolution": "Syntax fixed before any chemistry result; exact corrected helper passed."
+    },
+    {
+      "scope": "inline sequence helper",
+      "exit_code": 1,
+      "reason": "Bio package unavailable; later inline parser incorrectly removed amino-acid FT pair as line prefix",
+      "resolution": "Stored standard-code helper removes only source line prefix; exact translation checks then passed."
+    },
+    {
+      "scope": "PDF rendering",
+      "exit_code": 1,
+      "reason": "PIL absent in PDF interpreter",
+      "resolution": "Explicit existing compatible package path used; no dependency installation or shared environment modification."
+    }
+  ],
+  "not_run": [
+    "No YAML drafted",
+    "No canonical schema/corpus/KGX/review gates",
+    "No independent scientific approval"
+  ]
+}
