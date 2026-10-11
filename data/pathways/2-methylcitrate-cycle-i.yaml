@@ -1,0 +1,780 @@
+id: MetaCyc:PWY0-42
+label: 2-methylcitrate cycle I
+description: Complete five-reaction MetaCyc route from propanoate activation through methylcitrate synthesis,
+  dehydration, aconitase hydration and methylisocitrate cleavage to pyruvate and succinate, represented
+  for Escherichia coli K-12 with primary experiments separately scoped to their strains and preparations.
+  The central methylcitrate stereochemistry remains experimentally disputed. Approved stereounspecified
+  Rhea reactions 57493 and 57497 and CHEBI:15598 preserve the established transformations without selecting
+  an absolute stereoisomer or claiming all stereoisomers are substrates. These are broader reactions
+  than the stereospecific native annotations, not exact replacements. PrpC and PrpB assemblies are explicit;
+  AcnB monomer/dimer behavior is conditional. Acs and PrpE are alternative activation roles with different
+  evidence strength. Oxaloacetate regeneration by the TCA cycle is outside the five-member native definition.
+pathway_type: propionate-catabolic-pathway
+taxa:
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+participants:
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15598
+  label: 2-methylcitrate(3-)
+  category: small_molecule
+- id: CHEBI:16452
+  label: oxaloacetate(2-)
+  category: small_molecule
+- id: CHEBI:17272
+  label: propionate
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:30031
+  label: succinate(2-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: CHEBI:57392
+  label: propionyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:57429
+  label: (2S,3R)-3-hydroxybutane-1,2,3-tricarboxylate
+  category: small_molecule
+- id: CHEBI:57872
+  label: (Z)-but-2-ene-1,2,3-tricarboxylate
+  category: small_molecule
+- id: UniProtKB:P77495
+  label: Propionate--CoA ligase
+  category: protein
+- id: UniProtKB:P27550
+  label: Acetyl-coenzyme A synthetase
+  category: protein
+- id: UniProtKB:P31660
+  label: 2-methylcitrate synthase
+  category: protein
+- id: UniProtKB:P77243
+  label: 2-methylcitrate dehydratase
+  category: protein
+- id: UniProtKB:P36683
+  label: Aconitate hydratase B
+  category: protein
+- id: UniProtKB:P77541
+  label: 2-methylisocitrate lyase
+  category: protein
+- id: MetaCyc:CPLX0-251
+  label: 2-methylcitrate synthase
+  category: complex
+- id: MetaCyc:CPLX0-1021
+  label: 2-methylisocitrate lyase
+  category: complex
+reactions:
+- id: RHEA:20374
+  label: propanoate + ATP + CoA => propanoyl-CoA + AMP + diphosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:57493
+  label: propanoyl-CoA + oxaloacetate + H2O => 2-methylcitrate + CoA + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:57497
+  label: 2-methylcitrate => 2-methyl-cis-aconitate + H2O
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:17943
+  label: 2-methyl-cis-aconitate + H2O => (2S,3R)-3-hydroxybutane-1,2,3-tricarboxylate
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:16810
+  label: (2S,3R)-3-hydroxybutane-1,2,3-tricarboxylate => pyruvate + succinate
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: methylcitrate-edge-001
+  subject: CHEBI:17272
+  predicate: consumes
+  object: RHEA:20374
+  evidence:
+  - reference_id: RHEA:20374
+    source_assertion: RHEA:20374 assigns CHEBI:17272 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20374']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/20373_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_20373_compound_4801'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:20374
+  evidence:
+  - reference_id: RHEA:20374
+    source_assertion: RHEA:20374 assigns CHEBI:30616 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20374']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/20373_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_20373_compound_6372'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-003
+  subject: CHEBI:57287
+  predicate: consumes
+  object: RHEA:20374
+  evidence:
+  - reference_id: RHEA:20374
+    source_assertion: RHEA:20374 assigns CHEBI:57287 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20374']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/20373_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_20373_compound_1264'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-004
+  subject: RHEA:20374
+  predicate: produces
+  object: CHEBI:57392
+  evidence:
+  - &id001
+    reference_id: RHEA:20374
+    source_assertion: RHEA:20374 assigns CHEBI:57392 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20374']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/20373_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_20373_compound_3421'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-005
+  subject: RHEA:20374
+  predicate: produces
+  object: CHEBI:456215
+  evidence:
+  - reference_id: RHEA:20374
+    source_assertion: RHEA:20374 assigns CHEBI:456215 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20374']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/20373_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_20373_compound_2590'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-006
+  subject: RHEA:20374
+  predicate: produces
+  object: CHEBI:33019
+  evidence:
+  - reference_id: RHEA:20374
+    source_assertion: RHEA:20374 assigns CHEBI:33019 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/20374']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/20373_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_20373_compound_2106'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-007
+  subject: CHEBI:57392
+  predicate: consumes
+  object: RHEA:57493
+  evidence:
+  - &id002
+    reference_id: RHEA:57493
+    source_assertion: RHEA:57493 assigns CHEBI:57392 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57493']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57492_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57492_compound_3421'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-008
+  subject: CHEBI:16452
+  predicate: consumes
+  object: RHEA:57493
+  evidence:
+  - reference_id: RHEA:57493
+    source_assertion: RHEA:57493 assigns CHEBI:16452 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57493']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57492_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57492_compound_5219'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-009
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:57493
+  evidence:
+  - reference_id: RHEA:57493
+    source_assertion: RHEA:57493 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57493']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57492_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57492_compound_1283'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-010
+  subject: RHEA:57493
+  predicate: produces
+  object: CHEBI:15598
+  description: 'Stereounspecified source identity: this edge leaves methylcitrate absolute configuration
+    unresolved and does not assert utilization or production of every stereoisomer.'
+  evidence:
+  - &id003
+    reference_id: RHEA:57493
+    source_assertion: RHEA:57493 assigns CHEBI:15598 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57493']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57492_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57492_compound_14908'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-011
+  subject: RHEA:57493
+  predicate: produces
+  object: CHEBI:57287
+  evidence:
+  - reference_id: RHEA:57493
+    source_assertion: RHEA:57493 assigns CHEBI:57287 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57493']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57492_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57492_compound_1264'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-012
+  subject: RHEA:57493
+  predicate: produces
+  object: CHEBI:15378
+  evidence:
+  - reference_id: RHEA:57493
+    source_assertion: RHEA:57493 assigns CHEBI:15378 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57493']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57492_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57492_compound_3249'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-013
+  subject: CHEBI:15598
+  predicate: consumes
+  object: RHEA:57497
+  description: 'Stereounspecified source identity: this edge leaves methylcitrate absolute configuration
+    unresolved and does not assert utilization or production of every stereoisomer.'
+  evidence:
+  - &id004
+    reference_id: RHEA:57497
+    source_assertion: RHEA:57497 assigns CHEBI:15598 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57497']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57496_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57496_compound_14908'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-014
+  subject: RHEA:57497
+  predicate: produces
+  object: CHEBI:57872
+  evidence:
+  - &id005
+    reference_id: RHEA:57497
+    source_assertion: RHEA:57497 assigns CHEBI:57872 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57497']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57496_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57496_compound_3416'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-015
+  subject: RHEA:57497
+  predicate: produces
+  object: CHEBI:15377
+  evidence:
+  - reference_id: RHEA:57497
+    source_assertion: RHEA:57497 assigns CHEBI:15377 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/57497']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/57496_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_57496_compound_1283'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-016
+  subject: CHEBI:57872
+  predicate: consumes
+  object: RHEA:17943
+  evidence:
+  - &id006
+    reference_id: RHEA:17943
+    source_assertion: RHEA:17943 assigns CHEBI:57872 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17943']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/17941_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_17941_compound_3416'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-017
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17943
+  evidence:
+  - reference_id: RHEA:17943
+    source_assertion: RHEA:17943 assigns CHEBI:15377 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17943']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/17941_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_17941_compound_1283'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-018
+  subject: RHEA:17943
+  predicate: produces
+  object: CHEBI:57429
+  evidence:
+  - &id007
+    reference_id: RHEA:17943
+    source_assertion: RHEA:17943 assigns CHEBI:57429 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17943']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/17941_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_17941_compound_1381'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-019
+  subject: CHEBI:57429
+  predicate: consumes
+  object: RHEA:16810
+  evidence:
+  - &id008
+    reference_id: RHEA:16810
+    source_assertion: RHEA:16810 assigns CHEBI:57429 to its substrates with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16810']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16809_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16809_compound_1381'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-020
+  subject: RHEA:16810
+  predicate: produces
+  object: CHEBI:15361
+  evidence:
+  - reference_id: RHEA:16810
+    source_assertion: RHEA:16810 assigns CHEBI:15361 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16810']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16809_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16809_compound_3719'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-021
+  subject: RHEA:16810
+  predicate: produces
+  object: CHEBI:30031
+  evidence:
+  - reference_id: RHEA:16810
+    source_assertion: RHEA:16810 assigns CHEBI:30031 to its products with coefficient 1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/16810']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/16809_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_16809_compound_2501'];
+      rh:compound/rh:chebi
+- id: methylcitrate-edge-022
+  subject: RHEA:20374
+  predicate: part_of
+  object: MetaCyc:PWY0-42
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: PWY0-42 includes PROPIONATE--COA-LIGASE-RXN in its five-member reaction-list.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-list/Reaction[@frameid="PROPIONATE--COA-LIGASE-RXN"]
+  - reference_id: MetaCyc:PROPIONATE--COA-LIGASE-RXN
+    source_assertion: PROPIONATE--COA-LIGASE-RXN has native Rhea cross-reference 20373.
+    source_locator: Reaction[@frameid="PROPIONATE--COA-LIGASE-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:20374
+    source_assertion: Rhea master 20373 contains directed reaction 20374 and the native reaction cross-reference
+      20373 within its family.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/20373"]/rh:directionalReaction,rh:bidirectionalReaction
+- id: methylcitrate-edge-023
+  subject: RHEA:57493
+  predicate: part_of
+  object: MetaCyc:PWY0-42
+  description: The native reaction is stereospecific. This membership uses the separately issued generic
+    parent reaction to represent the same supported pathway transformation while leaving the disputed
+    methylcitrate configuration unspecified; no exactMatch is asserted.
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: PWY0-42 includes 2-METHYLCITRATE-SYNTHASE-RXN in its five-member reaction-list.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-list/Reaction[@frameid="2-METHYLCITRATE-SYNTHASE-RXN"]
+  - reference_id: MetaCyc:2-METHYLCITRATE-SYNTHASE-RXN
+    source_assertion: 2-METHYLCITRATE-SYNTHASE-RXN has native Rhea cross-reference 23783.
+    source_locator: Reaction[@frameid="2-METHYLCITRATE-SYNTHASE-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:57493
+    source_assertion: Rhea master 23780 is a subclass of approved generic master 57492; the latter cites
+      PMID:28956599 and supplies directed reaction 57493.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/23780"]/rdfs:subClassOf; rdf:Description[@rdf:about="http://rdf.rhea-db.org/57492"]/rh:status,rh:citation,rh:directionalReaction
+- id: methylcitrate-edge-024
+  subject: RHEA:57497
+  predicate: part_of
+  object: MetaCyc:PWY0-42
+  description: The native reaction is stereospecific. This membership uses the separately issued generic
+    parent reaction to represent the same supported pathway transformation while leaving the disputed
+    methylcitrate configuration unspecified; no exactMatch is asserted.
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: PWY0-42 includes 2-METHYLCITRATE-DEHYDRATASE-RXN in its five-member reaction-list.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-list/Reaction[@frameid="2-METHYLCITRATE-DEHYDRATASE-RXN"]
+  - reference_id: MetaCyc:2-METHYLCITRATE-DEHYDRATASE-RXN
+    source_assertion: 2-METHYLCITRATE-DEHYDRATASE-RXN has native Rhea cross-reference 17728.
+    source_locator: Reaction[@frameid="2-METHYLCITRATE-DEHYDRATASE-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:57497
+    source_assertion: Rhea master 17725 is a subclass of approved generic master 57496; the latter cites
+      PMID:28956599 and supplies directed reaction 57497.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/17725"]/rdfs:subClassOf; rdf:Description[@rdf:about="http://rdf.rhea-db.org/57496"]/rh:status,rh:citation,rh:directionalReaction
+- id: methylcitrate-edge-025
+  subject: RHEA:17943
+  predicate: part_of
+  object: MetaCyc:PWY0-42
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: PWY0-42 includes 4.2.1.99-RXN in its five-member reaction-list.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-list/Reaction[@frameid="4.2.1.99-RXN"]
+  - reference_id: MetaCyc:4.2.1.99-RXN
+    source_assertion: 4.2.1.99-RXN has native Rhea cross-reference 17944.
+    source_locator: Reaction[@frameid="4.2.1.99-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:17943
+    source_assertion: Rhea master 17941 contains directed reaction 17943 and the native reaction cross-reference
+      17944 within its family.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/17941"]/rh:directionalReaction,rh:bidirectionalReaction
+- id: methylcitrate-edge-026
+  subject: RHEA:16810
+  predicate: part_of
+  object: MetaCyc:PWY0-42
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: PWY0-42 includes METHYLISOCITRATE-LYASE-RXN in its five-member reaction-list.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-list/Reaction[@frameid="METHYLISOCITRATE-LYASE-RXN"]
+  - reference_id: MetaCyc:METHYLISOCITRATE-LYASE-RXN
+    source_assertion: METHYLISOCITRATE-LYASE-RXN has native Rhea cross-reference 16812.
+    source_locator: Reaction[@frameid="METHYLISOCITRATE-LYASE-RXN"]/dblink[dblink-db="RHEA"]/dblink-oid
+  - reference_id: RHEA:16810
+    source_assertion: Rhea master 16809 contains directed reaction 16810 and the native reaction cross-reference
+      16812 within its family.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/16809"]/rh:directionalReaction,rh:bidirectionalReaction
+- id: methylcitrate-edge-027
+  subject: RHEA:20374
+  predicate: provides_input_for
+  object: RHEA:57493
+  description: Material transfer through CHEBI:57392. Ordering is not a thermodynamic irreversibility
+    claim.
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: The native ordering places PROPIONATE--COA-LIGASE-RXN immediately before 2-METHYLCITRATE-SYNTHASE-RXN.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-ordering[Reaction/@frameid="2-METHYLCITRATE-SYNTHASE-RXN"]/predecessor-reactions
+  - *id001
+  - *id002
+- id: methylcitrate-edge-028
+  subject: RHEA:57493
+  predicate: provides_input_for
+  object: RHEA:57497
+  description: Material transfer through CHEBI:15598; the methylcitrate transfer retains an unspecified
+    absolute configuration.
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: The native ordering places 2-METHYLCITRATE-SYNTHASE-RXN immediately before 2-METHYLCITRATE-DEHYDRATASE-RXN.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-ordering[Reaction/@frameid="2-METHYLCITRATE-DEHYDRATASE-RXN"]/predecessor-reactions
+  - *id003
+  - *id004
+- id: methylcitrate-edge-029
+  subject: RHEA:57497
+  predicate: provides_input_for
+  object: RHEA:17943
+  description: Material transfer through CHEBI:57872. Ordering is not a thermodynamic irreversibility
+    claim.
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: The native ordering places 2-METHYLCITRATE-DEHYDRATASE-RXN immediately before
+      4.2.1.99-RXN.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-ordering[Reaction/@frameid="4.2.1.99-RXN"]/predecessor-reactions
+  - *id005
+  - *id006
+- id: methylcitrate-edge-030
+  subject: RHEA:17943
+  predicate: provides_input_for
+  object: RHEA:16810
+  description: Material transfer through CHEBI:57429. Ordering is not a thermodynamic irreversibility
+    claim.
+  evidence:
+  - reference_id: MetaCyc:PWY0-42
+    source_assertion: The native ordering places 4.2.1.99-RXN immediately before METHYLISOCITRATE-LYASE-RXN.
+    source_locator: Pathway[@frameid="PWY0-42"]/reaction-ordering[Reaction/@frameid="METHYLISOCITRATE-LYASE-RXN"]/predecessor-reactions
+  - *id007
+  - *id008
+- id: methylcitrate-edge-031
+  subject: UniProtKB:P31660
+  predicate: part_of
+  object: MetaCyc:CPLX0-251
+  description: Native assembly stoichiometry is 2 identical subunits; membership does not assert individual-subunit
+    sufficiency.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-251
+    source_assertion: CPLX0-251 contains 2 copies of G6198-MONOMER.
+    source_locator: Protein[@frameid="CPLX0-251"]/component/Protein; component/coefficient
+  - reference_id: MetaCyc:G6198-MONOMER
+    source_assertion: G6198-MONOMER has UniProt cross-reference P31660.
+    source_locator: Protein[@frameid="G6198-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid
+  - reference_id: UniProtKB:P31660
+    source_assertion: The reviewed SUBUNIT annotation states homodimer (ECO:0000269; PMID:9579066).
+    source_locator: $.comments[?(@.commentType=="SUBUNIT")]
+- id: methylcitrate-edge-032
+  subject: UniProtKB:P77541
+  predicate: part_of
+  object: MetaCyc:CPLX0-1021
+  description: Native assembly stoichiometry is 4 identical subunits; membership does not assert individual-subunit
+    sufficiency.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1021
+    source_assertion: CPLX0-1021 contains 4 copies of G6196-MONOMER.
+    source_locator: Protein[@frameid="CPLX0-1021"]/component/Protein; component/coefficient
+  - reference_id: MetaCyc:G6196-MONOMER
+    source_assertion: G6196-MONOMER has UniProt cross-reference P77541.
+    source_locator: Protein[@frameid="G6196-MONOMER"]/dblink[dblink-db="UNIPROT"]/dblink-oid
+  - reference_id: UniProtKB:P77541
+    source_assertion: The reviewed SUBUNIT annotation states homotetramer, a dimer of dimers (ECO:0000269;
+      PMID:12706720 and PMID:15723538; also HAMAP ECO:0000255).
+    source_locator: $.comments[?(@.commentType=="SUBUNIT")]
+- id: methylcitrate-edge-033
+  subject: UniProtKB:P77495
+  predicate: enables
+  object: RHEA:20374
+  description: Alternative annotated activation role. The E. coli reviewed FUNCTION is similarity-derived;
+    the 2002 propionate-growth study favored Acs under its conditions. No essentiality or measured PrpE
+    flux is asserted.
+  evidence:
+  - reference_id: UniProtKB:P77495
+    source_assertion: FUNCTION assigns synthesis of propionyl-CoA from propionate and CoA by similarity
+      (ECO:0000250); CATALYTIC ACTIVITY cross-references RHEA:20373.
+    source_locator: $.comments[0:2]
+  - reference_id: MetaCyc:G6200-MONOMER
+    source_assertion: G6200-MONOMER maps to P77495 and catalyzes PROPIONATE--COA-LIGASE-RXN through
+      ENZRXN0-7593.
+    source_locator: Protein[@frameid="G6200-MONOMER"]/dblink[dblink-db="UNIPROT"]; catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-7593"]/reaction
+- id: methylcitrate-edge-034
+  subject: UniProtKB:P27550
+  predicate: enables
+  object: RHEA:20374
+  description: Native curated propionate activation role plus condition-specific primary physiological
+    inference. Current UniProt CATALYTIC ACTIVITY describes acetate activation, not this propionate
+    equation; it is not used as direct support for substrate promiscuity or exclusive Acs dependence.
+  evidence:
+  - reference_id: MetaCyc:ACS-MONOMER
+    source_assertion: ACS-MONOMER maps to P27550 and catalyzes PROPIONATE--COA-LIGASE-RXN through ENZRXN0-1507.
+    source_locator: Protein[@frameid="ACS-MONOMER"]/dblink[dblink-db="UNIPROT"]; catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-1507"]/reaction
+  - reference_id: PMID:12473114
+    source_assertion: In propionate-grown E. coli, the abstract reports detection of prp-operon proteins
+      except PrpE and proposes its replacement by acetyl-CoA synthetase.
+    source_locator: $.resultList.result[0].abstractText; final two sentences
+- id: methylcitrate-edge-035
+  subject: MetaCyc:CPLX0-251
+  predicate: catalyzes
+  object: RHEA:57493
+  description: The catalytic transformation is established; its exact methylcitrate stereochemical product
+    is not selected. The source-issued generic reaction is used, not a modified RHEA:23781 equation.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-251
+    source_assertion: The PrpC complex catalyzes 2-METHYLCITRATE-SYNTHASE-RXN through ENZRXN0-245.
+    source_locator: Protein[@frameid="CPLX0-251"]/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-245"]/reaction
+  - reference_id: UniProtKB:P31660
+    source_assertion: FUNCTION assigns condensation of propionyl-CoA and oxaloacetate to methylcitrate
+      and CoA (ECO:0000269). CAUTION preserves conflicting absolute stereochemistry assignments from
+      PMID:12473114 and PMID:28956599.
+    source_locator: $.comments[0]; $.comments[9]
+  - reference_id: PMID:28956599
+    source_assertion: The abstract reports that E. coli PrpC and B. subtilis MmgD generate the same
+      methylcitrate stereoisomer, assigned alternatively as (2S,3R) or (2R,3S).
+    source_locator: $.resultList.result[0].abstractText
+  - reference_id: RHEA:57493
+    source_assertion: Approved generic synthesis reaction 57493 belongs to master 57492, which cites
+      PMID:28956599 and is the parent of specific master 23780.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/57493"]; rdf:Description[@rdf:about="http://rdf.rhea-db.org/23780"]/rdfs:subClassOf
+- id: methylcitrate-edge-036
+  subject: UniProtKB:P77243
+  predicate: catalyzes
+  object: RHEA:57497
+  description: This records the physiological cis-product branch, not universal stereoisomer acceptance.
+    Native curation preserves disagreement over whether PrpD contains an iron-sulfur cluster; one primary
+    study reports an unstable [2Fe-2S] cluster in its preparation. No obligatory cofactor or cofactor-independence
+    edge is asserted.
+  evidence:
+  - reference_id: UniProtKB:P77243
+    source_assertion: FUNCTION assigns dehydration of methylcitrate to cis-methylaconitate (ECO:0000269;
+      PMID:11782506 and PMID:12473114); SUBUNIT states monomer. CAUTION retains the substrate stereochemistry
+      conflict.
+    source_locator: $.comments[0]; $.comments[6]; $.comments[11]
+  - reference_id: PMID:28956599
+    source_assertion: The abstract reports that E. coli PrpD can dehydrate at least two methylcitrate
+      stereoisomers; the physiological pathways proceed through (Z)-2-methylaconitate.
+    source_locator: $.resultList.result[0].abstractText
+  - reference_id: RHEA:57497
+    source_assertion: Approved generic dehydration 57497 belongs to master 57496, which cites PMID:28956599
+      and is the parent of specific master 17725.
+    source_locator: rdf:Description[@rdf:about="http://rdf.rhea-db.org/57497"]; rdf:Description[@rdf:about="http://rdf.rhea-db.org/17725"]/rdfs:subClassOf
+  - reference_id: MetaCyc:G6199-MONOMER
+    source_assertion: The native comment preserves disagreement between PMID:11782506 and PMID:12473114
+      over whether PrpD contains an iron-sulfur cluster. This is a curated conflict statement, not a
+      resolution of the metal requirement.
+    source_locator: Protein[@frameid="G6199-MONOMER"]/comment
+  - reference_id: PMID:11782506
+    source_assertion: The primary abstract reports one unstable [2Fe-2S] cluster per purified PrpD monomer,
+      needed for maximum catalytic activity in that preparation and reconstitutable with Fe(2+) under
+      reducing conditions.
+    source_locator: $.resultList.result[0].abstractText
+- id: methylcitrate-edge-037
+  subject: UniProtKB:P36683
+  predicate: enables
+  object: RHEA:17943
+  description: Functional gene-product role, without fixing a condition-independent oligomeric state.
+    Native CPLX0-7761 has one component without a coefficient; current evidence supports conditional
+    monomer/dimer behavior. The catabolic hydration is Rhea right-to-left relative to the master equation.
+  evidence:
+  - reference_id: UniProtKB:P36683
+    source_assertion: FUNCTION assigns hydration of cis-2-methylaconitate to (2R,3S)-2-methylisocitrate;
+      CATALYTIC ACTIVITY cites RHEA:17941 with ECO:0000269, PMID:12473114.
+    source_locator: $.comments[0]; $.comments[2]
+  - reference_id: PMID:12473114
+    source_assertion: AcnB was purified from propionate-grown E. coli, identified by its N-terminus,
+      and required with PrpD for conversion of methylcitrate to methylisocitrate.
+    source_locator: $.resultList.result[0].abstractText
+  - reference_id: UniProtKB:P36683
+    source_assertion: SUBUNIT describes monomer and possible homodimer with iron-dependent interconversion
+      (ECO:0000269).
+    source_locator: $.comments[7]
+- id: methylcitrate-edge-038
+  subject: MetaCyc:CPLX0-1021
+  predicate: catalyzes
+  object: RHEA:16810
+  evidence:
+  - reference_id: MetaCyc:CPLX0-1021
+    source_assertion: The PrpB complex catalyzes METHYLISOCITRATE-LYASE-RXN through ENZRXN0-1521.
+    source_locator: Protein[@frameid="CPLX0-1021"]/catalyzes/Enzymatic-Reaction[@frameid="ENZRXN0-1521"]/reaction
+  - reference_id: UniProtKB:P77541
+    source_assertion: CATALYTIC ACTIVITY assigns methylisocitrate cleavage to pyruvate and succinate,
+      RHEA:16809 (ECO:0000269; PMID:11422389 and PMID:15723538; also HAMAP ECO:0000255).
+    source_locator: $.comments[1]
+  - reference_id: PMID:11422389
+    source_assertion: The purified E. coli PrpB is homotetrameric by size-exclusion chromatography and
+      cleaves threo-methylisocitrate; the erythro diastereomer was inactive.
+    source_locator: $.resultList.result[0].abstractText
+- id: methylcitrate-edge-039
+  subject: UniProtKB:P27550
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Protein-level curated cofactor annotation; alternative-metal ranking is source-specific,
+    not a newly measured propionate-specific metal series.
+  evidence:
+  - reference_id: UniProtKB:P27550
+    source_assertion: COFACTOR assigns Mg2+ with ECO:0000269 (PMID:15327942 and PMID:21941) and HAMAP
+      ECO:0000255; other divalent metals support decreasing activity in the order Mg, Mn, Ca, Ni.
+    source_locator: $.comments[3]
+- id: methylcitrate-edge-040
+  subject: UniProtKB:P36683
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: Catalytically active aconitase context; apo-AcnB RNA regulation and oxidative-stress
+    effects are outside the chemical route.
+  evidence:
+  - reference_id: UniProtKB:P36683
+    source_assertion: COFACTOR assigns one [4Fe-4S] cluster per subunit, CHEBI:49883 (ECO:0000269; PMID:11992126).
+    source_locator: $.comments[3]
+- id: methylcitrate-edge-041
+  subject: MetaCyc:CPLX0-1021
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P77541
+    source_assertion: COFACTOR assigns Mg2+, CHEBI:18420, with experimental ECO:0000269 references PMID:11422389,
+      PMID:12706720 and PMID:15723538, plus HAMAP ECO:0000255.
+    source_locator: $.comments[2]
+  - reference_id: PMID:12706720
+    source_assertion: The primary abstract states that E. coli PrpB strictly depends on Mg2+ for catalysis.
+    source_locator: $.resultList.result[0].abstractText
+references:
+- id: MetaCyc:2-METHYLCITRATE-DEHYDRATASE-RXN
+  title: MetaCyc 2-METHYLCITRATE-DEHYDRATASE-RXN native XML
+  url: https://pathway.yeastgenome.org/getxml?META:2-METHYLCITRATE-DEHYDRATASE-RXN
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 68fd51a3f1e4b54add580714fd1ff3634630db53f7312f72524b5ed0c16778a0
+- id: MetaCyc:2-METHYLCITRATE-SYNTHASE-RXN
+  title: MetaCyc 2-METHYLCITRATE-SYNTHASE-RXN native XML
+  url: https://pathway.yeastgenome.org/getxml?META:2-METHYLCITRATE-SYNTHASE-RXN
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 8b3bc404235fd244afcbe24296ffa09e21a76f44852c7c62a6a47d238cba1c67
+- id: MetaCyc:4.2.1.99-RXN
+  title: MetaCyc 4.2.1.99-RXN native XML
+  url: https://pathway.yeastgenome.org/getxml?META:4.2.1.99-RXN
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 581159cc0ce8df05dbfb817a3998cd5102e13dd73bbc3cbdfed5c7630a0d72b7
+- id: MetaCyc:ACS-MONOMER
+  title: MetaCyc ACS-MONOMER native XML
+  url: https://pathway.yeastgenome.org/getxml?META:ACS-MONOMER
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 811414178fa3132d72c67bb8d455c7c7e6b771d8123e9da1816bc6a9a440ad2f
+- id: MetaCyc:CPLX0-1021
+  title: MetaCyc CPLX0-1021 native XML
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-1021
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 0058bd6365291fcd9fef871791e9e1eee9ebaac0e9ae449766a4db9daaa254d7
+- id: MetaCyc:CPLX0-251
+  title: MetaCyc CPLX0-251 native XML
+  url: https://pathway.yeastgenome.org/getxml?META:CPLX0-251
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 410171166cadd69e5e2e7946d46baa319279d781df9fcf138ecdca18526b4b79
+- id: MetaCyc:G6196-MONOMER
+  title: MetaCyc G6196-MONOMER native XML
+  url: https://pathway.yeastgenome.org/getxml?META:G6196-MONOMER
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 20a772c189010d30f41730bc00d5cbb5bda517a8f212520fa06006eea5f9ad10
+- id: MetaCyc:G6198-MONOMER
+  title: MetaCyc G6198-MONOMER native XML
+  url: https://pathway.yeastgenome.org/getxml?META:G6198-MONOMER
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 2a1f194ecb547a8b1df0bbaf54e0950a0f1b5f54f5151ae08697f9351ee63022
+- id: MetaCyc:G6199-MONOMER
+  title: MetaCyc G6199-MONOMER native XML
+  url: https://pathway.yeastgenome.org/getxml?META:G6199-MONOMER
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: dc8914e4d6d9b139343f77ccbe245d24a059d0cd917bf85597c72581ee8392e8
+- id: MetaCyc:G6200-MONOMER
+  title: MetaCyc G6200-MONOMER native XML
+  url: https://pathway.yeastgenome.org/getxml?META:G6200-MONOMER
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 4a138bcdeb06df3b7ddd85c036023c66ebfd78ecbe1029eb34bfeaa7e64413e5
+- id: MetaCyc:METHYLISOCITRATE-LYASE-RXN
+  title: MetaCyc METHYLISOCITRATE-LYASE-RXN native XML
+  url: https://pathway.yeastgenome.org/getxml?META:METHYLISOCITRATE-LYASE-RXN
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 5975d4eee852998fcc842990cb7dfdee56231f5ca3240c15b24cfdaaad9f0e39
+- id: MetaCyc:PROPIONATE--COA-LIGASE-RXN
+  title: MetaCyc PROPIONATE--COA-LIGASE-RXN native XML
+  url: https://pathway.yeastgenome.org/getxml?META:PROPIONATE--COA-LIGASE-RXN
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 6ab112f8f76575a21e991fc4b4e4d86670d3187b7fe7bacd4947c8c50a1001f5
+- id: MetaCyc:PWY0-42
+  title: MetaCyc PWY0-42 native XML
+  url: https://pathway.yeastgenome.org/getxml?META:PWY0-42
+  source_version: MetaCyc public native XML; mirror 22.5; complete response body
+  source_sha256: 94b1ed597329a37b310717ae629db366644e504111cefcbfbdb0116170d56d25
+- id: PMID:11422389
+  title: '2-Methylisocitrate lyases from the bacterium Escherichia coli and the filamentous fungus Aspergillus
+    nidulans: characterization and comparison of both enzymes.'
+  url: https://pubmed.ncbi.nlm.nih.gov/11422389/
+  source_version: 2001 primary abstract via Europe PMC exact-PMID JSON; digest covers full API response
+  source_sha256: 54bf36b279e36f612d381adddd18e72f09db8d2572a8e6d53a4746807d8e4335
+- id: PMID:11782506
+  title: AcnC of Escherichia coli is a 2-methylcitrate dehydratase (PrpD) that can use citrate and isocitrate
+    as substrates.
+  url: https://pubmed.ncbi.nlm.nih.gov/11782506/
+  source_version: 2002 primary abstract via Europe PMC exact-PMID JSON; digest covers full API response
+  source_sha256: fa0a35710b54150751f47cd7e50fb89dd5f156cee3b4633f15a6170adbbc9025
+- id: PMID:12473114
+  title: Oxidation of propionate to pyruvate in Escherichia coli. Involvement of methylcitrate dehydratase
+    and aconitase.
+  url: https://pubmed.ncbi.nlm.nih.gov/12473114/
+  source_version: 2002 primary abstract via Europe PMC exact-PMID JSON; digest covers full API response
+  source_sha256: ba9ba61fa3b462cff84618dc187e5bd1db3add52644819e5006155c85f440839
+- id: PMID:12706720
+  title: Crystal structure of 2-methylisocitrate lyase (PrpB) from Escherichia coli and modelling of
+    its ligand bound active centre.
+  url: https://pubmed.ncbi.nlm.nih.gov/12706720/
+  source_version: 2003 primary abstract via Europe PMC exact-PMID JSON; digest covers full API response
+  source_sha256: 0d6a704e59a921b15ad8237a1024cb3d57877ac2ddaff1d20ce6efb08336c7b8
+- id: PMID:28956599
+  title: First Biochemical Characterization of a Methylcitric Acid Cycle from Bacillus subtilis Strain
+    168.
+  url: https://pubmed.ncbi.nlm.nih.gov/28956599/
+  source_version: 2017 primary abstract via Europe PMC exact-PMID JSON; digest covers full API response
+  source_sha256: b75114ee34ed06a995e24ec060684b10ffb214111dc613e085d0c0b3f1446cfe
+- id: RHEA:16810
+  title: Rhea 142 directed reaction 16810 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 is the full compressed official RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:17943
+  title: Rhea 142 directed reaction 17943 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 is the full compressed official RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:20374
+  title: Rhea 142 directed reaction 20374 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 is the full compressed official RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:57493
+  title: Rhea 142 directed reaction 57493 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 is the full compressed official RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:57497
+  title: Rhea 142 directed reaction 57497 and family
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142, 2026-09-02; SHA256 is the full compressed official RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P27550
+  title: Acetyl-coenzyme A synthetase
+  url: https://rest.uniprot.org/uniprotkb/P27550.json
+  source_version: UniProt 2026_03; 02-September-2026; complete JSON body
+  source_sha256: 3c4d153c7c2a2a8b4999ee7ea81e19fddb62fd728055950b16ae095c3febfeb6
+- id: UniProtKB:P31660
+  title: 2-methylcitrate synthase
+  url: https://rest.uniprot.org/uniprotkb/P31660.json
+  source_version: UniProt 2026_03; 02-September-2026; complete JSON body
+  source_sha256: 30f8f871558d241d0f0e7c00ac46242964b30bb7338656286e0804d46bc2282d
+- id: UniProtKB:P36683
+  title: Aconitate hydratase B
+  url: https://rest.uniprot.org/uniprotkb/P36683.json
+  source_version: UniProt 2026_03; 02-September-2026; complete JSON body
+  source_sha256: 6b47f414de4336cbd14a07e459d1bc8c1a540dad0d4c1d10e899c79d2d212f45
+- id: UniProtKB:P77243
+  title: 2-methylcitrate dehydratase
+  url: https://rest.uniprot.org/uniprotkb/P77243.json
+  source_version: UniProt 2026_03; 02-September-2026; complete JSON body
+  source_sha256: 1f21774aa4d8887c3cfde27bc5e328f83aa3d899ee183251747cf7fa946a9922
+- id: UniProtKB:P77495
+  title: Propionate--CoA ligase
+  url: https://rest.uniprot.org/uniprotkb/P77495.json
+  source_version: UniProt 2026_03; 02-September-2026; complete JSON body
+  source_sha256: 710fb9c750a9db3d5ece89ca219716c4d7510738026e99d42fdee18f1e0da30c
+- id: UniProtKB:P77541
+  title: 2-methylisocitrate lyase
+  url: https://rest.uniprot.org/uniprotkb/P77541.json
+  source_version: UniProt 2026_03; 02-September-2026; complete JSON body
+  source_sha256: 02fafccf438943d96480edd98500764903b34840a3c9eaae804460e3846bc729

@@ -1,0 +1,492 @@
+# Partial menaquinol successor: locators resolved, MenE citation gap
+
+- Review: 20261011T062138Z-menaquinol-structure-context-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T06:21:38Z
+- Finished UTC: 2026-10-11T06:21:38Z
+- Reviewer: Codex independent reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+The eight saved locator defects are independently verified as corrected. One additional minor MenE structural-context attribution gap remains: assembly JSON supplies stoichiometry, while retained primary papers supply the protein, mutation and ligand identities.
+
+## Scope And Provenance
+
+Reassessment of corrected eight primary locators and independent MenE structural-context evidence.
+
+Selection: Exactly frozen MetaCyc:PWY-5838 at SHA11ebb55f4c8150b09ed35eac0960515b9e7f6225bea05086d9a7a3fc918e2586.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base d776b82c9c598bb79885ad01514b07900a678de0.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5838 | data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml | maintained | superpathway of menaquinol-8 biosynthesis I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical inspect before assessment | passed | True | MetaCyc:PWY-5838 | Canonical reinspection of actual corrected record and locator fix inputs exited0. |
+| just validate | unavailable | True | MetaCyc:PWY-5838 | Coordinated root gates are in progress; no complete terminal receipt inspected for this partial observation. |
+| just test | unavailable | True | MetaCyc:PWY-5838 | Coordinated root gates are in progress; no complete terminal receipt inspected for this partial observation. |
+| just lint | unavailable | True | MetaCyc:PWY-5838 | Coordinated root gates are in progress; no complete terminal receipt inspected for this partial observation. |
+| Whitespace check | passed | True | MetaCyc:PWY-5838 | Actual command exited zero. |
+
+## Scientific And Domain Assessments
+
+### Primary-source retrieval locations
+
+provenance: supported. Targets: MetaCyc:PWY-5838.
+
+The eight initial locator substitutions are verified exactly against original headings and paragraphs.
+
+### MenE structure context sources
+
+provenance: concern. Targets: MetaCyc:PWY-5838.
+
+Biological details are supported by primary texts but are attributed to assembly JSON fields that do not contain them. No change to unresolved MenE stoichiometry or reaction identity is needed.
+
+## Findings
+
+### f-primary-locators: Eight primary citations name inaccurate article sections
+
+minor / resolved / confirmed; issue key: menaquinol-primary-section-locators.
+
+Edges 047, 054, 059, 061, 063, 065, 066 and 072 contain absent or inaccurate section headings. Exact original and replacement locations plus raw body digests are in menaquinol-independent-review-audit.json. The source assertions themselves are supported by the corrected locations.
+
+Disposition: Complete structural comparison with retained initial target confirms exactly eight source_locator changes. Each corrected location was independently matched to its original body and all scientific assertions remain unchanged.
+
+### f-mene-context: MenE assembly payloads do not supply protein and ligand context
+
+minor / open / confirmed; issue key: menaquinol-mene-structure-context-attribution.
+
+Edge059 assigns protein/mutation and inhibitor context to two RCSB assembly-only JSON payloads. Those payloads support monomeric author/PISA assemblies, while exact context is supported by separate retained original primary paragraphs. Restrict assembly assertions to their fields and attach the explicit primary bridges.
+
+## Recommended Actions And Acceptance Checks
+
+### a-mene-context
+
+Restrict each RCSB assertion to its explicit assembly facts and attach nearest primary evidence for the exact 6NJ0 and 5C5H context. Reinspect the correction and complete final review after coordinated gates.
+
+- The assembly fields and primary PDB-context paragraphs each support exactly their attributed assertion.
+- A successor retains both finding keys and exact previous occurrences after full gate receipts are inspected.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-initial-target | data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml; Entire record; eight primary evidence source_locator fields | refutes | All 85 edges and 67 references read. Eight source_locator fields contain section-heading mismatches documented in the independent audit. |
+| e-PMC107237 | https://pmc.ncbi.nlm.nih.gov/articles/PMC107237/; Original article body; exact observed locations listed in menaquinol-independent-review-audit.json | supports | Independently read relevant original Methods/Results and assembly/assay passages; supports the associated assertion at the corrected location, while the named heading is absent or inaccurate. |
+| e-PMC2943303 | https://pmc.ncbi.nlm.nih.gov/articles/PMC2943303/; Original article body; exact observed locations listed in menaquinol-independent-review-audit.json | supports | Independently read relevant original Methods/Results and assembly/assay passages; supports the associated assertion at the corrected location, while the named heading is absent or inaccurate. |
+| e-PMC3630204 | https://pmc.ncbi.nlm.nih.gov/articles/PMC3630204/; Original article body; exact observed locations listed in menaquinol-independent-review-audit.json | supports | Independently read relevant original Methods/Results and assembly/assay passages; supports the associated assertion at the corrected location, while the named heading is absent or inaccurate. |
+| e-PMC3697248 | https://pmc.ncbi.nlm.nih.gov/articles/PMC3697248/; Original article body; exact observed locations listed in menaquinol-independent-review-audit.json | supports | Independently read relevant original Methods/Results and assembly/assay passages; supports the associated assertion at the corrected location, while the named heading is absent or inaccurate. |
+| e-PMC4116151 | https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4116151/fullTextXML; Original article body; exact observed locations listed in menaquinol-independent-review-audit.json | supports | Independently read relevant original Methods/Results and assembly/assay passages; supports the associated assertion at the corrected location, while the named heading is absent or inaccurate. |
+| e-PMC4624480 | https://pmc.ncbi.nlm.nih.gov/articles/PMC4624480/; Original article body; exact observed locations listed in menaquinol-independent-review-audit.json | supports | Independently read relevant original Methods/Results and assembly/assay passages; supports the associated assertion at the corrected location, while the named heading is absent or inaccurate. |
+| e-current-target | data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml; Entire structural diff; edge059 two RCSB assertions | refutes | Exactly eight prior locator changes are present. The two assembly JSON assertions additionally identify protein/mutant/ligand contexts that are absent from those payloads. |
+| e-rcsb6 | https://data.rcsb.org/rest/v1/core/assembly/6NJ0/1; Entire original payload; pdbx_struct_assembly; rcsb_struct_symmetry | supports | Monomeric author/PISA assembly is explicit. Protein identity, wild-type status and inhibitor identity fields are not in this assembly payload. |
+| e-rcsb5 | https://data.rcsb.org/rest/v1/core/assembly/5C5H/1; Entire original payload; pdbx_struct_assembly; rcsb_struct_symmetry | supports | Monomeric author/PISA assembly is explicit. R195K protein and OSB-AMS identities are not fields in this payload. |
+| e-mene2019 | https://pmc.ncbi.nlm.nih.gov/articles/PMC6653581/; Methods paragraph P17; Results paragraph P32; P8 and P18 | supports | Original Methods P17 explicitly identifies wild-type E. coli MenE plus analogue 5 and coordinates 6NJ0; P8/P18 identify OSB-AMS in 5C5H. |
+| e-mene2015 | https://pmc.ncbi.nlm.nih.gov/articles/PMC4624480/; Methods P11; Results P23 | supports | Original source explicitly identifies the R195K E. coli MenE and OSB-AMS co-crystal as 5C5H. |
+
+## Limits And Additional Notes
+
+- Partial observation: the final coordinated post-fix gates and whole-record disposition are pending.
+- Independent original chemistry replay passed 43 chemical sides/ten balances, ten full native members and both generic Rhea bridges; that deterministic result is not itself a scientific pass.
+- Root deliberately interrupted the superseded pre-fix full suite with 1022 passed/3 skipped; no full-suite success is claimed.
+- Initial exact target bytes and locator audit are retained externally for historical replay. No author-owned input has been edited.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T062138Z-menaquinol-structure-context-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Partial menaquinol successor: locators resolved, MenE citation gap'
+started_at: '2026-10-11T06:21:38Z'
+finished_at: '2026-10-11T06:21:38Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Reviewer did not author menaquinol or its source dossiers. Full
+    target and original source sections were read independently. Reviewer-authored
+    methylcitrate is excluded.
+skill: review-yaml-record
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: 'The eight saved locator defects are independently verified as corrected.
+  One additional minor MenE structural-context attribution gap remains: assembly JSON
+  supplies stoichiometry, while retained primary papers supply the protein, mutation
+  and ligand identities.'
+source:
+  git_revision: d776b82c9c598bb79885ad01514b07900a678de0
+  state: working_tree
+  inputs:
+  - path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    sha256: 11ebb55f4c8150b09ed35eac0960515b9e7f6225bea05086d9a7a3fc918e2586
+    role: target
+  - path: research/pathway_additions/2026-10-11-next-195/menaquinol-independent-review-audit.json
+    sha256: 32bd0ccf2f18034b6997ae13e096b85de5c7d33a365942195e95ebe73e296be8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-195/menaquinol-provenance-fix.json
+    sha256: 76159be648583507a0b5d7b409de7aeab440c086f3334c8bf90fc30449c66f11
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+targets:
+- target_id: MetaCyc:PWY-5838
+  path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+  label: superpathway of menaquinol-8 biosynthesis I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    role: maintained record
+scope:
+  description: Reassessment of corrected eight primary locators and independent MenE
+    structural-context evidence.
+  selection: Exactly frozen MetaCyc:PWY-5838 at SHA11ebb55f4c8150b09ed35eac0960515b9e7f6225bea05086d9a7a3fc918e2586.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5838
+  exclusions:
+  - target: Complete independent reaction/identifier replay and final shared gates
+    reason: Still in progress; successor will assess final corrected inputs.
+  - target: Other records including reviewer-authored methylcitrate
+    reason: Outside this one-record scientific scope.
+checks:
+- check_id: inspect
+  name: Canonical inspect before assessment
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 uv
+    run python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-195-menaquinol-review/targets.yaml
+    --input research/pathway_additions/2026-10-11-next-195/menaquinol-provenance-fix.json
+    --input research/pathway_additions/2026-10-11-next-195/menaquinol-independent-review-audit.json
+    --input src/pathwaymech/schema.py
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Canonical reinspection of actual corrected record and locator fix inputs
+    exited0.
+  target_ids:
+  - MetaCyc:PWY-5838
+- check_id: just-validate
+  name: just validate
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    validate
+  status: unavailable
+  required: true
+  summary: Coordinated root gates are in progress; no complete terminal receipt inspected
+    for this partial observation.
+  target_ids:
+  - MetaCyc:PWY-5838
+- check_id: just-test
+  name: just test
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    test
+  status: unavailable
+  required: true
+  summary: Coordinated root gates are in progress; no complete terminal receipt inspected
+    for this partial observation.
+  target_ids:
+  - MetaCyc:PWY-5838
+- check_id: just-lint
+  name: just lint
+  command: UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache UV_NO_SYNC=1 just
+    lint
+  status: unavailable
+  required: true
+  summary: Coordinated root gates are in progress; no complete terminal receipt inspected
+    for this partial observation.
+  target_ids:
+  - MetaCyc:PWY-5838
+- check_id: diff
+  name: Whitespace check
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  summary: Actual command exited zero.
+  target_ids:
+  - MetaCyc:PWY-5838
+evidence:
+- evidence_id: e-initial-target
+  kind: record_content
+  reference: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+  locator: Entire record; eight primary evidence source_locator fields
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: refutes
+  summary: All 85 edges and 67 references read. Eight source_locator fields contain
+    section-heading mismatches documented in the independent audit.
+  snapshot_sha256: ce7ca7155a12be396ea94b0b83c5b6ca72285c1cf53188fb1916e559c7e15e81
+- evidence_id: e-PMC107237
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC107237/
+  locator: Original article body; exact observed locations listed in menaquinol-independent-review-audit.json
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: supports
+  summary: Independently read relevant original Methods/Results and assembly/assay
+    passages; supports the associated assertion at the corrected location, while the
+    named heading is absent or inaccurate.
+  snapshot_sha256: 7783345d801962b37134f7772ef6f79bb177a3574b65b60ef54e90086de571b9
+- evidence_id: e-PMC2943303
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2943303/
+  locator: Original article body; exact observed locations listed in menaquinol-independent-review-audit.json
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: supports
+  summary: Independently read relevant original Methods/Results and assembly/assay
+    passages; supports the associated assertion at the corrected location, while the
+    named heading is absent or inaccurate.
+  snapshot_sha256: 17b89c4f0fbf1f02265c257edfa7780233bea713fe4b6cfbdcacda489e8b44fb
+- evidence_id: e-PMC3630204
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3630204/
+  locator: Original article body; exact observed locations listed in menaquinol-independent-review-audit.json
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: supports
+  summary: Independently read relevant original Methods/Results and assembly/assay
+    passages; supports the associated assertion at the corrected location, while the
+    named heading is absent or inaccurate.
+  snapshot_sha256: 3a09918deee6b20b79a67c4687b6e904d3fc2f4ac109aa76f66f5545ff93c169
+- evidence_id: e-PMC3697248
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3697248/
+  locator: Original article body; exact observed locations listed in menaquinol-independent-review-audit.json
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: supports
+  summary: Independently read relevant original Methods/Results and assembly/assay
+    passages; supports the associated assertion at the corrected location, while the
+    named heading is absent or inaccurate.
+  snapshot_sha256: 44af8e69c22e4cca4b7bb80de3064852d7a3d5d03408072bab08875248a6861d
+- evidence_id: e-PMC4116151
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4116151/fullTextXML
+  locator: Original article body; exact observed locations listed in menaquinol-independent-review-audit.json
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: supports
+  summary: Independently read relevant original Methods/Results and assembly/assay
+    passages; supports the associated assertion at the corrected location, while the
+    named heading is absent or inaccurate.
+  snapshot_sha256: dc6f06a5e9076d94e0016621bd0e57bfc78aeb423d4462079f0d666cca2f47e3
+- evidence_id: e-PMC4624480
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC4624480/
+  locator: Original article body; exact observed locations listed in menaquinol-independent-review-audit.json
+  accessed_at: '2026-10-11T06:17:04Z'
+  support: supports
+  summary: Independently read relevant original Methods/Results and assembly/assay
+    passages; supports the associated assertion at the corrected location, while the
+    named heading is absent or inaccurate.
+  snapshot_sha256: f4a8d851344a536bc7d5dead20245d0ce5bf0d52ebfad038cc407c5c3ef07756
+- evidence_id: e-current-target
+  kind: record_content
+  reference: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+  locator: Entire structural diff; edge059 two RCSB assertions
+  accessed_at: '2026-10-11T06:21:38Z'
+  support: refutes
+  summary: Exactly eight prior locator changes are present. The two assembly JSON
+    assertions additionally identify protein/mutant/ligand contexts that are absent
+    from those payloads.
+  snapshot_sha256: 11ebb55f4c8150b09ed35eac0960515b9e7f6225bea05086d9a7a3fc918e2586
+- evidence_id: e-rcsb6
+  kind: database
+  reference: https://data.rcsb.org/rest/v1/core/assembly/6NJ0/1
+  locator: Entire original payload; pdbx_struct_assembly; rcsb_struct_symmetry
+  accessed_at: '2026-10-11T06:21:38Z'
+  support: supports
+  summary: Monomeric author/PISA assembly is explicit. Protein identity, wild-type
+    status and inhibitor identity fields are not in this assembly payload.
+  snapshot_sha256: 711cc1b8b27497be201e99fc7dc3c078648f1764d538449329b9c020cd8d292c
+- evidence_id: e-rcsb5
+  kind: database
+  reference: https://data.rcsb.org/rest/v1/core/assembly/5C5H/1
+  locator: Entire original payload; pdbx_struct_assembly; rcsb_struct_symmetry
+  accessed_at: '2026-10-11T06:21:38Z'
+  support: supports
+  summary: Monomeric author/PISA assembly is explicit. R195K protein and OSB-AMS identities
+    are not fields in this payload.
+  snapshot_sha256: de5a814d338a1656e19f702f2fc3d161eca3c7631548778124b57dd1aa65a308
+- evidence_id: e-mene2019
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC6653581/
+  locator: Methods paragraph P17; Results paragraph P32; P8 and P18
+  accessed_at: '2026-10-11T06:21:38Z'
+  support: supports
+  summary: Original Methods P17 explicitly identifies wild-type E. coli MenE plus
+    analogue 5 and coordinates 6NJ0; P8/P18 identify OSB-AMS in 5C5H.
+  snapshot_sha256: 7780cf50173d5f570480f707c0b912a00a900f3a16675cba7190dceea2accef4
+- evidence_id: e-mene2015
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC4624480/
+  locator: Methods P11; Results P23
+  accessed_at: '2026-10-11T06:21:38Z'
+  support: supports
+  summary: Original source explicitly identifies the R195K E. coli MenE and OSB-AMS
+    co-crystal as 5C5H.
+  snapshot_sha256: f4a8d851344a536bc7d5dead20245d0ce5bf0d52ebfad038cc407c5c3ef07756
+assessments:
+- assessment_id: a-locators
+  area: provenance
+  topic: Primary-source retrieval locations
+  outcome: supported
+  summary: The eight initial locator substitutions are verified exactly against original
+    headings and paragraphs.
+  target_ids:
+  - MetaCyc:PWY-5838
+  evidence_ids:
+  - e-initial-target
+  - e-PMC107237
+  - e-PMC2943303
+  - e-PMC3630204
+  - e-PMC3697248
+  - e-PMC4116151
+  - e-PMC4624480
+- assessment_id: a-mene-context
+  area: provenance
+  topic: MenE structure context sources
+  outcome: concern
+  summary: Biological details are supported by primary texts but are attributed to
+    assembly JSON fields that do not contain them. No change to unresolved MenE stoichiometry
+    or reaction identity is needed.
+  target_ids:
+  - MetaCyc:PWY-5838
+  evidence_ids:
+  - e-current-target
+  - e-rcsb6
+  - e-rcsb5
+  - e-mene2019
+  - e-mene2015
+findings:
+- finding_id: f-primary-locators
+  issue_key: menaquinol-primary-section-locators
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Eight primary citations name inaccurate article sections
+  description: Edges 047, 054, 059, 061, 063, 065, 066 and 072 contain absent or inaccurate
+    section headings. Exact original and replacement locations plus raw body digests
+    are in menaquinol-independent-review-audit.json. The source assertions themselves
+    are supported by the corrected locations.
+  target_ids:
+  - MetaCyc:PWY-5838
+  field_paths:
+  - mechanistic_edges[id=menaquinol-edge-047]/evidence[reference_id=PMID:23564174]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-054]/evidence[reference_id=PMID:23637813]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-059]/evidence[reference_id=PMID:26394156]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-061]/evidence[reference_id=PMID:20643650]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-063]/evidence[reference_id=PMID:20643650]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-065]/evidence[reference_id=PMID:23564174]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-066]/evidence[reference_id=PMID:25010423]/source_locator
+  - mechanistic_edges[id=menaquinol-edge-072]/evidence[reference_id=PMID:9573170]/source_locator
+  evidence_ids:
+  - e-initial-target
+  - e-PMC107237
+  - e-PMC2943303
+  - e-PMC3630204
+  - e-PMC3697248
+  - e-PMC4116151
+  - e-PMC4624480
+  rule_id: review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source
+    locators
+  native_severity: minor
+  normalization_reason: Bounded provenance gap; no unsupported chemistry or wrong
+    enzyme identity is established by this finding.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    role: maintained_record
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T061704Z-menaquinol-initial-independent-review
+    finding_id: f-primary-locators
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/357
+  disposition_reason: Complete structural comparison with retained initial target
+    confirms exactly eight source_locator changes. Each corrected location was independently
+    matched to its original body and all scientific assertions remain unchanged.
+- finding_id: f-mene-context
+  issue_key: menaquinol-mene-structure-context-attribution
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: MenE assembly payloads do not supply protein and ligand context
+  description: Edge059 assigns protein/mutation and inhibitor context to two RCSB
+    assembly-only JSON payloads. Those payloads support monomeric author/PISA assemblies,
+    while exact context is supported by separate retained original primary paragraphs.
+    Restrict assembly assertions to their fields and attach the explicit primary bridges.
+  target_ids:
+  - MetaCyc:PWY-5838
+  field_paths:
+  - mechanistic_edges[id=menaquinol-edge-059]/evidence[reference_id=DOI:10.2210/pdb6NJ0/pdb]/source_assertion
+  - mechanistic_edges[id=menaquinol-edge-059]/evidence[reference_id=DOI:10.2210/pdb5C5H/pdb]/source_assertion
+  evidence_ids:
+  - e-current-target
+  - e-rcsb6
+  - e-rcsb5
+  - e-mene2019
+  - e-mene2015
+  rule_id: review-yaml-record Evidence Rules; docs/CAUSAL_GRAPHS.md precise source
+    locators
+  native_severity: minor
+  normalization_reason: Bounded provenance gap; no unsupported chemistry or wrong
+    enzyme identity is established by this finding.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    role: maintained_record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/360
+actions:
+- action_id: a-mene-context
+  description: Restrict each RCSB assertion to its explicit assembly facts and attach
+    nearest primary evidence for the exact 6NJ0 and 5C5H context. Reinspect the correction
+    and complete final review after coordinated gates.
+  finding_ids:
+  - f-mene-context
+  target_ids:
+  - MetaCyc:PWY-5838
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    role: maintained_record
+  acceptance_checks:
+  - The assembly fields and primary PDB-context paragraphs each support exactly their
+    attributed assertion.
+  - A successor retains both finding keys and exact previous occurrences after full
+    gate receipts are inspected.
+limitations:
+- 'Partial observation: the final coordinated post-fix gates and whole-record disposition
+  are pending.'
+- Independent original chemistry replay passed 43 chemical sides/ten balances, ten
+  full native members and both generic Rhea bridges; that deterministic result is
+  not itself a scientific pass.
+- Root deliberately interrupted the superseded pre-fix full suite with 1022 passed/3
+  skipped; no full-suite success is claimed.
+notes:
+- Initial exact target bytes and locator audit are retained externally for historical
+  replay. No author-owned input has been edited.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/357
+- https://github.com/CultureBotAI/PathwayMech/issues/360
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261011T061704Z-menaquinol-initial-independent-review
+  relationship: Resolves eight confirmed primary-section locators and records a new
+    bounded MenE attribution finding.
+```
