@@ -1,0 +1,58 @@
+"""Isolated actual-replay probes; never edits author or maintained input bytes."""
+import argparse, hashlib, json, os, runpy, shutil, sys, traceback
+from datetime import datetime, timezone
+from pathlib import Path
+p=argparse.ArgumentParser();p.add_argument('case',choices=['positive','late_manifest','optimized']);a=p.parse_args()
+BASE=Path('/private/tmp/pathwaymech-calvin-cycle-independent-review-20261011/whole-record-initial')
+AUTHOR=Path('/private/tmp/pathwaymech-calvin-cycle-author-20261011')
+ROOT=BASE/('probe-'+a.case);ROOT.mkdir(exist_ok=False)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def rewrite(v):
+ if isinstance(v,str):return v.replace(str(AUTHOR),str(ROOT))
+ if isinstance(v,list):return [rewrite(x) for x in v]
+ if isinstance(v,dict):return {rewrite(k):rewrite(x) for k,x in v.items()}
+ return v
+for name in ['source-manifest.json','source-projection.json','source-projection-compact.json','chemistry-projection.json','protein-projection.json','coverage.json','authority-proposal.json']:
+ d=rewrite(json.loads((AUTHOR/name).read_text()))
+ (ROOT/name).write_text(json.dumps(d,indent=2)+'\n')
+(ROOT/'raw').symlink_to(AUTHOR/'raw',target_is_directory=True)
+(ROOT/'draft').mkdir();shutil.copyfile(AUTHOR/'draft/calvin-cycle.yaml',ROOT/'draft/calvin-cycle.yaml')
+shutil.copyfile(AUTHOR/'calvin-replay-successor.py',ROOT/'calvin-replay-successor.py')
+# The full projection's path-only relocation changes its digest, which the compact
+# companion explicitly binds. No evidence, reference, source hash, or equation changes.
+c=json.loads((ROOT/'source-projection-compact.json').read_text())
+c['external_full_projection']['sha256']=sha(ROOT/'source-projection.json')
+(ROOT/'source-projection-compact.json').write_text(json.dumps(c,indent=2)+'\n')
+# Source body declarations use new access aliases, retaining actual symlink resolution.
+m=json.loads((ROOT/'source-manifest.json').read_text())
+for key in ['bodies','prior_proof_inputs','issuing_databases','runtime_inputs']:
+ for row in m[key]:row['resolved_path']=str(Path(row['path']).resolve(strict=True))
+(ROOT/'source-manifest.json').write_text(json.dumps(m,indent=2)+'\n')
+# Compact embeds no source-manifest digest, and actual core metadata is captured
+# by the unchanged helper. The exact rewritten fixture is retained for audit.
+initial={str(f):sha(f) for f in ROOT.iterdir() if f.is_file()}
+initial[str(ROOT/'draft/calvin-cycle.yaml')]=sha(ROOT/'draft/calvin-cycle.yaml')
+(ROOT/'probe-initial-bindings.json').write_text(json.dumps(initial,indent=2)+'\n')
+started=datetime.now(timezone.utc).isoformat();mutation=None
+output=ROOT/'success.json'
+sys.argv=[str(ROOT/'calvin-replay-successor.py'),'--record',str(ROOT/'draft/calvin-cycle.yaml'),'--repo','/private/tmp/pathwaymech-next-220-20261011','--output',str(output)]
+def trace(frame,event,arg):
+ global mutation
+ if a.case=='late_manifest' and event=='call' and frame.f_code.co_name=='sha' and frame.f_code.co_filename==str(ROOT/'calvin-replay-successor.py'):
+  path=Path(frame.f_locals['path'])
+  if path.name=='go.db' and 'outdir' in frame.f_globals and mutation is None:
+   target=ROOT/'source-manifest.json';before=sha(target);d=json.loads(target.read_text());d['record_sha256']='f'*64;target.write_text(json.dumps(d,indent=2)+'\n')
+   mutation={'at':'actual final sha(go.db), after formal manifest entry was already rechecked','path':str(target),'before':before,'after':sha(target),'invalid_record_sha256':d['record_sha256'],'at_utc':datetime.now(timezone.utc).isoformat()}
+   (ROOT/'mutation-observation.json').write_text(json.dumps(mutation,indent=2)+'\n')
+ return trace
+sys.settrace(trace)
+error=None;exitcode=0
+try:runpy.run_path(str(ROOT/'calvin-replay-successor.py'),run_name='__main__')
+except BaseException as e:exitcode=1;error=repr(e);traceback.print_exc()
+finally:sys.settrace(None)
+final={path:sha(path) for path in initial}
+receipt={'case':a.case,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'helper_sha256':sha(ROOT/'calvin-replay-successor.py'),'target_sha256':sha(ROOT/'draft/calvin-cycle.yaml'),'helper_exit_code':exitcode,'error':error,'mutation':mutation,'success_exists':output.exists(),'initial_bindings':initial,'final_bindings':final,'changed':[k for k in initial if initial[k]!=final[k]],'scope':'Unchanged actual helper; relocated metadata access aliases only. Sources/runtime/whole issuing databases remain original read-only. No scientific values were changed except the designated late manifest record hash.'}
+if output.exists():receipt['success_sha256']=sha(output);receipt['success_status']=json.loads(output.read_text())['status']
+(ROOT/'probe-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps({'receipt':str(ROOT/'probe-receipt.json'),'sha256':sha(ROOT/'probe-receipt.json'),'helper_exit_code':exitcode,'mutation':bool(mutation),'success_exists':output.exists()}),flush=True)
+sys.exit(exitcode)
