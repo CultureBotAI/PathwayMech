@@ -1,0 +1,279 @@
+"""Prepare a provisional authority selection; no builder or maintained writes."""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import sqlite3
+import subprocess
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+from xml.etree import ElementTree
+
+ROOT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-221-20261011')
+AUTHOR = Path('/private/tmp/pathwaymech-ethylmalonyl-author-20261011')
+CORRECTION = Path('/private/tmp/pathwaymech-ethylmalonyl-correction-20261011')
+PRE = Path('/private/tmp/pathwaymech-ethylmalonyl-successor-preflight-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities')
+EXPECTED_HEAD = '7b5201e93c0608631af73e629780d829efd26426'
+bindings = {}
+
+
+def save(name, data):
+    with (ROOT / name).open('x') as stream:
+        json.dump(data, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def capture(path, expected=None):
+    path = Path(path).absolute()
+    data = path.read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    if expected is not None and digest != expected:
+        raise ValueError(f'Input hash mismatch: {path}')
+    row = {'path': str(path), 'resolved_path': str(path.resolve(strict=True)),
+           'sha256': digest, 'bytes': len(data)}
+    if str(path) in bindings and bindings[str(path)] != row:
+        raise ValueError(f'Input changed during capture: {path}')
+    bindings[str(path)] = row
+    return data
+
+
+def read(path, expected=None):
+    return json.loads(capture(path, expected))
+
+
+def recheck():
+    for row in list(bindings.values()):
+        path = Path(row['path'])
+        if str(path.resolve(strict=True)) != row['resolved_path']:
+            raise ValueError('Input path changed: ' + str(path))
+        if hashlib.sha256(path.read_bytes()).hexdigest() != row['sha256']:
+            raise ValueError('Input bytes changed: ' + str(path))
+
+
+if not __debug__ or not sys.dont_write_bytecode:
+    raise RuntimeError('Run with assertions enabled and bytecode disabled')
+started = datetime.now(UTC).isoformat()
+head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
+assert head == EXPECTED_HEAD
+tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=REPO, text=True).strip()
+capture(__file__)
+runtime_names = ['scripts/build_source_identifier_snapshot.py',
+                 'scripts/build_ontology_identifier_snapshot.py', 'src/pathwaymech/kegg.py',
+                 'conf/identifier_policy.yaml', 'conf/rhea_identifier_updates.json']
+for name in runtime_names:
+    capture(REPO / name)
+baseline_names = ['conf/identifier_sources.json', 'data/identifier_authorities/ontology.json',
+                  'data/identifier_authorities/sources.json']
+prior, ontology, sources = [read(REPO / name) for name in baseline_names]
+author_handoff = read(AUTHOR / 'handoff-v2.json',
+                      'fc262d3e4738be5167a61f1f10d67c727ff4afa4e782f1813982dda5403a4a2b')
+proposal = read(AUTHOR / 'authority-proposal.json',
+                '25ee2f7401b0767f25474071773383282686dd76fcf6d47c623a1f4bf5110b04')
+author_inputs = read(AUTHOR / 'authority-inputs.json',
+                     '1c27af90ebbb1fbd243dfb13d0ffb7fb3ab8b71856f93adcbea3e3f318c99875')
+target_bytes = capture(AUTHOR / author_handoff['record']['path'],
+                       author_handoff['record']['sha256'])
+corrected_binding = read(CORRECTION / 'provisional-target-binding.json',
+                         '1cf794f362bc8c241019412994b048cfbc9864b5680b69369ccd4751c35e9313')
+corrected_bytes = capture(CORRECTION / 'draft/ethylmalonyl-coa-pathway.yaml',
+                          '1c58f2d1b27fd7a8a3928971a49311a742e004a1b28f349b9331b8fe0f369912')
+
+# Canonical parsers are bound before import. Calling single-source readers is
+# preparation, not a snapshot build or independent approval of these parsers.
+sys.path.insert(0, str(REPO))
+import yaml
+from scripts.build_ontology_identifier_snapshot import extract_terms, walk_identifiers
+from scripts.build_source_identifier_snapshot import SOURCE_NAMESPACES, source_terms
+
+old_doc = yaml.safe_load(target_bytes)
+doc = yaml.safe_load(corrected_bytes)
+
+
+def nodes(record):
+    return [record, *(n for key in ['taxa', 'participants', 'reactions', 'gene_clusters']
+                      for n in record.get(key, []))]
+
+
+named = {n['id']: n['label'] for n in nodes(doc)}
+assert named == {n['id']: n['label'] for n in nodes(old_doc)}
+assert doc['references'] == old_doc['references']
+assert set(named) == set(proposal['terms']) and len(named) == 66
+ont_ids = walk_identifiers(doc, {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'})
+source_ids = {i for i in named if i.partition(':')[0] in SOURCE_NAMESPACES}
+assert ont_ids | source_ids == set(named)
+assert len(ont_ids) == 47 and len(source_ids) == 19
+corpus_command = ['rg', '-uu', '-L', '--files', '-g', '*.yaml', 'data/pathways']
+corpus_paths = subprocess.check_output(corpus_command, cwd=REPO, text=True).splitlines()
+for name in sorted(corpus_paths):
+    capture(REPO / name)
+assert len(corpus_paths) == 221
+
+database_locks, sql_terms, sql_comparisons = [], {}, []
+for prefix, filename in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+    path = CACHE / (filename + '.db')
+    resolved = path.resolve(strict=True)
+    keys = [k for k in ontology['sources'] if k.startswith(prefix.lower()+'-') and k != 'rhea-rdf-142']
+    assert len(keys) == 1
+    owner = keys[0]
+    metadata = ontology['sources'][owner]
+    stat = resolved.stat()
+    lock = {'path': str(path), 'resolved_path': str(resolved), 'source_key': owner,
+            'metadata': metadata, 'size': stat.st_size, 'mtime_ns': stat.st_mtime_ns,
+            'digest_status': 'Pinned expected whole-database hash; no fresh whole-database streaming in this preparation'}
+    database_locks.append(lock)
+    with sqlite3.connect(resolved.as_uri()+'?mode=ro', uri=True) as connection:
+        versions = list(connection.execute("SELECT subject,object FROM statements WHERE predicate='owl:versionIRI'"))
+        assert len(versions) == 1
+        details = list(connection.execute("SELECT predicate,object,value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo','dcterms:license')", (versions[0][0],)))
+        assert any(p == 'owl:versionInfo' and (o or v) == metadata['version'] for p,o,v in details)
+        terms, missing = extract_terms(connection, sorted(i for i in ont_ids if i.startswith(prefix+':')), owner)
+        assert not missing
+        lock['queried_metadata'] = {'version_iri_rows': versions, 'release_license_rows': details}
+        sql_terms.update(terms)
+for identifier, term in sql_terms.items():
+    expected = proposal['terms'][identifier]
+    assert term['label'] == expected['label']
+    assert sorted(term['synonyms']) == sorted(expected['synonyms'])
+    old = ontology['terms'].get(identifier)
+    assert old is None or old == term
+    sql_comparisons.append({'id': identifier, 'direct_sql_term': term,
+                            'author_proposed_term': expected,
+                            'existing_term': old, 'action': 'reuse_exact' if old else 'add_from_pinned_sql'})
+
+# Match each proposed acquisition to the actual original receipt. No new fetch.
+proofs = list(AUTHOR.glob('*acquisition.json')) + [PRE / 'acquisition.json']
+acquisitions = []
+for path in proofs:
+    body = read(path)
+    for index, row in enumerate(body.get('sources', [])):
+        acquisitions.append((path, index, row))
+
+by_key = {entry['key']: entry for entry in author_inputs['sources']}
+prior_by_hash = {}
+for entry in prior:
+    prior_by_hash.setdefault(entry['sha256'], []).append(entry)
+new_inputs, reuse, comparisons = [], [], []
+for identifier in sorted(source_ids):
+    expected = proposal['terms'][identifier]
+    existing = sources['terms'].get(identifier)
+    if existing:
+        assert existing['label'] == expected['label'] and existing['synonyms'] == expected['synonyms']
+        matched = [e for e in prior if e['key'] == existing['source']]
+        assert len(matched) == 1
+        reuse.append({'id': identifier, 'existing_term_preserved': existing,
+                      'existing_entry_preserved': matched[0],
+                      'existing_metadata_preserved': sources['sources'][existing['source']],
+                      'author_source_key_not_adopted': expected['source']})
+        continue
+    original = by_key[expected['source']]
+    raw = Path(original['path'])
+    data = capture(raw, original['sha256'])
+    assert original['sha256'] not in prior_by_hash, 'Exact original already in baseline: reuse required'
+    proof = [(p, index, r) for p, index, r in acquisitions
+             if r.get('path') == str(raw) and r.get('sha256') == original['sha256']
+             and r.get('url') == original['url'] and r.get('status') == 200]
+    assert proof, raw
+    entry = {k: original[k] for k in ['key', 'kind', 'url', 'version', 'license', 'sha256']}
+    source_facts = {}
+    if identifier.startswith('MetaCyc:'):
+        xml = ElementTree.fromstring(data)
+        pgdb = xml.find('metadata/PGDB')
+        protein = xml.find('Protein')
+        assert pgdb.attrib == {'orgid': 'META', 'version': '27.0'}
+        assert protein.attrib['frameid'] == identifier.split(':')[1]
+        entry['kind'], entry['version'] = 'metacyc-protein-xml', pgdb.attrib['version']
+        entry['path'] = 'ethylmalonyl-' + raw.stem + '-protein-27.0-2026-10-11.xml'
+        source_facts = {'top_level_attributes': protein.attrib, 'pgdb_attributes': pgdb.attrib,
+                        'direct_common_name': protein.findtext('common-name'),
+                        'ptools_software_version_not_database_authority': xml.get('ptools-version')}
+    elif identifier.startswith('UniProtKB:'):
+        native = json.loads(data)
+        assert native['primaryAccession'] == identifier.split(':')[1]
+        audit = native['entryAudit']
+        version = f"Entry {audit['entryVersion']}; sequence {audit['sequenceVersion']}; annotation {audit['lastAnnotationUpdateDate']}"
+        assert version == entry['version']
+        entry['path'] = 'ethylmalonyl-' + raw.stem + '-2026-10-11.json'
+        source_facts = {'primaryAccession': native['primaryAccession'], 'entryAudit': audit,
+                        'entryType': native['entryType'], 'organism': native['organism'],
+                        'proteinDescription': native['proteinDescription']}
+    elif identifier == 'KEGG:M00373':
+        entry['path'] = 'ethylmalonyl-kegg-M00373-2026-10-11.txt'
+        source_facts = {'entry_and_name_lines': [line for line in data.decode().splitlines()
+                                               if line.startswith(('ENTRY ', 'NAME '))],
+                        'version_scope': 'Retrieval date; native flatfile supplies no release number'}
+    else:
+        raise ValueError('Unexpected new source kind: '+identifier)
+    rows = list(source_terms(entry['kind'], raw, url=entry['url'], version=entry['version']))
+    assert len(rows) == 1 and rows[0][0] == identifier
+    _, label, synonyms = rows[0]
+    term = {'label': label, 'synonyms': sorted(set(synonyms)-{label}), 'source': entry['key']}
+    assert label == expected['label'] and term['synonyms'] == sorted(set(expected['synonyms'])-{label})
+    assert named[identifier] == label or named[identifier] in synonyms
+    proposed_destination = CACHE / 'sources' / entry['path']
+    assert not os.path.lexists(proposed_destination), 'Proposed cache path already occupied'
+    new_inputs.append({'id': identifier, 'original_path': str(raw),
+                       'original_manifest_entry': original, 'manifest_entry': entry,
+                       'proposed_cache_destination': str(proposed_destination),
+                       'proposed_term': term, 'source_facts': source_facts,
+                       'acquisition_proof': [{'path': str(p), 'sha256': bindings[str(p.absolute())]['sha256'],
+                                             'json_pointer': f'/sources/{index}', 'matched_row': row}
+                                            for p,index,row in proof]})
+    comparisons.append({'id': identifier, 'original_issued_term': term,
+                        'author_term_equal_except_alias_order': expected, 'record_label': named[identifier]})
+
+manifest = prior + [entry['manifest_entry'] for entry in new_inputs]
+for key in ['key', 'path']:
+    assert len({e[key] for e in manifest}) == len(manifest), 'Manifest collision: '+key
+assert manifest[:len(prior)] == prior
+missing_ont = {i: t for i,t in sql_terms.items() if i not in ontology['terms']}
+missing_source = {e['id']: e['proposed_term'] for e in new_inputs}
+assert len(missing_ont) == 13 and len(missing_source) == 17
+updates = read(REPO / 'conf/rhea_identifier_updates.json')
+rhea_decision = {'selected_14_ids': sorted(i for i in ont_ids if i.startswith('RHEA:')),
+                 'new_to_snapshot': sorted(i for i in missing_ont if i.startswith('RHEA:')),
+                 'additional_update_ids': [], 'keep_updates_exact': updates,
+                 'decision': 'All fourteen direct Rhea139 SQL labels match proposed Rhea142 equations; preserve source rhea-139, no release upgrade or new update selection.',
+                 'scope': 'Direct pinned SQL authority read; author current-RDF proposal compared, not independently rerun full RDF extraction here.'}
+for lock in database_locks:
+    path = Path(lock['path']); stat = path.resolve(strict=True).stat()
+    assert str(path.resolve(strict=True)) == lock['resolved_path']
+    assert (stat.st_size, stat.st_mtime_ns) == (lock['size'], lock['mtime_ns'])
+recheck()
+baseline = {'actual_merged_commit': head, 'actual_merged_tree': tree, 'current_records': len(corpus_paths),
+            'baseline_files': {name: bindings[str(REPO/name)]['sha256'] for name in baseline_names},
+            'runtime_files': {name: bindings[str(REPO/name)]['sha256'] for name in runtime_names},
+            'corpus_files': {name: bindings[str(REPO/name)]['sha256'] for name in corpus_paths},
+            'corpus_inventory_command': corpus_command, 'databases': database_locks}
+selection = {'status': 'provisional_selection_no_full_builder_executed', 'started_at': started,
+             'prepared_at': datetime.now(UTC).isoformat(), 'preparation_baseline': baseline,
+             'initial_author_target': bindings[str((AUTHOR/author_handoff['record']['path']).absolute())],
+             'provisional_corrected_target': bindings[str((CORRECTION/'draft/ethylmalonyl-coa-pathway.yaml').absolute())],
+             'corrected_target_and_parser_final_approval_required': True,
+             'counts': {'manifest_before': len(prior), 'manifest_proposed': len(manifest),
+                        'ontology_before': len(ontology['terms']), 'ontology_additions': len(missing_ont),
+                        'ontology_proposed': len(ontology['terms'])+len(missing_ont),
+                        'sources_before': len(sources['terms']), 'source_additions': len(missing_source),
+                        'sources_proposed': len(sources['terms'])+len(missing_source),
+                        'named_ids': len(named), 'recursive_ontology_ids': len(ont_ids)},
+             'selected_ontology_terms': missing_ont, 'selected_source_terms': missing_source,
+             'selected_new_inputs': new_inputs, 'reused_inputs': reuse,
+             'source_selection_scope': 'Named nodes only; NCBIProtein:ADC44452.1 is reference-only, not a new source term.',
+             'ontology_selection_scope': 'Canonical recursive walk including references; no extra reference-only ontology IDs.',
+             'rhea_decision': rhea_decision,
+             'scientific_scope': 'Technical preparation only; original scientific findings/correction acceptance are separate.',
+             'captured_inputs': list(bindings.values())}
+save('baseline-locks.json', baseline)
+save('sql-label-comparisons.json', sql_comparisons)
+save('source-label-comparisons.json', comparisons)
+save('rhea-update-decision.json', rhea_decision)
+save('manifest-proposed.json', manifest)
+save('copy-mapping-proposed.json', [{'source': e['original_path'], 'destination': e['proposed_cache_destination'],
+                                    'sha256': e['manifest_entry']['sha256'], 'key': e['manifest_entry']['key']}
+                                   for e in new_inputs])
+save('selection-provisional.json', selection)
+print(json.dumps({'counts': selection['counts'], 'additional_rhea_updates': [],
+                  'captured_short_inputs': len(bindings), 'no_full_builder_run': True}, indent=2))

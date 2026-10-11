@@ -65,6 +65,28 @@ guess, replacement-character repair, or ignored-byte decoding. This source kind
 emits the native canonical title and no synonyms; unrelated page prose is not an
 authority label. Other source kinds retain their existing decoders.
 
+The `metacyc-protein-xml` source kind accepts a single native Pathway Tools
+`getxml` response containing one direct, full META `Protein` instance. The
+manifest request, XML base, metadata query and top-level ID/frame/orgid must
+agree. The META PGDB version in the XML must equal the manifest's `version`
+exactly (for example, `27.0`); the separate `ptools-version` software attribute
+does not establish the database release. Original bytes are hashed unchanged
+and parsed according to their declared XML encoding. DTDs and custom entities,
+HTML/login responses, duplicate top-level objects and unresolved names fail.
+
+Only the direct `common-name` supplies the canonical label. Native inline
+presentation markup and character entities are decoded, with no curated-label
+fallback or imported synonyms. Malformed or still-escaped numeric references
+and decoded characters outside the supported XML character ranges are rejected;
+references are not recursively unescaped to guess a label. Nested enzyme,
+component, organism and curator names are not emitted as authority terms.
+Nested unresolved protein references
+do not imply unresolved identity of the full top-level object. This extraction
+establishes identifier/name provenance, not species/strain equivalence,
+assembly, sequence, reaction or experimental function. Conflicting canonical
+names involving an XML source fail before corpus selection, including conflicts
+with a MetaCyc HTML source; existing HTML-only selection behavior is unchanged.
+
 A term with `label_kind: source_context` is an identifier assertion in an
 independent source's cross-reference or local graph, not a canonical name
 assertion by the target namespace. Such a term can only satisfy an explicitly

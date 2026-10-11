@@ -1,0 +1,74 @@
+{
+  "scope": "Explicit106→105author-count reconciliation. No recovered original whole-file bytes claimed.",
+  "previous_reported_edges": 106,
+  "final_edges": 105,
+  "delta": -1,
+  "removed_original_assertion": {
+    "id": "emc-078",
+    "subject": "KEGG:M00373",
+    "predicate": "occurs_in",
+    "object": "NCBITaxon:272943",
+    "description": "Acetate-assimilation evidence is scoped to strain 2.4.1/DSM158 (historically R. sphaeroides). KEGG organism completeness alone is not experimental proof.",
+    "evidence": [
+      {
+        "reference_id": "PMID:20047909",
+        "source_assertion": "R. sphaeroides 2.4.1 (DSM158) was grown with named carbon sources; biochemical and mutant studies establish distinct Mcl1 lyase/condensation and Mcl2 thioesterase roles in acetate assimilation.",
+        "source_locator": "HTML section#sec3; section#sec17; section#sec19; section#sec20"
+      },
+      {
+        "reference_id": "KEGG:M00373",
+        "source_assertion": "The COMPLETE field includes rsp, Cereibacter sphaeroides 2.4.1; this is module annotation, not a strain experiment.",
+        "source_locator": "ENTRY M00373 / COMPLETE rsp"
+      }
+    ]
+  },
+  "surviving_original_call_verbatim": "edge(pid,'occurs_in','NCBITaxon:272943','Acetate-assimilation evidence is scoped to strain 2.4.1/DSM158 (historically R. sphaeroides). KEGG organism completeness alone is not experimental proof.',[ev('PMID:20047909','R. sphaeroides 2.4.1 (DSM158) was grown with named carbon sources; biochemical and mutant studies establish distinct Mcl1 lyase/condensation and Mcl2 thioesterase roles in acetate assimilation.',\"HTML section#sec3; section#sec17; section#sec19; section#sec20\"),ev(pid,'The COMPLETE field includes rsp, Cereibacter sphaeroides 2.4.1; this is module annotation, not a strain experiment.','ENTRY M00373 / COMPLETE rsp')])",
+  "original_attempt_provenance": {
+    "path": "build-draft.py",
+    "failure_log": "logs/replay-author-1.log",
+    "original_full106_yaml_preserved": false,
+    "reason": "Intermediate author YAML was regenerated during normal drafting before first seal. The original assertion call and actual failed schema log survive. No reconstructed YAML is substituted for a byte-preserved original. Source originals and preflight handoffs were never overwritten."
+  },
+  "rationale": "occurs_in requires a cellular-component participant. A taxon is organism scope, not a cellular location. This invalid localization edge was removed; the taxon and all biochemical reactions remain.",
+  "retained_taxon_evidence": {
+    "taxa_field": [
+      {
+        "id": "NCBITaxon:272943",
+        "label": "Cereibacter sphaeroides 2.4.1"
+      }
+    ],
+    "research": "scientific-ledger.json identity_scope; PMID20047909 explicit2.4.1/DSM158 Methods/Results; current issuing taxonomy originals; source-projections/protein-identities.json exact sequence/strain bridges",
+    "references_retained": true,
+    "KGX_taxon_retained": true,
+    "display": "Renderer excludes the unconnected taxon from mechanisticSVG:66declared IDs,65graph nodes. The native taxa field and66-nodeKGX retain it."
+  },
+  "other_corrections": {
+    "consumes": "25input edges reversed to required participant→reaction orientation without changing identities, coefficients, chemistry or counts.",
+    "source_anchors": "Table wrappers corrected to actual HTML sections and secondaryAccessions pointer made conditional; counts unchanged."
+  },
+  "final_predicate_counts": {
+    "part_of": 14,
+    "consumes": 25,
+    "produces": 25,
+    "provides_input_for": 13,
+    "has_part": 4,
+    "catalyzes": 10,
+    "enables": 3,
+    "has_cofactor": 10,
+    "regulates": 1
+  },
+  "unchanged_full_route": {
+    "reactions": 14,
+    "chemical_side_edges": 50,
+    "reaction_membership_edges": 14,
+    "material_flow_edges": 13,
+    "native_complexes": 4,
+    "assembly_edges": 4,
+    "complete_propionyl_branch": true,
+    "terminal_malyl_CoA_hydrolysis": true,
+    "MetaCyc_PWY5741": "Direct adoption held."
+  },
+  "final_record_sha256": "32e4c81cd007744bcd1c5f523922a0a085e658470ba3ce60391c44ee1f84b4ab",
+  "appendix_execution_note": "Initial AST-only extraction failed on the pid name (tool chunk22598e), before writing artifacts. Corrected explicit pid literal handling; no reconstructed draft was created.",
+  "current_runtime_coordination": "Root reported220Calvin commitd622e776a2154d125379d64c9c27c17b5bf67eee; runtime is bound by actual source bytes. Current-main dedup remains integration work."
+}

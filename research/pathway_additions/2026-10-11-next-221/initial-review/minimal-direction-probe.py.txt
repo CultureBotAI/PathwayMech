@@ -1,0 +1,20 @@
+from pathlib import Path
+import datetime, hashlib, json, os, shutil, subprocess
+
+author=Path('/private/tmp/pathwaymech-ethylmalonyl-author-20261011')
+out=Path(__file__).parent
+stage=out/'probes/reversed-direction-minimal'
+shutil.copytree(author,stage,ignore=shutil.ignore_patterns('generated-site','kgx','canonical-gate','logs'))
+record=stage/'draft/ethylmalonyl-coa-pathway.yaml'
+original=record.read_bytes()
+before=b'- id: RHEA:21037\n  label: 2 acetyl-CoA => acetoacetyl-CoA + CoA\n  direction: left_to_right\n'
+after=before.replace(b'left_to_right',b'right_to_left')
+assert original.count(before)==1
+record.write_bytes(original.replace(before,after))
+command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B',str(stage/'replay-author.py')]
+started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+with (stage/'probe.log').open('wb') as log:
+    run=subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTHONPATH':'/private/tmp/pathwaymech-next-220-20261011/src'})
+result={'case':'reversed-direction-minimal','started_at':started,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':command,'exit_code':run.returncode,'record_sha256':hashlib.sha256(record.read_bytes()).hexdigest(),'log':str(stage/'probe.log'),'result':str(stage/'author-checks.json'),'byte_mutation':'Only RHEA:21037 direction line changes left_to_right to right_to_left; every other byte is unchanged.'}
+(out/'minimal-direction-probe.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result,indent=2))

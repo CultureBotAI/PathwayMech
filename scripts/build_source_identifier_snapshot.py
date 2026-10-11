@@ -3,7 +3,8 @@
 
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
-gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html and
+gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,
+metacyc-protein-xml and
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile and metanetx-chemical-html. Source files are
 never generated from curated labels. The corpus only selects which identifiers
@@ -20,10 +21,11 @@ import re
 import tarfile
 from collections.abc import Iterator
 from html import unescape
+from html.entities import name2codepoint
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
-from urllib.parse import urldefrag, urljoin
+from urllib.parse import parse_qsl, unquote, urldefrag, urljoin, urlsplit
 from xml.etree import ElementTree
 
 import yaml
@@ -336,6 +338,161 @@ def metacyc_terms(text: str) -> Iterator[tuple[str, str, list[str]]]:
     yield "MetaCyc:" + identity[1], label, []
 
 
+class _MetaCycProteinTreeBuilder(ElementTree.TreeBuilder):
+    def doctype(self, name: str, pubid: str | None, system: str | None) -> None:
+        # Reject before any entity declarations are processed, including in
+        # UTF-16 documents. Scanning raw ASCII bytes would miss that encoding.
+        raise ValueError("MetaCyc protein XML must not contain a DOCTYPE")
+
+
+def _metacyc_protein_name_character(number: int) -> bool:
+    # Preserve the name lower bound and XML 1.0 ranges after HTML decoding too.
+    return (
+        0x20 <= number <= 0xD7FF
+        or 0xE000 <= number <= 0xFFFD
+        or 0x10000 <= number <= 0x10FFFF
+    )
+
+
+class _MetaCycProteinName(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.parts: list[str] = []
+        self.tags: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag not in {"i", "b", "em", "strong", "sub", "sup"} or attrs:
+            raise ValueError("MetaCyc protein name has unsupported markup")
+        self.tags.append(tag)
+
+    def handle_endtag(self, tag: str) -> None:
+        if not self.tags or self.tags.pop() != tag:
+            raise ValueError("MetaCyc protein name has unbalanced markup")
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        if name not in name2codepoint:
+            raise ValueError("MetaCyc protein name contains an unknown entity")
+        self.parts.append(chr(name2codepoint[name]))
+
+    def handle_charref(self, name: str) -> None:
+        number = int(name[1:], 16) if name.lower().startswith("x") else int(name)
+        if not _metacyc_protein_name_character(number):
+            raise ValueError("MetaCyc protein name contains an invalid character reference")
+        self.parts.append(chr(number))
+
+    def handle_comment(self, data: str) -> None:
+        raise ValueError("MetaCyc protein name contains a comment")
+
+    def handle_decl(self, decl: str) -> None:
+        raise ValueError("MetaCyc protein name contains a declaration")
+
+    def unknown_decl(self, data: str) -> None:
+        raise ValueError("MetaCyc protein name contains an unsupported declaration")
+
+    def handle_pi(self, data: str) -> None:
+        raise ValueError("MetaCyc protein name contains a processing instruction")
+
+
+def _metacyc_protein_request(url: str, *, legacy: bool = False) -> tuple[str, str]:
+    parsed = urlsplit(url)
+    if (
+        any(char.isspace() for char in url)
+        or parsed.scheme not in {"http", "https"}
+        or not parsed.hostname or parsed.username is not None or parsed.password is not None
+        or parsed.port == 0
+        or parsed.path != "/getxml" or parsed.fragment
+    ):
+        raise ValueError("MetaCyc protein source requires a native getxml URL")
+    if legacy and "=" not in parsed.query:
+        query = unquote(parsed.query)
+    else:
+        fields = parse_qsl(parsed.query, keep_blank_values=True, strict_parsing=True)
+        ids = [value for key, value in fields if key == "id"]
+        if (
+            len(ids) != 1 or len(fields) != len(set(fields))
+            or any(key != "id" and (key, value) != ("detail", "full") for key, value in fields)
+        ):
+            raise ValueError("MetaCyc protein URL requires one META frame request")
+        query = ids[0]
+    if not re.fullmatch(r"META:[A-Za-z0-9][A-Za-z0-9_.-]*", query):
+        raise ValueError("MetaCyc protein URL requires one META frame request")
+    return query, parsed.hostname
+
+
+def metacyc_protein_terms(
+    path: Path, *, url: str, version: str,
+) -> list[tuple[str, str, list[str]]]:
+    """Extract one full META Protein; nested names and references are not terms."""
+    requested, host = _metacyc_protein_request(url)
+    root = ElementTree.fromstring(
+        path.read_bytes(), parser=ElementTree.XMLParser(target=_MetaCycProteinTreeBuilder()),
+    )
+    if root.tag != "ptools-xml" or [node.tag for node in root].count("metadata") != 1:
+        raise ValueError("MetaCyc protein source lacks native XML metadata")
+    if len(root) != 2 or len(root.findall("Protein")) != 1:
+        raise ValueError("MetaCyc protein source requires exactly one direct Protein")
+    metadata = root.find("metadata")
+    protein = root.find("Protein")
+    assert metadata is not None and protein is not None  # checked above
+
+    def text(parent: ElementTree.Element, tag: str) -> str:
+        nodes = parent.findall(tag)
+        if len(nodes) != 1 or len(nodes[0]) or not (nodes[0].text or "").strip():
+            raise ValueError(f"MetaCyc protein source requires one nonempty {tag}")
+        return nodes[0].text.strip()
+
+    pgdbs = metadata.findall("PGDB")
+    if (
+        text(metadata, "service_name") != "getxml"
+        or text(metadata, "num_results") != "1"
+        or text(metadata, "query") != requested
+        or len(pgdbs) != 1 or pgdbs[0].get("orgid") != "META"
+        or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)*", version)
+        or pgdbs[0].get("version") != version
+        or text(pgdbs[0], "species") != "MetaCyc"
+    ):
+        raise ValueError("MetaCyc protein query/PGDB identity or native version mismatch")
+    base = root.get("{http://www.w3.org/XML/1998/namespace}base", "")
+    if _metacyc_protein_request(base, legacy=True) != (requested, host):
+        raise ValueError("MetaCyc protein XML base and manifest request disagree")
+    native_url = text(metadata, "url")
+    service_url = urlsplit(native_url)
+    if (
+        any(char.isspace() for char in native_url)
+        or service_url.scheme not in {"http", "https"} or service_url.hostname != host
+        or service_url.username is not None or service_url.password is not None
+        or service_url.port == 0
+        or service_url.query or service_url.fragment or service_url.path not in {"", "/"}
+    ):
+        raise ValueError("MetaCyc protein metadata names a different source service")
+    frame = requested.removeprefix("META:")
+    if (
+        protein.get("ID") != requested or protein.get("frameid") != frame
+        or protein.get("orgid") != "META" or protein.get("detail") != "full"
+        or "resource" in protein.attrib or protein.get("class", "false") != "false"
+    ):
+        raise ValueError("MetaCyc protein source has mismatched or unresolved top-level identity")
+    native_name = text(protein, "common-name")
+    if protein.find("common-name").get("datatype") != "string":
+        raise ValueError("MetaCyc protein common-name must be a native string")
+    name = _MetaCycProteinName()
+    name.feed(native_name)
+    name.close()
+    label = " ".join("".join(name.parts).split())
+    if (
+        name.tags or not label or "<" in label or ">" in label
+        or re.search(r"&(?:#|[A-Za-z][A-Za-z0-9]*;)", label)
+        or any(not _metacyc_protein_name_character(ord(char)) for char in label)
+        or label in {frame, requested, "MetaCyc:" + frame}
+        or label.casefold().startswith(("error", "unknown", "not found"))
+    ):
+        raise ValueError("MetaCyc protein source lacks a resolved native common-name")
+    return [("MetaCyc:" + frame, label, [])]
+
+
 def rhea_component_terms(path: Path) -> Iterator[tuple[str, str, list[str]]]:
     """Read whole generic polypeptides, never their ChEBI reactive parts.
 
@@ -576,7 +733,7 @@ def kegg_terms(text: str, kind: str, url: str) -> list[tuple[str, str, list[str]
 
 
 def source_terms(
-    kind: str, path: Path, *, url: str | None = None,
+    kind: str, path: Path, *, url: str | None = None, version: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
     if kind in {"gocam-tar", "mibig-tar"}:
         parser = gocam_terms if kind == "gocam-tar" else mibig_terms
@@ -600,6 +757,8 @@ def source_terms(
         yield from rhea_component_terms(path)
     elif kind == "metacyc-html":
         yield from metacyc_terms(path.read_bytes().decode("utf-8", errors="surrogateescape"))
+    elif kind == "metacyc-protein-xml":
+        yield from metacyc_protein_terms(path, url=url or "", version=version or "")
     elif kind in KEGG_SOURCE_TYPES:
         yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
     elif kind == "metanetx-chemical-html":
@@ -628,6 +787,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     source_keys: set[str] = set()
     kegg_assertions: dict[str, tuple[str, tuple[str, ...]]] = {}
     metanetx_assertions: dict[str, str] = {}
+    metacyc_names: dict[str, set[str]] = {}
+    metacyc_xml_ids: set[str] = set()
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
@@ -648,7 +809,16 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         metadata["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
-        for identifier, label, synonyms in source_terms(entry["kind"], path, url=entry["url"]):
+        for identifier, label, synonyms in source_terms(
+            entry["kind"], path, url=entry["url"], version=entry["version"],
+        ):
+            if entry["kind"] in {"metacyc-protein-xml", "metacyc-html"}:
+                names = metacyc_names.setdefault(identifier, set())
+                names.add(label)
+                if entry["kind"] == "metacyc-protein-xml":
+                    metacyc_xml_ids.add(identifier)
+                if identifier in metacyc_xml_ids and len(names) != 1:
+                    raise ValueError(f"conflicting MetaCyc protein native names for {identifier}")
             if (identifier.startswith("metanetx.chemical:")
                     and entry["kind"] != "metanetx-chemical-html"):
                 raise ValueError("MetaNetX chemical identifiers require native chemical HTML")

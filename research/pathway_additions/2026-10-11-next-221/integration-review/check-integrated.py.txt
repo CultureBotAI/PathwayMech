@@ -1,0 +1,159 @@
+"""Independent direct HTML/KGX integration audit; no production writes."""
+from pathlib import Path
+from datetime import datetime, timezone
+from urllib.parse import urlsplit, unquote
+import csv
+import hashlib
+import io
+import json
+import re
+import subprocess
+import sys
+
+from lxml import html
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-221-20261011')
+OUT = Path('/private/tmp/pathwaymech-ethylmalonyl-integration-review-20261011')
+BASE = '7b5201e93c0608631af73e629780d829efd26426'
+TARGET = ROOT / 'data/pathways/ethylmalonyl-coa-pathway.yaml'
+PAGE = ROOT / 'pages/records/KEGG_M00373.html'
+
+assert __debug__ and sys.dont_write_bytecode
+captured = {}
+
+
+def read(path):
+    raw = Path(path).read_bytes()
+    captured[str(path)] = hashlib.sha256(raw).hexdigest()
+    return raw
+
+
+def prior(path):
+    return subprocess.check_output(['git', 'show', BASE + ':' + path], cwd=ROOT)
+
+
+def table(raw):
+    values = list(csv.DictReader(io.StringIO(raw.decode()), delimiter='\t'))
+    result = {r['id']: r for r in values}
+    assert len(result) == len(values)
+    return result
+
+
+record_raw = read(TARGET)
+assert hashlib.sha256(record_raw).hexdigest() == '1c58f2d1b27fd7a8a3928971a49311a742e004a1b28f349b9331b8fe0f369912'
+record = yaml.safe_load(record_raw)
+document = html.fromstring(read(PAGE))
+by_id = {e.get('id'): e for e in document.xpath('//*[@id]')}
+assert len(by_id) == len(document.xpath('//*[@id]'))
+fragments = 0
+for a in document.xpath('//a[@href]'):
+    url = urlsplit(a.get('href'))
+    if not url.scheme and not url.netloc:
+        if not url.path:
+            assert unquote(url.fragment) in by_id
+            fragments += 1
+        else:
+            assert (PAGE.parent / unquote(url.path)).resolve().exists(), url.path
+
+svg_nodes = document.xpath("//a[contains(concat(' ',normalize-space(@class),' '),' graph-node ')]")
+svg_edges = document.xpath("//a[contains(concat(' ',normalize-space(@class),' '),' graph-edge ')]")
+assert len(svg_nodes) == 65 and len(svg_edges) == 105
+node_ids = [e.get('data-node-id') for e in svg_nodes]
+assert len(set(node_ids)) == 65
+expected_node_ids = {record['id']} | {n['id'] for group in ('participants','reactions') for n in record[group]}
+assert set(node_ids) == expected_node_ids
+graph_map = {e.get('href'): e for e in svg_edges}
+assert len(graph_map) == 105
+evidence_count = 0
+for index, edge in enumerate(record['mechanistic_edges'], 1):
+    fragment = '#mechanism-edge-' + str(index)
+    graph = graph_map[fragment]
+    assert tuple(graph.get('data-' + k) for k in ('subject','predicate','object')) == tuple(edge[k] for k in ('subject','predicate','object'))
+    row = by_id[fragment[1:]]
+    items = row.xpath('./td[4]/ul/li')
+    assert len(items) == len(edge['evidence'])
+    for evidence, item in zip(edge['evidence'], items, strict=True):
+        content = item.text_content()
+        assert evidence.get('source_assertion', evidence.get('quote')) in content
+        if evidence.get('source_locator'):
+            assert evidence['source_locator'] in content
+        a = item.xpath('./a')[0]
+        assert a.text_content() == evidence['reference_id']
+        assert evidence['reference_id'] in by_id[a.get('href')[1:]].text_content()
+        evidence_count += 1
+assert evidence_count == 155
+
+all_edges = table(read(ROOT / 'pages/downloads/edges.tsv'))
+all_nodes = table(read(ROOT / 'pages/downloads/nodes.tsv'))
+old_edges = table(prior('pages/downloads/edges.tsv'))
+old_nodes = table(prior('pages/downloads/nodes.tsv'))
+assert all(all_edges[k] == value for k, value in old_edges.items())
+references = {r['id']: r for r in record['references']}
+target_edge_ids = set()
+for edge in record['mechanistic_edges']:
+    safe = re.sub(r'[^A-Za-z0-9._-]+', '_', record['id'] + '_' + edge['id']).strip('_')
+    digest = hashlib.sha256((record['id'] + '\0' + edge['id']).encode()).hexdigest()[:12]
+    key = 'pathwaymech:' + safe + '_' + digest
+    target_edge_ids.add(key)
+    actual = all_edges[key]
+    assert actual['subject'] == edge['subject'] and actual['object'] == edge['object']
+    predicates = {'part_of': 'BFO:0000050', 'has_part': 'BFO:0000051',
+                  'provides_input_for': 'RO:0002413'}
+    assert actual['predicate'] == predicates.get(edge['predicate'], 'pathwaymech:' + edge['predicate'])
+    assert actual['description'] == edge.get('description', '')
+    assert json.loads(actual['evidence']) == edge['evidence']
+    refs = sorted({e['reference_id'] for e in edge['evidence']})
+    assert actual['source_records'] == '|'.join(refs)
+    assert json.loads(actual['reference_metadata']) == [references[r] for r in refs]
+assert len(target_edge_ids) == 105
+assert set(all_edges) == set(old_edges) | target_edge_ids
+assert not set(old_edges) & target_edge_ids
+
+contexts = {record['id']: {'record_id': record['id'], 'collection': 'pathway', 'label': record['label']}}
+for group in ('taxa', 'participants', 'reactions'):
+    for node in record[group]:
+        contexts[node['id']] = {'record_id': record['id'], 'collection': group, **node}
+assert len(contexts) == 66 and set(all_nodes) == set(old_nodes) | set(contexts)
+canonical = lambda values: sorted(json.dumps(v, sort_keys=True) for v in values)
+shared_global_changes = []
+for key, actual in all_nodes.items():
+    expected = json.loads(old_nodes.get(key, {}).get('source_contexts','[]'))
+    if key in contexts:
+        expected.append(contexts[key])
+    assert canonical(json.loads(actual['source_contexts'])) == canonical(expected)
+    if key in old_nodes:
+        changes = {k: [old_nodes[key][k], actual[k]] for k in actual if k != 'source_contexts' and old_nodes[key][k] != actual[k]}
+        if key not in contexts:
+            assert changes == {}
+        if changes:
+            shared_global_changes.append({'id': key, 'changes': changes})
+    else:
+        assert actual['name'] == contexts[key]['label']
+
+old_index = json.loads(prior('pages/pathway_index.json'))
+index = json.loads(read(ROOT / 'pages/pathway_index.json'))
+old_records = {r['id']: r for r in old_index['records']}
+indexed_records = {r['id']: r for r in index['records']}
+assert len(old_records) == 221 and len(indexed_records) == 222
+assert all(indexed_records[k] == v for k, v in old_records.items())
+entry = indexed_records[record['id']]
+assert entry['label'] == record['label'] and entry['taxa'] == record['taxa']
+assert entry['reactions'] == [r['id'] for r in record['reactions']]
+assert entry['page'] == 'records/KEGG_M00373.html'
+assert entry['url'] == 'https://culturebotai.github.io/PathwayMech/pages/records/KEGG_M00373.html'
+
+for path, expected in captured.items():
+    assert hashlib.sha256(Path(path).read_bytes()).hexdigest() == expected, path
+result = {'status':'passed', 'at':datetime.now(timezone.utc).isoformat(),
+          'reviewer':'/root/ethylmalonyl_integration_review', 'baseline':BASE,
+          'graph_nodes':65, 'graph_edges':105, 'evidence_items':155,
+          'in_page_links_resolved':fragments, 'kgx_target_nodes':66,
+          'kgx_target_edges':105, 'old_edges_preserved':len(old_edges),
+          'old_node_contexts_preserved':len(old_nodes), 'old_index_entries_preserved':221,
+          'shared_global_changes':shared_global_changes, 'bindings':captured,
+          'script_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+          'scope':'Independent direct parsed HTML, links, graph triples/evidence, record-to-KGX values/context and index audit. No production generation, browser inspection, or fresh scientific source review.'}
+with (OUT/'integrated-outputs.json').open('x') as stream:
+    json.dump(result,stream,indent=2); stream.write('\n')
+print(json.dumps({k:v for k,v in result.items() if k not in {'bindings'}},indent=2))

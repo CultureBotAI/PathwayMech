@@ -1,0 +1,89 @@
+"""Meaningful external author checks; does not claim independent scientific review."""
+from pathlib import Path
+import json,hashlib,sys,re,sqlite3,collections,csv,shutil
+from lxml import html,etree
+import yaml
+A=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-220-20261011');P=Path('/private/tmp/pathwaymech-ethylmalonyl-successor-preflight-20261011');B=Path('/private/tmp/pathwaymech-curation-authorities')
+sys.dont_write_bytecode=True
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import write_kgx,LOCAL_PREDICATE_CURIES
+read=lambda p:json.loads(p.read_text());sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(p,d):p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+p=A/'draft/ethylmalonyl-coa-pathway.yaml';doc=yaml.safe_load(p.read_text());record=validate_record(doc);assert not (errors:=strict_errors([p],A)),errors
+runtime=read(A/'runtime-source-binding.json');assert all(sha(Path(x['path']))==x['sha256'] for x in runtime['files'])
+# Run the actual canonical identifier gate in a throwaway external corpus.
+stage=A/'canonical-gate';(stage/'data/pathways').mkdir(parents=True,exist_ok=True);(stage/'conf').mkdir(exist_ok=True);shutil.copyfile(p,stage/'data/pathways'/p.name);shutil.copyfile(A/'authority-proposal.json',stage/'authority.json')
+ids=[doc,*doc['taxa'],*doc['participants'],*doc['reactions']];prefixes=sorted({n['id'].split(':')[0] for n in ids});policy={'version':1,'namespaces':{x:{'snapshot':'authority.json','policy':'canonical'} for x in prefixes},'contextual_labels':[]};(stage/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(policy,sort_keys=False));assert not (errors:=identifier_errors(stage)),errors
+# Exact complete module boundary: all mandatory groups and 14 reaction rows.
+module=(P/'raw/M00373.txt').read_text();fields={};key=None
+for line in module.splitlines():
+ if not line.strip() or line=='///':continue
+ if line[:12].strip():key=line[:12].strip()
+ fields.setdefault(key,[]).append(line[12:].strip())
+assert ' '.join(fields['DEFINITION'])=='K00626 K00023 K17865 K14446 K14447 K14448 K14449 K08691 K14451 K01965+K01966 K05606 K01847'
+module_reactions=re.findall(r'\bR\d{5}\b',' '.join(fields['REACTION']));coverage=read(A/'source-projections/coverage.json')['reactions'];assert len(module_reactions)==14 and set(module_reactions)=={x['kegg'] for x in coverage};assert {x['id'] for x in doc['reactions']}=={x['rhea_directional'] for x in coverage}
+# Reconstruct each original directional side, coefficient and chemical balance.
+N=read(A/'source-projections/rhea-original-replay.json')['nodes'];rh='http://rdf.rhea-db.org/';chemdb=sqlite3.connect(B.joinpath('chebi.db').resolve().as_uri()+'?mode=ro',uri=True);balances=[];net=collections.Counter();side_count=0
+for r in doc['reactions']:
+ n=N[rh+r['id'].split(':')[1]];assert n['equation']==[r['label']] and n['status']==[rh+'Approved'];bal=collections.Counter()
+ for side,pred,sign in [('substrates','consumes',-1),('products','produces',1)]:
+  expected={}
+  for sid in n[side]:
+   s=N[sid]
+   for pp in s['contains']:
+    coeffs=[int(k[8:]) for k,vals in s.items() if re.fullmatch(r'contains\d+',k) and pp in vals];assert len(coeffs)==1;coef=coeffs[0];c=N[N[pp]['compound'][0]];small=c['accession'][0].startswith('CHEBI:');i=c['accession'][0] if small else 'RHEA-COMP:'+N[pp]['compound'][0].split('Compound_')[1];expected[i]=coef;z=c if small else N[c['reactivePart'][0]];formula=z['formula'][0];charge=int(z['charge'][0])
+    if small:
+     native=dict(chemdb.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('chemrof:generalized_empirical_formula','chemrof:charge')",(i,)));assert native['chemrof:generalized_empirical_formula']==formula and int(native['chemrof:charge'])==charge
+    parts=re.findall(r'([A-Z][a-z]?)(\d*)',formula);assert ''.join(a+b for a,b in parts)==formula
+    for elem,count in parts:bal[elem]+=sign*coef*int(count or 1)
+    bal['charge']+=sign*coef*charge;net[i]+=sign*coef
+  actual={(e['subject'] if pred=='consumes' else e['object']):int(re.search(r'Stoichiometric coefficient (\d+)\.',e['description'])[1]) for e in doc['mechanistic_edges'] if (e['object'] if pred=='consumes' else e['subject'])==r['id'] and e['predicate']==pred};assert expected==actual,(r['id'],side,expected,actual);side_count+=len(actual)
+ residual={k:v for k,v in bal.items() if v};assert not residual;balances.append({'reaction':r['id'],'element_charge_residual':residual})
+assert side_count==50
+assert {i:v for i,v in net.items() if v}==read(P/'assessment.json')['current_chemistry']['formal_net_coefficients']
+# Full source hashes and precise selected evidence anchors.
+bindings=read(A/'source-projections/reference-bindings.json');byref={x['id']:x for x in doc['references']};sourcehashchecks=0;jsonchecks=0;htmlchecks=0;checkedpaths={}
+for rid,b in bindings.items():
+ p=Path(b['path'])
+ if str(p) not in checkedpaths:checkedpaths[str(p)]=sha(p)
+ assert checkedpaths[str(p)]==b['sha256']==byref[rid]['source_sha256'];sourcehashchecks+=1
+for e in doc['mechanistic_edges']:
+ for v in e['evidence']:
+  assert len(v['source_assertion'])<=400 and v['source_locator'];rid=v['reference_id'];p=Path(bindings[rid]['path']);loc=v['source_locator']
+  if rid.startswith('UniProtKB:'):
+   d=read(p)
+   for pointer in re.findall(r'/(?:primaryAccession|organism/taxonId|comments/\d+|secondaryAccessions|sequence)\b',loc):
+    z=d
+    for t in pointer.strip('/').split('/'):z=z[int(t)] if isinstance(z,list) else z[t]
+    jsonchecks+=1
+  if rid.startswith('PMID:') and p.suffix=='.html':
+   d=html.parse(str(p))
+   for selector in re.findall(r'(section|figure|table)#([A-Za-z0-9_-]+)(?:/p\[(\d+)\])?',loc):
+    tag,key,num=selector;nodes=d.xpath('//*[@id=$i]',i=key);assert len(nodes)==1,(rid,selector);assert nodes[0].tag==tag,(rid,selector,nodes[0].tag)
+    if num:assert len(nodes[0].xpath('p'))>=int(num),(rid,selector)
+    htmlchecks+=1
+# Exact Mcd native coding product and full source strain qualifier, distinct from current extension.
+up=read(A/'raw/D3JV03.json');other=read(A/'raw/Q3J5V7.json');x=etree.parse(str(A/'raw/ncbi-final-proteins.xml')).xpath('//GBSeq[GBSeq_accession-version="ADC44452.1"]')[0];seq=x.findtext('GBSeq_sequence').upper();assert seq==up['sequence']['value']==other['sequence']['value'][7:];assert len(seq)==548 and len(other['sequence']['value'])==555
+assert x.xpath('.//GBFeature[GBFeature_key="source"]//GBQualifier[GBQualifier_name="strain"]/GBQualifier_value/text()')==['2.4.1'];assert up['organism']['taxonId']==1063
+# Deliberate exclusions and source disagreements remain explicit, not silently reconciled.
+node_ids={x['id'] for x in ids};assert 'MetaCyc:PWY-5741' not in node_ids and not doc.get('source_mappings');assert 'UniProtKB:Q3J5V7' not in node_ids;assert 'UniProtKB:Q3IZW0' not in node_ids and 'UniProtKB:Q3J425' not in node_ids
+assert {'RHEA:38292','RHEA:23721','RHEA:20555','RHEA:22889'}<={x['id'] for x in doc['reactions']};assert {'RHEA-COMP:10685','RHEA-COMP:10686'}<=node_ids
+for x in read(A/'source-projections/assemblies.json')['assemblies']:
+ root=etree.parse(x['path']);parts=root.xpath('/ptools-xml/Protein/component[Protein/@frameid=$m]/coefficient/text()',m=x['component']);assert parts==[str(x['copies'])];assert any(e['subject']==x['id'] and e['predicate']=='has_part' and e['object']==x['selected_protein'] for e in doc['mechanistic_edges'])
+# Generated page and KGX preserve every edge/evidence item and all declared nodes.
+files=render_site([record],{record.id:'data/pathways/ethylmalonyl-coa-pathway.yaml'});site=A/'generated-site';site.mkdir(exist_ok=True)
+for name,text in files.items():
+ out=site/name;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(text)
+shutil.copyfile(R/'pages/style.css',site/'style.css')
+record_pages=[n for n in files if n.startswith('records/')];assert len(record_pages)==1;page=html.fromstring(files[record_pages[0]]);graph_edges=page.xpath('//*[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]');graph_nodes=page.xpath('//*[@data-node-id]');assert len(graph_edges)==len(doc['mechanistic_edges'])==105;assert {x.get('data-node-id') for x in graph_nodes}==node_ids-{'NCBITaxon:272943'}
+write_kgx([record],A/'kgx');rows=list(csv.DictReader((A/'kgx/edges.tsv').open(),delimiter='\t'));assert len(rows)==105
+for inp,out in zip(doc['mechanistic_edges'],rows,strict=True):
+ assert (inp['subject'],LOCAL_PREDICATE_CURIES[inp['predicate']],inp['object'])==(out['subject'],out['predicate'],out['object'])
+ assert json.loads(out['evidence'])==inp['evidence']
+ assert {x['id']:x for x in json.loads(out['reference_metadata'])}=={v['reference_id']:byref[v['reference_id']] for v in inp['evidence']}
+result={'status':'Author checks passed; independent adversarial scientific review remains required.','record_sha256':sha(A/'draft/ethylmalonyl-coa-pathway.yaml'),'runtime_source_binding_sha256':sha(A/'runtime-source-binding.json'),'source_byte_binding_count':len(runtime['files']),'schema':'local and closed LinkML passed','proposal_canonical_identifier_gate':'passed in external staging with all 66 IDs extracted independently; canonical policy and no contextual exemptions. Maintained production rebuild remains pending native Protein XML source-kind support.','module_definition':'exact 12 required groups /13 KOs /14 reaction rows; no alternatives omitted','chemical_sides':side_count,'balances':balances,'formal_net_coefficients':{i:v for i,v in net.items() if v},'balance_scope':'ETF reactive FAD/FADH2 moiety balance with unchanged scaffold cancellation, not a whole-protein formula or two-ETF semiquinone microscopic mechanism','references_rehashed':sourcehashchecks,'json_anchors_checked':jsonchecks,'primary_html_anchors_checked':htmlchecks,'page_graph':{'nodes':len(graph_nodes),'edges':len(graph_edges),'visual_inspection':False},'kgx_edges':len(rows),'kgx_evidence_and_reference_metadata':'Every edge item and full cited reference metadata round-tripped exactly','not_run':'No maintained full-corpus render/validate/test/lint, history write, Git action or independent review. These remain integration work after root review.'}
+dump(A/'author-checks.json',result);print(json.dumps(result,indent=2))
