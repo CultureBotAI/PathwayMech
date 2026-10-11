@@ -1,0 +1,461 @@
+{
+  "finished_at": "2026-10-11T02:33:08.875004+00:00",
+  "status": "author_checks_passed",
+  "target": "data/pathways/nicotine-degradation-ii.yaml",
+  "target_sha256": "59d1a699b4e40ce680715afa958f8a659feae11b6b1786a5867f25733b83d36c",
+  "replay": {
+    "command": ".venv/bin/python research/pathway_additions/2026-10-11-nicotine-next/nicotine-replay.py",
+    "exit_code": 0,
+    "session_id": 89156,
+    "script_sha256": "6a0dfb06f2bc804b85ab3c904d78f2e54af71cb9ba87c30ba71b1d137e3a3fa2",
+    "log_path": "/private/tmp/pathwaymech-nicotine-next-evidence/nicotine/replay-final.log",
+    "log_sha256": "5938ecacab7d40592e81fae704442f4246be5733843cd8fa43fa582deaba5e9b",
+    "result": {
+      "started_at": "2026-10-11T02:32:18.217102+00:00",
+      "finished_at": "2026-10-11T02:32:48.754989+00:00",
+      "status": "passed",
+      "target": "data/pathways/nicotine-degradation-ii.yaml",
+      "target_sha256": "59d1a699b4e40ce680715afa958f8a659feae11b6b1786a5867f25733b83d36c",
+      "source_count": 60,
+      "all_source_hashes_match": true,
+      "participants": 45,
+      "reactions": 11,
+      "edges": 99,
+      "evidence": 169,
+      "rhea_families": 10,
+      "raw_rhea_sides": 50,
+      "native_spm_sides": 5,
+      "chemical_edges": 55,
+      "exact_balance_count": 10,
+      "generic_spm_balance": "formal paired A/AH2 only; carrier identity unresolved",
+      "native_order_edges": 10,
+      "cycN_sequence_bridge": "RefSeq full132aa identical; S16 PDB7TLX mature105aa = UniProt28-132",
+      "nic2_deposit_sequence_matches": 4,
+      "schema": "native and closed LinkML passed",
+      "kgx_edges": 99,
+      "kgx_hashes": {
+        "edges.tsv": "8cdb2dadffb4e34e203b1799e0e7d536bbc4dacd62f262553ba19c7d02e02acf",
+        "nodes.tsv": "d63398541ba55a218b5729839ad6150991457c151c8e2288b1f823f097099637"
+      },
+      "source_projection_sha256": "cebf701d6f9c8108e29f799253459284ce84b8c06c500964b10a26b82c9890ef",
+      "source_manifest_sha256": "ef5d887bb469114c8438f61c9a3ba73c77eb6cc22ef62e2bc6011e3497150c8e"
+    }
+  },
+  "additional_checks": {
+    "finished_at": "2026-10-11T02:32:40.305895+00:00",
+    "diff_check": {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "data/pathways/nicotine-degradation-ii.yaml",
+        "research/pathway_additions/2026-10-11-nicotine-next/nicotine-curation.md",
+        "research/pathway_additions/2026-10-11-nicotine-next/nicotine-dedup.json",
+        "research/pathway_additions/2026-10-11-nicotine-next/nicotine-identifiers.json",
+        "research/pathway_additions/2026-10-11-nicotine-next/nicotine-replay.py",
+        "research/pathway_additions/2026-10-11-nicotine-next/nicotine-source-manifest.json",
+        "research/pathway_additions/2026-10-11-nicotine-next/nicotine-source-projection.json"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    "lint": [
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "/private/tmp/pathwaymech-nicotine-next-20261011/research/pathway_additions/2026-10-11-nicotine-next/nicotine-replay.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": "",
+        "finished_at": "2026-10-11T02:32:40.223491+00:00"
+      },
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "format",
+          "--check",
+          "/private/tmp/pathwaymech-nicotine-next-20261011/research/pathway_additions/2026-10-11-nicotine-next/nicotine-replay.py"
+        ],
+        "exit_code": 0,
+        "stdout": "1 file already formatted\n",
+        "stderr": "",
+        "finished_at": "2026-10-11T02:32:40.287787+00:00"
+      }
+    ],
+    "sensitive_metadata_key_scan": {
+      "files": [
+        "nicotine-dedup.json",
+        "nicotine-identifiers.json",
+        "nicotine-source-manifest.json",
+        "nicotine-source-projection.json"
+      ],
+      "matches": []
+    }
+  },
+  "issue_dispositions": [
+    {
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/341",
+      "observed_at": "2026-10-11T02:28:52.586373+00:00",
+      "before_sha256": "9ce8615af5768df3055df926fde6b65d1fee0104b12f8d26ea5b5bbc947a2830",
+      "after_sha256": "559e7e393e76873e8b86e4bb14aa228208e4ec6ffda1bfb43dd147ff73d45aed",
+      "finding": "Retired CHEBI193521 was declared in an active source_mappings subject slot, which the canonical ontology builder resolves; the builder correctly rejected it.",
+      "fix": "Remove the retired identifier from active source_mappings. Active participant CHEBI190393 and two exact edge provenance statements remain; historical mapping remains in the source projection and dossier.",
+      "removed_active_mapping": [
+        {
+          "subject_id": "CHEBI:193521",
+          "subject_label": "N-methylmyosmine",
+          "predicate_id": "skos:exactMatch",
+          "object_id": "CHEBI:190393",
+          "object_label": "N-methylmyosmine",
+          "mapping_justification": "semapv:ManualMappingCuration",
+          "confidence": "1.0",
+          "source_pathway_id": "MetaCyc:PWY-6993",
+          "source_element_id": "Rhea142 Compound_18516; ChEBI255 IAO:0100001 and hasAlternativeId"
+        }
+      ],
+      "target": "data/pathways/nicotine-degradation-ii.yaml"
+    },
+    {
+      "issue": "https://github.com/CultureBotAI/PathwayMech/issues/343",
+      "prepared_at": "2026-10-11T02:32:06.868531+00:00",
+      "before_sha256": "559e7e393e76873e8b86e4bb14aa228208e4ec6ffda1bfb43dd147ff73d45aed",
+      "after_sha256": "59d1a699b4e40ce680715afa958f8a659feae11b6b1786a5867f25733b83d36c",
+      "finding": "Native complex comment over-attribution and pathway-order ChEBI attribution lacking source-local support.",
+      "fix": "CPLX8439 evidence now points to actual native catalyzes reaction link; every pathway ordering edge separately cites the exact upstream/downstream chemical sides and active chemical replacement where needed.",
+      "changes": [
+        {
+          "edge": "nic-edge-062",
+          "before": {
+            "reference_id": "MetaCyc:CPLX-8439",
+            "source_assertion": "The native S16 enzyme description reports the complete biochemical reaction and homodimeric assembly.",
+            "source_locator": "Protein[@frameid='CPLX-8439']/comment; component; species"
+          },
+          "after": {
+            "reference_id": "MetaCyc:CPLX-8439",
+            "source_assertion": "The native S16 frame reports a homodimer and links CPLX-8439 through ENZRXN-20030 to RXN-13081; the normalized equation is supported separately by current UniProt and Rhea.",
+            "source_locator": "Protein[@frameid='CPLX-8439']/component; species; comment; catalyzes/Enzymatic-Reaction[@frameid='ENZRXN-20030']/reaction/Reaction[@frameid='RXN-13081']"
+          }
+        },
+        {
+          "edge": "nic-edge-082",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13076 to RXN-13077; the retained shared carbon intermediate is CHEBI:193521.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13077']/predecessor-reactions/Reaction[@frameid='RXN-13076']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13076 before RXN-13077 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13077']/predecessor-reactions/Reaction[@frameid='RXN-13076']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:73656",
+              "source_assertion": "RHEA:73656 products contain CHEBI:193521 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/73656']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/73655_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_73655_compound_18516']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_73655_compound_18516']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_18516']/rh:accession"
+            },
+            {
+              "reference_id": "CHEBI:190393",
+              "source_assertion": "ChEBI193521 is deprecated and explicitly replaced by CHEBI190393;190393 retains193521 as an alternative ID and has the same C10H13N2 formula and +1 charge.",
+              "source_locator": "statements[subject=CHEBI:193521,predicate=IAO:0100001,object=CHEBI:190393]; statements[subject=CHEBI:190393,predicate=oio:hasAlternativeId,value=CHEBI:193521]; chemrof formula/charge"
+            },
+            {
+              "reference_id": "RHEA:75416",
+              "source_assertion": "RHEA:75416 substrates contain CHEBI:193521 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/75416']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/75415_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_75415_compound_18516']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_75415_compound_18516']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_18516']/rh:accession"
+            },
+            {
+              "reference_id": "CHEBI:190393",
+              "source_assertion": "ChEBI193521 is deprecated and explicitly replaced by CHEBI190393;190393 retains193521 as an alternative ID and has the same C10H13N2 formula and +1 charge.",
+              "source_locator": "statements[subject=CHEBI:193521,predicate=IAO:0100001,object=CHEBI:190393]; statements[subject=CHEBI:190393,predicate=oio:hasAlternativeId,value=CHEBI:193521]; chemrof formula/charge"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:190393"
+        },
+        {
+          "edge": "nic-edge-083",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13077 to RXN-13088; the retained shared carbon intermediate is CHEBI:66878.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13088']/predecessor-reactions/Reaction[@frameid='RXN-13077']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13077 before RXN-13088 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13088']/predecessor-reactions/Reaction[@frameid='RXN-13077']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:75416",
+              "source_assertion": "RHEA:75416 products contain CHEBI:66878 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/75416']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/75415_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_75415_compound_7380']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_75415_compound_7380']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_7380']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:75352",
+              "source_assertion": "RHEA:75352 substrates contain CHEBI:66878 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/75352']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/75351_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_75351_compound_7380']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_75351_compound_7380']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_7380']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:66878"
+        },
+        {
+          "edge": "nic-edge-084",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13088 to RXN-13089; the retained shared carbon intermediate is CHEBI:66879.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13089']/predecessor-reactions/Reaction[@frameid='RXN-13088']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13088 before RXN-13089 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13089']/predecessor-reactions/Reaction[@frameid='RXN-13088']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:75352",
+              "source_assertion": "RHEA:75352 products contain CHEBI:66879 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/75352']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/75351_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_75351_compound_7379']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_75351_compound_7379']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_7379']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:34216",
+              "source_assertion": "RHEA:34216 substrates contain CHEBI:66879 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/34216']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34215_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34215_compound_7379']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_34215_compound_7379']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_7379']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:66879"
+        },
+        {
+          "edge": "nic-edge-085",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13089 to RXN-13082; the retained shared carbon intermediate is CHEBI:66942.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13082']/predecessor-reactions/Reaction[@frameid='RXN-13089']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13089 before RXN-13082 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13082']/predecessor-reactions/Reaction[@frameid='RXN-13089']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:34216",
+              "source_assertion": "RHEA:34216 products contain CHEBI:66942 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/34216']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34215_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34215_compound_7458']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_34215_compound_7458']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_7458']/rh:accession"
+            },
+            {
+              "reference_id": "MetaCyc:RXN-13082",
+              "source_assertion": "Native left participant CPD-14094 has coefficient 1 in Spm hydroxylation.",
+              "source_locator": "Reaction[@frameid='RXN-13082']/left/Compound[@frameid='CPD-14094']; ../coefficient (omitted coefficient denotes one)"
+            },
+            {
+              "reference_id": "MetaCyc:CPD-14094",
+              "source_assertion": "The native compound cross-reference is CHEBI:66942; its displayed role is retained without assigning a physiological Spm electron-acceptor species.",
+              "source_locator": "Compound[@frameid='CPD-14094']/dblink[dblink-db='CHEBI']/dblink-oid; common-name"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:66942"
+        },
+        {
+          "edge": "nic-edge-086",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13082 to RXN-13081; the retained shared carbon intermediate is CHEBI:66893.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13081']/predecessor-reactions/Reaction[@frameid='RXN-13082']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13082 before RXN-13081 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-13081']/predecessor-reactions/Reaction[@frameid='RXN-13082']; reaction-layout"
+            },
+            {
+              "reference_id": "MetaCyc:RXN-13082",
+              "source_assertion": "Native right participant CPD-14096 has coefficient 1 in Spm hydroxylation.",
+              "source_locator": "Reaction[@frameid='RXN-13082']/right/Compound[@frameid='CPD-14096']; ../coefficient (omitted coefficient denotes one)"
+            },
+            {
+              "reference_id": "MetaCyc:CPD-14096",
+              "source_assertion": "The native compound cross-reference is CHEBI:66893; its displayed role is retained without assigning a physiological Spm electron-acceptor species.",
+              "source_locator": "Compound[@frameid='CPD-14096']/dblink[dblink-db='CHEBI']/dblink-oid; common-name"
+            },
+            {
+              "reference_id": "RHEA:33928",
+              "source_assertion": "RHEA:33928 substrates contain CHEBI:66893 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/33928']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/33927_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_33927_compound_7386']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_33927_compound_7386']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_7386']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:66893"
+        },
+        {
+          "edge": "nic-edge-087",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13081 to 1.13.11.9-RXN; the retained shared carbon intermediate is CHEBI:16364.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='1.13.11.9-RXN']/predecessor-reactions/Reaction[@frameid='RXN-13081']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13081 before 1.13.11.9-RXN and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='1.13.11.9-RXN']/predecessor-reactions/Reaction[@frameid='RXN-13081']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:33928",
+              "source_assertion": "RHEA:33928 products contain CHEBI:16364 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/33928']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/33927_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_33927_compound_3377']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_33927_compound_3377']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_3377']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:27523",
+              "source_assertion": "RHEA:27523 substrates contain CHEBI:16364 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/27523']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27522_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27522_compound_3377']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_27522_compound_3377']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_3377']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:16364"
+        },
+        {
+          "edge": "nic-edge-088",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links 1.13.11.9-RXN to RXN-11318; the retained shared carbon intermediate is CHEBI:59911.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-11318']/predecessor-reactions/Reaction[@frameid='1.13.11.9-RXN']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders 1.13.11.9-RXN before RXN-11318 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-11318']/predecessor-reactions/Reaction[@frameid='1.13.11.9-RXN']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:27523",
+              "source_assertion": "RHEA:27523 products contain CHEBI:59911 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/27523']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27522_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27522_compound_6228']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_27522_compound_6228']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_6228']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:30844",
+              "source_assertion": "RHEA:30844 substrates contain CHEBI:59911 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/30844']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/30843_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_30843_compound_6228']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_30843_compound_6228']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_6228']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:59911"
+        },
+        {
+          "edge": "nic-edge-089",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-11318 to RXN-646; the retained shared carbon intermediate is CHEBI:16146.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-646']/predecessor-reactions/Reaction[@frameid='RXN-11318']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-11318 before RXN-646 and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='RXN-646']/predecessor-reactions/Reaction[@frameid='RXN-11318']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:30844",
+              "source_assertion": "RHEA:30844 products contain CHEBI:16146 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/30844']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/30843_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_30843_compound_3670']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_30843_compound_3670']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_3670']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:27386",
+              "source_assertion": "RHEA:27386 substrates contain CHEBI:16146 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/27386']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27385_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27385_compound_3670']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_27385_compound_3670']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_3670']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:16146"
+        },
+        {
+          "edge": "nic-edge-090",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-646 to MALEATE-ISOMERASE-RXN; the retained shared carbon intermediate is CHEBI:30780.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='MALEATE-ISOMERASE-RXN']/predecessor-reactions/Reaction[@frameid='RXN-646']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-646 before MALEATE-ISOMERASE-RXN and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='MALEATE-ISOMERASE-RXN']/predecessor-reactions/Reaction[@frameid='RXN-646']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:27386",
+              "source_assertion": "RHEA:27386 products contain CHEBI:30780 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/27386']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27385_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27385_compound_2303']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_27385_compound_2303']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_2303']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:13170",
+              "source_assertion": "RHEA:13170 substrates contain CHEBI:30780 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/13170']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13169_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13169_compound_2303']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_13169_compound_2303']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_2303']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:30780"
+        },
+        {
+          "edge": "nic-edge-091",
+          "before": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "Native order links RXN-13081 to SUCCSEMIALDDEHYDROG-RXN; the retained shared carbon intermediate is CHEBI:57706.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='SUCCSEMIALDDEHYDROG-RXN']/predecessor-reactions/Reaction[@frameid='RXN-13081']; reaction-layout"
+            }
+          ],
+          "after": [
+            {
+              "reference_id": "MetaCyc:PWY-6993",
+              "source_assertion": "The native pathway orders RXN-13081 before SUCCSEMIALDDEHYDROG-RXN and supplies the corresponding native compound layout; current chemical identity is supported separately by the reaction-side evidence.",
+              "source_locator": "Pathway[@frameid='PWY-6993']/reaction-ordering[Reaction/@frameid='SUCCSEMIALDDEHYDROG-RXN']/predecessor-reactions/Reaction[@frameid='RXN-13081']; reaction-layout"
+            },
+            {
+              "reference_id": "RHEA:33928",
+              "source_assertion": "RHEA:33928 products contain CHEBI:57706 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/33928']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/33927_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_33927_compound_4279']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_33927_compound_4279']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_4279']/rh:accession"
+            },
+            {
+              "reference_id": "RHEA:13214",
+              "source_assertion": "RHEA:13214 substrates contain CHEBI:57706 with coefficient 1. Whole cytochrome states are retained when the participant is generic protein.",
+              "source_locator": "rdf:Description[@rdf:about='http://rdf.rhea-db.org/13214']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/13213_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_13213_compound_4279']; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Participant_13213_compound_4279']/rh:compound; rdf:Description[@rdf:about='http://rdf.rhea-db.org/Compound_4279']/rh:accession"
+            }
+          ],
+          "retained_current_intermediate": "CHEBI:57706"
+        }
+      ],
+      "applied_at": "2026-10-11T02:32:17.862914+00:00"
+    }
+  ],
+  "owned_input_hashes": {
+    "research/pathway_additions/2026-10-11-nicotine-next/nicotine-curation.md": "be6957d2cac147d69c6b7e28a7d6517accf44a56d56eb6ef3b2ba787d0c4b573",
+    "research/pathway_additions/2026-10-11-nicotine-next/nicotine-dedup.json": "6dd44a402448c043afc927238db057d3408bebca4fc6f8250364e1a08efd6997",
+    "research/pathway_additions/2026-10-11-nicotine-next/nicotine-identifiers.json": "1afbbaf8552593d4e5f2e4240383d7bbcba5d367ae805d7dd93d69f82f2df43c",
+    "research/pathway_additions/2026-10-11-nicotine-next/nicotine-replay.py": "6a0dfb06f2bc804b85ab3c904d78f2e54af71cb9ba87c30ba71b1d137e3a3fa2",
+    "research/pathway_additions/2026-10-11-nicotine-next/nicotine-source-manifest.json": "ef5d887bb469114c8438f61c9a3ba73c77eb6cc22ef62e2bc6011e3497150c8e",
+    "research/pathway_additions/2026-10-11-nicotine-next/nicotine-source-projection.json": "cebf701d6f9c8108e29f799253459284ce84b8c06c500964b10a26b82c9890ef"
+  },
+  "full_corpus_gates": "Delegated to coordinator; author does not attest their completion here. Independent scientific review is separate.",
+  "limitations": [
+    "Native NADP aldehyde and succinate-semialdehyde reactions retained without an exact S16 catalyst assertion.",
+    "Spm physiological electron acceptor and CycN reoxidation unresolved; generic formal Spm A/AH2 balance only.",
+    "Current unreviewed lower-pathway/CycN accessions are grounded to exact primary sequence deposits/structural source, not promoted to reviewed entries.",
+    "Native Spm component stoichiometry and proposed Mo-MCD are not purified measurements; predicted periplasmic localization remains predicted."
+  ]
+}
