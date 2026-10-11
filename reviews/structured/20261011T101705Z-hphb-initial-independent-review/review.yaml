@@ -1,0 +1,568 @@
+schema_version: 1.0.0
+review_id: 20261011T101705Z-hphb-initial-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Independent HP/HB review: primary metadata and terminal-module citations'
+started_at: '2026-10-11T10:07:12.373572Z'
+finished_at: '2026-10-11T10:17:05Z'
+reviewer:
+  identity: Codex independent reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Did not author HP/HB target or author dossiers. Authored the
+    separate Chloroflexus first-cycle record and discussed common chemistry/source
+    facts; those contributions are disclosed and do not substitute for independent
+    HP/HB original-source inspection.
+skill: review-yaml-record
+completion: completed
+verdict: needs_curation
+scientific_review: true
+summary: 'The complete archaeal cycle, exact native boundary, balanced current chemistry
+  and qualified protein/assembly scope are supported. Two minor provenance defects
+  require correction: one contaminated article title and three terminal-module source
+  locators. This immutable initial observation precedes any fixes.'
+source:
+  git_revision: a3a31179b0533cacbf59559a3151c8ebcaac4f97
+  state: working_tree
+  inputs:
+  - path: data/identifier_authorities/ontology.json
+    sha256: 62778b0fc25173af80c79041830e7fd04f34025aa782cd1f072e37aabb14cc48
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 18ae3d0007bd2e12d8848689791001efd6582541b2e8d395af585cb37f1c8a42
+    role: context
+  - path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    sha256: 4064577a2f20c35cefbc838b5065f053c4cfe175ef113b6b782d3f712cfcd823
+    role: target
+  - path: research/pathway_additions/2026-10-11-next-206/baseline-preservation.json
+    sha256: 44556ae48ceb5ee66d0115814f0978bb0956e1b8e6cb9ae05a3b68af02a84f77
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/generated-graph-kgx-audit.json
+    sha256: ee045b6ec5256ce52b6d99bb93f38bf814328fee5c62208f55d5389885e4c0c0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/hphb-curation.md
+    sha256: 7e535a19be9713fd4dc0a4ddc6f4d4689a76900a4a75def7bcf5f07e92627c59
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/hphb-initial-independent-review-audit.json
+    sha256: dc67520d6b5ab6dd401d6d74c7a71724a4adfdc1abf4e3e795060d3cd90fbd41
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/hphb-source-manifest.json
+    sha256: ed3e9fce5f63c3101415d717e7e31a6d6f242d62eaafe77bb203837f3cac8e8b
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/hphb-source-projection.json
+    sha256: 9c117990d795fd38823ccfefe0c32beda32174f51465e817cd20b28c1cc892f8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/hphb-validation.json
+    sha256: 6654b7fd867b62f7b083baa25c4372f24194dc728911b2e02c180aaeb3f9cf7e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/imodulondb-applicability.json
+    sha256: dc02de15ecea776c0b50e1a02e4f39eea82e8c87c95d0e2d246c0651005d7433
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/imodulondb-dataset-inventory.json
+    sha256: d84677b8bd4bcb4114f4ae918186f28fe5faceba702fc195e62296f259c42fce
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/imodulondb-offline-replay.json
+    sha256: 5bc6ed355358b6c9c83c754e9037fa0e876ea2b6e4909c0c08ba3c2a13b9f2c0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-206/initial-integration-receipt.json
+    sha256: 73fcb487b20ac73e5459105e218abdd3de36befb503adeee5522e375ae9469ff
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: f006e5b99cedd91b57a2c5fb938315a84b68822586d1602d4df9ccfdc851e98c
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: ffa1107da83c8ff173833662e78ba73c779bbab9f2da33cea993b614e99d6345
+    role: context
+targets:
+- target_id: MetaCyc:PWY-5789
+  path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+  label: 3-hydroxypropanoate/4-hydroxybutanate cycle
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway
+scope:
+  description: Independent complete scientific review of the frozen HP/HB target,
+    every edge and original source metadata, with separately verified source replay
+    and actual exported evidence.
+  selection: Exact target SHA256 4064577a2f20c35cefbc838b5065f053c4cfe175ef113b6b782d3f712cfcd823
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5789
+  exclusions:
+  - target: Other two cohort pathway records
+    reason: Different scientific review ownership; authored first-cycle science is
+      explicitly excluded from self-review.
+  - target: New laboratory replication and unspecified organism generalization
+    reason: Evidence review only; exact source strain/preparation and recorded scientific
+      limitations remain.
+checks:
+- check_id: inspect
+  name: Canonical pre-assessment inspection
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py inspect --targets
+    /private/tmp/pathwaymech-next-206-hphb-independent-review/targets.yaml with explicit
+    authority, schema and author input paths
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Actual inspect captured target 4064577a and frozen source inputs before
+    assessment; pre-save inspection captures added review and coordinated gate inputs.
+- check_id: independent-original-replay
+  name: Independent original-source replay
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-206-hphb-independent-review/replay.py
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Session 35184 completed original RDF, formula/charge, native membership,
+    three full CDS, source hash, metadata and locator checks. Reviewer-only parser
+    corrections and their initial failures are retained in the audit.
+- check_id: actual-kgx
+  name: Independent actual KGX and schema projection
+  command: PYTHONPATH=src .venv/bin/python independent inline schema/render_kgx check
+    retained in independent-kgx.json
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Session 80742 terminal 0; actual 87-node/164-edge/291-evidence projection
+    and native/closed schema pass.
+- check_id: diff
+  name: Read-only whitespace check
+  command: git diff --check
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Actual independent read-only command exited 0.
+- check_id: coordinated-render
+  name: Coordinated render
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just render-pages
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-render.log
+    SHA256 395e49f0cf6605d21489d6cee71983c6cb09927bfcb0f50067bbe5f0fa0b2af0; completed
+    2026-10-11T10:07:47.270036+00:00. Independently read and rehashed.
+- check_id: coordinated-validate
+  name: Coordinated validate
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just validate
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-validate.log
+    SHA256 3d889a21f801c2ad9b799ddb5245c7a63b2f5d2c0844abc355dd6645775e9c2e; completed
+    2026-10-11T10:09:41.597179+00:00. Independently read and rehashed.
+- check_id: coordinated-test
+  name: Coordinated test
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just test
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-test.log
+    SHA256 b5e36c36a6b3294a8f5c70704a22e9cb1478eb276ed21be12a97c2f14f76ff6b; completed
+    2026-10-11T10:14:35.303321+00:00. Independently read and rehashed.
+- check_id: coordinated-lint
+  name: Coordinated lint
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just lint
+  status: passed
+  required: true
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-lint.log
+    SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41; completed
+    2026-10-11T10:07:47.533334+00:00. Independently read and rehashed.
+- check_id: coordinated-identifiers
+  name: Coordinated identifiers
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just check-identifiers
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-identifiers.log
+    SHA256 4ad4b68a4c7d4eae12aa19f78ac3f098726216950ec9ec0e937e24fe21b759ea; completed
+    2026-10-11T10:08:02.234762+00:00. Independently read and rehashed.
+- check_id: coordinated-kgx
+  name: Coordinated kgx
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    just kgx-export --output-dir /private/tmp/pathwaymech-next-206-kgx
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-kgx.log
+    SHA256 fda40ce2b6193e1033be7645e4ee257252e165623848d880b758fdeac4550177; completed
+    2026-10-11T10:08:15.781541+00:00. Independently read and rehashed.
+- check_id: coordinated-diff
+  name: Coordinated diff
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    git diff --check
+  status: passed
+  required: false
+  exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-5789
+  summary: Root-coordinated original observation, exact retained log /private/tmp/pathwaymech-next-206-verification-publication-diff.log
+    SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; completed
+    2026-10-11T10:08:16.118172+00:00. Independently read and rehashed.
+evidence:
+- evidence_id: e-target
+  kind: record_content
+  reference: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+  locator: Complete record, all 164 edges and 109 references
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: partial
+  summary: The complete 68-participant, 17-reaction record was independently read.
+    Two bounded provenance findings remain open; the full cycle and explicit scientific
+    limitations are otherwise supported.
+  snapshot_sha256: 4064577a2f20c35cefbc838b5065f053c4cfe175ef113b6b782d3f712cfcd823
+- evidence_id: e-audit
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-206/hphb-initial-independent-review-audit.json
+  locator: independent_checks; actual_kgx; primary_assertion_checks; findings
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: Independent source replay verified 129 original bodies, 109 reference digests,
+    78 Rhea sides, 17 directions and atom/charge balances, 18 native members, 144
+    native XPath selections, 21 exact-taxon proteins and three original CDS translations.
+    Separate actual KGX preserved 87 nodes, 164 edges and all 291 evidence blocks.
+  snapshot_sha256: dc67520d6b5ab6dd401d6d74c7a71724a4adfdc1abf4e3e795060d3cd90fbd41
+- evidence_id: e-native
+  kind: database
+  reference: https://pathway.yeastgenome.org/getxml?META:PWY-5789
+  locator: /ptools-xml/Pathway/reaction-list; reaction-layout; comment
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: The complete native 18-object cycle is accounted for. Two acetyl-CoA carboxylase
+    half-reactions are represented by independently issued net RHEA:11309; auxiliary
+    carbon dioxide hydration is retained without an invented catalyst.
+  snapshot_sha256: 134f07865db2c2e86fcddf093a2e1cc1188f91a6a1f54a004d328efa52c5ab54
+- evidence_id: e-title
+  kind: primary_source
+  reference: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7078158/fullTextXML
+  locator: /article/front/article-meta/title-group/article-title versus //article-title
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: refutes
+  summary: The sole front article title is a single article title; the target title
+    is 5,895 characters because it includes 53 bibliography titles. The 11 other inspected
+    original HTML article titles match their maintained references.
+  snapshot_sha256: 6a86bad3966f1aa6c2d17b2a2383bd9a1184b762ff3901bae38b39cc52cc4f84
+- evidence_id: e-module
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3993168/
+  locator: Results / Purification and characterization of M. sedula enzymes / paragraphs
+    1, 2 and 4; Abstract; Table 2
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: partial
+  summary: The selected paragraph 1 discusses recombinant preparation and Msed_1321.
+    Named Msed_0656/Msed_0399 activities and completed module reconstitution are supported
+    in the Abstract and later results, omitted by the three current p1-only locators.
+    This is a retrieval defect, not refutation of the enzyme activities.
+  snapshot_sha256: e31d389454b3fa78e2ae08593a07fdb9772cb9f46411593f6fa86b8630913fa0
+- evidence_id: e-strain
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC3067578/
+  locator: Abstract; Materials and Methods / bacterial strains and growth conditions
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: The independent isotope study used autotrophic microaerobic TH2 (DSM 5348)
+    at 75 degrees C and pH 2. Labeling supports cycle operation and succinyl-CoA as
+    a major biosynthetic exit; it does not make acetyl-CoA the sole anabolic exit.
+  snapshot_sha256: 2381c35a8ca1991eb874fa97df5c3358d8d512b690d32f4c6563b5eedc28b586
+- evidence_id: e-carboxylase
+  kind: primary_source
+  reference: https://febs.onlinelibrary.wiley.com/doi/full/10.1046/j.1432-1033.2003.03434.x
+  locator: 'Official publisher full-text web rendering: Molecular Properties; Catalytic
+    Properties; Table 2; Methods'
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: The independently inspected publisher text supports the same purified archaeal
+    holoenzyme acting on acetyl- and propionyl-CoA, a proposed tetramer of heterotrimers,
+    divalent-ion dependence and specified in-vitro inhibitor conditions. Its retained
+    digest is honestly scoped to tool-rendered JSON, not original publisher HTML.
+  snapshot_sha256: 1bf5ef7240acd43a7d99617eb7c06fcf6f72216af1d90781686c1959ea5a3baf
+- evidence_id: e-cds
+  kind: database
+  reference: https://www.ebi.ac.uk/ena/browser/api/embl/AF461115?download=false
+  locator: Original AF461115/AF461116 CDS translations AAO15571.1, AAO15572.1 and
+    AAO15573.1
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: The three original translations exactly match A4YGI1 carboxyltransferase,
+    A4YD22 biotin carboxylase and A4YD23 carrier. This corrects the reversed native
+    BC/BCCP UniProt cross-references without silently transferring sequence or strain
+    identities.
+  snapshot_sha256: ad39cca1e4b0f521bfcee44566406ae2355a32914fb7bc4a34023ec2eaa26d01
+- evidence_id: e-reductases
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2753041/
+  locator: 'Results: native malonyl/succinyl-CoA reductase purification and peptide
+    identification; recombinant Msed_1993 and Msed_1424; zinc analysis'
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: Native Msed_0709 activity/peptide evidence and directly characterized Msed_1993/Msed_1424
+    support the selected reductases. Zinc content and approximate assemblies are scoped
+    to measured preparations; the unrelated current A4YGN0 catalytic annotation is
+    explicitly rejected.
+  snapshot_sha256: 007d86b186a3da978f6ca10256d101d930828314380fa1071fafbeefa0ee6807
+- evidence_id: e-revised
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC7845616/
+  locator: Results and discussion of Msed_2001 activity and proteomic/kinetic capacity
+    estimates
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: Later data support Msed_2001 as the principal dehydratase/crotonase. The
+    recorded percentages are protein-abundance and kinetics estimates, not flux or
+    knockout measurements; measured alternative proteins remain qualified.
+  snapshot_sha256: 2247c350a1f9667908142b512fc4669bcfe7e8cf897087f0c4579beb7ff54961
+- evidence_id: e-conflicts
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC5433351/?pdf=render
+  locator: 'Results: Msed_2001, HPCS/HPCD association, Msed_1426 coexpression and
+    Msed_1424; source MCR labels'
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: The original study supports direct selected-protein activities while creating
+    unresolved preparation-specific oligomer estimates and an MCR name/locus discrepancy.
+    Those limitations are explicit, rather than treated as universally fixed assemblies
+    or silent sequence corrections.
+  snapshot_sha256: 426c21ac77b49b5d82ca871d3d0eb4cd523b22454b4084fea626fc592febeedd
+- evidence_id: e-expression
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-206/imodulondb-dataset-inventory.json
+  locator: datasets and originals[0]; imodulondb-applicability.json; offline replay
+  accessed_at: '2026-10-11T10:17:05Z'
+  support: supports
+  summary: The current hash-verified inventory has 20 organisms and 28 datasets, with
+    no Metallosphaera dataset. Sulfolobus acidocaldarius is a different species. The
+    appropriate disposition is not applicable to this strain; no biological absence
+    is inferred.
+  snapshot_sha256: d84677b8bd4bcb4114f4ae918186f28fe5faceba702fc195e62296f259c42fce
+assessments:
+- assessment_id: a-boundary
+  area: identity
+  topic: Complete archaeal HP/HB cycle
+  outcome: supported
+  summary: Native and primary scope agree on the full cycle through 4-hydroxybutyryl-CoA
+    and thiolysis. The Chloroflexus glyoxylate-producing GO:0043427 route is distinct.
+    All 18 native reaction objects have dispositions; no difficult regeneration step
+    was omitted.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-native
+  - e-strain
+  - e-audit
+- assessment_id: a-chemistry
+  area: grounding
+  topic: Directions, whole chemical states and biological closure
+  outcome: supported
+  summary: All 78 exact source sides and 17 equations balance by original ChEBI formula/charge.
+    Native/current crotonyl-CoA differs by broader conserved CoA stereochemistry,
+    not an unsupported opposite acyl isomer. Net cycle gains one acetyl-CoA, consumes
+    two inorganic carbons, four ATP and five NADPH, and produces one NADH; auxiliary
+    hydration convention is explicit.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-audit
+  - e-native
+- assessment_id: a-protein
+  area: scope
+  topic: Exact strain, native cross-reference repair and preparation scope
+  outcome: supported
+  summary: All 21 selected proteins have exact DSM 5348 taxon metadata. Original CDSs
+    resolve the swapped carboxylase subunits. Native, recombinant and cross-species
+    experiments are separated; current annotation conflicts are retained and direct
+    experiments take priority only where explicitly supported.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-cds
+  - e-carboxylase
+  - e-reductases
+  - e-conflicts
+- assessment_id: a-assemblies
+  area: representation
+  topic: Assemblies, alternative activities and inferred cofactors
+  outcome: supported
+  summary: Measured assembly models retain their method limits. Msed_2001 monomer/octamer
+    is handled through functional enables; Msed_1424 dimer/pentamer is tied to the
+    respective native model/preparation. Alternative metal and activity edges retain
+    qualifiers, and no unsupported universal or simultaneous cofactor occupancy is
+    asserted.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-reductases
+  - e-conflicts
+  - e-revised
+  - e-audit
+- assessment_id: a-regulation
+  area: evidence
+  topic: Assay inhibition and transcriptomic context
+  outcome: supported
+  summary: Carboxylase inhibitor edges are limited to the reported in-vitro concentrations
+    and activities. The iModulon inventory is not applicable to the selected organism;
+    absence is not mechanism evidence.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-carboxylase
+  - e-expression
+- assessment_id: a-provenance
+  area: provenance
+  topic: Two source retrieval defects
+  outcome: concern
+  summary: One primary title incorporates unrelated bibliography titles. Three terminal-module
+    citations select preparation paragraph 1 rather than the named activities/reconstitution
+    results. Original full sources support the science, so both are minor citation
+    corrections.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-title
+  - e-module
+  - e-target
+- assessment_id: a-graph
+  area: graph
+  topic: Local endpoints and exported evidence
+  outcome: supported
+  summary: Independent source/graph and actual KGX checks preserve all local nodes,
+    164 edges, 291 evidence blocks and 18 separately grounded continuity edges. Deterministic
+    checks supplement the full source reading and do not establish experimental truth.
+  target_ids:
+  - MetaCyc:PWY-5789
+  evidence_ids:
+  - e-audit
+findings:
+- finding_id: f-primary-title
+  issue_key: hphb-primary-reference-title-extraction
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Primary reference title includes bibliography article titles
+  description: PMID:32218776/title contains 5,895 characters from the main title and
+    53 cited-paper titles. The external author builder selects //article-title//text()
+    across the full JATS. Restrict extraction to /article/front/article-meta/title-group/article-title
+    and preserve only that article title. Other original HTML titles checked in this
+    target are unaffected.
+  target_ids:
+  - MetaCyc:PWY-5789
+  field_paths:
+  - references[id=PMID:32218776]/title
+  evidence_ids:
+  - e-title
+  - e-target
+  - e-audit
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway record
+  rule_id: review-yaml-record precise original reference metadata
+  native_severity: minor
+  normalization_reason: Source attribution/display contamination does not change the
+    supported pathway chemistry or primary evidence.
+- finding_id: f-terminal-module-locators
+  issue_key: hphb-terminal-module-primary-locators
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Three terminal-module assertions cite a preparation paragraph instead of
+    the supporting results
+  description: Edges 122, 124 and 125 evidence[2] all select PMC3993168 Results section4/section1/p[1].
+    That paragraph discusses generic preparations and Msed_1321 rather than the asserted
+    Msed_0656/Msed_0399 activities and completed reconstruction. Select the exact
+    Abstract, named enzyme results and reconstitution paragraphs appropriate to each
+    assertion. The full original article supports the stated biology.
+  target_ids:
+  - MetaCyc:PWY-5789
+  field_paths:
+  - mechanistic_edges[id=hphb-edge-122]/evidence[2]/source_locator
+  - mechanistic_edges[id=hphb-edge-124]/evidence[2]/source_locator
+  - mechanistic_edges[id=hphb-edge-125]/evidence[2]/source_locator
+  evidence_ids:
+  - e-module
+  - e-target
+  - e-audit
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway record
+  rule_id: review-yaml-record nearest source assertion and exact locator
+  native_severity: minor
+  normalization_reason: Bounded retrievability defect; no reaction, protein identity
+    or complete-pathway change is required.
+actions:
+- action_id: repair-title
+  description: After preserving initial reviewed inputs, correct the sole contaminated
+    title in the maintained record and its author extraction logic; add an exact front-title
+    metadata guard. Refresh generated products through their maintained owner.
+  finding_ids:
+  - f-primary-title
+  target_ids:
+  - MetaCyc:PWY-5789
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Confirm normalized reference title equals only the original JATS front title and
+    excludes bibliography titles.
+  - Sweep all primary titles; prove no unrelated record fields changed. Run author
+    replay, render and applicable final gates.
+- action_id: repair-module-locators
+  description: Replace only the three unsupported p1-only selectors with source-specific
+    original passages that support the named enzyme activities and completed reconstitution;
+    update matching projections and replay guards.
+  finding_ids:
+  - f-terminal-module-locators
+  target_ids:
+  - MetaCyc:PWY-5789
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Resolve corrected locators against the exact original PMC3993168 HTML and inspect
+    named genes, activities and combined reconstitution results.
+  - Verify exact semantic delta, preserve all reaction/protein/strain scope, rerun
+    affected source/export checks and coordinated final gates.
+limitations:
+- The 2003 publisher article was independently web-read; the retained local reference
+  body is an explicitly labeled transformed/tool-rendered JSON. Unavailable original
+  publisher HTML/PDF bodies are not called original scientific source bytes.
+- The 2007 discovery paper was not available as inspected full text. Its FAD/Fe-S
+  claim is retained only as explicit native database annotation, distinct from the
+  2014 measured activity.
+- Oligomer estimates, source annotation/locus discrepancies, inferred cofactors and
+  capacity-versus-flux limits remain source-specific; a completed review is not a
+  claim that these scientific questions are settled.
+- Reviewer replay initially required fixes to dependency and parser assumptions, documented
+  in the independent audit; final actual replay passed. No target changes were made
+  by the reviewer.
