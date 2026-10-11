@@ -122,7 +122,7 @@ def test_the_schema_and_the_python_validator_allow_the_same_prefixes() -> None:
     }
     assert len(patterns) == 1
     allowed = re.match(r"\^\(([^)]*)\):", patterns.pop()).group(1).split("|")
-    assert set(allowed) == ALLOWED_CURIE_PREFIXES
+    assert {prefix.replace(r"\.", ".") for prefix in allowed} == ALLOWED_CURIE_PREFIXES
 
 
 def test_the_schema_directory_does_not_shadow_the_schema_module() -> None:

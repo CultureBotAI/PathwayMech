@@ -67,6 +67,7 @@ ALLOWED_CURIE_PREFIXES = {
     "UniProtKB",
     "WikiPathways",
     "gomodel",
+    "metanetx.chemical",
 }
 
 ALLOWED_EDGE_PREDICATES = {

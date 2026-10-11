@@ -1,0 +1,951 @@
+# Resolved independent scientific review of complete bacillibactin biosynthesis
+
+- Review: 20261011T133445Z-bacillibactin-resolved-independent-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-11T13:21:49.788193Z
+- Finished UTC: 2026-10-11T13:34:45.289344Z
+- Reviewer: Codex reviewer (/root/pathway_literature_candidates) (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete twelve-transformation bacillibactin record is supported within its explicit KH3-4, construct, annotation and variable-carrier limits. Issue 382 is resolved by exactly six source-locator corrections, with all scientific assertions and valid carrier locators preserved. Final coordinated corpus gates passed on bytes preserved across the proven equivalent merged baseline. No unresolved scientific finding remains in this record scope.
+
+## Scope And Provenance
+
+Complete scientific successor for the same twelve-transformation bacillibactin target, including exact predecessor finding disposition and current source/authority/generated-artifact gate evidence.
+
+Selection: Exact corrected maintained target SHA256 aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa at actual merged base 2c8c4cf4cef058118c6b42b644b9ad4cc3108639.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 2c8c4cf4cef058118c6b42b644b9ad4cc3108639.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5903 | data/pathways/bacillibactin-biosynthesis.yaml | maintained | bacillibactin biosynthesis |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical initial and final successor input inspections | passed | True | MetaCyc:PWY-5903 | Initial successor preparation inspect 19889 and final merged-base inspect 48986 both exited 0. Final changed integration inputs were read and reassessed before their hashes were adopted. |
+| Independent original-source scientific replay | passed | False | MetaCyc:PWY-5903 | Actual external preflight session 50110 exited 0: 99 original bodies, 50 reference digests, full 9+3 native boundary, 52 sides/directions, six exact reaction balances, scoped carrier/net accounting, three ionic bridges and seven genome translations. The final target differs only in six independently verified source_locator strings; all scientific assertions and chemistry are unchanged. This earlier actual source execution is preserved, not claimed as a new full-suite run. |
+| Independent original-structure stereochemical comparison | passed | False | MetaCyc:PWY-5903 | Actual session 84013 exited 0 after an honestly retained scratch-path lookup failure. Compared issued structures and S,R threonyl centers, variable fragment formula and charge without inferring a whole protein structure. This earlier actual source execution is preserved, not claimed as a new full-suite run. |
+| Independent source-specific correction acceptance and final original-body replay | passed | True | MetaCyc:PWY-5903 | Actual session 2687 exited 0; prior independent acceptance 80793 also passed. Exact six fields, eight retained valid selectors, all 99 original hashes and preserved authority baseline confirmed. No owner or scientific source mutation. |
+| Final log, input, artifact and actual merged-tree verification | passed | True | MetaCyc:PWY-5903 | Actual chunk 1bbda9 exited 0. All final inspect hashes, seven log digests, lossless transcripts, supporting receipts, generated outputs and 73 preparation hashes match. Both authoritative Git trees are identical. |
+| Base-aware prior immutable review check | passed | True | MetaCyc:PWY-5903 | Actual session 8957 exited 0 with 81 valid existing reviews. This was the pre-save history check; the new successor receives its own canonical validate/save/check afterward. |
+| Coordinated final render | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 e2d78d8cda65155edc0f06f8c925e897a5b5feddaf193a7033d62402be0d6295. Finished 2026-10-11T13:22:35.223052+00:00. Scope is the actual integrated corpus/check command. No duplicate reviewer execution claimed. |
+| Coordinated final validate | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 9e98bac520aeacf5ed660dd8c72cfb76b417361d57f01580f21606bdcaeead92. Finished 2026-10-11T13:25:39.991158+00:00. Scope is the actual integrated corpus/check command. No duplicate reviewer execution claimed. |
+| Coordinated final test | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 389fb88623f9acb050ad57133de75e5e39ef9303cf7e3baf826fae5fe0f4db71. Finished 2026-10-11T13:31:50.203990+00:00. 1256 passed, 3 skipped, 3 warnings in 552.70s (0:09:12) No duplicate reviewer execution claimed. |
+| Coordinated final lint | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41. Finished 2026-10-11T13:22:35.647175+00:00. Scope is the actual integrated corpus/check command. No duplicate reviewer execution claimed. |
+| Coordinated final identifiers | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 b43f0ed647ba54f0df03d91b176e5929228a48c709bf95032e0c8018044d8cb4. Finished 2026-10-11T13:23:08.163854+00:00. Scope is the actual integrated corpus/check command. No duplicate reviewer execution claimed. |
+| Coordinated final kgx | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 422914d827eb0bf5b0ce07bd85221a2a7741d354e86e825a94c5799ca5404e55. Finished 2026-10-11T13:23:40.266032+00:00. Scope is the actual integrated corpus/check command. No duplicate reviewer execution claimed. |
+| Coordinated final diff | passed | True | MetaCyc:PWY-5903 | Root actual terminal result verified from original log SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. Finished 2026-10-11T13:23:41.075520+00:00. Scope is the actual integrated corpus/check command. No duplicate reviewer execution claimed. |
+| Coordinated governed-artifact comparison | passed | True | MetaCyc:PWY-5903 | Actual root session 49913 exited 0; all 22 governed artifacts matched. Original log and transcript hash verified. |
+
+## Scientific And Domain Assessments
+
+### Exact full native pathway boundary
+
+identity: supported. Targets: MetaCyc:PWY-5903.
+
+All nine direct PWY-5903 transformations plus three nested PWY-5901 transformations are represented. The route is not a relabeled DHB subset, an iron-uptake process or a mutasynthetic analogue pathway.
+
+### Directions, carrier states and atom/charge accounting
+
+grounding: supported. Targets: MetaCyc:PWY-5903.
+
+The ionic source bridges and selected threonyl variable class are supported. The old native arginyl frame is explicitly rejected rather than relabeled; the old six-ATP net is excluded. Nine ATP per trimer is formal accounting. Repeated DhbF state nodes describe reactive sites, not physical full-enzyme molecule stoichiometry.
+
+### Exact strain, constructs and biochemical support
+
+evidence: supported. Targets: MetaCyc:PWY-5903.
+
+Seven chromosome translations and primary gene-source identifiers support KH3-4 scope. Upstream DhbA/C/B activities retain annotation tier. Purified NRPS/PPTase claims preserve construct limits and the printed primer discrepancy. DhbB activation has mass-shift/control evidence; DhbF activation is qualified coexpression/reconstitution evidence.
+
+### Assemblies, cofactors and contextual proteins
+
+scope: supported. Targets: MetaCyc:PWY-5903.
+
+The record does not infer obligatory Mg or MbtH dependence from an assay recipe, transfer Bacillus oligomeric states, or assign a measured ATP/product ratio. Native carrier classes are separated from exact gene products. No exact iModulon dataset applies to KH3-4.
+
+### Source element fidelity
+
+provenance: supported. Targets: MetaCyc:PWY-5903.
+
+Exactly six unsupported locator fragments were removed from the two original carrier objects. Present common-name/parent fields support all corrected assertions; eight valid unmodified-form locators on other modified carriers remain intact. Initial scientific content and full native scope are unchanged.
+
+### Final source authority, graph and coordinated integration
+
+schema: supported. Targets: MetaCyc:PWY-5903.
+
+All selected source identities are represented by independently sourced authority inputs; initial entries are preserved. Actual final gates pass, generated graph/export bytes preserve every target assertion and the tested preparation tree equals the actual merged base. Code acceptance is separately attributed rather than self-approved. Local gate success does not claim later PR or deployment completion.
+
+## Findings
+
+### f-carrier-unmodified-form-locator: Six carrier evidence locators cite absent native unmodified-form elements
+
+minor / resolved / confirmed; issue key: bacillibactin-carrier-unmodified-form-locator.
+
+The initial record named an absent unmodified-form element in six carrier locators. The corrected record removes only those six fragments; actual source common-name/parent fields support retained assertions, all eight valid selectors elsewhere remain, and every scientific assertion/node/triple is unchanged.
+
+Disposition: Verified exact six-field delta against original XML and archived initial target, independently exercised positive and restored-defect negative guards, confirmed preserved source/record bytes, and inspected all final successful integration gates at the proven equivalent actual merged baseline. The initial observation remains immutable.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/bacillibactin-biosynthesis.yaml; Complete record, including all 89 edges, 192 evidence blocks and 50 references | supports | Complete corrected target rechecked against the fully reviewed initial record. Only six source_locator strings differ; all twelve reactions, 31 participants, 89 triples, 192 evidence blocks, 50 references and scientific assertions remain unchanged. |
+| preflight | research/pathway_additions/2026-10-11-next-212/independent-scientific-preflight.json; Checks, scientific_assessment, remaining_limits, contribution disclosure and all artifact hashes | supports | Independent preflight read the full target and original sources; it is carried forward as inspected evidence rather than relabeled as an earlier canonical review. Its complete methodological limits and failed scratch-path attempt remain preserved. |
+| native | research/pathway_additions/2026-10-11-next-212/independent-original-source-replay.json; Original PWY-5903/PWY-5901 objects, twelve reaction members, 52 chemical sides and direction fields | supports | Original native objects define nine direct NRPS transformations plus three nested DHB transformations. Independent source replay rehashed 99 bodies and 50 reference artifacts, checked six fully specified balances and the formal net, and verified seven genome translations. Source projection was compared with originals. |
+| primary | PMID:39870587 / DOI:10.1002/cbic.202400836; Original accepted PDF pages 4-9 Figures 1-6; pages 12-14 Methods; page 19 Table S1 | supports | Read the full main article and relevant SI text, extracted all 30 pages, and visually inspected PDF pages 4, 8 and 19. KH3-4 protein sourcing, NRPS reconstitution, substrate preference and activation experiments support the bounded claims. Printed DhbB primer inconsistency is preserved; no exact complete tagged-construct identity is inferred. |
+| genome | ENA:AP025627.1 and NCBIProtein:BDG45611.1-BDG45617.1; Original chromosome CDS intervals and versioned protein XML coded_by, translation, taxon and strain fields | supports | Seven original chromosome intervals translate exactly to the versioned gene products. Six selected products are nodes; the included MbtH preparation is contextual. Native gene sequence identity does not establish every expressed fusion or tagged construct. |
+| carrier | research/pathway_additions/2026-10-11-next-212/independent-carrier-stereochemistry.json; Original MNXM743865 SMILES, CPD-9984 InChI and THR structure; alpha/beta CIP and formula/charge comparison | supports | Independent structural comparison finds S,R threonyl centers in the issued loaded class, free L-threonine and all three product units. The variable carrier has two wildcards and charge -1; loaded-minus-holo reactive fragment tripled equals bacillibactin. This is scoped class bookkeeping, not whole-polypeptide formula or a fresh experimental stereochemical determination. |
+| holo-source | MetaCyc:Holo-DhbB; /ptools-xml/Protein[@frameid="Holo-DhbB"]/common-name; parent; modified-form; complete child inventory | supports | Exact original full Protein object rechecked; common-name and parent fields support the retained locators. The nonexistent unmodified-form fragment was removed only from edges 018 and 033. Other carrier objects with real unmodified-form elements retain their eight valid locators. |
+| dhbf-source | MetaCyc:DhbF; /ptools-xml/Protein[@frameid="DhbF"]/common-name; parent; modified-form; complete child inventory | supports | Exact original full Protein object rechecked; common-name and parent fields support the retained locators. The nonexistent unmodified-form fragment was removed only from edges 027, 041, 048 and 052. Other carrier objects with real unmodified-form elements retain their eight valid locators. |
+| finding-ledger | research/pathway_additions/2026-10-11-next-212/initial-scientific-findings.json; Six exact edge/evidence selectors, assertions, source locators, original paths and SHA-256 values | supports | Immutable initial ledger preserves the six original defects and source hashes. Current source-specific acceptance is recorded separately; the old observation is not rewritten. |
+| context | research/pathway_additions/2026-10-11-next-212/bacillibactin-imodulondb-applicability.json; Original current dataset inventory, exact organism applicability and retained parser receipt | supports | Rehashed the 20-organism/28-dataset original inventory. No exact Parageobacillus/KH3-4 dataset is listed. Bacillus subtilis expression context is not transferred, and inventory absence is not evidence of biological absence. |
+| dedup | research/pathway_additions/2026-10-11-next-212/preintegration-dedup.json; Root recorded rg -uu search and adjudication of all 27 prior hits | supports | Current repository search includes hidden and ignored files, excluding Git metadata and dependency environment. Its hits concern prior scouts, acquisition projections and scope disclosures; author full dedup separately distinguishes the DHB precursor record from the complete twelve-transformations route. |
+| predecessor | reviews/structured/20261011T124017Z-bacillibactin-initial-independent-review/review.yaml; Full initial YAML and paired rendered Markdown; f-carrier-unmodified-form-locator | supports | Read both complete immutable reports and checked ignored-inclusive lineage. This is the sole structured predecessor for the selected issue key; all affected targets are retained. |
+| correction | research/pathway_additions/2026-10-11-next-212/independent-locator-acceptance.json; Six-field parsed diff; exact original XML fields; positive, old-record and six isolated negative guards | supports | Independent bounded acceptance verified exactly six changes, preserved eight valid selectors, all 18 other initial inputs and 19 archived inputs. Actual positive execution passed and every restored original defect failed as intended; this earlier acceptance did not by itself retire the finding. |
+| reassessment | research/pathway_additions/2026-10-11-next-212/independent-final-scientific-reassessment.json; Original-body hashes; current target/delta; retained source selectors; authority baseline comparison | supports | Actual session 2687 exited 0. Fresh streaming hashes matched all 99 original bodies, including full ChEBI SQL. Scientific fields remain equal to the independently reviewed initial target except six corrected locators. All 45 named nodes are in current authorities and baseline authority entries are preserved. |
+| gates | research/pathway_additions/2026-10-11-next-212/integration-receipt.json; Seven terminal final gates, actual tool sessions, exact source/output hashes and test result | supports | Read and independently rehashed each original gate log and lossless console transcript. Actual coordinated runner 7044 exited 0; 1256 tests passed, 3 skipped and 3 warnings in 552.70 seconds. All seven gates and separate 22-artifact vendored check passed. These are root executions, not duplicate reviewer runs. |
+| baseline | research/pathway_additions/2026-10-11-next-212/merged-baseline-equivalence.json; Reviewed preparation head, actual merge, whole-tree identity and all 73 prepared file hashes | supports | Independently resolved both Git tree objects and checked exact equality at 3f184fd84409037a462b67efcc2ae05913680893. Actual merged base is 2c8c4cf4cef058118c6b42b644b9ad4cc3108639. All prepared files retain their exact hashes; the seven gates ran before the equivalent transition, not after a claimed rerun. |
+| graph | research/pathway_additions/2026-10-11-next-212/generated-graph-kgx-audit.json; Every target edge, evidence anchor, category, geometry and independent CLI/download equality | supports | Programmatic audit preserves 44 SVG nodes, 45 named KGX nodes, all 89 edges and 192 evidence blocks. The audited generated bytes remain identical after final render and the final CLI export matches them. This is not browser inspection or independent biological proof. |
+| delegated-code | research/pathway_additions/2026-10-11-next-212/parser-independent-successor.json; Independent reviewer identity, exact owner hashes, 264 native terms and 14 original negative cases | supports | /root/verify_graph_publication independently reassessed parser issues 384 and 385 and recorded their resolution with additional quote/escape controls, preserving all original source terms. This evidence is explicitly delegated technical acceptance; this scientific reviewer authored the separate code and does not self-approve it. |
+| final-seal | /private/tmp/pathwaymech-next-212-bacillibactin-final-review/final-seal-recheck.json; Final canonical input hashes, original console logs, merged-tree proof and final export hashes | supports | Post-inspection verification succeeded against all final captured inputs, all supporting receipts and every generated path in the integration seal. Historical source and first-review byte attestations remain immutable. |
+
+## Limits And Additional Notes
+
+- Upstream DHB enzyme assignments retain source annotation scope; the 2025 NRPS reconstitution starts from DHB, glycine and L-threonine.
+- Exact chromosome-to-protein translations do not establish all engineered construct sequences. The printed DhbB primer discrepancy remains explicit without claiming that the physical plasmid was wrong.
+- Variable carrier classes and conditional reactive-fragment balance do not specify whole-polypeptide formulae or fixed enzyme stoichiometry.
+- All primary pages were text-extracted; only pages 4, 8 and 19 were visually inspected. Analogue NMR pages outside the selected pathway were not adjudicated as a separate synthesis route.
+- The reviewer authored separate source-adapter changes. Their approval is excluded; source structure comparison and target scientific assessment are distinct from code approval.
+- Whole-corpus gates ran at reviewed 5cf4d257 before switching to actual merge 2c8c4cf4; exact whole-tree equivalence and preservation of prepared edits were independently checked. No post-transition duplicate test execution is claimed.
+- Programmatic SVG/KGX parity is not browser inspection. This scientific successor does not approve a later PR, merge or deployed site.
+- The separate source-authority parser code was authored by this reviewer. Its independent acceptance is delegated explicitly; this report does not self-review that implementation.
+- The earlier partial initial report and its 19 captured inputs remain immutable. This completed successor retains the exact issue key, predecessor review/finding identity and full affected target.
+- Current target/source scientific claims were fully assessed in the initial external and canonical work; this successor independently verified the narrow correction, all original byte hashes, integrated source identities and final gate evidence. Green gates are not used as biological proof.
+- All initial source-helper environment/path failures and later independent method attempts remain disclosed in their original receipts. Successor setup initially used system Python without PyYAML, then used the documented venv before any canonical inspection; no owner state changed.
+- Lossless JSON console transcripts retain exact terminal output including original whitespace; their decoded bytes and hashes were checked against original logs.
+- No record, curation/history or GitHub edits were made by this review; the only repository writes are this canonical review pair.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261011T133445Z-bacillibactin-resolved-independent-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Resolved independent scientific review of complete bacillibactin biosynthesis
+started_at: '2026-10-11T13:21:49.788193Z'
+finished_at: '2026-10-11T13:34:45.289344Z'
+reviewer:
+  identity: Codex reviewer (/root/pathway_literature_candidates)
+  kind: agent
+  independence: independent
+  independence_basis: Did not author the scientific target or its author dossiers.
+    Independently read and assessed its complete original-source science, verified
+    the six-locator correction, rehashed all 99 original bodies and inspected final
+    integration evidence. Authored separate MetaNetX/MetaCyc parser support and two
+    technical corrections; independent code approval is explicitly excluded here and
+    attributed to root plus /root/verify_graph_publication, whose exact successor
+    audit was inspected. Author code replay is not independent scientific or technical
+    approval.
+skill: review-yaml-record
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The complete twelve-transformation bacillibactin record is supported within
+  its explicit KH3-4, construct, annotation and variable-carrier limits. Issue 382
+  is resolved by exactly six source-locator corrections, with all scientific assertions
+  and valid carrier locators preserved. Final coordinated corpus gates passed on bytes
+  preserved across the proven equivalent merged baseline. No unresolved scientific
+  finding remains in this record scope.
+source:
+  git_revision: 2c8c4cf4cef058118c6b42b644b9ad4cc3108639
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: 20e6c584796085fa8e9813e8398f68424b2da65732bfa51148f2559ddf016881
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: fdc9e72240d1cc02dc4f2f1b30bf0840757d6684abb286db47ac1763f9369ded
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 330452fe97881d19ed49a7ad1534b2d5d2ec1f1cefd28b671eb9aa8f41332cd7
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: b76405b7781816ac64d342eb2ad48850554bb43cedd8aeb47814da5f534fd0cb
+    role: context
+  - path: data/pathways/bacillibactin-biosynthesis.yaml
+    sha256: aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: c635a91493a53b519ed2c8e0f825adcca320e1c8d96ef87a69459c8a2cb14937
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 16b75fc236a668239f7b296f8a61a3110a914afea01bb2bb0d1c34d9eefa6d48
+    role: context
+  - path: pages/records/MetaCyc_PWY-5903.html
+    sha256: bdef23def0e9bee6abfa59e1940cf128034f5362893617b8212d89d981245302
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/authority-integration.json
+    sha256: cd9e7fea83bbb17483ecad0b2ac664a395a2c251a4be983b96f8e921322288c8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-carrier-replay.json
+    sha256: 7af1ca3fc5ee0022f36e2d44586696a6e13358606330cbc567e52e42c1b6ab23
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-curation.md
+    sha256: f4ef1dc573280c9d5b18eb634eb26bcfe30750244eba468e4e1d9af5c101eb3d
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-dedup.json
+    sha256: ee5a2e225eefead80789952390d83dbcf199f8fb4ff8f40616b6db98a427d9f0
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-identifiers.json
+    sha256: 91b58d7ee47ec4f4b3958a7c12b51851b341232123635912e12263583978b141
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-imodulondb-applicability.json
+    sha256: febf17b2f245a060a5a163a61d203c2dbc08ad4aefe486abee036de23fae11e8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-primary-index.json
+    sha256: 0eb060c5e60cc5516e152ee3dd7f34304be827d1b5c8d99c966ad73f422c08ce
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-source-manifest.json
+    sha256: 6eba2e3f8bac3df1ca6a2ec4d4ae56fe2405597f8d5cdf2309a9e3c126e6785c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-source-projection.json
+    sha256: 8fe6309047d0b1f05ac1b0dd29d712e204132aa8a9c11481c57949d7b75c6678
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/bacillibactin-validation.json
+    sha256: c70d0076d6e49592cfc0410870ba99bc4690b66adc8afeccd883d698979749e6
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/carrier-locator-correction.json
+    sha256: a1b31ebe424daaf2fa23d61bca79c959e65bf4c62b393461d5c9308e3e09d00a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/carrier-locator-guard-checks-final.json
+    sha256: b506f5ad7bf706fec970c28c9b90579992de74ffc995e55d734f88101180adde
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/carrier-locator-replay-final.json
+    sha256: 23be867c0977b92a101f9fd53c4eaf57ef2d5d9693b1290d8670547ab1bc37b8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/console-transcripts.json
+    sha256: 8a012143a559c8d3c866a63e2a899f62f81b058f39464a84ded6452793b4ae2e
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/full-gate-receipts.json
+    sha256: 912a8a9cb0bc82c4694a1450645fb2625f60b1e137c164eaf2702ef6551f4369
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/generated-graph-kgx-attempts.json
+    sha256: ef58fb5e127867892e17e4074bed5d6d7321a5fe3fe576919e9f957bb581dec3
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/generated-graph-kgx-audit.json
+    sha256: 2a7e030db0d1233a325eabf453c4e089ad5d28b2fa58b34b7d6910ad7a32352c
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/independent-carrier-stereochemistry.json
+    sha256: 232dee7a203f4f68172c0cf37c5b8578b85c57ae14a69e634fd9d211957bc0b2
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/independent-final-scientific-reassessment.json
+    sha256: d0d2c33cd5581c597c4a7598f7ea1c31f5936474a41e670fa8b2057e5bc66868
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/independent-locator-acceptance.json
+    sha256: d9dfb4fa1e68a248cbf39d8cf334c5a8f740e4eb877bbb5a0cf8b89780101b97
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/independent-original-source-replay.json
+    sha256: 30c5adc53c61fc6a80fdbd83be145d8dd7ca2dde9783c6c6679a7368fafc4363
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/independent-scientific-preflight.json
+    sha256: 89c0b884c608b3aa039092b65e1b467a49086fb6b4b21517357e19915f45a711
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/independent-scientific-preflight.md
+    sha256: 3db133cc92ff9bce0f6971ce117efc37c35ecb5fb1eb8c75fa661e31b2589d78
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/initial-scientific-findings.json
+    sha256: 66f235662e1cdc8ea14a835b28baa29cb003ee2bb89c34ed469699b1c09f8ff9
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/integration-receipt.json
+    sha256: 6ace1014bb24d8b396765d95186c8f31cf97ca1878a396203d6af5575220dbd8
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/merged-baseline-equivalence.json
+    sha256: 80472569ea7df91db7fc2e5604cee79cf4c0e8d92fa94575490bcbd56fb51217
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/parser-independent-successor.json
+    sha256: cf4f261cc2ec4313e515072afbee8c699eccadf26007e328ab6d3c8ab0523f5a
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/preintegration-dedup.json
+    sha256: 7947cc79f7aa444968d88e70826cb6e30522f3a077c5cc8e3a44340155d94e72
+    role: context
+  - path: research/pathway_additions/2026-10-11-next-212/verify-carrier-locators.py
+    sha256: adc90ea06cb724e8291744d373bf6ac0f3caa2214089dd3ab37055f7255cf7f8
+    role: context
+  - path: reviews/structured/20261011T124017Z-bacillibactin-initial-independent-review/review.md
+    sha256: fbf1b5ee8f21f3063b1a660c47180675976f12dfa7c683a225ebd5e4ef497581
+    role: context
+  - path: reviews/structured/20261011T124017Z-bacillibactin-initial-independent-review/review.yaml
+    sha256: 868810a936afde6050e6671eaed26146fa63b9f2fec2156850d460271b088919
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: e81f95da70943090d470b1837d248fec2a592c5f4b53fc6587bc4214adbf35f3
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 5e4a0bcb5b4901b603e9e0e89ce8b2172efbd8fcbe5e68cac7283555c6a1c056
+    role: context
+scope:
+  description: Complete scientific successor for the same twelve-transformation bacillibactin
+    target, including exact predecessor finding disposition and current source/authority/generated-artifact
+    gate evidence.
+  selection: Exact corrected maintained target SHA256 aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa
+    at actual merged base 2c8c4cf4cef058118c6b42b644b9ad4cc3108639.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5903
+  exclusions:
+  - target: Independent approval of separately authored MetaNetX/MetaCyc parser code
+    reason: Reviewer authored that code; technical acceptance is separately attributed
+      to /root/verify_graph_publication and root, not self-approved.
+  - target: Other pathway records, uptake/ferric loading and mutasynthetic analogue
+      pathways
+    reason: Outside the selected complete native biosynthetic record. Corpus validation
+      is a deterministic shared check, not a scientific review of all other records.
+  - target: Browser interactions, PR CI, merge and live deployment of this cohort
+    reason: No browser or later publication claim; programmatic graph/export evidence
+      and actual current local gates only.
+targets:
+- target_id: MetaCyc:PWY-5903
+  path: data/pathways/bacillibactin-biosynthesis.yaml
+  label: bacillibactin biosynthesis
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/bacillibactin-biosynthesis.yaml
+    role: maintained_record
+checks:
+- check_id: inspect
+  name: Canonical initial and final successor input inspections
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/pathwaymech-curation-uv-cache
+    .venv/bin/python scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-212-bacillibactin-final-review/targets.yaml
+    with explicit final context inputs
+  summary: Initial successor preparation inspect 19889 and final merged-base inspect
+    48986 both exited 0. Final changed integration inputs were read and reassessed
+    before their hashes were adopted.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - target
+  - final-seal
+- check_id: original-replay
+  name: Independent original-source scientific replay
+  status: passed
+  required: false
+  exit_code: 0
+  command: .venv/bin/python /private/tmp/pathwaymech-bacillibactin-independent-preflight-20261011/original-replay.py
+  summary: 'Actual external preflight session 50110 exited 0: 99 original bodies,
+    50 reference digests, full 9+3 native boundary, 52 sides/directions, six exact
+    reaction balances, scoped carrier/net accounting, three ionic bridges and seven
+    genome translations. The final target differs only in six independently verified
+    source_locator strings; all scientific assertions and chemistry are unchanged.
+    This earlier actual source execution is preserved, not claimed as a new full-suite
+    run.'
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - native
+- check_id: carrier-stereo
+  name: Independent original-structure stereochemical comparison
+  status: passed
+  required: false
+  exit_code: 0
+  command: .venv/bin/python /private/tmp/pathwaymech-bacillibactin-independent-preflight-20261011/carrier-stereo-check.py
+  summary: Actual session 84013 exited 0 after an honestly retained scratch-path lookup
+    failure. Compared issued structures and S,R threonyl centers, variable fragment
+    formula and charge without inferring a whole protein structure. This earlier actual
+    source execution is preserved, not claimed as a new full-suite run.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - carrier
+- check_id: correction-reassessment
+  name: Independent source-specific correction acceptance and final original-body
+    replay
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-212-bacillibactin-final-review/reassess.py
+  summary: Actual session 2687 exited 0; prior independent acceptance 80793 also passed.
+    Exact six fields, eight retained valid selectors, all 99 original hashes and preserved
+    authority baseline confirmed. No owner or scientific source mutation.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - correction
+  - reassessment
+- check_id: final-seal-recheck
+  name: Final log, input, artifact and actual merged-tree verification
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python /private/tmp/pathwaymech-next-212-bacillibactin-final-review/verify-final-seal.py
+  summary: Actual chunk 1bbda9 exited 0. All final inspect hashes, seven log digests,
+    lossless transcripts, supporting receipts, generated outputs and 73 preparation
+    hashes match. Both authoritative Git trees are identical.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - final-seal
+  - gates
+  - baseline
+  - graph
+- check_id: history-before-successor
+  name: Base-aware prior immutable review check
+  status: passed
+  required: true
+  exit_code: 0
+  command: PYTHONPATH=src .venv/bin/python scripts/record_review.py check --base 5cf4d2578da6b61a49f8c0f9886229b8c1369c91
+  summary: Actual session 8957 exited 0 with 81 valid existing reviews. This was the
+    pre-save history check; the new successor receives its own canonical validate/save/check
+    afterward.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - predecessor
+- check_id: shared-render
+  name: Coordinated final render
+  status: passed
+  required: true
+  exit_code: 0
+  command: just render-pages
+  summary: Root actual terminal result verified from original log SHA256 e2d78d8cda65155edc0f06f8c925e897a5b5feddaf193a7033d62402be0d6295.
+    Finished 2026-10-11T13:22:35.223052+00:00. Scope is the actual integrated corpus/check
+    command. No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-validate
+  name: Coordinated final validate
+  status: passed
+  required: true
+  exit_code: 0
+  command: just validate
+  summary: Root actual terminal result verified from original log SHA256 9e98bac520aeacf5ed660dd8c72cfb76b417361d57f01580f21606bdcaeead92.
+    Finished 2026-10-11T13:25:39.991158+00:00. Scope is the actual integrated corpus/check
+    command. No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-test
+  name: Coordinated final test
+  status: passed
+  required: true
+  exit_code: 0
+  command: just test
+  summary: Root actual terminal result verified from original log SHA256 389fb88623f9acb050ad57133de75e5e39ef9303cf7e3baf826fae5fe0f4db71.
+    Finished 2026-10-11T13:31:50.203990+00:00. 1256 passed, 3 skipped, 3 warnings
+    in 552.70s (0:09:12) No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-lint
+  name: Coordinated final lint
+  status: passed
+  required: true
+  exit_code: 0
+  command: just lint
+  summary: Root actual terminal result verified from original log SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.
+    Finished 2026-10-11T13:22:35.647175+00:00. Scope is the actual integrated corpus/check
+    command. No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-identifiers
+  name: Coordinated final identifiers
+  status: passed
+  required: true
+  exit_code: 0
+  command: just check-identifiers
+  summary: Root actual terminal result verified from original log SHA256 b43f0ed647ba54f0df03d91b176e5929228a48c709bf95032e0c8018044d8cb4.
+    Finished 2026-10-11T13:23:08.163854+00:00. Scope is the actual integrated corpus/check
+    command. No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-kgx
+  name: Coordinated final kgx
+  status: passed
+  required: true
+  exit_code: 0
+  command: just kgx-export --output-dir /private/tmp/pathwaymech-next-212-final-kgx
+  summary: Root actual terminal result verified from original log SHA256 422914d827eb0bf5b0ce07bd85221a2a7741d354e86e825a94c5799ca5404e55.
+    Finished 2026-10-11T13:23:40.266032+00:00. Scope is the actual integrated corpus/check
+    command. No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-diff
+  name: Coordinated final diff
+  status: passed
+  required: true
+  exit_code: 0
+  command: git diff --check
+  summary: Root actual terminal result verified from original log SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+    Finished 2026-10-11T13:23:41.075520+00:00. Scope is the actual integrated corpus/check
+    command. No duplicate reviewer execution claimed.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+- check_id: shared-vendored
+  name: Coordinated governed-artifact comparison
+  status: passed
+  required: true
+  exit_code: 0
+  command: just vendored-check
+  summary: Actual root session 49913 exited 0; all 22 governed artifacts matched.
+    Original log and transcript hash verified.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/bacillibactin-biosynthesis.yaml
+  locator: Complete record, including all 89 edges, 192 evidence blocks and 50 references
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Complete corrected target rechecked against the fully reviewed initial
+    record. Only six source_locator strings differ; all twelve reactions, 31 participants,
+    89 triples, 192 evidence blocks, 50 references and scientific assertions remain
+    unchanged.
+  snapshot_sha256: aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa
+- evidence_id: preflight
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/independent-scientific-preflight.json
+  locator: Checks, scientific_assessment, remaining_limits, contribution disclosure
+    and all artifact hashes
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Independent preflight read the full target and original sources; it is
+    carried forward as inspected evidence rather than relabeled as an earlier canonical
+    review. Its complete methodological limits and failed scratch-path attempt remain
+    preserved.
+  snapshot_sha256: 89c0b884c608b3aa039092b65e1b467a49086fb6b4b21517357e19915f45a711
+- evidence_id: native
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-212/independent-original-source-replay.json
+  locator: Original PWY-5903/PWY-5901 objects, twelve reaction members, 52 chemical
+    sides and direction fields
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Original native objects define nine direct NRPS transformations plus three
+    nested DHB transformations. Independent source replay rehashed 99 bodies and 50
+    reference artifacts, checked six fully specified balances and the formal net,
+    and verified seven genome translations. Source projection was compared with originals.
+  snapshot_sha256: 30c5adc53c61fc6a80fdbd83be145d8dd7ca2dde9783c6c6679a7368fafc4363
+- evidence_id: primary
+  kind: primary_source
+  reference: PMID:39870587 / DOI:10.1002/cbic.202400836
+  locator: Original accepted PDF pages 4-9 Figures 1-6; pages 12-14 Methods; page
+    19 Table S1
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Read the full main article and relevant SI text, extracted all 30 pages,
+    and visually inspected PDF pages 4, 8 and 19. KH3-4 protein sourcing, NRPS reconstitution,
+    substrate preference and activation experiments support the bounded claims. Printed
+    DhbB primer inconsistency is preserved; no exact complete tagged-construct identity
+    is inferred.
+  snapshot_sha256: b0634407933acfa5a161698520e4eb370a73955908b4af913f5c9cae877af86b
+- evidence_id: genome
+  kind: database
+  reference: ENA:AP025627.1 and NCBIProtein:BDG45611.1-BDG45617.1
+  locator: Original chromosome CDS intervals and versioned protein XML coded_by, translation,
+    taxon and strain fields
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Seven original chromosome intervals translate exactly to the versioned
+    gene products. Six selected products are nodes; the included MbtH preparation
+    is contextual. Native gene sequence identity does not establish every expressed
+    fusion or tagged construct.
+  snapshot_sha256: 165e803666f9a03e0ad173925ead22bf5afb6b68ad724f6c29f78d1952814888
+- evidence_id: carrier
+  kind: authority
+  reference: research/pathway_additions/2026-10-11-next-212/independent-carrier-stereochemistry.json
+  locator: Original MNXM743865 SMILES, CPD-9984 InChI and THR structure; alpha/beta
+    CIP and formula/charge comparison
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Independent structural comparison finds S,R threonyl centers in the issued
+    loaded class, free L-threonine and all three product units. The variable carrier
+    has two wildcards and charge -1; loaded-minus-holo reactive fragment tripled equals
+    bacillibactin. This is scoped class bookkeeping, not whole-polypeptide formula
+    or a fresh experimental stereochemical determination.
+  snapshot_sha256: 232dee7a203f4f68172c0cf37c5b8578b85c57ae14a69e634fd9d211957bc0b2
+- evidence_id: holo-source
+  kind: database
+  reference: MetaCyc:Holo-DhbB
+  locator: /ptools-xml/Protein[@frameid="Holo-DhbB"]/common-name; parent; modified-form;
+    complete child inventory
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Exact original full Protein object rechecked; common-name and parent fields
+    support the retained locators. The nonexistent unmodified-form fragment was removed
+    only from edges 018 and 033. Other carrier objects with real unmodified-form elements
+    retain their eight valid locators.
+  snapshot_sha256: 10b44a70171a20f03c78f040587ef4466eb8efcc4fe10e0b1131646ba934e6e7
+  search_scope: Complete direct-child inspection of the exact original top-level Protein
+    object, not a repository filename absence claim.
+- evidence_id: dhbf-source
+  kind: database
+  reference: MetaCyc:DhbF
+  locator: /ptools-xml/Protein[@frameid="DhbF"]/common-name; parent; modified-form;
+    complete child inventory
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Exact original full Protein object rechecked; common-name and parent fields
+    support the retained locators. The nonexistent unmodified-form fragment was removed
+    only from edges 027, 041, 048 and 052. Other carrier objects with real unmodified-form
+    elements retain their eight valid locators.
+  snapshot_sha256: e6d402775acc49fc63f147f6a4619631cdc85e1aeb2657cf93305961f30e6c0d
+  search_scope: Complete direct-child inspection of the exact original top-level Protein
+    object, with comparative checks of the other carrier objects.
+- evidence_id: finding-ledger
+  kind: record_content
+  reference: research/pathway_additions/2026-10-11-next-212/initial-scientific-findings.json
+  locator: Six exact edge/evidence selectors, assertions, source locators, original
+    paths and SHA-256 values
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Immutable initial ledger preserves the six original defects and source
+    hashes. Current source-specific acceptance is recorded separately; the old observation
+    is not rewritten.
+  snapshot_sha256: 66f235662e1cdc8ea14a835b28baa29cb003ee2bb89c34ed469699b1c09f8ff9
+- evidence_id: context
+  kind: database
+  reference: research/pathway_additions/2026-10-11-next-212/bacillibactin-imodulondb-applicability.json
+  locator: Original current dataset inventory, exact organism applicability and retained
+    parser receipt
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Rehashed the 20-organism/28-dataset original inventory. No exact Parageobacillus/KH3-4
+    dataset is listed. Bacillus subtilis expression context is not transferred, and
+    inventory absence is not evidence of biological absence.
+  snapshot_sha256: febf17b2f245a060a5a163a61d203c2dbc08ad4aefe486abee036de23fae11e8
+  search_scope: Bounded current retained iModulonDB inventory only; no inference of
+    exhaustive biological gene/module absence.
+- evidence_id: dedup
+  kind: search
+  reference: research/pathway_additions/2026-10-11-next-212/preintegration-dedup.json
+  locator: Root recorded rg -uu search and adjudication of all 27 prior hits
+  accessed_at: '2026-10-11T12:40:17.858197Z'
+  support: supports
+  summary: Current repository search includes hidden and ignored files, excluding
+    Git metadata and dependency environment. Its hits concern prior scouts, acquisition
+    projections and scope disclosures; author full dedup separately distinguishes
+    the DHB precursor record from the complete twelve-transformations route.
+  snapshot_sha256: 7947cc79f7aa444968d88e70826cb6e30522f3a077c5cc8e3a44340155d94e72
+  search_scope: Read recorded rg -uu PWY-5903|bacillibactin output/adjudication and
+    the author hidden/ignored-inclusive semantic dedup; this observation does not
+    claim every pathway in all external databases was screened.
+- evidence_id: predecessor
+  kind: record_content
+  reference: reviews/structured/20261011T124017Z-bacillibactin-initial-independent-review/review.yaml
+  locator: Full initial YAML and paired rendered Markdown; f-carrier-unmodified-form-locator
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Read both complete immutable reports and checked ignored-inclusive lineage.
+    This is the sole structured predecessor for the selected issue key; all affected
+    targets are retained.
+  snapshot_sha256: 868810a936afde6050e6671eaed26146fa63b9f2fec2156850d460271b088919
+- evidence_id: correction
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/independent-locator-acceptance.json
+  locator: Six-field parsed diff; exact original XML fields; positive, old-record
+    and six isolated negative guards
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Independent bounded acceptance verified exactly six changes, preserved
+    eight valid selectors, all 18 other initial inputs and 19 archived inputs. Actual
+    positive execution passed and every restored original defect failed as intended;
+    this earlier acceptance did not by itself retire the finding.
+  snapshot_sha256: d9dfb4fa1e68a248cbf39d8cf334c5a8f740e4eb877bbb5a0cf8b89780101b97
+- evidence_id: reassessment
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/independent-final-scientific-reassessment.json
+  locator: Original-body hashes; current target/delta; retained source selectors;
+    authority baseline comparison
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Actual session 2687 exited 0. Fresh streaming hashes matched all 99 original
+    bodies, including full ChEBI SQL. Scientific fields remain equal to the independently
+    reviewed initial target except six corrected locators. All 45 named nodes are
+    in current authorities and baseline authority entries are preserved.
+  snapshot_sha256: d0d2c33cd5581c597c4a7598f7ea1c31f5936474a41e670fa8b2057e5bc66868
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/integration-receipt.json
+  locator: Seven terminal final gates, actual tool sessions, exact source/output hashes
+    and test result
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Read and independently rehashed each original gate log and lossless console
+    transcript. Actual coordinated runner 7044 exited 0; 1256 tests passed, 3 skipped
+    and 3 warnings in 552.70 seconds. All seven gates and separate 22-artifact vendored
+    check passed. These are root executions, not duplicate reviewer runs.
+  snapshot_sha256: 6ace1014bb24d8b396765d95186c8f31cf97ca1878a396203d6af5575220dbd8
+- evidence_id: baseline
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/merged-baseline-equivalence.json
+  locator: Reviewed preparation head, actual merge, whole-tree identity and all 73
+    prepared file hashes
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Independently resolved both Git tree objects and checked exact equality
+    at 3f184fd84409037a462b67efcc2ae05913680893. Actual merged base is 2c8c4cf4cef058118c6b42b644b9ad4cc3108639.
+    All prepared files retain their exact hashes; the seven gates ran before the equivalent
+    transition, not after a claimed rerun.
+  snapshot_sha256: 80472569ea7df91db7fc2e5604cee79cf4c0e8d92fa94575490bcbd56fb51217
+- evidence_id: graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/generated-graph-kgx-audit.json
+  locator: Every target edge, evidence anchor, category, geometry and independent
+    CLI/download equality
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Programmatic audit preserves 44 SVG nodes, 45 named KGX nodes, all 89 edges
+    and 192 evidence blocks. The audited generated bytes remain identical after final
+    render and the final CLI export matches them. This is not browser inspection or
+    independent biological proof.
+  snapshot_sha256: 2a7e030db0d1233a325eabf453c4e089ad5d28b2fa58b34b7d6910ad7a32352c
+- evidence_id: delegated-code
+  kind: validation
+  reference: research/pathway_additions/2026-10-11-next-212/parser-independent-successor.json
+  locator: Independent reviewer identity, exact owner hashes, 264 native terms and
+    14 original negative cases
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: /root/verify_graph_publication independently reassessed parser issues 384
+    and 385 and recorded their resolution with additional quote/escape controls, preserving
+    all original source terms. This evidence is explicitly delegated technical acceptance;
+    this scientific reviewer authored the separate code and does not self-approve
+    it.
+  snapshot_sha256: cf4f261cc2ec4313e515072afbee8c699eccadf26007e328ab6d3c8ab0523f5a
+- evidence_id: final-seal
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-212-bacillibactin-final-review/final-seal-recheck.json
+  locator: Final canonical input hashes, original console logs, merged-tree proof
+    and final export hashes
+  accessed_at: '2026-10-11T13:34:45.289344Z'
+  support: supports
+  summary: Post-inspection verification succeeded against all final captured inputs,
+    all supporting receipts and every generated path in the integration seal. Historical
+    source and first-review byte attestations remain immutable.
+  snapshot_sha256: cacaac7bcc2423e97f22678018d9ae4d55b6215074394272276f87fb3203f52d
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact full native pathway boundary
+  outcome: supported
+  summary: All nine direct PWY-5903 transformations plus three nested PWY-5901 transformations
+    are represented. The route is not a relabeled DHB subset, an iron-uptake process
+    or a mutasynthetic analogue pathway.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - native
+  - dedup
+  - primary
+- assessment_id: chemistry
+  area: grounding
+  topic: Directions, carrier states and atom/charge accounting
+  outcome: supported
+  summary: The ionic source bridges and selected threonyl variable class are supported.
+    The old native arginyl frame is explicitly rejected rather than relabeled; the
+    old six-ATP net is excluded. Nine ATP per trimer is formal accounting. Repeated
+    DhbF state nodes describe reactive sites, not physical full-enzyme molecule stoichiometry.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - native
+  - carrier
+  - primary
+- assessment_id: enzymes
+  area: evidence
+  topic: Exact strain, constructs and biochemical support
+  outcome: supported
+  summary: Seven chromosome translations and primary gene-source identifiers support
+    KH3-4 scope. Upstream DhbA/C/B activities retain annotation tier. Purified NRPS/PPTase
+    claims preserve construct limits and the printed primer discrepancy. DhbB activation
+    has mass-shift/control evidence; DhbF activation is qualified coexpression/reconstitution
+    evidence.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - genome
+  - primary
+  - preflight
+- assessment_id: components
+  area: scope
+  topic: Assemblies, cofactors and contextual proteins
+  outcome: supported
+  summary: The record does not infer obligatory Mg or MbtH dependence from an assay
+    recipe, transfer Bacillus oligomeric states, or assign a measured ATP/product
+    ratio. Native carrier classes are separated from exact gene products. No exact
+    iModulon dataset applies to KH3-4.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - primary
+  - native
+  - context
+- assessment_id: locators
+  area: provenance
+  topic: Source element fidelity
+  outcome: supported
+  summary: Exactly six unsupported locator fragments were removed from the two original
+    carrier objects. Present common-name/parent fields support all corrected assertions;
+    eight valid unmodified-form locators on other modified carriers remain intact.
+    Initial scientific content and full native scope are unchanged.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - holo-source
+  - dhbf-source
+  - predecessor
+  - correction
+  - reassessment
+- assessment_id: integration
+  area: schema
+  topic: Final source authority, graph and coordinated integration
+  outcome: supported
+  summary: All selected source identities are represented by independently sourced
+    authority inputs; initial entries are preserved. Actual final gates pass, generated
+    graph/export bytes preserve every target assertion and the tested preparation
+    tree equals the actual merged base. Code acceptance is separately attributed rather
+    than self-approved. Local gate success does not claim later PR or deployment completion.
+  target_ids:
+  - MetaCyc:PWY-5903
+  evidence_ids:
+  - gates
+  - baseline
+  - graph
+  - delegated-code
+  - final-seal
+findings:
+- finding_id: f-carrier-unmodified-form-locator
+  issue_key: bacillibactin-carrier-unmodified-form-locator
+  category: provenance
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Six carrier evidence locators cite absent native unmodified-form elements
+  description: The initial record named an absent unmodified-form element in six carrier
+    locators. The corrected record removes only those six fragments; actual source
+    common-name/parent fields support retained assertions, all eight valid selectors
+    elsewhere remain, and every scientific assertion/node/triple is unchanged.
+  target_ids:
+  - MetaCyc:PWY-5903
+  field_paths:
+  - mechanistic_edges[id=bacillibactin-edge-018].evidence[1].source_locator
+  - mechanistic_edges[id=bacillibactin-edge-027].evidence[1].source_locator
+  - mechanistic_edges[id=bacillibactin-edge-033].evidence[1].source_locator
+  - mechanistic_edges[id=bacillibactin-edge-041].evidence[1].source_locator
+  - mechanistic_edges[id=bacillibactin-edge-048].evidence[1].source_locator
+  - mechanistic_edges[id=bacillibactin-edge-052].evidence[1].source_locator
+  evidence_ids:
+  - holo-source
+  - dhbf-source
+  - predecessor
+  - correction
+  - reassessment
+  - gates
+  - final-seal
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/bacillibactin-biosynthesis.yaml
+    role: maintained_record
+  rule_id: docs/CAUSAL_GRAPHS.md exact structured-source locator rule
+  native_severity: minor
+  normalization_reason: 'Bounded provenance defect: the class identities and full
+    pathway chemistry remain supported by the actual source fields.'
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/382
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261011T124017Z-bacillibactin-initial-independent-review
+    finding_id: f-carrier-unmodified-form-locator
+  disposition_reason: Verified exact six-field delta against original XML and archived
+    initial target, independently exercised positive and restored-defect negative
+    guards, confirmed preserved source/record bytes, and inspected all final successful
+    integration gates at the proven equivalent actual merged baseline. The initial
+    observation remains immutable.
+actions: []
+limitations:
+- Upstream DHB enzyme assignments retain source annotation scope; the 2025 NRPS reconstitution
+  starts from DHB, glycine and L-threonine.
+- Exact chromosome-to-protein translations do not establish all engineered construct
+  sequences. The printed DhbB primer discrepancy remains explicit without claiming
+  that the physical plasmid was wrong.
+- Variable carrier classes and conditional reactive-fragment balance do not specify
+  whole-polypeptide formulae or fixed enzyme stoichiometry.
+- All primary pages were text-extracted; only pages 4, 8 and 19 were visually inspected.
+  Analogue NMR pages outside the selected pathway were not adjudicated as a separate
+  synthesis route.
+- The reviewer authored separate source-adapter changes. Their approval is excluded;
+  source structure comparison and target scientific assessment are distinct from code
+  approval.
+- Whole-corpus gates ran at reviewed 5cf4d257 before switching to actual merge 2c8c4cf4;
+  exact whole-tree equivalence and preservation of prepared edits were independently
+  checked. No post-transition duplicate test execution is claimed.
+- Programmatic SVG/KGX parity is not browser inspection. This scientific successor
+  does not approve a later PR, merge or deployed site.
+- The separate source-authority parser code was authored by this reviewer. Its independent
+  acceptance is delegated explicitly; this report does not self-review that implementation.
+notes:
+- The earlier partial initial report and its 19 captured inputs remain immutable.
+  This completed successor retains the exact issue key, predecessor review/finding
+  identity and full affected target.
+- Current target/source scientific claims were fully assessed in the initial external
+  and canonical work; this successor independently verified the narrow correction,
+  all original byte hashes, integrated source identities and final gate evidence.
+  Green gates are not used as biological proof.
+- All initial source-helper environment/path failures and later independent method
+  attempts remain disclosed in their original receipts. Successor setup initially
+  used system Python without PyYAML, then used the documented venv before any canonical
+  inspection; no owner state changed.
+- Lossless JSON console transcripts retain exact terminal output including original
+  whitespace; their decoded bytes and hashes were checked against original logs.
+- No record, curation/history or GitHub edits were made by this review; the only repository
+  writes are this canonical review pair.
+links:
+- reviews/structured/20261011T124017Z-bacillibactin-initial-independent-review/review.md
+- reviews/structured/20261011T124017Z-bacillibactin-initial-independent-review/review.yaml
+- https://github.com/CultureBotAI/PathwayMech/issues/382
+- https://github.com/CultureBotAI/PathwayMech/issues/384
+- https://github.com/CultureBotAI/PathwayMech/issues/385
+- https://doi.org/10.1002/cbic.202400836
+```
