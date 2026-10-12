@@ -1,0 +1,44 @@
+"""Fresh original-RDF orientation and chemistry extraction; no candidate YAML."""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import gzip,re,json,hashlib,collections,xml.etree.ElementTree as ET
+C=Path(__file__).parent;source=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');digest=hashlib.sha256(source.read_bytes()).hexdigest();assert digest=='8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf'
+raw=gzip.decompress(source.read_bytes()).decode();RH='http://rdf.rhea-db.org/';NS={'rh':RH,'rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'};wrapper='<root '+' '.join(f'xmlns:{k}="{v}"' for k,v in NS.items())+'>'
+starts={};nodes={}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',raw):starts.setdefault(m[1],[]).append(m.start())
+def get(uri):
+ if uri in nodes:return nodes[uri]
+ props={}
+ for start in starts[uri]:
+  end=raw.index('</rdf:Description>',start)+len('</rdf:Description>');node=ET.fromstring(wrapper+raw[start:end]+'</root>')[0]
+  for child in node:
+   k=child.tag.split('}',1)[1];v=child.get('{'+NS['rdf']+'}resource') or child.text
+   if v not in props.setdefault(k,[]):props[k].append(v)
+ nodes[uri]=props;return props
+def side(uri):
+ s=get(uri);out=[]
+ for part in s['contains']:
+  coefs=[int(k[8:]) for k,v in s.items() if re.fullmatch('contains[0-9]+',k) and part in v];assert len(coefs)==1
+  pu=get(part);cu=pu['compound'][0];c=get(cu);out.append({'participant':part,'compound_uri':cu,'coefficient':coefs[0],'properties':c})
+ return out
+rows=[]
+for mid in ['27630', '20001']:
+ uri=RH+mid;m=get(uri);assert m['status']==[RH+'Approved'];directions=[]
+ for du in m['directionalReaction']:
+  d=get(du);sides={k:[q for u in d[k] for q in side(u)] for k in ['substrates','products']};pair=(d['substrates'],d['products']);lr=(uri+'_L',uri+'_R');orientation='left_to_right' if pair==([lr[0]],[lr[1]]) else 'right_to_left' if pair==([lr[1]],[lr[0]]) else 'UNRESOLVED';assert orientation!='UNRESOLVED'
+  balance=collections.Counter();complete_formula=True
+  for k,sign in [('substrates',-1),('products',1)]:
+   for q in sides[k]:
+    p=q['properties'];formula=p.get('formula',[''])[0];complete_formula=complete_formula and bool(formula) and bool(re.fullmatch(r'(?:[A-Z][a-z]?[0-9]*)+',formula)) and 'charge' in p
+    for atom,num in re.findall(r'([A-Z][a-z]?)(\d*)',formula):balance[atom]+=sign*q['coefficient']*int(num or 1)
+    balance['charge']+=sign*q['coefficient']*int(p.get('charge',[0])[0])
+  imbalance={k:v for k,v in balance.items() if v}
+  if complete_formula:assert not imbalance
+  else:imbalance={'not_computed':'One or more generic protein participants lack a complete molecular formula/charge; native Rhea balanced flag retained separately.'}
+  directions.append({'id':d['accession'][0],'equation':d.get('equation'),'orientation':orientation,'native_sides':{k:d[k] for k in ['substrates','products']},'sides':sides,'formula_charge_imbalance':imbalance})
+ rows.append({'master_id':'RHEA:'+mid,'master':m,'directions':directions})
+(C/'derived'/'rhea-linked-native-chemistry.json').write_text(json.dumps({'source':str(source),'sha256':digest,'source_version':'142, retained issuing RDF original; freshly read all selected objects and directional links','masters':rows},indent=2)+'\n')
+for r in rows:
+ print(r['master_id'],[(d['id'],d['orientation'],d['equation']) for d in r['directions']])
+print('All extracted directional variants checked against original source; source retained unchanged.')

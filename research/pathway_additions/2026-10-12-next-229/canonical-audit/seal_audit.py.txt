@@ -1,0 +1,70 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess
+D=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012');A=Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012');S=Path('/private/tmp/pathwaymech-next-229-science-review-20261012')
+def load(p):return json.loads(Path(p).read_bytes())
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb')as s:
+  for b in iter(lambda:s.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def bind(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def check(x):assert sha(x['path'])==x['sha256'] and Path(x['path']).stat().st_size==x['bytes']
+def save(n,v):(D/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert not (D/'handoff.json').exists()
+assert sha(A/'handoff.json')=='eac1603ffb4d1b8879de82b5a308593aa00c5ca4fbbd986ff5cfcb2cccd6e491'
+assert sha(A/'artifact-manifest.json')=='01975ada726d2e59bfb1c5ec4351e9d2013d78df585541964ff9df65b8a022ac'
+artifacts=load(A/'artifact-manifest.json')['artifacts'];assert len(artifacts)==168
+for x in artifacts:check(x)
+# Bind every later single-protein and release companion to a genuinely sealed issuing original.
+known={(x['path'],x['sha256'])for x in artifacts}
+for x in load(D/'all-21-source-assessments.json'):
+ if 'fresh_scientific_original'in x['native_facts']:
+  f=x['native_facts']['fresh_scientific_original'];check(f)
+  if str(A)in f['path']:assert (f['path'],f['sha256'])in known
+for x in load(D/'metacyc-native-release-joins.json'):
+ f=x['separate_native_XML'];check(f)
+ if str(A)in f['path']:assert (f['path'],f['sha256'])in known
+save('additional-authority-original-intake.json',{'handoff':bind(A/'handoff.json'),'manifest':bind(A/'artifact-manifest.json'),'verified_artifacts':168,'scope':'Fresh single-protein and native META database-version companions match sealed issuing-original package. Their source versions are not silently substituted into selected bulk provenance.'})
+commands=[{'tool_receipt':'004403/1','code':bind(D/'attempt1-audit.py'),'stdout':bind(D/'attempt1-audit.stdout'),'stderr':bind(D/'attempt1-audit.stderr'),'outcome':'Reviewer harness assumed all compact pathway identities have direct scientific-reference keys. Existing authority-preparation originals and actual same-PGDB companion scope used in successor; no target/source mutation.'},{'tool_receipt':'535c9e/1','code':bind(D/'attempt2-audit.py'),'stdout':bind(D/'attempt2-audit.stdout'),'stderr':bind(D/'attempt2-audit.stderr'),'outcome':'Reviewer harness likewise assumed all protein fresh originals had direct scientific-reference keys. Six were in sealed authority preparation, two in preflight; exact originals now bound without adding fabricated scientific references.'},{'tool_receipt':'36e474/0','code':bind(D/'audit.py'),'stdout':bind(D/'audit.stdout'),'stderr':bind(D/'audit.stderr'),'outcome':'All bounded original/consumer/negative controls passed. No full SQL rebuild/hash repeated.'}]
+save('audit-execution.json',{'attempts':commands,'read_receipts':[{'tool':'904e88/0','scope':'Full preparation README/common/build execution wrapper'},{'tool':'980501/0','scope':'All new21source/6ontology objects,12metadata/manifest entries and4SQLpins'},{'tool':'923261/0','scope':'Native original-source builder first-source policy and readonly SQL extraction/metadata logic'},{'tool':'ce2313/0','scope':'All21 native identity facts, full selected complex components/gene joins and precise release-companion scope'},{'tool':'f82cb1/0','scope':'All6ontology exactnative observations,10negativecontrols and finalaudit'},{'tool':'0dc376/0','scope':'Initial broad expected snapshot print truncated; not claimed read. Replaced by complete object comparisons and all-additions reads.'},{'tool':'7025c0/1','scope':'One guessed optional README path absent; useful direct original XML/HTML metadata lines read. No completeness or scientific absence assertion derived.'}]})
+report='''# Independent EG canonical-output audit
+
+Accepted for the exact original `c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704` target, with no canonical-output findings. Scientific corrections for issues446/447 remain separate; this audit does not give the original scientific target clean acceptance.
+
+The actual native build produces2454 source terms/587metadata and1957 ontology terms/5metadata. Both builder commands exited0 with the exact bound inputs/environment/logs. All478 build artifacts and478 preparation artifacts, the complete hidden/ignored/followed inventory,222 runtime files,229 prior records and749 source-original paths were freshly verified. All2433 prior source terms/575metadata and1951 ontology terms/5metadata are object-identical. The first738 manifest entries and first20Rhea selectors remain exact;12manifest entries and2Rhea selectors are appended. The4384-ID retention selector is build-only and contains existing authority IDs, never authored labels.
+
+## Every added authority object
+
+All21 new source terms were extracted independently from original identity/name fields and replayed through the actual native parser. The bounded13-source native build reproduces the complete21term objects and13selected metadata objects exactly, including12new metadata. The additions are four EcoCyc complexes/states, two NCBI genes, five MetaCyc pathways, two PathBank children and eight UniProt proteins. `all-21-source-assessments.json` preserves original bindings, selected manifest entries, exact native observations and complete comparisons.
+
+AldA has native tetramer coefficient4 and FucO dimer coefficient2. FucR/L-fuculose1-phosphate and DnaA/ATP native components remain explicit without invented stoichiometries. Entrez945672/aldA/b1415/EG10035 and947273/fucO/b2799/EG10351 correctly join native taxon511145 records. Omitted native Gene-track status is not invented as an explicit live assertion.
+
+All eight UniProt identities and complete label/synonym sets agree with both the earlier selected bulk original and later single-protein originals; the bulk taxon is83333. The selected bulk name for P52044 remains its native YgfI label; scientific SrsR context is separately evidenced. First-source ordering remains unchanged. Later originals are evidence with their own dates/versions, not replacement selected provenance. All168 authority-preparation artifacts were additionally verified, binding the six individual proteins and META companion original located there; the other two protein originals remain in preflight.
+
+Five exact META HTML frame/title pairs supply the pathway names. Independently retained META XML confirms PGDB27.0 on the same issuing host/database. Exact-frame XML companions exist for PWY0-1280 and GLYCOL-GLYOXDEG-PWY; the other three release joins use the explicit same-database companion, not a falsely claimed full individual XML. No software-version footer alone establishes the database version.
+
+The full original PathBank ZIP and unique PW002093.owl member bind rootSMP0002105 and childSMP0002052/SMP0000847 exactly. The root-owned native Interactions support structural attachment and adjacent child identity; they do not establish biological inhibition or full child mechanisms. The root occurs only as a reference, so its absence from the named-node compact terms is legitimate. Root identity remains in closed archive metadata; no extra record identity was invented to force a term.
+
+All six new ontology objects were assessed independently. Read-only indexed SQL queries reproduce exact labels/synonyms for CHEBI17234,17497,29805 and30742; neutral glycolic acid remains distinct from glycolate. The complete Rhea142 gzip original was freshly hashed. The production selector parser reproduced all22equations, and independent RDF extraction verified unique approved directional reactions27631 and20002, correct labels/equations and native sides. Event2 retains2protons. Original scientific chemistry balancing remains separately bound by the science review.
+
+All four native SQL databases were reopened read-only to inspect versionIRI, versionInfo, license and prefix declarations. Metadata, sizes and modification times match the pins. Full multi-gigabyte database hashes are inherited from the exact successful native ontology-builder output; this audit does not falsely claim a fresh full hash or SQL rebuild.
+
+## Controls and limits
+
+The exact candidate passes schema and identifier-consumer checks using external copies of the actual canonical outputs. Ten meaningful negatives reject swapped aldA/fucO request identity, EcoCyc release mismatch, PathBank member-hash/root mismatch, an unselected Rhea ID, missing glycolate, missing EG-oxidation Rhea identity, absent gene-source metadata, extra closed-PathBank metadata and acid/anion source-object substitution. The last comparison uses independently queried exact SQL object equality because contextual participant display labels are intentionally permitted. Consumer snapshots were restored byte-for-byte and passed again.
+
+Two initial audit-harness lookup failures are preserved with their exact scripts/logs in `audit-execution.json`. They assumed every canonical identity had a directly keyed scientific reference; the actual issuing originals were correctly retained in the separate sealed authority package. Neither was a canonical defect or a waived failed target gate. Final bounded audit exited0 (`36e474/0`). Broad truncated output is not represented as full human reading; exact object comparisons and selected-source reads provide the stated coverage.
+
+The historical baseline is the actual228-record lyxose worktree plus accepted external MG, giving229prior records and230withEG. This prospective composition is not called a maintained230-record repository. Root owns the later exact merged-base bridge, adoption and maintained full gates. The forthcoming corrected scientific target requires an explicit proof that all declared identities and canonical inputs remain unchanged, plus independent scientific successor assessment. No maintained/shared-cache/Git/GitHub writes occurred, and no source-exhaustion claim is made.
+'''
+(D/'REVIEW.md').write_text(report)
+issues=Path('/private/tmp/pathwaymech-next-229-issues-20261012/issue-creation.json');save('science-issue-lineage.json',{'science_review':bind(S/'handoff.json'),'root_issue_receipt':bind(issues),'issues':load(issues)['issues'],'scope':'Two pending scientific-context corrections are outside this canonical verdict. Root owns issue closure after accepted correction and merged integration.'})
+a=load(D/'audit.json');assert a['findings']==[] and a['controls_rejected']==10
+for x in a['outputs'].values():check(x)
+files=subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(D)],text=True).splitlines();assert all(not Path(p).is_symlink()for p in files)
+manifest={'scope':'All independent audit artifacts, complete hidden/ignored/followed inventory. Self-manifest/handoff excluded. All original failures retained. External immutable source packages remain separately bound.','artifact_count':len(files),'artifacts':[bind(p)for p in sorted(files)]};save('artifact-manifest.json',manifest)
+handoff={'status':'accepted_actual_EG_canonical_outputs_pending_exact_scientific_successor_bridge','sealed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'manifest':bind(D/'artifact-manifest.json'),'artifact_count':len(files),'report':bind(D/'REVIEW.md'),'audit':bind(D/'audit.json'),'execution':bind(D/'audit-execution.json'),'build':bind(B/'handoff.json'),'target':a['target'],'actual_outputs':a['outputs'],'findings':[],'scientific_findings':'Issues446/447 remain separate; no clean original scientific acceptance claimed.','required_bridge':'Exact later target must retain all named identifiers/reference identities, canonical selectors/manifest/original inputs and core/edge identities. Independent successor review is required.','remaining':'Root merged-base/adoption/fullcorpus/nativefinalization/PR gates; no source-exhaustion claim.'};save('handoff.json',handoff)
+for x in manifest['artifacts']:check(x)
+assert set(subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(D)],text=True).splitlines())==set(files)|{str(D/'artifact-manifest.json'),str(D/'handoff.json')}
+print(json.dumps({'status':'sealed_and_freshly_verified','handoff':bind(D/'handoff.json'),'manifest':bind(D/'artifact-manifest.json'),'report':bind(D/'REVIEW.md'),'artifact_count':len(files)},indent=2))

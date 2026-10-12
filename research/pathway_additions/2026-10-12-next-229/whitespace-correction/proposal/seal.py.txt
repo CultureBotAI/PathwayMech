@@ -1,0 +1,58 @@
+from pathlib import Path
+import hashlib
+import json
+from datetime import datetime, timezone
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-whitespace-repair-20261012')
+
+
+def bind(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+receipt = json.loads((ROOT / 'receipt.json').read_text())
+assert receipt['status'] == 'external_proposal_passed_not_maintained_adoption'
+assert (ROOT / 'third-attempt.stderr').read_bytes() == b''
+assert json.loads((ROOT / 'third-attempt.stdout').read_text())['receipt'] == bind(ROOT / 'receipt.json')
+excluded_raw = {'original-render.html', 'successor-render.html',
+                'no-index-contract/bad.txt', 'no-index-contract/old.txt', 'no-index-contract/clean.txt'}
+archive = []
+for path in sorted(ROOT.rglob('*')):
+    assert not path.is_symlink()
+    if not path.is_file():
+        continue
+    relative = path.relative_to(ROOT).as_posix()
+    if relative in excluded_raw or relative in {'manifest.json', 'handoff.json', 'archive-plan.json'}:
+        continue
+    if path.suffix != '.gz':
+        text = path.read_text()
+        assert all(line == line.rstrip() for line in text.splitlines()), relative
+    archive.append({'source': bind(path), 'destination': relative + ('.txt' if path.suffix == '.py' else '')})
+(ROOT / 'archive-plan.json').write_text(json.dumps({
+    'status': 'safe_text_or_exact_gzip_archive_proposal',
+    'allowlist': archive,
+    'also_include': ['archive-plan.json', 'manifest.json', 'handoff.json'],
+    'raw_external_only': sorted(excluded_raw),
+    'reason': 'Raw failing render and negative whitespace fixture must not create new maintained text whitespace failures. Original bytes are bound by manifest and exact gzip artifacts.',
+}, indent=2) + '\n')
+files = []
+for path in sorted(ROOT.rglob('*')):
+    assert not path.is_symlink()
+    if path.is_file() and path.name not in {'manifest.json', 'handoff.json'}:
+        files.append({'relative_path': path.relative_to(ROOT).as_posix(), **bind(path)})
+(ROOT / 'manifest.json').write_text(json.dumps({'inventory': 'All filesystem entries including hidden and ignored paths; symlinks refused.', 'artifacts': files}, indent=2) + '\n')
+handoff = {
+    'status': 'sealed_external_proposal_ready_for_root_review',
+    'at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/449',
+    'manifest': bind(ROOT / 'manifest.json'), 'artifact_count': len(files),
+    'receipt': bind(ROOT / 'receipt.json'),
+    'successor': receipt['successor'],
+    'protocol': bind(ROOT / 'PROTOCOL.md'),
+    'archive_plan': bind(ROOT / 'archive-plan.json'),
+    'maintained_adoption': False, 'maintained_or_index_writes': False,
+    'failure_handling': 'Both helper failures retained. Required maintained staged-diff failure remains unsuppressed and must pass after root corrective curation/render.'
+}
+(ROOT / 'handoff.json').write_text(json.dumps(handoff, indent=2) + '\n')
+print(json.dumps({'handoff': bind(ROOT / 'handoff.json'), **handoff}, indent=2))

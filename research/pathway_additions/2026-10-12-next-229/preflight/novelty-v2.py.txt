@@ -1,0 +1,28 @@
+from pathlib import Path
+import json,subprocess,hashlib,datetime,yaml
+O=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-226-20261012')
+cues=['PWY0-1280','SMP0002105','PW002093','ethylene glycol','ethane-1,2-diol','GLYCOLALDREDUCT','GLYCOLALD-DEHYDROG','RHEA:27630','RHEA:27631','RHEA:27632','RHEA:27633','RHEA:20001','RHEA:20002','RHEA:20003','RHEA:20004','R01781','R01333','6336729','6345530','glycolaldehyde','glycolate','fucO','aldA']
+argv=['rg','--no-ignore','--hidden','--follow','-l','-i','-F','-g','!.git','-g','!.venv']
+for c in cues:argv+=['-e',c]
+argv+=['.'];q=subprocess.run(argv,cwd=R,capture_output=True,text=True)
+(O/'derived/novelty-v2-search.stdout').write_text(q.stdout);(O/'derived/novelty-v2-search.stderr').write_text(q.stderr)
+files=subprocess.run(['rg','--files','--no-ignore','--hidden','--follow','data/pathways'],cwd=R,capture_output=True,text=True,check=True).stdout.splitlines()
+pros=[Path('/private/tmp/pathwaymech-next-227-science-correction-v2-20261012/draft/l-lyxose-degradation.yaml'),Path('/private/tmp/pathwaymech-next-228-author-20261012/draft/mannosylglycerate-degradation.yaml')]
+rows=[]
+for p in [R/f for f in files if f.endswith(('.yaml','.yml'))]+pros:
+ raw=p.read_bytes();a=yaml.safe_load(raw); rx=[]
+ for v in a.get('reactions',[]):
+  rid=v['id'];s=[];t=[]
+  for e in a.get('mechanistic_edges',[]):
+   if e['predicate']=='consumes' and e['object']==rid:s.append([e['subject'],e.get('stoichiometry',e.get('stoichiometric_coefficient',1))])
+   if e['predicate']=='produces' and e['subject']==rid:t.append([e['object'],e.get('stoichiometry',e.get('stoichiometric_coefficient',1))])
+  rx.append({'id':rid,'label':v.get('label'),'direction':v.get('direction'),'substrates':sorted(s),'products':sorted(t)})
+ row={'path':str(p),'prospective':p in pros,'sha256':hashlib.sha256(raw).hexdigest(),'id':a['id'],'label':a['label'],'reactions':rx,'participants':[{'id':v['id'],'label':v.get('label')}for v in a.get('participants',[])]};rows.append(row)
+matched=[]
+for row in rows:
+ needles=['ethylene glycol','ethane-1,2-diol','glycolaldehyde','glycolate','fucO','aldA','27630','27631','27632','27633','20001','20002','20003','20004']
+ blob=json.dumps(row).lower()
+ if any(s.lower()in blob for s in needles):matched.append(row)
+report={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'root':str(R),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=R,text=True).strip(),'search_argv':argv,'exit':q.returncode,'ignored_hidden_included':True,'followed_links':True,'excluded_roots':['.git','.venv'],'matched_files':len(q.stdout.splitlines()),'actual_record_count':sum(not r['prospective']for r in rows),'prospective_count':2,'candidate_related_records':matched,'all_records':rows}
+(O/'derived/novelty-v2-all-records.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items()if k not in ['all_records','candidate_related_records']},indent=2));print('RELATED',[(r['id'],r['path'])for r in matched])

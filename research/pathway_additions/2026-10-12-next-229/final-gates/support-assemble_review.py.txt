@@ -1,0 +1,193 @@
+"""Root-only actual archive and native inspection/assembly. Never saves review/history.
+
+Requires --apply-archive: this future root execution appends only the exact
+new dossier/final-gates archive. Preparation never executes this command.
+"""
+import argparse
+import copy
+import shlex
+import subprocess
+import yaml
+from support import *
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('gates', 'preservation', 'preservation-assessment', 'qa', 'visual', 'history', 'root-intake', 'output'):
+        parser.add_argument('--' + name, required=True, type=Path)
+    parser.add_argument('--display-assessment', type=Path)
+    parser.add_argument('--additional-receipt', action='append', default=[], type=Path)
+    parser.add_argument('--apply-archive', action='store_true', required=True)
+    args = parser.parse_args()
+    verify_support()
+    assert_head(); gates, inputs = verify_gates(args.gates)
+    preserved = load(args.preservation)
+    assert preserved['status'] == 'passed' and preserved['gate_receipt'] == bind(args.gates)
+    assert preserved['target_sha256'] == TARGET_SHA and not preserved['problems']
+    assessment = load(args.preservation_assessment)
+    assert assessment['status'] == 'passed' and assessment['preservation'] == bind(args.preservation)
+    assert assessment['gate_receipt'] == bind(args.gates)
+    qa = load(args.qa)
+    assert qa['status'] == 'passed' and qa['render_receipt'] == gates['receipts'][0]
+    verify(qa['gate_observation'])
+    assert (qa['edges'], qa['qualifiers'], qa['evidence_uses'], qa['references']) == (82, 21, 190, 90)
+    for key in ('target', 'page', 'css', 'overview', 'stdout', 'stderr'):
+        verify(qa[key])
+    visual = load(args.visual)
+    assert visual['page'] == qa['page'] and visual['overview'] == qa['overview']
+    assert visual['programmatic_receipt'] == bind(args.qa) and visual['observed'].strip()
+    history = load(args.history)
+    assert history['status'] == 'native_execution_complete' and history['exit_code'] == 0
+    for key in ('history', 'stdout', 'stderr', 'command'):
+        verify(history[key])
+    assert datetime.fromisoformat(history['finished_at']) <= datetime.fromisoformat(gates['receipts'][0]['started_at'])
+    assert Path(history['history']['path']).is_relative_to(ROOT / 'history')
+    assert any(row['sha256'] == history['history']['sha256'] and
+               row['relative_path'] == str(Path(history['history']['path']).relative_to(ROOT))
+               for row in gates['render_history_inputs'])
+    for row in load(HERE / 'review-evidence-bindings.json'):
+        verify(row['original'])
+        verify(row['original'], ROOT / row['maintained_reference'])
+    # A root review of the sealed support must be separately documented; do not
+    # infer acceptance solely from possession of the package.
+    intake = load(args.root_intake)
+    assert intake['status'] == 'accepted' and intake['handoff'] == bind(HERE / 'handoff.json')
+    if preserved['node_display_delta']:
+        assert args.display_assessment is not None
+        display = load(args.display_assessment)
+        assert display['approval'] == preserved['approved_node_display_delta']
+        assert display['baseline'] == preserved['baseline_kgx']
+        assert display['target']['sha256'] == TARGET_SHA
+        assert display['all_prior_context_multiplicities_retained'] is True
+        for key in ('approval', 'baseline', 'target', 'current_nodes', 'kgx_implementation'):
+            verify(display[key])
+    out = external_new(args.output)
+    archive = ROOT / DOSSIER_REL / 'final-gates'
+    assert not archive.exists() and not archive.is_symlink()
+    out.mkdir(); archive.mkdir()
+    archive_map = []
+
+    def archive_copy(path, name):
+        path = Path(path); destination = archive / name
+        assert destination.parent == archive and not destination.exists()
+        body = path.read_bytes()
+        if path.suffix != '.png':
+            text = body.decode('utf-8')
+            if any(line.rstrip() != line for line in text.splitlines()) or text.endswith('\n\n'):
+                destination = destination.with_name(destination.name + '.json')
+                body = (json.dumps({'serialization': 'lossless-utf8-json', 'original': bind(path),
+                                    'text': text}, indent=2, ensure_ascii=False) + '\n').encode()
+        with destination.open('xb') as stream:
+            stream.write(body)
+        archive_map.append({'source': bind(path), 'archived': bind(destination)})
+        return destination
+
+    local = {}
+    for key, source in [('gates', args.gates), ('preservation', args.preservation),
+        ('preservation-assessment', args.preservation_assessment), ('gate-inputs', Path(gates['inputs']['path'])),
+        ('page-qa', args.qa), ('visual-observation', args.visual), ('history-execution', args.history),
+        ('root-support-intake', args.root_intake)]:
+        local[key] = archive_copy(source, key + '.json')
+    for key in ('stdout', 'stderr', 'command'):
+        archive_copy(history[key]['path'], 'history-' + key + '.json')
+    if args.display_assessment:
+        local['display-assessment'] = archive_copy(args.display_assessment, 'display-assessment.json')
+    for row in gates['receipts']:
+        for key in ('stdout', 'stderr'):
+            archive_copy(row[key]['path'], row['name'] + '.' + key)
+    for key in ('approved_node_display_delta', 'approved_extra_files'):
+        if preserved.get(key):
+            verify(preserved[key]); local[key] = archive_copy(preserved[key]['path'], key + '.json')
+    failures = []
+    if 'original_failure' in gates:
+        local['original-gate-failure'] = archive_copy(gates['original_failure']['path'], 'original-gate-failure.json')
+        local['gate-recovery-inputs'] = archive_copy(gates['recovery_inputs']['path'], 'gate-recovery-inputs.json')
+        recovery = load(gates['recovery_inputs']['path'])
+        if recovery.get('helper'):
+            verify(recovery['helper']); archive_copy(recovery['helper']['path'], 'recovery-helper.py.txt')
+        for i, row in enumerate(load(gates['original_failure']['path'])['receipts']):
+            if row['exit_code']:
+                failures.append(row)
+                for key in ('stdout', 'stderr'):
+                    archive_copy(row[key]['path'], 'original-failure-' + str(i) + '-' + key)
+    for i, source in enumerate(args.additional_receipt):
+        local['additional-receipt-' + str(i)] = archive_copy(source, 'additional-receipt-' + str(i) + '.json')
+    archive_copy(qa['gate_observation']['path'], 'page-qa-gate-observation.json')
+    for name in ('original.svg', 'styled.svg', 'overview.png'):
+        archive_copy(args.qa.parent / name, 'graph-' + name)
+    for name in ('handoff.json', 'artifact-manifest.json', 'review-content-fragments.json',
+                 'review-evidence-bindings.json', 'support.py', 'page_qa.py', 'preservation_assessment.py',
+                 'assemble_review.py', 'save_review.py', 'archive_native.py', 'inspect_with_inputs.py'):
+        archive_copy(HERE / name, 'support-' + name + ('.txt' if name.endswith('.py') else ''))
+    write(archive / 'archive-map.json', archive_map)
+    # Inspect AFTER archive; every archived observation has an exact current hash.
+    known = ['schema/record_review.yaml', 'scripts/record_review.py', 'docs/record-reviews.md',
+      'docs/record-review-profile.md', 'conf/record_review.yaml',
+      '.claude/skills/review-yaml-record/SKILL.md', '.claude/skills/add-pathway/SKILL.md',
+      'CLAUDE.md', 'justfile', 'docs/CURATION.md', 'docs/HARMONIZATION.md', 'docs/CAUSAL_GRAPHS.md',
+      'history/README.md', 'scripts/new_history_record.py', 'src/pathwaymech/schema/history.yaml',
+      'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml', 'src/pathwaymech/strict.py',
+      'conf/identifier_policy.yaml', 'src/pathwaymech/kgx.py', 'src/pathwaymech/graph_view.py',
+      'src/pathwaymech/assets/pathway-network.css', 'docs/IDENTIFIERS.md',
+      'scripts/build_source_identifier_snapshot.py', 'scripts/build_ontology_identifier_snapshot.py',
+      'tests/test_pathbank_identifier_authority.py', 'conf/identifier_sources.json',
+      'conf/rhea_identifier_updates.json', 'data/identifier_authorities/sources.json',
+      'data/identifier_authorities/ontology.json', PAGE_REL, 'pages/downloads/nodes.tsv', 'pages/downloads/edges.tsv']
+    current_inputs = set(known) | set(files(ROOT, DOSSIER_REL))
+    current_inputs.add(str(Path(history['history']['path']).relative_to(ROOT)))
+    write(out / 'native-inspection-inputs.json', sorted(current_inputs))
+    command = [PYTHON, '-B', str(HERE / 'inspect_with_inputs.py'), '--input-list',
+               str(out / 'native-inspection-inputs.json'), '--targets', str(HERE / 'targets.yaml')]
+    started = now(); result = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True)
+    (out / 'inspect.stdout').write_bytes(result.stdout); (out / 'inspect.stderr').write_bytes(result.stderr)
+    write(out / 'inspect-execution.json', {'command': command, 'cwd': str(ROOT), 'started_at': started,
+       'finished_at': now(), 'exit_code': result.returncode, 'stdout': bind(out / 'inspect.stdout'),
+       'stderr': bind(out / 'inspect.stderr')})
+    result.check_returncode(); inspection = json.loads(result.stdout)
+    assert inspection['source']['git_revision'] == BASE
+    record = yaml.safe_load((ROOT / TARGET_REL).read_bytes())
+    assert len(record['mechanistic_edges']) == 82 and len(record['references']) == 90
+    document = copy.deepcopy(load(HERE / 'review-content-fragments.json')['review_fields'])
+    finished = now()
+    document.update({'review_id': datetime.fromisoformat(finished).strftime('%Y%m%dT%H%M%SZ') + '-ethylene-glycol-degradation',
+       'started_at': started, 'finished_at': finished, 'skill': '.claude/skills/review-yaml-record/SKILL.md',
+       'completion': 'completed', 'verdict': 'pass_with_limitations',
+       'source': inspection['source'], 'targets': inspection['targets'],
+       'reviewer': {'identity': 'Codex /root (maintained integrator; support preparation by /root/eg_finalization_support)',
+          'kind': 'agent', 'independence': 'self_review',
+          'independence_basis': 'Root integrated this record and reviews current execution/preservation/representation. Scientific content explicitly inherits separately independent original/successor assessments. Support preparation is not an independent literature review.'},
+       'summary': 'Exact82-edge,90-reference successor retains accepted scientific fixes446/447 and explicitly bridged actual canonical authorities. Full maintained gates, old-corpus preservation and static graph/text checks passed. Root reads this assembled content before native validation/save; no future lifecycle success is claimed.'})
+    for key, path in local.items():
+        document['evidence'].append({'evidence_id': key, 'kind': 'validation', 'reference': str(path.relative_to(ROOT)),
+          'accessed_at': finished, 'support': 'supports', 'snapshot_sha256': bind(path)['sha256'],
+          'summary': 'Actual exact receipt; original bindings, scope and results retained.'})
+    document['checks'] = [{'check_id': 'maintained-' + row['name'], 'name': 'Actual maintained ' + row['name'],
+       'status': 'passed', 'required': True, 'target_ids': [TARGET_ID],
+       'summary': 'Root-executed native command passed; actual streams and time retained.',
+       'command': shlex.join(row['command']), 'exit_code': row['exit_code'], 'evidence_ids': ['gates'],
+       'scope_note': 'Full maintained run contains pre-render history; later review/archive additions require final checks.'}
+       for row in gates['receipts']]
+    for i, row in enumerate(failures):
+        document['checks'].append({'check_id': 'original-failed-' + str(i), 'name': 'Retained original failed ' + row['name'],
+          'status': 'failed', 'required': False, 'target_ids': [TARGET_ID], 'command': shlex.join(row['command']),
+          'exit_code': row['exit_code'], 'summary': 'Original failed attempt preserved; successful required successor is separately bound. See exact streams and recovery receipt for cause, not an inferred failure class.',
+          'evidence_ids': ['original-gate-failure', 'gate-recovery-inputs']})
+    for key, area, summary, eids in [
+      ('preservation', 'consistency', 'All229 prior records/pages, prior review/history bytes, old authority objects, old KGX edges and source-context multiplicities remain exact. Shared display deltas, if any, are separately byte-bound in preservation approval.', ['preservation', 'preservation-assessment']),
+      ('representation', 'representation', visual['observed'] + ' Exact82 ordered graph triples,21 qualifier descriptions,190 evidence statements and90 reference identities are present.', ['page-qa', 'visual-observation'])]:
+        document['checks'].append({'check_id': key, 'name': key, 'status': 'passed', 'required': True,
+           'target_ids': [TARGET_ID], 'summary': summary, 'evidence_ids': eids})
+        document['assessments'].append({'assessment_id': 'root-' + key, 'area': area, 'topic': key,
+           'outcome': 'supported', 'target_ids': [TARGET_ID], 'summary': summary, 'evidence_ids': eids})
+    assert all(row['accessed_at'].endswith('Z') for row in document['evidence'])
+    assert_history(ROOT, gates['render_history_inputs'])
+    write(out / 'completed-review.json', document)
+    write(out / 'assembly.json', {'status': 'assembled_pending_root_read_native_serialization_save',
+        'at': now(), 'target': bind(ROOT / TARGET_REL), 'review': bind(out / 'completed-review.json'),
+        'inspection': bind(out / 'inspect.stdout'), 'archive_map': bind(archive / 'archive-map.json'),
+        'gate_receipt': bind(args.gates), 'inputs': len(current_inputs), 'maintained_review_saved': False,
+        'late_history_written': False})
+    print(json.dumps(load(out / 'assembly.json'), indent=2))
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,143 @@
+"""Original-selected checks and biological adversarial probes, independent of YAML generation.
+
+Checks locate original evidence and compare a bounded source-derived contract to the
+candidate. They do not purport to automate all scientific prose interpretation.
+"""
+from pathlib import Path
+from lxml import etree,html
+import json,hashlib,copy,re,subprocess,collections,sys
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');H=Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,v):(A/p).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+src=json.loads((A/'ledgers/source-bindings.json').read_text());ledger=json.loads((A/'ledgers/evidence-original-selectors.json').read_text());hashes={}
+for id,b in src.items():
+ p=Path(b['path']);hashes.setdefault(str(p),sha(p));assert hashes[str(p)]==b['sha256'] and p.stat().st_size==b['bytes'],id
+# Re-extract exact native Rhea fragments from the complete unchanged RDF.
+import extract_rhea as rr
+rxd={d['id']:d for m in rr.rows for d in m['directions']}
+trees={};js={};checked=[]
+def replay(x):
+ b=x['binding'];p=Path(b['path']);assert hashes[str(p)]==b['sha256'];typ=x['selector_type'];s=x['selector']
+ if typ=='xpath':
+  t=trees.setdefault(str(p),html.parse(str(p)) if p.suffix=='.html' else etree.parse(str(p)))
+  vals=t.xpath(s);assert vals,'original locator empty'
+  out=[etree.tostring(v,encoding='unicode') if isinstance(v,etree._Element) else str(v) for v in vals]
+ elif typ in ['uniprot_comment','uniprot_bulk_comment']:
+  j=js.setdefault(str(p),json.loads(p.read_text()))
+  if typ=='uniprot_bulk_comment':j=next(z for z in j['results'] if z['primaryAccession']==s['accession']);s=s['comment']
+  out=[v for v in j['comments'] if v['commentType']==s]
+ elif typ=='pdf_text':
+  q=Path(s['extraction_path']);assert sha(q)==s['extraction_sha256'];assert s['needle'] in q.read_text();out=s['needle']
+ elif typ=='rhea_side':out=next(v for v in rxd[s['reaction']]['sides'][s['side']] if v['participant']==s['participant'])
+ else:raise AssertionError(typ)
+ assert out==x['observed'],(x['evidence']['reference_id'],s)
+ return True
+for i,x in enumerate(ledger):replay(x);checked.append(dict(index=i,reference=x['evidence']['reference_id'],selector_type=x['selector_type'],matched=True))
+def tree(ref):
+ p=Path(src[ref]['path']);t=etree.parse(str(p));org='META' if ref.startswith('MetaCyc:') else 'ECOLI'
+ assert t.getroot().get('ptools-version')=='27.0' and t.findtext('metadata/query')==org+':'+ref.split(':')[1]
+ assert t.xpath('/ptools-xml/metadata/PGDB/@orgid')==[org]
+ assert t.xpath('/ptools-xml/*[@detail="full"]/@frameid')==[ref.split(':')[1]]
+ return t
+native=tree('MetaCyc:PWY0-1280')
+assert set(native.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid'))=={'GLYCOLALD-DEHYDROG-RXN','GLYCOLALDREDUCT-RXN'}
+chemical=[]
+for rx in ['RHEA:27631','RHEA:20002']:
+ assert rxd[rx]['orientation']=='left_to_right' and rxd[rx]['formula_charge_imbalance']=={}
+ for side,pred in [('substrates','consumes'),('products','produces')]:
+  for q in rxd[rx]['sides'][side]:
+   c=q['properties']['accession'][0];chemical.append(dict(subject=c if pred=='consumes' else rx,predicate=pred,object=rx if pred=='consumes' else c,coefficient=q['coefficient'],source_participant=q['participant']))
+assert len(chemical)==11
+assert [x['coefficient'] for x in chemical if x['subject']=='RHEA:20002' and x['object']=='CHEBI:15378']==[2]
+assemblies=[]
+for comp,chain,acc,count in [('LACTALDREDUCT-CPLX','LACTALDREDUCT-MONOMER','P0A9S1',2),('ALD-CPLX','LACTALDDEHYDROG-MONOMER','P25553',4),('PC00004','PD00257','P0ACJ8',2),('CPLX0-7797','PD00197','P0A9E5',2),('PC00027','PD00347','P0A6X7',None),('PC00027','PD00348','P0A6Y1',None),('CPLX0-7650','PD00444','P0ACK8',None),('MONOMER0-160','PD03831','P03004',None)]:
+ t=tree('EcoCyc:'+comp);parts=t.xpath(f'/ptools-xml/Protein/component[Protein[@frameid="{chain}"]]');assert len(parts)==1
+ assert parts[0].xpath('coefficient/text()')==([] if count is None else [str(count)])
+ assert tree('EcoCyc:'+chain).xpath('/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]/dblink-oid/text()')==[acc]
+ assemblies.append(dict(subject='EcoCyc:'+comp,predicate='has_part',object='UniProtKB:'+acc,coefficient=count,native_chain=chain))
+genes=[]
+for gid,name,nativeid,acc in [('947273','fucO','EG10351','P0A9S1'),('945672','aldA','EG10035','P25553')]:
+ t=etree.parse(src['Entrez:'+gid]['path']);assert t.xpath('//Gene-track_geneid/text()')==[gid]
+ assert t.xpath('//Gene-ref_locus/text()')==[name]
+ assert t.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()')==['511145']
+ assert nativeid in t.xpath('//Dbtag[Dbtag_db="ECOCYC"]/Dbtag_tag/Object-id/Object-id_str/text()')
+ j=json.loads(Path(src['UniProtKB:'+acc]['path']).read_text());assert j['sequence']['length']==(382 if acc=='P0A9S1' else 479)
+ assert any(q['database']=='GeneID' and q['id']==gid for q in j['uniProtKBCrossReferences'])
+ genes.append(dict(gene='Entrez:'+gid,protein='UniProtKB:'+acc,taxon='NCBITaxon:511145',native=nativeid,reference_length=j['sequence']['length']))
+reg=[]
+subjectmap={'CPLX0-226':'EcoCyc:CPLX0-226','PHOSPHO-ARCA':'UniProtKB:P0A9Q1','MONOMER0-160':'EcoCyc:MONOMER0-160','CPLX0-7797':'EcoCyc:CPLX0-7797','PD00365':'UniProtKB:P0ACH5','PD04418':'UniProtKB:P0ACI0','PD00406':'UniProtKB:P0A9E2','CPLX0-7650':'EcoCyc:CPLX0-7650','G7518-MONOMER':'UniProtKB:P52044'}
+for ref in src:
+ if not ref.startswith('EcoCyc:REG0-'):continue
+ t=tree(ref);v=t.find('Regulation');regulator=v.xpath('regulator/Protein/@frameid');target=v.xpath('regulated-entity/*/@frameid')
+ if not regulator:continue
+ assert len(regulator)==1 and len(target)==1
+ s=subjectmap[regulator[0]];n=target[0]
+ if n in ['PM324','TU102','EG10035']:tu='TU102';gene='Entrez:945672';frame='EG10035'
+ elif n in ['PM00180','TU00135']:tu='TU00135';gene='Entrez:947273';frame='EG10351'
+ else:raise AssertionError((ref,target))
+ assert frame in tree('EcoCyc:'+tu).xpath('/ptools-xml/Transcription-Unit/component/Gene/@frameid')
+ mode=v.findtext('mode');assert mode in ['+','-']
+ reg.append(dict(subject=s,predicate='activates' if mode=='+' else 'inhibits',object=gene,reference=ref,native_regulator=regulator[0],native_target=n,unit=tu,evidence_codes=v.xpath('evidence/Evidence-Code/@frameid')))
+assert tree('EcoCyc:PHOSPHO-ARCA').xpath('/ptools-xml/Protein/unmodified-form/Protein/@frameid')==['ARCA-MONOMER']
+
+# Primary-source probes select specific contrasting observations without consulting YAML.
+def primary(ref,xp,words):
+ p=Path(src[ref]['path']);t=html.parse(str(p)) if p.suffix=='.html' else etree.parse(str(p));v=t.xpath(xp);assert v
+ txt=' '.join(' '.join(' '.join(z.itertext()).split()) for z in v)
+ for w in words:assert w.lower() in txt.lower(),(ref,xp,w)
+ return dict(reference=ref,xpath=xp,required_source_terms=words,sha256=sha(p))
+probes=[primary('PMID:16731973','//p[contains(.,"esterase") and contains(.,"activated")]', ['NADH','ALD']),primary('PMID:16731973','//p[contains(.,"propionaldehyde") and contains(.,"competitive")]', ['NADH','inhibition']),primary('PMID:9202484','//p[contains(.,"himA mutant")]', ['no significant effect','HN1491','K2704']),primary('PMID:17173928','//p[contains(.,"pBSET")]', ['BL21(DE3)','side product','taxadiene synthase']),primary('PMID:36002154','//p[contains(.,"half") and contains(.,"Hill")]', ['K','Michaelis','cooperativity']),primary('PMID:33482812','/article/body/sec[5]/sec[1]/p[2]', ['yeast extract','2','10','IPTG']),primary('PMID:39272202','/article/body/sec[3]/sec[4]/p[3]', ['third module','fourth module','Module III','Module IV']),primary('PMID:35682733','/article/body/sec[2]/sec[4]/p',['stationary','decreased','increased']),primary('PMID:12003946','//table[.//td[contains(.,"P25553")]]',['AldA','P25553'])]
+# Newly extracted PDF bodies provide independent full-source text, not only old snippets.
+pdf=[];(A/'pdf-replay').mkdir(exist_ok=True)
+for id in ['PMID:6336729','PMID:3275622']:
+ out=A/'pdf-replay'/(id.replace(':','-')+'.txt');cmd=['/usr/bin/swift','-module-cache-path',str(A/'transient/swift-module-cache'),str(A/'extract_pdf.swift'),src[id]['path'],str(out)];r=subprocess.run(cmd,capture_output=True,text=True);assert r.returncode==0,r.stderr
+ tx=out.read_text();assert 'glycolaldehyde' in tx.lower()
+ pdf.append(dict(reference=id,command=cmd,exit=r.returncode,stdout=r.stdout,stderr=r.stderr,source_sha256=src[id]['sha256'],text_sha256=sha(out),text_bytes=out.stat().st_size))
+d=yaml.safe_load((A/'draft/ethylene-glycol-degradation.yaml').read_text())
+def audit(d):
+ es=d['mechanistic_edges'];triples=[(x['subject'],x['predicate'],x['object']) for x in es]
+ actual=[t for t in triples if t[1] in ['consumes','produces']]
+ expected=[(x['subject'],x['predicate'],x['object']) for x in chemical]
+ assert collections.Counter(actual)==collections.Counter(expected),'exact native chemical side multiset'
+ assert {e['subject'] for e in es if e['predicate']=='part_of' and e['object']==d['id']}=={'RHEA:27631','RHEA:20002'},'two core members'
+ for x in chemical:
+  e=next(e for e in es if (e['subject'],e['predicate'],e['object'])==(x['subject'],x['predicate'],x['object']))
+  assert any(f'coefficient {x["coefficient"]}.' in v['source_assertion'] and f'contains{x["coefficient"]}' in v['source_locator'] for v in e['evidence']),'native side multiplicity'
+ for a in assemblies:assert (a['subject'],'has_part',a['object']) in triples,'native assembly identity'
+ for r in reg:
+  ee=[e for e in es if r['reference'] in [v['reference_id'] for v in e['evidence']]]
+  assert ee and all((e['subject'],e['predicate'],e['object'])==(r['subject'],r['predicate'],r['object']) for e in ee),'native regulatory sign/endpoint'
+ for e in es:
+  if e['subject']=='UniProtKB:P0A9Q1':assert any(q['endpoint']=='subject' and q['kind']=='molecular_state' and 'phosphorylat' in q['description'].lower() for q in e.get('endpoint_qualifiers',[])),'ArcA modified endpoint'
+  if e['subject']=='EcoCyc:PC00027':assert e['predicate']=='has_part','IHF binding is unsigned'
+  if e['subject'].startswith('PathBank:'):assert e['predicate']=='has_part','opaque Interaction is unsigned'
+  if e['predicate'] in ['catalyzes','inhibits','activates'] and any(v['reference_id'] in ['PMID:6336729','PMID:3275622','PMID:16731973','PMID:31850327'] for v in e['evidence']):assert e.get('endpoint_qualifiers'),'assay construct survives'
+ pos=[e for e in es if (e['subject'],e['predicate'],e['object'])==('CHEBI:57945','activates','EcoCyc:ALD-CPLX')]
+ assert len(pos)==1 and 'esterase' in pos[0]['endpoint_qualifiers'][0]['description'],'opposite NADH sign restricted to esterase'
+ assert not any(e['subject']=='Entrez:93779199' or e['object']=='Entrez:93779199' for e in es),'Shigella GeneID excluded'
+ return True
+audit(d);neg=[]
+def negative(name,mutate):
+ x=copy.deepcopy(d);mutate(x)
+ try:audit(x)
+ except AssertionError as e:neg.append(dict(name=name,rejected=True,reason=str(e)));return
+ raise AssertionError('negative escaped: '+name)
+def edit(d,id,key,value):next(e for e in d['mechanistic_edges'] if e['id']==id)[key]=value
+negative('reverse core direction',lambda d:edit(d,'eg-003','predicate','produces'))
+negative('neutral acid substituted for glycolate',lambda d:edit(d,'eg-011','object','CHEBI:17497'))
+negative('second-event proton coefficient collapsed',lambda d:next(e for e in d['mechanistic_edges'] if e['id']=='eg-013')['evidence'][0].update(source_assertion='Coefficient 1.',source_locator='contains1'))
+negative('CRP repression sign',lambda d:edit(d,'eg-056','predicate','inhibits'))
+negative('wrong neighboring fucO endpoint for aldA',lambda d:edit(d,'eg-060','object','Entrez:947273'))
+negative('remove modified ArcA state',lambda d:next(e for e in d['mechanistic_edges'] if e['id']=='eg-058').pop('endpoint_qualifiers'))
+negative('invent signed IHF effect',lambda d:edit(d,'eg-047','predicate','activates'))
+negative('opaque PathBank Interaction as inhibition',lambda d:edit(d,'eg-080','predicate','inhibits'))
+negative('transfer NADH esterase activation to dehydrogenase',lambda d:next(e for e in d['mechanistic_edges'] if e['id']=='eg-039')['endpoint_qualifiers'][0].update(description='Unqualified glycolaldehyde dehydrogenase activation'))
+negative('erase historical AldA assay qualifier',lambda d:next(e for e in d['mechanistic_edges'] if e['id']=='eg-036').pop('endpoint_qualifiers'))
+negative('wrong Shigella reference gene',lambda d:edit(d,'eg-065','object','Entrez:93779199'))
+x=copy.deepcopy(next(x for x in ledger if x['selector_type']=='xpath'));x['selector']='/ptools-xml/Pathway/definitely_missing'
+try:replay(x)
+except AssertionError as e:neg.append(dict(name='absent source locator',rejected=True,reason=str(e)))
+else:raise AssertionError('bad source locator escaped')
+save('source-replay-checks.json',dict(target_sha256=sha(A/'draft/ethylene-glycol-degradation.yaml'),status='passed',reference_bodies=len(src),distinct_body_paths=len(hashes),literal_original_replays=checked,chemical_sides=chemical,assemblies=assemblies,genes=genes,native_regulations=reg,primary_contrast_probes=probes,fresh_pdf_commands=pdf,negative_controls=neg,limits='Original-locator replay and bounded source-selected biological contracts. Full interpretation remains human scientific review; image cell values were visually read, not OCR-certified. No full tests/canonical/integration claim.'))
+print(len(checked),'original observations,',len(chemical),'sides,',len(reg),'native regulations,',len(probes),'primary probes,',len(neg),'negative controls passed')

@@ -1,0 +1,51 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess
+import yaml
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-229-author-20261012');R=Path('/private/tmp/pathwaymech-next-229-science-review-20261012')
+def sha(p):
+    with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):
+    p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def save(n,v):(C/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert not (C/'handoff.json').exists()
+d=yaml.safe_load((C/'draft/ethylene-glycol-degradation.yaml').read_text());ledger=json.loads((C/'ledgers/evidence-original-selectors.json').read_text());ctx=json.loads((C/'ledgers/context-assertions.json').read_text())
+for c in ctx:
+    for e in c['evidence']:assert any(r['evidence']==e for r in ledger),(c['key'],e)
+claims=json.loads((C/'claim-dispositions.json').read_text());assert len(claims['claims'])==50
+for claim,key in [('EG08-FucO-metal','FucO-cleaved-WT-solution-metal-comparator'),('EG09-FucO-zinc','FucO-prior-Cu-Cd-report')]:assert key in next(x for x in claims['claims'] if x['key']==claim)['context_assertion_keys']
+results=json.loads((C/'candidate-checks/results.json').read_text());assert results['schema']=='pass' and results['source_role_negative_controls']==5
+for v in json.loads((C/'validation/commands.json').read_text()):assert v['exit_code']==0 and sha(v['path'])==v['sha256']
+counts=[]
+for root,n in [(A,360),(R,43)]:
+    m=json.loads((root/'artifact-manifest.json').read_text());assert len(m['artifacts'])==n
+    for row in m['artifacts']:assert sha(row['path'])==row['sha256']
+    counts.append(dict(manifest=bind(root/'artifact-manifest.json'),unchanged_artifacts=n))
+executed=(C/'prepare_correction.py').read_text().replace("if row['key']=='EG09-FucO-zinc':","if row['key']=='EG09-Zn-Fe-competition':")
+(C/'prepare_correction.executed.py').write_text(executed)
+save('preparation-command-receipt.json',dict(command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','prepare_correction.py'],cwd=str(C),exit_code=0,terminal_start='9d8a0f',terminal_completion='9ae020',executed_script=bind(C/'prepare_correction.executed.py'),scope='Actual original preparation execution reconstructed losslessly from the one-line later key correction; the target was unchanged. The independently executed finish_dispositions.py receipt records the EG09 join completion.',output=results['target'],exact_start_timestamp='not separately captured; file/terminal receipts retained'))
+save('seal-checks.json',dict(at=datetime.datetime.now(datetime.timezone.utc).isoformat(),predecessor_packets_still_exact=counts,all_17_context_evidence_items_joined=True,all_50_preflight_dispositions_retained=True,three_field_semantic_delta=True,closed_issue_claim=False,target=bind(C/'draft/ethylene-glycol-degradation.yaml')))
+(C/'AUTHOR-HANDOFF.md').write_text('''# Ethylene glycol scientific correction successor
+
+This immutable external author successor addresses the two minor findings from the independently sealed EG review: [issue 446](https://github.com/CultureBotAI/PathwayMech/issues/446), `eg-fuco-cu-cd-context-omission`, and [issue 447](https://github.com/CultureBotAI/PathwayMech/issues/447), `eg-fuco-iron-occupancy-construct-conflation`. It is an author correction, not independent scientific acceptance, a native saved review, or a claim that either issue is closed.
+
+Exactly three record string fields change: description, `eg-025.evidence[1].source_assertion`, and `eg-025.endpoint_qualifiers[0].description`. All 82 edge identities, 81 complete unchanged edges, 90 reference objects, 61 declared identities/labels, 21 qualifier identities, two core events and eleven chemical sides remain exact. `record-semantic-delta.json` records the entire semantic delta; rolling back those strings exactly recovers the original parsed record.
+
+The pCM1/pQE32 N-terminal His6 crystal preparation in M15(pREP4) now scopes only crystal-site evidence on eg-025. The 0.53 Fe atom/subunit WT solution comparator is retained in description/context and explicitly attributed by joining the exact Methods (pCM2/pGEX3X, GST/factor-Xa cleavage, BL21(DE3)) with Results (WT examined in parallel with D196L/H200A/H200F). This is a contextual source join, not an assertion that the Results independently name the plasmid or that occupancy is universal. No simultaneous mixed construct is introduced.
+
+Cu(II)/Cd(II) FucO inhibition is retained as the 2005 paper's report of prior work, with its exact reference-40 identity. The older PMID4306747 evidence remains inspected abstract/landing material; its full experimental body was not read. No Cu/Cd concentration, direct binding, EG oxidation IC50 or physiological threshold is inferred. The separate direct 2005 Figure 4 Zn/Fe experiment is unchanged. No new chemical participant, source reference or graph edge is added.
+
+All original 50 claim dispositions remain, with correction contexts joined to EG08 and EG09. There are now 17 context assertions and 199 source-selector observations. Fresh primary Methods, Results, earlier-work paragraph and reference-40 objects were inspected and replayed; all 90 reference-body hashes were rechecked. The original 360-file author packet and 43-file independent review packet were freshly verified before and after correction and remain untouched.
+
+Actual bounded checks passed: native candidate schema/strict validation; complete identifier checking against exact unchanged original-backed author proposals; both production source/ontology ID collectors and label selection; five corrected source-selector replays; four source-role substitution negatives plus the original construct-regression negative; all 82 KGX/SVG edge identities, evidence arrays and all 21 exported qualifiers; corrected prose presence in generated HTML. No browser interaction or visual-layout assessment is claimed. Actual commands/exits are in `validation/`; no whole-corpus tests or full builders ran here.
+
+Root's completed native canonical build used the original c248... target, not this corrected target. `authority-input-bridge.json` proves the production collectors return exactly the same selected source/ontology identities and labels for both targets and that reference objects are identical. No authority manifest, Rhea selector or source-body change is proposed. Root must bind its accepted canonical outputs and later maintained integration to this explicit bridge; this packet does not silently retarget the historical build.
+
+All broader scientific findings, source-access limitations, historical strains and numbering, source conflicts and preflight novelty work are inherited exactly from the original author/review packets except the two specified corrections. No source-exhaustion claim is made. Root owns independent successor acceptance, maintained adoption, native saved review/history, all-corpus gates, PR/merge and branch cleanup. The original next230 preflight remains separate and in progress.
+
+Replay scripts are external-only. To replay author preparation, copy the scripts into a fresh external directory; the target writer refuses an existing target. `prepare_correction.executed.py` preserves the original actual execution with its nonmatching EG09 dossier key; `finish_dispositions.py` and its actual receipt complete that join. Final `prepare_correction.py` contains the correct key. This initial dossier-only miss did not alter the target or any original packet.
+''')
+r=subprocess.run(['rg','--files','--hidden','--no-ignore','--follow',str(C)],capture_output=True,text=True,check=True)
+files=sorted(Path(x) for x in r.stdout.splitlines() if Path(x).name not in ['artifact-manifest.json','handoff.json'])
+artifacts=[bind(p) for p in files];save('artifact-manifest.json',dict(scope='All external correction artifacts, including hidden/ignored/followed files; no self-manifest/handoff, no source packet or shared-cache writes.',artifact_count=len(artifacts),artifacts=artifacts))
+save('handoff.json',dict(status='sealed_author_scientific_correction_pending_independent_successor_review',sealed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),target=bind(C/'draft/ethylene-glycol-degradation.yaml'),report=bind(C/'AUTHOR-HANDOFF.md'),manifest=bind(C/'artifact-manifest.json'),artifact_count=len(artifacts),original_author=bind(A/'handoff.json'),independent_predecessor_review=bind(R/'handoff.json'),dispositions=bind(C/'dispositions.json'),authority_input_bridge=bind(C/'authority-input-bridge.json'),semantic_delta=bind(C/'record-semantic-delta.json'),actual_commands=bind(C/'validation/commands.json'),counts=results,independent_acceptance=False,maintained_adoption=False,full_build_rerun=False,source_exhaustion=False))
+print(json.dumps(dict(handoff=bind(C/'handoff.json'),manifest=bind(C/'artifact-manifest.json'),artifacts=len(artifacts),target=bind(C/'draft/ethylene-glycol-degradation.yaml'))))

@@ -1,0 +1,19 @@
+"""Fetch only original downstream interface authorities requested by record author."""
+import concurrent.futures,datetime,hashlib,json,urllib.request
+from pathlib import Path
+O=Path(__file__).parent
+jobs=[]
+for frame in ['PWY-6649','GLYOXDEG-PWY','GLYCOLATEMET-PWY']:
+ jobs.append((f'META-{frame}.html','https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object='+frame))
+for org,frame in [('META','GLYCOL-GLYOXDEG-PWY'),('ECOLI','GLYCOL-GLYOXDEG-PWY')]:
+ jobs.append((f'{org}-{frame}.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+org+':'+frame))
+def fetch(job):
+ name,url=job;p=O/'raw'/name;assert not p.exists()
+ d={'url':url,'destination':str(p),'at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech authority research'}),timeout=40) as r:b=r.read();d.update(status=r.status,response_url=r.url,content_type=r.headers.get('Content-Type'))
+  p.write_bytes(b);d.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+ except Exception as e:d.update(error=str(e),type=type(e).__name__)
+ print(name,d.get('status',d.get('error')),flush=True);return d
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:rows=list(pool.map(fetch,jobs))
+(O/'interface-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')

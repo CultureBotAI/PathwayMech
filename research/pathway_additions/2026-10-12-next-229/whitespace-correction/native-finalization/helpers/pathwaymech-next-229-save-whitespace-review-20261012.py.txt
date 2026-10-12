@@ -1,0 +1,100 @@
+import copy
+import hashlib
+import json
+import os
+import runpy
+import shlex
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+ASSEMBLY = Path('/private/tmp/pathwaymech-next-229-whitespace-review-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-229-whitespace-native-20261012')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+sys.path.insert(0, str(ROOT / 'src'))
+sys.path.insert(0, '/private/tmp/pathwaymech-next-229-integration-preparation-20261012')
+from common import inventory
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def bind(path):
+    body = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+assembly = json.loads((ASSEMBLY / 'assembly.json').read_text())
+assert bind(ASSEMBLY / 'assembled-review.json') == assembly['review']
+doc = copy.deepcopy(json.loads((ASSEMBLY / 'assembled-review.json').read_text()))
+history = json.loads(Path('/private/tmp/pathwaymech-next-229-whitespace-execution-20261012/render-history-inputs.json').read_text())
+assert inventory(ROOT, 'history') == history
+assert len(doc['assessments']) == 91 and len(doc['checks']) == 16 and len(doc['source']['inputs']) == 479
+doc['scope']['description'] = 'The full 82-edge record is assessed through explicit inheritance of unchanged science. Current root work covers two bibliography title endings, corrective history and rendering, and exact preservation.'
+doc['summary'] = 'Two trailing-whitespace title endings are corrected for issue #449. Current native/strict validation, identifier checks, rendering, exports, page consistency, and exact preservation passed. All scientific content, 82 edge identities, 90 references, and 21 qualifiers remain. Four new EG reference_metadata cells and the current curation-history display comprise the derived correction. The earlier 2,394 passed / 3 skipped full test run remains a historical observation of target 8e52.'
+doc['reviewer']['independence_basis'] = 'Root applied the two bibliography title trims and assesses their exact semantic and generated-output changes. All 90 prior assessments are preserved as inherited observations; independent source science is explicitly inherited, not newly performed.'
+doc['related_reviews'][0]['relationship'] = 'Preserved predecessor: all 90 assessments inherited through the exact two-title semantic and generated-output comparison.'
+doc['assessments'][-1]['summary'] = 'The correction for issue #449 is supported: exactly two bibliography title endings were trimmed. Original source bodies, identifiers, URLs, versions, hashes, scientific statements, edges, qualifiers, and canonical identifier selections remain unchanged. The current generated page has no trailing whitespace; the staged-diff retry follows separately. The external issue disposition is recorded here without fabricating a native predecessor finding.'
+doc['limitations'][2] = 'The full test run (2,394 passed, 3 skipped) and earlier whole-corpus gates ran on historical target 8e52 before this correction. They were not rerun for two bibliography title trims; current corrective checks are separately bound.'
+doc['notes'][0] = 'All 90 predecessor assessments remain exactly inherited through the current preservation proof.'
+gates = json.loads(Path('/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/execution.json').read_text())
+for row in gates['receipts']:
+    check = next(c for c in doc['checks'] if c['check_id'] == 'bibliography-' + row['name'])
+    check['command'] = shlex.join(row['command'])
+doc['finished_at'] = now()
+doc['review_id'] = datetime.fromisoformat(doc['finished_at']).strftime('%Y%m%dT%H%M%SZ') + '-ethylene-glycol-bibliography'
+OUT.mkdir()
+write(OUT / 'root-read.json', {'status': 'accepted', 'reviewer': 'Codex /root', 'finished_at': now(),
+    'assembly': bind(ASSEMBLY / 'assembled-review.json'), 'read_terminal': 'db86d2/0',
+    'observed': 'Read assembled scope, summary, reviewer, relationship, all limitations/notes, new issue449 assessment, six new evidence entries, and all16 check statuses/scopes. Previously read90 inherited assessments remain exact. Root improves spacing/readability in newly authored text and shell-quotes current displayed commands from actual argv; no inherited assessment or science changes. No fresh full-literature or repeated-full-test claim.'})
+write(OUT / 'root-assessed-review.json', doc)
+native_path = ROOT / 'scripts/record_review.py'
+native = runpy.run_path(str(native_path), run_name='eg_bibliography_native')
+started = now()
+try:
+    native['validate_review'](doc, ROOT / 'schema/record_review.yaml')
+    native['assert_current_source'](ROOT, doc)
+    serialized = native['_dump_document'](doc)
+    roundtrip = native['load_document'](serialized.encode())
+    assert roundtrip == doc
+    native['validate_review'](roundtrip, ROOT / 'schema/record_review.yaml')
+    (OUT / 'completed-review.yaml').write_text(serialized)
+except Exception as exc:
+    write(OUT / 'serialization-failure.json', {'started_at': started, 'finished_at': now(),
+        'type': type(exc).__name__, 'message': str(exc), 'history_unchanged': inventory(ROOT, 'history') == history})
+    raise
+write(OUT / 'serialization.json', {'status': 'passed', 'started_at': started, 'finished_at': now(),
+    'input': bind(OUT / 'root-assessed-review.json'), 'output': bind(OUT / 'completed-review.yaml'),
+    'native_helper': bind(native_path), 'validated_before_and_after_dump': True})
+receipts = []
+env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONPATH': str(ROOT / 'src')}
+for name, command in [
+    ('validate', [PYTHON, '-B', str(native_path), 'validate', str(OUT / 'completed-review.yaml')]),
+    ('save', [PYTHON, '-B', str(native_path), 'save', '--content', str(OUT / 'completed-review.yaml')]),
+    ('check', [PYTHON, '-B', str(native_path), 'check', '--require-reviews', '--base', 'ed6337d0adbcee81f962c80391e12c0dcc084908'])]:
+    assert inventory(ROOT, 'history') == history
+    start = now()
+    result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
+    (OUT / (name + '.stdout')).write_bytes(result.stdout)
+    (OUT / (name + '.stderr')).write_bytes(result.stderr)
+    receipts.append({'name': name, 'command': command, 'started_at': start, 'finished_at': now(),
+        'exit_code': result.returncode, 'stdout': bind(OUT / (name + '.stdout')), 'stderr': bind(OUT / (name + '.stderr'))})
+    (OUT / 'execution.json').write_text(json.dumps({'status': 'failed' if result.returncode else 'running', 'receipts': receipts}, indent=2) + '\n')
+    print(name, result.returncode, flush=True)
+    if result.returncode:
+        raise SystemExit(result.returncode)
+assert inventory(ROOT, 'history') == history
+bundle = ROOT / 'reviews/structured' / doc['review_id']
+(OUT / 'execution.json').write_text(json.dumps({'status': 'passed', 'receipts': receipts,
+    'saved_yaml': bind(bundle / 'review.yaml'), 'saved_markdown': bind(bundle / 'review.md'),
+    'late_history_written': False, 'assembly': bind(ASSEMBLY / 'assembly.json')}, indent=2) + '\n')
+print(json.dumps({'status': 'passed', 'review_id': doc['review_id']}))

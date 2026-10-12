@@ -1,0 +1,70 @@
+"""Check proposal preservation and original bridges without running a canonical build."""
+from pathlib import Path
+import hashlib
+import json
+
+O = Path(__file__).parent
+B = Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def main():
+    checks = []
+    def check(name, value):
+        assert value, name
+        checks.append(name)
+    for name in ('sources.json', 'ontology.json'):
+        prior = read(B / name)
+        proposed = read(O / 'proposals' / name)
+        for section in ('terms', 'sources'):
+            check(name + ' all prior ' + section + ' unchanged',
+                  all(proposed[section].get(k) == v for k, v in prior[section].items()))
+    base_manifest = read(B / 'manifest.json')
+    new_manifest = read(O / 'proposals/manifest.json')
+    check('all prior manifest entries retain exact objects/order', new_manifest[:len(base_manifest)] == base_manifest)
+    check('manifest keys unique', len({e['key'] for e in new_manifest}) == len(new_manifest))
+    old_rhea = read(B / 'rhea-updates.json')
+    new_rhea = read(O / 'proposals/rhea-updates.json')
+    check('all prior Rhea selectors retain order', new_rhea['ids'][:len(old_rhea['ids'])] == old_rhea['ids'])
+    check('Rhea original metadata unchanged', {k: v for k, v in old_rhea.items() if k != 'ids'} == {k: v for k, v in new_rhea.items() if k != 'ids'})
+    source = read(O / 'incremental-source-build.json')
+    ontology = read(O / 'incremental-ontology-build.json')
+    check('author selected 61 exact native names', read(O / 'working-labels.json') ==
+          {i: t['label'] for s in (source, ontology) for i, t in s['terms'].items()} and len(read(O / 'working-labels.json')) == 61)
+    check('root PathBank reference not forced into selected terms', 'PathBank:SMP0002105' not in source['terms'])
+    for assembly in read(O / 'assembly-native-bridges.json'):
+        for component in assembly['components']:
+            if component['native_type'] != 'Compound':
+                continue
+            check('assembly compound uses exact ECOLI body ' + assembly['id'],
+                  component['native_compound_identity']['orgid'] == 'ECOLI' and
+                  component['native_compound_identity']['frameid'] == component['native_identity']['frameid'])
+            check('assembly compound CHEBI unification ' + assembly['id'],
+                  [x['oid'] for x in component['native_unification_xrefs'] if x['db'] == 'CHEBI' and x['relationship'] == 'unification'] == [component['chemical_mapping'].split(':')[1]])
+    check('exact native source order observed', read(O / 'source-order-check.json')['first_native_terms'] == source['terms'])
+    check('exact Rhea native triple checks passed', read(O / 'interface-locator-checks.json')['status'] == 'passed')
+    intake = read(O / 'intake.json')
+    for row in intake['runtime']:
+        for name in ('original', 'copy'):
+            path = Path(row[name]['path'])
+            check('unchanged accepted runtime ' + name + ' ' + path.name,
+                  path.stat().st_size == row[name]['bytes'] and hashlib.sha256(path.read_bytes()).hexdigest() == row[name]['sha256'])
+        check('runtime original/copy byte identity ' + Path(row['copy']['path']).name,
+              row['original']['sha256'] == row['copy']['sha256'])
+    for path in sorted(O.glob('*.py')):
+        compile(path.read_bytes(), str(path), 'exec')
+        check('non-bytecode compile ' + path.name, True)
+    check('source copy plan 11 new and exact ZIP reuse',
+          read(O / 'source-cache-copy-plan.json')['new_originals_to_copy'] == 11 and
+          read(O / 'source-cache-copy-plan.json')['existing_originals_to_reuse'] == 1)
+    output = {'status': 'passed', 'checks': checks, 'count': len(checks),
+              'scope': 'Authority proposal preservation, exact original joins and untouched native runtime only; not full canonical or scientific acceptance.'}
+    (O / 'final-checks.json').write_text(json.dumps(output, indent=2) + '\n')
+    print(json.dumps({'status': 'passed', 'checks': len(checks)}))
+
+
+if __name__ == '__main__':
+    main()

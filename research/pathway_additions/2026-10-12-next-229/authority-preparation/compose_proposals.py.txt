@@ -1,0 +1,164 @@
+"""Compose append-only EG proposals on the independently accepted prospective MG base."""
+from pathlib import Path
+import copy
+import datetime
+import hashlib
+import json
+
+O = Path(__file__).parent
+B = Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')
+C = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+ROOT_ACCEPTANCE = Path('/private/tmp/pathwaymech-next-228-root-canonical-review-intake-20261012.json')
+EXPECTED_ACCEPTANCE = '5123e4c35f5f155c397f0a6bdbf059b4f725940fe6cacfe074675c20a05a664d'
+
+
+def bind(path):
+    path = Path(path)
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest}
+
+
+def save(name, data):
+    path = O / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def verified(binding):
+    observed = bind(binding['path'])
+    assert all(observed[k] == binding[k] for k in ('path', 'bytes', 'sha256')), binding
+    return observed
+
+
+def main():
+    assert bind(ROOT_ACCEPTANCE)['sha256'] == EXPECTED_ACCEPTANCE
+    acceptance = read(ROOT_ACCEPTANCE)
+    assert acceptance['status'] == 'accepted_actual_canonical_outputs'
+    assert not acceptance['maintained_adoption']
+    verified(acceptance['review'])
+    verified(acceptance['report'])
+    completion = Path('/private/tmp/pathwaymech-next-228-canonical-completion-20261012/handoff.json')
+    assert bind(completion)['sha256'] == 'ba16915d5b135faa432033e2a0fc16afe97ecfe5f6da5fa5e9d63aa8a4f882d8'
+    for name, binding in acceptance['actual_outputs'].items():
+        assert Path(binding['path']) == B / name
+        verified(binding)
+    base = {n: read(B / n) for n in ('sources.json', 'ontology.json', 'manifest.json', 'rhea-updates.json')}
+    assert (len(base['sources.json']['terms']), len(base['sources.json']['sources']),
+            len(base['ontology.json']['terms']), len(base['ontology.json']['sources']),
+            len(base['manifest.json']), len(base['rhea-updates.json']['ids'])) == (2433, 575, 1951, 5, 738, 20)
+    order = read(O / 'source-order-check.json')
+    assert order['status'] == 'passed' and order['base_manifest_entries'] == 738
+    source = read(O / 'incremental-source-build.json')
+    ontology = read(O / 'incremental-ontology-build.json')
+    assert source['terms'] == order['first_native_terms']
+    selected = set(source['terms']) | set(ontology['terms'])
+    assert len(selected) == 61 and set(source['terms']).isdisjoint(ontology['terms'])
+    composed = {}
+    preservation = {}
+    for name, increment in [('sources.json', source), ('ontology.json', ontology)]:
+        original = base[name]
+        assert increment['version'] == original['version']
+        result = copy.deepcopy(original)
+        added = {}
+        retained = {}
+        for section in ('terms', 'sources'):
+            added[section] = []
+            retained[section] = []
+            for key, value in increment[section].items():
+                if key in original[section]:
+                    assert original[section][key] == value, (name, section, key, original[section][key], value)
+                    retained[section].append(key)
+                else:
+                    result[section][key] = copy.deepcopy(value)
+                    added[section].append(key)
+            assert all(result[section][k] == v for k, v in original[section].items())
+        composed[name] = result
+        preservation[name] = {'all_prior_objects_unchanged': True,
+                              'prior_counts': {k: len(original[k]) for k in ('terms', 'sources')},
+                              'proposed_counts': {k: len(result[k]) for k in ('terms', 'sources')},
+                              'new': added, 'selected_existing_exact_matches': retained}
+        save('proposals/' + name, result)
+    manifest = copy.deepcopy(base['manifest.json'])
+    by_key = {e['key']: e for e in manifest}
+    assert len(by_key) == len(manifest)
+    new_entries = []
+    for entry in read(O / 'incremental-source-manifest.json'):
+        if entry['key'] in by_key:
+            assert by_key[entry['key']] == entry
+        else:
+            new_entries.append(copy.deepcopy(entry))
+            manifest.append(copy.deepcopy(entry))
+            by_key[entry['key']] = entry
+    assert manifest[:len(base['manifest.json'])] == base['manifest.json']
+    assert len(manifest) == order['proposed_entries']
+    save('proposals/manifest.json', manifest)
+    rhea = copy.deepcopy(base['rhea-updates.json'])
+    rhea_increment = read(O / 'incremental-rhea-manifest.json')
+    assert {k: v for k, v in rhea.items() if k != 'ids'} == {k: v for k, v in rhea_increment.items() if k != 'ids'}
+    for identifier in rhea_increment['ids']:
+        if identifier not in rhea['ids']:
+            rhea['ids'].append(identifier)
+    assert rhea['ids'][:len(base['rhea-updates.json']['ids'])] == base['rhea-updates.json']['ids']
+    save('proposals/rhea-updates.json', rhea)
+    bindings = {r['entry']['key']: r['original'] for r in read(O / 'source-original-bindings.json')}
+    base_paths = {e['path']: e['sha256'] for e in base['manifest.json']}
+    assert all(base_paths[e['path']] == e['sha256'] for e in base['manifest.json'])
+    copy_plan = []
+    for entry in new_entries:
+        original = verified(bindings[entry['key']])
+        assert original['sha256'] == entry['sha256']
+        destination = C / entry['path']
+        assert not Path(entry['path']).is_absolute() and '..' not in Path(entry['path']).parts
+        existing = bind(destination) if destination.exists() else None
+        if existing:
+            assert existing['sha256'] == entry['sha256']
+        if entry['path'] in base_paths:
+            assert base_paths[entry['path']] == entry['sha256']
+        copy_plan.append({'source_key': entry['key'], 'original': original,
+                          'destination': str(destination),
+                          'action': 'reuse_exact_existing_original' if existing else 'copy_new_original_after_root_acceptance',
+                          'observed_destination': existing, 'part_of_prior_manifest': entry['path'] in base_paths,
+                          'archive': entry.get('archive')})
+    save('source-cache-copy-plan.json', {
+        'scope': 'Plan only; no shared-cache writes. Root must freshly verify prior cache before adoption.',
+        'prospective_base': bind(ROOT_ACCEPTANCE), 'entries': copy_plan,
+        'new_originals_to_copy': sum(x['observed_destination'] is None for x in copy_plan),
+        'existing_originals_to_reuse': sum(x['observed_destination'] is not None for x in copy_plan),
+        'preconditions': ['Adopt the accepted MG predecessor separately; retain all its source objects and manifest order.',
+                          'Verify all prior cache bindings before and after append-only copy.',
+                          'Require new destination absent or byte-identical; reject collisions, symlink substitution and changed originals.',
+                          'Copy original body bytes only; do not serialize, trim, rewrite, or extract a replacement PathBank source.',
+                          'Run the root-owned full native canonical build against the actual EG author record and accepted predecessor.']})
+    report = {'status': 'append_only_proposals_composed', 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'scope': 'Proposed composition, not a full native canonical build, maintained adoption, merge, or scientific acceptance.',
+              'accepted_prospective_MG_base': bind(ROOT_ACCEPTANCE), 'completion': bind(completion),
+              'independent_review': acceptance['review'], 'exact_base_outputs': acceptance['actual_outputs'],
+              'preservation': preservation, 'prior_manifest_entries': len(base['manifest.json']),
+              'proposed_manifest_entries': len(manifest), 'manifest_prior_prefix_exact': True,
+              'new_manifest_keys': [e['key'] for e in new_entries],
+              'prior_rhea_selectors': base['rhea-updates.json']['ids'], 'proposed_rhea_selectors': rhea['ids'],
+              'rhea_prior_prefix_exact': True, 'selected_ids': sorted(selected),
+              'graph_scope_owner': '/root/lyxose_author; all 61 selected IDs confirmed',
+              'native_order_check': bind(O / 'source-order-check.json')}
+    save('authority-preservation.json', report)
+    save('source-selection-status.json', {'status': 'native_incremental_build_passed',
+         'selected_ids': sorted(source['terms']), 'graph_scope': 'Author-confirmed final selection; author record not edited',
+         'extra_catalog_only': ['PathBank:SMP0002105'], 'base': bind(ROOT_ACCEPTANCE), 'full_canonical_build': False})
+    save('ontology-selection-status.json', {'status': 'native_original_extraction_passed',
+         'ids': sorted(ontology['terms']), 'conditional_ids': [], 'native_labels_only': True,
+         'scope': 'All 31 author-confirmed selected ontology identities; original SQL/RDF projection, no full canonical build'})
+    save('working-labels.json', {i: t['label'] for snapshot in (source, ontology) for i, t in snapshot['terms'].items()})
+    print(json.dumps({'status': report['status'], 'source_terms': len(composed['sources.json']['terms']),
+                      'source_metadata': len(composed['sources.json']['sources']),
+                      'ontology_terms': len(composed['ontology.json']['terms']),
+                      'manifest_entries': len(manifest), 'rhea_selectors': len(rhea['ids']),
+                      'new_originals': sum(x['observed_destination'] is None for x in copy_plan)}))
+
+
+if __name__ == '__main__':
+    main()

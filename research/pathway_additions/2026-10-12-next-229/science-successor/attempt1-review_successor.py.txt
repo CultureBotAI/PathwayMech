@@ -1,0 +1,112 @@
+"""Independent source-backed EG scientific successor and exact canonical bridge."""
+from pathlib import Path
+import copy,datetime,hashlib,importlib.util,json,shutil,subprocess,sys
+import yaml
+from lxml import html,etree
+D=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-229-author-20261012');C=Path('/private/tmp/pathwaymech-next-229-science-correction-20261012');S=Path('/private/tmp/pathwaymech-next-229-science-review-20261012');K=Path('/private/tmp/pathwaymech-next-229-canonical-review-20261012');B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+def load(p):return json.loads(Path(p).read_bytes())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def check(x):assert sha(x['path'])==x['sha256'] and Path(x['path']).stat().st_size==x['bytes']
+def save(n,v):
+ p=D/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def inventory(p):return set(subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(p)],text=True).splitlines())
+packets=[]
+for p,expected,count in [(A,'2b42932ab2af013959191e75373213eb4875254f28a49745b6163a812215667a',360),(C,'acaedfd644a4ef14134901f4252b9c65ee9a60f18bb40c2dbdc9939174aeb99d',52),(S,'41bc34c098e852a3f1e2f13f1f97ec318742a220494603e4e1ee45019a9ac3ec',43),(K,'a86c9d94e98d3c0932aa3eb30d778dc28ee87a2f25b8773738ad9f1412f3e1db',33)]:
+ assert sha(p/'handoff.json')==expected
+ m=load(p/'artifact-manifest.json');rows=m['artifacts'];assert len(rows)==count
+ for x in rows:check(x)
+ assert inventory(p)=={x['path']for x in rows}|{str(p/'artifact-manifest.json'),str(p/'handoff.json')}
+ packets.append({'handoff':bind(p/'handoff.json'),'manifest':bind(p/'artifact-manifest.json'),'artifacts':count,'complete_inventory':count+2})
+save('sealed-intake.json',packets)
+oldp=A/'draft/ethylene-glycol-degradation.yaml';newp=C/'draft/ethylene-glycol-degradation.yaml';assert sha(oldp)=='c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704'and sha(newp)=='8e52beb1ff5b8d60c0888b9d0930340cff751febd4fb8ef82ded384a94d84af4';old=yaml.safe_load(oldp.read_bytes());new=yaml.safe_load(newp.read_bytes())
+def diff(a,b,p=''):
+ if type(a)!=type(b):return [{'path':p,'before':a,'after':b}]
+ if isinstance(a,dict):return sum([diff(a.get(k),b.get(k),p+'/'+str(k))for k in sorted(a.keys()|b.keys())],[])
+ if isinstance(a,list):return sum([diff(a[i]if i<len(a)else None,b[i]if i<len(b)else None,p+'/'+str(i))for i in range(max(len(a),len(b)))],[])
+ return [] if a==b else [{'path':p,'before':a,'after':b}]
+delta=diff(old,new);assert [x['path']for x in delta]==['/description','/mechanistic_edges/24/endpoint_qualifiers/0/description','/mechanistic_edges/24/evidence/1/source_assertion'];save('independent-full-semantic-delta.json',delta)
+assert len(new['mechanistic_edges'])==82 and new['references']==old['references']and len(new['references'])==90
+unchanged=[e['id']for i,e in enumerate(new['mechanistic_edges'])if e==old['mechanistic_edges'][i]];assert len(unchanged)==81
+for before,after in zip(old['mechanistic_edges'],new['mechanistic_edges']):assert tuple(before[k]for k in ['id','subject','predicate','object'])==tuple(after[k]for k in ['id','subject','predicate','object'])
+assert new['reactions']==old['reactions']and new['participants']==old['participants']
+rollback=copy.deepcopy(new);rollback['description']=old['description'];rollback['mechanistic_edges'][24]['endpoint_qualifiers'][0]['description']=old['mechanistic_edges'][24]['endpoint_qualifiers'][0]['description'];rollback['mechanistic_edges'][24]['evidence'][1]['source_assertion']=old['mechanistic_edges'][24]['evidence'][1]['source_assertion'];assert rollback==old
+bindings=load(C/'ledgers/source-bindings.json');assert bindings==load(A/'ledgers/source-bindings.json')and len(bindings)==90
+for x in bindings.values():check(x)
+oldledger=load(A/'ledgers/evidence-original-selectors.json');ledger=load(C/'ledgers/evidence-original-selectors.json');assert len(oldledger)==195 and len(ledger)==199
+assert [i for i in range(195)if oldledger[i]!=ledger[i]]==[37];assert {k:v for k,v in oldledger[37].items()if k!='evidence'}=={k:v for k,v in ledger[37].items()if k!='evidence'}
+proof=[]
+for i in [37,195,196,197,198]:
+ row=ledger[i];doc=html.parse(row['binding']['path']);objects=doc.xpath(row['selector']);observed=[etree.tostring(x,encoding='unicode')for x in objects];assert objects and observed==row['observed'];proof.append({'row':i,'evidence':row['evidence'],'binding':row['binding'],'selector':row['selector'],'observed':observed,'freshly_replayed':True})
+save('corrected-source-selector-replay.json',proof)
+# Read each primary source role independently, beyond selector existence.
+original=bindings['PMID:15995211'];doc=html.parse(original['path']);base='/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/'
+selectors={'crystal':base+'section[2]/section[3]/p[1]','cleaved':base+'section[2]/section[3]/p[2]','solution':base+'section[3]/section[2]/p[1]','prior_report':base+'section[3]/section[2]/p[2]','direct_Fig4':base+'section[3]/section[2]/figure[2]/figcaption/p','reference40':'//li[@id="r40"]'}
+def source_roles(sel):
+ text={k:' '.join(' '.join(doc.xpath(p)[0].itertext()).split())for k,p in sel.items()}
+ assert all(s in text['crystal']for s in ['pCM1','pQE32','M15(pREP4)','crystallization'])
+ assert all(s in text['cleaved']for s in ['wild-type and mutant','pCM2','pGEX-3X','factor Xa','BL21(DE3)'])
+ assert all(s in text['solution']for s in ['D196L','H200A','H200F','examined in parallel','0.53 atom/subunit'])
+ assert all(s in text['prior_report']for s in ['reported','Cu','Cd','40'])
+ assert all(s in text['direct_Fig4']for s in ['ZnCl','FeSO','NADH','glycol aldehyde'])and 'Cu'not in text['direct_Fig4']and 'Cd'not in text['direct_Fig4']
+ assert doc.xpath(sel['reference40']+'//a[contains(@href,"4306747")]')
+ return text
+text=source_roles(selectors);save('independent-primary-role-proofs.json',{'original':original,'objects':[{'role':k,'xpath':selectors[k],'text':t,'xml':etree.tostring(doc.xpath(selectors[k])[0],encoding='unicode')}for k,t in text.items()],'interpretation':'pCM2 solution WT attribution is an explicit Methods/Results join, not separately named plasmid in Results. Cu/Cd are prior-work report; direct Fig4 Zn/Fe remains separate.'})
+contexts=load(C/'ledgers/context-assertions.json');assert contexts[:15]==load(A/'ledgers/context-assertions.json')and len(contexts)==17;ctx={x['key']:x for x in contexts}
+oldclaims=load(A/'claim-dispositions.json');claims=load(C/'claim-dispositions.json');assert len(claims['claims'])==50
+assert [i for i in range(50)if oldclaims['claims'][i]!=claims['claims'][i]]==[7,8]
+assert 'FucO-cleaved-WT-solution-metal-comparator'in claims['claims'][7]['context_assertion_keys']and 'FucO-prior-Cu-Cd-report'in claims['claims'][8]['context_assertion_keys']
+# Independent bounded acceptance invariants derived from the inspected source roles.
+def record_scope(rec,contexts):
+ desc=rec['description'];edge=next(x for x in rec['mechanistic_edges']if x['id']=='eg-025');q=edge['endpoint_qualifiers'][0]
+ assert 'earlier Cu(II)/Cd(II) inhibition'in desc and 'PMID4306747'in desc and 'not an inspected full experimental body'in desc
+ assert 'no Cu/Cd dose or direct assay is inferred'in desc and 'Figure\n4 experiment separately tests Zn/Fe' in desc.replace('Figure 4','Figure\n4')
+ assert '0.53 Fe atom/subunit'in desc and 'Methods/Results join'in desc and 'cleaved-WT'in desc and 'not a measured occupancy for the His6 crystal preparation'in desc
+ assert q['endpoint']=='subject'and q['kind']=='experimental_construct'and 'pQE32/pCM1'in q['description']and 'crystal-site evidence'in q['description']
+ assert '0.53'not in json.dumps(edge)
+ c={x['key']:x for x in contexts};assert 'abstract/landing'in c['FucO-prior-Cu-Cd-report']['text']and 'Methods/Results'in c['FucO-cleaved-WT-solution-metal-comparator']['text']
+record_scope(new,contexts)
+controls=[]
+def rejects(name,fn):
+ try:fn()
+ except AssertionError:controls.append({'name':name,'rejected':True})
+ else:raise AssertionError('negative failed:'+name)
+for name,key,wrong in [('crystal-Method-used-for-cleaved-WT','cleaved','crystal'),('crystal-paragraph-used-for-solution-value','solution','crystal'),('Fig4-used-as-CuCd-primary-assay','prior_report','direct_Fig4'),('wrong-older-citation','reference40','crystal')]:
+ bad=dict(selectors);bad[key]=selectors[wrong];rejects(name,lambda bad=bad:source_roles(bad))
+bad=copy.deepcopy(new);bad['mechanistic_edges'][24]=old['mechanistic_edges'][24];rejects('restore-original-His6-only-solution-occupancy',lambda:record_scope(bad,contexts))
+bad=copy.deepcopy(new);bad['description']=bad['description'].replace('earlier Cu(II)/Cd(II) inhibition','direct Cu(II)/Cd(II) inhibition');rejects('upgrade-prior-report-to-direct-assay',lambda:record_scope(bad,contexts))
+bad=copy.deepcopy(new);bad['description']=bad['description'].replace('not an inspected full experimental body','an inspected full experimental body');rejects('fabricate-older-fullbody-inspection',lambda:record_scope(bad,contexts))
+rejects('omit-explicit-context-dispositions',lambda:record_scope(new,contexts[:15]))
+save('independent-negative-controls.json',{'baseline_passes':True,'controls':controls,'scope':'Original-source role substitutions and changed contextual assertions. No claim of automated free-text scientific verification.'})
+# Actual build's native collectors and actual canonical outputs, never the author's proposals.
+sys.path.insert(0,str(B/'runtime/src'))
+def module(n,p):
+ spec=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+sb=module('bridge_actual_source',B/'runtime/scripts/build_source_identifier_snapshot.py');ob=module('bridge_actual_ontology',B/'runtime/scripts/build_ontology_identifier_snapshot.py')
+for label,p in [('old',oldp),('corrected',newp)]:
+ dest=D/'selection'/label;dest.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,dest/p.name)
+source_before=sb.corpus_ids(D/'selection/old');source_after=sb.corpus_ids(D/'selection/corrected');assert source_before==source_after and len(source_before)==61
+prefixes={'CHEBI','GO','RHEA','NCBITaxon'};ontology_before=ob.walk_identifiers(old,prefixes);ontology_after=ob.walk_identifiers(new,prefixes);assert ontology_before==ontology_after and len(ontology_before)==31;assert ob.walk_labels(old)==ob.walk_labels(new)
+assert (B/'corpus/ethylene-glycol-degradation.yaml').read_bytes()==oldp.read_bytes()
+root=D/'actual-authority-consumer';(root/'conf').mkdir(parents=True,exist_ok=True);(root/'data/pathways').mkdir(parents=True,exist_ok=True);(root/'data/identifier_authorities').mkdir(parents=True,exist_ok=True);shutil.copyfile(newp,root/'data/pathways'/newp.name);shutil.copyfile(B/'runtime/conf/identifier_policy.yaml',root/'conf/identifier_policy.yaml')
+for n in ['sources.json','ontology.json']:shutil.copyfile(B/n,root/'data/identifier_authorities'/n)
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+validate_record(new);strict=strict_errors([root/'data/pathways'/newp.name],root);ids=identifier_errors(root);assert strict==ids==[]
+canonical=load(K/'audit.json');assert canonical['target']['sha256']==sha(oldp)
+for x in canonical['outputs'].values():check(x)
+save('actual-canonical-successor-bridge.json',{'original_target':bind(oldp),'actual_build_target':bind(B/'corpus/ethylene-glycol-degradation.yaml'),'corrected_target':bind(newp),'actual_build':bind(B/'handoff.json'),'accepted_canonical_audit':bind(K/'handoff.json'),'actual_outputs':canonical['outputs'],'actual_production_source_builder':bind(B/'runtime/scripts/build_source_identifier_snapshot.py'),'actual_production_ontology_builder':bind(B/'runtime/scripts/build_ontology_identifier_snapshot.py'),'source_ids_before':sorted(source_before),'source_ids_after':sorted(source_after),'ontology_ids_before':sorted(ontology_before),'ontology_ids_after':sorted(ontology_after),'labels_and_references_exact':True,'82_edge_identities_and_core_exact':True,'actual_canonical_consumer':{'schema':'pass','strict_errors':strict,'identifier_errors':ids},'canonical_inputs':'No source/ontology manifest, Rhea selector, original body, record identity or runtime code changed. Historical full build remains explicitly scoped to originalc248; this successor qualifies by exact production-selector and consumer proof, not relabelling old execution.'})
+# Detailed source-owned dossier delta ensures all50 earlier dispositions persist coherently.
+dossier={}
+for name in ['claim-dispositions.json','construct-source-dispositions.json','ledgers/context-assertions.json','ledgers/constructs.json','ledgers/edges.json','description-source-crosswalk.json','source-conflicts-and-limits.json','source-acquisition-crosswalk.json','reference-coverage.json']:
+ dossier[name]=diff(load(A/name),load(C/name))
+save('independent-dossier-delta.json',dossier)
+save('source-preservation-and-inherited-assessment.json',{'original_author':bind(A/'handoff.json'),'original_science_review':bind(S/'handoff.json'),'original_all82_assessments':bind(S/'all-82-edge-assessments.json'),'unchanged_complete_edges':unchanged,'freshly_reviewed_changed_edge':'eg-025','old_evidence_rows_exact_except_changed_assertion':194,'new_context_evidence_rows':4,'original90_reference_objects_and_original_bindings_exact':True,'all_originals_rehashed':90,'source_reads':'Exact changed full paragraphs/Methods/Results/citation fresh read in31c78b/0; broader previous scientific reads inherited by unchanged source bindings, not claimed freshly repeated.','iModulon':'Original exact same-date adapter replay and unavailable-live evidence inherited; selected genes and all source access assertions unchanged.'})
+issues=load('/private/tmp/pathwaymech-next-229-issues-20261012/issue-creation.json');findings=load(S/'findings.json');dispositions=[]
+for f,i in zip(findings,issues['issues']):
+ assert f['issue_key']==i['issue_key'];dispositions.append({'issue_key':f['issue_key'],'issue_number':i['number'],'issue_url':i['url'],'severity':'minor','independent_disposition':'resolved_in_exact_external_successor','all_acceptance_checks_satisfied':f['acceptance_checks'],'proof':'independent-primary-role-proofs.json; corrected-source-selector-replay.json; independent-full-semantic-delta.json; actual-canonical-successor-bridge.json','scope':'GitHub closure remains root-owned after merged integration; reviewer did not mutate issue.'})
+save('dispositions.json',dispositions)
+save('review.json',{'status':'accepted_exact_scientific_successor','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':bind(newp),'predecessor_target':bind(oldp),'correction_handoff':bind(C/'handoff.json'),'original_review':bind(S/'handoff.json'),'canonical_audit':bind(K/'handoff.json'),'findings':[],'resolved_findings':dispositions,'semantic_changed_fields':3,'edges':82,'complete_edges_inherited_exact':81,'core_events_and_all11sides_exact':True,'references_exact':90,'named_ids_exact':61,'all50claim_dispositions_retained':True,'new_context_rows':2,'new_source_evidence_rows':4,'fresh_source_selector_replays':5,'independent_negative_controls':len(controls),'actual_canonical_consumer_passed':True,'scope':'Independent narrow scientific successor reassessment and explicit canonical bridge; full original scope inherited by exact semantic/source proof. No fresh all-literature review, full rebuild/fullcorpus or maintained finalization claim.','maintained_or_Git_or_cache_writes':False,'source_exhaustion':False})
+print(json.dumps({'status':'accepted','target':sha(newp),'resolved_issues':[446,447],'changed_fields':3,'controls':len(controls),'actual_canonical_bridge':'pass'},indent=2))

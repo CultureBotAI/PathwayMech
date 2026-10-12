@@ -1,0 +1,42 @@
+from pathlib import Path
+import json,hashlib,shutil,datetime,sys,zipfile,xml.etree.ElementTree as ET
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');I=Path('/private/tmp/pathwaymech-next-228-authority-implementation-20261012');R=O/'runtime'
+def bind(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.file_digest(p.open('rb'),'sha256').hexdigest()}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+assert bind(P/'handoff.json')['sha256']=='0394996ee385c3f5b2c61fbf4f9c1ab537a4750ff3f136ddfa4f3d2efb328984'
+m=json.loads((P/'artifact-manifest.json').read_bytes());rows=m.get('files',m.get('artifacts'));assert len(rows)==248
+for row in rows:
+ rel=row.get('relative_path',row.get('path'));p=P/rel
+ assert bind(p)['sha256']==row['sha256']
+review=Path('/private/tmp/pathwaymech-next-228-root-adapter-review-20261012/handoff.json');assert bind(review)['sha256']=='34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed'
+code=[]
+for base,pattern in [(I/'candidate/src','**/*.py'),(I/'candidate/scripts','build_*identifier_snapshot.py')]:
+ for p in sorted(base.glob(pattern)):
+  if '__pycache__' in p.parts:continue
+  q=R/p.relative_to(I/'candidate');q.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,q);assert bind(p)['sha256']==bind(q)['sha256'];code.append({'original':bind(p),'copy':bind(q)})
+for name in ['raw','derived','original-cache']:(O/name).mkdir()
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+import build_source_identifier_snapshot as sb
+native=[]
+for ident in ['LACTALDREDUCT-CPLX','ALD-CPLX','CPLX0-226','PC00004','CPLX0-7650','PHOSPHO-ARCA','MONOMER0-160','CPLX0-7797']:
+ p=P/'raw'/f'ECOLI-{ident}.xml'
+ if not p.exists():p=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012/raw')/p.name
+ url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+ident
+ try: terms=list(sb.source_terms('ecocyc-protein-xml',p,url=url,version='27.0'));result={'terms':terms,'status':'native_builder_passed'}
+ except Exception as e:result={'status':'native_adapter_gate','exception_type':type(e).__name__,'exception':str(e)}
+ native.append({'id':'EcoCyc:'+ident,'original':bind(p),'url':url,**result})
+archive=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip')
+member='PW002093.owl';original_member=P/'raw/PathBank-PW002093.owl'
+with zipfile.ZipFile(archive) as z:
+ matches=[n for n in z.namelist() if n.endswith('/'+member) or n==member];assert len(matches)==1;name=matches[0];b=z.read(name);assert b==original_member.read_bytes()
+ desc={'type':'zip','member':name,'member_sha256':bind(original_member)['sha256'],'root':'SMP0002105'}
+# Read accepted typed archive shape; populate exactly its established fields.
+mg=json.loads((Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')/'manifest.json').read_bytes())
+example=next(e['archive'] for e in mg if e['kind']=='pathbank-biopax-zip')
+desc={**example,'member':name,'member_bytes':bind(original_member)['bytes'],'member_sha256':bind(original_member)['sha256'],'root':'SMP0002105'}
+try:ts=sb._pathbank_archive_terms(archive,url='https://pathbank.org/downloads/pathbank_primary_biopax.zip',sha256=bind(archive)['sha256'],archive=desc);pb={'terms':ts,'status':'native_builder_passed'}
+except Exception as e:pb={'status':'native_adapter_gate','exception_type':type(e).__name__,'exception':str(e)}
+save('native-protein-probes.json',native);save('pathbank-original-probe.json',{'original_archive':bind(archive),'original_member':bind(original_member),'archive':desc,**pb})
+save('intake.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'preflight_handoff':bind(P/'handoff.json'),'preflight_manifest':bind(P/'artifact-manifest.json'),'preflight_artifacts_verified':248,'accepted_adapter_review':bind(review),'adapter_implementation':bind(I/'handoff.json'),'runtime':code,'baseline':'MG actual canonical output not sealed/accepted at intake; no composed canonical proposal or preservation claim yet','scope':'Original-derived identity proposals only; graph selection remains author owned'})
+print(json.dumps({'native_probes':[{k:r[k] for k in ['id','status'] } | ({'error':r['exception']} if 'exception' in r else {}) for r in native],'PathBank':{'status':pb['status'],'archive':desc,'terms':pb.get('terms'),'error':pb.get('exception')}}))

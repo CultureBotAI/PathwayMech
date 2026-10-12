@@ -1,0 +1,14 @@
+"""Append author-requested Ca/Cu terms from the already-bound same SQL original."""
+from pathlib import Path
+import json,sqlite3,sys
+O=Path(__file__).parent;sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_ontology_identifier_snapshot as ob
+p=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');snap=json.loads((O/'incremental-ontology-build.json').read_bytes());replay=json.loads((O/'ontology-native-replay.json').read_bytes());rec=next(r for r in replay if r['prefix']=='CHEBI');key=next(t['source'] for i,t in snap['terms'].items() if i.startswith('CHEBI:'))
+with sqlite3.connect(p.resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as c:
+ ts,missing=ob.extract_terms(c,['CHEBI:29108','CHEBI:29036','CHEBI:49883','CHEBI:16480','CHEBI:18287','CHEBI:62345'],key);assert not missing
+ rows={i:[{'predicate':r[0],'object':r[1],'value':r[2]} for r in c.execute('SELECT predicate,object,value FROM statements WHERE subject=?',(i,))] for i in ts}
+ search=c.execute("SELECT subject,predicate,value FROM statements WHERE lower(value) LIKE '%mercuribenzo%' ").fetchall()
+rec['terms'].update(ts);rec['native_rows'].update(rows);snap['terms'].update(ts)
+for name,data in [('ontology-native-replay.json',replay),('incremental-ontology-build.json',snap),('derived/mercuribenzoate-full-predicate-search.json',{'original':rec['original'],'query':'SELECT subject,predicate,value FROM statements WHERE lower(value) LIKE %mercuribenzo%; all predicates included','rows':search,'decision':'Exact source compound mapping not established: CHEBI49644 is neutral p-hydroxymercuribenzoic acid, while source annotation names p-hydroxy mercuribenzoate without exact charge/salt identity; related mercuribenzoate20435 omits hydroxyl ligand. Retain as source context pending unambiguous issuing identity.'})]: (O/name).write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+(O/'working-labels.json').write_text(json.dumps({i:t['label'] for s in [json.loads((O/'incremental-source-build.json').read_bytes()),snap] for i,t in s['terms'].items()},indent=2,ensure_ascii=False)+'\n')
+print('working labels',len(json.loads((O/'working-labels.json').read_bytes())),'candidate mercury rows',len(search))

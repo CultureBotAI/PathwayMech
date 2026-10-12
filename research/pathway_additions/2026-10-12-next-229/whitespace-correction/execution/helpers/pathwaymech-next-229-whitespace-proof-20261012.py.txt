@@ -1,0 +1,158 @@
+"""Verify actual corrective outputs, preservation, and archive exact observations."""
+import copy
+import csv
+import hashlib
+import io
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+from lxml import html, etree
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-229-whitespace-proof-20261012')
+EXECUTION = Path('/private/tmp/pathwaymech-next-229-whitespace-execution-20261012')
+GATES = Path('/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012')
+PACKAGE = Path('/private/tmp/pathwaymech-next-229-whitespace-repair-20261012')
+DOSSIER = 'research/pathway_additions/2026-10-12-next-229/whitespace-correction'
+sys.path.insert(0, '/private/tmp/pathwaymech-next-229-integration-preparation-20261012')
+from common import inventory
+
+
+def bind(path):
+    data = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+assert load(GATES / 'execution.json')['status'] == 'passed'
+before = {r['relative_path']: r for r in load(EXECUTION / 'before-inventory.json')}
+current = {r['relative_path']: r for r in inventory(ROOT, exclude_runtime=True)}
+changed = sorted(p for p, row in before.items() if current.get(p, {}).get('sha256') != row['sha256'])
+expected_changed = sorted(['data/pathways/ethylene-glycol-degradation.yaml',
+    'pages/records/MetaCyc_PWY0-1280.html', 'pages/index.html',
+    'pages/downloads/edges.tsv', 'pages/downloads/manifest.json', 'output/kgx/edges.tsv'])
+assert changed == expected_changed, changed
+history = load(EXECUTION / 'render-history-inputs.json')
+assert inventory(ROOT, 'history') == history
+new_history = load(EXECUTION / 'adoption.json')['history']['relative_path']
+new_paths = sorted(set(current) - set(before))
+assert all(p == new_history or p.startswith(DOSSIER + '/') for p in new_paths)
+baseline = load('/private/tmp/pathwaymech-next-229-maintained-baseline-20261012/baseline.json')
+initial = load('/private/tmp/pathwaymech-next-229-integration-preparation-20261012/expected-changes.json')
+base_allowed = set(initial['allowed_generated_paths']) | {
+    'conf/identifier_sources.json', 'conf/rhea_identifier_updates.json',
+    'data/identifier_authorities/sources.json', 'data/identifier_authorities/ontology.json'}
+for row in baseline['all_maintained_files']:
+    if row['relative_path'] not in base_allowed:
+        assert current[row['relative_path']]['sha256'] == row['sha256'], row['relative_path']
+for row in baseline['source_cache_files']:
+    result = bind(row['path'])
+    assert (result['bytes'], result['sha256']) == (row['bytes'], row['sha256'])
+cache = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+cache_listing = subprocess.run(['rg', '--files', '-uu', '-L', '.'], cwd=cache, capture_output=True, text=True)
+assert cache_listing.returncode == 0 and not cache_listing.stderr
+cache_paths = {str(Path(p)) for p in cache_listing.stdout.splitlines()}
+assert cache_paths == {r['relative_path'] for r in baseline['source_cache_files']} | {r['cache_relative_path'] for r in initial['new_originals']}
+for row in initial['new_originals']:
+    result = bind(cache / row['cache_relative_path'])
+    assert (result['bytes'], result['sha256']) == (row['original']['bytes'], row['original']['sha256'])
+old_doc = yaml.safe_load((PACKAGE / 'original/ethylene-glycol-degradation.yaml').read_text())
+new_doc = yaml.safe_load((ROOT / 'data/pathways/ethylene-glycol-degradation.yaml').read_text())
+expected_doc = copy.deepcopy(old_doc)
+for i in (14, 70):
+    expected_doc['references'][i]['title'] = expected_doc['references'][i]['title'].rstrip()
+assert expected_doc == new_doc
+assert bind(ROOT / 'data/pathways/ethylene-glycol-degradation.yaml')['sha256'] == 'c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de'
+old_edges = subprocess.check_output(['git', 'show', ':output/kgx/edges.tsv'], cwd=ROOT)
+old_nodes = subprocess.check_output(['git', 'show', ':output/kgx/nodes.tsv'], cwd=ROOT)
+assert hashlib.sha256(old_edges).hexdigest() == before['output/kgx/edges.tsv']['sha256']
+assert old_nodes == (ROOT / 'output/kgx/nodes.tsv').read_bytes() == (ROOT / 'pages/downloads/nodes.tsv').read_bytes()
+assert (ROOT / 'output/kgx/edges.tsv').read_bytes() == (ROOT / 'pages/downloads/edges.tsv').read_bytes()
+left = list(csv.DictReader(io.StringIO(old_edges.decode()), delimiter='\t'))
+right = list(csv.DictReader((ROOT / 'output/kgx/edges.tsv').open(), delimiter='\t'))
+assert len(left) == len(right) == 11469
+metadata_changes = []
+for a, b in zip(left, right):
+    if a == b:
+        continue
+    assert {k for k in a if a[k] != b[k]} == {'reference_metadata'}
+    refs = json.loads(a['reference_metadata'])
+    for ref in refs:
+        if ref['id'] in ('PMID:15995211', 'PMID:12003946'):
+            ref['title'] = ref['title'].rstrip()
+    assert refs == json.loads(b['reference_metadata'])
+    metadata_changes.append(a['id'])
+assert metadata_changes == [r['edge_id'] for r in load(PACKAGE / 'receipt.json')['whole_corpus_kgx']['changes']]
+old_page = (PACKAGE / 'original-render.html').read_bytes()
+page = (ROOT / 'pages/records/MetaCyc_PWY0-1280.html').read_bytes()
+assert not [i for i, line in enumerate(page.splitlines(), 1) if line.rstrip() != line]
+old_tree, new_tree = html.fromstring(old_page), html.fromstring(page)
+old_svg, new_svg = old_tree.xpath('//svg'), new_tree.xpath('//svg')
+assert len(old_svg) == len(new_svg) == 7
+assert len(old_tree.xpath('//svg[@class="pathway-network-svg"]')) == 1
+assert len(new_tree.xpath('//svg[@class="pathway-network-svg"]')) == 1
+assert all(etree.tostring(a) == etree.tostring(b) for a, b in zip(old_svg, new_svg))
+assert 'Trim trailing whitespace from two ethylene-glycol bibliography titles.' in new_tree.text_content()
+assert len(new_tree.xpath('//*[@id]')) == len({e.attrib['id'] for e in new_tree.xpath('//*[@id]')})
+OUT.mkdir()
+proof = {'status': 'passed', 'at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'target': bind(ROOT / 'data/pathways/ethylene-glycol-degradation.yaml'),
+    'proposal': bind(PACKAGE / 'handoff.json'), 'actual_gates': bind(GATES / 'execution.json'),
+    'predecessor_preservation': bind(Path('/private/tmp/pathwaymech-next-229-final-preservation-20261012.json')),
+    'before_inventory': bind(EXECUTION / 'before-inventory.json'), 'changed_paths': changed,
+    'all_other_before_files_exact': True, 'old_base_protected_files_exact': True,
+    'old_source_cache_files_rehashed': len(baseline['source_cache_files']),
+    'exact_new_cache_originals_rehashed': len(initial['new_originals']),
+    'all_other_yaml_objects_exact': True, 'new_edge_metadata_cells_only': metadata_changes,
+    'all11469_edge_rows_and_other_cells_exact': True, 'nodes_and_source_contexts_byte_equal': True,
+    'old229_record_pages_unchanged': True, 'old_reviews_and_history_unchanged': True,
+    'full_render_history_inputs_exact': True, 'svg_byte_equal_after_DOM_parse': True,
+    'page': bind(ROOT / 'pages/records/MetaCyc_PWY0-1280.html'),
+    'current_page_trailing_whitespace': [], 'initial_new_paths': new_paths,
+    'scope': 'Two bibliography title trims and a real pre-render EDIT event. Full historical2394test run retained, not rerun or relabelled as current. Original five shared display changes remain as previously approved; nodes are unchanged by this correction.'}
+write(OUT / 'proof.json', proof)
+archive = ROOT / DOSSIER / 'execution'
+archive.mkdir()
+mappings = []
+
+
+def archive_one(source, relative):
+    data = source.read_bytes()
+    destination = archive / relative
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    text = data.decode('utf-8')
+    if any(line.rstrip() != line for line in text.splitlines()) or text.endswith('\n\n'):
+        destination = destination.with_name(destination.name + '.json')
+        data = (json.dumps({'serialization': 'lossless-utf8-json', 'original': bind(source), 'text': text}, ensure_ascii=False, indent=2) + '\n').encode()
+    with destination.open('xb') as stream:
+        stream.write(data)
+    mappings.append({'source': bind(source), 'archived': bind(destination)})
+
+
+for label, directory in (('adoption', EXECUTION), ('corrective-gates', GATES), ('proof', OUT),
+                         ('failed-svg-assumption', Path('/private/tmp/pathwaymech-next-229-whitespace-proof-failed-svg-20261012'))):
+    for path in sorted(directory.rglob('*')):
+        if path.is_file():
+            archive_one(path, label + '/' + str(path.relative_to(directory)))
+for filename in ('execution.json', 'staged-diff-check.stdout', 'staged-diff-check.stderr'):
+    archive_one(Path('/private/tmp/pathwaymech-next-229-commit-execution-20261012') / filename, 'failed-staging/' + filename)
+for script in ('apply-whitespace', 'whitespace-proof'):
+    path = Path('/private/tmp') / ('pathwaymech-next-229-' + script + '-20261012.py')
+    archive_one(path, 'helpers/' + path.name + '.txt')
+write(archive / 'archive-map.json', mappings)
+write(OUT / 'archive-map.json', mappings)
+print(json.dumps(proof, indent=2))

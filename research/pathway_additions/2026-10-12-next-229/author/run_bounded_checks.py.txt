@@ -1,0 +1,13 @@
+"""Execute the exact bounded author checks and preserve real command receipts."""
+from pathlib import Path
+import subprocess,datetime,json,hashlib,os,sys
+A=Path(__file__).parent;PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'}
+(A/'validation').mkdir(exist_ok=True);rows=[]
+for name in ['author_finish.py','replay_sources.py','check_candidate.py','check_exports.py','intake_authorities.py','authority-replay/check_native_proposals.py','write_assessment.py','check_provenance.py']:
+ cmd=[PY,'-B',str(A/name)];start=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(cmd,cwd=A,env=env,text=True,capture_output=True)
+ item=dict(command=cmd,cwd=str(A),started=start,finished=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=r.returncode,stdout=r.stdout,stderr=r.stderr,script_sha256=hashlib.sha256((A/name).read_bytes()).hexdigest(),environment={'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'},scope='bounded single-candidate checks; no full canonical/integration or whole-corpus tests')
+ path=A/'validation'/(name.replace('/','--')+'.json');path.write_text(json.dumps(item,indent=2)+'\n');rows.append(dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest(),command=cmd,exit=r.returncode));print(name,r.returncode,flush=True)
+ if r.returncode:
+  print(r.stderr or r.stdout);(A/'validation/commands.json').write_text(json.dumps(rows,indent=2)+'\n');sys.exit(r.returncode)
+(A/'validation/commands.json').write_text(json.dumps(rows,indent=2)+'\n')

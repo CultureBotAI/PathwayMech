@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "receipts": [
+    {
+      "name": "render",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-229-20261012",
+      "started_at": "2026-10-12T06:04:52.627797Z",
+      "finished_at": "2026-10-12T06:05:37.591793Z",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/render.stdout",
+        "bytes": 29,
+        "sha256": "5f22e9d11fbe69785118dae27177a8cd96743fe8272d3917079e992d1c468f4d"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "corrective-validation",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathlib import Path; import yaml; from pathwaymech.schema import validate_record; from pathwaymech.strict import strict_errors; from pathwaymech.identifiers import identifier_errors; r=Path.cwd(); p=r/\"data/pathways/ethylene-glycol-degradation.yaml\"; validate_record(yaml.safe_load(p.read_text())); errors=strict_errors([p],r)+identifier_errors(r); print(\"target native/strict and whole-corpus identifier checks:\",errors); assert not errors"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-229-20261012",
+      "started_at": "2026-10-12T06:05:37.688641Z",
+      "finished_at": "2026-10-12T06:05:58.846910Z",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/corrective-validation.stdout",
+        "bytes": 60,
+        "sha256": "af75450bdfa765f947ba2968b710a5cbebbbfe2b61f04528a535ab5af7e7514b"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/corrective-validation.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "kgx",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-229-20261012",
+      "started_at": "2026-10-12T06:05:58.948462Z",
+      "finished_at": "2026-10-12T06:06:18.231966Z",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/kgx.stdout",
+        "bytes": 163,
+        "sha256": "3080f6276f25c8ea957e3104369b8f9755f0b95b9d363cc5922f8e5e3d052c27"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/kgx.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "site-current",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main([\"--check\"]))"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-229-20261012",
+      "started_at": "2026-10-12T06:06:18.335533Z",
+      "finished_at": "2026-10-12T06:07:01.276700Z",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/site-current.stdout",
+        "bytes": 43,
+        "sha256": "22fdff1e0fa96d8ea23d028199bbe6d58cc2fc4ba7faebcbe49dc9fe937c0fe0"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-229-whitespace-corrective-gates-20261012/site-current.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "adoption": {
+    "path": "/private/tmp/pathwaymech-next-229-whitespace-execution-20261012/adoption.json",
+    "bytes": 1768,
+    "sha256": "628d675cecc0e81c9c7ec21c7b6ff301aad86cde92befefbbf2ee7c50cf0808a"
+  },
+  "history_before_render_and_after_gates_exact": true,
+  "scope": "Current two-title correction validation/render/export/page checks; earlier full tests remain historical."
+}

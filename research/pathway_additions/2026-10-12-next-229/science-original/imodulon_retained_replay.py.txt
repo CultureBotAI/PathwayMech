@@ -1,0 +1,18 @@
+import dataclasses, hashlib, importlib.util, json, sys
+from pathlib import Path
+OUT=Path(__file__).parent
+SOURCE=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/src/kg_microbe_sources/imodulondb.py')
+spec=importlib.util.spec_from_file_location('retained_imodulon_adapter', SOURCE)
+m=importlib.util.module_from_spec(spec); sys.modules[spec.name]=m; spec.loader.exec_module(m)
+paths=[Path('/private/tmp/pathwaymech-next-227-preflight-20261012/imodulondb/attempt1/receipts.json'),Path('/private/tmp/pathwaymech-next-229-preflight-20261012/derived/jobs11-receipts.json')]
+index={r['url']:r for p in paths for r in json.loads(p.read_text())}
+used=[]
+def transport(url):
+    r=index[url]; raw=Path(r['path']).read_bytes(); assert hashlib.sha256(raw).hexdigest()==r['sha256']; assert len(raw)==r['bytes']
+    used.append(r); return json.loads(raw)
+c=m.ImodulonDBClient(transport=transport)
+datasets=c.organism_datasets(); searches={q:dataclasses.asdict(c.search('e_coli','precise_mg1655',q)) for q in ['fucO','aldA','b2799','b1415']}; t=c.imodulon_genes('e_coli','precise_mg1655',73)
+assert any(x.organism_id=='e_coli' and 'precise_mg1655' in x.datasets for x in datasets)
+report={'source_mode':'Exact retained issuing originals acquired 2026-10-12, replayed through unchanged source adapter. This is not a fresh network acquisition. Console missing dotenv in pinned runtime; fresh standalone network attempt failed DNS; both failures retained.','adapter':{'path':str(SOURCE),'sha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest()},'datasets':[dataclasses.asdict(x) for x in datasets],'searches':searches,'component':{'key':m.imodulon_key('e_coli','precise_mg1655',73),'threshold':t.threshold,'total_rows':len(t.genes),'in_component':[dataclasses.asdict(x) for x in t.in_imodulon],'target_rows':[dataclasses.asdict(x) for x in t.genes if x.gene_id in {'b2799','b1415'}]},'original_receipts':used,'limits':'Computational expression context only. A search returning no modules does not prove absent membership. No binding, catalysis, edge direction, taxon or EG growth inferred.'}
+(OUT/'imodulon-context.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'originals':len(used),'in_component':len(t.in_imodulon),'target_rows':report['component']['target_rows']}))

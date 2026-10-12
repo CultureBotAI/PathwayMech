@@ -1,0 +1,83 @@
+import copy, hashlib, json, re
+from pathlib import Path
+import yaml
+from lxml import etree
+O=Path(__file__).parent; A=Path('/private/tmp/pathwaymech-next-229-author-20261012')
+t=yaml.safe_load((A/'draft/ethylene-glycol-degradation.yaml').read_text())
+native={r['reference']:r for r in json.loads((O/'native-identities-and-regulations.json').read_text())}
+chem=json.loads((O/'independent-chemistry.json').read_text())
+refs=json.loads((A/'ledgers/source-bindings.json').read_text())
+baseline_edges={e['id']:e for e in t['mechanistic_edges']}
+def protein_id(frame):
+    r=native['EcoCyc:'+frame]
+    if frame=='PHOSPHO-ARCA':r=native['EcoCyc:'+r['modified_form'][0]]
+    u=[x['id'] for x in r['direct_unifications'] if x['db']=='UNIPROT' and x['relationship']=='unification']
+    return 'UniProtKB:'+u[0] if u else 'EcoCyc:'+frame
+regjoins=[]
+for e in t['mechanistic_edges']:
+    if e['predicate'] not in ['activates','inhibits'] or not e['object'].startswith('Entrez:'):continue
+    for ev in e['evidence']:
+        if not ev['reference_id'].startswith('EcoCyc:REG'):continue
+        n=native[ev['reference_id']]; gene=native[e['object']]['gene'][0]
+        frame='EG10035' if gene=='aldA' else 'EG10351'
+        if n['target'][0].startswith('PM'):
+            assert len(n['TU'])==1; assert frame in native['EcoCyc:'+n['TU'][0]]['components']
+        elif n['target'][0].startswith('TU'):assert frame in native['EcoCyc:'+n['target'][0]]['components']
+        else:assert n['target']==[frame]
+        expected=(protein_id(n['regulator'][0]),'activates' if n['mode']==['+'] else 'inhibits',e['object'])
+        assert expected==(e['subject'],e['predicate'],e['object']),(e['id'],expected)
+        regjoins.append({'edge':e['id'],'regulation':ev['reference_id'],'native_regulator':n['regulator'],'native_target':n['target'],'native_TU':n['TU'],'gene_frame':frame,'expected':expected})
+(O/'regulatory-join-proof.json').write_text(json.dumps(regjoins,indent=2)+'\n')
+def checks(record):
+    errors=[]; es={e['id']:e for e in record['mechanistic_edges']}
+    for reaction in chem:
+        rx=reaction['reaction']
+        expected={(s['predicate'],s['chemical']):s['coefficient'] for s in reaction['sides']}
+        actual={}
+        for e in es.values():
+            if (e['predicate']=='consumes' and e['object']==rx) or (e['predicate']=='produces' and e['subject']==rx):
+                m=re.search(r'coefficient (\d+)',e.get('description',''))
+                actual[(e['predicate'],e['subject'] if e['predicate']=='consumes' else e['object'])]=int(m.group(1)) if m else None
+        if actual!=expected:errors.append('issuing-rhea-sides:'+rx)
+    for j in regjoins:
+        e=es.get(j['edge'],{})
+        if (e.get('subject'),e.get('predicate'),e.get('object'))!=tuple(j['expected']):errors.append('issuing-regulation-join:'+j['edge'])
+    # These source-specific endpoint roles are derived from assay design: enzyme is
+    # subject in catalysis/cofactor assays and object in inhibitor assays.
+    for eid in ['eg-021','eg-022','eg-023','eg-024','eg-025','eg-026','eg-029','eg-030','eg-036','eg-037','eg-038','eg-039','eg-040','eg-054','eg-055','eg-056','eg-057','eg-058','eg-059','eg-061','eg-067']:
+        e=es.get(eid,{})
+        expected='subject' if e.get('predicate') in ['catalyzes','has_cofactor'] or eid in ['eg-056','eg-057','eg-058','eg-059','eg-061','eg-067'] else 'object'
+        if not any(q['endpoint']==expected for q in e.get('endpoint_qualifiers',[])):errors.append('assay-endpoint-role:'+eid)
+    # Exact scoped evidence roles matter even when both source objects are valid.
+    for eid in ['eg-056','eg-057','eg-058','eg-059','eg-061','eg-067']:
+        if es.get(eid,{}).get('evidence')!=baseline_edges[eid]['evidence']:errors.append('source-claim-selector-binding:'+eid)
+    for eid in ['eg-037','eg-038']:
+        if 'propionaldehyde' not in json.dumps(es[eid]):errors.append('assay-substrate-lost:'+eid)
+    e=es['eg-039']
+    if e['predicate']!='activates' or 'esterase' not in e['description'].lower() or not any('esterase' in q['description'].lower() for q in e.get('endpoint_qualifiers',[])):errors.append('esterase-specific-activation')
+    for eid in ['eg-079','eg-080','eg-081','eg-082']:
+        if es.get(eid,{}).get('predicate')!='has_part':errors.append('unsigned-pathbank-attachment:'+eid)
+    if not any(q['endpoint']=='subject' and 'E15' in q['description'] and 'MG1655' in q['description'] for q in es['eg-021'].get('endpoint_qualifiers',[])):errors.append('selected-E15-assay-scope')
+    for eid in ['eg-057','eg-058','eg-059']:
+        if not any(q['endpoint']=='subject' and q['kind']=='molecular_state' and 'phosph' in q['description'].lower() for q in es[eid].get('endpoint_qualifiers',[])):errors.append('phosphorylated-ArcA-state:'+eid)
+    return errors
+assert checks(t)==[],checks(t)
+mutations=[]
+def case(key,fn,expect):
+    v=copy.deepcopy(t); d={e['id']:e for e in v['mechanistic_edges']};fn(v,d); failures=checks(v)
+    assert any(expect in s for s in failures),(key,failures)
+    mutations.append({'control':key,'rejected':True,'failures':failures,'expected_failure':expect})
+case('drop-second-core-proton',lambda v,e:e['eg-013'].update(description=e['eg-013']['description'].replace('coefficient 2','coefficient 1')),'issuing-rhea-sides')
+case('reverse-EG-consumption-endpoints',lambda v,e:e['eg-003'].update(subject='RHEA:27631',object='CHEBI:30742'),'issuing-rhea-sides')
+case('use-NADH-as-oxidation-input',lambda v,e:e['eg-004'].update(subject='CHEBI:57945'),'issuing-rhea-sides')
+case('swap-aldA-regulation-to-fucO-gene',lambda v,e:e['eg-056'].update(object='Entrez:947273'),'issuing-regulation-join')
+case('invert-SrsR-expression-sign',lambda v,e:e['eg-067'].update(predicate='inhibits'),'issuing-regulation-join')
+case('remove-tagged-AldA-assay-qualifier',lambda v,e:e['eg-023'].update(endpoint_qualifiers=[]),'assay-endpoint-role')
+case('put-zinc-assay-construct-on-ion',lambda v,e:e['eg-029']['endpoint_qualifiers'][0].update(endpoint='subject'),'assay-endpoint-role')
+case('remove-selected-E15-scope',lambda v,e:e['eg-021']['endpoint_qualifiers'][0].update(description='Wild-type MG1655 enzyme assay'),'selected-E15-assay-scope')
+case('remove-ArcA-modified-state',lambda v,e:e['eg-058']['endpoint_qualifiers'][0].update(description='Unmodified protein'),'phosphorylated-ArcA-state')
+case('swap-SrsR-methods-and-effect-support',lambda v,e:e['eg-067'].update(evidence=e['eg-067']['endpoint_qualifiers'][0]['evidence']),'source-claim-selector-binding')
+case('turn-esterase-activation-into-core-activation',lambda v,e:e['eg-039'].update(description='NADH activates EG oxidation'),'esterase-specific-activation')
+case('turn-PathBank-Interaction-into-inhibition',lambda v,e:e['eg-080'].update(predicate='inhibits'),'unsigned-pathbank-attachment')
+(O/'adversarial-controls.json').write_text(json.dumps({'baseline_passes':True,'scope':'Source-derived chemistry/native joins/assay endpoint and claim-role controls; not a replacement for scientific interpretation or native full gates.','controls':mutations},indent=2)+'\n')
+print(json.dumps({'native_regulation_joins':len(regjoins),'baseline_errors':0,'meaningful_rejected_mutants':len(mutations)}))

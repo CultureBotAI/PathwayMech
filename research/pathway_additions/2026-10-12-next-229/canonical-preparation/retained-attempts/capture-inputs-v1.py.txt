@@ -1,0 +1,138 @@
+"""Capture external EG build inputs; does not execute builders or adopt anything."""
+
+import shutil
+import subprocess
+from pathlib import Path
+
+from common import (
+    AUTHOR, AUTHORITY, HERE, PRIOR, TARGET_SHA, WORKTREE, bind, check,
+    check_sql_stat, inventory, load, now, preserve, validate_manifest,
+    validate_updates, write,
+)
+
+
+PACKETS = {
+    "eg_author": (AUTHOR, "2b42932ab2af013959191e75373213eb4875254f28a49745b6163a812215667a"),
+    "eg_authority": (AUTHORITY, "eac1603ffb4d1b8879de82b5a308593aa00c5ca4fbbd986ff5cfcb2cccd6e491"),
+    "mg_completion": (Path("/private/tmp/pathwaymech-next-228-canonical-completion-20261012"), "ba16915d5b135faa432033e2a0fc16afe97ecfe5f6da5fa5e9d63aa8a4f882d8"),
+    "mg_audit": (Path("/private/tmp/pathwaymech-next-228-canonical-review-20261012"), "5e8197bb2ef3f391a2174e47ba3535218c4d14b2969165c3c8ca27d6faade546"),
+    "mg_adapter_review": (Path("/private/tmp/pathwaymech-next-228-root-adapter-review-20261012"), "34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed"),
+}
+RECEIPTS = {
+    "eg_author": ("/private/tmp/pathwaymech-next-229-root-author-intake-20261012.json", "00ee64f2cb63eda90e11d7bcc43a3357b3b0f0a970557447be612d92a6b464c2"),
+    "eg_authority": ("/private/tmp/pathwaymech-next-229-root-authority-preparation-intake-20261012.json", "ac2842c928e7ba17735a7b4c0263886c46a2b5d40fa1a51c5836f55f80ff724d"),
+    "mg_canonical": ("/private/tmp/pathwaymech-next-228-root-canonical-review-intake-20261012.json", "5123e4c35f5f155c397f0a6bdbf059b4f725940fe6cacfe074675c20a05a664d"),
+}
+
+
+def copy_binding(source, destination):
+    before = bind(source)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not destination.exists()
+    shutil.copyfile(source, destination)
+    after = bind(destination)
+    assert (before["bytes"], before["sha256"]) == (after["bytes"], after["sha256"])
+    return {"original": before, "captured": after}
+
+
+def main():
+    assert not (HERE / "capture.json").exists()
+    packages = []
+    for name, (directory, digest) in PACKETS.items():
+        handoff = check({"path": str(directory / "handoff.json"), "sha256": digest})
+        data = load(handoff["path"])
+        manifest = check(data.get("manifest") or data["artifact_manifest"])
+        rows = load(manifest["path"])["artifacts"]
+        for row in rows:
+            # Completion deliberately binds one exact root-owned external completion script.
+            path = Path(row["path"]).resolve()
+            if not path.is_relative_to(directory.resolve()):
+                assert name == "mg_completion" and path == Path("/private/tmp/pathwaymech-next-228-complete-canonical-20261012.py")
+                assert row["sha256"] == "49a97d60a29346e5a964d1a1d441c9d4b378862def4560d4674cb01d47cd8bbb"
+            check(row)
+        packages.append({"name": name, "handoff": handoff, "manifest": manifest, "artifacts_verified": len(rows)})
+    root_receipts = {name: check({"path": path, "sha256": digest}) for name, (path, digest) in RECEIPTS.items()}
+    completion = load(PACKETS["mg_completion"][0] / "verification.json")
+    for row in completion["build_artifact_bindings"]:
+        check(row)
+    prior_capture = load(PRIOR / "preparation-capture.json")
+    records = []
+    old = prior_capture["records"]
+    actual_paths = inventory(WORKTREE / "data/pathways")
+    assert {str(p.relative_to(WORKTREE / "data/pathways")) for p in actual_paths} == {r["relative_path"] for r in old}
+    for row in old:
+        source = WORKTREE / "data/pathways" / row["relative_path"]
+        assert bind(source)["sha256"] == row["captured"]["sha256"]
+        records.append({"relative_path": row["relative_path"], "role": "actual_lyxose_prior_record", **copy_binding(source, HERE / "captured/corpus" / row["relative_path"])})
+    mg_target = PRIOR / "corpus/mannosylglycerate-degradation.yaml"
+    assert bind(mg_target)["sha256"] == "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"
+    records.append({"relative_path": mg_target.name, "role": "accepted_prospective_MG_record", **copy_binding(mg_target, HERE / "captured/corpus" / mg_target.name)})
+    assert len([r for r in records if r["relative_path"].endswith(".yaml")]) == 229
+    baseline = []
+    proposals = {}
+    for name in ("sources.json", "ontology.json", "manifest.json", "rhea-updates.json"):
+        baseline.append({"relative_path": name, **copy_binding(PRIOR / name, HERE / "captured/baseline" / name)})
+        proposals[name] = copy_binding(AUTHORITY / "proposals" / name, HERE / "captured/proposals" / name)
+    baseline_data = {name: load(PRIOR / (name + ".json")) for name in ("sources", "ontology")}
+    snapshots = {name: load(AUTHORITY / "proposals" / (name + ".json")) for name in baseline_data}
+    for name in baseline_data:
+        preserve(baseline_data[name], snapshots[name])
+    manifest = load(AUTHORITY / "proposals/manifest.json")
+    hashes = validate_manifest(load(PRIOR / "manifest.json"), manifest)
+    updates = load(AUTHORITY / "proposals/rhea-updates.json")
+    validate_updates(load(PRIOR / "rhea-updates.json"), updates)
+    hashes[updates["path"]] = updates["sha256"]
+    original_map = {r["cache_relative_path"]: r for r in completion["source_originals_freshly_hashed"]}
+    cache_root = Path("/private/tmp/pathwaymech-curation-authorities/sources")
+    for row in load(AUTHORITY / "source-cache-copy-plan.json")["entries"]:
+        key = str(Path(row["destination"]).relative_to(cache_root))
+        binding = row["original"]
+        if key in original_map:
+            assert original_map[key]["sha256"] == binding["sha256"]
+        else:
+            original_map[key] = {"cache_relative_path": key, **binding}
+    assert set(original_map) == set(hashes)
+    originals = []
+    for key, digest in sorted(hashes.items()):
+        row = original_map[key]
+        actual = check(row)
+        assert actual["sha256"] == digest
+        originals.append({"cache_relative_path": key, **actual, "mtime_ns": Path(actual["path"]).stat().st_mtime_ns, "hash_scope": "fresh preparation hash; repeat at root execution before staging"})
+    code = []
+    for row in prior_capture["candidate_code"]:
+        rel = row["relative_path"]
+        source = PRIOR / "runtime" / rel
+        check({**row["captured"], "path": str(source)})
+        code.append({"relative_path": rel, "role": "accepted_MG_runtime_with_three_file_adapter_overlay", **copy_binding(source, HERE / "captured/code" / rel)})
+    assert len(code) == 222
+    target = copy_binding(AUTHOR / "draft/ethylene-glycol-degradation.yaml", HERE / "captured/target/ethylene-glycol-degradation.yaml")
+    assert target["captured"]["sha256"] == TARGET_SHA
+    sql = prior_capture["sql_originals"]
+    for row in sql:
+        check_sql_stat(row)
+        assert baseline_data["ontology"]["sources"][row["source_key"]]["sha256"] == row["sha256"]
+    head, tree = subprocess.check_output(["git", "-C", str(WORKTREE), "rev-parse", "HEAD", "HEAD^{tree}"], text=True).splitlines()
+    retention = sorted(set(baseline_data["sources"]["terms"]) | set(baseline_data["ontology"]["terms"]))
+    capture = {
+        "at": now(), "scope": "Prospective 229-record baseline: actual 228-record lyxose working tree, checked byte-exact against accepted MG input capture, plus accepted external MG record and actual MG canonical outputs. Neither this composition nor MG is claimed maintained or merged.",
+        "observed_head": head, "observed_tree": tree,
+        "historical_MG_capture": bind(PRIOR / "preparation-capture.json"),
+        "historical_MG_scope_preserved": prior_capture["scope"],
+        "records": records, "target": target, "baseline": baseline,
+        "candidate_code": code, "code_scope": "222 byte-exact accepted MG runtime files; their captured config remains historical lyxose config. Builders explicitly consume staged EG manifest and Rhea selectors, never those historical config files.",
+        "proposals": proposals, "packages": packages, "root_receipts": root_receipts,
+        "source_originals": originals, "sql_originals": sql,
+        "sql_hash_scope": "Accepted MG native full hashes inherited, size/mtime rechecked; full hashing occurs in root-owned native ontology builder once, not in preparation.",
+        "retention_ids": retention, "new_manifest_entries": 12, "new_original_paths": 11,
+        "inventory": "rg --files --no-ignore --hidden --follow",
+        "prior_records": 229, "prospective_records_with_EG": 230,
+        "full_build_executed": False, "scientific_acceptance": False,
+        "maintained_or_shared_cache_writes": False,
+    }
+    write(HERE / "expected-native-comparison.json", {"snapshots": snapshots, "scope": "Comparison only; native original builders derive outputs independently and preserve first-source ordering.", "expected_counts": {"source_terms":2454,"source_metadata":587,"ontology_terms":1957,"ontology_metadata":5}})
+    write(HERE / "capture.json", capture)
+    print({"records": 229, "code_files": len(code), "originals": len(originals), "retention_ids": len(retention), "packages": len(packages), "artifacts_verified": sum(p["artifacts_verified"] for p in packages), "full_build": False})
+
+
+if __name__ == "__main__":
+    main()

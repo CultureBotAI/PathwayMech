@@ -1,0 +1,86 @@
+"""Record evidence bindings and the actual bounded validation history before sealing."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+
+O = Path(__file__).parent
+
+
+def bind(path):
+    path = Path(path)
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    return {'path': str(path), 'resolved_path': str(path.resolve()),
+            'bytes': path.stat().st_size, 'sha256': digest}
+
+
+def save(name, data):
+    (O / name).write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+
+def main():
+    original_bindings = {}
+    containers = ['source-original-bindings.json', 'gene-identity-bridges.json',
+                  'protein-identity-bridges.json', 'assembly-native-bridges.json',
+                  'ArcA-state-adapter-disposition.json', 'effector-chemical-bridges.json',
+                  'native-superpathway-bridge.json', 'uniprot-source-projections.json',
+                  'pathbank-original-probe.json', 'ontology-native-replay.json']
+    def visit(value, owner):
+        if isinstance(value, dict):
+            if {'path', 'bytes', 'sha256'} <= value.keys():
+                path = value['path']
+                binding = {k: value[k] for k in ('path', 'bytes', 'sha256')}
+                if path in original_bindings:
+                    assert original_bindings[path]['binding'] == binding
+                else:
+                    original_bindings[path] = {'binding': binding, 'used_by': []}
+                original_bindings[path]['used_by'].append(owner)
+            for child in value.values():
+                visit(child, owner)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child, owner)
+    for name in containers:
+        visit(json.loads((O / name).read_bytes()), name)
+    for path in sorted((O / 'raw').iterdir()):
+        observed = bind(path)
+        key = str(path)
+        if key not in original_bindings:
+            original_bindings[key] = {'binding': {k: observed[k] for k in ('path', 'bytes', 'sha256')}, 'used_by': ['raw acquisition; complete issuing body retained']}
+    for path, row in original_bindings.items():
+        row['used_by'] = sorted(set(row['used_by']))
+        if Path(path).suffix == '.db':
+            row['verification'] = 'Original SQL SHA/size captured during completed read-only native projection; exact source metadata agrees with accepted MG base. Large database not rehashed again during final sealing.'
+            continue
+        observed = bind(path)
+        assert all(observed[k] == row['binding'][k] for k in ('path', 'bytes', 'sha256'))
+        row['verification'] = 'Full bytes rehashed at packet finalization'
+    save('all-original-bindings.json', {'count': len(original_bindings),
+         'scope': 'Complete original bodies for selected native identities and scientific joins; external originals remain external and unmodified.',
+         'originals': list(original_bindings.values())})
+    save('validation-history.json', {
+        'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'scope': 'Actual tool terminal observations; concise receipt summaries, not fabricated full command logs.',
+        'successful_receipts': [
+            {'terminal': '8a6c78', 'exit_code': 0, 'command': 'project_identity_bridges.py', 'result': '13 protein joins, 2 exact core gene joins, 8 assemblies; all three assembly compound mappings derived from direct ECOLI unification originals'},
+            {'terminal': 'eec23c', 'exit_code': 0, 'command': 'check_source_order.py', 'result': '707 relevant unchanged originals scanned; 43 excluded by adapter namespace contract; all 30 selected identities exactly match native first source'},
+            {'terminal': '0c63ab', 'exit_code': 0, 'command': 'compose_proposals.py', 'result': '2454 source terms, 587 metadata, 1957 ontology terms, 750 manifest entries, 22 Rhea selectors, 11 new originals'},
+            {'terminal': 'a41a50', 'exit_code': 0, 'command': 'check_interface_locators.py', 'result': '11 exact Rhea sides and 2 native PathBank child interfaces passed'},
+            {'terminal': '1d2c15', 'exit_code': 0, 'commands': ['final_checks.py', 'ruff check --no-cache --select F compose_proposals.py check_source_order.py check_interface_locators.py capture_cache.py final_checks.py project_identity_bridges.py'], 'result': '156 checks passed; selected Ruff F checks passed'},
+            {'terminal': '068fb2', 'exit_code': 0, 'command': 'capture_cache.py', 'result': '727 actual hidden/ignored/followed source-cache files, 195980211 bytes, names stable during hashing; no writes'},
+            {'terminal': 'd8538c', 'exit_code': 0, 'command': 'check_native_proposals.py', 'result': '37 native authority checks including 5 meaningful original-scope negative controls'},
+            {'terminal': 'a39de1', 'exit_code': 0, 'command': 'compare_uniprot_originals.py', 'result': '13 frozen/fresh accession-label-synonym-taxon comparisons; no identity differences; fresh-only scientific fields retained separately'}],
+        'retained_attempts': [
+            {'terminal': '592219', 'exit_code': 0, 'record': 'retained-attempts/acquisition-sandbox-dns-failure.json', 'result': 'Initial acquisition helper recorded network DNS failures; complete originals subsequently acquired with network access; failure is not a successful source acquisition'},
+            {'terminal': 'f5fb2d', 'exit_code': 1, 'record': 'retained-attempts/project_identity_bridges-v1.py', 'result': 'Incorrect Textseq-id_accession locator assumption rejected; corrected to actual Gene-commentary_accession native locus and validated'},
+            {'record': 'retained-attempts/pathbank-descriptor-member-bytes-mismatch.json', 'result': 'Copied byte count for another archive member rejected; complete unchanged member measured as 34352 bytes and correct native typed parse passed'},
+            {'record': 'retained-attempts/fresh-UP-first-*', 'result': 'Preliminary fresh-first UniProt proposal retained; production source-order review superseded it with the existing frozen bulk original, never reordered canonical sources'}],
+        'not_run': ['full canonical build', 'scientific review of author record', 'maintained adoption', 'cache mutation', 'Git/GitHub changes'],
+        'pinned_python': '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B',
+        'environment': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1'}})
+    print(json.dumps({'original_bindings': len(original_bindings), 'status': 'recorded'}))
+
+
+if __name__ == '__main__':
+    main()

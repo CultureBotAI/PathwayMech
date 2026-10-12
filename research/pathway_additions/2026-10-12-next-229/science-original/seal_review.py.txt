@@ -1,0 +1,54 @@
+from pathlib import Path
+import hashlib,json,subprocess
+from datetime import datetime,timezone
+O=Path('/private/tmp/pathwaymech-next-229-science-review-20261012')
+A=Path('/private/tmp/pathwaymech-next-229-author-20261012')
+P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012')
+R=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+def h(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def b(p):
+ p=Path(p); return {'path':str(p),'sha256':h(p),'bytes':p.stat().st_size}
+def save(n,v): (O/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def read(n):return json.loads((O/n).read_text())
+assert not (O/'handoff.json').exists()
+assert h(A/'handoff.json')=='2b42932ab2af013959191e75373213eb4875254f28a49745b6163a812215667a'
+assert h(A/'artifact-manifest.json')=='2443ea3e67a6fb34f344cff30ccfaf686f56a9e6bf81778c5f787776e32ad1ef'
+assert h(A/'draft/ethylene-glycol-degradation.yaml')=='c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704'
+artifacts=json.loads((A/'artifact-manifest.json').read_text())['artifacts']
+assert len(artifacts)==360
+for x in artifacts:
+ assert h(x['path'])==x['sha256'],x
+ assert Path(x['path']).stat().st_size==x['bytes'],x
+inventory=subprocess.run(['rg','--files','--no-ignore','--hidden','--follow',str(A)],capture_output=True,text=True,check=True)
+assert set(inventory.stdout.splitlines())=={x['path'] for x in artifacts}|{str(A/'handoff.json'),str(A/'artifact-manifest.json')}
+refs=read('original-bindings-verified.json');assert len(refs)==90
+for x in refs:
+ assert h(x['path'])==x['sha256'],x
+ assert Path(x['path']).stat().st_size==x['bytes'],x
+replays=read('all-evidence-original-replay.json');assert len(replays)==195 and all(x['passed'] for x in replays)
+assert len(read('all-82-edge-assessments.json'))==82
+assert len(read('all-50-dispositions-reviewed.json'))==50
+assert len(read('regulatory-join-proof.json'))==15
+assert len(read('article-projection-replays.json'))==10
+controls=read('adversarial-controls.json');assert controls['baseline_passes'] and len(controls['controls'])==12 and all(x['rejected'] for x in controls['controls'])
+findings=read('findings.json');assert len(findings)==2 and all(x['severity']=='minor' for x in findings)
+validation=read('native-candidate-validation.json');assert validation['native_schema']=='pass' and not validation['native_strict_errors']
+# Correct a temporal-description wording in unsealed review metadata only.
+old='first-artifact timestamp is supplied as an observed lower-bound receipt, not fabricated session start.'
+new='first-artifact timestamp is supplied only as an observed artifact timestamp, not as an exact session start.'
+for name in ['finish_review.py','review.json']:
+ p=O/name;t=p.read_text();assert old in t;p.write_text(t.replace(old,new))
+images=[('raw/PMC2242541-1387tbl1.jpg','2ea668/0','AldA kinetic values and units'),('raw/PMC2242541-1387tbl4.jpg','2ea668/0','Substrate/cofactor comparisons'),('raw/PMC2242541-1387tbl5.jpg','2ea668/0','Inhibitor assay observations'),('raw/PMC2242541-1387tbl6.jpg','2ea668/0','Mg/NADH dehydrogenase versus esterase observations and absent2mM esterase cell'),('derived/Baldoma1988-preview/page-5.png','efc0ab/0','Figure5 NADH inhibition of direct glycolaldehyde oxidation'),('raw/PMC9181523-Fig5.jpg','92207d/0','SrsR selected-gene expression signs'),('raw/correct-PMC11401383-Fig4.jpg','7c2163/0','Engineering moduleIII versus single-module growth; correct retrieved figure')]
+save('visual-read-bindings.json',{'scope':'Exact image bytes viewed during this review; full original/source-access ancestry remains the sealed preflight packet. Not a fresh inspection of inaccessible supplemental figures.','images':[{'original_or_derived_image':b(P/p),'actual_tool_receipt':receipt,'observation':obs} for p,receipt,obs in images]})
+save('rubric-bindings.json',{'scope':'Local rubric files used during review; paths freshly bound at sealing, scientific task reads are recorded in source-read receipts and inherited working context.','files':[b(R/p) for p in ['.claude/skills/review-yaml-record/SKILL.md','.claude/skills/add-pathway/SKILL.md','docs/CAUSAL_GRAPHS.md','docs/record-review-profile.md']]})
+save('seal-precheck.json',{'observed_utc':datetime.now(timezone.utc).isoformat(),'author_artifacts_freshly_verified':360,'author_inventory_including_hidden_ignored_followed':362,'reference_bindings_freshly_verified':90,'all195_source_replays_pass':True,'all82_edges_assessed':True,'all50_dispositions_assessed':True,'native_regulatory_joins':15,'source_invalid_mutants_rejected':12,'native_candidate_schema_and_strict':'pass','findings':{'blocker':0,'major':0,'minor':2},'target':b(A/'draft/ethylene-glycol-degradation.yaml'),'scope':'Final verification of completed independent source review. No full canonical build/full-corpus test/native maintained save/render/Git action performed.'})
+files=subprocess.run(['rg','--files','--no-ignore','--hidden','--follow',str(O)],capture_output=True,text=True,check=True).stdout.splitlines()
+assert not any(Path(p).is_symlink() for p in files)
+manifest={'scope':'All review files, including original failed checker attempts, hidden/ignored/followed. Self-manifest/handoff excluded; disposable external Swift caches excluded by location. No sealed author/preflight original was changed.','artifact_count':len(files),'artifacts':[b(p) for p in sorted(files)]}
+save('artifact-manifest.json',manifest)
+handoff={'status':'sealed_independent_scientific_review_changes_requested_minor','sealed_utc':datetime.now(timezone.utc).isoformat(),'target':b(A/'draft/ethylene-glycol-degradation.yaml'),'target_id':'MetaCyc:PWY0-1280','author_handoff':b(A/'handoff.json'),'author_manifest':b(A/'artifact-manifest.json'),'preflight_handoff':b(P/'handoff.json'),'preflight_manifest':b(P/'artifact-manifest.json'),'review':b(O/'review.json'),'report':b(O/'REVIEW.md'),'findings':b(O/'findings.json'),'manifest':b(O/'artifact-manifest.json'),'artifact_count':len(files),'finding_keys':[x['issue_key'] for x in findings],'severity_counts':{'blocker':0,'major':0,'minor':2},'core_verdict':'Exact two native core events and all82 edge identities supported; eg-025 supporting solution measurement needs construct clarification, and FucO prior-work Cu/Cd context needs explicit disposition. No clean acceptance until exact successor reassessment.','independence':'Reviewer authored original source preflight, not the reviewed YAML. Fresh source work versus inherited exact-source reads are distinguished.','next_action':'Root reads and files issues; independent author prepares immutable scientific successor; reviewer assesses exact successor and all source/identity preservation before acceptance. No GitHub action by reviewer.','remaining_gates':'Root owns canonical build and merged baseline bridge, full maintained validation/tests, native review/history/render, PR and merge. This external packet does not claim those gates or source exhaustion.'}
+save('handoff.json',handoff)
+for x in manifest['artifacts']:assert h(x['path'])==x['sha256'] and Path(x['path']).stat().st_size==x['bytes']
+actual=set(subprocess.run(['rg','--files','--no-ignore','--hidden','--follow',str(O)],capture_output=True,text=True,check=True).stdout.splitlines())
+assert actual==set(files)|{str(O/'artifact-manifest.json'),str(O/'handoff.json')}
+print(json.dumps({'status':'sealed_and_freshly_verified','handoff':b(O/'handoff.json'),'manifest':b(O/'artifact-manifest.json'),'review':b(O/'review.json'),'report':b(O/'REVIEW.md'),'artifact_count':len(files),'findings':[x['issue_key'] for x in findings]},indent=2))

@@ -1,0 +1,18 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime
+from concurrent.futures import ThreadPoolExecutor
+O=Path(__file__).parent
+jobs=[('UniProt-'+a+'.json','https://rest.uniprot.org/uniprotkb/'+a+'.json') for a in ['P0A9S1','P25553']]
+for f in ['REG0-9194','REG0-9208','REG0-9207','EG10351','EG10035']:jobs.append(('ECOLI-'+f+'.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+f))
+ids=['15995211','9851711','2203757','1730033','8120011','9525938','3275622','9202484','10071223','12003946','16731973','3308886','17173928','18218709','41308929','39079834','6336729']
+jobs.append(('mechanism-pubmed.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id='+','.join(ids)+'&rettype=xml'))
+def run(job):
+ name,url=job;p=O/'raw'/name;assert not p.exists();r={'path':str(p),'url':url,'at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  req=urllib.request.Request(url,headers={'User-Agent':'PathwayMech evidence research/1.0'})
+  with urllib.request.urlopen(req,timeout=50) as resp:raw=resp.read();r.update(status=resp.status,final_url=resp.url,content_type=resp.headers.get('Content-Type'))
+ except urllib.error.HTTPError as e:raw=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:raw=b'';r.update(status=None,error=str(e))
+ p.write_bytes(raw);r.update(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest());return r
+with ThreadPoolExecutor(max_workers=3) as ex:rows=list(ex.map(run,jobs))
+(O/'derived/acquisition-1.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps([{k:v for k,v in x.items() if k in ['path','status','bytes','error']} for x in rows],indent=2))

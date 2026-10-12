@@ -1,0 +1,53 @@
+"""Build bounded source authorities through the accepted native adapters only."""
+import copy,datetime,hashlib,json,sys
+from pathlib import Path
+import yaml
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');L=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012');B=Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012');cache=O/'original-cache'
+sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+# Existing entry lookup uses actual originals only, not acceptance of these unsealed baseline outputs.
+observed_s=json.loads((B/'sources.json').read_bytes());observed_m=json.loads((B/'manifest.json').read_bytes())
+entries=[];bindings=[];selected=set();native=[]
+def add(entry,p,ids):
+ p=Path(p);entry=copy.deepcopy(entry);assert bind(p)['sha256']==entry['sha256']
+ q=cache/entry['path'];q.parent.mkdir(parents=True,exist_ok=True)
+ if not q.exists():q.symlink_to(p.resolve())
+ assert bind(q)['sha256']==entry['sha256'];assert entry['key'] not in {e['key'] for e in entries}
+ ts=list(sb._pathbank_archive_terms(p,url=entry['url'],sha256=entry['sha256'],archive=entry['archive'])) if 'archive' in entry else list(sb.source_terms(entry['kind'],p,url=entry['url'],version=entry['version']))
+ assert set(ids)<={t[0] for t in ts},(ids,[t[0] for t in ts])
+ entries.append(entry);bindings.append({'entry':entry,'original':bind(p),'external_builder_cache':str(q)});selected.update(ids)
+ native.append({'entry_key':entry['key'],'original':bind(p),'selected_terms':[t for t in ts if t[0] in ids]})
+def fresh(kind,p,url,key,ids,version='27.0',archive=None):
+ p=Path(p);e={'key':key,'kind':kind,'path':'eg229-'+p.name,'url':url,'version':version,'license':'CC-BY-4.0' if kind=='uniprot' else 'Public domain' if kind=='ncbi-entrezgene-xml' else 'Upstream terms; public-release licensing deferred','sha256':bind(p)['sha256']}
+ if archive:
+  e['archive']=archive
+  e['path']=next(x['path'] for x in observed_m if x['kind']=='pathbank-biopax-zip' and x['sha256']==e['sha256'])
+ add(e,p,ids)
+def old(key,ids):
+ e=next(x for x in observed_m if x['key']==key);add(e,B/'originals'/e['path'],ids)
+old('uniprot-ecoli-reviewed-cofactors',['UniProtKB:'+x for x in ['P0A9S1','P25553','P0ACK8','P03004','P0ACH5','P0A9E2','P0ACI0','P52044','P0A9Q1','P0A6X7','P0A6Y1','P0A9E5','P0ACJ8']])
+for frame in ['LACTALDREDUCT-CPLX','ALD-CPLX','PC00004','CPLX0-226','CPLX0-7650','CPLX0-7797','PC00027','MONOMER0-160']:
+ ident='EcoCyc:'+frame
+ if ident in observed_s['terms']:old(observed_s['terms'][ident]['source'],[ident]);continue
+ p=P/'raw'/('ECOLI-'+frame+'.xml')
+ if not p.exists():p=L/'raw'/p.name
+ fresh('ecocyc-protein-xml',p,'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+frame,'eg229-ecocyc-'+frame,[ident])
+for gid in ['947273','945672']:
+ p=O/'raw'/('Entrez-'+gid+'-exact.xml');url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml'
+ t,tax=sb._ncbi_gene_record(p,url);assert t[0]=='Entrez:'+gid and tax=='511145'
+ fresh('ncbi-entrezgene-xml',p,url,'eg229-ncbi-gene-'+gid,[t[0]],'NCBI Gene original retrieved 2026-10-12')
+for frame in ['PWY0-1280','PWY-6649','GLYOXDEG-PWY','GLYCOLATEMET-PWY','GLYCOL-GLYOXDEG-PWY']:
+ fresh('metacyc-html',O/'raw'/('META-'+frame+'.html'),'https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object='+frame,'eg229-metacyc-'+frame,['MetaCyc:'+frame],'MetaCyc 27.0; original retrieved 2026-10-12')
+pb=json.loads((O/'pathbank-original-probe.json').read_bytes());assert pb['status']=='native_builder_passed'
+fresh('pathbank-biopax-zip',pb['original_archive']['path'],'https://pathbank.org/downloads/pathbank_primary_biopax.zip','eg229-pathbank-SMP0002105',['PathBank:SMP0002052','PathBank:SMP0000847'],'Frozen PathBank original primary BioPAX archive',archive=pb['archive'])
+sel=O/'bounded-selection';sel.mkdir(exist_ok=True);(sel/'identifiers.yaml').write_text(yaml.safe_dump({'id':'MetaCyc:PWY0-1280','participants':[{'id':i} for i in sorted(selected)]}))
+save('incremental-source-manifest.json',entries);snap=sb.build_snapshot(O/'incremental-source-manifest.json',sel,cache);assert set(snap['terms'])==selected
+save('incremental-source-build.json',snap);save('source-original-bindings.json',bindings);save('source-native-replay.json',native)
+save('source-selection-status.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'native_incremental_build_passed','selected_ids':sorted(selected),'graph_scope':'Author provisional list, unchanged; no final YAML edited','extra_catalog_only':['PathBank:SMP0002105'],'baseline_acceptance':'pending root-sealed actual MG canonical output','full_canonical_build':False})
+print(json.dumps({'terms':len(snap['terms']),'metadata':len(snap['sources']),'entries':len(entries),'labels':{i:t['label'] for i,t in snap['terms'].items()}},ensure_ascii=False))
