@@ -1,0 +1,50 @@
+from pathlib import Path
+import json,hashlib,copy,sys,shutil
+from lxml import etree
+import yaml
+O=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-227-science-correction-20261012');I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');ORIG=Path('/private/tmp/pathwaymech-next-227-author-20261012');sys.path.insert(0,str(I/'candidate/src'))
+from pathwaymech.identifiers import identifier_errors
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def bind(p):return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def dump(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+d=yaml.safe_load((O/'draft/l-lyxose-degradation.yaml').read_text());old=yaml.safe_load((A/'draft/l-lyxose-degradation.yaml').read_text());refs=json.loads((O/'reference-original-bindings.json').read_text());ledger=json.loads((O/'edge-evidence-ledger.json').read_text());previous=json.loads((A/'edge-evidence-ledger.json').read_text())
+changed=[i for i,(a,b) in enumerate(zip(ledger,previous)) if a!=b];assert changed==[239,248]
+checks=[]
+for idx,e in enumerate(d['mechanistic_edges'][109:],109):
+ subject=e['subject'];obj=e['object'];u_binding=refs[subject];u_path=Path(u_binding['path']);assert sha(u_path)==u_binding['sha256'];u=json.loads(u_path.read_text());assert subject=='UniProtKB:'+u['primaryAccession'];geneids=[r['id'] for r in u['uniProtKBCrossReferences'] if r['database']=='GeneID'];assert len(geneids)==1
+ ref='Entrez:'+geneids[0];b=refs[ref];p=Path(b['path']);assert sha(p)==b['sha256'];t=etree.parse(str(p));assert t.xpath('//Gene-track_geneid/text()')==geneids
+ name=t.xpath('//Gene-ref_locus/text()')[0];locus=t.xpath('//Gene-ref_locus-tag/text()')[0];assert any(g['geneName']['value']==name and locus in [n['value'] for n in g['orderedLocusNames']] for g in u['genes']);assert ref!=obj
+ ev=next(x for x in e['evidence'] if x['reference_id']==ref);found=[r for r in ledger if r['evidence']==ev];assert len(found)==1;r=found[0];obs=[etree.tostring(x,encoding='unicode') for x in t.xpath(r['selector'])];assert obs==r['observed']
+ target_binding=refs[obj];targetpath=Path(target_binding['path']);assert sha(targetpath)==target_binding['sha256'];targettree=etree.parse(str(targetpath));assert 'Entrez:'+targettree.xpath('//Gene-track_geneid/text()')[0]==obj
+ targetname=targettree.xpath('//Gene-ref_locus/text()')[0]
+ checks.append(dict(edge_id=e['id'],subject=subject,subject_reference_gene=ref,gene_name=name,locus=locus,actual_target=obj,target_gene_name=targetname,protein_source=u_binding,gene_source=b,source_selector=r['selector'],selected_evidence=ev))
+
+def audit_role(candidate,row):
+ e=next(x for x in candidate['mechanistic_edges'] if x['id']==row['edge_id']);ev=next(x for x in e['evidence'] if x['reference_id']==row['subject_reference_gene']);s=ev['source_assertion']
+ assert e['subject']==row['subject'] and e['object']==row['actual_target'] and e['predicate']=='inhibits'
+ assert row['gene_name']+'/'+row['locus'] in s
+ assert "regulator subject's reference gene" in s
+ assert 'separately cited UniProt GeneID join' in s
+ assert f"expression target is {row['target_gene_name']} ({row['actual_target']})" in s
+ assert 'BW25113 derivatives' in s
+ assert 'grounds the gene-expression endpoint' not in s
+ return True
+for row in checks:audit_role(d,row)
+neg=[]
+for row in checks:
+ for label,mut in [('restore wrong endpoint-grounding role',lambda e:e.update(source_assertion='This grounds the gene-expression endpoint.')),('swap target to subject reference gene',lambda e:e.update(source_assertion=e['source_assertion'].replace(row['actual_target'],row['subject_reference_gene'])))]:
+  bad=copy.deepcopy(d);edge=next(x for x in bad['mechanistic_edges'] if x['id']==row['edge_id']);ev=next(x for x in edge['evidence'] if x['reference_id']==row['subject_reference_gene']);mut(ev)
+  try:audit_role(bad,row)
+  except AssertionError:neg.append(dict(edge=row['edge_id'],control=label,rejected=True))
+  else:raise AssertionError(label)
+# Exact target mutation guard: undo the two selected sentences and restore every original record value.
+restored=copy.deepcopy(d)
+for idx,evidx in [(109,4),(110,6)]:restored['mechanistic_edges'][idx]['evidence'][evidx]['source_assertion']=old['mechanistic_edges'][idx]['evidence'][evidx]['source_assertion']
+assert restored==old
+original=yaml.safe_load((ORIG/'draft/l-lyxose-degradation.yaml').read_text());assert d['mechanistic_edges'][:109]==original['mechanistic_edges'];assert d['description']==old['description'];assert d['participants']==old['participants'];assert d['references']==old['references']
+root=O/'identifier-exercise';(root/'data/pathways').mkdir(parents=True,exist_ok=True);(root/'data/identifier_authorities').mkdir(parents=True,exist_ok=True);(root/'conf').mkdir(exist_ok=True)
+shutil.copyfile(O/'draft/l-lyxose-degradation.yaml',root/'data/pathways/l-lyxose-degradation.yaml');shutil.copyfile(I/'candidate/conf/identifier_policy.yaml',root/'conf/identifier_policy.yaml');shutil.copyfile(A/'complete-source-proposal.json',root/'data/identifier_authorities/sources.json');shutil.copyfile(ORIG/'authority-preparation/ontology-authority-proposal.json',root/'data/identifier_authorities/ontology.json')
+errors=identifier_errors(root);assert not errors,errors
+out=dict(status='pass',target=bind(O/'draft/l-lyxose-degradation.yaml'),new_source_claims=checks,changed_observation_rows=changed,negative_controls=neg,restoring_only_two_sentences_recovers_complete_prior_record=True,all_111_edge_ids_subjects_predicates_objects_unchanged=True,all_original_109_edge_objects_exact=True,pectin439_description_and_context_unchanged=True,participant_reference_authority_deltas=0,provisional_identifier_errors=errors,full_canonical_build=False,scope='Fresh issuing-source role join/locator replay and exact two-sentence semantic delta; prior full scientific and source checks inherited only for otherwise identical bytes/values. No automated scientific interpretation claim.')
+dump('role-check-result.json',out);reviews=json.loads((O/'review-dispositions.json').read_text());reviews[0]['verification']=bind(O/'role-check-result.json');dump('review-dispositions.json',reviews);print('roles source-verified; four source-derived negative controls pass; exact two-string delta and provisional identifiers pass')

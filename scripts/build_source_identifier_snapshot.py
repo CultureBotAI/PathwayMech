@@ -3,7 +3,7 @@
 
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
-gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,
+gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip, metacyc-html,
 metacyc-protein-xml, metacyc-reaction-xml, ecocyc-protein-xml, ecocyc-rna-xml, ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
@@ -18,10 +18,12 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
+import io
 import json
 import math
 import re
 import tarfile
+import zipfile
 from collections.abc import Iterator
 from datetime import date, datetime
 from html import unescape
@@ -34,6 +36,12 @@ from xml.etree import ElementTree
 from xml.parsers import expat
 
 import yaml
+
+from pathwaymech.pathbank_provenance import (
+    PATHBANK_ARCHIVE_KIND,
+    PATHBANK_ARCHIVE_URL,
+    validate_pathbank_archive,
+)
 
 SOURCE_NAMESPACES = frozenset(
     {
@@ -218,7 +226,7 @@ def _pathbank_request(url: str) -> str | None:
 
 
 def pathbank_terms(
-    root: ElementTree.Element, *, url: str = "",
+    root: ElementTree.Element, *, url: str = "", archive_root: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
     """Read one native pathway and its declared local graph objects, not xref labels.
 
@@ -287,7 +295,13 @@ def pathbank_terms(
 
     pathways = root.findall(bp + "Pathway")
     child_terms: list[tuple[str, str, list[str]]] = []
-    requested = _pathbank_request(url)
+    if archive_root is None:
+        requested = _pathbank_request(url)
+    else:
+        if (url != PATHBANK_ARCHIVE_URL or not isinstance(archive_root, str)
+                or not re.fullmatch(r"SMP[0-9]+", archive_root)):
+            raise ValueError("PathBank archive selection requires exact archive/root provenance")
+        requested = archive_root
     if requested is None:
         if len(pathways) != 1:
             raise ValueError("PathBank authority requires exactly one native Pathway")
@@ -390,6 +404,34 @@ def pathbank_terms(
             raise ValueError(f"PathBank graph object lacks an unambiguous local identity: {uri}")
         names = labels(node) or [native]
         yield identifier + "/" + native, names[0], names[1:]
+
+
+def _pathbank_archive_terms(
+    path: Path, *, url: str, sha256: str, archive: Any,
+) -> list[tuple[str, str, list[str]]]:
+    """Verify actual ZIP and member bytes before native membership selection."""
+    validate_pathbank_archive(url, sha256, archive)
+    raw = path.read_bytes()
+    if len(raw) != archive["bytes"] or hashlib.sha256(raw).hexdigest() != sha256:
+        raise ValueError("PathBank ZIP original bytes disagree with archive provenance")
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as source:
+            members = [info for info in source.infolist() if info.filename == archive["member"]]
+            if (len(members) != 1 or members[0].is_dir()
+                    or members[0].file_size != archive["member_bytes"]):
+                raise ValueError("PathBank ZIP requires one exact member with bound byte count")
+            member = source.read(members[0])
+    except (zipfile.BadZipFile, RuntimeError, NotImplementedError) as error:
+        raise ValueError("PathBank ZIP member could not be verified") from error
+    if (len(member) != archive["member_bytes"]
+            or hashlib.sha256(member).hexdigest() != archive["member_sha256"]):
+        raise ValueError("PathBank ZIP member bytes disagree with member provenance")
+    root = ElementTree.fromstring(member)
+    if (root.tag != "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"
+            or any(not node.tag.startswith("{http://www.biopax.org/release/biopax-level3.owl#}")
+                   and node.tag != "{http://www.w3.org/2002/07/owl#}Ontology" for node in root)):
+        raise ValueError("PathBank ZIP member requires native RDF/BioPAX object types")
+    return list(pathbank_terms(root, url=url, archive_root=archive["root"]))
 
 
 def _metacyc_metadata_fields(text: str) -> Iterator[str]:
@@ -826,14 +868,19 @@ def _metacyc_reaction_record(
                 len(slot) != 1 or slot.attrib or (slot.text or "").strip()
                 or len(compound) or (compound.text or "").strip()
                 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", compound_frame)
-                or compound.attrib != {
+                or compound.attrib not in ({
                     "resource": "getxml?META:" + compound_frame,
                     "orgid": "META", "frameid": compound_frame,
-                }
+                }, {
+                    "resource": "getxml?META:" + compound_frame,
+                    "orgid": "META", "frameid": compound_frame, "class": "true",
+                })
             ):
                 raise ValueError("MetaCyc reaction requires exact native Compound side references")
-            participants.append(compound_frame)
-        if len(participants) != len(set(participants)):
+            # Keep the source's class assertion in conflict comparisons. It
+            # does not establish an external chemical/anomer equivalence.
+            participants.append((compound_frame, compound.get("class")))
+        if len(participants) != len({frame for frame, _ in participants}):
             raise ValueError("MetaCyc reaction repeats a native side participant")
         sides.append(tuple(sorted(participants)))
     flags = []
@@ -1514,8 +1561,15 @@ def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
 
 def source_terms(
     kind: str, path: Path, *, url: str | None = None, version: str | None = None,
+    archive: dict[str, Any] | None = None, sha256: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
-    if kind in {"gocam-tar", "mibig-tar"}:
+    if archive is not None and kind != PATHBANK_ARCHIVE_KIND:
+        raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
+    if kind == PATHBANK_ARCHIVE_KIND:
+        yield from _pathbank_archive_terms(
+            path, url=url or "", sha256=sha256 or "", archive=archive,
+        )
+    elif kind in {"gocam-tar", "mibig-tar"}:
         parser = gocam_terms if kind == "gocam-tar" else mibig_terms
         with tarfile.open(path, "r:gz") as archive:
             for member in archive:
@@ -1610,7 +1664,22 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         metadata["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
-        if entry["kind"] == "metacyc-reaction-xml":
+        if "archive" in entry and entry["kind"] != PATHBANK_ARCHIVE_KIND:
+            raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
+        if entry["kind"] == PATHBANK_ARCHIVE_KIND:
+            if entry.keys() != {
+                "key", "kind", "path", "url", "version", "license", "sha256", "archive",
+            }:
+                raise ValueError("PathBank ZIP requires closed source manifest fields")
+            parsed_terms = _pathbank_archive_terms(
+                path, url=entry["url"], sha256=entry["sha256"], archive=entry["archive"],
+            )
+            metadata.update(
+                kind=PATHBANK_ARCHIVE_KIND, archive=dict(entry["archive"]),
+                pathway_accessions=[identifier.split(":", 1)[1]
+                                    for identifier, _, _ in parsed_terms if "/" not in identifier],
+            )
+        elif entry["kind"] == "metacyc-reaction-xml":
             term, assertion = _metacyc_reaction_record(
                 path, url=entry["url"], version=entry["version"],
             )
@@ -1674,7 +1743,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 if identifier in pubchem_assertions and pubchem_assertions[identifier] != label:
                     raise ValueError(f"conflicting PubChem native names for {identifier}")
                 pubchem_assertions[identifier] = label
-            if entry["kind"] == "pathbank-biopax" and "/" not in identifier:
+            if (entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
+                    and "/" not in identifier):
                 if identifier in pathbank_assertions and pathbank_assertions[identifier] != label:
                     raise ValueError(f"conflicting PathBank native pathway names for {identifier}")
                 pathbank_assertions[identifier] = label
@@ -1721,7 +1791,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier].update(label_kind="source_context", entity_type="reaction")
             if (
                 (identifier.startswith("WikiPathways:") and "/" in identifier)
-                or (entry["kind"] == "pathbank-biopax" and "/" in identifier)
+                or (entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
+                    and "/" in identifier)
                 or identifier.startswith("MIBiG:")
                 or (
                     entry["kind"] == "gocam-tar"

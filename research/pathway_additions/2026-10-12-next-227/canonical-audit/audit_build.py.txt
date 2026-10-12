@@ -1,0 +1,63 @@
+from pathlib import Path
+import json,hashlib,os,subprocess,yaml,datetime
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-227-canonical-build-20261012');R=Path('/private/tmp/pathwaymech-next-226-20261012');I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');C=I/'candidate';COMMIT='b70ed36907b4c434d967f4456456be3b480415ae'
+def h(p):
+ z=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):z.update(b)
+ return z.hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def save(n,j):(O/n).write_text(json.dumps(j,indent=2,ensure_ascii=False)+'\n')
+def git(*a):return subprocess.check_output(['git',*a],cwd=R)
+assert h(B/'handoff.json')=='d86b350b842cabb36aadacbf008ca5f96ab63675b8864707b2c27ea0ed9cb472'
+assert h(B/'artifact-manifest.json')=='4f64d00776775ce5c2a6798951e9dade2e93594ccb2ed531e1ee3e0f9e659ce2'
+m=load(B/'artifact-manifest.json')['artifacts'];assert len(m)==979
+for x in m:
+ p=B/x['path'];assert h(p)==x['sha256'] and p.stat().st_size==x['bytes'],p
+actual={str((Path(d)/n).relative_to(B)) for d,ds,fs in os.walk(B,followlinks=True) for n in fs}
+assert actual=={x['path'] for x in m}|{'artifact-manifest.json','handoff.json'}
+save('sealed-build-verification.json',{'artifacts_freshly_hashed':979,'hidden_ignored_followed_inventory_exact':True,'handoff_sha256':h(B/'handoff.json'),'manifest_sha256':h(B/'artifact-manifest.json')})
+cap=load(B/'baseline-capture.json');assert git('rev-parse',COMMIT+'^{tree}').decode().strip()=='428c9ff0ab1294c2e4b5d6059d45a40ddf096974'
+for row in cap['records']:
+ p=B/'corpus'/Path(row['relative_path']).relative_to('data/pathways');blob=git('show',COMMIT+':'+row['relative_path']);assert p.read_bytes()==blob;assert h(p)==row['sha256']
+assert len(cap['records'])==228 and sum(x['relative_path'].endswith('.yaml') for x in cap['records'])==227
+assert h(B/'corpus/l-lyxose-degradation.yaml')=='8ca651dc70a0dda2620ba09719a4e6861517d39f1736ca1971f283900accc121'
+checks={};mapping={'sources':'data/identifier_authorities/sources.json','ontology':'data/identifier_authorities/ontology.json','manifest':'conf/identifier_sources.json','rhea-updates':'conf/rhea_identifier_updates.json'}
+for k,rel in mapping.items():assert (B/'baseline'/f'{k}.json').read_bytes()==git('show',COMMIT+':'+rel)
+for k in ['sources','ontology']:
+ old=load(B/'baseline'/f'{k}.json');new=load(B/f'{k}.json');assert old['version']==new['version']
+ for section in ['sources','terms']:assert all(new[section].get(id)==v for id,v in old[section].items())
+ checks[k]={section:{'old':len(old[section]),'new':len(new[section]),'old_objects_equal':True,'added':sorted(set(new[section])-set(old[section]))} for section in ['sources','terms']}
+manifest=load(B/'manifest.json');oldm=load(B/'baseline/manifest.json');assert manifest[:len(oldm)]==oldm and len(oldm)==698 and len(manifest)==717
+rhea=load(B/'rhea-updates.json');oldr=load(B/'baseline/rhea-updates.json');assert rhea['ids'][:len(oldr['ids'])]==oldr['ids'];assert {k:v for k,v in rhea.items() if k!='ids'}=={k:v for k,v in oldr.items() if k!='ids'}
+ret=yaml.safe_load((B/'corpus/_authority_retention/selector.yaml').read_text());retids={ret['id']}|{x['id'] for x in ret['participants']};oldids=set(load(B/'baseline/sources.json')['terms'])|set(load(B/'baseline/ontology.json')['terms']);assert retids==oldids and len(retids)==4315
+changes={x['path']:x for x in load(I/'code-delta.json')['files']};assert len(changes)==6
+for row in cap['code_inputs']:
+ p=Path(row['path']);assert h(p)==row['sha256'] and p.stat().st_size==row['bytes'];rel=row['relative_path']
+ if rel in changes:assert h(p)==changes[rel]['after']['sha256']
+ else:assert p.read_bytes()==git('show',COMMIT+':'+rel)
+assert len(cap['code_inputs'])==222
+commands=load(B/'commands.json');receipts=load(B/'execution-ledger.json')['executions'];assert len(receipts)==2
+for x in receipts:
+ assert x['command']==commands[x['name']] and x['environment']==commands['environment'] and x['cwd']==str(B) and x['exit_code']==0
+ for stream in ['stdout','stderr']:
+  z=x[stream];assert h(z['path'])==z['sha256'] and Path(z['path']).stat().st_size==z['bytes']
+ assert x['stderr']['bytes']==0
+assert commands['source_builder'][-1]==str(B/'sources.json') and commands['ontology_builder'][-1]==str(B/'ontology.json')
+assert all('proposal' not in s for key in ['source_builder','ontology_builder'] for s in commands[key])
+ori=load(B/'source-original-bindings.json')['originals'];paths={x['cache_relative_path']:x for x in ori};required={x['path'] for x in manifest}|{x['version_source']['path'] for x in manifest if 'version_source' in x}|{rhea['path']};assert set(paths)==required and len(paths)==718
+for rel,x in paths.items():
+ p=B/'originals'/rel;assert p.is_symlink() and str(p.resolve())==x['resolved_original'];assert h(p)==x['sha256'] and p.stat().st_size==x['bytes']
+for e in manifest:
+ assert paths[e['path']]['sha256']==e['sha256']
+ if 'version_source' in e:assert paths[e['version_source']['path']]['sha256']==e['version_source']['sha256']
+assert paths[rhea['path']]['sha256']==rhea['sha256']
+copy=load(B/'new-originals-copy-plan.json')['new_originals'];assert len(copy)==19 and {x['cache_relative_path'] for x in copy}=={x['path'] for x in manifest[698:]}
+for x in copy:assert h(x['original']['path'])==x['original']['sha256']==paths[x['cache_relative_path']]['sha256']
+onto=load(B/'ontology.json');dbchecks=[]
+for x in load(B/'ontology-original-bindings.json')['originals']:
+ p=Path(x['path']);assert p.stat().st_size==x['bytes'] and p.stat().st_mtime_ns==x['mtime_ns'];assert onto['sources'][x['source_key']]['sha256']==x['sha256']
+ dbchecks.append({**x,'fresh_full_hash_not_repeated':True,'basis':'Reviewed production builder command hashes full SQL originals; exact output metadata digest and current size/mtime match pinned original binding.'})
+save('ontology-input-binding-assessment.json',dbchecks)
+save('preservation-and-command-audit.json',{'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_commit':COMMIT,'baseline_tree':'428c9ff0ab1294c2e4b5d6059d45a40ddf096974','records_fresh_git_blob_comparisons':227,'gitkeep_preserved':True,'exact_target':h(B/'corpus/l-lyxose-degradation.yaml'),'old_object_preservation':checks,'old_manifest_entries':698,'manifest_total':717,'rhea_old':16,'rhea_total':19,'retention_selector_ids':4315,'retention_selector_build_only':True,'reviewed_code_files_freshly_verified':222,'unchanged_code_vs_commit':216,'reviewed_adapter_delta':6,'executions_verified':receipts,'original_paths_verified':718,'new_originals_verified':19,'SQL_full_native_execution_hashes_inherited_with_exact_stat_and_output_metadata':True})
+print('PASS: 979 sealed artifacts; 227 committed records + target; 222 code files; all old source/ontology objects; 718 original paths; 19 new originals; both successful native command receipts.')

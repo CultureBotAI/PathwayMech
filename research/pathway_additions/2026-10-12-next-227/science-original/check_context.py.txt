@@ -1,0 +1,16 @@
+from pathlib import Path
+import sys,json,hashlib,re,dataclasses,yaml
+D=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012');C=P/'imodulondb';sys.path.insert(0,str(C));from imodulondb import ImodulonDBClient
+rows=json.loads((C/'attempt1/receipts.json').read_bytes());byurl={r['url']:r for r in rows};seen=set()
+def tr(url):
+ r=byurl[url];p=Path(r['path']);b=p.read_bytes();assert hashlib.sha256(b).hexdigest()==r['sha256'] and len(b)==r['bytes'] and r['status']==200;seen.add(url);return json.loads(b)
+client=ImodulonDBClient(transport=tr);context=json.loads((C/'attempt1/context.json').read_bytes());norm=lambda o:json.loads(json.dumps(o))
+assert norm([dataclasses.asdict(x) for x in client.organism_datasets()])==context['datasets']
+for q,x in context['queries'].items():assert norm(dataclasses.asdict(client.search('e_coli','precise_mg1655',q)))==x
+for k,x in context['summaries'].items():
+ t=client.imodulon_genes('e_coli','precise_mg1655',int(k));assert norm([dataclasses.asdict(g) for g in t.genes if g.gene_name in context['queries']])==x['candidate_rows'];assert len(t.genes)==x['rows'] and t.threshold==x['threshold']
+assert len(seen)==len(rows)==26
+res={'status':'passed','originals':26,'queries':len(context['queries']),'components':len(context['summaries']),'causal_graph_edges_from_computation':0,'interpretation':'Computational expression context only; neither flux nor catalysis nor direction proven.','original_bindings':rows,'client_sha256':hashlib.sha256((C/'imodulondb.py').read_bytes()).hexdigest()};(D/'independent-imodulondb-replay.json').write_text(json.dumps(res,indent=2)+'\n')
+a=(D/'Badia1991-fresh.txt').read_text();b=re.sub(r'^=== PAGE \d+ ===$','',(P/'Badia1991.txt').read_text(),flags=re.M);assert ''.join(a.split())==''.join(b.split())
+(D/'pdf-replay-result.json').write_text(json.dumps({'status':'passed','original_pdf_sha256':hashlib.sha256((P/'raw/PMC208206.pdf').read_bytes()).hexdigest(),'pages':7,'fresh_text_sha256':hashlib.sha256((D/'Badia1991-fresh.txt').read_bytes()).hexdigest(),'comparison':'Exact text after removing preflight-added page markers and whitespace; previous raw comparison correctly returned false.','visual_inspection':'Preflight page 4 (printed 5147) viewed; kinetics and transport figure/caption agree with fresh original extraction.','image_sha256':hashlib.sha256((P/'Badia1991-page-4.png').read_bytes()).hexdigest()},indent=2)+'\n')
+print(json.dumps({k:v for k,v in res.items() if k!='original_bindings'},indent=2));print('PDF text body verified')

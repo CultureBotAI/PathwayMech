@@ -1,0 +1,18 @@
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import json,hashlib,copy
+from dataclasses import asdict
+sys.path.insert(0,'/private/tmp/pathwaymech-next-227-preflight-20261012/imodulondb')
+from imodulondb import ImodulonDBClient
+D=Path('/private/tmp/pathwaymech-next-227-preflight-20261012/imodulondb');R=D/'attempt1';r=json.loads((R/'context.json').read_bytes());rows=json.loads((R/'receipts.json').read_bytes());byurl={x['url']:x for x in rows}
+def transport(url):
+ x=byurl[url];raw=Path(x['path']).read_bytes();assert hashlib.sha256(raw).hexdigest()==x['sha256'];assert x['status']==200;return json.loads(raw)
+def norm(x):return json.loads(json.dumps(x))
+c=ImodulonDBClient(transport=transport);assert norm([asdict(x) for x in c.organism_datasets()])==r['datasets']
+for q,x in r['queries'].items():assert norm(asdict(c.search('e_coli','precise_mg1655',q)))==x
+for k,x in r['summaries'].items():
+ t=c.imodulon_genes('e_coli','precise_mg1655',int(k));assert norm([asdict(g) for g in t.genes if g.gene_name in r['queries']])==x['candidate_rows'];assert t.threshold==x['threshold'];assert len(t.genes)==x['rows'] and len(t.in_imodulon)==x['in_imodulon_count']
+assert len(rows)==26
+result={'status':'passed','whole_originals':len(rows),'searches':len(r['queries']),'components':len(r['summaries']),'adapter_sha256':hashlib.sha256((D/'imodulondb.py').read_bytes()).hexdigest(),'computational_context_only':True,'record_change':False,'candidate_memberships':{k:[{'gene_key':f'e_coli/precise_mg1655/{g["gene_id"]}','gene_name':g['gene_name'],'weight':g['weight'],'in_imodulon':g['in_imodulon']} for g in x['candidate_rows']] for k,x in r['summaries'].items() if x['candidate_rows']}}
+(Path('/private/tmp/pathwaymech-next-227-author-20261012')/'imodulondb-author-replay.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

@@ -1,0 +1,132 @@
+"""Complete external LYXMET draft assembly from inspected native and primary originals."""
+from pathlib import Path
+import hashlib,json,sqlite3,sys
+from lxml import etree,html
+import yaml
+A=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012')
+C=Path('/private/tmp/pathwaymech-curation-authorities')
+refs={}; sources={}; ledger=[]; E=[]; participants=[]; reactions=[]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,x):(A/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def binding(p):p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def original(frame,org='ECOLI'):return P/'raw'/f'{org}-{frame}.xml'
+def ref(id,p,title,url,version):
+ p=Path(p)
+ if id in refs:assert refs[id]['source_sha256']==sha(p);return id
+ refs[id]=dict(id=id,title=title,url=url,source_version=version,source_sha256=sha(p));sources[id]={**binding(p),'url':url,'version':version};return id
+def evidence(id,text,loc,typ,selector,observed):
+ assert 0<len(text)<=400,(len(text),text)
+ e=dict(reference_id=id,source_assertion=text,source_locator=loc)
+ ledger.append(dict(evidence=e,binding=sources[id],selector_type=typ,selector=selector,observed=observed));return e
+def xe(frame,text,xpath,org='ECOLI'):
+ p=original(frame,org);prefix='EcoCyc' if org=='ECOLI' else 'MetaCyc';id=ref(prefix+':'+frame,p,f'{prefix} {frame}: native definition',f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id={org}:{frame}',f'{org} PGDB 27.0; original XML retrieved 2026-10-12')
+ t=etree.parse(str(p));vals=t.xpath(xpath);assert vals,(frame,xpath)
+ return evidence(id,text,'XPath '+xpath,'xpath',xpath,[etree.tostring(v,encoding='unicode') if isinstance(v,etree._Element) else str(v) for v in vals])
+def ue(acc,ctype,text):
+ p=P/'raw'/f'UniProt-{acc}.json';d=json.loads(p.read_text());assert d['primaryAccession']==acc
+ id=ref('UniProtKB:'+acc,p,d['proteinDescription']['recommendedName']['fullName']['value'],f'https://rest.uniprot.org/uniprotkb/{acc}.json','UniProt complete issuing JSON retrieved 2026-10-12; entry audit retained')
+ vals=[v for v in d['comments'] if v['commentType']==ctype];assert vals
+ return evidence(id,text,f'comments[commentType={ctype}]','uniprot_comment',ctype,vals)
+papers={'10913097':('PMC94635.html','Role of the yiaR and yiaS genes of Escherichia coli in metabolism of endogenously formed L-xylulose'), '10913096':('PMC94634.html','Regulation of expression of the yiaKLMNOPQRS operon for carbohydrate utilization in Escherichia coli'), '11741871':('PMC134747.html','Utilization of L-ascorbate by Escherichia coli K-12: assignments of functions to products of the yjf-sga and yia-sgb operons'), '31892694':('PMC6958661.xml','Regulatory role of PlaR for utilization of plant-derived nutrients in Escherichia coli')}
+def pe(pmid,needle,text):
+ n,title=papers[pmid];p=P/'raw'/n;t=etree.parse(str(p)) if n.endswith('.xml') else html.parse(str(p))
+ matches=[q for q in t.xpath('//p') if needle in ' '.join(''.join(q.itertext()).split())];assert len(matches)==1,(pmid,needle,len(matches))
+ q=matches[0];xp=t.getpath(q);titles=t.xpath('//front/article-meta/title-group/article-title') if n.endswith('.xml') else t.xpath('//hgroup/h1');assert len(titles)==1,(pmid,titles);title=' '.join(''.join(titles[0].itertext()).split());id=ref('PMID:'+pmid,p,title,f'https://pmc.ncbi.nlm.nih.gov/articles/{n.split(".")[0]}/','Inspected complete primary article body; original '+n+' retrieved 2026-10-12')
+ return evidence(id,text,'XPath '+xp+'; paragraph containing '+repr(needle),'xpath',xp,[etree.tostring(q,encoding='unicode')])
+def pube(pmid,text):
+ p=P/'raw/papers-pubmed.xml';t=etree.parse(str(p));xp=f'//PubmedArticle[MedlineCitation/PMID="{pmid}"]/MedlineCitation/Article/Abstract';vals=t.xpath(xp);assert vals
+ title=' '.join(t.xpath(f'//PubmedArticle[MedlineCitation/PMID="{pmid}"]/MedlineCitation/Article/ArticleTitle//text()'))
+ id=ref('PMID:'+pmid,p,title,f'https://pubmed.ncbi.nlm.nih.gov/{pmid}/','NCBI PubMed batch original; only exact PMID abstract inspected; full article unavailable')
+ return evidence(id,text,'XPath '+xp,'xpath',xp,[etree.tostring(q,encoding='unicode') for q in vals])
+def pdfe(text,pages,needle):
+ p=P/'raw/PMC208206.pdf';id=ref('PMID:1650346',p,'L-Lyxose metabolism employs the L-rhamnose pathway in mutant cells of Escherichia coli adapted to grow on L-lyxose','https://europepmc.org/articles/PMC208206?pdf=render','Original seven-page primary PDF; PDFKit extraction and page images retained; 1991')
+ extracted=(P/'Badia1991.txt').read_text();assert needle in extracted,needle
+ return evidence(id,text,pages,'pdf_text',{'extraction_path':str(P/'Badia1991.txt'),'needle':needle},needle)
+def edge(s,p,o,*ev,description=None,qualifiers=None):
+ assert ev
+ x=dict(id=f'lyxose-{len(E)+1:03d}',subject=s,predicate=p,object=o,description=description or ev[0]['source_assertion'],evidence=list(ev))
+ if qualifiers:x['endpoint_qualifiers']=qualifiers
+ E.append(x);return x
+def qual(endpoint,kind,description,*ev):assert len(description)<=400;return dict(endpoint=endpoint,kind=kind,description=description,evidence=list(ev))
+def ont(id):
+ db={'CHEBI':'chebi','GO':'go','NCBITaxon':'ncbitaxon'}[id.split(':')[0]]
+ with sqlite3.connect((C/(db+'.db')).resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as conn:v=conn.execute('select value from statements where subject=? and predicate="rdfs:label"',(id,)).fetchall()
+ assert len(v)==1,(id,v);return v[0][0]
+def node(id,category,label=None):
+ if any(n['id']==id for n in participants):return id
+ if label is None:
+  if id.startswith('UniProtKB:'):label=json.loads((P/'raw'/f'UniProt-{id.split(":")[1]}.json').read_text())['proteinDescription']['recommendedName']['fullName']['value']
+  elif id.startswith(('MetaCyc:','EcoCyc:')):
+   org='META' if id.startswith('MetaCyc:') else 'ECOLI';t=etree.parse(str(original(id.split(':')[1],org)));label=t.xpath('/ptools-xml/Protein/common-name/text()')[0]
+  else:label=ont(id)
+ participants.append(dict(id=id,label=label,category=category));return id
+for c in ['147210','17399','57829','58226','57737','30616','456216','15378','62321','62320','58165','38290','58658']:node('CHEBI:'+c,'small_molecule')
+for c in ['29035','18420','29105','48828']:node('CHEBI:'+c,'cofactor')
+for acc in ['P32170','P37677','P37679','P37680','P08203','P27125','P37671']:node('UniProtKB:'+acc,'protein')
+for f in ['CPLX0-7652','LYXK-CPLX','RIBULPEPIM-CPLX']:node('MetaCyc:'+f,'complex')
+for g in ['0005829','0005886']:node('GO:'+g,'cellular_component')
+rp='MetaCyc:LYXMET-PWY';r1='MetaCyc:LYXISOM-RXN';r2='RHEA:18870';r3='RHEA:18499';r4='RHEA:22369';tx='RHEA:29993'
+for id,label,direction in [(r1,'beta-L-lyxopyranose to L-xylulose isomerization','left_to_right'),(r2,'L-xylulose + ATP => L-xylulose 5-phosphate + ADP + H(+)','left_to_right'),(r3,'L-xylulose 5-phosphate => L-ribulose 5-phosphate','right_to_left'),(r4,'L-ribulose 5-phosphate => D-xylulose 5-phosphate','left_to_right'),(tx,'L-lyxopyranose(out) + H(+)(out) => L-lyxopyranose(in) + H(+)(in)','right_to_left')]:reactions.append(dict(id=id,label=label,category='molecular_activity',direction=direction))
+for f in ['NONOXIPENT-PWY','PWY-5257']:
+ t=etree.parse(str(original(f,'META')));label=t.xpath('/ptools-xml/Pathway/common-name/text()')[0];label='pentose phosphate pathway (non-oxidative branch)' if f=='NONOXIPENT-PWY' else label;reactions.append(dict(id='MetaCyc:'+f,label=label,category='pathway'))
+for rx,frame in [(r1,'LYXISOM-RXN'),(r2,'LYXK-RXN'),(r3,'LXULRU5P-RXN'),(r4,'RIBULPEPIM-RXN')]:
+ edge(rx,'part_of',rp,xe('LYXMET-PWY',f'The exact native reaction-list includes {frame} in this four-event route. The L-xylulose 1-phosphate route described separately in the comment is not part of this definition.',f'/ptools-xml/Pathway/reaction-list/Reaction[@frameid="{frame}"]','META'))
+# Native specificity retained without substituting the broader Rhea 28059.
+for c,pred,slot,frame in [('147210','consumes','left','L-LYXOSE'),('17399','produces','right','L-XYLULOSE')]:
+ e=xe('LYXISOM-RXN',f'Native {slot} side contains {frame}; this pathway selects left-to-right flux. Its L-LYXOSE structure is beta-L-lyxopyranose, unlike the anomer-unspecified Rhea 28059 substrate.',f'/ptools-xml/Reaction/{slot}/Compound[@frameid="{frame}"]','META')
+ extra=[]
+ if c=='147210':extra=[xe('L-LYXOSE','The exact native L-LYXOSE InChI is identical to ChEBI 147210 beta-L-lyxopyranose. Native partial EC-5.1.3 metadata is not used as an identity or transformation claim.','/ptools-xml/Compound/inchi')]
+ edge('CHEBI:'+c,pred,r1,e,*extra) if pred=='consumes' else edge(r1,pred,'CHEBI:'+c,e,*extra)
+rhea=json.loads((A/'projections/rhea-author-chemistry.json').read_text());rd={d['id']:d for m in rhea['masters'] for d in m['directions']}
+for rx in [r2,r3,r4,tx]:
+ d=rd[rx];ref(rx,C/'rhea.rdf.gz','Rhea '+rx+': selected formal reaction','https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz','Rhea release 142; complete retained original RDF; selected directional and participant objects freshly extracted')
+ for side,pred in [('substrates','consumes'),('products','produces')]:
+  for q in d['sides'][side]:
+   c=q['properties']['accession'][0];comp='; external input' if rx==tx and side=='substrates' else '; internal output' if rx==tx else ''
+   txt=f'{rx} {side} contains {c}, coefficient {q["coefficient"]}{comp}. This is the selected formal directional equation; metal cofactors are not added as chemical sides.'
+   loc=f'rdf:Description[@rdf:about="http://rdf.rhea-db.org/{rx.split(":")[1]}"]/rh:{side}; {q["participant"]}/rh:compound; {q["compound_uri"]}/rh:accession'
+   ev=evidence(rx,txt,loc,'rhea_side',dict(reaction=rx,side=side,participant=q['participant']),q)
+   edge(c,pred,rx,ev) if pred=='consumes' else edge(rx,pred,c,ev)
+# Ordered material passage; transport class boundary remains explicit.
+for src,dst,frame,product in [(r1,r2,'LYXISOM-RXN','L-XYLULOSE'),(r2,r3,'LYXK-RXN','L-XYLULOSE-5-P'),(r3,r4,'LXULRU5P-RXN','L-RIBULOSE-5-P')]:
+ edge(src,'provides_input_for',dst,xe('LYXMET-PWY',f'Native reaction-layout carries the shared intermediate {product} between these successive core events, with LXULRU5P selected right-to-left.',f'/ptools-xml/Pathway/reaction-layout[Reaction[@frameid="{frame}"]]','META'))
+edge(tx,'provides_input_for',r1,xe('LYXMET-PWY','The native narrative places RhaT uptake before RhaA isomerization. The formal transport substrate is generic L-lyxopyranose, while the core first reaction specifies beta-L-lyxopyranose; this source-level interface is not an anomerization reaction.','/ptools-xml/Pathway/comment','META'))
+edge(r4,'provides_input_for','MetaCyc:NONOXIPENT-PWY',xe('LYXMET-PWY','The endpoint D-xylulose 5-phosphate is linked to NONOXIPENT-PWY. This downstream pentose-phosphate pathway is an opaque interface; its reactions are not additional LYXMET core events.','/ptools-xml/Pathway/pathway-link[Compound[@frameid="XYLULOSE-5-PHOSPHATE"]]/link-target/Pathway[@frameid="NONOXIPENT-PWY"]','META'))
+edge(rp,'part_of','MetaCyc:PWY-5257',xe('LYXMET-PWY','The native in-pathway slot places LYXMET-PWY in parent superpathway PWY-5257. This is a hierarchy relationship rather than another catalytic event.','/ptools-xml/Pathway/in-pathway/Pathway[@frameid="PWY-5257"]','META'))
+# Source-defined native catalytic assemblies and tentative assignment.
+for comp,enz,rx in [('CPLX0-7652','LYXISOM-ENZRXN',r1),('LYXK-CPLX','LYXK-ENZRXN',r2),('RIBULPEPIM-CPLX','RIBULPEPIM-ENZRXN',r4)]:
+ edge('MetaCyc:'+comp,'catalyzes',rx,xe(enz,f'The native enzyme slot assigns {comp} to this reaction. Assemblies are retained separately from their reference chains; membership alone is not individual-subunit catalysis.','/ptools-xml/Enzymatic-Reaction/enzyme','META'))
+edge('UniProtKB:P37679','enables',r3,xe('ENZRXN0-6410','The source assigns SgbU/YiaR to this event with EV-COMP-HINF-FN-FROM-SEQ. This is a tentative functional assignment, not experimentally established catalysis.','/ptools-xml/Enzymatic-Reaction'),pe('10913097','all attempts to obtain experimental evidence','The 2000 study genetically implicated yiaR but failed to detect 3-epimerase activity, including a purified GST-based preparation. It retained the assignment as tentative, with possible instability or missing cofactor.'),pe('11741871','unable to demonstrate that SgbU','The independent 2002 study also failed to detect SgbU 3-epimerase activity under conditions that detected UlaE. Inappropriate assay conditions or a sequence defect were hypotheses, not proof of universal SgbU inactivity.'))
+edge('UniProtKB:P37680','catalyzes',r4,ue('P37680','FUNCTION','Reviewed SgbE catalyzes L-ribulose 5-phosphate to D-xylulose 5-phosphate, supported by PMID10913097 and PMID11741871. It is an alternative to AraD, not an obligate AraD-SgbE complex.'),pe('10913097','A double mutant','Complementation of the JA198 araD yiaS double mutant by plasmids carrying either gene restored the examined metabolism, supporting alternative 4-epimerase functions.'))
+edge('UniProtKB:P27125','catalyzes',tx,xe('ENZRXN0-6409','The native enzymatic-reaction assigns RHAT-MONOMER to L-lyxose transport. Generic L-lyxopyranose and proton coupling are source annotations; the 1991 radiotracer experiment directly measured lyxose competition with rhamnose uptake.','/ptools-xml/Enzymatic-Reaction/enzyme'),pdfe('L-lyxose reduced uptake of radiolabelled L-rhamnose in ECL1 cells. This competition supports recognition by RhaT but does not directly measure lyxose radiotracer flux or proton stoichiometry.','PDF printed pp. 5146-5147, Results and Figure 3','exper-\niments involving competition'))
+for comp,frame,acc,num in [('CPLX0-7652','RHAMNISOM-MONOMER','P32170',4),('LYXK-CPLX','LYXK-MONOMER','P37677',2),('RIBULPEPIM-CPLX','RIBULPEPIM-MONOMER','P08203',4)]:
+ edge('MetaCyc:'+comp,'has_part','UniProtKB:'+acc,xe(comp,f'The native assembly has {num} copies of {frame}; the corresponding UniProt chain is a component rather than an independently asserted complete catalyst.',f'/ptools-xml/Protein/component[Protein[@frameid="{frame}"]]/coefficient','META'),xe(frame,f'The native chain has an exact UNIPROT cross-reference to {acc}.',f'/ptools-xml/Protein/dblink[dblink-db="UNIPROT" and dblink-oid="{acc}"]','ECOLI'))
+# Direct assay preparations remain qualified rather than replacing native assembly identity.
+q2002=pe('11741871','N-terminal His tags','The MG1655-derived genes were expressed in BL21(DE3) from modified pET15b with N-terminal 10His tags. Tags remained for LyxK; SgbE and SgbU tags were removed with thrombin. Residual cleavage sequences were not reported.')
+q2002_origin=pe('11741871','PCR amplified from genomic DNA','Enzyme genes were PCR-amplified from MG1655 genomic DNA and cloned into modified pET15b encoding an N-terminal 10His tag.')
+q1991=pdfe('RhaA was purified from JA121, produced by transforming JA120 with pJB4.3. Purification buffers contained Mn2+ and reducing reagent; this overexpressed preparation is not a whole-culture MG1655 assay.','PDF printed pp. 5145-5146, strains and purification','transforming strain JA120 with plasmid pJB4.3')
+edge('UniProtKB:P32170','catalyzes',r1,pdfe('Purified overexpressed RhaA converted L-lyxose to L-xylulose, with Km 5 mM and apparent Vmax 6.0 U/mg. The assay did not resolve substrate anomers; beta specificity here is native pathway structure, not an independent assay finding.','PDF printed p. 5147, L-Lyxose as a substrate of rhamnose isomerase','The apparent Vmax was 6.2 U/mgfor'),qualifiers=[qual('subject','experimental_construct','JA121 (JA120 carrying pJB4.3) overexpressed RhaA preparation; reference P32170 is an identity anchor, not proof of exact assayed sequence. Mn2+/reducing purification conditions; native oligomer not independently established by this assay.',q1991)])
+edge('UniProtKB:P37677','catalyzes',r2,pe('11741871','We observed that the 3-keto','Purified LyxK phosphorylated L-xylulose and also 3-keto-L-gulonate. The later alternate substrate result limits the older description of absolute specificity.'),qualifiers=[qual('subject','experimental_construct','MG1655-derived LyxK expressed in BL21(DE3) from modified pET15b with retained N-terminal 10His tag; current native reference chain is 498 residues. This tagged assay material is not asserted identical to unmodified LyxK.',q2002,q2002_origin)])
+edge('UniProtKB:P37680','catalyzes',r4,pe('11741871','Both SgaE and SgbE catalyzed','Purified SgbE catalyzed the L-ribulose 5-phosphate to D-xylulose 5-phosphate reaction in a coupled assay; The purified preparation independently extends the earlier cell-extract evidence.'),qualifiers=[qual('subject','experimental_construct','MG1655-derived SgbE expressed with N-terminal 10His in BL21(DE3), then thrombin-cleaved; residual cleavage sequence unreported. Current reference is 231 residues; the article 232-codon wording does not establish a 232-residue assayed variant.',q2002,q2002_origin)])
+# Cofactor and effector context, with inference/preparation limits explicit.
+edge('UniProtKB:P32170','has_cofactor','CHEBI:29035',ue('P32170','COFACTOR','Reviewed RhaA binds one Mn2+ per subunit (HAMAP and cited experimental sources). This is source annotation; the 1991 use of Mn2+ in purification does not independently establish physiological metal occupancy.'))
+edge('MetaCyc:LYXK-CPLX','has_cofactor','CHEBI:18420',xe('LYXK-ENZRXN','Native LyxK lists Mg2+ as cofactor, citing PMID7961955. Its original full body was unavailable here, so this remains an annotation-level cofactor assertion.','/ptools-xml/Enzymatic-Reaction/cofactor/Compound[@frameid="MG+2"]'))
+edge('UniProtKB:P37677','has_cofactor','CHEBI:18420',pe('11741871','phosphoenolpyruvate','Table 2 note e describes the LyxK assay with 10 mM MgCl2, 1.5 mM ATP and coupled pyruvate kinase/lactate dehydrogenase. This is an assay condition, not measured intracellular occupancy.'),qualifiers=[qual('subject','experimental_construct','MG1655-derived, BL21(DE3)-expressed LyxK retaining N-terminal 10His tag; assay used 10 mM MgCl2. Presence in a coupled assay is not a direct metal-binding measurement.',q2002,q2002_origin)])
+edge('UniProtKB:P37680','has_cofactor','CHEBI:29105',ue('P37680','COFACTOR','SgbE zinc binding and one-zinc-per-subunit stoichiometry are annotated by similarity to AraD P08203 (ECO:0000250), not a direct SgbE metal determination.'))
+for c,name in [('29105','zinc'),('48828','cobalt'),('29035','manganese')]:
+ edge('UniProtKB:P08203','has_cofactor','CHEBI:'+c,ue('P08203','COFACTOR',f'Reviewed AraD can use {name}; zinc is the annotated cofactor and cobalt/manganese alternatives are less efficient. These are alternatives rather than jointly required metals.'),xe('RIBULPEPIM-MONOMER','The native commentary distinguishes B/r UP1000 metal/structure preparations from K-12 AraD (98.7% deduced amino-acid identity), and a separate DH1 K-12 tetramer study. Reviewed metal evidence must retain this preparation scope.','/ptools-xml/Protein/comment'),qualifiers=[qual('subject','experimental_construct','AraD metal annotation includes B/r UP1000-derived preparations, distinct from the P08203 K-12 reference sequence; native commentary reports 98.7% deduced identity. No assertion that every cited preparation was unmodified MG1655 AraD.',xe('RIBULPEPIM-MONOMER','The native AraD commentary explicitly identifies B/r UP1000 and the K-12/B-r sequence difference for the cited biochemical/structural work.','/ptools-xml/Protein/comment'))])
+# ATP substrate inhibition belongs to the named kinase activity; glutathione identity is supplied by regulator helper.
+edge('CHEBI:30616','inhibits',r2,xe('REG0-7578','The native negative regulation event identifies ATP inhibition of LyxK activity, citing the 1994 paper. ATP remains a reaction substrate; concentrations, allosteric mechanism and in-vivo flux effects are not inferred.','/ptools-xml/Regulation[mode="-"]/regulator/Compound[@frameid="ATP"]'))
+# Source-qualified localization, never global localization of free chemical classes.
+for acc,frame in [('P32170','RHAMNISOM-MONOMER'),('P37677','LYXK-MONOMER'),('P37679','EG12286-MONOMER'),('P37680','EG12287-MONOMER'),('P08203','RIBULPEPIM-MONOMER'),('P37671','EG12278-MONOMER')]:
+ edge('UniProtKB:'+acc,'located_in','GO:0005829',xe(frame,'The native location slot places the protein in Gram-negative cytosol; this annotation is not a new direct localization measurement.','/ptools-xml/Protein/location/cco[@frameid="CCI-CYTOSOL-GN"]'))
+edge('UniProtKB:P27125','located_in','GO:0005886',ue('P27125','SUBCELLULAR LOCATION','Reviewed RhaT is a multipass inner-membrane protein; membrane location belongs to the transporter rather than to all substrate molecules.'))
+for rx,frame in [(r1,'RHAMNISOM-MONOMER'),(r2,'LYXK-MONOMER'),(r3,'EG12286-MONOMER'),(r4,'EG12287-MONOMER')]:
+ edge(rx,'occurs_in','GO:0005829',xe('LYXMET-PWY','The source-defined intracellular route converts imported lyxose to cytosolic pentose-phosphate intermediates; native catalyst location slots support cytosolic context. Tentative SgbU catalysis remains tentative.','/ptools-xml/Pathway/comment','META'),xe(frame,'The native protein location slot supplies cytosolic context for its associated activity; assigning process location from catalyst annotation is a qualified inference.', '/ptools-xml/Protein/location/cco[@frameid="CCI-CYTOSOL-GN"]'))
+edge(tx,'occurs_in','GO:0005886',ue('P27125','SUBCELLULAR LOCATION','RhaT-mediated uptake crosses the bacterial inner membrane; the corresponding reviewed protein is a multipass inner-membrane transporter.'))
+# A native transport side is outside/periplasmic context, not a universal location claim for free lyxose.
+record=dict(id=rp,label='L-lyxose degradation',description='The source-defined four-event L-lyxose 5-phosphate route joins RhaA isomerization, LyxK phosphorylation and successive 3- and 4-epimerization to D-xylulose 5-phosphate. Whole-route genetic support concerns adapted K-12 derivatives such as JA134 with plaR/yiaJ derepression; it does not establish complete flux in ordinary wild-type MG1655. SgbU remains a tentative 3-epimerase assignment after two negative enzyme assays. Native beta-L-lyxopyranose initiating chemistry is distinct from generic RhaT lyxopyranose transport; no anomerization is invented. The separate 1991 mutant-rhaB L-xylulose 1-phosphate route is excluded. AraD and SgbE are alternatives; frozen PathBank UlaF conflicts with native enzymes-not-used. Regulatory, metal, construct and source-access limits are preserved beside their edges.',pathway_type='carbohydrate-degradation',taxa=[dict(id='NCBITaxon:83333',label=ont('NCBITaxon:83333')),dict(id='NCBITaxon:511145',label=ont('NCBITaxon:511145'))],participants=participants,reactions=reactions,mechanistic_edges=E,references=list(refs.values()))
+def output():
+ record['references']=list(refs.values());(A/'draft/l-lyxose-degradation.yaml').write_text(yaml.safe_dump(json.loads(json.dumps(record)),sort_keys=False,allow_unicode=True,width=110));save('edge-evidence-ledger.json',ledger);save('reference-original-bindings.json',sources);save('author-counts.json',dict(edges=len(E),participants=len(participants),reactions=len(reactions),references=len(refs),status='draft_in_progress_regulation_and_audits_pending'))
+if __name__=='__main__':output();print('draft',len(E),'edges',len(participants),'participants')

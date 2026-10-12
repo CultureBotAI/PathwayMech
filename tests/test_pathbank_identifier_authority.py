@@ -6,14 +6,21 @@ import copy
 import hashlib
 import json
 import sys
+import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import pytest
 import yaml
 
-from pathwaymech.identifiers import identifier_errors
-from scripts.build_source_identifier_snapshot import build_snapshot, main, pathbank_terms
+from pathwaymech.identifiers import _load_authority, identifier_errors
+from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, PATHBANK_ARCHIVE_URL
+from scripts.build_source_identifier_snapshot import (
+    build_snapshot,
+    main,
+    pathbank_terms,
+    source_terms,
+)
 
 BP = "{http://www.biopax.org/release/biopax-level3.owl#}"
 RDF = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
@@ -509,3 +516,232 @@ def test_invalid_unselected_child_cannot_publish_selected_parent(tmp_path, monke
     with pytest.raises(ValueError, match="PathBank attached pathway"):
         main()
     assert output.read_bytes() == b"prior authority\n" if existing else not output.exists()
+
+
+
+def archive_fixture(tmp_path, root=None):
+    if root is None:
+        root = native_source()
+        add_stub(root)
+    body = ET.tostring(root)
+    path = tmp_path / "primary.zip"
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("PW9999999.owl", body)
+    return path, {
+        "key": "archive", "kind": PATHBANK_ARCHIVE_KIND, "path": path.name,
+        "url": PATHBANK_ARCHIVE_URL, "version": "fixture", "license": "fixture",
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "archive": {"bytes": path.stat().st_size, "member": "PW9999999.owl",
+                    "member_bytes": len(body), "member_sha256": hashlib.sha256(body).hexdigest(),
+                    "root": "SMP9999999"},
+    }
+
+
+def parse_archive(path, entry):
+    return list(source_terms(entry["kind"], path, url=entry["url"], version=entry["version"],
+                             archive=entry.get("archive"), sha256=entry["sha256"]))
+
+
+def archive_snapshot(tmp_path):
+    path, entry = archive_fixture(tmp_path)
+    records = tmp_path / "records"
+    records.mkdir()
+    (records / "record.yaml").write_text(yaml.safe_dump({
+        "id": PATHWAY, "label": "Curated title never used as authority", "participants": [
+            {"id": PATHWAY + "/ProteinComplex/8", "label": "Curated complex"}],
+        "reactions": [{"id": "PathBank:SMP9999998", "label": "Curated child"}],
+    }))
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps([entry]))
+    return build_snapshot(manifest, records, tmp_path), entry, path, manifest, records
+
+
+def test_archive_bytes_root_and_attached_names_remain_independent_authority(tmp_path):
+    snapshot, entry, path, _, _ = archive_snapshot(tmp_path)
+    terms = parse_archive(path, entry)
+    assert terms == list(pathbank_terms(ET.fromstring(zipfile.ZipFile(path).read(
+        entry["archive"]["member"])), url=DOWNLOAD))
+    metadata = snapshot["sources"]["archive"]
+    assert metadata["sha256"] == entry["sha256"]
+    assert metadata["archive"] == entry["archive"]
+    assert metadata["url"] == PATHBANK_ARCHIVE_URL
+    assert metadata["pathway_accessions"] == ["SMP9999999", "SMP9999998"]
+    assert snapshot["terms"]["PathBank:SMP9999998"]["label"] == "Adjacent native pathway"
+    assert snapshot["terms"][PATHWAY + "/ProteinComplex/8"]["label_kind"] == "source_context"
+    assert "Curated" not in json.dumps(snapshot)
+    authority = tmp_path / "snapshot.json"
+    authority.write_text(json.dumps(snapshot))
+    assert _load_authority(authority) == snapshot["terms"]
+
+
+@pytest.mark.parametrize("problem", [
+    "archive-hash", "archive-bytes", "member-hash", "member-bytes", "member-missing",
+    "root-missing", "root-stub", "live-url", "foreign-url", "url-query", "url-fragment",
+    "url-whitespace", "member-path", "bool-bytes", "string-bytes", "missing-field",
+    "extra-field", "unknown-kind", "missing-object", "invalid-member-hash",
+])
+def test_archive_binding_cannot_be_spoofed_before_parsing(tmp_path, problem):
+    path, entry = archive_fixture(tmp_path)
+    archive = entry["archive"]
+    if problem == "archive-hash":
+        entry["sha256"] = "0" * 64
+    elif problem in {"archive-bytes", "member-bytes"}:
+        archive["bytes" if problem == "archive-bytes" else "member_bytes"] += 1
+    elif problem == "member-hash":
+        archive["member_sha256"] = "0" * 64
+    elif problem == "member-missing":
+        archive["member"] = "PW0000000.owl"
+    elif problem in {"root-missing", "root-stub"}:
+        archive["root"] = "SMP0000000" if problem == "root-missing" else "SMP9999998"
+    elif problem.endswith("url") or problem.startswith("url-"):
+        entry["url"] = {"live-url": DOWNLOAD, "foreign-url": "https://example.org/source.zip",
+                        "url-query": PATHBANK_ARCHIVE_URL + "?root=SMP9999999",
+                        "url-fragment": PATHBANK_ARCHIVE_URL + "#PW9999999.owl",
+                        "url-whitespace": PATHBANK_ARCHIVE_URL + " "}[problem]
+    elif problem == "member-path":
+        archive["member"] = "../PW9999999.owl"
+    elif problem in {"bool-bytes", "string-bytes"}:
+        archive["bytes"] = True if problem == "bool-bytes" else str(archive["bytes"])
+    elif problem == "missing-field":
+        archive.pop("member_sha256")
+    elif problem == "extra-field":
+        archive["claimed_title"] = "Plausible name"
+    elif problem == "unknown-kind":
+        entry["kind"] = "pathbank-biopax"
+    elif problem == "missing-object":
+        entry.pop("archive")
+    elif problem == "invalid-member-hash":
+        archive["member_sha256"] = "not-a-hash"
+    with pytest.raises(ValueError, match="PathBank"):
+        parse_archive(path, entry)
+
+
+@pytest.mark.parametrize("problem", [
+    "unattached-child", "expanded-child", "duplicate-accession", "wrong-namespace", "wrong-root",
+])
+def test_archive_native_membership_remains_closed(tmp_path, problem):
+    root = native_source()
+    stub = add_stub(root)
+    if problem == "unattached-child":
+        primary = root.find(BP + "Pathway")
+        primary.remove(primary.findall(BP + "pathwayComponent")[-1])
+    elif problem == "expanded-child":
+        root.find(BP + "Interaction").tag = BP + "BiochemicalReaction"
+    elif problem == "duplicate-accession":
+        root.append(copy.deepcopy(stub))
+    elif problem == "wrong-namespace":
+        stub.tag = "{https://other.example/}Pathway"
+    else:
+        root.tag = "NotRDF"
+    path, entry = archive_fixture(tmp_path, root)
+    with pytest.raises(ValueError, match="PathBank"):
+        parse_archive(path, entry)
+
+
+def test_duplicate_selected_zip_member_is_rejected_even_when_bytes_match(tmp_path):
+    path, entry = archive_fixture(tmp_path)
+    with zipfile.ZipFile(path) as archive:
+        body = archive.read(entry["archive"]["member"])
+    with zipfile.ZipFile(path, "a") as archive, pytest.warns(UserWarning, match="Duplicate name"):
+        archive.writestr(entry["archive"]["member"], body)
+    entry["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    entry["archive"]["bytes"] = path.stat().st_size
+    with pytest.raises(ValueError, match="one exact member"):
+        parse_archive(path, entry)
+
+
+@pytest.mark.parametrize("problem", [
+    "missing-archive", "extra-archive-field", "bool-count", "wrong-url", "wrong-kind",
+    "missing-kind", "missing-pathways", "duplicate-pathways", "wrong-first-pathway",
+    "non-pathbank-term", "unlisted-pathway", "wrong-local-root", "contextual-pathway",
+    "canonical-local", "unsafe-local", "invented-entity-type", "hash-scope",
+])
+def test_snapshot_consumer_rejects_malformed_typed_archive_provenance(tmp_path, problem):
+    snapshot, _, _, _, _ = archive_snapshot(tmp_path)
+    meta = snapshot["sources"]["archive"]
+    term = snapshot["terms"][PATHWAY]
+    if problem == "missing-archive":
+        meta.pop("archive")
+    elif problem == "extra-archive-field":
+        meta["archive"]["other"] = "unsupported"
+    elif problem == "bool-count":
+        meta["archive"]["member_bytes"] = True
+    elif problem == "wrong-url":
+        meta["url"] = DOWNLOAD
+    elif problem == "wrong-kind":
+        meta["kind"] = "metacyc-reaction-xml"
+    elif problem == "missing-kind":
+        meta.pop("kind")
+    elif problem == "missing-pathways":
+        meta.pop("pathway_accessions")
+    elif problem == "duplicate-pathways":
+        meta["pathway_accessions"].append(meta["pathway_accessions"][0])
+    elif problem == "wrong-first-pathway":
+        meta["pathway_accessions"].reverse()
+    elif problem in {"non-pathbank-term", "unlisted-pathway", "wrong-local-root", "unsafe-local"}:
+        identifier = {"non-pathbank-term": "MetaCyc:PWY-FIXTURE",
+                      "unlisted-pathway": "PathBank:SMP0000000",
+                      "wrong-local-root": "PathBank:SMP9999998/ProteinComplex/8",
+                      "unsafe-local": PATHWAY + "/ProteinComplex/../8"}[problem]
+        snapshot["terms"][identifier] = snapshot["terms"].pop(
+            PATHWAY if problem in {"non-pathbank-term", "unlisted-pathway"}
+            else PATHWAY + "/ProteinComplex/8")
+    elif problem == "contextual-pathway":
+        term["label_kind"] = "source_context"
+    elif problem == "canonical-local":
+        snapshot["terms"][PATHWAY + "/ProteinComplex/8"].pop("label_kind")
+    elif problem == "invented-entity-type":
+        term["entity_type"] = "reaction"
+    elif problem == "hash-scope":
+        meta["sha256_scope"] = "Actually only the member hash"
+    path = tmp_path / "snapshot.json"
+    path.write_text(json.dumps(snapshot))
+    with pytest.raises(ValueError):
+        _load_authority(path)
+
+
+def test_archive_builder_failure_preserves_previous_output(tmp_path, monkeypatch):
+    _, entry, _, manifest, records = archive_snapshot(tmp_path)
+    entry["archive"]["member_sha256"] = "0" * 64
+    manifest.write_text(json.dumps([entry]))
+    output = tmp_path / "output.json"
+    output.write_text("previous reviewed authority")
+    monkeypatch.setattr(sys, "argv", ["builder", "--manifest", str(manifest),
+                        "--records", str(records), "--cache-dir", str(tmp_path),
+                        "--output", str(output)])
+    with pytest.raises(ValueError, match="member bytes"):
+        main()
+    assert output.read_text() == "previous reviewed authority"
+
+
+@pytest.mark.parametrize("problem", ["extra-field", "missing-archive", "legacy-scope"])
+def test_archive_manifest_fields_are_closed(tmp_path, problem):
+    _, entry, _, manifest, records = archive_snapshot(tmp_path)
+    if problem == "extra-field":
+        entry["root"] = "SMP9999999"
+    elif problem == "missing-archive":
+        entry.pop("archive")
+    else:
+        entry["sha256_scope"] = "Only a member, despite claiming the ZIP kind"
+    manifest.write_text(json.dumps([entry]))
+    with pytest.raises(ValueError, match="closed source manifest"):
+        build_snapshot(manifest, records, tmp_path)
+
+
+@pytest.mark.parametrize("selected", [True, False])
+def test_archive_and_live_child_name_conflict_fails_before_selection(tmp_path, selected):
+    _, entry, _, manifest, records = archive_snapshot(tmp_path)
+    root = native_source()
+    child = add_stub(root)
+    child.find(BP + "displayName").text = "Conflicting native child name"
+    path = tmp_path / "live.owl"
+    path.write_bytes(ET.tostring(root))
+    other = {"key": "live", "kind": "pathbank-biopax", "path": path.name,
+             "url": DOWNLOAD, "version": "fixture", "license": "fixture",
+             "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+    manifest.write_text(json.dumps([entry, other]))
+    if not selected:
+        (records / "record.yaml").write_text(yaml.safe_dump({
+            "id": PATHWAY, "label": "Native pathway title"}))
+    with pytest.raises(ValueError, match="conflicting PathBank native pathway names"):
+        build_snapshot(manifest, records, tmp_path)

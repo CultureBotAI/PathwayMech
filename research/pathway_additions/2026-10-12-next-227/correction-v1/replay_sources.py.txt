@@ -1,0 +1,132 @@
+"""Read original bodies independently; test draft statements against source-derived identities/topology.
+This tests literal locators and bounded mechanistic contracts, not automated truth of every prose inference.
+"""
+from pathlib import Path
+import json,hashlib,copy,sqlite3,re,collections
+from lxml import etree,html
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012');C=Path('/private/tmp/pathwaymech-curation-authorities');H=Path('/private/tmp/pathwaymech-next-227-author-20261012/regulator-authorities')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def dump(n,d):(A/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+helper=json.loads((H/'artifact-manifest.json').read_text())
+for a in helper:assert sha(a['path'])==a['sha256'] and Path(a['path']).stat().st_size==a['bytes']
+refs=json.loads((A/'reference-original-bindings.json').read_text());hashes={}
+for r,b in refs.items():
+ if b['path'] not in hashes:hashes[b['path']]=sha(b['path'])
+ assert hashes[b['path']]==b['sha256'] and Path(b['path']).stat().st_size==b['bytes'],r
+pdf=Path('/private/tmp/pathwaymech-next-227-author-20261012/pdf-replay/Badia1991.txt');assert pdf.read_bytes()==(P/'Badia1991.txt').read_bytes()
+rd=json.loads((Path('/private/tmp/pathwaymech-next-227-author-20261012/projections/rhea-author-chemistry.json')).read_text());assert hashes[str(C/'rhea.rdf.gz')]==rd['sha256'];rxd={d['id']:d for m in rd['masters'] for d in m['directions']}
+ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+ledger=json.loads((A/'edge-evidence-ledger.json').read_text());trees={};js={};checks=[]
+def replay(item):
+ b=item['binding'];p=Path(b['path']);s=item['selector'];typ=item['selector_type']
+ if hashes.get(str(p))!=b['sha256']:raise AssertionError('original digest')
+ if typ in ['xpath','xpath_biopax']:
+  if str(p) not in trees:trees[str(p)]=html.parse(str(p)) if p.suffix=='.html' else etree.parse(str(p))
+  v=trees[str(p)].xpath(s,namespaces=ns);assert v,'empty original locator';v=[etree.tostring(q,encoding='unicode') if isinstance(q,etree._Element) else str(q) for q in v]
+ elif typ.startswith('uniprot_'):
+  if str(p) not in js:js[str(p)]=json.loads(p.read_text())
+  d=js[str(p)]
+  v=[q for q in d['comments'] if q['commentType']==s] if typ=='uniprot_comment' else [q for q in d['uniProtKBCrossReferences'] if all(q.get(k)==w for k,w in s.items())]
+ elif typ=='pdf_text':assert s['needle'] in pdf.read_text();v=s['needle']
+ elif typ=='rhea_side':v=next(q for q in rxd[s['reaction']]['sides'][s['side']] if q['participant']==s['participant'])
+ else:raise AssertionError(typ)
+ assert v==item['observed'],(item['evidence']['reference_id'],typ,s)
+ return True
+for i,x in enumerate(ledger):replay(x);checks.append({'index':i,'reference_id':x['evidence']['reference_id'],'selector_type':x['selector_type'],'matched':True})
+def tree(frame,org='ECOLI'):
+ p=H/'raw'/f'{org}-{frame}.xml';p=p if p.exists() else P/'raw'/f'{org}-{frame}.xml';return etree.parse(str(p))
+# Derive native membership and orientation rather than trusting the author's YAML.
+pw=tree('LYXMET-PWY','META');native=pw.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid');assert len(native)==4
+mapping={'LYXISOM-RXN':'MetaCyc:LYXISOM-RXN','LYXK-RXN':'RHEA:18870','LXULRU5P-RXN':'RHEA:18499','RIBULPEPIM-RXN':'RHEA:22369'}
+chemical=[]
+for fr in native:
+ rx=mapping[fr]
+ if rx.startswith('RHEA:'):
+  for side,pred in [('substrates','consumes'),('products','produces')]:
+   for q in rxd[rx]['sides'][side]:
+    assert q['coefficient']==1
+    chem=q['properties']['accession'][0];chemical.append((chem,pred,rx) if pred=='consumes' else (rx,pred,chem))
+ else:
+  assert tree(fr,'META').xpath('/ptools-xml/Reaction/left/Compound/@frameid')==['L-LYXOSE'];assert tree(fr,'META').xpath('/ptools-xml/Reaction/right/Compound/@frameid')==['L-XYLULOSE']
+  for slot,cid,frc in [('left','CHEBI:147210','L-LYXOSE'),('right','CHEBI:17399','L-XYLULOSE')]:
+   with sqlite3.connect((C/'chebi.db').resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as co:
+    vals=co.execute('select value from statements where subject=? and predicate="chemrof:inchi_string"',(cid,)).fetchall()
+   assert vals==[(tree(frc).xpath('/ptools-xml/Compound/inchi/text()')[0],)],(cid,vals)
+   chemical.append((cid,'consumes',rx) if slot=='left' else (rx,'produces',cid))
+assert len(chemical)==11
+for side,pred in [('substrates','consumes'),('products','produces')]:
+ for q in rxd['RHEA:29993']['sides'][side]:
+  assert q['coefficient']==1;c=q['properties']['accession'][0];chemical.append((c,pred,'RHEA:29993') if pred=='consumes' else ('RHEA:29993',pred,c))
+# Gene identities use both issuing originals, not the draft's labels.
+genes=[]
+for spec in json.loads((H/'gene-identity-projection.json').read_text()):
+ pass
+identity=json.loads((H/'authority-identities.json').read_text())['terms'];identity={r['id']:r for r in identity}
+for g,n,f,a in [('945294','araD','EG10055','P08203'),('948398','rhaT','EG11313','P27125'),('948400','rhaA','EG11867','P32170'),('948084','plaR','EG12278','P37671'),('948101','lyxK','EG12284','P37677'),('948100','sgbU','EG12286','P37679'),('948099','sgbE','EG12287','P37680')]:
+ p=Path(identity['Entrez:'+g]['original_path']);t=etree.parse(str(p));assert t.xpath('//Gene-ref_locus/text()')==[n];assert t.xpath('//Gene-track_geneid/text()')==[g];assert f in t.xpath('//Dbtag[Dbtag_db="ECOCYC"]/Dbtag_tag/Object-id/Object-id_str/text()')
+ u=json.loads((P/'raw'/f'UniProt-{a}.json').read_text());assert any(x['database']=='GeneID' and x['id']==g for x in u['uniProtKBCrossReferences']);genes.append(dict(gene='Entrez:'+g,name=n,native=f,protein='UniProtKB:'+a,source=str(p),sha256=sha(p),uniprot_sha256=sha(P/'raw'/f'UniProt-{a}.json')))
+assemblies=[]
+for f,ch,acc,num,org in [('CPLX0-7652','RHAMNISOM-MONOMER','P32170',4,'META'),('LYXK-CPLX','LYXK-MONOMER','P37677',2,'META'),('RIBULPEPIM-CPLX','RIBULPEPIM-MONOMER','P08203',4,'META'),('PC00004','PD00257','P0ACJ8',2,'ECOLI'),('PC00086','PD00221','P09377',2,'ECOLI'),('PC00027','PD00347','P0A6X7',None,'ECOLI'),('PC00027','PD00348','P0A6Y1',None,'ECOLI')]:
+ t=tree(f,org);v=t.xpath(f'/ptools-xml/Protein/component[Protein[@frameid="{ch}"]]');assert len(v)==1;coeff=v[0].xpath('coefficient/text()');assert coeff==([] if num is None else [str(num)]);assemblies.append(dict(assembly=('MetaCyc:' if org=='META' else 'EcoCyc:')+f,component='UniProtKB:'+acc,native_chain=ch,coefficient=num,coefficient_source='absent; 1:1 IHF interpretation from native/UniProt heterodimer description' if num is None else 'native component coefficient'))
+# Explicit native regulatory join with subject identity and target gene. Adjacent promoter spillover rejected.
+reg=[]
+for tu,prom,events,target in [('TU592','PM692',['REG0-4907','REG0-4905','REG0-4906'],['lyxK','sgbU','sgbE']),('TU368','PM449',['REG0-10778','REG0-4987','REG0-4986'],['plaR']),('TU00208','PM00293',['REG0-5372','REG0-5374'],['rhaT']),('TU00219','PM00303',['REG0-5986','REG0-5985'],['rhaA'])]:
+ t=tree(tu)
+ for ev in events:
+  o=t.xpath(f'//Regulation[@frameid="{ev}" and mode]');assert len(o)==1;assert o[0].xpath('regulated-entity/Promoter/@frameid')==[prom];mode=o[0].findtext('mode');native_reg=o[0].xpath('regulator/Protein/@frameid')[0];sub={'EG12278-MONOMER':'UniProtKB:P37671','CPLX0-226':'EcoCyc:CPLX0-226','PC00027':'EcoCyc:PC00027','CPLX-124':'EcoCyc:CPLX-124'}[native_reg]
+  for n in target:
+   g=next(x for x in genes if x['name']==n);assert g['native'] in t.xpath('/ptools-xml/Transcription-Unit/component/Gene/@frameid');reg.append(dict(subject=sub,predicate='activates' if mode=='+' else 'inhibits',object=g['gene'],source_event=ev,unit=tu,promoter=prom))
+state=tree('PHOSPHO-ARCA');assert state.xpath('/ptools-xml/Protein/unmodified-form/Protein/@frameid')==['ARCA-MONOMER']
+for ev in ['REG0-5375','REG0-5376','REG0-5377']:
+ t=tree(ev);assert t.xpath('/ptools-xml/Regulation/regulator/Protein/@frameid')==['PHOSPHO-ARCA'];assert t.xpath('/ptools-xml/Regulation/regulated-entity/Promoter/@frameid')==['PM00293'];assert t.xpath('/ptools-xml/Regulation/mode/text()')==['-']
+reg.append(dict(subject='UniProtKB:P0A9Q1',predicate='inhibits',object='Entrez:948398',source_event='REG0-5375/5376/5377',promoter='PM00293',state='PHOSPHO-ARCA'))
+d=yaml.safe_load((A/'draft/l-lyxose-degradation.yaml').read_text())
+def graph_audit(d):
+ edges=d['mechanistic_edges'];triples=[(e['subject'],e['predicate'],e['object']) for e in edges];allchem=[t for t in triples if t[1] in ['consumes','produces']]
+ assert collections.Counter(allchem)==collections.Counter(chemical),'formal sides differ from native/RDF originals'
+ assert set(e['subject'] for e in edges if e['predicate']=='part_of' and e['object']==d['id'])==set(mapping.values()),'native core membership'
+ for r in d['reactions']:
+  if r['id'] in rxd:assert r['direction']==rxd[r['id']]['orientation'],'RDF orientation'
+ for row in assemblies:assert (row['assembly'],'has_part',row['component']) in triples,'missing assembly component'
+ for row in reg:
+  assert (row['subject'],row['predicate'],row['object']) in triples,'source promoter/gene/regulator mismatch'
+ assert not any(e['subject']=='UniProtKB:P37679' and e['predicate']=='catalyzes' for e in edges),'tentative SgbU upgraded'
+ sg=[e for e in edges if e['subject']=='UniProtKB:P37679' and e['predicate']=='enables'];assert len(sg)==1;assert {'PMID:10913097','PMID:11741871'} <= {e['reference_id'] for e in sg[0]['evidence']},'two negative assays absent'
+ for e in edges:
+  if e['subject']=='UniProtKB:P0A9Q1' and e['predicate']=='inhibits':
+   q=e.get('endpoint_qualifiers',[]);assert len(q)==1 and q[0]['endpoint']=='subject' and q[0]['kind']=='molecular_state' and 'PHOSPHO-ARCA' in q[0]['description'],'ArcA active state lost'
+  if e['predicate']=='catalyzes' and e['subject'] in ['UniProtKB:P32170','UniProtKB:P37677']:
+   assert any(q['endpoint']=='subject' and q['kind']=='experimental_construct' for q in e.get('endpoint_qualifiers',[])),'assayed construct flattened'
+  if e['object']=='UniProtKB:P37671' and e['subject'].startswith('CHEBI:'):
+   assert e['subject'] in ['CHEBI:38290','CHEBI:58658'],'unsupported PlaR effector';assert any(q['endpoint']=='object' and q['kind']=='experimental_construct' for q in e.get('endpoint_qualifiers',[])),'PlaR construct flattened'
+ assert not any('UlaF'==p['label'] for p in d['participants']),'disputed frozen enzyme imported'
+ return True
+graph_audit(d)
+neg=[]
+def test(name,mutator,fn=graph_audit,obj=d):
+ x=copy.deepcopy(obj);mutator(x)
+ try:fn(x)
+ except (AssertionError,KeyError,StopIteration):neg.append({'name':name,'rejected':True});return
+ raise AssertionError('negative control passed: '+name)
+def edge_matching(x,s=None,p=None,o=None):return next(e for e in x['mechanistic_edges'] if (s is None or e['subject']==s) and(p is None or e['predicate']==p) and(o is None or e['object']==o))
+test('beta substrate collapsed to generic pyranose',lambda x:edge_matching(x,s='CHEBI:147210',p='consumes').update(subject='CHEBI:62321'))
+test('lost kinase ADP',lambda x:x['mechanistic_edges'].remove(edge_matching(x,s='RHEA:18870',p='produces',o='CHEBI:456216')))
+test('lost kinase proton',lambda x:x['mechanistic_edges'].remove(edge_matching(x,s='RHEA:18870',p='produces',o='CHEBI:15378')))
+test('invented core water',lambda x:x['mechanistic_edges'].append(dict(subject='CHEBI:15377',predicate='consumes',object='RHEA:18870')))
+test('reverse3 epimerase direction',lambda x:next(r for r in x['reactions'] if r['id']=='RHEA:18499').update(direction='left_to_right'))
+test('tentativeSgbU upgraded',lambda x:edge_matching(x,s='UniProtKB:P37679',p='enables').update(predicate='catalyzes'))
+test('one negativeSgbU assay dropped',lambda x:edge_matching(x,s='UniProtKB:P37679',p='enables').update(evidence=[e for e in edge_matching(x,s='UniProtKB:P37679',p='enables')['evidence'] if e['reference_id']!='PMID:11741871']))
+test('ArcA state erased',lambda x:edge_matching(x,s='UniProtKB:P0A9Q1',p='inhibits').pop('endpoint_qualifiers'))
+test('ArcA modifier moved togene',lambda x:edge_matching(x,s='UniProtKB:P0A9Q1',p='inhibits')['endpoint_qualifiers'][0].update(endpoint='object'))
+test('neighboring promoter gene substituted',lambda x:edge_matching(x,s='EcoCyc:CPLX0-226',p='activates',o='Entrez:948398').update(object='Entrez:948084'))
+test('IHF sign flipped',lambda x:edge_matching(x,s='EcoCyc:PC00027',p='activates').update(predicate='inhibits'))
+test('LyxK construct lost',lambda x:edge_matching(x,s='UniProtKB:P37677',p='catalyzes').pop('endpoint_qualifiers'))
+test('unsupported galacturonate anomer',lambda x:edge_matching(x,s='CHEBI:58658',p='inhibits').update(subject='CHEBI:28475'))
+test('IHF subunit removed',lambda x:x['mechanistic_edges'].remove(edge_matching(x,s='EcoCyc:PC00027',p='has_part',o='UniProtKB:P0A6Y1')))
+test('original digest mismatch',lambda x:x['binding'].update(sha256='0'*64),replay,ledger[0])
+test('empty source locator',lambda x:x.update(selector='/no-such-source-object'),replay,ledger[0])
+x=next(e for e in ledger if e['selector_type']=='uniprot_crossref');test('wrong issuing crossreference',lambda x:x['selector'].update(id='NOT_THE_GENE'),replay,x)
+dump('source-replay-checks.json',dict(target_sha256=sha(A/'draft/l-lyxose-degradation.yaml'),helper_artifacts_verified=len(helper),references_verified=len(refs),unique_originals_hashed=len(hashes),locator_checks=checks,negative_controls=neg,pdf_replay=dict(path=str(pdf),sha256=sha(pdf),identical_to_preflight=True),limits='Original replay proves digests, exact selectors, chemical sides, source assembly and native regulatory joins. Interpretation of prose, scope and negative experiments remains explicitly reviewed scientific judgment, not automatic truth checking.'))
+dump('assembly-identity-ledger.json',assemblies);dump('gene-product-identity-ledger.json',genes);dump('regulatory-source-joins.json',reg);dump('chemical-side-audit.json',dict(core_and_transport=chemical,core_side_count=11,transport_side_count=4,native_core_frames=native))
+print('source replay passed:',len(refs),'references,',len(checks),'original selectors,',len(neg),'negative controls;11core+4transport sides;helper45')

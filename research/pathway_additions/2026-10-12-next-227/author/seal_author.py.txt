@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,hashlib,datetime
+A=Path(__file__).parent
+expected='fa77f6b451b49863552a7bcc9543ba94cd408f2886e8477d53e3a2464eb9583b'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def binding(p):p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+p=A/'draft/l-lyxose-degradation.yaml';assert sha(p)==expected
+for f in ['source-replay-checks.json','candidate-checks/result.json','candidate-checks/export-proof.json']:
+ assert json.loads((A/f).read_text())['target_sha256']==expected
+assert json.loads((A/'authority-preparation/handoff.json').read_text())['target']['sha256']==expected
+files=[]
+for q in sorted(A.rglob('*')):
+ if q.is_file() and q not in [A/'artifact-manifest.json',A/'handoff.json']:
+  files.append(dict(path=q.relative_to(A).as_posix(),bytes=q.stat().st_size,sha256=sha(q)))
+m=A/'artifact-manifest.json';m.write_text(json.dumps(dict(artifacts=files,all_author_files_including_runtime_and_pdf_build_outputs=True),indent=2)+'\n')
+h={'status':'sealed_complete_external_author_draft_with_two_required_authority_extensions','created':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':binding(p),'proposed_maintained_path':'data/pathways/l-lyxose-degradation.yaml','author_handoff':binding(A/'AUTHOR-HANDOFF.md'),'authority_extension_requirements':binding(A/'AUTHORITY-EXTENSION-REQUIREMENTS.md'),'artifact_manifest':binding(m),'artifact_count':len(files),'counts':json.loads((A/'author-counts.json').read_text()),'candidate_checks':{'schema':'pass','strict':'pass','source_original_replay':'235selectors;64references;17negativecontrols passed','pages_kgx':'109edges;10qualifiers retained','identifiers':'FAIL:exactlyMetaCyc:LYXISOM-RXN andPathBank:SMP0121065 missing;noothererrors','browser_visual_review':False,'canonical_full_build':False,'whole_corpus_gates':False},'preflight_manifest_sha256':'4d4dd384a0c5754322b4c7faf3892065428df54d79caa880ed146da10fced19f','helper_handoffs':[binding(A/'regulator-authorities/handoff.json'),binding(A/'authority-preparation/handoff.json')],'maintained_writes':False,'shared_cache_writes':False,'git_github_actions':False,'remaining':['Independent scientific adversarial review','Separate reviewed native-authority adapter extensions','Full original-backed canonical authorities and all native corpus gates','Root exact merged-commit baseline bridge/adoption/history/review/PR/issues/fixes/merge/branchcleanup'],'source_exhausted':False}
+(A/'handoff.json').write_text(json.dumps(h,indent=2)+'\n');print(json.dumps({'handoff':binding(A/'handoff.json'),'manifest':binding(m),'artifacts':len(files),'target':binding(p)},indent=2))

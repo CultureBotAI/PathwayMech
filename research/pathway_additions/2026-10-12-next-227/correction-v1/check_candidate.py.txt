@@ -1,0 +1,19 @@
+from pathlib import Path
+import sys,json,hashlib,csv,io
+A=Path(__file__).parent;sys.path.insert(0,'/private/tmp/pathwaymech-next-227-authority-implementation-20261012/candidate/src')
+import yaml
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import render_kgx
+p=A/'draft/l-lyxose-degradation.yaml';d=yaml.safe_load(p.read_text());r=validate_record(d)
+errors=strict_errors([p],A)
+(A/'candidate-checks').mkdir(exist_ok=True)
+result={'target_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'schema':'pass','strict_errors':errors,'authority_status':'provisional complete source-built proposals; no full canonical build or production adoption'}
+for kind,files in [('pages',render_site([r],source_paths={r.id:'data/pathways/l-lyxose-degradation.yaml'})),('kgx',render_kgx([r]))]:
+ out=A/'candidate-checks'/kind;out.mkdir(exist_ok=True)
+ for n,v in files.items():
+  t=out/n;t.parent.mkdir(parents=True,exist_ok=True);t.write_text(v)
+ result[kind]={'files':len(files),'names':sorted(files)}
+(A/'candidate-checks/result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result))
+assert not errors

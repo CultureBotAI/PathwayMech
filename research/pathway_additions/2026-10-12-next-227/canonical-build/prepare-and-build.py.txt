@@ -1,0 +1,163 @@
+"""Full original-backed lyxose authority build on exact committed ribose baseline; external writes only."""
+from pathlib import Path
+import json,hashlib,os,sys,shutil,subprocess,datetime,time,traceback
+from concurrent.futures import ThreadPoolExecutor
+import yaml
+R=Path('/private/tmp/pathwaymech-next-226-20261012');O=Path('/private/tmp/pathwaymech-next-227-canonical-build-20261012');P=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012');A=Path('/private/tmp/pathwaymech-next-227-author-20261012');I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');K=I/'candidate';V1=Path('/private/tmp/pathwaymech-next-227-science-correction-20261012');V2=Path('/private/tmp/pathwaymech-next-227-science-correction-v2-20261012');REV=Path('/private/tmp/pathwaymech-next-227-authority-review-20261012')
+PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';COMMIT='b70ed36907b4c434d967f4456456be3b480415ae';TREE='428c9ff0ab1294c2e4b5d6059d45a40ddf096974';TARGET=V2/'draft/l-lyxose-degradation.yaml';TARGET_SHA='8ca651dc70a0dda2620ba09719a4e6861517d39f1736ca1971f283900accc121'
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def load(p):return json.loads(Path(p).read_text())
+def write(name,obj):
+ with (O/name).open('x') as f:json.dump(obj,f,indent=2,ensure_ascii=False);f.write('\n')
+def check(p,h,size=None):
+ p=Path(p);assert p.is_file() and sha(p)==h,p
+ if size is not None:assert p.stat().st_size==size,p
+ return bind(p)
+def git(*args):return subprocess.check_output(['git',*args],cwd=R)
+def inventory(p):return sorted(Path(x) for x in subprocess.check_output(['rg','--files','-uu','-L',str(p)],text=True).splitlines())
+
+def intake():
+ assert not O.exists();assert sha(TARGET)==TARGET_SHA
+ seals=[]
+ for root,h,count in [(V2,'0e615628a8746c8c3f86acc8b7d239441053362daa6249496b4f78eea3c571e7',44),(V1,'c4a11786e4b105b3ff3d284569b73adde98c429e96620faa20374d4f9a8c6772',69),(I,'971cd166de47b8c11b4181a97991ba3abc3c4460a675959de753da8dbd4993c8',280),(A,'244b0a10567388ac44d677b435d7fd600c2ed7a36d4043bb00a9ae49dbd89aff',400)]:
+  check(root/'handoff.json',h);m=load(root/'artifact-manifest.json');rows=m['artifacts'];assert len(rows)==count
+  for row in rows:check(root/row['path'],row['sha256'],row['bytes'])
+  seals.append(dict(handoff=bind(root/'handoff.json'),manifest=bind(root/'artifact-manifest.json'),artifacts_verified=count))
+ check(REV/'handoff.json','784478221d2fa3c6852eeb0fffc4f716693bfd1b5e7b9921900ec44986ac7257');rh=load(REV/'handoff.json');assert rh['findings']==0 and rh['implementation_handoff_sha256']==sha(I/'handoff.json');check(REV/'REVIEW.md',rh['review_markdown_sha256']);check(REV/'artifact-manifest.json',rh['artifact_manifest_sha256'])
+ rootreview=Path('/private/tmp/pathwaymech-next-227-root-authority-review-intake-20261012.json');assert load(rootreview)['artifacts_verified']==1715;seals.append(dict(handoff=bind(REV/'handoff.json'),review=bind(REV/'REVIEW.md'),artifact_manifest=bind(REV/'artifact-manifest.json'),full1715_review_artifact_check_inherited_from_root=bind(rootreview)))
+ assert git('rev-parse','HEAD').decode().strip()==COMMIT
+ assert git('rev-parse',COMMIT+'^{tree}').decode().strip()==TREE
+ entries={}
+ for line in git('ls-tree','-r','-z',COMMIT).split(b'\0'):
+  if not line:continue
+  meta,path=line.split(b'\t',1);mode,kind,oid=meta.decode().split();entries[path.decode()]=dict(mode=mode,kind=kind,oid=oid)
+ paths=inventory(R/'data/pathways');assert len([p for p in paths if p.suffix=='.yaml'])==227;assert [p for p in paths if p.suffix!='.yaml']==[R/'data/pathways/.gitkeep']
+ records=[]
+ for p in paths:
+  rel=str(p.relative_to(R));b=p.read_bytes();assert git('show',COMMIT+':'+rel)==b;records.append(dict(relative_path=rel,**bind(p)))
+ old={kind:load(R/f'data/identifier_authorities/{kind}.json') for kind in ['sources','ontology']}
+ manifest=load(R/'conf/identifier_sources.json');rhea=load(R/'conf/rhea_identifier_updates.json')
+ assert (len(old['sources']['terms']),len(old['sources']['sources']),len(old['ontology']['terms']),len(old['ontology']['sources']),len(manifest),len(rhea['ids']))==(2384,545,1931,5,698,16)
+ baseline=[]
+ for rel,prior in [('data/identifier_authorities/sources.json','sources.json'),('data/identifier_authorities/ontology.json','ontology.json'),('conf/identifier_sources.json','manifest.json'),('conf/rhea_identifier_updates.json','rhea-updates.json')]:
+  assert (R/rel).read_bytes()==git('show',COMMIT+':'+rel)==(P/prior).read_bytes();baseline.append(dict(relative_path=rel,**bind(R/rel)))
+ delta=load(I/'code-delta.json')['files'];changed={x['path']:x for x in delta};candidate_files=[];excluded=[]
+ for p in inventory(K):
+  rel=str(p.relative_to(K))
+  if rel.startswith('.ruff_cache/'):
+   excluded.append(bind(p));continue
+  if rel in changed:
+   row=changed[rel];check(p,row['after']['sha256'])
+   if row['before'] is None:assert rel not in entries and not (R/rel).exists()
+   else:assert (R/rel).read_bytes()==git('show',COMMIT+':'+rel);check(R/rel,row['before']['sha256'])
+  else:assert p.read_bytes()==(R/rel).read_bytes()==git('show',COMMIT+':'+rel),rel
+  candidate_files.append(dict(relative_path=rel,**bind(p)))
+ assert len(changed)==6 and len(candidate_files)==222
+ assert (K/'scripts/build_ontology_identifier_snapshot.py').read_bytes()==(R/'scripts/build_ontology_identifier_snapshot.py').read_bytes()
+ proposed_source=load(V1/'complete-source-proposal.json');proposed_ontology=load(A/'authority-preparation/ontology-authority-proposal.json');fullmanifest=load(V1/'complete-source-manifest-proposal.json');updates=load(A/'authority-preparation/rhea-identifier-updates-proposal.json')
+ assert fullmanifest[:698]==manifest and len(fullmanifest)==717
+ assert len({x['key'] for x in fullmanifest})==717 and len({x['path'] for x in fullmanifest})==717
+ for kind,new in [('sources',proposed_source),('ontology',proposed_ontology)]:
+  assert new['version']==old[kind]['version']
+  for key in ['sources','terms']:assert all(new[key][id]==value for id,value in old[kind][key].items())
+ assert updates['ids'][:16]==rhea['ids'] and len(updates['ids'])==19
+ assert {k:v for k,v in updates.items() if k!='ids'}=={k:v for k,v in rhea.items() if k!='ids'}
+ originals={};new_plans=[]
+ for x in load(A/'authority-preparation/source-original-manifest.json')['selected_originals']:
+  if x['new_manifest_entry']:new_plans.append(dict(cache_relative_path=x['manifest_path'],original=x['original'],source_key=x['source_key'],plan='author supported-source original manifest'))
+ for x in load(I/'new-originals-copy-plan.json'):new_plans.append(dict(cache_relative_path=x['entry']['path'],original=x['original'],source_key=x['entry']['key'],plan='reviewed adapter copy plan'))
+ for x in load(V1/'new-originals-copy-plan.json'):new_plans.append(dict(cache_relative_path=x['cache_relative_path'],original=dict(path=x['original_path'],bytes=x['bytes'],sha256=x['sha256']),source_key=x['source_key'],plan='scientific correction copy plan'))
+ assert len(new_plans)==19;by_path={x['cache_relative_path']:x for x in new_plans};assert len(by_path)==19
+ # Select actual bodies by preserved manifest paths; no proposal snapshot is builder input.
+ for entry in fullmanifest:
+  for e in [entry]+([entry['version_source']] if 'version_source'in entry else []):
+   rel=e['path'];assert not Path(rel).is_absolute() and '..' not in Path(rel).parts
+   p=Path(by_path[rel]['original']['path']) if rel in by_path else P/'originals'/rel
+   if rel in originals:assert originals[rel]['sha256']==e['sha256'];continue
+   check(p,e['sha256']);originals[rel]=dict(cache_relative_path=rel,**bind(p),resolved_original=str(p.resolve()))
+ if updates['path'] not in originals:
+  p=P/'originals'/updates['path'];check(p,updates['sha256']);originals[updates['path']]=dict(cache_relative_path=updates['path'],**bind(p),resolved_original=str(p.resolve()))
+ else:assert originals[updates['path']]['sha256']==updates['sha256']
+ for x in new_plans:
+  assert x['cache_relative_path'] in originals;assert originals[x['cache_relative_path']]['sha256']==x['original']['sha256'];assert x['source_key'] in {e['key'] for e in fullmanifest[698:]}
+ dbs=load(P/'ontology-original-bindings.json')['originals'];assert len(dbs)==4
+ for x in dbs:
+  p=Path(x['path']);assert p.stat().st_size==x['bytes'] and p.stat().st_mtime_ns==x['mtime_ns'];assert old['ontology']['sources'][x['source_key']]['sha256']==x['sha256']
+ retained=sorted(set(old['sources']['terms'])|set(old['ontology']['terms']));assert len(retained)==4315
+ target=yaml.safe_load(TARGET.read_text());ids={target['id']}|{x['id'] for k in ['taxa','participants','reactions'] for x in target[k]};assert len(ids)==66
+ additions={kind:{k:v for k,v in proposal['terms'].items() if k not in old[kind]['terms']} for kind,proposal in [('sources',proposed_source),('ontology',proposed_ontology)]};assert len(additions['sources'])==28 and len(additions['ontology'])==14;assert set(additions['sources'])|set(additions['ontology'])==ids-set(retained)
+ observed=dict(head=COMMIT,tree=TREE,tracked_status=git('status','--porcelain','--untracked-files=no').decode(),scope='Exact committed ribose tree; no main merge/publication claim. Root owns later exact-tree merge bridge.')
+ return locals()
+
+def prepare(d):
+ O.mkdir();shutil.copyfile(__file__,O/'prepare-and-build.py')
+ for n in ['corpus','originals','baseline']: (O/n).mkdir()
+ for row in d['records']:
+  dest=O/'corpus'/Path(row['relative_path']).relative_to('data/pathways');dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(row['path'],dest);check(dest,row['sha256'])
+ shutil.copyfile(TARGET,O/'corpus/l-lyxose-degradation.yaml');check(O/'corpus/l-lyxose-degradation.yaml',TARGET_SHA)
+ (O/'corpus/_authority_retention').mkdir();(O/'corpus/_authority_retention/selector.yaml').write_text(yaml.safe_dump(dict(id=d['retained'][0],participants=[dict(id=x) for x in d['retained'][1:]]),sort_keys=False))
+ for rel,row in d['originals'].items():
+  dest=O/'originals'/rel;dest.parent.mkdir(parents=True,exist_ok=True);dest.symlink_to(row['resolved_original'])
+ for src,dst in [('data/identifier_authorities/sources.json','sources.json'),('data/identifier_authorities/ontology.json','ontology.json'),('conf/identifier_sources.json','manifest.json'),('conf/rhea_identifier_updates.json','rhea-updates.json')]:shutil.copyfile(R/src,O/'baseline'/dst)
+ write('manifest.json',d['fullmanifest']);write('rhea-updates.json',d['updates']);write('seal-intake.json',dict(at=now(),packages=d['seals'],root_v2_acceptance=bind(Path('/private/tmp/pathwaymech-next-227-root-v2-intake-20261012.json'))))
+ write('baseline-capture.json',dict(at=now(),observed=d['observed'],root=str(R),records=d['records'],authority_bindings=d['baseline'],code_inputs=d['candidate_files'],code_delta=bind(I/'code-delta.json'),ignored_generated_candidate_files=d['excluded'],capture_inventory='rg --files -uu -L includes hidden/ignored files and follows links; all227 record bytes independently compared to exact committed Git blobs'))
+ write('corpus-bindings.json',dict(actual_records=228,baseline_committed_records=227,retention_ids=d['retained'],retention_selector_build_only=True,files=[bind(p) for p in inventory(O/'corpus')]))
+ write('source-original-bindings.json',dict(originals=list(d['originals'].values()),new_originals=d['new_plans'],all_staged_as_readonly_external_symlinks=True,shared_cache_writes=False))
+ write('new-originals-copy-plan.json',dict(new_originals=d['new_plans'],count=19,scope='Later root adoption staging only; full ZIP and exact member bindings remain truthful in typed manifest. Fresh P76268 scientific original retained even if earlier native bulk source supplies its canonical term.'))
+ write('ontology-original-bindings.json',dict(originals=d['dbs'],prior_binding=bind(P/'ontology-original-bindings.json'),intake_scope='Inherited full-file hashes with exact path/size/mtime and committed source metadata checks; native command freshly hashes all four complete SQL databases and full selected RDF original.'))
+ write('expected-additions.json',dict(terms=d['additions'],proposed_sources=bind(V1/'complete-source-proposal.json'),proposed_ontology=bind(A/'authority-preparation/ontology-authority-proposal.json'),note='Comparison expectation only, never builder input. Existing native bulk UniProt may win duplicate P76268 by unchanged source order; exact observed delta must be explicitly reported.'))
+ source=[PY,'-B',str(K/'scripts/build_source_identifier_snapshot.py'),'--manifest',str(O/'manifest.json'),'--cache-dir',str(O/'originals'),'--records',str(O/'corpus'),'--output',str(O/'sources.json')]
+ onto=[PY,'-B',str(K/'scripts/build_ontology_identifier_snapshot.py')]
+ for item in d['dbs']:onto+=['--source',item['prefix']+'='+item['path']]
+ onto+=['--corpus',str(O/'corpus'),'--rhea-updates',str(O/'rhea-updates.json'),'--cache-dir',str(O/'originals'),'--output',str(O/'ontology.json')]
+ cmds=dict(cwd=str(O),environment=dict(PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1',PYTHONPATH=str(K/'src')+':'+str(K)),source_builder=source,ontology_builder=onto)
+ write('commands.json',cmds);print('INPUT_CAPTURE_COMPLETE '+json.dumps(dict(at=now(),commit=COMMIT,tree=TREE,records=228,retention_ids=len(d['retained']),manifest_entries=717,original_paths=len(d['originals']),new_originals=19,rhea_ids=19,expected_source_terms=2412,expected_ontology_terms=1945)),flush=True);return cmds
+
+def execute(name,cmd,config):
+ start=now();tick=time.monotonic()
+ with (O/(name+'.stdout')).open('xb') as out,(O/(name+'.stderr')).open('xb') as err:r=subprocess.run(cmd,cwd=config['cwd'],env={**os.environ,**config['environment']},stdout=out,stderr=err)
+ result=dict(name=name,command=cmd,cwd=config['cwd'],environment=config['environment'],started_at=start,finished_at=now(),duration_seconds=round(time.monotonic()-tick,3),exit_code=r.returncode,stdout=bind(O/(name+'.stdout')),stderr=bind(O/(name+'.stderr')));write(name+'-execution.json',result);print('BUILDER_TERMINAL '+json.dumps(result),flush=True);return result
+
+def verify(d,results):
+ assert all(x['exit_code']==0 for x in results);comparison={};preserved={}
+ for kind,proposal in [('sources',d['proposed_source']),('ontology',d['proposed_ontology'])]:
+  old=d['old'][kind];new=load(O/(kind+'.json'));assert new['version']==old['version']
+  for section in ['terms','sources']:
+   assert all(new[section].get(k)==v for k,v in old[section].items()),(kind,section,'old object changed')
+  assert set(new['terms'])==set(proposal['terms']);diff={section:[dict(id=k,proposal=proposal[section].get(k),actual=new[section].get(k)) for k in sorted(set(proposal[section])|set(new[section])) if proposal[section].get(k)!=new[section].get(k)] for section in ['terms','sources']}
+  comparison[kind]=diff;preserved[kind]=dict(old_terms=len(old['terms']),old_source_metadata=len(old['sources']),total_terms=len(new['terms']),total_source_metadata=len(new['sources']),old_objects_exact=True,output=bind(O/(kind+'.json')))
+ # Explicit actual native duplicate-source resolution, not an arbitrary proposal waiver.
+ s=load(O/'sources.json');bulkentry=next(x for x in d['fullmanifest'] if x['key']=='uniprot-ecoli-reviewed-cofactors');bulkpath=O/'originals'/bulkentry['path'];bulk=load(bulkpath);matches=[x for x in bulk['results'] if x['primaryAccession']=='P76268'];assert len(matches)==1
+ assert s['terms']['UniProtKB:P76268']==dict(label=matches[0]['proteinDescription']['recommendedName']['fullName']['value'],synonyms=[],source=bulkentry['key'])
+ assert comparison['sources']['terms']==[dict(id='UniProtKB:P76268',proposal=d['proposed_source']['terms']['UniProtKB:P76268'],actual=s['terms']['UniProtKB:P76268'])]
+ assert comparison['sources']['sources']==[dict(id='lyxose-correction-UniProtKB-P76268',proposal=d['proposed_source']['sources']['lyxose-correction-UniProtKB-P76268'],actual=None)]
+ assert comparison['ontology']==dict(terms=[],sources=[])
+ assert (len(s['terms']),len(s['sources']))==(2412,563)
+ assert (len(load(O/'ontology.json')['terms']),len(load(O/'ontology.json')['sources']))==(1945,5)
+ assert load(O/'manifest.json')==d['fullmanifest'] and load(O/'manifest.json')[:698]==d['manifest']
+ assert load(O/'rhea-updates.json')==d['updates'] and d['updates']['ids'][:16]==d['rhea']['ids']
+ for row in load(O/'corpus-bindings.json')['files']:check(row['path'],row['sha256'],row['bytes'])
+ for row in d['originals'].values():check(O/'originals'/row['cache_relative_path'],row['sha256'],row['bytes'])
+ for row in d['candidate_files']:check(row['path'],row['sha256'],row['bytes'])
+ for row in d['dbs']:
+  p=Path(row['path']);assert p.stat().st_size==row['bytes'] and p.stat().st_mtime_ns==row['mtime_ns'];assert load(O/'ontology.json')['sources'][row['source_key']]['sha256']==row['sha256']
+ write('proposal-comparison.json',dict(differences=comparison,p76268_original=dict(full_original=bind(bulkpath),source_entry=bulkentry,exact_native_record=matches[0],fresh_scientific_original=bind(V1/'raw/UniProt-P76268.json')),explanation='Unchanged source builder preserves first manifest source for duplicate IDs. Existing frozen bulk original already issues P76268 with identical label. Fresh UniProt source remains acquired scientific gene-join evidence and its manifest entry is retained, but contributes no selected canonical term, so no unused metadata object is emitted. All old metadata remains exact. No source order change, hand inserted term or dropped original.'))
+ write('verification.json',dict(status='full_native_lyxose_build_passed_exact_committed227_preservation',at=now(),baseline_commit=COMMIT,baseline_tree=TREE,baseline_scope='Committed ribose tree; no main merge/publication assertion; root owns exact-tree bridge.',target_sha256=TARGET_SHA,actual_records=228,retention_ids=4315,preservation=preserved,old_manifest_entries_preserved=698,manifest_entries=717,old_rhea_ids_preserved=16,rhea_ids=19,source_original_paths_verified=len(d['originals']),fresh_native_SQL_hashes_match_pinned_originals=True,proposed_native_delta_explicit=bind(O/'proposal-comparison.json'),maintained_writes=False,shared_cache_writes=False,git_github_mutations=False,environment_installs=False,full_tests_rerun=False,integration_claim=False,source_exhausted=False));print('VERIFIED '+json.dumps(preserved),flush=True)
+
+def main():
+ d=intake();cmds=prepare(d)
+ with ThreadPoolExecutor(max_workers=2) as pool:
+  futures=[pool.submit(execute,name,cmds[name],cmds) for name in ['source_builder','ontology_builder']];results=[f.result() for f in futures]
+ write('execution-ledger.json',dict(executions=results));verify(d,results);print('READY_FOR_SEAL',flush=True)
+if __name__=='__main__':
+ try:main()
+ except Exception:
+  error=traceback.format_exc();print(error,flush=True)
+  if O.exists():(O/('failure-'+str(time.time_ns())+'.txt')).write_text(error)
+  raise

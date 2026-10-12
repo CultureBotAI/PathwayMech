@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 
 import yaml
 
+from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
 from pathwaymech.schema import ALLOWED_CURIE_PREFIXES
 from pathwaymech.yaml_io import load_yaml_file, pathway_files
 
@@ -90,17 +91,35 @@ def _load_authority(path: Path) -> dict[str, Any]:
     for source, metadata in data["sources"].items():
         _keys(
             metadata, {"url", "version", "sha256", "license"},
-            {"sha256_scope", "kind"}, f"source {source}",
+            {"sha256_scope", "kind", "archive", "pathway_accessions"}, f"source {source}",
         )
-        if any(not _text(value) for value in metadata.values()):
+        if any(not _text(value) for name, value in metadata.items()
+               if name not in {"archive", "pathway_accessions"}):
             raise ValueError(f"source {source}: provenance fields must be nonempty strings")
         url = urlparse(metadata["url"])
         if url.scheme not in {"http", "https"} or not url.netloc:
             raise ValueError(f"source {source}: expected a public source URL")
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
-        if "kind" in metadata and metadata["kind"] != "metacyc-reaction-xml":
+        if "kind" in metadata and metadata["kind"] not in {
+            "metacyc-reaction-xml", PATHBANK_ARCHIVE_KIND,
+        }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
+        if metadata.get("kind") == PATHBANK_ARCHIVE_KIND:
+            if set(metadata) != {
+                "url", "version", "sha256", "license", "kind", "archive", "pathway_accessions",
+            }:
+                raise ValueError(f"source {source}: incomplete typed PathBank ZIP provenance")
+            validate_pathbank_archive(metadata["url"], metadata["sha256"], metadata["archive"])
+            accessions = metadata["pathway_accessions"]
+            if (not isinstance(accessions, list) or not accessions
+                    or any(not isinstance(value, str) or not re.fullmatch(r"SMP[0-9]+", value)
+                           for value in accessions)
+                    or len(accessions) != len(set(accessions))
+                    or accessions[0] != metadata["archive"]["root"]):
+                raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
+        elif "archive" in metadata or "pathway_accessions" in metadata:
+            raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
         if metadata.get("kind") == "metacyc-reaction-xml":
             request = re.fullmatch(
                 r"https://bf2i-artsymbiocyc\.insa-lyon\.fr/getxml\?id=META:"
@@ -140,6 +159,20 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if source_kind == PATHBANK_ARCHIVE_KIND:
+            provenance = data["sources"][term["source"]]
+            native = identifier.removeprefix("PathBank:")
+            root, separator, local = native.partition("/")
+            if (not identifier.startswith("PathBank:")
+                    or (not separator and root not in provenance["pathway_accessions"])
+                    or (separator and (root != provenance["archive"]["root"]
+                                       or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", local)
+                                       or any(part in {".", "..", ""}
+                                              for part in local.split("/"))))
+                    or term.get("label_kind", "canonical")
+                    != ("source_context" if separator else "canonical")
+                    or "entity_type" in term):
+                raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
         if "entity_type" in term or source_kind == "metacyc-reaction-xml":
             if (
                 term.get("entity_type") != "reaction"

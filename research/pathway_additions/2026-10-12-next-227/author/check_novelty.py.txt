@@ -1,0 +1,18 @@
+from pathlib import Path
+import hashlib,json,subprocess
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012');B=Path('/private/tmp/pathwaymech-next-225-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+base=json.loads((P/'baseline-bridge.json').read_text());rows=[];core={'MetaCyc:LYXISOM-RXN','RHEA:18870','RHEA:18499','RHEA:22369'}
+for v in base['bound_records']:
+ p=Path(v['path']);assert sha(p)==v['sha256'],p;d=yaml.safe_load(p.read_text());rx={r['id'] for r in d.get('reactions',[])};edges=d.get('mechanistic_edges',[])
+ assert d['id']!='MetaCyc:LYXMET-PWY';assert 'lyxose degradation' not in d['label'].lower()
+ rows.append({'path':str(p),'sha256':sha(p),'id':d['id'],'label':d['label'],'reaction_overlap':sorted(rx&core),'core_members':sorted(e['subject'] for e in edges if e['predicate']=='part_of' and e['object']==d['id'] and e['subject'] in core)})
+assert len(rows)==227
+cmd=['rg','--no-ignore','--hidden','--follow','-n','-i','--glob','!.git/**','LYXMET-PWY|SMP0002112|SMP0121065|LYXISOM-RXN|LYXK-RXN|LXULRU5P-RXN|L[- ]lyxose|10913097|10913096|1650346',str(B)]
+p=subprocess.run(cmd,capture_output=True,text=True);assert p.returncode in [0,1];(A/'novelty-ignored-hidden-followed.txt').write_text(p.stdout);(A/'novelty-search-stderr.txt').write_text(p.stderr)
+# Separate final accepted ribose draft is outside that root and must be searched explicitly.
+cmd2=cmd[:-1]+['/private/tmp/pathwaymech-next-226-author-20261012/draft/ribose-phosphorylation.yaml'];q=subprocess.run(cmd2,capture_output=True,text=True);assert q.returncode in [0,1]
+(A/'novelty-ribose-search.txt').write_text(q.stdout)
+result={'status':'novel scoped four-event definition against all227 exact bound records','baseline_status':'226 maintained files plus exact accepted ribose target; threonine path bridge already adopted; root owns exact merged commit bridge','commands':[cmd,cmd2],'returncodes':[p.returncode,q.returncode],'records':rows,'semantics':'Arabinose shares RHEA22369/AraD terminal chemistry; D-xylose/ribose supply D-configuration routes. No selected four-event lyxose core duplicate. Lead/source inventory mentions are retained as context, not absent-claim evidence.'}
+(A/'novelty-corpus-proof.json').write_text(json.dumps(result,indent=2)+'\n');print('verified227 originals; text search includes ignored, hidden, followed paths;',len(p.stdout.splitlines()),'matches; semantic overlaps',[(r['label'],r['reaction_overlap']) for r in rows if r['reaction_overlap']])

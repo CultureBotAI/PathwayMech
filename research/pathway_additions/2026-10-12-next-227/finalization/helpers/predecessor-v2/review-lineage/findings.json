@@ -1,0 +1,40 @@
+[
+  {
+    "key": "finalizer-native-completion-dependency-chain",
+    "severity": "major",
+    "location": "seal_completion.py:34-45; archive_completion.py:37-45; bind_final_files.py:35-40; run_native.py:42-50",
+    "problem": "Final completion trusts status plus an arbitrary actual_receipts mapping. Empty, missing-save and unrelated-only zero-exit receipt sets are accepted; bound assembly native inspect is not followed. Earlier archive/binding consumers likewise lack a shared complete native lineage check.",
+    "reproduction": {
+      "path": "/private/tmp/pathwaymech-next-227-finalization-helper-review-20261012/dependency-probes.json",
+      "bytes": 3078,
+      "sha256": "c850d73f79ae7a2884b7e33d178178c1fa76c6f309f082357665368c70c59b78"
+    },
+    "expected": "Require exact five native keys, expected command/cwd/env, bound output/log files, native inspect via exact assembly, source/config/archive lineage and current target/inputs. Reuse at all completion consumers and pre-mutation run_native assembly validation.",
+    "fixture_limit": "Actual current() is read-only against maintained adopted state. Fixtures isolate final receipt checks and do not constitute actual native completion."
+  },
+  {
+    "key": "finalizer-current-file-path-binding",
+    "severity": "major",
+    "location": "seal_completion.py:46-53",
+    "problem": "all_current_files verifies each arbitrary absolute path but compares inventory using only relative_path. A redirected old external copy is accepted even when actual ROOT/relative_path bytes differ.",
+    "reproduction": {
+      "path": "/private/tmp/pathwaymech-next-227-finalization-helper-review-20261012/additional-probes.json",
+      "bytes": 1718,
+      "sha256": "7d25d0be01251e3268883073da6885a9be7e7317fdcdcdc79d2d3e360a122175"
+    },
+    "expected": "Require safe normalized relative path, exact rooted absolute path, unique complete inventory, no symlink escape and fresh actual ROOT bytes."
+  },
+  {
+    "key": "finalizer-archive-destination-preflight",
+    "severity": "minor",
+    "location": "apply_archive.py:37-61",
+    "problem": "Duplicate destinations pass preflight, then the first append succeeds and the second raises FileExistsError. This leaves a partial archive for malformed plan input despite the all-guards-before-write contract.",
+    "reproduction": {
+      "path": "/private/tmp/pathwaymech-next-227-finalization-helper-review-20261012/additional-probes.json",
+      "bytes": 1718,
+      "sha256": "7d25d0be01251e3268883073da6885a9be7e7317fdcdcdc79d2d3e360a122175"
+    },
+    "expected": "Preflight unique destinations and file/ancestor collisions before creating directories or files; validate plan/config mapping agreement.",
+    "fixture_limit": "Only upstream config check was stubbed to isolate archive mapping preflight; --apply writes were redirected to a fresh external fixture root."
+  }
+]

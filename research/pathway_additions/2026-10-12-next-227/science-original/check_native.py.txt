@@ -1,0 +1,76 @@
+from pathlib import Path
+from lxml import etree
+import yaml,json,hashlib,copy,re
+D=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012');A=Path('/private/tmp/pathwaymech-next-227-author-20261012')
+data=yaml.load((D/'target-initial.yaml').read_bytes(),Loader=yaml.CSafeLoader)
+def dump(n,x):(D/n).write_text(json.dumps(x,indent=2)+'\n')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+bindings={r['id']:r for r in json.loads((D/'verified-reference-originals.json').read_text())}; sources={};xp={}
+def xml(p):
+ p=Path(p);sources[str(p)]={'sha256':sha(p),'bytes':p.stat().st_size};return etree.parse(str(p))
+def refs(id):return xml(bindings[id]['path'])
+ups={};ids=[];chainmap={};genemap={}
+for n in data['participants']:
+ id=n['id']
+ if id.startswith('UniProtKB:'):
+  p=Path(bindings[id]['path']);j=json.loads(p.read_bytes());assert j['primaryAccession']==id.split(':')[1] and j['organism']['taxonId']==83333
+  assert j['proteinDescription']['recommendedName']['fullName']['value']==n['label']; assert n['category']=='protein';ups[id]=j
+  for x in j['uniProtKBCrossReferences']:
+   if x['database']=='BioCyc' and x['id'].startswith('EcoCyc:'):chainmap[x['id'].split(':')[1]]=id
+  ids.append({'id':id,'issuing_type':j['entryType'],'taxon':j['organism']['taxonId'],'label':n['label'],'sequence_sha256':hashlib.sha256(j['sequence']['value'].encode()).hexdigest(),'length':j['sequence']['length']})
+ elif id.startswith('Entrez:'):
+  t=refs(id);assert t.xpath('string(//Gene-track_geneid)')==id.split(':')[1];assert t.xpath('string(//Gene-ref_locus)')==n['label'];assert n['category']=='gene'
+  tax=t.xpath('//Dbtag[Dbtag_db="taxon"]//Object-id_id/text()');assert tax==['511145'];ids.append({'id':id,'label':n['label'],'taxon':tax,'locus_tag':t.xpath('//Gene-ref_locus-tag/text()')})
+# Join reviewed GeneID and EcoCyc chain xrefs through native Protein/gene and root TU membership.
+for ch,uid in chainmap.items():
+ p=P/'raw'/('ECOLI-'+ch+'.xml')
+ if not p.exists():p=A/'regulator-authorities/raw'/('ECOLI-'+ch+'.xml')
+ if not p.exists():continue
+ t=xml(p);g=t.xpath('/ptools-xml/Protein/gene/Gene/@frameid');gid=[x['id'] for x in ups[uid]['uniProtKBCrossReferences'] if x['database']=='GeneID']
+ if len(g)==1 and len(gid)==1:genemap[g[0]]='Entrez:'+gid[0]
+# Native assembly components: body coefficients, not homomer guesses.
+assem=[]
+for n in data['participants']:
+ if n['category']!='complex':continue
+ t=refs(n['id']);root=t.xpath('/ptools-xml/Protein')[0];assert root.get('frameid')==n['id'].split(':')[1]
+ components=[]
+ for c in root.findall('component'):
+  z=next(x for x in c if x.tag in ('Protein','Compound'));fid=z.get('frameid');coeff=c.findtext('coefficient');target=chainmap.get(fid)
+  if target is None:target={'PC00004':'EcoCyc:PC00004','PC00086':'EcoCyc:PC00086','CAMP':'CHEBI:58165','L-rhamnose':'CHEBI:62345'}[fid]
+  components.append({'native':fid,'target':target,'coefficient':int(coeff) if coeff else None})
+ assem.append({'id':n['id'],'components':components})
+# All relevant exact promoter effects; nested foreign-promoter statements retained as negative controls.
+reg=[];foreign=[]
+for tu,pm in [('TU592','PM692'),('TU368','PM449'),('TU00208','PM00293'),('TU00219','PM00303')]:
+ t=refs('EcoCyc:'+tu);com=t.xpath('/ptools-xml/Transcription-Unit/component/*/@frameid');assert pm in com;genes=[genemap[c] for c in com if c in genemap and any(n['id']==genemap[c] for n in data['participants'])]
+ for r in t.xpath('//Regulation[mode]'):
+  entity=r.xpath('regulated-entity/*/@frameid');regulator=r.xpath('regulator/*/@frameid');mode=r.findtext('mode')
+  if entity!=[pm]:foreign.append({'unit':tu,'regulation':r.get('frameid'),'promoter':entity});continue
+  if len(regulator)!=1:continue
+  subj={'CPLX-124':'EcoCyc:CPLX-124','CPLX0-226':'EcoCyc:CPLX0-226','PC00027':'EcoCyc:PC00027','PHOSPHO-ARCA':'UniProtKB:P0A9Q1'}.get(regulator[0],chainmap.get(regulator[0]))
+  if subj:
+   for gene in genes:reg.append({'source_event':r.get('frameid'),'unit':tu,'promoter':pm,'subject':subj,'predicate':{'+':'activates','-':'inhibits'}[mode],'object':gene,'state':'PHOSPHO-ARCA' if regulator[0]=='PHOSPHO-ARCA' else None})
+allowed={(r['subject'],r['predicate'],r['object']) for r in reg}
+def audit(d):
+ for e in d['mechanistic_edges']:
+  if 66<=int(e['id'].split('-')[1])<=82:assert (e['subject'],e['predicate'],e['object']) in allowed,'exact promoter/gene/sign source join'
+ for a in assem:
+  es=[e for e in d['mechanistic_edges'] if e['subject']==a['id'] and e['predicate']=='has_part'];assert {e['object'] for e in es}=={c['target'] for c in a['components']},'complete native assembly'
+  for c in a['components']:
+   if c['coefficient']:
+    e=next(e for e in es if e['object']==c['target']);assert str(c['coefficient']) in e['description'],'assembly coefficient retained'
+audit(data);neg=[]
+for name,eid,change in [('IHF_wrong_adjacent_promoter_sign','lyxose-068',{'predicate':'inhibits'}),('PlaR_wrong_target_rhaT','lyxose-066',{'object':'Entrez:948398'}),('CRP_lost_component','lyxose-059',{'subject':'EcoCyc:PC00004'})]:
+ d=copy.deepcopy(data);next(e for e in d['mechanistic_edges'] if e['id']==eid).update(change)
+ try:audit(d)
+ except AssertionError as ex:neg.append({'name':name,'outcome':'rejected','reason':str(ex)});continue
+ raise AssertionError('corruption escaped '+name)
+# Native source identity assertions, independently of adapters.
+nativeids=[]
+for n in [{'id':data['id'],'category':'pathway'}]+data['participants']+data['reactions']:
+ if not n['id'].startswith(('MetaCyc:','EcoCyc:')):continue
+ prefix,fid=n['id'].split(':');p=Path(bindings[n['id']]['path']) if n['id'] in bindings else P/'raw'/('META-'+fid+'.xml');t=xml(p);obj=t.xpath('/ptools-xml/*[@frameid="'+fid+'"]');assert len(obj)==1
+ expected={'complex':'Protein','pathway':'Pathway','molecular_activity':'Reaction'}[n['category']];assert obj[0].tag==expected
+ nativeids.append({'id':n['id'],'issuing_type':obj[0].tag,'class':obj[0].get('class'),'label':obj[0].findtext('common-name'),'body':str(p),'sha256':sha(p)})
+dump('independent-protein-gene-identities.json',ids);dump('independent-native-joins.json',{'gene_bridge':genemap,'chain_bridge':chainmap,'assemblies':assem,'regulatory_assertions':reg,'excluded_foreign_promoter_assertions':foreign,'negative_controls':neg,'native_identities':nativeids});dump('additional-original-bindings.json',sources)
+print(json.dumps({'uniprot_gene_identities':len(ids),'native_identities':len(nativeids),'assemblies':len(assem),'regulatory_assertions':len(reg),'foreign_promoter_assertions_excluded':len(foreign),'negative_controls':neg},indent=2))

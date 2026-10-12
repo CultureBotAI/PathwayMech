@@ -1,0 +1,49 @@
+from pathlib import Path
+import json,hashlib,os,yaml,datetime
+O=Path('/private/tmp/pathwaymech-next-227-science-successor-review-20261012')
+def h(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,x): (O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+roots={k:Path('/private/tmp/pathwaymech-next-227-'+k+'-20261012') for k in ['author','science-review','science-correction','science-correction-v2']}
+expected={
+'author':('244b0a10567388ac44d677b435d7fd600c2ed7a36d4043bb00a9ae49dbd89aff','f1048c05d54b671b0dbf41ac114ce01629db0dfbf612aca671a97d504e44863c',400),
+'science-review':('056e3564f548b40c2cf0586ca3634e8a0b2d0a263ce22fd0c77ca97773ede8ca','e249ae8a05afe62a2ad4380614ca56923ee2bc2ded2e1f5415252958fc5b5627',136),
+'science-correction':('c4a11786e4b105b3ff3d284569b73adde98c429e96620faa20374d4f9a8c6772','79abcc98a02e241ef7437e16dcef8f340e67da4d99e5a4418a603488bed04a19',69),
+'science-correction-v2':('0e615628a8746c8c3f86acc8b7d239441053362daa6249496b4f78eea3c571e7','bcf2dc06d68b325ef7c18ac5c7ad359279040df08b606e25a956443a86538b90',44)}
+seals=[]
+for k,r in roots.items():
+ e=expected[k]; assert h(r/'handoff.json')==e[0];assert h(r/'artifact-manifest.json')==e[1]
+ m=json.loads((r/'artifact-manifest.json').read_text())['artifacts'];assert len(m)==e[2]
+ for x in m:
+  p=r/x['path'];assert h(p)==x['sha256'] and p.stat().st_size==x['bytes'],p
+ actual={str((Path(d)/n).relative_to(r)) for d,ds,fs in os.walk(r,followlinks=True) for n in fs}
+ assert actual=={x['path'] for x in m}|{'artifact-manifest.json','handoff.json'},(k,actual-{x['path'] for x in m})
+ seals.append({'package':str(r),'handoff_sha256':e[0],'manifest_sha256':e[1],'verified_artifacts':len(m),'full_hidden_ignored_followed_inventory_exact':True})
+save('package-verification.json',seals)
+records={k:yaml.safe_load((r/'draft/l-lyxose-degradation.yaml').read_text()) for k,r in roots.items() if k!='science-review'}
+a,b,c=[records[k] for k in ['author','science-correction','science-correction-v2']]
+assert h(roots['science-correction-v2']/'draft/l-lyxose-degradation.yaml')=='8ca651dc70a0dda2620ba09719a4e6861517d39f1736ca1971f283900accc121'
+def diff(x,y,p=()):
+ if type(x)!=type(y): return [{'path':list(p),'before':x,'after':y}]
+ if isinstance(x,dict):return sum([diff(x.get(k),y.get(k),p+(k,)) for k in sorted(set(x)|set(y))],[])
+ if isinstance(x,list): return sum([diff(x[i] if i<len(x) else None,y[i] if i<len(y) else None,p+(i,)) for i in range(max(len(x),len(y)))],[])
+ return [] if x==y else [{'path':list(p),'before':x,'after':y}]
+d1=diff(a,c);d2=diff(b,c)
+assert len(d2)==2 and {tuple(x['path']) for x in d2}=={('mechanistic_edges',109,'evidence',4,'source_assertion'),('mechanistic_edges',110,'evidence',6,'source_assertion')}
+assert c['mechanistic_edges'][:109]==a['mechanistic_edges'] and len(c['mechanistic_edges'])==111
+assert c['references'][:64]==a['references'] and len(c['references'])==66
+assert c['participants'][:53]==a['participants'] and len(c['participants'])==55
+assert c['reactions']==a['reactions'] and c['taxa']==a['taxa']
+assert len(d1)==7 and {tuple(x['path']) for x in d1}=={('description',),('mechanistic_edges',109),('mechanistic_edges',110),('participants',53),('participants',54),('references',64),('references',65)}
+assert c['description'].startswith(a['description'])
+save('independent-full-semantic-delta.json',{'original_to_v2':d1,'first_successor_to_v2':d2})
+bind=json.loads((roots['science-correction-v2']/'reference-original-bindings.json').read_text());oldbind=json.loads((roots['author']/'reference-original-bindings.json').read_text())
+assert all(bind[k]==v for k,v in oldbind.items())
+rows=[]
+for ref in c['references']:
+ q=bind[ref['id']];p=Path(q['path']);actual=h(p)
+ assert actual==q['sha256']==ref['source_sha256'];assert p.stat().st_size==q['bytes']
+ rows.append({'reference_id':ref['id'],'path':str(p),'bytes':p.stat().st_size,'sha256':actual,'unchanged_original_binding':ref['id'] in oldbind})
+save('all-reference-originals-verification.json',rows)
+uses=sum(len(e['evidence'])+sum(len(q['evidence']) for q in e.get('endpoint_qualifiers',[])) for e in c['mechanistic_edges'])
+summary={'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'packages':len(seals),'artifacts_verified':sum(x['verified_artifacts'] for x in seals),'original_edges_unchanged':109,'references_original_and_unchanged':64,'references_new':2,'references_fresh_hash_verified':len(rows),'target_edges':111,'evidence_uses':uses,'new_edges_evidence_uses':sum(len(x['evidence']) for x in c['mechanistic_edges'][109:]),'qualifiers_unchanged':sum(len(x.get('endpoint_qualifiers',[])) for x in a['mechanistic_edges']),'delta_fields_original_to_v2':len(d1),'delta_fields_v1_to_v2':len(d2),'inheritance':'Original review scientific acceptance inherited only for exact unchanged objects and verified original bindings. No fresh complete literature review.'}
+save('inheritance-result.json',summary);print(json.dumps(summary,indent=2))

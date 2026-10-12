@@ -1,0 +1,102 @@
+"""Bounded replay of real originals and deliberate derivatives; not a full corpus rebuild."""
+from pathlib import Path
+from xml.etree import ElementTree as ET
+import json,hashlib,sys,copy,zipfile,importlib.util,shutil
+A=Path(__file__).parent;K=A/'candidate';B=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012');H=Path('/private/tmp/pathwaymech-next-227-author-20261012/authority-preparation');P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012')
+sys.path[:0]=[str(K/'src'),str(K)]
+from pathwaymech.identifiers import identifier_errors,_load_authority
+from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND,PATHBANK_ARCHIVE_URL
+from scripts import build_source_identifier_snapshot as new
+spec=importlib.util.spec_from_file_location('accepted_ribose_builder','/private/tmp/pathwaymech-next-226-20261012/scripts/build_source_identifier_snapshot.py');old=importlib.util.module_from_spec(spec);spec.loader.exec_module(old)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def dump(n,d):(A/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+plan=json.loads((H/'source-original-manifest.json').read_text());manifest=json.loads((B/'manifest.json').read_text());supported=json.loads((H/'source-manifest-proposal.json').read_text());bykey={x['key']:x for x in supported}
+regression=[]
+originals={q['source_key']:Path(q['original']['path']) for q in plan['selected_originals']}
+entries=[bykey[k] for k in originals]
+# Include every existing PathBank artifact, plus original native ribose reaction.
+for e in manifest:
+ if e['kind'] in ['pathbank-biopax','metacyc-reaction-xml']:
+  entries.append(e);originals[e['key']]=B/'originals'/e['path']
+for e in entries:
+ p=originals[e['key']];assert sha(p)==e['sha256'],p
+ before=list(old.source_terms(e['kind'],p,url=e['url'],version=e['version']));after=list(new.source_terms(e['kind'],p,url=e['url'],version=e['version']));assert before==after,e['key'];regression.append(dict(key=e['key'],original=bind(p),kind=e['kind'],terms=len(after),exact_native_outputs_equal=True))
+lyx=plan['unsupported_native_originals'][0];lyxentry=copy.deepcopy(lyx['entry']);lyxfile=Path(lyx['original']['path']);assert sha(lyxfile)==lyxentry['sha256']
+archivefile=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip');assert sha(archivefile)=='b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44'
+member=P/'frozen-PW002100.owl';assert sha(member)=='37d112684540b7b07d373324fa0c5d995d352ab32afa6674db9c05dd712b19aa'
+zipentry=dict(key='pathbank-primary-2019-PW002100-SMP0002112',kind=PATHBANK_ARCHIVE_KIND,path='pathbank-primary-biopax-original.zip',url=PATHBANK_ARCHIVE_URL,version='2019-08-16 frozen primary BioPAX archive; acquisition retained by source ledger',license='Upstream terms; public-release licensing deferred',sha256=sha(archivefile),archive=dict(bytes=archivefile.stat().st_size,member='PW002100.owl',member_bytes=member.stat().st_size,member_sha256=sha(member),root='SMP0002112'))
+newentries=[lyxentry,zipentry];cache=A/'original-cache';cache.mkdir(exist_ok=True)
+for e,p in [(lyxentry,lyxfile),(zipentry,archivefile)]:
+ link=cache/e['path'];link.symlink_to(p);assert sha(link)==e['sha256']
+# This selection-only fixture is not a replacement pathway record.
+records=A/'bounded-selection';records.mkdir(exist_ok=True);(records/'identifiers.yaml').write_text('id: PathBank:SMP0121065\nlabel: selection only\nreactions:\n  - id: MetaCyc:LYXISOM-RXN\n    label: selection only\n')
+mp=A/'two-source-manifest.json';mp.write_text(json.dumps(newentries,indent=2)+'\n');built=new.build_snapshot(mp,records,cache);dump('two-source-build.json',built)
+assert set(built['terms'])=={'MetaCyc:LYXISOM-RXN','PathBank:SMP0121065'}
+assert built['terms']['MetaCyc:LYXISOM-RXN']['label']=='LYXISOM-RXN';assert built['terms']['MetaCyc:LYXISOM-RXN']['label_kind']=='source_context';assert built['terms']['PathBank:SMP0121065']['label']=='Pentose Phosphate'
+assert built['sources'][zipentry['key']]['sha256']==sha(archivefile);assert built['sources'][zipentry['key']]['archive']['member_sha256']==sha(member)
+assert built['sources'][zipentry['key']]['pathway_accessions']==['SMP0002112','SMP0121065'];assert _load_authority(A/'two-source-build.json')==built['terms']
+# Derivatives are clearly separated from originals and never become authority inputs.
+mut=A/'adversarial-derivatives';mut.mkdir(exist_ok=True);controls=[]
+def reject(name,fn):
+ try:fn()
+ except (ValueError,ET.ParseError) as e:controls.append(dict(name=name,rejected=True,error_type=type(e).__name__,error=str(e)));return
+ raise AssertionError('accepted negative control: '+name)
+def react_mut(name,change):
+ t=ET.parse(lyxfile).getroot();change(t);p=mut/(name+'.xml');p.write_bytes(ET.tostring(t));reject(name,lambda:list(new.source_terms('metacyc-reaction-xml',p,url=lyxentry['url'],version='27.0')))
+react_mut('compound-class-false',lambda r:r.find('Reaction/right/Compound').set('class','false'))
+react_mut('compound-unknown-attribute',lambda r:r.find('Reaction/right/Compound').set('scope','class'))
+react_mut('class-on-side-wrapper',lambda r:r.find('Reaction/right').set('class','true'))
+react_mut('compound-wrong-org',lambda r:r.find('Reaction/right/Compound').set('orgid','ECOLI'))
+react_mut('compound-wrong-frame',lambda r:r.find('Reaction/right/Compound').set('frameid','OTHER'))
+react_mut('wrong-version',lambda r:r.set('ptools-version','28.0'))
+react_mut('duplicate-native-reaction',lambda r:r.append(copy.deepcopy(r.find('Reaction'))))
+react_mut('wrong-native-entity-type',lambda r:setattr(r.find('Reaction'),'tag','Protein'))
+react_mut('invented-canonical-name',lambda r:ET.SubElement(r.find('Reaction'),'common-name',{'datatype':'string'}).__setattr__('text','A plausible name'))
+reject('wrong-native-request-frame',lambda:list(new.source_terms('metacyc-reaction-xml',lyxfile,url=lyxentry['url'].replace('LYXISOM-RXN','OTHER'),version='27.0')))
+r=ET.parse(lyxfile).getroot();r.find('Reaction/right/Compound').attrib.pop('class');q=mut/'unmarked-second.xml';q.write_bytes(ET.tostring(r));duplicate={**lyxentry,'key':'conflicting-unmarked','path':q.name,'sha256':sha(q)};(cache/q.name).symlink_to(q);cmp=A/'marker-conflict-manifest.json';cmp.write_text(json.dumps([*newentries,duplicate]));reject('marker-conflict-before-selection',lambda:new.build_snapshot(cmp,records,cache))
+bp='{http://www.biopax.org/release/biopax-level3.owl#}';rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+def parse_zip(p,e):return list(new.source_terms(PATHBANK_ARCHIVE_KIND,p,url=e['url'],version=e['version'],sha256=e['sha256'],archive=e['archive']))
+def zip_mut(name,change):
+ r=ET.parse(member).getroot();change(r);body=ET.tostring(r);p=mut/(name+'.zip')
+ with zipfile.ZipFile(p,'w') as z:z.writestr('PW002100.owl',body)
+ e=copy.deepcopy(zipentry);e['sha256']=sha(p);e['archive'].update(bytes=p.stat().st_size,member_bytes=len(body),member_sha256=hashlib.sha256(body).hexdigest());reject(name,lambda:parse_zip(p,e))
+def primary(r):return next(x for x in r.findall(bp+'Pathway') if x.get(rdf+'about')=='http://identifiers.org/smpdb/SMP0002112')
+def child(r):return next(x for x in r.findall(bp+'Pathway') if x.get(rdf+'about')=='http://identifiers.org/smpdb/SMP0121065')
+def remove_link(r):
+ p=primary(r);p.remove(next(x for x in p.findall(bp+'pathwayComponent') if x.get(rdf+'resource')=='http://identifiers.org/smpdb/SMP0121065'))
+zip_mut('unattached-actual-child',remove_link)
+zip_mut('duplicate-actual-child',lambda r:r.append(copy.deepcopy(child(r))))
+zip_mut('wrong-child-namespace',lambda r:setattr(child(r),'tag','{https://spoof.example/}Pathway'))
+zip_mut('expanded-interface-chemistry',lambda r:setattr(r.find(bp+'Interaction'),'tag',bp+'BiochemicalReaction'))
+zip_mut('wrong-RDF-root',lambda r:setattr(r,'tag','NotRDF'))
+zip_mut('unrelated-pathway',lambda r:primary(r).remove(next(x for x in primary(r).findall(bp+'pathwayComponent') if x.get(rdf+'resource')==child(r).get(rdf+'about'))))
+for name,change in [
+ ('wrong-archive-hash',lambda e:e.update(sha256='0'*64)),
+ ('wrong-member-hash',lambda e:e['archive'].update(member_sha256='0'*64)),
+ ('wrong-archive-size',lambda e:e['archive'].update(bytes=e['archive']['bytes']+1)),
+ ('wrong-member-size',lambda e:e['archive'].update(member_bytes=e['archive']['member_bytes']+1)),
+ ('missing-member',lambda e:e['archive'].update(member='PW0000000.owl')),
+ ('wrong-selected-root',lambda e:e['archive'].update(root='SMP0121065')),
+ ('spoofed-live-download-url',lambda e:e.update(url='https://pathbank.org/view/SMP0002112/download?type=owl_markup')),
+ ('extra-typed-provenance',lambda e:e['archive'].update(label='An invented native label'))]:
+ e=copy.deepcopy(zipentry);change(e);reject(name,lambda:parse_zip(archivefile,e))
+p=mut/'duplicate-member.zip';body=member.read_bytes()
+with zipfile.ZipFile(p,'w') as z:
+ z.writestr('PW002100.owl',body)
+ import warnings
+ with warnings.catch_warnings():warnings.simplefilter('ignore',UserWarning);z.writestr('PW002100.owl',body)
+e=copy.deepcopy(zipentry);e['sha256']=sha(p);e['archive']['bytes']=p.stat().st_size;reject('duplicate-actual-member-name',lambda:parse_zip(p,e))
+# Combine only genuine builder output with the supported proposal, preserving every prior object.
+proposal=json.loads((H/'source-authority-supported-proposal.json').read_text());prior=copy.deepcopy(proposal)
+for field in ['terms','sources']:
+ assert not (set(built[field])&set(proposal[field]));proposal[field].update(built[field]);proposal[field]=dict(sorted(proposal[field].items()));assert all(proposal[field][k]==v for k,v in prior[field].items())
+dump('complete-source-proposal.json',proposal)
+fullmanifest=json.loads((H/'source-manifest-proposal.json').read_text());assert len(fullmanifest)==713;fullmanifest.extend(newentries);dump('complete-source-manifest-proposal.json',fullmanifest)
+exercise=A/'identifier-exercise';(exercise/'conf').mkdir(parents=True);(exercise/'data/identifier_authorities').mkdir(parents=True);(exercise/'data/pathways').mkdir()
+shutil.copyfile(K/'conf/identifier_policy.yaml',exercise/'conf/identifier_policy.yaml');shutil.copyfile(A/'complete-source-proposal.json',exercise/'data/identifier_authorities/sources.json');shutil.copyfile(H/'ontology-authority-proposal.json',exercise/'data/identifier_authorities/ontology.json')
+target=Path('/private/tmp/pathwaymech-next-227-author-20261012/draft/l-lyxose-degradation.yaml');assert sha(target)=='fa77f6b451b49863552a7bcc9543ba94cd408f2886e8477d53e3a2464eb9583b';shutil.copyfile(target,exercise/'data/pathways/l-lyxose-degradation.yaml');errors=identifier_errors(exercise);assert errors==[],errors
+base=json.loads((B/'sources.json').read_text());assert all(proposal['terms'][k]==v for k,v in base['terms'].items());assert all(proposal['sources'][k]==v for k,v in base['sources'].items());assert fullmanifest[:len(manifest)]==manifest
+copyplan=[{'entry':e,'original':bind(p),'external_only_symlink':str(cache/e['path']),'root_adoption':'Copy exact original into future canonical build cache under manifest path or symlink read-only original; verify whole bytes/hash before building. Shared cache not modified.'} for e,p in [(lyxentry,lyxfile),(zipentry,archivefile)]];dump('new-originals-copy-plan.json',copyplan)
+dump('real-source-replay.json',dict(status='pass',scope='Bounded two-source production build plus exact previous/native source output regressions and actual-original derivatives. No full canonical/corpus build.',target=bind(target),original_regressions=regression,negative_controls=controls,new_terms=built['terms'],new_metadata=built['sources'],candidate_identifier_errors=errors,baseline_preservation=dict(source_terms=len(base['terms']),source_metadata=len(base['sources']),manifest_entries=len(manifest),unchanged=True),proposal_totals=dict(source_terms=len(proposal['terms']),source_metadata=len(proposal['sources']),manifest_entries=len(fullmanifest))))
+print('Real originals:',len(regression),'unchanged parser outputs;',len(controls),'adversarial derivatives rejected;2newterms native-built;target identifiers PASS;allbaseline objects preserved')

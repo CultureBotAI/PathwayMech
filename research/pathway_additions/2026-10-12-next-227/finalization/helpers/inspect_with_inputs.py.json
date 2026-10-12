@@ -1,0 +1,10 @@
+{
+  "serialization": "lossless-utf8-json",
+  "original": {
+    "path": "/private/tmp/pathwaymech-next-227-finalization-v3-20261012/inspect_with_inputs.py",
+    "bytes": 982,
+    "sha256": "c7d964c25b525d0dc97a6aeaaef3275e08083d80c32e14f1567f730274ca522b"
+  },
+  "content_status": "unchanged_original_bytes_encoded_as_text",
+  "text": "\"\"\"Call unchanged native inspect with all exact inputs, without shell ARG_MAX truncation.\"\"\"\n\nimport argparse\nimport runpy\nfrom pathlib import Path\n\nfrom common import ROOT, read, relative\n\n\ndef main():\n    ap = argparse.ArgumentParser(description=__doc__)\n    ap.add_argument(\"--input-list\", required=True, type=Path)\n    ap.add_argument(\"--targets\", required=True, type=Path)\n    args = ap.parse_args()\n    paths = read(args.input_list)\n    assert isinstance(paths, list) and len(paths) == len(set(paths))\n    argv = [\n        \"--repo-root\",\n        str(ROOT),\n        \"--schema\",\n        str(ROOT / \"schema/record_review.yaml\"),\n        \"inspect\",\n        \"--targets\",\n        str(args.targets),\n    ]\n    for p in paths:\n        argv += [\"--input\", relative(p)]\n    native = runpy.run_path(\n        str(ROOT / \"scripts/record_review.py\"), run_name=\"lyxose_native_review_inspection\"\n    )\n    return native[\"main\"](argv)\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+}

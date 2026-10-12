@@ -1,0 +1,18 @@
+from pathlib import Path
+import json,hashlib,datetime
+A=Path(__file__).parent
+
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+checks=json.loads((A/'check-executions.json').read_text());assert all(q['returncode']==0 for q in checks);assert '433 passed' in (A/'focused-tests.stdout').read_text();replay=json.loads((A/'real-source-replay.json').read_text());assert replay['candidate_identifier_errors']==[]
+changes=json.loads((A/'code-delta.json').read_text())['files']
+for r in changes:assert sha(r['after']['path'])==r['after']['sha256']
+files=[]
+for p in sorted(A.rglob('*')):
+ if p.is_file() and p not in [A/'handoff.json',A/'artifact-manifest.json']:
+  r=dict(path=p.relative_to(A).as_posix(),bytes=p.stat().st_size,sha256=sha(p))
+  if p.is_symlink():r['read_only_original_symlink_target']=str(p.resolve())
+  files.append(r)
+m=A/'artifact-manifest.json';m.write_text(json.dumps(dict(artifacts=files),indent=2)+'\n')
+h=dict(status='sealed_external_bounded_authority_implementation_ready_for_independent_code_review',created=datetime.datetime.now(datetime.timezone.utc).isoformat(),assessment=bind(A/'IMPLEMENTATION-HANDOFF.md'),code_delta=bind(A/'code-delta.json'),patch=bind(A/'implementation.diff'),artifact_manifest=bind(m),artifact_count=len(files),changed_files=changes,tests=dict(focused_passed=433,lint='pass',native_original_regressions=27,real_source_negative_controls=26,candidate_identifiers='pass',execution=bind(A/'check-executions.json'),original_replay=bind(A/'real-source-replay.json')),proposals=[bind(A/n) for n in ['two-source-build.json','two-source-manifest.json','complete-source-proposal.json','complete-source-manifest-proposal.json','new-originals-copy-plan.json']],baseline_preservation=bind(A/'baseline-preservation.json'),scientific_author_preservation=bind(A/'author-packet-preservation.json'),maintained_writes=False,shared_cache_writes=False,git_github_mutations=False,environment_installs=False,governed_artifacts_edited=False,full_canonical_build=False,whole_corpus_gates=False,remaining=['Independent code review','Any supported successor corrections','Root full original-backed canonical builds and full native gates','Separate independent scientific successor/adoption workflow'],source_exhausted=False)
+(A/'handoff.json').write_text(json.dumps(h,indent=2)+'\n');print(json.dumps(dict(handoff=bind(A/'handoff.json'),manifest=bind(m),artifacts=len(files),code_files=[{'path':x['path'],'sha256':x['after']['sha256']} for x in changes]),indent=2))

@@ -1,0 +1,52 @@
+from pathlib import Path
+import sys,json,importlib.util,sqlite3,hashlib,yaml,shutil,copy
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-227-canonical-build-20261012');K=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012/candidate');sys.path.insert(0,str(K/'src'))
+def load(p):return json.loads(Path(p).read_text())
+def save(n,j):(O/n).write_text(json.dumps(j,indent=2,ensure_ascii=False)+'\n')
+def module(n,p):s=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+s=module('source_build',K/'scripts/build_source_identifier_snapshot.py');o=module('onto_build',K/'scripts/build_ontology_identifier_snapshot.py')
+current=load(B/'sources.json');old=load(B/'baseline/sources.json');ids=set(current['terms'])-set(old['terms']);assert len(ids)==28
+manifest=load(B/'manifest.json');usedkeys={current['terms'][id]['source'] for id in ids};selected=[x for x in manifest if x['key'] in usedkeys or x['key']=='lyxose-correction-UniProtKB-P76268'];assert len(selected)==20
+save('bounded-source-manifest.json',selected);(O/'selection').mkdir(exist_ok=True);(O/'selection/ids.yaml').write_text(yaml.safe_dump({'id':sorted(ids)[0],'participants':[{'id':x} for x in sorted(ids)[1:]]}))
+result=s.build_snapshot(O/'bounded-source-manifest.json',O/'selection',B/'originals');assert result['terms']=={id:current['terms'][id] for id in ids};assert all(current['sources'][k]==v for k,v in result['sources'].items());save('bounded-native-source-replay.json',result)
+# The duplicate is tested from both original source bodies and in each source order.
+p76268='UniProtKB:P76268';dup=[x for x in manifest if x['key'] in ['uniprot-ecoli-reviewed-cofactors','lyxose-correction-UniProtKB-P76268']];assert len(dup)==2
+bulk=load(B/'originals'/dup[0]['path']);obj=[x for x in bulk['results'] if x['primaryAccession']=='P76268'];assert len(obj)==1
+fresh=load(B/'originals'/dup[1]['path']);assert fresh['primaryAccession']=='P76268';assert obj[0]['proteinDescription']['recommendedName']['fullName']['value']==fresh['proteinDescription']['recommendedName']['fullName']['value']==current['terms'][p76268]['label']
+(O/'duplicate-selection').mkdir(exist_ok=True);(O/'duplicate-selection/id.yaml').write_text('id: UniProtKB:P76268\n')
+dupresults=[]
+for name,entries in [('actual-order',dup),('reversed-control',list(reversed(dup)))]:
+ save(name+'-manifest.json',entries);r=s.build_snapshot(O/(name+'-manifest.json'),O/'duplicate-selection',B/'originals');assert r['terms'][p76268]['source']==entries[0]['key'];assert r['terms'][p76268]['label']==current['terms'][p76268]['label'];assert set(r['sources'])=={entries[0]['key']};dupresults.append({'case':name,'winner':r['terms'][p76268],'contributing_metadata':list(r['sources'])})
+save('duplicate-source-independent-assessment.json',{'actual_manifest_indices':[{ 'key':e['key'],'index':manifest.index(e)} for e in dup],'native_bulk_record':obj[0],'fresh_original':{'path':str(B/'originals'/dup[1]['path']),'sha256':hashlib.sha256((B/'originals'/dup[1]['path']).read_bytes()).hexdigest()},'replays':dupresults,'conclusion':'Same native identity and label. First source wins unchanged production behavior; fresh original remains scientific GeneID evidence. No source-order or term edit required.'})
+# Bounded original SQL and RDF term replay, avoiding repeated full SQL hashing/build.
+onto=load(B/'ontology.json');oldonto=load(B/'baseline/ontology.json');newids=set(onto['terms'])-set(oldonto['terms']);assert len(newids)==14;observed={}
+for db in load(B/'ontology-original-bindings.json')['originals']:
+ wanted=sorted(id for id in newids if id.startswith(db['prefix']+':') and onto['terms'][id]['source']==db['source_key'])
+ if not wanted:continue
+ with sqlite3.connect(Path(db['path']).as_uri()+'?mode=ro&immutable=1',uri=True) as conn:
+  terms,missing=o.extract_terms(conn,wanted,db['source_key']);assert not missing;observed.update(terms)
+key,metadata,terms=o.read_rhea_updates(B/'rhea-updates.json',B/'originals',set(load(B/'rhea-updates.json')['ids']));observed.update({k:v for k,v in terms.items() if k in newids});assert observed=={id:onto['terms'][id] for id in newids};save('bounded-ontology-original-replay.json',{'terms':observed,'rhea_metadata':metadata,'SQL_access':'mode=ro&immutable=1; bounded term SELECT only','full_SQL_hashes':'Inherited exact native execution and stat/output metadata binding; not recomputed here.'})
+# Fresh production consumers on copied authority files and exact reviewed target.
+from pathwaymech.identifiers import _load_authority,identifier_errors
+assert len(_load_authority(B/'sources.json'))==2412 and len(_load_authority(B/'ontology.json'))==1945
+F=O/'consumer-fixture';(F/'data/pathways').mkdir(parents=True,exist_ok=True);(F/'data/identifier_authorities').mkdir(exist_ok=True);(F/'conf').mkdir(exist_ok=True)
+for kind in ['sources','ontology']:shutil.copyfile(B/(kind+'.json'),F/'data/identifier_authorities'/(kind+'.json'))
+shutil.copyfile(B/'corpus/l-lyxose-degradation.yaml',F/'data/pathways/l-lyxose-degradation.yaml');shutil.copyfile('/private/tmp/pathwaymech-next-226-20261012/conf/identifier_policy.yaml',F/'conf/identifier_policy.yaml')
+errors=identifier_errors(F);assert not errors,errors
+controls=[]
+def mutate(name,fn,expected):
+ d=copy.deepcopy(current);fn(d);p=O/(name+'.json');save(name+'.json',d)
+ try:_load_authority(p)
+ except ValueError as e:
+  assert expected in str(e),(name,str(e));controls.append({'name':name,'rejected':str(e)});return
+ raise AssertionError(name+' accepted')
+pkey=current['terms']['PathBank:SMP0121065']['source'];rkey=current['terms']['MetaCyc:LYXISOM-RXN']['source']
+mutate('bad-archive-hash-scope',lambda d:d['sources'][pkey].update(sha256_scope='member'),'incomplete typed PathBank ZIP provenance')
+mutate('bad-unattached-child',lambda d:d['terms'].update({'PathBank:SMP0999999':{'label':'Invented child','synonyms':[],'source':pkey}}),'invalid typed PathBank archive term scope')
+mutate('bad-native-reaction-type',lambda d:d['terms']['MetaCyc:LYXISOM-RXN'].update(entity_type='protein'),'invalid typed native reaction')
+# Prove the single-target gate does not ignore either formerly unavailable identity.
+for id in ['MetaCyc:LYXISOM-RXN','PathBank:SMP0121065','Entrez:946129']:
+ d=copy.deepcopy(current);del d['terms'][id];(F/'data/identifier_authorities/sources.json').write_text(json.dumps(d));errs=identifier_errors(F);assert any('ID_NOT_FOUND' in e and id in e for e in errs);controls.append({'name':'remove '+id,'rejected':errs})
+shutil.copyfile(B/'sources.json',F/'data/identifier_authorities/sources.json');assert not identifier_errors(F)
+save('consumer-replay.json',{'native_source_terms':2412,'native_ontology_terms':1945,'single_target_identifier_errors':errors,'exact_target_sha256':hashlib.sha256((F/'data/pathways/l-lyxose-degradation.yaml').read_bytes()).hexdigest(),'negative_controls':controls,'negative_controls_passed':len(controls),'full_corpus_gate_rerun':False})
+print(json.dumps({'source_terms_reproduced':len(ids),'source_entries_replayed':len(selected),'ontology_terms_reproduced':len(newids),'duplicate_source_orders_tested':2,'consumer_negative_controls':len(controls),'native_consumers':'pass','single_target_identifiers':'pass'}))

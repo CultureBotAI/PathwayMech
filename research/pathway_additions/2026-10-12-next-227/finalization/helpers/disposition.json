@@ -1,0 +1,22 @@
+{
+  "stable_key": "lyxose-review-yaml-alias-serialization",
+  "severity": "blocking finalization",
+  "status": "corrected in external successor pending root independent acceptance",
+  "actual_failure": {
+    "path": "/private/tmp/pathwaymech-next-227-native-finalization-20261012/validate-execution.json",
+    "bytes": 1024,
+    "sha256": "7cb793d0de760796ca361e3dd7b91e7b9bd96ba992c754658eb59dd4cffc3448"
+  },
+  "cause": "111 evidence-ID list object identities shared across assessment/dimension fields; yaml.safe_dump emits anchors/aliases rejected by native loader",
+  "fix": "Use unchanged native _dump_document with ignore_aliases=True, no scientific payload changes",
+  "acceptance_checks": [
+    "Actual failed review has111 anchors and111 aliases and fails unchanged native loader",
+    "Fixed full semantic object equals failed original and passes unchanged native CLI validate",
+    "Shared nested mappings/lists serialize without aliases",
+    "Unchanged native loader rejects aliases, standalone anchors and explicit tags",
+    "All main AST unchanged after normalizing only dump call",
+    "All lineage and completion consumer modules byte-identical; all47 guard fixtures pass",
+    "Root freshly reruns inspection/assembly and complete native receipt chain before save acceptance"
+  ],
+  "native_completion_claimed": false
+}

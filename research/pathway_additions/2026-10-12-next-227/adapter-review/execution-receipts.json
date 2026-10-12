@@ -1,0 +1,72 @@
+[
+  {
+    "operation": "Read exact handoff metadata",
+    "terminal_chunk": "d7e4c5/0",
+    "exit_code": 1,
+    "detail": "handoff.json read successfully; guessed AUTHOR-HANDOFF.md path absent. Correct IMPLEMENTATION-HANDOFF.md read next; no missing-file claim beyond that exact path."
+  },
+  {
+    "operation": "Read implementation narrative and all delta regions",
+    "terminal_chunks": [
+      "caf520/0",
+      "62b8fd/0",
+      "ebc0b0/0",
+      "95fd31/0",
+      "9d3a8a/0",
+      "d3bbb6/0",
+      "5b383c/0",
+      "555b48/0"
+    ],
+    "detail": "Initial combined output truncated; subsequently read complete affected parser/consumer paths, shared provenance module, changed tests and documentation hunks."
+  },
+  {
+    "operation": "Initial exhaustive copied-file count",
+    "terminal_chunk": "3be380/0",
+    "exit_code": 1,
+    "detail": "Reviewer count assertion included generated Ruff cache files. Investigation 06480b/0 found five cache files (three changed, two identical); no additional maintained delta. Corrected inventory explicitly retains their bindings separately."
+  },
+  {
+    "operation": "Verify 280-artifact seal and exact six-file delta; copy candidate externally",
+    "terminal_chunk": "434dcf/0",
+    "exit_code": 0,
+    "result": {
+      "changed_maintained_files": 6,
+      "unchanged_copied_files": 216,
+      "generated_cache_files": 5
+    }
+  },
+  {
+    "operation": "Focused repository tests in independent copy",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/private/tmp/pathwaymech-next-227-authority-review-20261012/candidate/src /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest -q -p no:cacheprovider --basetemp=/private/tmp/pathwaymech-next-227-authority-review-20261012/pytest-tmp tests/test_metacyc_reaction_authority.py tests/test_pathbank_identifier_authority.py tests/test_identifiers.py tests/test_source_identifier_snapshot.py tests/test_identifier_snapshot_builders.py",
+    "cwd": "/private/tmp/pathwaymech-next-227-authority-review-20261012/candidate",
+    "terminal_chunks": [
+      "f1d3be",
+      "0568f0/0"
+    ],
+    "exit_code": 0,
+    "result": "433 passed in 4.46s"
+  },
+  {
+    "operation": "Reviewer-authored original/adversarial replay",
+    "command": "PYTHONDONTWRITEBYTECODE=1 /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-227-authority-review-20261012/independent_replay.py",
+    "terminal_chunks": [
+      "37ed10",
+      "ec1f4b/0"
+    ],
+    "exit_code": 0,
+    "result": {
+      "old_original_outputs_exact": 27,
+      "reviewer_negative_controls_rejected": 29,
+      "new_source_builder_output_exact": true,
+      "candidate_identifier_errors": []
+    }
+  },
+  {
+    "operation": "Focused lint in independent copy without cache",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/private/tmp/pathwaymech-next-227-authority-review-20261012/candidate/src /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff check --no-cache scripts/build_source_identifier_snapshot.py src/pathwaymech/identifiers.py src/pathwaymech/pathbank_provenance.py tests/test_metacyc_reaction_authority.py tests/test_pathbank_identifier_authority.py",
+    "cwd": "/private/tmp/pathwaymech-next-227-authority-review-20261012/candidate",
+    "terminal_chunk": "31afa3/0",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  }
+]

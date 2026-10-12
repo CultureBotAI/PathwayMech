@@ -1,0 +1,85 @@
+from pathlib import Path
+import json,hashlib,yaml,collections
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def dump(n,x):(A/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+d=yaml.safe_load((A/'draft/l-lyxose-degradation.yaml').read_text());edges=d['mechanistic_edges'];refs=json.loads((A/'reference-original-bindings.json').read_text());claims=json.loads((P/'claim-ledger.json').read_text())
+# Every original30-row preflight claim retained exactly, with explicit author disposition.
+disp={
+'C01':'Four native core memberships and selected directions retained; exact beta-specific LYXISOM authority blocked by class=true adapter gap.',
+'C02':'Eleven formal core chemical sides and three intermediate edges retain the complete route. Adapted-strain support does not imply purified four-enzyme reconstruction.',
+'C03':'Frozen PathBank opaque child membership retained; core enzyme/formula/anomer conflicts adjudicated below. The attached child authority remains blocked, not omitted.',
+'C04':'AraD and SgbE alternatives retained; native enzymes-not-used UlaE/UlaF exclude frozen UlaF from the chosen core.',
+'C05':'Native complete InChI matches CHEBI147210; broader Rhea28059 and generic transport62321 are not aliases.',
+'C06':'All11 formal sides have coefficient1; ATP/ADP/proton included; no water or metal chemical side invented. Fresh Rhea orientation/formula-charge audit retained.',
+'C07':'Transport RHEA29993 and RhaT retained with generic pyranose/proton annotated stoichiometry and outside/inside boundary. The primary experiment is radiolabelled-rhamnose competition.',
+'C08':'Excluded alternate mutant-rhaB1-phosphate route explicitly distinguished in record description, native membership assertions and scope ledger. Direct aldolase assay unavailable in1991.',
+'C09':'Qualified JA121 purified RhaA catalytic edge retained with Km5mM and Vmax6.0U/mg. PDF extraction freshly replayed and one original assay page visually inspected.',
+'C10':'RhaA tetramer and Mn association retained separately;1991 preparation does not independently establish native oligomer occupancy.',
+'C11':'Native LyxK dimer, later tagged protein assay and1994 abstract retained; unavailable1994body not claimed.',
+'C12':'2002 alternate3-keto-L-gulonate substrate noted on LyxK activity; not imported as an extra lyxose core event.',
+'C13':'SgbU enables edge is tentative; both2000GST and2002purified negative assays explicit. No universal inactivity or proven catalytic assignment.',
+'C14':'AraD native tetramer and SgbE alternative catalysis retained; separate constructs, not a composite obligate complex.',
+'C15':'SgbE zinc by similarity and AraDZn/Co/Mn alternatives with B/rUP1000 versusK12 preparation scope retained.',
+'C16':'Native reference sequences anchored independently; assay constructs preserved beside catalytic/cofactor edges and in construct ledger. SgbU negative-assay preparation retained as a limitation, not a proven catalyst.',
+'C17':'Negative contextual exclusion: yiaQ insertion polarity was complemented by yiaR; YiaQ/UlaD decarboxylation is not an extra lyxose core event.',
+'C18':'JA134 adapted ECL1-derived background and yiaJ/plaR inversion disruption retained;1998abstract/native scope explicit.',
+'C19':'PlaR repression of all3 pathway-associated yiaK-S genes and autorepression retained at gene-expression level.',
+'C20':'CRP-cAMP nested dimer/ligand assembly retained; site1 activation and plaR repression included. Site2 binding has unknown sign and no signededge.',
+'C21':'IHF heterodimer membership/1:1 interpretation and JA134reporter activation retained; native XML omits numericcoefficients.',
+'C22':'Negative contextual exclusion: no Fnr or ArcA positive yiaK-Sedge from2000anaerobic reporter result. Separate rhaTArcA-Psource annotation has different promoter/evidence.',
+'C23':'Generic L-lyxose induction of rhaA/rhaT/araD retained; no direct lyxose-RhaS/RhaR/AraC binding or beta-anomer sensing asserted.',
+'C24':'PlaR His-tagged effector gel-shift inhibition and BW25113 reporter activation retained with distinct10mMscreen versus0.2%/30mMreporter conditions.',
+'C25':'LyxK ATP inhibition, glutathionate activation and magnesium annotation retained with source access limits; no concentration/allostery invented.',
+'C26':'Native RhaS-rhamnose/CRP-cAMP controls retained; phosphorylated ArcA-P qualified on affected endpoint, expression-analysis evidence distinct from computational consensus sites.',
+'C27':'NONOXIPENT downstream opaque interface and PWY5257parent retained; no expansion of their chemistry.',
+'C28':'Own227original hashes and ignored/hidden/followed searches confirm novelty; prior PathBank lead/context mentions preserved; onlyarabinoseterminal22369overlap.',
+'C29':'Fresh independent replay of26original iModulonDB responses/14queries/11components; computational context only, no new causal edges.',
+'C30':'Native partialEC5.1.3 conflict recorded and excluded from activity identity; no invented EC5.3.1 mapping.'}
+assert set(disp)=={c['id'] for c in claims}
+rows=[]
+for c in claims:
+ matches=[]
+ sources={Path(r['path']).name for r in c['evidence']}
+ for e in edges:
+  ids={v['reference_id'] for v in e['evidence']};evpaths={Path(refs[i]['path']).name for i in ids}
+  if sources&evpaths:matches.append(e['id'])
+ rows.append(dict(preflight_claim=c,disposition=disp[c['id']],source_overlapping_edges=matches,edge_mapping_scope='Overlap is navigation, not a claim that every overlapping edge proves every part of this claim. Exact locators and assertions are in edge-source-crosswalk.'))
+dump('claim-dispositions.json',rows)
+constructs=[
+ dict(entity='RhaA',reference='UniProtKB:P32170',native_assembly='MetaCyc:CPLX0-7652 tetramer',assay='1991 JA121 from JA120+pJB4.3; overexpressed purified preparation; Mn2+ and reducing buffers',limits='Exact assayed sequence and oligomer not independently established; substrate anomers unresolved',sources=['PMID:1650346','MetaCyc:CPLX0-7652','UniProtKB:P32170']),
+ dict(entity='LyxK',reference='UniProtKB:P37677',native_assembly='MetaCyc:LYXK-CPLX dimer',assay='2002 MG1655 coding region in modifiedpET15b/BL21(DE3);Nterminal10His retained;10mMMgCl2 coupled assay',limits='Current498aa reference not tagged assay sequence;1994body unavailable; absolute specificity limited by3-keto-L-gulonate activity',sources=['PMID:11741871','PMID:7961955','MetaCyc:LYXK-CPLX']),
+ dict(entity='SgbU',reference='UniProtKB:P37679',native_assembly='not established',assay='2000 GST-based preparation negative;2002 MG1655/pET15b/BL21(DE3),10His then thrombin-cleaved preparation negative',limits='Residual cleavage sequence unreported; no proven 3-epimerase catalysis, universal inactivity, cofactor independence or native oligomer inferred',sources=['PMID:10913097','PMID:11741871','EcoCyc:ENZRXN0-6410']),
+ dict(entity='SgbE',reference='UniProtKB:P37680',native_assembly='not established',assay='2002 MG1655/pET15b/BL21(DE3),Nterminal10His removed by thrombin;2000 alternative-function genetics',limits='Residual cleavage sequence unreported;231aa reference versus232codon wording not an assayed variant;zinc bysimilarity',sources=['PMID:10913097','PMID:11741871','UniProtKB:P37680']),
+ dict(entity='AraD',reference='UniProtKB:P08203',native_assembly='MetaCyc:RIBULPEPIM-CPLX tetramer',assay='B/rUP1000 enzyme sources distinct from K12P08203; native commentary98.7%deduced identity; separateK12DH1tetramer preparation',limits='Metals alternatives, not jointly required; annotations not relabelled as MG1655assays; inhibitor structure unresolved',sources=['EcoCyc:RIBULPEPIM-MONOMER','UniProtKB:P08203']),
+ dict(entity='PlaR',reference='UniProtKB:P37671',native_assembly='no unsupported assembly inferred',assay='2019His-taggedpET21a(+)/BL21DE3 affinity-purified;BW25113probeDNA;W3110typeAgSELEXDNA;BW25113/JW3546reporters',limits='Exacttagposition/fullsequenceunreported;effectorbinding inferred fromDNAcomplexloss, no exactligandprotonation/anomermeasurement',sources=['PMID:31892694']),
+ dict(entity='ArcA',reference='UniProtKB:P0A9Q1',native_assembly='reference chain plus molecular_state PHOSPHO-ARCA',assay='NativeAsp54aspartylphosphate bysimilarity; rhaTnegativegeneexpression annotation; motifconsensus separate',limits='No directrhaTbinding assay claimed; indirectexpressioneffect possible; no unmodifiedchain claim',sources=['EcoCyc:PHOSPHO-ARCA','EcoCyc:REG0-5375','EcoCyc:REG0-5376','EcoCyc:REG0-5377'])]
+for x in constructs:x['source_bindings']={r:refs[r] for r in x['sources'] if r in refs}
+dump('construct-state-ledger.json',constructs)
+conflicts=[
+ dict(topic='First reaction anomer',decision='Native beta-L-lyxopyranose147210; Rhea28059generic62321 retained onlyascomparison. No inventedanomerization between transport andcore.',source='nativeL-LYXOSEInChI andoriginalRhea'),
+ dict(topic='FrozenPathBankUlaF',decision='ExcludeUlaF/UlaEfromchosen core; nativeenzymes-not-used plusprimaryAraD/SgbEalternatives prevail; frozenmembership preservedasconflict.',source='frozenPW002100.owl andMETA/ECOLILYXMET'),
+ dict(topic='FrozenPathBankchemicalformula',decision='Frozen57829label/formula C7H13O6P isnotselected; SQL/Rhea exactC5H9O8P−2retained.',source='chemical-ledger.json andfreshRhea'),
+ dict(topic='1991versus1994/2000route',decision='JA125mutantrhaB1-phosphateroute isdistinct from adaptedJA1345-phosphateroute;1991aldolasecleavage wasnotdirectlyassayed.',source='full1991PDF andnativepathwaynarrative'),
+ dict(topic='Wildtypewholeflux',decision='NoordinaryWTMG1655completefluxclaim; strainreferencesanchoridentity, adaptedJA134geneticsboundrouteevidence.',source='PMID10913097/10913096;1998abstract'),
+ dict(topic='SgbUassays',decision='Tentativeassignment retained with2negativeassays; noasserteduniversalabsence orcofactorindependence.',source='2000/2002fullprimarybodies'),
+ dict(topic='LyxKspecificity',decision='Later3-keto-L-gulonateactivity limitsolderabsolutespecificity; alternatechemistrynotcore.',source='2002primary versus1994abstract/nativeannotation'),
+ dict(topic='IHFcoefficients',decision='NativeXMLonlymembership;1:1comesfromnative/UniProtheterodimerdescription.',source='ECOLIPC00027 andUniProtP0A6X7/P0A6Y1'),
+ dict(topic='CRPsite2andArcA',decision='Site2CRPbinding hasunknownsignedfunction; noFnr/ArcAyiaK-Sactivation; ArcA-P rhaTnegativeexpressionisaseparateboundedannotation.',source='PMID10913096 andnativeREG05375/6/7'),
+ dict(topic='Glycolohydroxamateinhibitor',decision='UniProtP08203ACTIVITYREGULATION saysinhibition above0.1mM, citing11732896. Exactstructureunresolved afterissuingnamesearches; do notsubstitutephosphoglycolohydroxamateCHEBI28475. Retainedunmodeledbiology, no inventedchemicalnode.',source='UniProtP08203original comment; helpernegativeacquisitionreceipts'),
+ dict(topic='NativepartialEC',decision='EC5.1.3metadata conflictswithaldose/ketosechemistry; omitECidentityratherthanrepairsource.',source='META-LYXISOM-RXN exactoriginal'),
+ dict(topic='Genetoproductionpredicate',decision='Schemadoesnotprovideencodes;7gene-productidentitiesretainedinledgerandcrossreferences, no falseproducesedge.',source='nativeclosed schema and7Entrez/UniProtoriginals'),
+ dict(topic='Fullbodyaccess',decision='1994/1998abstractsonly;2001AraDinhibitorfullPDF403;2004ArcAfullPDF403; use nativeannotation/abstractscope, no bodyclaim.',source='sealedpreflight/helperacquisitionreceipts'),
+ dict(topic='iModuloncontext',decision='AraDcomponent84 andRhaA/RhaT/RhaS98 are computationalcoexpressioncontext; zero causalgraphedges.',source='26originalresponsereplay')]
+dump('conflict-and-scope-ledger.json',conflicts)
+# Bind display references separately from actual acquisition metadata.
+acqs=json.loads((P/'source-ledger.json').read_text())['acquisitions']+json.loads((A/'regulator-authorities/source-ledger.json').read_text());by=collections.defaultdict(list)
+for q in acqs:
+ if q.get('path'):by[str(Path(q['path']))].append({k:q[k] for k in ['request_url','requested_at','status','final_url','sha256','bytes','receipt_file'] if k in q})
+out={}
+for r,b in refs.items():out[r]={'display_reference_binding':b,'actual_acquisition_receipts':by.get(b['path'],[]),'scope':'Missing matching receipt here means shared/frozen original: use source_original_external_bindings and source-ledger frozen metadata, not an invented request.'}
+dump('reference-acquisition-matrix.json',out)
+dump('external-source-ledger-bindings.json',{'preflight':bind(P/'source-ledger.json'),'protein_identity':bind(P/'protein-identity-ledger.json'),'chemical_identity':bind(P/'chemical-ledger.json'),'ontology_identity':bind(P/'ontology-identity-ledger.json'),'native_preflight_claims':bind(P/'claim-ledger.json'),'regulator_sources':bind(A/'regulator-authorities/source-ledger.json'),'authority_originals':bind(A/'authority-preparation/source-original-manifest.json')})
+dump('author-counts.json',dict(edges=len(edges),participants=len(d['participants']),reactions=len(d['reactions']),references=len(d['references']),core_events=4,core_sides=11,transport_sides=4,named_identities=64,endpoint_qualifiers=10,status='sealed draft readiness pending separate native adapter fixes, independent scientific review and root fullgates'))
+print('30claim dispositions,7construct/state cases,14conflict/scope cases;64reference acquisitions bound')

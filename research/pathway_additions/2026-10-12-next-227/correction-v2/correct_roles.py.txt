@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,copy,shutil
+import yaml
+A=Path('/private/tmp/pathwaymech-next-227-science-correction-20261012');O=Path(__file__).parent
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def bind(p):return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def dump(n,d):(O/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+assert sha(A/'handoff.json')=='c4a11786e4b105b3ff3d284569b73adde98c429e96620faa20374d4f9a8c6772'
+manifest=json.loads((A/'artifact-manifest.json').read_text());assert len(manifest['artifacts'])==69
+for row in manifest['artifacts']:
+ p=A/row['path'];assert sha(p)==row['sha256'] and p.stat().st_size==row['bytes'],p
+p=A/'draft/l-lyxose-degradation.yaml';assert sha(p)=='ed850bfef8abf66b4f9786a0b1b98cee692aa415aac956d719a47aec6bb20144';old=yaml.safe_load(p.read_text());d=copy.deepcopy(old);ledger=json.loads((A/'edge-evidence-ledger.json').read_text());changes=[]
+for edge_id,ref,rowindex,gene,locus,protein,target in [('lyxose-110','Entrez:946129',239,'kdgR','b1827','KdgR','plaR (Entrez:948084)'),('lyxose-111','Entrez:948084',248,'plaR','b3574','PlaR','kdgR (Entrez:946129)')]:
+ e=next(e for e in d['mechanistic_edges'] if e['id']==edge_id);ev=next(ev for ev in e['evidence'] if ev['reference_id']==ref);before=copy.deepcopy(ev)
+ assert ledger[rowindex]['evidence']==before and ledger[rowindex]['binding']['path'].endswith('Entrez-946129.xml' if gene=='kdgR' else 'Entrez-948084-retry.xml')
+ assertion=f'The issuing MG1655 NCBI Gene record grounds {gene}/{locus} as the {protein} regulator subject\'s reference gene. The separately cited UniProt GeneID join identifies the protein subject; the expression target is {target}, and assay observations remain scoped to BW25113 derivatives.'
+ assert len(assertion)<=400
+ ev['source_assertion']=assertion;ledger[rowindex]['evidence']=copy.deepcopy(ev);changes.append(dict(edge_id=edge_id,reference_id=ref,ledger_row=rowindex,before=before,after=copy.deepcopy(ev),source_binding=ledger[rowindex]['binding'],source_selector=ledger[rowindex]['selector'],reason='Correct supporting reference-gene identity evidence role: regulator subject mapping versus actual measured expression target. No source locator, reference, graph endpoint, sign or scope change.'))
+# Only the two authorized source assertion strings differ anywhere in the complete record.
+def differences(x,y,path=()):
+ if type(x)!=type(y):return [dict(path=list(path),before=x,after=y)]
+ if isinstance(x,dict):
+  assert x.keys()==y.keys();return [r for k in x for r in differences(x[k],y[k],path+(k,))]
+ if isinstance(x,list):
+  assert len(x)==len(y);return [r for i,(a,b) in enumerate(zip(x,y)) for r in differences(a,b,path+(i,))]
+ return [] if x==y else [dict(path=list(path),before=x,after=y)]
+diff=differences(old,d);assert [r['path'] for r in diff]==[['mechanistic_edges',109,'evidence',4,'source_assertion'],['mechanistic_edges',110,'evidence',6,'source_assertion']],diff
+(O/'draft/l-lyxose-degradation.yaml').write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=106));dump('edge-evidence-ledger.json',ledger);dump('role-correction-ledger.json',changes);dump('exact-target-delta.json',dict(prior_target=bind(p),target=bind(O/'draft/l-lyxose-degradation.yaml'),differences=diff,only_source_assertion_strings_changed=True,edge_ids_subjects_predicates_objects_unchanged=True,all_111_edges_retained=True,original_109_edge_objects_unchanged=True))
+for name in ['reference-original-bindings.json','reference-acquisition-matrix.json','context-evidence-ledger.json','correction-identity-ledger.json','gene-product-identity-ledger.json','construct-state-ledger.json','conflict-and-scope-ledger.json','regulatory-source-joins.json','claim-dispositions.json','assembly-identity-ledger.json','chemical-side-audit.json']:
+ shutil.copyfile(A/name,O/name)
+reviews=json.loads((A/'review-dispositions.json').read_text());reviews[0]['disposition']='addressed_in_second_external_successor_pending_independent_reassessment';reviews[0]['evidence_role_followup']='Root found two source assertions mislabeling subject reference-gene mapping as target grounding. Those two assertion strings are corrected; all identities, sources, signs, endpoints and scope remain exact.';reviews[0]['role_correction_ledger']=bind(O/'role-correction-ledger.json');reviews[0]['verification']=dict(status='pending_v2_checks',prior=bind(A/'correction-replay-result.json'));reviews[1]['verification']=bind(O/'context-evidence-ledger.json');dump('review-dispositions.json',reviews)
+for name in ['check_candidate.py','check_exports.py']:shutil.copyfile(A/name,O/name)
+dump('inherited-package-bindings.json',dict(previous_successor_handoff=bind(A/'handoff.json'),previous_successor_manifest=bind(A/'artifact-manifest.json'),verified_artifacts=69,unchanged_authority_proposals=[bind(A/'complete-source-proposal.json'),bind(A/'complete-source-manifest-proposal.json'),bind(A/'incremental-source-build.json'),bind(A/'new-originals-copy-plan.json')],prior_source_controls=bind(A/'source-replay-checks.json'),prior_correction_controls=bind(A/'correction-replay-result.json'),original_author_and_adapter_preservation=bind(A/'immutable-input-verification.json'),source_exhaustion=False))
+print('corrected exactly two source_assertion strings;',len(ledger),'observation rows; target',sha(O/'draft/l-lyxose-degradation.yaml'))

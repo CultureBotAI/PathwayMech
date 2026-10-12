@@ -1,0 +1,28 @@
+from pathlib import Path
+import json,hashlib,difflib,datetime
+A=Path(__file__).parent;K=A/'candidate';B=Path('/private/tmp/pathwaymech-next-226-20261012');author=Path('/private/tmp/pathwaymech-next-227-author-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def dump(n,x):(A/n).write_text(json.dumps(x,indent=2)+'\n')
+baseline=json.loads((A/'baseline-code-bindings.json').read_text())['files'];changes=[];patch=[]
+for r in baseline:
+ p=Path(r['path']);q=K/r['relative_path'];assert sha(p)==r['sha256'],('baseline source changed',p)
+ if sha(q)!=r['sha256']:
+  changes.append(dict(path=r['relative_path'],before=r,after=bind(q)));patch.extend(difflib.unified_diff(p.read_text().splitlines(True),q.read_text().splitlines(True),fromfile='a/'+r['relative_path'],tofile='b/'+r['relative_path']))
+new='src/pathwaymech/pathbank_provenance.py';q=K/new;assert not (B/new).exists();changes.append(dict(path=new,before=None,after=bind(q)));patch.extend(difflib.unified_diff([],q.read_text().splitlines(True),fromfile='/dev/null',tofile='b/'+new))
+expected={'scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py',new,'tests/test_metacyc_reaction_authority.py','tests/test_pathbank_identifier_authority.py','docs/IDENTIFIERS.md'};assert {c['path'] for c in changes}==expected
+(A/'implementation.diff').write_text(''.join(patch));dump('code-delta.json',dict(files=changes,changed_count=6,all_other_216_copied_files_exact=True,baseline_files_checked=len(baseline),maintained_root_edited=False,governed_artifacts_edited=False,full_vendored_check='Not run by this bounded task; root owns the pinned22artifact gate. No governed path appears in the six-file delta.'))
+m=json.loads((author/'artifact-manifest.json').read_text())['artifacts'];assert len(m)==400
+for r in m:
+ p=author/r['path'];assert sha(p)==r['sha256'] and p.stat().st_size==r['bytes'],p
+assert sha(author/'handoff.json')=='244b0a10567388ac44d677b435d7fd600c2ed7a36d4043bb00a9ae49dbd89aff'
+dump('author-packet-preservation.json',dict(handoff=bind(author/'handoff.json'),manifest=bind(author/'artifact-manifest.json'),all_artifacts_unchanged=400,checked_at=datetime.datetime.now(datetime.timezone.utc).isoformat()))
+# Independent object-by-object preservation of both accepted baseline snapshots and selections.
+C=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012');H=author/'authority-preparation';src=json.loads((A/'complete-source-proposal.json').read_text());onto=json.loads((H/'ontology-authority-proposal.json').read_text());rows=[]
+for p,result in [(C/'sources.json',src),(C/'ontology.json',onto)]:
+ d=json.loads(p.read_text());assert all(result['terms'][k]==v for k,v in d['terms'].items());assert all(result['sources'][k]==v for k,v in d['sources'].items());rows.append(dict(baseline=bind(p),terms=len(d['terms']),metadata=len(d['sources']),exact=True))
+old=json.loads((C/'manifest.json').read_text());newm=json.loads((A/'complete-source-manifest-proposal.json').read_text());assert newm[:len(old)]==old
+oldr=json.loads((C/'rhea-updates.json').read_text());newr=json.loads((H/'rhea-identifier-updates-proposal.json').read_text())
+# Preserve the independently verified helper Rhea selection object and all originals.
+dump('baseline-preservation.json',dict(snapshots=rows,baseline_manifest=bind(C/'manifest.json'),new_manifest=bind(A/'complete-source-manifest-proposal.json'),old_manifest_entries=len(old),all_old_entries_exact=True,rhea_baseline=bind(C/'rhea-updates.json'),rhea_successor=bind(H/'rhea-identifier-updates-proposal.json'),rhea_scope='No Rhea changes by implementation. Author helper proposal preserves16old IDs and appends3 source-extracted IDs; root full builder repeats originals.'))
+print('exact six-file delta;216copiedfilesunchanged;400authorartifactsimmutable;4315baseline terms/550metadata preserved')
