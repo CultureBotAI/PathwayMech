@@ -1,0 +1,217 @@
+from pathlib import Path
+import json, hashlib, re, html, sqlite3
+import yaml
+from lxml import etree as E
+O=Path('/private/tmp/pathwaymech-next-228-author-20261012')
+P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012')
+A=O/'authority-preparation'
+refs={}; bindings={}; ledger=[]; edges=[]; participants=[]; reactions=[]
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def path(file):
+ for d in [P/'raw',A/'raw',P/'derived']:
+  if (d/file).exists(): return d/file
+ raise ValueError(file)
+def ref(i,file,title=None,url=None,version=None,hash_body=True):
+ p=path(file)
+ if i in refs: assert bindings[i]['path']==str(p); return i
+ if file.endswith('.xml') and file.startswith(('META-','ECOLI-')):
+  org,frame=file[:-4].split('-',1); url=url or f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id={org}:{frame}'
+  version=version or f'{org} PGDB 27.0; complete native XML retrieved 2026-10-12'
+ if i.startswith('UniProtKB:'):
+  url=url or 'https://rest.uniprot.org/uniprotkb/'+i.split(':')[1]+'.json'; version=version or 'Reviewed issuing UniProt JSON retrieved 2026-10-12'
+ if i.startswith('Entrez:'):
+  url=url or 'https://www.ncbi.nlm.nih.gov/gene/'+i.split(':')[1]; version=version or 'Exact issuing NCBI Gene XML retrieved 2026-10-12; MG1655 locus'
+ refs[i]={'id':i,'title':title or i+' native evidence','url':url,'source_version':version or 'Retained issuing original retrieved 2026-10-12'}
+ if hash_body: refs[i]['source_sha256']=sha(p)
+ assert url
+ bindings[i]={'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size,'access_level':version or refs[i]['source_version'],'reference_hash_is_original_body':hash_body}
+ return i
+def native(frame,org='ECOLI'):
+ return ref(('MetaCyc' if org=='META' else 'EcoCyc')+':'+frame,org+'-'+frame+'.xml')
+def up(acc):
+ f=acc+'.json' if (P/'raw'/(acc+'.json')).exists() else 'UniProt-'+acc+'.json'
+ j=json.loads(path(f).read_text()); return ref('UniProtKB:'+acc,f,j['proteinDescription']['recommendedName']['fullName']['value'])
+def gene(n): return ref('Entrez:'+str(n),f'Entrez-{n}-exact.xml')
+def paper(pmid,file,title):
+ t=E.parse(str(path(file)),E.HTMLParser() if file.endswith('html') else E.XMLParser())
+ es=t.xpath('//h1' if file.endswith('html') else '//article-title'); assert es
+ title=' '.join(''.join(es[0].itertext()).split())
+ return ref('PMID:'+str(pmid),file,title,'https://pmc.ncbi.nlm.nih.gov/articles/'+file.split('.')[0]+'/', 'Complete retained primary article '+file.split('.')[-1].upper()+'; figures inspected as text/captions, no image-level claim')
+def ev(i,loc,text):
+ assert i in refs,i
+ assert 0<len(text)<=400,(len(text),text)
+ return {'reference_id':i,'source_assertion':text,'source_locator':loc}
+def xev(frame,xp,text,org='ECOLI'): return ev(native(frame,org),'XPath '+xp,text)
+def uev(acc,loc,text): return ev(up(acc),loc,text)
+def pev(i,phrase,text):
+ p=Path(bindings[i]['path']); t=E.parse(str(p),E.HTMLParser() if p.suffix=='.html' else E.XMLParser())
+ hits=[e for e in t.xpath('//p') if phrase.casefold() in ' '.join(''.join(e.itertext()).split()).casefold()]
+ assert len(hits)==1,(i,phrase,len(hits))
+ return ev(i,'XPath '+t.getpath(hits[0])+'; paragraph containing '+repr(phrase),text)
+def web(a,b,text): return ev('PMID:14645248',f'Author-uploaded full text retained web observation, lines L{a}–L{b}; JBC279:5537–5548',text)
+def qual(endpoint,kind,desc,evidence): return {'endpoint':endpoint,'kind':kind,'description':desc,'evidence':evidence}
+def edge(key,s,p,o,description,evidence,qualifiers=None):
+ e={'id':'mg-'+key,'subject':s,'predicate':p,'object':o,'description':description,'evidence':evidence}
+ if qualifiers: e['endpoint_qualifiers']=qualifiers
+ edges.append(e); return e
+def onto(i):
+ db={'CHEBI':'chebi','GO':'go','NCBITaxon':'ncbitaxon'}[i.split(':')[0]]
+ c=sqlite3.connect(f'file:/private/tmp/pathwaymech-curation-authorities/{db}.db?mode=ro&immutable=1',uri=True)
+ r=c.execute('select value from statements where subject=? and predicate=?',(i,'rdfs:label')).fetchall(); c.close(); assert len(r)==1,(i,r); return r[0][0]
+def node(i,category,label=None):
+ if label is None:
+  if i.split(':')[0] in ['CHEBI','GO','NCBITaxon']: label=onto(i)
+  elif i.startswith('UniProtKB:'):
+   up(i.split(':')[1]); label=refs[i]['title']
+  elif i.startswith('Entrez:'):
+   gene(i.split(':')[1]); t=E.parse(bindings[i]['path']); label=t.findtext('.//Gene-ref_locus')
+  else: raise ValueError(i)
+ participants.append(dict(id=i,label=label,category=category)); return i
+pw='MetaCyc:PWY0-1300'; hydro='MetaCyc:RXN0-5216'; kinase='RHEA:27378'; entry='RHEA:33308'; energy='RHEA:23881'
+native('PWY0-1300','META'); native('PWY0-1300'); native('RXN0-5216','META')
+for i,f,title in [(25823014,'PMC4378991.xml','Resolving the product specificity of E. coli glycerate kinases by metabolic selection'),(10762278,'PMC111340.html','Regulation of the genes for D-galactarate and D-glucarate metabolism in Escherichia coli'),(17526711,'PMC1951813.html','Temperature- and H-NS-dependent gene expression in Escherichia coli'),(17921503,'PMC2189734.xml','Discovery of Fur binding sites and intragenic regulatory elements'),(17053069,'PMC1618308.html','Structure of the trapped phosphorylated PTS enzyme I'),(22002719,'PMC3218208.html','Alpha-ketoglutarate coordinates carbon and nitrogen utilization via enzyme I inhibition'),(23506042,'PMC3735840.html','Structural and kinetic analysis of alpha-ketoglutarate inhibition of enzyme I'),(33376208,'PMC7812783.html','TmaR-mediated spatial regulation of enzyme I and sugar utilization')]: paper(i,f,title)
+ref('PMID:14645248','Sampaio2004-assembled.txt','Sampaio et al. 2004. Phosphotransferase-mediated transport of mannosylglycerate by MngA and regulation by MngR','https://doi.org/10.1074/jbc.M310980200','Full primary text inspected through retained ResearchGate web observations L86–L2902; original publisher PDF unavailable; bound projection is not original PDF',False)
+ref('PathBank:SMP0002108','PW002096.owl','Frozen PathBank 2-O-alpha-Mannosyl-D-glycerate Degradation; PW002096.owl','https://pathbank.org/downloads/pathbank_primary_biopax.zip','Frozen primary BioPAX archive; hash is exact42234-byte PW002096.owl member, not wholeZIP; root SMP0002108 and opaque SMP0000839 interface')
+for n in [57541,60331,15377,58735,16659,30616,456216,15378,58289,58702,15361,60332,16810]: node('CHEBI:'+str(n),'small_molecule')
+for n in [60240,18420,29033]: node('CHEBI:'+str(n),'cofactor')
+for a in ['P54745','P54746','P23524','P08839','P0AA04','P13669','P37047','P0ACF8','P0A9E5','P0A9A9','P0A8M6']: node('UniProtKB:'+a,'protein')
+for i in [945355,945359,945371,947632,944860]: node('Entrez:'+str(i),'gene')
+for i in ['GO:0005737','GO:0005886','GO:0009295']: node(i,'cellular_component')
+assemblies=[('MetaCyc:CPLX0-7938','PTS enzyme I','P08839','PTSI-MONOMER'),('EcoCyc:PC00103','DNA-binding transcriptional repressor MngR','P13669','PD01103'),('EcoCyc:CPLX0-7797','DNA-binding transcriptional dual regulator FNR','P0A9E5','PD00197'),('EcoCyc:CPLX0-7639','Fur-Fe2+ DNA-binding transcriptional dual regulator','P0A9A9','PD00260')]
+for i,label,acc,frame in assemblies:
+ node(i,'complex',label); org='META' if i.startswith('MetaCyc') else 'ECOLI'; native(i.split(':')[1],org)
+ edge('assembly-'+acc,i,'has_part','UniProtKB:'+acc,'The exact native assembly contains two copies of this polypeptide; stoichiometry2 applies to this assembly, not all solution states.',[xev(i.split(':')[1],f'/ptools-xml/Protein/component[Protein/@frameid="{frame}"]','The component list specifies coefficient2 for '+frame+'.',org),xev(frame,'/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]','The native polypeptide directly cross-references this issuing UniProt accession.',org),uev(acc,'primaryAccession; genes','The reviewed issuing accession and ordered locus identify the corresponding polypeptide.')])
+node('MetaCyc:MANNCAT-PWY','pathway','D-mannose degradation'); node('MetaCyc:COLANSYN-PWY','pathway','colanic acid building blocks biosynthesis')
+node('PathBank:SMP0000839','pathway','Gluconeogenesis from L-Malic Acid')
+for rid,label in [(hydro,'2-O-(6-phospho-alpha-mannosyl)-D-glycerate hydrolase'),(kinase,'ATP + (R)-glycerate => ADP + (2R)-2-phosphoglycerate + H(+)'),(entry,'2-O-alpha-D-mannosyl-D-glycerate(out) + protein N(pi)-phospho-L-histidine => (2R)-2-O-(6-phospho-alpha-D-mannosyl)-glycerate(in) + protein L-histidine'),(energy,'phosphoenolpyruvate + protein L-histidine => pyruvate + protein N(pi)-phospho-L-histidine')]: reactions.append(dict(id=rid,label=label,category='molecular_activity',direction='left_to_right'))
+for rid,frame in [(hydro,'RXN0-5216'),(kinase,'GKI-RXN')]: edge('core-'+frame,rid,'part_of',pw,'Exact member of the two-reaction native pathway definition.',[xev('PWY0-1300',f'/ptools-xml/Pathway/reaction-list/Reaction[@frameid="{frame}"]','The native reaction-list explicitly includes '+frame+'.','META')])
+edge('core-order',hydro,'precedes',kinase,'Native reaction-ordering places MG-P hydrolysis before glycerate phosphorylation.',[xev('PWY0-1300','/ptools-xml/Pathway/reaction-ordering','GKI-RXN has RXN0-5216 as predecessor.','META')])
+edge('entry-interface',entry,'provides_input_for',hydro,'MngA entry produces MG-P for the core hydrolase; it is an incoming interface, not a third core member.',[xev('PWY0-1300','/ptools-xml/Pathway/pathway-link','The CPD0-1063 incoming pathway-link names RXN0-2522.','META'),xev('RXN0-2522','/ptools-xml/Reaction/right','The transport reaction produces intracellular CPD0-1063.')])
+edge('energy-interface',energy,'provides_input_for',entry,'PEP phosphorylates HPr through PtsI; phospho-HPr then supplies MngA. PEP is consumed once in this contextual relay reaction, not again in the formal MngA equation.',[xev('2.7.3.9-RXN','/ptools-xml/Reaction/left | /ptools-xml/Reaction/right','The PtsI composite reaction consumes PEP and histidyl HPr and produces pyruvate and phosphohistidyl HPr.'),xev('RXN0-2522','/ptools-xml/Reaction/left','MngA takes phosphohistidyl HPr as donor.')])
+def side(rid,pred,chem,frame,side,compound,desc,org='ECOLI',qs=None):
+ if pred=='consumes':
+  for q in (qs or []): q['endpoint']='subject'
+ return edge(f'{frame}-{pred}-{chem.split(":")[1]}',chem if pred=='consumes' else rid,pred,rid if pred=='consumes' else chem,desc,[xev(frame,f'/ptools-xml/Reaction/{side}/Compound[@frameid="{compound}"]',desc,org)],qs)
+for pred,side_,cid,compound in [('consumes','left',60331,'CPD0-1063'),('consumes','left',15377,'WATER'),('produces','right',58735,'CPD-15979'),('produces','right',16659,'GLYCERATE')]:
+ desc='Coefficient1. Native MG-P hydrolysis uses anomer-unspecified D-mannopyranose6-phosphate; the alpha-specific Rhea27867 reaction is not asserted as an exact alias.'
+ side(hydro,pred,'CHEBI:'+str(cid),'RXN0-5216',side_,compound,desc,'META')
+for pred,side_,cid,compound in [('consumes','left',16659,'GLYCERATE'),('consumes','left',30616,'ATP'),('produces','right',58289,'2-PG'),('produces','right',456216,'ADP'),('produces','right',15378,'PROTON')]: side(kinase,pred,'CHEBI:'+str(cid),'GKI-RXN',side_,compound,'Coefficient1; forward glycerate2-kinase reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.')
+H='UniProtKB:P0AA04'
+def hprq(phospho):
+ desc=('His15 phosphorylated HPr donor' if phospho else 'His15 unphosphorylated HPr acceptor')+' in the cytoplasm. This is the E. coli phosphocarrier protein state, not free histidine; native generic HPr Compound classes are instantiated using issuing P0AA04 identity.'
+ return qual('object','molecular_state',desc,[uev('P0AA04','features[type=Active site]; comments[commentType=FUNCTION]','HPr transfers phosphate through His15; state-qualified endpoints distinguish its two formal reaction pools.'),xev('PTSH-MONOMER','/ptools-xml/Protein/comment','Native HPr is a cytoplasmic phosphocarrier with transient histidyl phosphorylation.')])
+side(entry,'consumes','CHEBI:57541','RXN0-2522','left','2-O-ALPHA-MANNOSYL-D-GLYCERATE','Coefficient1 MG outside; native compartment CCO-OUT. MngA couples uptake to phosphorylation.')
+side(entry,'consumes',H,'RXN0-2522','left','Hpr-pi-phospho-L-histidines','Coefficient1 phosphohistidyl HPr inside; native CCO-IN. One HPr phosphate supplies the incoming MG.',qs=[hprq(True)])
+side(entry,'produces','CHEBI:60331','RXN0-2522','right','CPD0-1063','Coefficient1 MG-P inside; native CCO-IN. ATP and proton-motive force are not asserted as additional energy inputs.')
+side(entry,'produces',H,'RXN0-2522','right','Hpr-Histidine','Coefficient1 histidyl HPr inside; native CCO-IN. The carrier remains a protein after phosphate transfer.',qs=[hprq(False)])
+side(energy,'consumes','CHEBI:58702','2.7.3.9-RXN','left','PHOSPHO-ENOL-PYRUVATE','Coefficient1 PEP in the contextual PtsI-to-HPr reaction; native composite direction is physiological left-to-right.')
+side(energy,'consumes',H,'2.7.3.9-RXN','left','Hpr-Histidine','Coefficient1 histidyl HPr accepts phosphate through PtsI.',qs=[hprq(False)])
+side(energy,'produces','CHEBI:15361','2.7.3.9-RXN','right','PYRUVATE','Coefficient1 pyruvate is formed from PEP during general PTS energy coupling.')
+side(energy,'produces',H,'2.7.3.9-RXN','right','Hpr-pi-phospho-L-histidines','Coefficient1 phosphohistidyl HPr supplies downstream MngA.',qs=[hprq(True)])
+edge('mnga-catalysis','UniProtKB:P54745','catalyzes',entry,'MngA is one658-residue EIIABC chain. MC4100 mngA deletion loses MG transport and pACS31 restores it; inverted membranes plus general PTS extracts and PEP form MG-P. This is not a purified three-protein reconstitution.',[xev('ENZRXN0-3541','/ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction','Native enzymatic reaction assigns HRSA-MONOMER to RXN0-2522.'),web(1443,1662,'MngA deletion/complementation and inverted-membrane assays support MG uptake/phosphorylation; phosphatase experiments infer the phosphate position.'),uev('P54745','sequence.length; proteinDescription.includes','One658-residue protein contains IIA, IIB and IIC functional regions; these are not three distinct subunits.')])
+edge('mnga-vesicle-assay','UniProtKB:P54745','enables',entry,'Construct-qualified transport support: pACS31 encodes IPTG-controlled MngA in inverted membranes; general PTS-containing extract and PEP are supplied. Native MngA His87/Cys192 are putative sequence assignments, not measured occupancy.',[web(894,944,'pACS31 places mngA under IPTG-inducible lac-promoter control.'),web(1100,1230,'Membranes and general PTS extract support PEP-dependent MG phosphorylation.')],[qual('subject','experimental_construct','pACS31/pTrc99b MngA expression construct in inverted-membrane preparations; accompanying general PTS extract. This observation does not identify native oligomeric stoichiometry or directly measure His87/Cys192 phosphorylation.',[web(894,944,'The experiment expresses MngA from pACS31 under an IPTG-inducible promoter.')])])
+edge('mngb-enables','UniProtKB:P54746','enables',hydro,'MngB is the native MG-P hydrolase assignment, supported by physiological genetics and p-nitrophenyl-alpha-D-mannoside surrogate activity. The inspected native record states that MngB has not been purified; MG-P turnover and product anomer were not directly measured with purified MngB.',[xev('EG13236-MONOMER','/ptools-xml/Protein/comment','MngB is assigned MG-P hydrolysis from physiological evidence; the native comment states that it has not yet been purified.'),web(1880,1958,'The mannosidase assay uses p-nitrophenyl substrates and does not distinguish phosphorylated from unphosphorylated surrogate hydrolysis.'),xev('ENZRXN0-6336','/ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction','The native enzymatic reaction links MngB to RXN0-5216.')])
+edge('gark-catalysis','UniProtKB:P23524','catalyzes',kinase,'GarK catalyzes glycerate2-phosphorylation. Native direction and later in-vivo product selection support2PG; historical GKI/GKII naming does not justify transferring disputed pH, temperature or metal measurements between enzymes.',[xev('GKI-ENZRXN','/ptools-xml/Enzymatic-Reaction/reaction | /ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction-direction','The native enzyme assignment links GKI-MONOMER to physiologically forward GKI-RXN.'),uev('P23524','comments[commentType=CATALYTIC ACTIVITY]; comments[commentType=CAUTION]','Reviewed GarK has glycerate2-kinase chemistry; the caution preserves historical ambiguity between GK1/GK2 gene assignments.')])
+garkresult=pev('PMID:25823014','We tested three glycerate kinases','In the engineered four-deletion background, GarK expression allows glycerate to replace pyruvate, supporting formation of2PG instead of3PG.')
+edge('gark-product-selection','UniProtKB:P23524','enables',kinase,'GarK product specificity is supported by complementation in the engineered ΔgpmA ΔgpmM ΔgarK ΔglxK background. This growth-selection experiment is not a native oligomer assay or a purified direct product measurement.',[garkresult,ev('PMID:25823014','XPath /article/body/sec[3]/sec[1]','The cloning section describes plasmid expression and N-terminal His6-bearing primers; tag cleavage is not established.')],[qual('subject','experimental_construct','Plasmid-expressed E. coli GarK in ΔgpmA ΔgpmM ΔgarK ΔglxK cells; cloning primers encode an N-terminal His6 sequence. No tag cleavage or identity to native assembly is asserted.',[ev('PMID:25823014','XPath /article/body/sec[3]/sec[1]','Cloning uses K-12 garK, RBS E, Pniv and Ptac vectors with His6-bearing primer sequence.')])])
+edge('ptsi-catalysis','MetaCyc:CPLX0-7938','catalyzes',energy,'The independently issued MetaCyc PtsI dimer matches the EcoCyc PTSI-MONOMER2 assembly. It transfers a PEP-derived phosphate through PtsI His189 to HPr His15; the composite native reaction has two substeps, neither a new MG core member.',[xev('ENZRXN0-8621','/ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction','EcoCyc assigns CPLX0-7938 to the composite2.7.3.9-RXN.'),xev('CPLX0-7938','/ptools-xml/Protein/component','The independently issued MetaCyc assembly has2PTSI-MONOMER components.','META'),uev('P08839','comments[commentType=FUNCTION]; features[type=Modified residue]','PtsI autophosphorylation at His189 precedes transfer to HPr.')])
+edge('mngb-cofactor','UniProtKB:P54746','has_cofactor','CHEBI:60240','UniProt assigns one divalent metal cation per MngB subunit by similarity(ECO:0000250). Exact metal identity, physiological occupancy and biological assembly remain unresolved.',[uev('P54746','comments[commentType=COFACTOR]','One generic divalent metal cation per subunit is annotated by similarity; this is not a measured MG-P assay metal.')])
+edge('ptsi-cofactor','MetaCyc:CPLX0-7938','has_cofactor','CHEBI:18420','Mg2+ is required by PtsI. The Mg/oxalate-trapped phosphoenzyme structure supports the catalytic metal context; the crystallized occupancy is not a universal cellular stoichiometry.',[uev('P08839','comments[commentType=COFACTOR]','The reviewed PtsI entry identifies Mg2+ with experimental evidence from the trapped phosphoenzyme structure.'),pev('PMID:17053069','Both EI and PPDK must shuttle','The structure captures phosphorylated enzyme I with Mg2+ and oxalate, a specific trapped state.')])
+edge('fur-iron','EcoCyc:CPLX0-7639','has_part','CHEBI:29033','The exact native Fur-Fe2+ assembly contains two ferrous ions with two Fur polypeptides; this stoichiometry is not inferred for apo-Fur or every DNA-binding assay.',[xev('CPLX0-7639','/ptools-xml/Protein/component[Compound/@frameid="FE+2"]','The component list assigns coefficient2 to ferrous iron.'),xev('FE+2','/ptools-xml/Compound/dblink[dblink-db="CHEBI"]','The native FE+2 compound directly cross-references CHEBI:29033.')])
+for acc,go,desc,loc in [('P54745','GO:0005886','MngA is an inner-membrane multipass protein. Predicted N-terminal topology is not adopted as experimentally measured phosphorelay sidedness.','comments[commentType=SUBCELLULAR LOCATION]'),('P08839','GO:0005737','PtsI is cytoplasmic; its polar sequestration is a regulated state examined in general sugar studies.','comments[commentType=SUBCELLULAR LOCATION]'),('P0AA04','GO:0005737','HPr is a soluble cytoplasmic phosphocarrier, not the inner-membrane protein implied by frozen PathBank placement.','comments[commentType=SUBCELLULAR LOCATION]'),('P0ACF8','GO:0009295','H-NS is a nucleoid-associated protein; it forms variable oligomers, so no fixed H-NS stoichiometry is assigned.','comments[commentType=SUBCELLULAR LOCATION]')]: edge('location-'+acc,'UniProtKB:'+acc,'located_in',go,desc,[uev(acc,loc,desc)])
+edge('entry-membrane',entry,'occurs_in','GO:0005886','The coupled uptake/phosphorylation event crosses the cell inner membrane; individual MG and HPr sides retain their native OUT/IN assignments.',[xev('RXN0-2522','/ptools-xml/Reaction/left | /ptools-xml/Reaction/right','Native MG is outside and MG-P plus both HPr states are inside.'),uev('P54745','comments[commentType=SUBCELLULAR LOCATION]','MngA is an inner-membrane multipass protein.')])
+for gid,acc,frame in [(945355,'P54745','EG13235'),(945359,'P54746','EG13236'),(945371,'P13669','EG11109'),(947632,'P23524','EG11175'),(944860,'P37047','EG12335')]:
+ edge('gene-'+str(gid),'Entrez:'+str(gid),'enables','UniProtKB:'+acc,'Issuing gene/protein cross-references identify the encoded MG1655 protein; gene-expression edges target the gene, not the enzyme catalytic state.',[ev(gene(gid),f'XPath //Gene-ref_locus | //Gene-ref_locus-tag | //Dbtag[Dbtag_db="ECOCYC" and Dbtag_tag/Object-id/Object-id_str="{frame}"]','The exact NCBI Gene object identifies this locus and its EcoCyc frame.'),uev(acc,'uniProtKBCrossReferences[database=GeneID]','The issuing protein record cross-references this NCBI Gene identifier.')])
+for gid in [945355,945359]:
+ edge('mngr-repress-'+str(gid),'EcoCyc:PC00103','inhibits','Entrez:'+str(gid),'MngR represses mngAB expression. Gene-deletion/complementation and native operator annotation support this relation; an MG-P ligand remains proposed rather than a demonstrated direct binding interaction.',[xev('REG0-10703','/ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity | /ptools-xml/Regulation/mode','MngR negatively regulates the mngAB promoter.'),xev('TU0-4482','/ptools-xml/Transcription-Unit/component','The native transcription unit includes mngA and mngB.'),web(1758,1875,'Deleting mngR derepresses MG transport and mngAB; plasmid mngR restores MG-inducible regulation.')])
+edge('mngr-autorepress','EcoCyc:PC00103','inhibits','Entrez:945371','Native MngR autorepression is retained as regulatory annotation. The historical fatty-acyl-responsive interpretation is disputed; high-concentration displacement may reflect protein damage.',[xev('REG0-5259','/ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity','The native regulatory object assigns negative autoregulation to MngR.'),xev('PC00103','/ptools-xml/Protein/comment','The native comment supports autoregulation and explicitly revisits the disputed fatty-acid interpretation.')])
+regbridge=xev('TU482','/ptools-xml/Transcription-Unit/component/Gene[@frameid="EG11175"]','Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.')
+for key,subject,pred,reg,desc in [('cdar','UniProtKB:P37047','activates','REG0-5033','CdaR activates garPLRK expression. MC4100 reporter, regulator-mutant and complementation evidence supports activation; direct binding of small-molecule inducers is not demonstrated.'),('hns','UniProtKB:P0ACF8','inhibits','REG0-9114','H-NS negatively controls garPLRK expression. The hns651 comparison measures garP transcript in DL1504/DL1947 at23/37°C in M9 glycerol; it is not direct GarK inhibition or an MG-flux assay.'),('fnr','EcoCyc:CPLX0-7797','activates','REG0-5032','Native annotation assigns positive FNR control of garPLRK-rnpB from transcriptomics. The upstream site is putative and its sequence was not shown; the cited primary article was accessible only as metadata/abstract.'),('fur','EcoCyc:CPLX0-7639','regulates','REG0-10783','Fur control is unsigned here: native negative mode conflicts with primary intragenic garP binding and discussion of prior garPLRK activation. The internal element has unknown function; established promoter repression is not asserted.')]:
+ evidence=[xev(reg,'/ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity','The native regulatory object names the regulator, garP promoter and source-specific signed mode; the edge description preserves primary-access and sign-conflict limits.'),regbridge]
+ if key=='cdar': evidence.append(pev('PMID:10762278','To identify the gene responsible','CdaR/sdaR mutants implicate the regulator; the reported P297S and near-terminalTn5 constructs differ from wild type.'))
+ if key=='cdar': evidence.append(pev('PMID:10762278','yielding pRM1','MC4100 sdaR cloned in pBluescript restores growth of JA176/JA177 on the three carbon sources.'))
+ if key=='hns': evidence.append(pev('PMID:17526711','Effects of the hns651mutation','Figure5 compares garP transcript in wild typeDL1504 and hns651DL1947, in M9 glycerol at23/37°C.'))
+ if key=='fur':
+  evidence.extend([pev('PMID:17921503','We were also interested in whether Fur binds intragenically','The garP oligonucleotide tested for Fur binding is intragenic, not a demonstrated native garPLRK promoter.'),pev('PMID:17921503','The function of these control elements is unknown','The paper leaves the function of the intragenic garP control element unresolved.'),pev('PMID:17921503','48 Fur-activated genes belong','Prior expression analysis described garPLRK as Fur-activated, conflicting with the native negative-mode assignment.')])
+ edge('gark-reg-'+key,subject,pred,'Entrez:947632',desc,evidence)
+edge('cdar-auto','UniProtKB:P37047','activates','Entrez:944860','CdaR/sdaR positively autoregulates expression in the tested MC4100 reporter system. The three inducing carbon sources increase reporter activity only with functional regulator; this does not establish direct ligand binding.',[pev('PMID:10762278','Control of sdaR expression was studied','Loss of functional SdaR abolishes inducer-dependent sdaR-lacZ activation.'),pev('PMID:10762278','Of the possible models of coupled expression','The paper interprets regulator-dependent reporter activation as positive autoregulation.')])
+for gid in [945355,945359,945371,944860,947632]:
+ edge('mg-expression-'+str(gid),'CHEBI:57541','activates','Entrez:'+str(gid),'MG exposure induces expression in the tested E. coli K-12 culture context. The effect does not establish direct MG or MG-P binding to MngR/CdaR; cdaR and garK effects belong to the linked sugar-diacid regulon.',[web(1368,1441,'MG induces the CdaR-associated sugar-diacid regulon; cdaR disruption does not abolish MG transport.'),web(1984,2245,'TablesIV/V and associated microarray/reporter results document MG-dependent expression, with strain and construct dependence.')])
+for other in ['MANNCAT-PWY','COLANSYN-PWY']:
+ edge('interface-'+other,'MetaCyc:'+other,'has_input','CHEBI:60332','The native outgoing pathway link uses alpha-D-mannose6-phosphate. This interface granularity differs from the anomer-unspecified hydrolase product; no unobserved anomerization or exact generic-to-alpha equivalence is inserted.',[xev('PWY0-1300',f'/ptools-xml/Pathway/pathway-link[Compound/@frameid="MANNOSE-6P"]','Native pathway-link associates MANNOSE-6P with mannose degradation and colanic-acid precursor synthesis.','META'),xev('MANNOSE-6P','/ptools-xml/Compound/dblink','The native MANNOSE-6P compound is cross-referenced to alpha-D-mannose6-phosphate.','META')])
+edge('opaque-pathbank-child',pw,'has_part','PathBank:SMP0000839','Frozen source context includes an opaque gluconeogenesis interface attached through an Interaction participant pair with2PG. This structural context is not an additional core reaction, proven flux direction, or biological inhibition; child chemistry remains unexpanded.',[ev('PathBank:SMP0002108','XPath //bp:Interaction[@rdf:ID="SubPathwayControls/109883"]/bp:participant | //bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0000839"]','The frozen InhibitorySubPathwayControl is typed Interaction and names2PG and the opaque pathway as participants; its label does not prove inhibition.')])
+inh=pev('PMID:22002719','Addition of 2 mM α-ketoglutarate inhibited','The full-EI study interprets alpha-ketoglutarate inhibition as noncompetitive; this is general PTS regulation, not a specific MngA assay.')
+edge('2og-full-ei','CHEBI:16810','inhibits','UniProtKB:P08839','2-Oxoglutarate inhibits full-length PtsI in the2011 study. Its noncompetitive interpretation conflicts with the later isolated-EIC competitive model; assay scope and reagent-quality alternatives remain explicit.',[inh],[qual('object','experimental_construct','Full-length N-terminal His-tagged PtsI from ASKA strain b2416; the2011 assay measures isotopic PEP/pyruvate exchange. This differs from2013 EIC261–575 and does not measure native-cell MG uptake.',[pev('PMID:22002719','containing an N-terminal His tag','Methods identify N-terminal His-tagged PtsI from ASKA strain b2416 and an isotope-exchange assay with MgCl2 at37°C.')])])
+eic=pev('PMID:23506042','The ability of EIC to hydrolyze PEP','Alpha-ketoglutarate inhibits isolated EIC PEP hydrolysis; competitive fitting is better than noncompetitive fitting under the reported assay conditions.')
+edge('2og-eic','CHEBI:16810','inhibits','UniProtKB:P08839','The2013 isolated EIC assay supports competition with PEP. It measures PEP hydrolysis rather than complete HPr phosphotransfer; reagent contamination is a proposed explanation for differing earlier kinetics, and mixed effects in intact EI are not excluded.',[eic,pev('PMID:23506042','Enzymatic assays performed in the absence and presence','The discussion reports a degrading alpha-ketoglutarate batch and preserves possible competitive plus noncompetitive effects in intact EI.')],[qual('object','experimental_construct','Isolated PtsI EIC residues261–575; NMR comparison uses EIN1–249 and full-length1–575. The R465A mutant is a separate specificity probe. No equivalence to full native HPr phosphotransfer is asserted.',[pev('PMID:23506042','The R465A mutant of EIC was created','Methods identify EIC261–575, EIN1–249, full-lengthEI1–575 and the R465A construct.')])])
+tm=pev('PMID:33376208','In this study, we show that a previously uncharacterized','TmaR and EI interact and colocalize; TmaR controls EI sequestration/release in general sugar-utilization experiments.')
+edge('tmar-ptsi','UniProtKB:P0A8M6','regulates','UniProtKB:P08839','TmaR controls PtsI localization and activity by polar sequestration/release in general sugar studies. Tagged WT and phosphosite-mutant constructs establish context; no MG-specific control, universal occupancy or fixed TmaR–EI stoichiometry is asserted.',[tm],[qual('subject','experimental_construct','TmaR-YFP/mYFP-TmaR imaging and His-TmaR interaction experiments; Tyr72 mutants alter localization and release. These constructs do not establish a native fixed complex stoichiometry.',[pev('PMID:33376208','TmaR forms clusters that localize','Figure1 describes terminal fluorescent tags and Y72F/Y79F/Y51F variants; native-promoter/locus constructs are distinguished from plasmid expression.')]),qual('object','experimental_construct','Fluorescently tagged EI and Tyr122 variants in localization experiments. Tyr122-dependent polar recruitment is distinct from catalytic His189 phosphorylation.',[uev('P08839','comments[commentType=SUBCELLULAR LOCATION]','EI polar recruitment depends on Tyr122 and TmaR, based on the cited spatial-regulation study.')])])
+for cid in [30612,16537,15379]: node('CHEBI:'+str(cid),'small_molecule')
+node('CHEBI:49883','cofactor')
+for cid in [16659,30612,16537]:
+ for gid in [947632,944860]:
+  desc='The carbon source induces garPLRK or cdaR expression in MC4100 reporter experiments. This is expression-level evidence, not direct binding to CdaR; the ionic chemical identifier normalizes structure and does not imply measured assay protonation.'
+  evidence=[pev('PMID:10762278','Control of sdaR expression was studied','The sdaR/cdaR reporter responds to glycerate, glucarate and galactarate only with a functional regulator.') if gid==944860 else pev('PMID:10762278','β-Galactosidase activities of Φ(garD-lacZ)','The garP operon reporter is induced by glycerate, glucarate and galactarate; glycerate gives stronger activation.')]
+  if gid==947632: evidence.append(regbridge)
+  edge('induction-'+str(cid)+'-'+str(gid),'CHEBI:'+str(cid),'activates','Entrez:'+str(gid),desc,evidence)
+fnrstate=qual('subject','molecular_state','Low-oxygen, [4Fe-4S]-containing FNR dimer. Native annotation supports this active regulatory state; exact in-vivo occupancy under MG growth is not measured.',[xev('CPLX0-7797','/ptools-xml/Protein/comment','Anaerobic cluster acquisition activates dimeric FNR; oxygen converts the cluster and inactivates the regulator.')])
+for e in edges:
+ if e['id']=='mg-tmar-ptsi':
+  e['endpoint_qualifiers'][0]['evidence'].append(pev('PMID:33376208','TmaR and EI exhibit colocalization','Figure2 specifies TmaR-YFP, EI-mCherry and plasmid His-TmaR in Far-Western assays, with His-only and mCherry controls.'))
+  e['endpoint_qualifiers'][1]['evidence'].append(pev('PMID:33376208','To examine whether Tyr122 is important','The localization experiment compares EI-mCherry with EIY122F-mCherry; this is distinct from His189 catalytic phosphorylation.'))
+ if e['id']=='mg-gark-reg-fnr': e['endpoint_qualifiers']=[fnrstate]
+edge('fnr-cluster','UniProtKB:P0A9E5','has_cofactor','CHEBI:49883','The issuing FNR annotation assigns one [4Fe-4S] cluster per subunit in the active state. This is a protein-state-specific annotation, not constitutive occupancy of every FNR molecule.',[uev('P0A9E5','comments[commentType=COFACTOR]','UniProt identifies CHEBI:49883 and one cluster per subunit.')],[qual('subject','molecular_state','Active [4Fe-4S]-containing FNR subunit; oxygen-dependent state changes prevent treating this occupancy as universal.',[xev('CPLX0-7797','/ptools-xml/Protein/comment','Native FNR activation accompanies [4Fe-4S] acquisition under anaerobiosis.')])])
+edge('oxygen-fnr','CHEBI:15379','inhibits','EcoCyc:CPLX0-7797','Oxygen inactivates [4Fe-4S]-FNR through cluster conversion and dimer dissociation. This is general regulator-state context, not a separately measured MG-specific flux response.',[xev('CPLX0-7797','/ptools-xml/Protein/comment','Oxygen converts the [4Fe-4S] cluster to [2Fe-2S] and promotes FNR inactivation/dimer dissociation.')],[qual('object','molecular_state',fnrstate['description'],fnrstate['evidence'])])
+for acc in ['P0A9E5','P0A9A9','P0A8M6']:
+ j=json.loads(Path(bindings['UniProtKB:'+acc]['path']).read_text())
+ if any(c.get('commentType')=='SUBCELLULAR LOCATION' and 'Cytoplasm' in json.dumps(c) for c in j.get('comments',[])):
+  edge('location-'+acc,'UniProtKB:'+acc,'located_in','GO:0005737','Issuing protein annotation places this regulator in the cytoplasm; the location does not independently demonstrate MG-specific action.',[uev(acc,'comments[commentType=SUBCELLULAR LOCATION]','The reviewed entry supplies the cytoplasmic location; more specific localization/state assertions require their separate evidence.')])
+edge('taxon-primary',pw,'occurs_in','NCBITaxon:83333','Whole-route growth and transport evidence concerns E. coli K-12 MC4100 and specified derivatives. Strain-dependent deletion, plasmid and surrogate-assay observations are not generalized to all bacteria.',[web(117,188,'The primary study reports MG utilization as sole carbon source by K-12 MC4100 and characterizes mngA/mngR/mngB genetics.')])
+edge('taxon-native',pw,'occurs_in','NCBITaxon:511145','The issuing EcoCyc MG1655 annotation and exact gene/protein identities define the reference-genome scope. This does not relabel the MC4100 experiments as MG1655 assays.',[xev('PWY0-1300','/ptools-xml/metadata','The issuing ECOLI PGDB identifies the reference organism and database version.'),ev(gene(945355),'XPath //Org-ref_taxname | //Dbtag[Dbtag_db="taxon"]','The exact MG1655 mngA gene record binds this reference-genome taxon.')])
+taxon_evidence=[e for e in edges if e['id'] in ['mg-taxon-primary','mg-taxon-native']]
+(O/'derived/taxon-scope-evidence.json').write_text(json.dumps(taxon_evidence,indent=2)+'\n')
+edges[:]=[e for e in edges if e['id'] not in ['mg-taxon-primary','mg-taxon-native']]
+for i in ['MetaCyc:MANNCAT-PWY','MetaCyc:COLANSYN-PWY']:
+ n=next(n for n in participants if n['id']==i);participants.remove(n);reactions.append(n)
+for eid,frame,org,chebi in [('mg-RXN0-5216-consumes-60331','CPD0-1063','META','60331'),('mg-RXN0-5216-produces-58735','CPD-15979','ECOLI','58735'),('mg-RXN0-5216-produces-16659','GLYCERATE','META','16659')]:
+ next(e for e in edges if e['id']==eid)['evidence'].append(xev(frame,'/ptools-xml/Compound/dblink[dblink-db="CHEBI"]','The issuing native compound cross-reference identifies CHEBI:'+chebi+'; product anomer specificity is not increased beyond this compound definition.',org))
+native_names={r['id']:r['label'] for r in json.loads((A/'preliminary-native-labels.json').read_text())}
+for n in participants+reactions:
+ if n['id'] in native_names: n['label']=native_names[n['id']]
+next(n for n in reactions if n['id']==hydro)['label']='MG-phosphate hydrolysis (anomer-unspecified mannose 6-phosphate)'
+rhea=json.loads((P/'derived/rhea-preflight-chemistry.json').read_text())
+rd={d['id']:d for m in rhea['masters'] for d in m['directions']}
+for r in reactions:
+ if r['id'] in rd:
+  r['label']=rd[r['id']]['equation'][0]
+  i=r['id']; fp=Path(rhea['source']); refs[i]={'id':i,'title':'Rhea142 directional reaction '+i,'url':'https://www.rhea-db.org/rhea/'+i.split(':')[1],'source_version':'Rhea142 retained full issuing RDF; SHA256 binds compressed original, not extracted side projection','source_sha256':rhea['sha256']}
+  bindings[i]={'path':str(fp),'sha256':rhea['sha256'],'bytes':fp.stat().st_size,'access_level':'Full issuing Rhea142 RDF plus exact linked reaction/component objects','reference_hash_is_original_body':True}
+  for e in edges:
+   if (e['subject']==i and e['predicate']=='produces') or (e['object']==i and e['predicate']=='consumes'):
+    sidekey='substrates' if e['predicate']=='consumes' else 'products'
+    physical=e['subject'] if e['predicate']=='consumes' else e['object']
+    acc=physical
+    if physical==H: acc='GENERIC:9746' if (i==entry and sidekey=='substrates') or (i==energy and sidekey=='products') else 'GENERIC:9745'
+    matches=[x for x in rd[i]['sides'][sidekey] if acc in x['properties'].get('accession',[])]
+    assert len(matches)==1,(i,sidekey,physical)
+    part=matches[0]
+    loc='http://rdf.rhea-db.org/'+i.split(':')[1]+' rh:'+sidekey+' '+rd[i]['native_sides'][sidekey][0]+'; '+part['participant']+' rh:compound '+part['compound_uri']+'; rh:coefficient1'
+    assertion='The forward Rhea side contains one '+part['properties']['name'][0]+'.'
+    if physical==H: assertion+=' This generic protein state is instantiated as E. coli HPr using the native reaction and protein evidence; it is not free histidine.'
+    e['evidence'].append(ev(i,loc,assertion))
+record={'id':pw,'label':native_names[pw],'description':'The native two-reaction pathway hydrolyzes imported MG phosphate to anomer-unspecified D-mannopyranose 6-phosphate and (R)-glycerate, then phosphorylates glycerate to 2-phosphoglycerate. MngA uptake and the PEP–PtsI–HPr relay are linked entry/energy context, not extra core members. E. coli K-12 culture and genetic evidence supports the route; the MngB purified-substrate assay, product anomer and physiological metal remain unresolved. Regulatory expression effects, constructs, source conflicts and opaque downstream interfaces retain their evidence limits. MG biosynthesis and unphosphorylated thermophile MG hydrolysis are excluded.','pathway_type':'carbohydrate-degradation','taxa':[{'id':i,'label':onto(i)} for i in ['NCBITaxon:83333','NCBITaxon:511145']],'participants':participants,'reactions':reactions,'mechanistic_edges':edges,'references':list(refs.values())}
+def readable(x):
+ if isinstance(x,dict):
+  for k,v in x.items():
+   if k in ['description','source_assertion','source_version'] and isinstance(v,str):
+    for a,b in [('Coefficient1','Coefficient 1'),('coefficient1','coefficient 1'),('coefficient2','coefficient 2'),('stoichiometry2','stoichiometry 2'),('one658','one 658'),('one cluster','one cluster'),('with2PTSI','with 2 PTSI'),('glycerate2','glycerate 2'),('mannopyranose6','mannopyranose 6'),('mannose6','mannose 6'),('to2PG','to 2PG'),('of2PG','of 2PG'),('instead of3PG','instead of 3PG'),('at23/37','at 23/37'),('inDL','in DL'),('wild typeDL','wild type DL'),('hns651DL','hns651 DL'),('underMG','under MG')]:v=v.replace(a,b)
+    v=re.sub(r'(?<=[A-Za-z])(20(?:04|06|11|13|15))',r' \1',v)
+    if k=='source_assertion':assert len(v)<=400
+    x[k]=v
+   else:readable(v)
+ elif isinstance(x,list):
+  for v in x:readable(v)
+readable(record)
+(O/'draft/mannosylglycerate-degradation.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=110))
+(O/'derived/reference-bindings.json').write_text(json.dumps(bindings,indent=2)+'\n')
+print(json.dumps({'participants':len(participants),'edges':len(edges),'references':len(refs),'draft_sha256':sha(O/'draft/mannosylglycerate-degradation.yaml')}))

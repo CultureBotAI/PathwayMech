@@ -1,0 +1,248 @@
+import copy
+import datetime
+import hashlib
+import json
+import shutil
+from pathlib import Path
+
+import yaml
+
+OUT = Path(__file__).parent
+AUTHOR = Path('/private/tmp/pathwaymech-next-228-author-20261012')
+REVIEW = Path('/private/tmp/pathwaymech-next-228-science-review-20261012')
+ADAPTER = Path('/private/tmp/pathwaymech-next-228-authority-implementation-20261012')
+ADAPTER_REVIEW = Path('/private/tmp/pathwaymech-next-228-root-adapter-review-20261012')
+LYXOSE = Path('/private/tmp/pathwaymech-next-227-canonical-build-20261012')
+PREFLIGHT = Path('/private/tmp/pathwaymech-next-228-preflight-20261012')
+PRIOR_SHA = '08fe9a6f3f0da2f66c4dc6cd68fc33fbe51a38770b6eeee743751f05f019d088'
+ROOT_RHEA = Path('/private/tmp/pathwaymech-next-228-root-rhea-locator-complete-20261012.json')
+
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def write(name, value):
+    path = OUT / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+def packet(directory, digest, count):
+    handoff = bind(directory / 'handoff.json')
+    assert handoff['sha256'] == digest
+    manifest = load(directory / 'artifact-manifest.json')
+    rows = manifest.get('artifacts', manifest.get('files'))
+    assert len(rows) == count
+    for row in rows:
+        path = directory / row.get('relative_path', row.get('path'))
+        actual = bind(path)
+        assert (actual['bytes'], actual['sha256']) == (row['bytes'], row['sha256']), path
+    return {'handoff': handoff, 'manifest': bind(directory / 'artifact-manifest.json'),
+            'artifacts_verified': count}
+
+
+def main():
+    assert not (OUT / 'draft').exists()
+    packets = {
+        'author': packet(AUTHOR, 'f86be00b99dd8182c71fc1c7e493ab130c924f907edb64c7335c68dd610594fd', 612),
+        'science_review': packet(REVIEW, '36cbadc214456c366a4d579909daedd128458b398eac594f0670fbdc839e5b7a', 53),
+        'adapter': packet(ADAPTER, '68b1dd25ad72c8655c6c8d7876b3f7e2409c3c6b1a0cf3a29e7b2f806eb962e3', 317),
+        'adapter_review': packet(ADAPTER_REVIEW, '34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed', 20),
+    }
+    assert bind(ROOT_RHEA)['sha256'] == '281f0bb0b1412f62325bb234fe24f175d63b42eeea2442fefcde08c34eb03d0d'
+    root_intake = Path('/private/tmp/pathwaymech-next-228-root-science-review-intake-20261012.json')
+    assert bind(root_intake)['sha256'] == '4688456d45270e12dc2dd8615b07bd808392c538d6e5b5fb3a3d1bac41e96191'
+    issue_path = Path('/private/tmp/pathwaymech-next-228-review-issues-20261012/creation.json')
+    issues = load(issue_path)
+    assert [row['exit_code'] for row in issues] == [0, 0, 0]
+    assert [row['stdout'].strip().rsplit('/', 1)[-1] for row in issues] == ['441', '442', '443']
+    old_path = AUTHOR / 'draft/mannosylglycerate-degradation.yaml'
+    assert bind(old_path)['sha256'] == PRIOR_SHA
+    prior = yaml.safe_load(old_path.read_bytes())
+    record = copy.deepcopy(prior)
+    edges = {edge['id']: edge for edge in record['mechanistic_edges']}
+    entry = edges['mg-mnga-catalysis']
+    entry['description'] += (
+        ' Separate intact-cell uptake comparisons in MG-induced MC4100 reported weak reduction '
+        'with glucose, mannose and mannitol, a smaller effect with trehalose, and no observed '
+        'reduction with fructose, maltose, arabinose, gluconate, glycerate, 1-alpha-glucosylglycerol, '
+        '2-alpha-glucosylglycerate or 2-alpha-mannosylglycerol. The Discussion instead describes '
+        'mannose and those three glycosyl analogues as not significantly inhibitory even at 1 mM '
+        'against 0.1 micromolar radiolabeled MG; the mannose weak-effect/no-significant-effect '
+        'tension remains unresolved. These are uptake comparisons, not direct binding, a proven '
+        'competitive mechanism or inhibition constants. Separately, 300 mM NaCl during growth '
+        'did not induce transport and reduced MG-dependent induction by about 50%; this is an '
+        'induction endpoint, distinct from the KM522 500 mM salt-protection experiment and from '
+        'a direct catalytic salt effect. None of these whole-cell comparisons is attributed to '
+        'the pACS31 inverted-membrane assay.')
+    def observation(assertion, start, end):
+        assert len(assertion) <= 400
+        return {'reference_id': 'PMID:14645248', 'source_assertion': assertion,
+                'source_locator': f'Author-uploaded full text retained web observation, lines L{start}–L{end}; JBC279:5537–5548'}
+    entry['evidence'] += [
+        observation('In MG-induced MC4100, Results reports weak uptake inhibition by glucose, '
+                    'mannose and mannitol, a smaller effect from trehalose, and none from fructose.', 1323, 1354),
+        observation('No uptake inhibition was observed for maltose, arabinose, gluconate, glycerate, '
+                    '1-alpha-glucosylglycerol, 2-alpha-glucosylglycerate or 2-alpha-mannosylglycerol '
+                    'in the reported MC4100 comparisons.', 1350, 1372),
+        observation('Discussion reports no significant inhibition by mannose or the three named '
+                    'glycosyl analogues at 1 mM against 0.1 micromolar labeled MG. This contrasts '
+                    'with the weak mannose effect in Results; a direct competitive mechanism is not established.', 2429, 2457),
+        observation('In MC4100 growth experiments, 300 mM sodium chloride did not induce MG '
+                    'transport and reduced MG-dependent induction by about 50%. This is an '
+                    'induction observation, separate from KM522 salt protection.', 1251, 1310),
+    ]
+    xp = '/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section'
+    qualifier = {
+        'endpoint': 'subject', 'kind': 'experimental_construct',
+        'description': 'MC4100 reporter/loss-rescue context: active wild-type or pRM1-complemented '
+                       'SdaR/CdaR is inferred from loss in JA176 (paper-numbered P297S) and JA177 '
+                       '(Tn5 20 nt before stop); these mutants are not active endpoints. The paper '
+                       'uses a 391-aa reference versus current P37047 (385 aa); residue numbering '
+                       'is not mapped to the current chain.',
+        'evidence': [
+            {'reference_id': 'PMID:10762278',
+             'source_assertion': 'The paper reports a 391-residue yaeG/sdaR reference, JA176 '
+                                 'Pro297-to-Ser substitution and JA177 Tn5 insertion 20 nucleotides '
+                                 'before the stop codon. These loss mutants inform regulator assignment.',
+             'source_locator': 'XPath ' + xp + '[5]/p[1]'},
+            {'reference_id': 'PMID:10762278',
+             'source_assertion': 'pRM1 contains MC4100 sdaR amplified and cloned in pBluescript; '
+                                 'it restores JA176/JA177 growth on glucarate, galactarate and glycerate. '
+                                 'Loss and rescue support an activator role, not activation by mutant proteins.',
+             'source_locator': 'XPath ' + xp + '[5]/p[2]'},
+            {'reference_id': 'PMID:10762278',
+             'source_assertion': 'MC4100 sdaR-promoter-lacZ reporters respond to the three inducing '
+                                 'carbon sources only with functional SdaR. The source interprets '
+                                 'loss of sdaR-lacZ and garP-lacZ activation in knockouts as positive control.',
+             'source_locator': 'XPath ' + xp + '[6]/p[1] | ' + xp + '[6]/p[2]'},
+            {'reference_id': 'UniProtKB:P37047',
+             'source_assertion': 'The current issuing P37047 reference is 385 residues; its gene '
+                                 'name is cdaR with sdaR and yaeG synonyms. This anchors identity, '
+                                 'not equivalence to the paper’s 391-residue sequence numbering.',
+             'source_locator': 'primaryAccession; sequence.length; genes'},
+        ],
+    }
+    assert len(qualifier['description']) <= 400
+    assert all(len(item['source_assertion']) <= 400 for item in qualifier['evidence'])
+    for name in ('mg-gark-reg-cdar', 'mg-cdar-auto'):
+        assert 'endpoint_qualifiers' not in edges[name]
+        edges[name]['endpoint_qualifiers'] = [copy.deepcopy(qualifier)]
+    edges['mg-ptsi-catalysis']['evidence'][2]['source_locator'] = (
+        'comments[commentType=FUNCTION]; features[type=Active site,location.start.value=189]')
+    edges['mg-location-P0ACF8']['evidence'][0]['source_locator'] = (
+        'comments[commentType=SUBCELLULAR LOCATION]; comments[commentType=SUBUNIT]')
+    probes = {row['edge']: row for row in load(ROOT_RHEA)['probes']}
+    assert len(probes) == 13
+    for name, row in probes.items():
+        matches = [ev for ev in edges[name]['evidence'] if ev['reference_id'] in
+                   {'RHEA:27378', 'RHEA:33308', 'RHEA:23881'}]
+        assert len(matches) == 1 and matches[0]['source_locator'] == row['locator']
+        matches[0]['source_locator'] = row['corrected_locator']
+    # Shared YAML anchors cross edge boundaries. Serialize without aliases so changed
+    # blocks cannot leave undefined references; prove unchanged semantic objects below.
+    original_text = old_path.read_text()
+    tree = yaml.compose(original_text)
+    sequence = next(value for key, value in tree.value if key.value == 'mechanistic_edges')
+    changed = []
+    for old_edge, new_edge, node in zip(prior['mechanistic_edges'], record['mechanistic_edges'], sequence.value, strict=True):
+        if old_edge == new_edge:
+            continue
+        changed.append(new_edge['id'])
+    class NoAliasDumper(yaml.SafeDumper):
+        def ignore_aliases(self, data):
+            return True
+    corrected_text = yaml.dump(record, Dumper=NoAliasDumper, allow_unicode=True,
+                               sort_keys=False, width=100)
+    assert yaml.safe_load(corrected_text) == record
+    assert len(changed) == 18
+    (OUT / 'draft').mkdir()
+    (OUT / 'draft/mannosylglycerate-degradation.yaml').write_text(corrected_text)
+    write('input-bindings.json', {
+        'prepared_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'packets': packets, 'root_findings_acceptance': bind(root_intake),
+        'root_rhea_replay': bind(ROOT_RHEA), 'issues': bind(issue_path),
+        'old_target': bind(old_path), 'new_target': bind(OUT / 'draft/mannosylglycerate-degradation.yaml'),
+        'scope': 'External scientific correction only; no maintained save or independent acceptance.',
+    })
+    write('correction-specification.json', {
+        'changed_edges': changed, 'entry_context_evidence': entry['evidence'][3:],
+        'cdar_qualifier': qualifier, 'rhea_locator_updates': list(probes.values()),
+        'reference_count': 62, 'core_events': 2, 'native_chemical_sides': 17,
+        'new_nodes': 0, 'new_edges': 0, 'new_references': 0,
+    })
+    # Use the accepted implementation without touching its immutable candidate.
+    runtime = OUT / 'candidate'
+    baseline = load(ADAPTER / 'baseline-code-bindings.json')
+    code = []
+    for row in baseline['files']:
+        source = ADAPTER / 'candidate' / row['relative_path']
+        destination = runtime / row['relative_path']
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+        code.append({'relative_path': row['relative_path'], 'original': bind(source),
+                     'candidate': bind(destination)})
+    canonical = load(LYXOSE / 'handoff.json')
+    assert bind(LYXOSE / 'handoff.json')['sha256'] == 'd86b350b842cabb36aadacbf008ca5f96ab63675b8864707b2c27ea0ed9cb472'
+    for row in canonical['outputs'].values():
+        assert bind(row['path']) == row
+    composition = {}
+    for kind, proposal in [('sources', 'source-authority-proposal.json'),
+                           ('ontology', 'ontology-authority-proposal.json')]:
+        base = load(LYXOSE / (kind + '.json'))
+        proposed = load(AUTHOR / 'authority-preparation' / proposal)
+        result = copy.deepcopy(base)
+        new_terms = {key: value for key, value in proposed['terms'].items() if key not in base['terms']}
+        for key, term in new_terms.items():
+            result['terms'][key] = term
+            source = term['source']
+            if source in result['sources']:
+                assert result['sources'][source] == proposed['sources'][source]
+            else:
+                result['sources'][source] = proposed['sources'][source]
+        if kind == 'sources':
+            native = load(ADAPTER / 'two-term-build.json')
+            for key, term in native['terms'].items():
+                assert key not in result['terms']
+                result['terms'][key] = term
+            for key, value in native['sources'].items():
+                assert key not in result['sources']
+                result['sources'][key] = value
+        assert all(result['terms'][key] == value for key, value in base['terms'].items())
+        assert all(result['sources'][key] == value for key, value in base['sources'].items())
+        write('candidate/data/identifier_authorities/' + kind + '.json', result)
+        composition[kind] = {
+            'accepted_base': bind(LYXOSE / (kind + '.json')),
+            'native_proposal_input': bind(AUTHOR / 'authority-preparation' / proposal),
+            'output': bind(runtime / 'data/identifier_authorities' / (kind + '.json')),
+            'prior_terms_exact': len(base['terms']), 'prior_metadata_exact': len(base['sources']),
+            'result_terms': len(result['terms']), 'result_metadata': len(result['sources']),
+        }
+    shutil.copyfile(OUT / 'draft/mannosylglycerate-degradation.yaml',
+                    runtime / 'data/pathways/mannosylglycerate-degradation.yaml') if (runtime / 'data/pathways').exists() else None
+    (runtime / 'data/pathways').mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(OUT / 'draft/mannosylglycerate-degradation.yaml',
+                    runtime / 'data/pathways/mannosylglycerate-degradation.yaml')
+    write('runtime-bindings.json', {'code': code, 'authority_composition': composition,
+          'typed_pathbank_build': bind(ADAPTER / 'two-term-build.json'),
+          'scope': 'Bounded identifier test composition from accepted lyxose actual outputs plus '
+                   'previous original-derived MG proposals and native PathBank build. Not a full canonical build.'})
+    for name in ['reference-bindings.json', 'all-preflight-claim-dispositions.json',
+                 'record-native-reaction-projection.json', 'scope-and-conflicts.json']:
+        path = OUT / 'inherited' / name
+        path.parent.mkdir(exist_ok=True)
+        shutil.copyfile(AUTHOR / 'derived' / name, path)
+    print(json.dumps({'target': bind(OUT / 'draft/mannosylglycerate-degradation.yaml'),
+                      'changed_edges': len(changed), 'qualifier_length': len(qualifier['description']),
+                      'authority_composition': composition, 'new_evidence_uses': 12}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

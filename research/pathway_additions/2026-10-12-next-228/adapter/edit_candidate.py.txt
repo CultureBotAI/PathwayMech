@@ -1,0 +1,139 @@
+from pathlib import Path
+A=Path(__file__).parent;P=A/'candidate/scripts/build_source_identifier_snapshot.py';s=P.read_text()
+needle='''        attached = {subject(node) for node in primary if node.tag == bp + "Pathway"}
+        for other in pathways:
+'''
+replacement='''        attached = {subject(node) for node in primary if node.tag == bp + "Pathway"}
+
+        def local_object(node: ElementTree.Element) -> str:
+            uri = subject(node)
+            document, fragment = urldefrag(uri)
+            if (
+                set(node.attrib) not in ({rdf + "ID"}, {rdf + "about"})
+                or document != urldefrag(base)[0]
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", fragment)
+                or any(part in {".", "..", ""} for part in fragment.split("/"))
+            ):
+                raise ValueError("PathBank interface bridge requires exact local RDF objects")
+            return uri
+
+        def literal(node: ElementTree.Element, tag: str, count: int) -> list[str]:
+            values = node.findall(bp + tag)
+            if len(values) != count or any(
+                len(value) or not (value.text or "").strip()
+                or value.attrib not in ({}, {rdf + "datatype":
+                                            "http://www.w3.org/2001/XMLSchema#string"})
+                for value in values
+            ):
+                raise ValueError("PathBank interface bridge has unsupported literal fields")
+            return [value.text.strip() for value in values]
+
+        def pointer(link: ElementTree.Element) -> ElementTree.Element:
+            if (
+                set(link.attrib) != {rdf + "resource"} or len(link)
+                or (link.text or "").strip() or not link.get(rdf + "resource", "")
+            ):
+                raise ValueError("PathBank interface bridge requires exact resource pointers")
+            return resolve(link)
+
+        def bridge_child(node: ElementTree.Element) -> ElementTree.Element:
+            # This closed issuing format identifies an opaque adjacent Pathway.
+            # Its marker names do not establish an inhibition edge or mechanism.
+            local_object(node)
+            if node.tag != bp + "Interaction" or any(
+                item.tag not in {bp + "displayName", bp + "name", bp + "participant"}
+                for item in node
+            ):
+                raise ValueError("PathBank interface bridge requires a native Interaction")
+            literal(node, "displayName", 1)
+            names = literal(node, "name", 2)
+            if len(set(names)) != 2 or names.count("InhibitorySubPathwayControl") != 1:
+                raise ValueError("PathBank interface bridge has an unsupported source marker")
+            direct = [link for link in pathway.findall(bp + "pathwayComponent")
+                      if resolve(link) is node]
+            ordered = []
+            for link in pathway.findall(bp + "pathwayOrder"):
+                step = resolve(link)
+                links = [item for item in step if item.tag in {
+                    bp + "stepProcess", bp + "stepConversion",
+                } and resolve(item) is node]
+                if not links:
+                    continue
+                pointer(link)
+                local_object(step)
+                if step.tag != bp + "PathwayStep" or len(step) != 1 or (
+                    step[0].tag != bp + "stepProcess" or pointer(step[0]) is not node
+                ):
+                    raise ValueError("PathBank interface bridge requires an exact PathwayStep")
+                ordered.append(step)
+            if not (direct or ordered) or len(direct) > 1 or len(ordered) > 1:
+                raise ValueError("PathBank interface bridge must be owned by the primary pathway")
+            for link in direct:
+                pointer(link)
+            links = node.findall(bp + "participant")
+            if len(links) != 2:
+                raise ValueError("PathBank interface bridge requires exactly two participants")
+            targets = [pointer(link) for link in links]
+            children = [item for item in targets if item.tag == bp + "Pathway"]
+            compounds = [item for item in targets if item.tag == bp + "SmallMolecule"]
+            if len(children) != 1 or len(compounds) != 1 or children[0] is pathway:
+                raise ValueError("PathBank interface bridge requires one compound and one child")
+            compound = compounds[0]
+            local_object(compound)
+            if any(item.tag not in {bp + "displayName", bp + "name", bp + "entityReference"}
+                   for item in compound):
+                raise ValueError("PathBank interface compound has unsupported fields")
+            literal(compound, "displayName", 1)
+            if literal(compound, "name", 1) != ["SubPathwayInhibitor"]:
+                raise ValueError("PathBank interface compound has an unsupported source marker")
+            references = compound.findall(bp + "entityReference")
+            if len(references) != 1 or pointer(references[0]).tag != bp + "SmallMoleculeReference":
+                raise ValueError("PathBank interface compound requires its native reference")
+            local_object(pointer(references[0]))
+            child = children[0]
+            if set(child.attrib) != {rdf + "about"} or any(
+                item.tag not in {bp + "displayName", bp + "name", bp + "xref"}
+                for item in child
+            ) or literal(child, "name", 1) != ["InhibitorySubPathway"]:
+                raise ValueError("PathBank interface bridge requires an empty native child stub")
+            literal(child, "displayName", 1)
+            xrefs = [pointer(link) for link in child.findall(bp + "xref")]
+            if not xrefs or len({subject(item) for item in xrefs}) != len(xrefs):
+                raise ValueError("PathBank interface child requires unique native xrefs")
+            for xref in xrefs:
+                if xref.tag != bp + "UnificationXref":
+                    raise ValueError("PathBank interface child requires native unification xrefs")
+                literal(xref, "db", 1)
+                literal(xref, "id", 1)
+            return child
+
+        bridged: set[str] = set()
+        seen_bridges: set[str] = set()
+        for node in primary:
+            if "InhibitorySubPathwayControl" not in labels(node):
+                continue
+            uri = subject(node)
+            if uri in seen_bridges:
+                continue  # The direct and ordered paths may name the same object.
+            seen_bridges.add(uri)
+            child_uri = subject(bridge_child(node))
+            if child_uri in bridged:
+                raise ValueError("PathBank interface child has duplicate primary-owned bridges")
+            bridged.add(child_uri)
+        for other in pathways:
+'''
+assert s.count(needle)==1;s=s.replace(needle,replacement)
+old='''            if (
+                subject(other) not in attached or "SubPathway" not in labels(other)
+                or not members or any(node.tag != bp + "Interaction" for node in members)
+            ):
+'''
+new='''            direct_stub = (
+                subject(other) in attached and "SubPathway" in labels(other)
+                and members and all(node.tag == bp + "Interaction" for node in members)
+            )
+            if not direct_stub and subject(other) not in bridged:
+'''
+assert s.count(old)==1;s=s.replace(old,new)
+s=s.replace('''            if child_name.casefold() == "subpathway":''','''            if child_name.casefold() in {"subpathway", "inhibitorysubpathway"}:''')
+P.write_text(s)

@@ -1,0 +1,222 @@
+import copy
+import csv
+import html
+import io
+import json
+import sys
+
+import yaml
+
+from prepare_correction import AUTHOR, OUT, bind, load, write
+
+C = OUT / 'candidate'
+sys.path.insert(0, str(C / 'src'))
+
+
+def edges(record):
+    return {edge['id']: edge for edge in record['mechanistic_edges']}
+
+
+def scope_errors(record):
+    """Bounded scientific regression profile; not a natural-language entailment engine."""
+    es = edges(record)
+    errors = []
+    core = sorted(edge['subject'] for edge in es.values() if edge['predicate'] == 'part_of' and edge['object'] == record['id'])
+    if core != ['MetaCyc:RXN0-5216', 'RHEA:27378']:
+        errors.append('native_two_event_core')
+    expected = {
+        'MetaCyc:RXN0-5216': {'consumes': ['CHEBI:60331','CHEBI:15377'], 'produces': ['CHEBI:58735','CHEBI:16659']},
+        'RHEA:27378': {'consumes': ['CHEBI:16659','CHEBI:30616'], 'produces': ['CHEBI:58289','CHEBI:456216','CHEBI:15378']},
+        'RHEA:33308': {'consumes': ['CHEBI:57541','UniProtKB:P0AA04'], 'produces': ['CHEBI:60331','UniProtKB:P0AA04']},
+        'RHEA:23881': {'consumes': ['CHEBI:58702','UniProtKB:P0AA04'], 'produces': ['CHEBI:15361','UniProtKB:P0AA04']},
+    }
+    for reaction, sides in expected.items():
+        for predicate, compounds in sides.items():
+            actual = [e['subject'] if predicate == 'consumes' else e['object'] for e in es.values()
+                      if e['predicate'] == predicate and (e['object'] if predicate == 'consumes' else e['subject']) == reaction]
+            if sorted(actual) != sorted(compounds):
+                errors.append(reaction + ':' + predicate)
+    for edge in es.values():
+        if edge['predicate'] in ['consumes','produces'] and ({edge['subject'],edge['object']} & {'RHEA:33308','RHEA:23881'}) and 'UniProtKB:P0AA04' in [edge['subject'],edge['object']] and not edge.get('endpoint_qualifiers'):
+            errors.append('HPr_state_missing')
+    if es['mg-mnga-catalysis']['subject'] != 'UniProtKB:P54745':
+        errors.append('MngA_exact_identity')
+    if es['mg-gark-reg-fur']['predicate'] != 'regulates':
+        errors.append('Fur_conflicting_sign_erased')
+    if es['mg-opaque-pathbank-child']['predicate'] in ['activates','inhibits']:
+        errors.append('PathBank_label_as_sign')
+    entry = es['mg-mnga-catalysis']
+    description = entry['description']
+    for phrase in ['intact-cell uptake comparisons', 'glucose, mannose and mannitol',
+                   'trehalose', 'fructose, maltose, arabinose, gluconate, glycerate',
+                   '1-alpha-glucosylglycerol', '2-alpha-glucosylglycerate', '2-alpha-mannosylglycerol',
+                   'weak-effect/no-significant-effect', 'tension remains unresolved',
+                   '300 mM NaCl', 'about 50%', 'induction endpoint', 'KM522 500 mM',
+                   'not direct binding', 'None of these whole-cell comparisons is attributed']:
+        if phrase not in description:
+            errors.append('entry_scope_missing:' + phrase)
+    locators = [ev['source_locator'] for ev in entry['evidence']]
+    for span in ['L1323–L1354','L1350–L1372','L2429–L2457','L1251–L1310']:
+        if not any(span in locator for locator in locators):
+            errors.append('entry_evidence_missing:' + span)
+    for name in ['mg-gark-reg-cdar','mg-cdar-auto']:
+        edge = es[name]
+        # Issuing gene CURIE spelling is checked by exact old/new object preservation below.
+        if edge['subject'] != 'UniProtKB:P37047' or edge['predicate'] != 'activates':
+            errors.append('CdaR_endpoint_or_sign:' + name)
+        qs = [q for q in edge.get('endpoint_qualifiers', []) if q['endpoint'] == 'subject' and q['kind'] == 'experimental_construct']
+        if len(qs) != 1:
+            errors.append('CdaR_subject_construct:' + name)
+            continue
+        q = qs[0]
+        for phrase in ['MC4100', 'active wild-type or pRM1-complemented', 'JA176', 'paper-numbered P297S',
+                       'JA177', 'Tn5 20 nt before stop', 'these mutants are not active endpoints',
+                       '391-aa reference', 'P37047 (385 aa)', 'not mapped to the current chain']:
+            if phrase not in q['description']:
+                errors.append('CdaR_scope_missing:' + name + ':' + phrase)
+        refs = {ev['reference_id'] for ev in q['evidence']}
+        if refs != {'PMID:10762278','UniProtKB:P37047'}:
+            errors.append('CdaR_missing_primary_or_current_identity:' + name)
+    return errors
+
+
+def main():
+    from pathwaymech.cli import render_pages_main
+    from pathwaymech.graph_view import _declared_nodes, _qualified_endpoints, graph_html
+    from pathwaymech.identifiers import identifier_errors
+    from pathwaymech.kgx import render_kgx
+    from pathwaymech.schema import validate_record
+    from pathwaymech.strict import strict_errors
+
+    target = OUT / 'draft/mannosylglycerate-degradation.yaml'
+    record = yaml.safe_load(target.read_bytes())
+    old = yaml.safe_load((AUTHOR / 'draft/mannosylglycerate-degradation.yaml').read_bytes())
+    spec = load(OUT / 'correction-specification.json')
+    prior, current = edges(old), edges(record)
+    assert list(prior) == list(current) and len(current) == 75
+    assert len(record['references']) == 62
+    unchanged = [key for key in prior if prior[key] == current[key]]
+    changed = [key for key in prior if prior[key] != current[key]]
+    assert changed == spec['changed_edges'] and len(unchanged) == 57
+    restored = copy.deepcopy(record)
+    restore_edges = edges(restored)
+    for key in changed:
+        if key == 'mg-mnga-catalysis':
+            assert current[key]['description'].startswith(prior[key]['description'])
+            assert current[key]['evidence'][:-4] == prior[key]['evidence']
+            restore_edges[key]['description'] = prior[key]['description']
+            restore_edges[key]['evidence'] = prior[key]['evidence']
+        elif key in {'mg-gark-reg-cdar','mg-cdar-auto'}:
+            assert 'endpoint_qualifiers' not in prior[key]
+            del restore_edges[key]['endpoint_qualifiers']
+        else:
+            for previous, new, reset in zip(prior[key]['evidence'], current[key]['evidence'],restore_edges[key]['evidence'],strict=True):
+                for field in previous:
+                    if field != 'source_locator':
+                        assert previous[field] == new[field]
+                reset['source_locator'] = previous['source_locator']
+    assert restored == old
+    for key in old:
+        if key != 'mechanistic_edges':
+            assert record[key] == old[key]
+    for key in prior:
+        if key not in {'mg-gark-reg-cdar','mg-cdar-auto'}:
+            assert current[key].get('endpoint_qualifiers',[]) == prior[key].get('endpoint_qualifiers',[])
+    assert current['mg-mnga-vesicle-assay'] == prior['mg-mnga-vesicle-assay']
+    projection = [{'id':e['id'],'subject':e['subject'],'predicate':e['predicate'],'object':e['object'],
+                   'endpoint_qualifiers':e.get('endpoint_qualifiers',[])} for e in current.values()
+                  if e['predicate'] in {'consumes','produces'}]
+    assert len(projection) == 17
+    write('derived/unchanged-object-proof.json', {
+        'old_target':bind(AUTHOR/'draft/mannosylglycerate-degradation.yaml'),'new_target':bind(target),
+        'all_non_edge_sections_exact': [key for key in old if key != 'mechanistic_edges'],
+        'references_exact':62,'unchanged_edges':unchanged,'changed_edges':changed,
+        'edge_order_and_ids_exact':True,'reverting_only_approved_fields_restores_entire_original':True,
+        'all_13_prior_qualifiers_exact':True,'vesicle_assay_exact':True,
+        'chemical_projection':projection,
+        'serialization':'Shared YAML aliases expanded to standalone values; semantic objects preserved. Byte-identical formatting is not claimed.'})
+    model = validate_record(record)
+    strict = strict_errors([target],C)
+    identifiers = identifier_errors(C)
+    assert not strict and not identifiers, (strict, identifiers)
+    assert not scope_errors(record), scope_errors(record)
+    mutated = []
+    def trial(name, edit):
+        candidate = copy.deepcopy(record)
+        edit(candidate, edges(candidate))
+        errors = scope_errors(candidate)
+        assert errors, name
+        mutated.append({'name':name,'rejected':True,'errors':errors})
+    trial('erase weak glucose/mannose/mannitol comparisons',lambda r,e:e['mg-mnga-catalysis'].update(description=e['mg-mnga-catalysis']['description'].replace('glucose, mannose and mannitol','other sugars')))
+    trial('erase negative fructose and nonPTS comparisons',lambda r,e:e['mg-mnga-catalysis'].update(description=e['mg-mnga-catalysis']['description'].replace('fructose, maltose, arabinose, gluconate, glycerate','comparators')))
+    trial('erase Results/Discussion mannose tension',lambda r,e:e['mg-mnga-catalysis'].update(description=e['mg-mnga-catalysis']['description'].replace('tension remains unresolved','statements are equivalent')))
+    trial('conflate MC4100 induction with 500mM KM522 assay',lambda r,e:e['mg-mnga-catalysis'].update(description=e['mg-mnga-catalysis']['description'].replace('300 mM NaCl','500 mM NaCl')))
+    trial('erase induction evidence passage',lambda r,e:e['mg-mnga-catalysis']['evidence'].pop())
+    trial('claim direct binding from uptake comparison',lambda r,e:e['mg-mnga-catalysis'].update(description=e['mg-mnga-catalysis']['description'].replace('not direct binding','proven direct binding')))
+    trial('attribute wholecell comparisons to vesicle assay',lambda r,e:e['mg-mnga-catalysis'].update(description=e['mg-mnga-catalysis']['description'].replace('None of these whole-cell comparisons is attributed','All these whole-cell comparisons are attributed')))
+    for edge in ['mg-gark-reg-cdar','mg-cdar-auto']:
+        trial(edge+' missing construct',lambda r,e,k=edge:e[k].pop('endpoint_qualifiers'))
+        trial(edge+' qualifier on wrong endpoint',lambda r,e,k=edge:e[k]['endpoint_qualifiers'][0].update(endpoint='object'))
+        trial(edge+' active P297S mutant',lambda r,e,k=edge:e[k]['endpoint_qualifiers'][0].update(description=e[k]['endpoint_qualifiers'][0]['description'].replace('these mutants are not active endpoints','these mutants are active endpoints')))
+        trial(edge+' invented residue-numbering equivalence',lambda r,e,k=edge:e[k]['endpoint_qualifiers'][0].update(description=e[k]['endpoint_qualifiers'][0]['description'].replace('not mapped to the current chain','mapped exactly to the current chain')))
+        trial(edge+' missing modern sequence reference',lambda r,e,k=edge:e[k]['endpoint_qualifiers'][0]['evidence'].pop())
+    trial('drop core kinase membership',lambda r,e:r['mechanistic_edges'].remove(e['mg-core-GKI-RXN']))
+    trial('replace generic mannose phosphate with alpha anomer',lambda r,e:e['mg-RXN0-5216-produces-58735'].update(object='CHEBI:60332'))
+    trial('charge PEP twice',lambda r,e:r['mechanistic_edges'].append({'id':'added-pep','subject':'CHEBI:58702','predicate':'consumes','object':'RHEA:33308'}))
+    trial('replace HPr with free histidine',lambda r,e:e['mg-RXN0-2522-produces-P0AA04'].update(object='CHEBI:29979'))
+    trial('drop His15 state',lambda r,e:e['mg-RXN0-2522-produces-P0AA04'].pop('endpoint_qualifiers'))
+    trial('use frozen MngR permease identity',lambda r,e:e['mg-mnga-catalysis'].update(subject='UniProtKB:P13669'))
+    trial('resolve Fur conflict without evidence',lambda r,e:e['mg-gark-reg-fur'].update(predicate='inhibits'))
+    trial('infer inhibition from PathBank label',lambda r,e:e['mg-opaque-pathbank-child'].update(predicate='inhibits'))
+    write('derived/semantic-negative-controls.json', {'scope':'Source-bounded regression profile for accepted findings and native chemistry. Prose phrase guards establish retained scope, not automated scientific entailment. Source-specific selectors/triples have separate original-backed negatives.','controls':mutated})
+    rendered = OUT / 'rendered'
+    rendered.mkdir(exist_ok=True)
+    kgx = render_kgx([model])
+    for name,text in kgx.items():
+        (rendered/name).write_text(text)
+    rows = list(csv.DictReader(io.StringIO(kgx['edges.tsv']),delimiter='\t'))
+    pending = list(rows)
+    kgxchecks = []
+    for edge in current.values():
+        matches = [row for row in pending if row['subject']==edge['subject'] and row['object']==edge['object'] and json.loads(row['evidence'])==edge['evidence'] and (json.loads(row['endpoint_qualifiers']) if row['endpoint_qualifiers'] else [])==edge.get('endpoint_qualifiers',[])]
+        assert len(matches)==1,edge['id']
+        pending.remove(matches[0])
+        kgxchecks.append({'edge':edge['id'],'complete_evidence_and_qualifiers_preserved':True})
+    assert not pending and len(rows)==75
+    assert render_pages_main([],root=C)==0
+    page = next((C/'pages/records').glob('*.html'))
+    page_text = html.unescape(page.read_text())
+    network = graph_html(model,{}, {})
+    (rendered/'network.html').write_text(network)
+    network_text = html.unescape(network)
+    nodes = _declared_nodes(model,{})
+    views = _qualified_endpoints(nodes,model.mechanistic_edges)
+    graphchecks = []
+    for number,edge in enumerate(current.values(),1):
+        for qualifier in edge.get('endpoint_qualifiers',[]):
+            node_id = views[number-1][qualifier['endpoint']]
+            assert node_id.startswith(f'qualified-endpoint-{number}-')
+            detail = nodes[node_id]['detail']
+            assert nodes[node_id]['identifier'] == edge[qualifier['endpoint']]
+            for text in [qualifier['description']] + [ev['source_assertion'] for ev in qualifier['evidence']] + [ev['source_locator'] for ev in qualifier['evidence']]:
+                assert text in detail and text in page_text and text in network_text, (edge['id'],text)
+            graphchecks.append({'edge':edge['id'],'endpoint':qualifier['endpoint'],
+                                'display_node':node_id,'native_identity':nodes[node_id]['identifier'],
+                                'complete_qualifier_description_evidence_locator_in_graph_and_page':True})
+    assert len(graphchecks)==15
+    for text in [current['mg-mnga-catalysis']['description']] + [ev['source_assertion'] for ev in current['mg-mnga-catalysis']['evidence'][-4:]]:
+        assert text in page_text
+    write('derived/graph-page-kgx-roundtrip.json', {'page':bind(page),'network':bind(rendered/'network.html'),
+          'kgx_edges':bind(rendered/'edges.tsv'),'kgx_nodes':bind(rendered/'nodes.tsv'),
+          'edge_checks':kgxchecks,'qualifier_checks':graphchecks,'entry_scope_in_page':True,
+          'inspection':'Native bounded rendering and structural/text roundtrip; no browser visual QA or whole-corpus rendering claimed.'})
+    write('derived/validation.json', {'target':bind(target),'schema_errors':[], 'strict_errors':strict,
+          'identifier_errors':identifiers,'identifier_scope':'Bounded original-derived proposal composition, not a full canonical build',
+          'core_events':2,'chemical_sides':17,'edges':75,'references':62,'qualifiers':15,
+          'unchanged_edges':57,'changed_edges':18,'negative_controls':len(mutated),'page_render_exit':0,
+          'all75_KGX_evidence_and_qualifier_payloads_exact':True,'all15_qualifiers_in_graph_and_page':True})
+    print(json.dumps({'schema':'pass','strict':'pass','identifiers':'pass','semantic_negatives':len(mutated),
+                      'KGX_edges':75,'page_graph_qualifiers':15,'target':bind(target)}))
+
+if __name__ == '__main__':
+    main()

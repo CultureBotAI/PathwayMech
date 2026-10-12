@@ -1,0 +1,184 @@
+"""Capture accepted uncommitted lyxose bytes; no native builder is executed."""
+import shutil
+import subprocess
+from pathlib import Path
+
+import yaml
+
+from common import (
+    ADAPTER, AUTHOR, BASE_HEAD, BASE_TREE, CORRECTION, HERE, PRIOR, TARGET_SHA,
+    WORKTREE, bind, check, check_sql_stat, inventory, load, now, preserve,
+    sha, validate_manifest, validate_updates, write,
+)
+
+
+def copy_bound(source, destination):
+    row = bind(source)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not destination.exists()
+    shutil.copyfile(source, destination)
+    assert sha(destination) == row['sha256']
+    return {'original': row, 'captured': bind(destination)}
+
+
+def packet(root, digest, count):
+    handoff = check({'path': str(root / 'handoff.json'), 'sha256': digest})
+    manifest = bind(root / 'artifact-manifest.json')
+    data = load(manifest['path'])
+    rows = data.get('artifacts', data.get('files'))
+    assert len(rows) == count
+    for row in rows:
+        check({**row, 'path': str(root / row.get('relative_path', row.get('path')))})
+    return {'handoff': handoff, 'manifest': manifest, 'artifacts_verified': count}
+
+
+def main():
+    assert not (HERE / 'captured').exists()
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=WORKTREE, text=True).strip()
+    tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=WORKTREE, text=True).strip()
+    assert (head, tree) == (BASE_HEAD, BASE_TREE)
+    status = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=all'], cwd=WORKTREE, text=True)
+    packages = [
+        packet(ADAPTER, '68b1dd25ad72c8655c6c8d7876b3f7e2409c3c6b1a0cf3a29e7b2f806eb962e3', 317),
+        packet(Path('/private/tmp/pathwaymech-next-228-root-adapter-review-20261012'), '34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed', 20),
+        packet(AUTHOR, 'f86be00b99dd8182c71fc1c7e493ab130c924f907edb64c7335c68dd610594fd', 612),
+        packet(CORRECTION, '9a7c0e1d676523bb5495a0aca99b805f54d2ba90696e6581417a5b2d1447c809', 319),
+        packet(Path('/private/tmp/pathwaymech-next-228-science-successor-review-20261012'), 'c9802f0ce6162a572539be6e656f16f7c5756720a8964aa2cda723cd769f3a65', 34),
+    ]
+    assert load(packages[1]['handoff']['path'])['verdict'] == 'accepted'
+    assert load(packages[-1]['handoff']['path'])['new_findings'] == 0
+    paths = inventory(WORKTREE / 'data/pathways')
+    records = [p for p in paths if p.suffix == '.yaml']
+    assert len(records) == 228
+    assert [p.name for p in paths if p.suffix != '.yaml'] == ['.gitkeep']
+    record_rows = []
+    for path in paths:
+        rel = path.relative_to(WORKTREE / 'data/pathways')
+        assert path.read_bytes() == (PRIOR / 'corpus' / rel).read_bytes(), rel
+        record_rows.append({'relative_path': str(rel), **copy_bound(path, HERE / 'captured/corpus' / rel)})
+    target = CORRECTION / 'draft/mannosylglycerate-degradation.yaml'
+    assert sha(target) == TARGET_SHA
+    target_row = copy_bound(target, HERE / 'captured/target/mannosylglycerate-degradation.yaml')
+    old = {}
+    baseline = []
+    for rel, name in [('data/identifier_authorities/sources.json', 'sources.json'),
+                      ('data/identifier_authorities/ontology.json', 'ontology.json'),
+                      ('conf/identifier_sources.json', 'manifest.json'),
+                      ('conf/rhea_identifier_updates.json', 'rhea-updates.json')]:
+        assert (WORKTREE / rel).read_bytes() == (PRIOR / name).read_bytes(), rel
+        baseline.append({'relative_path': rel, **copy_bound(WORKTREE / rel, HERE / 'captured/baseline' / name)})
+        old[name] = load(WORKTREE / rel)
+    assert [len(old['sources.json'][k]) for k in ('terms', 'sources')] == [2412, 563]
+    assert [len(old['ontology.json'][k]) for k in ('terms', 'sources')] == [1945, 5]
+    assert len(old['manifest.json']) == 717 and len(old['rhea-updates.json']['ids']) == 19
+    delta = load(ADAPTER / 'code-delta.json')
+    changed = {row['relative_path']: row for row in delta['changed_files']}
+    assert len(changed) == 3
+    code = []
+    excluded = []
+    for path in inventory(ADAPTER / 'candidate'):
+        rel = str(path.relative_to(ADAPTER / 'candidate'))
+        if rel.startswith('.ruff_cache/'):
+            excluded.append(bind(path))
+            continue
+        if rel in changed:
+            check(changed[rel]['after'])
+            assert sha(WORKTREE / rel) == changed[rel]['before']['sha256']
+            selected = path
+            role = 'accepted MG delta atop adopted lyxose'
+        elif rel in ('conf/identifier_sources.json', 'conf/rhea_identifier_updates.json'):
+            selected = WORKTREE / rel
+            role = 'actual adopted lyxose manifest/selector, superseding historical candidate copy'
+        else:
+            assert path.read_bytes() == (WORKTREE / rel).read_bytes(), rel
+            selected = path
+            role = 'exact current adopted lyxose runtime byte'
+        code.append({'relative_path': rel, 'role': role, **copy_bound(selected, HERE / 'captured/code' / rel)})
+    assert len(code) == 222
+    selected = {
+        'manifest.json': ADAPTER / 'complete-source-manifest-proposal.json',
+        'rhea-updates.json': AUTHOR / 'authority-preparation/rhea-identifier-updates-proposal.json',
+        'source-proposal.json': ADAPTER / 'complete-source-proposal.json',
+        'ontology-proposal.json': AUTHOR / 'authority-preparation/ontology-authority-proposal.json',
+    }
+    proposals = {name: copy_bound(path, HERE / 'captured/proposals' / name) for name, path in selected.items()}
+    manifest = load(selected['manifest.json'])
+    hashes = validate_manifest(old['manifest.json'], manifest)
+    updates = load(selected['rhea-updates.json'])
+    validate_updates(old['rhea-updates.json'], updates)
+    assert len(manifest) == 738 and len(updates['ids']) == 20
+    plans = load(AUTHOR / 'authority-preparation/new-originals-copy-plan.json') + load(ADAPTER / 'new-originals-copy-plan.json')
+    assert len(plans) == 21 and [row['entry'] for row in plans] == manifest[717:]
+    prior_originals = {row['cache_relative_path']: row for row in load(PRIOR / 'source-original-bindings.json')['originals']}
+    new_originals = {}
+    for row in plans:
+        check(row['original'])
+        rel = row['entry']['path']
+        assert row['entry']['sha256'] == row['original']['sha256']
+        if rel in prior_originals:
+            assert prior_originals[rel]['sha256'] == row['original']['sha256']
+            assert prior_originals[rel]['bytes'] == row['original']['bytes']
+        else:
+            assert rel not in new_originals
+            new_originals[rel] = row['original']
+    hashes[updates['path']] = updates['sha256']
+    originals = []
+    for rel, digest in sorted(hashes.items()):
+        row = new_originals.get(rel, prior_originals.get(rel))
+        assert row is not None and row['sha256'] == digest, rel
+        path = Path(row.get('resolved_original', row['path'])).resolve()
+        assert path.stat().st_size == row['bytes']
+        originals.append({'cache_relative_path': rel, 'path': str(path), 'bytes': row['bytes'],
+                          'sha256': digest, 'mtime_ns': path.stat().st_mtime_ns,
+                          'hash_scope': 'fresh preparation hash' if rel in new_originals else 'inherited sealed lyxose original hash; fresh stat now; mandatory fresh hash at execution'})
+    assert len(originals) == 738 and len(new_originals) == 20
+    dbs = load(PRIOR / 'ontology-original-bindings.json')['originals']
+    assert len(dbs) == 4
+    for row in dbs:
+        check_sql_stat(row)
+        assert old['ontology.json']['sources'][row['source_key']]['sha256'] == row['sha256']
+    retention = sorted(set(old['sources.json']['terms']) | set(old['ontology.json']['terms']))
+    assert len(retention) == 4357
+    target_obj = yaml.safe_load(target.read_bytes())
+    ids = {target_obj['id']} | {node['id'] for field in ('taxa', 'participants', 'reactions') for node in target_obj[field]}
+    expected = {}
+    expectation_deltas = {}
+    for kind, filename in [('sources', 'source-proposal.json'), ('ontology', 'ontology-proposal.json')]:
+        original = old[kind + '.json']
+        proposed = load(selected[filename])
+        assert proposed['version'] == original['version']
+        expected[kind] = {'version': original['version']}
+        for section in ('terms', 'sources'):
+            additions = {k: v for k, v in proposed[section].items() if k not in original[section]}
+            # The stale lyxose duplicate-source metadata is not an MG addition.
+            if kind == 'sources' and section == 'sources':
+                additions.pop('lyxose-correction-UniProtKB-P76268', None)
+            expected[kind][section] = {**original[section], **additions}
+        preserve(original, expected[kind])
+        from common import differences
+        expectation_deltas[kind] = differences(proposed, expected[kind])
+    assert [len(expected['sources'][k]) for k in ('terms', 'sources')] == [2434, 584]
+    assert [len(expected['ontology'][k]) for k in ('terms', 'sources')] == [1951, 5]
+    additions = {kind: {k: v for k, v in snapshot['terms'].items() if k not in old[kind + '.json']['terms']} for kind, snapshot in expected.items()}
+    assert set(additions['sources']) | set(additions['ontology']) == ids - set(retention)
+    assert len(additions['sources']) == 22 and len(additions['ontology']) == 6
+    assert [x['id'] for x in expectation_deltas['sources']['terms']] == ['UniProtKB:P76268']
+    assert [x['id'] for x in expectation_deltas['sources']['sources']] == ['lyxose-correction-UniProtKB-P76268']
+    assert expectation_deltas['ontology'] == {'terms': [], 'sources': []}
+    write(HERE / 'capture.json', {'created_at': now(), 'observed_head': head, 'observed_tree': tree,
+                                'git_status_at_capture': status, 'scope': 'Actual accepted uncommitted 228-record lyxose worktree on committed ribose tree; lyxose is not claimed committed or merged.',
+                                'records': record_rows, 'target': target_row, 'baseline': baseline,
+                                'candidate_code': code, 'proposals': proposals, 'packages': packages,
+                                'excluded_generated_candidate_files': excluded, 'inventory': 'rg --files --no-ignore --hidden --follow',
+                                'source_originals': originals, 'sql_originals': dbs,
+                                'sql_hash_scope': 'Inherited full original hashes and fresh size/mtime check; native ontology builder must freshly hash all four SQL files.',
+                                'retention_ids': retention, 'new_manifest_plans': plans, 'unique_new_original_paths': 20,
+                                'full_build_executed': False})
+    write(HERE / 'expected-native-comparison.json', {'snapshots': expected, 'additions': additions,
+                                                 'difference_from_historical_proposals': expectation_deltas,
+                                                 'scope': 'Comparison expectation only, never consumed by either native builder. Actual prior lyxose 563 metadata is preserved; historical extra P76268 provenance is not recreated. All738 ordered manifest entries remain native input.'})
+    print('Captured228 records + exact MG target; 222 runtime files; 738 manifest entries/738 original paths; 4357 retained IDs. No builder executed.')
+
+
+if __name__ == '__main__':
+    main()

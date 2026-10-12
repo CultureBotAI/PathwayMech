@@ -1,0 +1,80 @@
+"""Root-authorized native serialization, validation, append-only save and check."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+from datetime import datetime, timezone
+
+ROOT = Path('/private/tmp/pathwaymech-next-228-20261012')
+ASSEMBLY = Path('/private/tmp/pathwaymech-next-228-review-assembly-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-228-native-review-execution-recovery-20261012')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+BASE = '790a9699d7c1ca9c00536be877fa884af1c57918'
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def bind(path):
+    data = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def main():
+    assert not OUT.exists()
+    OUT.mkdir()
+    content = ASSEMBLY / 'completed-review.json'
+    original = bind(content)
+    shutil.copyfile(content, OUT / 'assembled-before-root-read.json')
+    document = json.loads(content.read_text())
+    assert document['completion'] == 'completed' and not document['findings']
+    assert document['source']['git_revision'] == BASE
+    document['started_at'] = document['started_at'].replace('+00:00', 'Z')
+    for item in document['evidence']:
+        if 'accessed_at' in item:
+            item['accessed_at'] = item['accessed_at'].replace('+00:00', 'Z')
+    document['finished_at'] = now()
+    document['review_id'] = datetime.fromisoformat(document['finished_at']).strftime('%Y%m%dT%H%M%SZ') + '-mannosylglycerate-degradation'
+    content.write_text(json.dumps(document, indent=2, ensure_ascii=False) + '\n')
+    (OUT / 'root-assessment.json').write_text(json.dumps({
+        'at': now(), 'initial_assembly': original, 'root_accepted_content': bind(content),
+        'scope': 'Root read native fields/checks/limitations and every inherited edge-assessment summary; exact original per-use science remains explicitly inherited. Finished timestamp now includes actual root read. Native review UTC text canonicalized from +00:00 to equivalent Z after original serializer refusal; exact initial failure retained in separate execution directory. No maintained input or source hash changed.',
+        'root_read_terminals': ['3e7fc3/0 (large details truncated)', '3ee5c3/0 (all 75 summaries complete)'],
+        'helper': bind(__file__)}, indent=2) + '\n')
+    env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+           'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+    native = str(ROOT / 'scripts/record_review.py')
+    completed = str(ASSEMBLY / 'completed-review.yaml')
+    commands = [
+        ('serialize', [PYTHON, '-B', '/private/tmp/pathwaymech-next-228-finalization-support-20261012/serialize_review.py', '--content', str(content)]),
+        ('validate', [PYTHON, '-B', native, 'validate', completed]),
+        ('save', [PYTHON, '-B', native, 'save', '--content', completed]),
+        ('check', [PYTHON, '-B', native, 'check', '--require-reviews', '--base', BASE]),
+    ]
+    receipts = []
+    for name, command in commands:
+        start = now()
+        result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
+        stdout, stderr = OUT / (name + '.stdout'), OUT / (name + '.stderr')
+        stdout.write_bytes(result.stdout)
+        stderr.write_bytes(result.stderr)
+        receipts.append({'name': name, 'command': command, 'cwd': str(ROOT), 'started_at': start,
+                         'finished_at': now(), 'exit_code': result.returncode,
+                         'stdout': bind(stdout), 'stderr': bind(stderr)})
+        (OUT / 'execution.json').write_text(json.dumps({'status': 'running' if result.returncode == 0 else 'failed', 'receipts': receipts}, indent=2) + '\n')
+        print(name, result.returncode, result.stdout.decode().strip(), result.stderr.decode().strip(), flush=True)
+        if result.returncode:
+            return result.returncode
+    bundle = ROOT / 'reviews/structured' / document['review_id']
+    assert (bundle / 'review.yaml').is_file() and (bundle / 'review.md').is_file()
+    (OUT / 'execution.json').write_text(json.dumps({'status': 'passed', 'receipts': receipts,
+        'saved_yaml': bind(bundle / 'review.yaml'), 'saved_markdown': bind(bundle / 'review.md'),
+        'late_history_written': False, 'base': BASE}, indent=2) + '\n')
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

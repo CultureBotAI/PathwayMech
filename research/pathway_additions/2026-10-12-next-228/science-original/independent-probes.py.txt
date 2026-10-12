@@ -1,0 +1,83 @@
+from pathlib import Path
+import json,hashlib,re,gzip,sqlite3,collections,xml.etree.ElementTree as ET
+from lxml import etree,html
+O=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-228-author-20261012');P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012');D=json.loads((O/'parsed-target.json').read_text()); B=json.loads((A/'derived/reference-bindings.json').read_text()); rows=[]
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for chunk in iter(lambda:f.read(8*1024*1024),b''):h.update(chunk)
+ return h.hexdigest()
+def record(name,observed,passed):
+ rows.append({'probe':name,'observed':observed,'passed':bool(passed)});assert passed,name
+native=lambda rid:etree.parse(B[rid]['path'])
+# The source, rather than graph labels, establishes all chemistry and role expectations.
+core=native('MetaCyc:PWY0-1300');members=core.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid');order=core.xpath('/ptools-xml/Pathway/reaction-ordering/predecessor-reactions/Reaction/@frameid')
+record('source core list and ordering',{'members':members,'predecessor':order},set(members)=={'RXN0-5216','GKI-RXN'} and order==['RXN0-5216'])
+for rid,b in B.items():
+ if rid.startswith(('MetaCyc:','EcoCyc:')):
+  t=native(rid);o=t.xpath('/ptools-xml/*[not(self::metadata)]');prefix,frame=rid.split(':',1);pg='META' if prefix=='MetaCyc' else 'ECOLI';record('issuing object '+rid,{'query':t.xpath('string(/ptools-xml/metadata/query)'),'count':len(o),'object':dict(o[0].attrib)},len(o)==1 and o[0].get('frameid')==frame and o[0].get('orgid')==pg and t.xpath('string(/ptools-xml/metadata/query)')==pg+':'+frame and t.getroot().get('ptools-version')=='27.0')
+chemmap={'CPD0-1063':'CHEBI:60331','WATER':'CHEBI:15377','CPD-15979':'CHEBI:58735','GLYCERATE':'CHEBI:16659','ATP':'CHEBI:30616','ADP':'CHEBI:456216','PROTON':'CHEBI:15378','2-PG':'CHEBI:58289','2-O-ALPHA-MANNOSYL-D-GLYCERATE':'CHEBI:57541','Hpr-Histidine':'UniProtKB:P0AA04','Hpr-pi-phospho-L-histidines':'UniProtKB:P0AA04','PHOSPHO-ENOL-PYRUVATE':'CHEBI:58702','PYRUVATE':'CHEBI:15361'}
+sidechecks=[]
+for nativeid,rid in [('MetaCyc:RXN0-5216','MetaCyc:RXN0-5216'),('EcoCyc:GKI-RXN','RHEA:27378'),('EcoCyc:RXN0-2522','RHEA:33308'),('EcoCyc:2.7.3.9-RXN','RHEA:23881')]:
+ t=native(nativeid)
+ for side,pred in [('left','consumes'),('right','produces')]:
+  for e in t.xpath('/ptools-xml/Reaction/'+side):
+   frame=e.find('Compound').get('frameid');part=chemmap[frame];matches=[x for x in D['mechanistic_edges'] if x['predicate']==pred and (x['subject'],x['object'])==((part,rid) if side=='left' else(rid,part))];assert len(matches)==1
+   row={'native':nativeid,'side':side,'frame':frame,'identity':part,'edge':matches[0]['id'],'coefficient':int(e.findtext('coefficient') or 1),'native_compartment':e.xpath('compartment/*/@frameid')};sidechecks.append(row)
+   if part=='UniProtKB:P0AA04':
+    q=matches[0]['endpoint_qualifiers'];state='unphosphorylated' if frame=='Hpr-Histidine' else 'phosphorylated';assert len(q)==1 and q[0]['endpoint']==('subject' if side=='left' else 'object') and 'His15 '+state in q[0]['description']
+record('all native core and linked chemical sides',sidechecks,len(sidechecks)==17)
+# Every selected ontology identity is replayed from read-only issuing semantic SQL, not from the proposal.
+ont=[]
+for src in json.loads((A/'authority-preparation/ontology-original-replay.json').read_text()):
+ if src['prefix']=='RHEA':continue
+ p=Path(src['original']['path']);h=sha(p);assert h==src['original']['sha256'];c=sqlite3.connect(p.as_uri()+'?mode=ro',uri=True)
+ ids=[x for x in D['participants']+D['taxa'] if x['id'].startswith(src['prefix']+':')]
+ for x in ids:
+  rr=c.execute('select predicate,object,value from statements where subject=? order by predicate,object,value',(x['id'],)).fetchall();labels=[v for k,ob,v in rr if k in ['rdfs:label','oio:hasExactSynonym']];assert x['label'] in labels;ont.append({'id':x['id'],'label':x['label'],'original':str(p),'original_sha256':h,'rows':rr})
+ c.close()
+(O/'ontology-original-independent.json').write_text(json.dumps(ont,indent=2)+'\n')
+def values(id,key):return [v for x in ont if x['id']==id for p,o,v in x['rows'] if p==key]
+record('anomer structures remain distinct',{'generic':values('CHEBI:58735','chemrof:inchi_string'),'alpha':values('CHEBI:60332','chemrof:inchi_string')},values('CHEBI:58735','chemrof:inchi_string')!=values('CHEBI:60332','chemrof:inchi_string'))
+# Rhea parser reads full original RDF and joins directional sides -> participant -> compound.
+source=Path(B['RHEA:27378']['path']);assert sha(source)==B['RHEA:27378']['sha256'];raw=gzip.decompress(source.read_bytes()).decode();ns={'rh':'http://rdf.rhea-db.org/','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#','rdfs':'http://www.w3.org/2000/01/rdf-schema#'};wrapper='<root '+' '.join(f'xmlns:{k}="{v}"' for k,v in ns.items())+'>';RH=ns['rh'];rr={}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">([\s\S]*?)</rdf:Description>',raw):
+ uri=m[1]
+ if uri.startswith(RH):rr.setdefault(uri,[]).append(m[0])
+def props(uri):
+ out=collections.defaultdict(list)
+ for block in rr[uri]:
+  for el in ET.fromstring(wrapper+block+'</root>')[0]:
+   k=el.tag.split('}',1)[-1];v=el.get('{'+ns['rdf']+'}resource') or el.text
+   if v not in out[k]:out[k].append(v)
+ return dict(out)
+rx=[]
+for rid in ['27378','33308','23881','27867']:
+ u=RH+rid;p=props(u);entry={'id':'RHEA:'+rid,'direction':p,'sides':{}}
+ for key in ['substrates','products']:
+  side=p[key][0];s=props(side);parts=[]
+  for pu in s['contains']:
+   pp=props(pu);cu=pp['compound'][0];cp=props(cu);coef=[int(k[8:]) for k,v in s.items() if re.fullmatch('contains[0-9]+',k) and pu in v];assert len(coef)==1;parts.append({'participant':pu,'compound_uri':cu,'coefficient':coef[0],'properties':cp})
+  entry['sides'][key]=parts
+ rx.append(entry)
+(O/'rhea-independent.json').write_text(json.dumps({'original':str(source),'sha256':sha(source),'reactions':rx},indent=2)+'\n')
+for r in rx:
+ rid=r['id'];eq=r['direction']['equation'][0];record('Rhea directional label '+rid,eq,not [x for x in D['reactions'] if x['id']==rid and x['label']!=eq])
+ if rid=='RHEA:27867':continue
+ for side,pred in [('substrates','consumes'),('products','produces')]:
+  for part in r['sides'][side]:
+   ident=part['properties']['accession'][0]
+   if ident in ['CHEBI:30013','CHEBI:83448']:ident='UniProtKB:P0AA04'
+   # Generic protein residues are selected by issuing name and native HPr-specific side.
+   if 'histidyl-[protein]' in part['properties']['name'][0]:ident='UniProtKB:P0AA04'
+   record('Rhea side '+rid+' '+side+' '+ident,part['properties']['name'][0],any(x['predicate']==pred and (x['subject'],x['object'])==((ident,rid) if pred=='consumes' else(rid,ident)) for x in D['mechanistic_edges']))
+# Exact native complex counts and direct chain IDs.
+for cid,mid,acc in [('MetaCyc:CPLX0-7938','MetaCyc:PTSI-MONOMER','P08839'),('EcoCyc:PC00103','EcoCyc:PD01103','P13669'),('EcoCyc:CPLX0-7797','EcoCyc:PD00197','P0A9E5'),('EcoCyc:CPLX0-7639','EcoCyc:PD00260','P0A9A9')]:
+ t=native(cid);f=mid.split(':')[1];components=t.xpath('/ptools-xml/Protein/component[Protein/@frameid="'+f+'"]');assert len(components)==1;co=components[0].findtext('coefficient');cross=native(mid).xpath('/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]/dblink-oid/text()');record('assembly join '+cid,{'component':mid,'coefficient':co,'uniprot':cross},co=='2' and cross==[acc])
+# Issuing Gene XML and protein GeneID reciprocal joins.
+for e in D['mechanistic_edges']:
+ if not e['id'].startswith('mg-gene-'):continue
+ t=native(e['subject']);gid=t.xpath('//Gene-track_geneid/text()');tax=t.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()');locus=t.xpath('//Gene-ref_locus/text()');j=json.loads(Path(B[e['object']]['path']).read_text());gids=[x['id'] for x in j['uniProtKBCrossReferences'] if x['database']=='GeneID'];record('Gene protein join '+e['subject'],{'geneid':gid,'taxon':tax,'locus':locus,'protein_geneids':gids},gid==[e['subject'].split(':')[1]] and tax==['511145'] and gid[0] in gids and j['genes'][0]['geneName']['value']==locus[0])
+# Exact frozen child only provides context, not an inhibitory event.
+bp={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':ns['rdf']};t=etree.parse(B['PathBank:SMP0002108']['path']);r=t.xpath('//bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002108"]',namespaces=bp)[0];i=t.xpath('//bp:Interaction[@rdf:ID="SubPathwayControls/109883"]',namespaces=bp)[0];child=t.xpath('//bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0000839"]',namespaces=bp)[0];pb={'root_components':r.xpath('bp:pathwayComponent/@rdf:resource',namespaces=bp),'interaction':etree.tostring(i,encoding='unicode'),'child':etree.tostring(child,encoding='unicode')};record('PathBank opaque child',pb,any('109883' in v for v in pb['root_components']) and not child.xpath('bp:pathwayComponent',namespaces=bp))
+(O/'independent-probes.json').write_text(json.dumps({'checks':rows,'all_pass':all(x['passed'] for x in rows)},indent=2)+'\n');print('Source-backed probes passed',len(rows),'ontology identities',len(ont),'sides',len(sidechecks))

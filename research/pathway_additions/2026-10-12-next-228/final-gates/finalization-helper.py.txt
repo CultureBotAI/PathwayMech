@@ -1,0 +1,267 @@
+"""Archive actual MG results, inspect current inputs and assemble a native review.
+
+Root executes only after all maintained gates and exact preservation passed.
+This does not save a review, create history, commit, or modify accepted inputs.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shlex
+import subprocess
+from datetime import datetime, timezone
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-228-20261012')
+SUPPORT = Path('/private/tmp/pathwaymech-next-228-finalization-support-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-228-review-assembly-20261012')
+DOSSIER = ROOT / 'research/pathway_additions/2026-10-12-next-228'
+TARGET = ROOT / 'data/pathways/mannosylglycerate-degradation.yaml'
+TARGET_ID = 'MetaCyc:PWY0-1300'
+TARGET_SHA = 'b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6'
+BASE = '790a9699d7c1ca9c00536be877fa884af1c57918'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ENV = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONPATH': str(ROOT / 'src') + ':' + str(ROOT)}
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def bind(path):
+    path = Path(path)
+    body = path.read_bytes()
+    return {'path': str(path), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--gates', required=True, type=Path)
+    parser.add_argument('--preservation', required=True, type=Path)
+    args = parser.parse_args()
+    gates, preserved = load(args.gates), load(args.preservation)
+    assert gates['status'] == preserved['status'] == 'passed'
+    assert gates['base'] == BASE and gates['target_sha256'] == TARGET_SHA
+    assert preserved['target_sha256'] == TARGET_SHA
+    assert bind(args.gates) == preserved['gate_receipt']
+    assert bind(gates['inputs']['path']) == gates['inputs']
+    gate_inputs = load(gates['inputs']['path'])
+    assert gate_inputs['render_history_inputs'] == gates['render_history_inputs']
+    assert [r['name'] for r in gates['receipts']] == [
+        'render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored',
+        'diff-check', 'site-current']
+    for receipt in gates['receipts']:
+        assert receipt['exit_code'] == 0
+        for key in ('stdout', 'stderr'):
+            assert bind(receipt[key]['path']) == receipt[key]
+    assert bind(TARGET)['sha256'] == TARGET_SHA
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip() == BASE
+    prior = {r['relative_path']: r for r in gate_inputs['all_maintained_inputs']}
+    generated = {r['relative_path'] for r in gates['generated_files']}
+    current = set(subprocess.check_output([
+        'rg', '--files', '-uu', '-L', '-g', '!.git', '-g', '!.git/**',
+        '-g', '!.venv', '-g', '!.venv/**', '.'], cwd=ROOT, text=True).splitlines())
+    current = {str(Path(p)) for p in current}
+    assert current - generated == set(prior) - generated
+    for relative in sorted(current - generated):
+        item = bind(ROOT / relative)
+        assert (item['bytes'], item['sha256']) == (prior[relative]['bytes'], prior[relative]['sha256'])
+    for item in gates['generated_files']:
+        actual = bind(ROOT / item['relative_path'])
+        assert (actual['bytes'], actual['sha256']) == (item['bytes'], item['sha256'])
+    assert not OUT.exists() and not (DOSSIER / 'final-gates').exists()
+    qa = Path('/private/tmp/pathwaymech-next-228-page-qa-20261012')
+    visual = load(qa / 'root-visual-observation.json')
+    assert bind(visual['page']['path']) == visual['page']
+    assert bind(visual['overview']['path']) == visual['overview']
+    assert bind(visual['programmatic_receipt']['path']) == visual['programmatic_receipt']
+    history_paths = set(subprocess.check_output([
+        'rg', '--files', '-uu', '-L', 'history'], cwd=ROOT, text=True).splitlines())
+    assert history_paths == {i['relative_path'] for i in gates['render_history_inputs']}
+    for item in gates['render_history_inputs']:
+        actual = bind(ROOT / item['relative_path'])
+        assert actual['sha256'] == item['sha256'] and actual['bytes'] == item['bytes']
+
+    OUT.mkdir()
+    archive = DOSSIER / 'final-gates'
+    archive.mkdir()
+    mappings = []
+
+    def copy(source, name):
+        source = Path(source)
+        destination = archive / name
+        body = source.read_bytes()
+        # Retain text byte-for-byte in a lossless wrapper when Git whitespace
+        # checks would reject its original formatting. Never normalize evidence.
+        if destination.suffix != '.png':
+            text = body.decode('utf-8')
+            if any(line.rstrip() != line for line in text.splitlines()) or text.endswith('\n\n'):
+                destination = destination.with_name(destination.name + '.json')
+                write(destination, {'serialization': 'lossless-utf8-json',
+                                    'original': bind(source), 'text': text})
+            else:
+                with destination.open('xb') as stream:
+                    stream.write(body)
+        else:
+            with destination.open('xb') as stream:
+                stream.write(body)
+        mappings.append({'source': bind(source), 'archived': bind(destination)})
+        return destination
+
+    local = {}
+    for key, source, name in [
+        ('gates', args.gates, 'gates.json'),
+        ('preservation', args.preservation, 'preservation.json'),
+        ('gate-inputs', Path(gates['inputs']['path']), 'gate-inputs.json'),
+        ('page-qa', qa / 'receipt.json', 'page-qa.json'),
+        ('visual-observation', qa / 'root-visual-observation.json', 'visual-observation.json'),
+        ('display-approval', Path('/private/tmp/pathwaymech-next-228-approved-node-display-delta-20261012.json'), 'display-approval.json'),
+        ('display-assessment', Path('/private/tmp/pathwaymech-next-228-node-display-assessment-20261012.json'), 'display-assessment.json'),
+        ('history-execution', Path('/private/tmp/pathwaymech-next-228-native-history-20261012/receipt.json'), 'history-execution.json'),
+    ]:
+        local[key] = copy(source, name)
+    for receipt in gates['receipts']:
+        for key in ('stdout', 'stderr'):
+            copy(receipt[key]['path'], receipt['name'] + '.' + key)
+    for name in ('original.svg', 'styled.svg', 'overview.png'):
+        copy(qa / name, 'graph-' + name)
+    copy('/private/tmp/pathwaymech-next-228-page-qa.py', 'page-qa-helper.py.txt')
+    copy(__file__, 'finalization-helper.py.txt')
+    assert bind(gates['original_failure']['path']) == gates['original_failure']
+    assert bind(gates['recovery_inputs']['path']) == gates['recovery_inputs']
+    local['original-gate-failure'] = copy(gates['original_failure']['path'], 'original-gate-failure.json')
+    local['gate-recovery-inputs'] = copy(gates['recovery_inputs']['path'], 'gate-recovery-inputs.json')
+    recovery = load(gates['recovery_inputs']['path'])
+    assert bind(recovery['helper']['path']) == recovery['helper']
+    copy(recovery['helper']['path'], 'gate-recovery-helper.py.txt')
+    original_failure = load(gates['original_failure']['path'])['receipts'][-1]
+    assert original_failure['name'] == 'vendored' and original_failure['exit_code'] == 1
+    for key in ('stdout', 'stderr'):
+        assert bind(original_failure[key]['path']) == original_failure[key]
+        copy(original_failure[key]['path'], 'original-vendored-failure.' + key)
+    local['test-bytecode-cleanup'] = copy(
+        '/private/tmp/pathwaymech-next-228-test-bytecode-20261012/receipt.json',
+        'test-bytecode-cleanup.json')
+    copy(SUPPORT / 'handoff.json', 'finalization-support-handoff.json')
+    copy(SUPPORT / 'review-content-fragments.json', 'review-content-fragments.json')
+    copy('/private/tmp/pathwaymech-next-228-root-finalization-support-intake-20261012.json', 'root-support-intake.json')
+    write(archive / 'archive-map.json', mappings)
+
+    inputs = {
+        'schema/record_review.yaml', 'scripts/record_review.py',
+        'docs/record-reviews.md', 'docs/record-review-profile.md', 'conf/record_review.yaml',
+        '.claude/skills/review-yaml-record/SKILL.md', '.claude/skills/add-pathway/SKILL.md',
+        'CLAUDE.md', 'justfile', 'docs/CURATION.md', 'docs/HARMONIZATION.md',
+        'docs/CAUSAL_GRAPHS.md', 'history/README.md', 'scripts/new_history_record.py',
+        'src/pathwaymech/schema/history.yaml', 'src/pathwaymech/schema.py',
+        'src/pathwaymech/schema/pathwaymech.yaml', 'src/pathwaymech/strict.py',
+        'conf/identifier_policy.yaml', 'src/pathwaymech/kgx.py', 'src/pathwaymech/graph_view.py',
+        'src/pathwaymech/assets/pathway-network.css', 'docs/IDENTIFIERS.md',
+        'scripts/build_source_identifier_snapshot.py', 'scripts/build_ontology_identifier_snapshot.py',
+        'tests/test_pathbank_identifier_authority.py', 'conf/identifier_sources.json',
+        'conf/rhea_identifier_updates.json', 'data/identifier_authorities/sources.json',
+        'data/identifier_authorities/ontology.json', 'pages/records/MetaCyc_PWY0-1300.html',
+        'pages/downloads/nodes.tsv', 'pages/downloads/edges.tsv',
+    }
+    inputs.update(subprocess.check_output(['rg', '--files', '-uu', '-L',
+                                         str(DOSSIER.relative_to(ROOT))], cwd=ROOT, text=True).splitlines())
+    history = load('/private/tmp/pathwaymech-next-228-native-history-20261012/receipt.json')['history']
+    inputs.add(str(Path(history['path']).relative_to(ROOT)))
+    write(OUT / 'native-inspection-inputs.json', sorted(inputs))
+    command = [PYTHON, '-B', str(SUPPORT / 'inspect_with_inputs.py'), '--input-list',
+               str(OUT / 'native-inspection-inputs.json'), '--targets', str(SUPPORT / 'targets.yaml')]
+    started = now()
+    inspected = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True)
+    (OUT / 'inspect.stdout').write_bytes(inspected.stdout)
+    (OUT / 'inspect.stderr').write_bytes(inspected.stderr)
+    write(OUT / 'inspect-execution.json', {'command': command, 'cwd': str(ROOT),
+          'started_at': started, 'finished_at': now(), 'exit_code': inspected.returncode,
+          'stdout': bind(OUT / 'inspect.stdout'), 'stderr': bind(OUT / 'inspect.stderr')})
+    inspected.check_returncode()
+    inspection = json.loads(inspected.stdout)
+    assert inspection['source']['git_revision'] == BASE
+    # Current assessment follows actual native inspection. Exact inherited
+    # science is distinguished from these integration/representation checks.
+    record = yaml.safe_load(TARGET.read_bytes())
+    assert bind(TARGET)['sha256'] == TARGET_SHA
+    assert len(record['mechanistic_edges']) == 75 and len(record['references']) == 62
+    assert sum(len(e.get('endpoint_qualifiers', [])) for e in record['mechanistic_edges']) == 15
+    document = load(SUPPORT / 'review-content-fragments.json')['review_fields']
+    finished = now()
+    document.update({
+        'review_id': datetime.fromisoformat(finished).strftime('%Y%m%dT%H%M%SZ') + '-mannosylglycerate-degradation',
+        'started_at': started, 'finished_at': finished,
+        'skill': '.claude/skills/review-yaml-record/SKILL.md',
+        'completion': 'completed', 'verdict': 'pass_with_limitations',
+        'source': inspection['source'], 'targets': inspection['targets'],
+        'summary': 'Exact 75-edge, 62-reference maintained MG successor retains accepted independent scientific corrections for issues 441–443, original-derived canonical authorities, actual full maintained gates and exact old-corpus preservation. Static graph and complete qualifier/evidence text were checked. No issue closure or merge is claimed.',
+    })
+    document['reviewer'] = {
+        'identity': 'Codex /root (maintained integrator; packaging fragments by /root/mannosylglycerate_preflight/mg_authorities)',
+        'kind': 'agent', 'independence': 'self_review',
+        'independence_basis': 'Root integrated the record and assessed actual maintained gates, preservation and rendered outputs. Scientific content explicitly inherits independent original/successor reviews. Fragment preparer authored the scientific correction/adapter; neither this packaging nor root integration is presented as a new independent literature review.',
+    }
+    for key, path in local.items():
+        document['evidence'].append({'evidence_id': key, 'kind': 'validation',
+            'reference': str(path.relative_to(ROOT)), 'accessed_at': finished,
+            'support': 'supports', 'snapshot_sha256': bind(path)['sha256'],
+            'summary': 'Actual inspected ' + key + ' receipt; scope and original bindings retained.'})
+    document['checks'] = [{
+        'check_id': 'maintained-' + r['name'], 'name': 'Actual maintained ' + r['name'],
+        'status': 'passed', 'required': True, 'target_ids': [TARGET_ID],
+        'summary': 'Root-executed command passed; exact stdout/stderr, times and environment are archived.',
+        'command': shlex.join(r['command']), 'exit_code': r['exit_code'], 'evidence_ids': ['gates'],
+        'scope_note': 'Full maintained run includes pre-render MG history; later review/receipt additions require separate native and final checks.',
+    } for r in gates['receipts']]
+    document['checks'].append({
+        'check_id': 'original-vendored-dns-failure', 'name': 'Original vendored check before network retry',
+        'status': 'failed', 'required': False, 'target_ids': [TARGET_ID],
+        'summary': 'The initial command exited 1 because the canonical GitHub hostname could not resolve. The unchanged-input retry passed; the required maintained-vendored check records that final result.',
+        'command': shlex.join(original_failure['command']), 'exit_code': 1,
+        'evidence_ids': ['original-gate-failure', 'gate-recovery-inputs'],
+        'scope_note': 'Historical failed attempt retained explicitly; superseded by successful required retry, without rerunning or relabeling six already-passed commands.',
+    })
+    for key, topic, summary, evidence in [
+        ('preservation', 'Exact prior-corpus conservation',
+         'All 228 prior records/pages, 102 native review bundles, prior history, authority objects, old KGX edges and source-context multiplicities preserved. Only four individually assessed shared display cells changed.',
+         ['preservation', 'display-approval', 'display-assessment']),
+        ('representation', 'Actual static graph and rendered evidence',
+         visual['observed'] + ' Programmatic checks retain 75 ordered graph triples, 282 unique HTML IDs, 318 local fragments, all 15 qualifier descriptions and all 176 evidence statements.',
+         ['page-qa', 'visual-observation']),
+    ]:
+        document['checks'].append({'check_id': key, 'name': topic, 'status': 'passed',
+            'required': True, 'target_ids': [TARGET_ID], 'summary': summary, 'evidence_ids': evidence})
+        document['assessments'].append({'assessment_id': 'root-' + key,
+            'area': 'representation' if key == 'representation' else 'consistency',
+            'topic': topic, 'outcome': 'supported', 'target_ids': [TARGET_ID],
+            'summary': summary, 'evidence_ids': evidence})
+    document['limitations'].extend([
+        'Current native inspection directly binds this target, maintained owners, current graph/exports and archived evidence. Old-corpus input hashes and conservation are bound through the full gate-input and preservation receipts; those other records were not freshly scientifically reviewed.',
+        'Static visual/HTML coverage only; browser interaction, focus and keyboard controls were not exercised.',
+        'Native review validation/save/check and later final receipt checks follow this assembled document; no late history is authorized by this review.',
+        'PR review, hosted CI, merge, issue closure and branch cleanup remain pending. Source exhaustion is false.',
+    ])
+    write(OUT / 'completed-review.json', document)
+    write(OUT / 'assembly.json', {'status': 'assembled_pending_root_read_native_serialization_and_save',
+        'started_at': started, 'finished_at': finished, 'target': bind(TARGET),
+        'inspection': bind(OUT / 'inspect.stdout'), 'review': bind(OUT / 'completed-review.json'),
+        'archive_map': bind(archive / 'archive-map.json'), 'inputs': len(inputs),
+        'maintained_review_saved': False, 'late_history_written': False})
+    print(json.dumps(load(OUT / 'assembly.json'), indent=2))
+
+
+if __name__ == '__main__':
+    main()

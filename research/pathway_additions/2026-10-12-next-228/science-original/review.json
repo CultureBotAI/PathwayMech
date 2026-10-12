@@ -1,0 +1,180 @@
+{
+  "kind": "record",
+  "reviewer": "/root/lyxose_author",
+  "independence": "Reviewer did not author MG target or MG adapter; owns prior lyxose work only. Author clarification is corroboration, not review evidence.",
+  "status": "changes_requested",
+  "target": {
+    "path": "/private/tmp/pathwaymech-next-228-author-20261012/draft/mannosylglycerate-degradation.yaml",
+    "intended_owner": "data/pathways/mannosylglycerate-degradation.yaml",
+    "id": "MetaCyc:PWY0-1300",
+    "sha256": "08fe9a6f3f0da2f66c4dc6cd68fc33fbe51a38770b6eeee743751f05f019d088"
+  },
+  "started_at": "2026-10-12T02:54:18.047451+00:00",
+  "finished_at": "2026-10-12T03:04:00.983889+00:00",
+  "findings": [
+    {
+      "key": "mg-entry-assay-context-omission",
+      "severity": "major",
+      "title": "Relevant MG uptake modulation and its internal source tension lack a disposition",
+      "locations": [
+        "mechanistic_edges[id=mg-mnga-catalysis]",
+        "mechanistic_edges[id=mg-mnga-vesicle-assay]",
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "evidence": [
+        {
+          "reference": "PMID:14645248",
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/derived/Sampaio2004-assembled.txt",
+          "sha256": "65221244b50be357ab0ac0c10b40dfe922794d63f277f65522bc3473e1bb2edb",
+          "locators": [
+            "retained author-uploaded full-text observation L1303–L1310",
+            "L1350–L1372",
+            "L2429–L2457"
+          ],
+          "interpretation": "In induced MC4100 uptake experiments, Results reports weak effects of glucose, mannose and mannitol, a smaller trehalose effect, and no effect for fructose and the named non-PTS comparators. Discussion describes mannose and the three glycosyl analogues as not significantly inhibitory even at 1 mM against 0.1 μM radiolabeled MG. These statements must coexist, rather than being upgraded into a robust direct competitive-inhibition mechanism. The same Results also reports that 300 mM NaCl did not induce transport and reduced MG-dependent induction by approximately half; this differs from the later KM522 500 mM salt-protection test."
+        }
+      ],
+      "rationale": "The linked entry event is explicitly in record scope, yet these source-supported experimental bounds are absent from target, authored research and scope disposition. This is material incompleteness of the entry mechanism context, not a demand to extend unrelated regulons.",
+      "fix": "Preserve the observed weak-positive and negative uptake comparisons, the Results/Discussion mannose tension, and the separate salt-induction observation in source-backed entry assay context and corresponding scope/coverage ledgers. Keep MC4100 and measured uptake/induction endpoints explicit. Do not assert direct ligand binding, a competitive mechanism, exact inhibition constants or a stronger biological sign than the source supports. If graph edges are added, independently ground each chemical and qualify the measured process; source-limited prose on the existing entry context is acceptable where exact mechanistic/chemical scope is unresolved.",
+      "acceptance": [
+        "Relevant source statements are present with exact L-number locators and declared projection access.",
+        "The mannose weak-effect/no-significant-effect tension and negative controls remain explicit.",
+        "300 mM salt-induced suppression of induction is separated from KM522 osmoprotection and from a direct catalytic salt effect.",
+        "Original two core events and native 17 chemical sides remain unchanged."
+      ],
+      "author_response": "Author independently acknowledged no explicit evidence-backed exclusion was preserved; this does not replace reviewer inspection."
+    },
+    {
+      "key": "mg-cdar-assay-endpoint-scope",
+      "severity": "major",
+      "title": "CdaR assay-derived regulatory endpoints omit construct and sequence-reference qualification",
+      "locations": [
+        "mechanistic_edges[id=mg-gark-reg-cdar].subject",
+        "mechanistic_edges[id=mg-cdar-auto].subject"
+      ],
+      "evidence": [
+        {
+          "reference": "PMID:10762278",
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC111340.html",
+          "sha256": "558ddd8487022da44e22f533f49a4f2d8d9c433fd2cdfa3bd6613449c702c391",
+          "locators": [
+            "/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1]",
+            "same section p[2]",
+            "section[6]/p[1] and p[2]"
+          ],
+          "interpretation": "The study uses MC4100 loss/rescue and reporter systems; its reference describes 391 residues, paper-numbered P297S in JA176 and a near-terminal Tn5 insertion in JA177. pRM1 carries MC4100 sdaR in pBluescript. Positive autoregulation is inferred from reporter responses and loss of functional sdaR."
+        },
+        {
+          "reference": "UniProtKB:P37047",
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P37047.json",
+          "sha256": "510779d935c3ec17cf2702a2be40300f544d6cea4a25924e72e31232dbaf1789",
+          "locators": [
+            "primaryAccession",
+            "sequence.length",
+            "genes"
+          ],
+          "interpretation": "The current issuing reference is P37047 with 385 residues. The author dossier retains this mismatch, but it is not on either regulatory subject endpoint in the YAML/page/export claim."
+        }
+      ],
+      "rationale": "The graph/export endpoint is the exact modern reference protein. Assay-specific reference numbering, preparations and loss/rescue interpretation must travel with the affected claim, rather than remaining only in an external dossier. The signs and gene endpoints are supported; this is a scope defect, not evidence that P297S or Tn5 mutants activate transcription.",
+      "fix": "Qualify the subject of both affected edges as experimental_construct with exact source-limited MC4100 reporter/loss/rescue context and the 391-aa paper/current-385-aa reference distinction. Preserve paper residue numbering without silently mapping it to the modern chain. Distinguish active reference or rescued regulator from loss-of-function mutants used to infer its role; do not mint a new protein ID or label mutant proteins as active.",
+      "acceptance": [
+        "Both affected CdaR subject endpoints retain evidence-backed qualification in YAML, graph and KGX.",
+        "Current P37047 identity and both existing positive expression signs/gene targets remain unchanged.",
+        "No asserted sequence equivalence, direct ligand binding or active P297S/Tn5 phenotype is introduced."
+      ],
+      "author_response": "Author acknowledged intended native activation supported by loss/rescue, and confirmed the missing target-level preparation/reference distinction."
+    },
+    {
+      "key": "mg-uniprot-rhea-evidence-locator-scope",
+      "severity": "minor",
+      "title": "Several evidence locators resolve to adjacent fields rather than the asserted native statement",
+      "locations": [
+        "mechanistic_edges[id=mg-ptsi-catalysis].evidence[2]",
+        "mechanistic_edges[id=mg-location-P0ACF8].evidence[0]",
+        "all 13 evidence items whose reference_id is RHEA:27378, RHEA:33308 or RHEA:23881"
+      ],
+      "evidence": [
+        {
+          "reference": "UniProtKB:P08839",
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P08839.json",
+          "sha256": "70ac1d76fe0def5c5546bd523292601305ef56cc326a31ff7a0223f572cae844",
+          "locators": [
+            "features[type=Active site,location.start.value=189]",
+            "features[type=Modified residue]"
+          ],
+          "interpretation": "His189 is an Active site feature. The original Modified residue feature is Tyr122, so the existing locator does not locate the claimed catalytic histidine."
+        },
+        {
+          "reference": "UniProtKB:P0ACF8",
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P0ACF8.json",
+          "sha256": "69765685e6a74d1b208bbeb2ddd51204aa1be75b3b8b411efbe83252cd9523c8",
+          "locators": [
+            "comments[commentType=SUBUNIT]",
+            "comments[commentType=SUBCELLULAR LOCATION]"
+          ],
+          "interpretation": "The current assertion combines nucleoid location with variable oligomers but locates only SUBCELLULAR LOCATION. Oligomer support occurs in SUBUNIT."
+        },
+        {
+          "reference": "RHEA:27378 / RHEA:33308 / RHEA:23881",
+          "path": "/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz",
+          "sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf",
+          "locators": [
+            "directional rh:substrates/rh:products side; side rh:contains1 participant; participant rh:compound compound"
+          ],
+          "interpretation": "All 13 stoichiometry locators end with rh:coefficient1, which is not the actual native predicate. The source encodes unit stoichiometry using the side-to-participant rh:contains1 relation."
+        }
+      ],
+      "rationale": "The identities and scientific assertions are supported elsewhere in the same originals, but exact reproducibility of the declared locator fails. A nonempty locator check misses these adjacent-field errors.",
+      "fix": "Point PtsI His189 to its Active site feature, include H-NS SUBUNIT for the oligomer assertion or split its evidence, and spell each Rhea side/participant rh:contains1 triple exactly. Preserve all scientific claims, source hashes, reaction sides, coefficients and state qualifiers.",
+      "acceptance": [
+        "Independent replay resolves each asserted feature/comment/triple in the exact bound original.",
+        "A Tyr122 Modified residue or nonexistent rh:coefficient1 predicate is rejected by source-specific negative controls.",
+        "No edge endpoint, predicate, chemical identity, stoichiometry or qualifier changes occur for this locator-only fix."
+      ]
+    }
+  ],
+  "coverage": {
+    "edges": 75,
+    "existing_qualifiers": 13,
+    "references": 62,
+    "evidence_uses": 164,
+    "preflight_claims": 29,
+    "issuing_source_probes": 63,
+    "ontology_identities": 25,
+    "native_chemical_sides": 17,
+    "negative_controls": 10
+  },
+  "checks": [
+    "612 sealed author artifacts independently rehashed",
+    "62 bound references independently rehashed;2004 projection replayed to2883 exact observed lines",
+    "all cited XML/HTML XPath locators and primary line ranges replayed; actual assertion meaning checked separately",
+    "all33 issuing native object requests/frames/version and exact selected chemistry/identity joins checked",
+    "full ChEBI/GO/NCBITaxon original files rehashed and25 selected identities queried read-only",
+    "full Rhea original hash plus actual directional side/participant/compound/coefficient joins",
+    "native shape and strict single-target pass; author candidate has1 acknowledged childID gap",
+    "75-edge13-qualifier independent KGX serialization; no page regeneration",
+    "frozen iModulon10queries/module38 replayed; no new causal inference"
+  ],
+  "limits": [
+    "No new live original acquisition was necessary; review is pinned to supplied native originals and primary bodies.",
+    "2004 body access is exact retained author-uploaded web observations, not publisher PDF. Figures/captions were inspected as text; no image-level conclusion.",
+    "Historical/FNR full texts and TmaR supplements remain unavailable. All cited primary passages and source-selected relevant sections were inspected; complete reading of every unrelated paragraph of every reference is not claimed.",
+    "No maintained records, source caches, Git/GitHub, installs or environment sync were changed. No whole-corpus tests, full canonical build, maintained structured review save or merge-readiness claim.",
+    "Root reports MG adapter separately accepted at34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed; this reviewer retained the exact author-candidate one-gap result and did not substitute its authority."
+  ],
+  "commands": {
+    "inspection_initial": "b630ba/0",
+    "complete_target_read": [
+      "b630ba/0",
+      "35d94d/0",
+      "a903d7/0"
+    ],
+    "original_extraction_final": "c0aaf3/0",
+    "independent_probes": "59dbce session36232; completion982176/0; stdout ba962c/0",
+    "context_replay": "3f7a88/0",
+    "native_and_negative": "752383 session72309; completion081be5/0",
+    "attempt_accounting": "inspect-originals-first.py selected metadata as object for a descriptive projection; corrected final extractor selects the actual issued object. Raw refs/locators had no errors. A read-only ps diagnostic was sandbox-denied; no elevated retry, no artifact mutation."
+  }
+}

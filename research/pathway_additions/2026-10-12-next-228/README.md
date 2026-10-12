@@ -1,0 +1,7 @@
+This dossier retains the complete author-to-correction-to-independent-review chain for MetaCyc:PWY0-1300, including issues 441–443, three accepted adapter files, original canonical failure, independent diagnosis, exact completion and independent audit. No original finding or hash binding is rewritten.
+
+Full primary bodies, databases and candidate trees remain externally bound by their original sealed manifests. Scripts, text and logs requiring whitespace preservation use lossless UTF-8 JSON wrappers; decoding their text restores the original bytes. Explicit credential-header projections, if present, are separately labeled and bind the unchanged external original.
+
+The canonical capture was originally taken from an accepted uncommitted 228-record lyxose worktree. The separate merge bridge binds the later actual merged base and verifies every captured record, old authority file and code input without relabeling that earlier observation. The actual native MG output preserves all old source objects and native source order, including the accepted frozen UniProt provenance differences documented in the diagnosis.
+
+The adoption receipt, maintained gate receipts, exact old page/review/history/KGX preservation, saved maintained scientific review, visual page/SVG assessment and PR/merge/issue closure are separate later actions. No completion is asserted here. Curation history must precede the final render and site-current check; any subsequent history change requires rerendering and rebinding affected receipts. No source-exhaustion claim is made.

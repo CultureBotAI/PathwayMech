@@ -1,0 +1,828 @@
+{
+  "source": {
+    "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/derived/claim-ledger.json",
+    "bytes": 24154,
+    "sha256": "2eab355863945141c162043e8b6479e1527e04b1dfe903eb0d06d568b2ea7d52"
+  },
+  "claims": [
+    {
+      "key": "native-core",
+      "claim": "PWY0-1300 has two reaction-list members, RXN0-5216 and GKI-RXN, with hydrolysis preceding glycerate phosphorylation.",
+      "status": "supported",
+      "locator": "/ptools-xml/Pathway/reaction-list and reaction-ordering",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/META-PWY0-1300.xml",
+          "sha256": "32e438087ffa7ea6298110131c5e47a6ff91d48c3817006431138569baf71e9c",
+          "bytes": 10481
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PWY0-1300.xml",
+          "sha256": "96020b865b963e10b30806e7fcbe25f246fc862eddba3e293149d879c2393bdd",
+          "bytes": 4956
+        }
+      ],
+      "disposition": "Retained exactly two formal core members; no transport or energy event promoted into reaction-list.",
+      "record_edges": [
+        "mg-core-RXN0-5216",
+        "mg-core-GKI-RXN",
+        "mg-core-order"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "native-entry",
+      "claim": "MG-P has incoming link RXN0-2522; mannose-phosphate has outgoing MANNCAT-PWY and COLANSYN-PWY links. These are interfaces, not extra reaction-list members.",
+      "status": "supported",
+      "locator": "/ptools-xml/Pathway/pathway-link",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/META-PWY0-1300.xml",
+          "sha256": "32e438087ffa7ea6298110131c5e47a6ff91d48c3817006431138569baf71e9c",
+          "bytes": 10481
+        }
+      ],
+      "disposition": "Incoming entry retained; outgoing alpha-M6P interfaces are separate opaque pathway-context nodes. No generic-to-alpha conversion is invented.",
+      "record_edges": [
+        "mg-entry-interface",
+        "mg-interface-MANNCAT-PWY",
+        "mg-interface-COLANSYN-PWY"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "pathbank-root",
+      "claim": "SMP0002108 has two biochemical reactions, one coupled transport and an opaque SMP0000839 interface.",
+      "status": "supported",
+      "locator": "Pathway about SMP0002108; pathwayComponent and pathwayOrder",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PW002096.owl",
+          "sha256": "473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8",
+          "bytes": 42234
+        }
+      ],
+      "disposition": "All root components and PathwayStep/Interaction objects retained in original source and bounded adapter dossier; exact two biochemical reactions plus coupled transport distinguished from child context.",
+      "record_edges": [
+        "mg-opaque-pathbank-child"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "pathbank-permease-conflict",
+      "claim": "Frozen ProteinReference/10354 misassigns MngR accession P13669 to an MngA permease label. Native MngA is P54745.",
+      "status": "conflicting_frozen_assignment",
+      "locator": "ProteinReference/10354/xref; UniProt primaryAccession/proteinDescription; native dblink",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PW002096.owl",
+          "sha256": "473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8",
+          "bytes": 42234
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54745.json",
+          "sha256": "37c500236193de7d2140e3098e8287dd02d18f12a6b8deb6356700b977ed89b0",
+          "bytes": 28012
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P13669.json",
+          "sha256": "65368a54513e2a59ea3d4cf5da450a93873afbbdc320cb23d37b1a1fc4a7a897",
+          "bytes": 15848
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-HRSA-MONOMER.xml",
+          "sha256": "ef2f8358306ae8e94ac2c70ba7b72f384d1af2e06159065a84b6c107e6a4558f",
+          "bytes": 57612
+        }
+      ],
+      "disposition": "Reject frozen P13669-as-permease assignment. Actual MngA P54745 and MngR P13669 remain distinct; full original conflict retained.",
+      "record_edges": [
+        "mg-mnga-catalysis",
+        "mg-assembly-P13669"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "pathbank-ec-conflict",
+      "claim": "EC3.2.1.170 hydrolyzes unphosphorylated MG. It must not label the candidate MG-P hydrolase reaction.",
+      "status": "rejected_frozen_assignment",
+      "locator": "Reactions/6116/eCNumber; IUBMB Reaction",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PW002096.owl",
+          "sha256": "473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8",
+          "bytes": 42234
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/IUBMB-3.2.1.170.html",
+          "sha256": "b2cd976d4f7c1d118ed468fea103cc48bb246d07573e47f4f37092b1db8ec126",
+          "bytes": 2533
+        }
+      ],
+      "disposition": "Reject EC3.2.1.170 as an MG-P hydrolase label. The IUBMB original describes unphosphorylated MG hydrolysis; no substitute incomplete EC is invented.",
+      "record_edges": [
+        "mg-mngb-enables"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "hydrolysis-anomer",
+      "claim": "Native RXN0-5216 produces anomer-unspecified CPD-15979/CHEBI:58735; Rhea27867 instead specifies alpha-M6P/CHEBI:60332.",
+      "status": "granularity_conflict",
+      "locator": "Reaction/right; Compound/dblink; UniProt catalytic activity",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-RXN0-5216.xml",
+          "sha256": "63082e29b9a30b08ee1c4d0c5ea92e47aff7616f0eb3942adfba8b300561d259",
+          "bytes": 2306
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-CPD-15979.xml",
+          "sha256": "1dc81a81ba0b1068fe5a485ef9ab51410ac57b7f5fde7745e82c50aec6ed1a57",
+          "bytes": 7976
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54746.json",
+          "sha256": "2063c1639591c2a036a8be619ec05a5e12e0313ee29bc07c0199a7a3bebb35b7",
+          "bytes": 16962
+        }
+      ],
+      "disposition": "Retain anomer-unspecified native CPD15979/CHEBI58735 core product. Rhea27867 alpha-specific CHEBI60332 chemistry and native alpha-M6P outgoing links are compared, not collapsed.",
+      "record_edges": [
+        "mg-RXN0-5216-produces-58735",
+        "mg-interface-MANNCAT-PWY",
+        "mg-interface-COLANSYN-PWY"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mnga-chain",
+      "claim": "MngA is a single 658-residue EIIABC polypeptide. Its three functional domains do not imply three separate protein subunits.",
+      "status": "supported",
+      "locator": "UniProt sequence.length/features; native Protein/comment",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54745.json",
+          "sha256": "37c500236193de7d2140e3098e8287dd02d18f12a6b8deb6356700b977ed89b0",
+          "bytes": 28012
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-HRSA-MONOMER.xml",
+          "sha256": "ef2f8358306ae8e94ac2c70ba7b72f384d1af2e06159065a84b6c107e6a4558f",
+          "bytes": 57612
+        }
+      ],
+      "disposition": "One658-aa polypeptide with EIIABC domains; no three-polypeptide assembly claim.",
+      "record_edges": [
+        "mg-mnga-catalysis"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mnga-sites",
+      "claim": "MngA His87/Cys192 relay sites are putative sequence-based assignments; no site occupancy was measured by the inspected MG transport work.",
+      "status": "qualified_annotation",
+      "locator": "Protein/comment; UniProt features",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-HRSA-MONOMER.xml",
+          "sha256": "ef2f8358306ae8e94ac2c70ba7b72f384d1af2e06159065a84b6c107e6a4558f",
+          "bytes": 57612
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54745.json",
+          "sha256": "37c500236193de7d2140e3098e8287dd02d18f12a6b8deb6356700b977ed89b0",
+          "bytes": 28012
+        }
+      ],
+      "disposition": "His87/Cys192 are putative sequence-based relay assignments, not measured occupancy or a new exact phosphoprotein identifier.",
+      "record_edges": [
+        "mg-mnga-vesicle-assay"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mnga-topology",
+      "claim": "MngA is an inner-membrane permease; a predicted N-terminal periplasmic topology must not override the cytoplasmic phosphorelay-domain context as measured sidedness.",
+      "status": "annotation_conflict",
+      "locator": "UniProt Topological domain and SUBCELLULAR LOCATION; native relay comment",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54745.json",
+          "sha256": "37c500236193de7d2140e3098e8287dd02d18f12a6b8deb6356700b977ed89b0",
+          "bytes": 28012
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-HRSA-MONOMER.xml",
+          "sha256": "ef2f8358306ae8e94ac2c70ba7b72f384d1af2e06159065a84b6c107e6a4558f",
+          "bytes": 57612
+        }
+      ],
+      "disposition": "Inner-membrane placement retained. Predicted N-terminal periplasmic annotation is not equated to measured sidedness; native HPr and EI phosphate transfer are cytoplasmic.",
+      "record_edges": [
+        "mg-location-P54745"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mngb-evidence",
+      "claim": "MngB is assigned MG-P hydrolase function from physiological/surrogate evidence; the inspected native record says it has not been purified.",
+      "status": "qualified_annotation",
+      "locator": "Protein/comment; UniProt FUNCTION and catalytic activity",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-EG13236-MONOMER.xml",
+          "sha256": "8d8f66a8919751f10fefa78946c539915e4c4a82f22393a6b8c00238ec985d86",
+          "bytes": 27706
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54746.json",
+          "sha256": "2063c1639591c2a036a8be619ec05a5e12e0313ee29bc07c0199a7a3bebb35b7",
+          "bytes": 16962
+        }
+      ],
+      "disposition": "Physiological/surrogate support represented as enables, with no purified MG-P assay or exact product-anomer claim.",
+      "record_edges": [
+        "mg-mngb-enables"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mngb-metal",
+      "claim": "UniProt annotates one generic divalent metal cation per MngB subunit by similarity; exact metal, occupancy and biological assembly remain unresolved.",
+      "status": "similarity_only",
+      "locator": "comments[COFACTOR], ECO:0000250",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P54746.json",
+          "sha256": "2063c1639591c2a036a8be619ec05a5e12e0313ee29bc07c0199a7a3bebb35b7",
+          "bytes": 16962
+        }
+      ],
+      "disposition": "One generic divalent cation per subunit is similarity-only; exact ion, occupancy and native assembly remain unknown.",
+      "record_edges": [
+        "mg-mngb-cofactor"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "gark-identity",
+      "claim": "GarK P23524 is glycerate2kinase with forward Rhea27378 chemistry; historical GKI/GKII naming remains explicitly cautioned.",
+      "status": "supported",
+      "locator": "UniProt catalytic activity/CAUTION; Enzymatic-Reaction/reaction-direction",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P23524.json",
+          "sha256": "e1616e74784f3e3c1aed4165e575325ec2dfc382075de2a6c83ed9cb06ed44d4",
+          "bytes": 15314
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-GKI-ENZRXN.xml",
+          "sha256": "bceb2290d2aa39ad21641e162b8c9119e7afe2bab7c7abe22bbc18592de8c5a3",
+          "bytes": 9041
+        }
+      ],
+      "disposition": "Forward glycerate2-kinase retained. Historical GK1/GK2 ambiguity does not transfer uncertain assay conditions to a selected gene.",
+      "record_edges": [
+        "mg-gark-catalysis"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "gark-product-primary",
+      "claim": "Engineered phosphoglycerate-mutase/kinase deletion strains complemented with GarK or GlxK support formation of2PG, rather than3PG.",
+      "status": "primary_genetic_selection",
+      "locator": "Results/Fig1/Fig2/Table1; Materials and Methods/Cloning",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC4378991.xml",
+          "sha256": "8f97177babf460118ddaadb2e1192c5f210205e2be5a51eea47900fe054f54a9",
+          "bytes": 55724
+        }
+      ],
+      "disposition": "Engineered quadruple-deletion complementation and plasmid/His6 primer constructs retained; no native assembly measurement or purified direct product quantification asserted.",
+      "record_edges": [
+        "mg-gark-product-selection"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "ptsi-assembly",
+      "claim": "Catalytic PtsI complex CPLX0-7938 contains two P08839 subunits and requires Mg2+; the formal native reaction phosphorylates HPr using PEP.",
+      "status": "supported",
+      "locator": "Protein/component/comment; Reaction/left/right",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-CPLX0-7938.xml",
+          "sha256": "024ccf00ed2940a2e0483ed31f8875ea70fa0a72da4cd31e2a0cba750530fdf4",
+          "bytes": 36248
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-2.7.3.9-RXN.xml",
+          "sha256": "da8505dadae8d9b28d2c7cf5d400565db45f3726f13deb66b75a87530c1af8b8",
+          "bytes": 3205
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P08839.json",
+          "sha256": "70ac1d76fe0def5c5546bd523292601305ef56cc326a31ff7a0223f572cae844",
+          "bytes": 52869
+        }
+      ],
+      "disposition": "Use independently issued MetaCyc:CPLX0-7938 with2META:PTSI-MONOMER and original direct P08839 cross-reference. EcoCyc equivalent has three native parents and fails its narrower parser; original bodies and same-component bridge retained.",
+      "record_edges": [
+        "mg-assembly-P08839",
+        "mg-ptsi-catalysis",
+        "mg-ptsi-cofactor"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "ptsi-trapped-structure",
+      "claim": "The EI structure is a phosphoenzyme trapped using Mg and oxalate; one metal per crystallized subunit is not universal cellular occupancy.",
+      "status": "qualified_primary_structure",
+      "locator": "Results: Overall structure, Active site, PEP-binding site",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC1618308.html",
+          "sha256": "fc58aa90b6183e9b6d6c468533ac6599b69588f311f2695afbc5edcb18073a3f",
+          "bytes": 187003
+        }
+      ],
+      "disposition": "Mg/oxalate phosphoenzyme trap is explicit; crystallized metal occupancy is not generalized to all cellular EI.",
+      "record_edges": [
+        "mg-ptsi-cofactor"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "hpr-state",
+      "claim": "HPr is a soluble cytoplasmic monomer with transient His15 phosphorylation; frozen PathBank conflates its two states and membrane location.",
+      "status": "frozen_model_conflict",
+      "locator": "Protein/comment; UniProt location; ReactionCoupledTransports/192",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PTSH-MONOMER.xml",
+          "sha256": "8359d59ecee9d892e43e966570a077d81bb707d53e8e82f1fe57aeff407081f2",
+          "bytes": 82860
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P0AA04.json",
+          "sha256": "cd91212440418f80308f01df2a84195a17e03ae620cf07e3a1ca303b7a5a2fd5",
+          "bytes": 32878
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PW002096.owl",
+          "sha256": "473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8",
+          "bytes": 42234
+        }
+      ],
+      "disposition": "Separate His15 phospho/unphosphorylated state qualifiers replace frozen state conflation. Exact native PTSH-PHOSPHORYLATED original exists but current EcoCyc adapter rejects its multiple-parent modified-protein shape; source-backed qualifiers preserve the state without forged authority rows.",
+      "record_edges": [
+        "mg-RXN0-2522-consumes-P0AA04",
+        "mg-RXN0-2522-produces-P0AA04",
+        "mg-2.7.3.9-RXN-consumes-P0AA04",
+        "mg-2.7.3.9-RXN-produces-P0AA04",
+        "mg-location-P0AA04"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mngr-assembly",
+      "claim": "Native MngR functional complex PC00103 has two PD01103/P13669 subunits.",
+      "status": "supported",
+      "locator": "Protein/component/coefficient and dblink",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PC00103.xml",
+          "sha256": "439b03bfe361bf11f2334606e2a9208c5727a36fc06bea13318da1e837d3e442",
+          "bytes": 25298
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PD01103.xml",
+          "sha256": "a331c518f29c0d96b71abd953e418bc0b29bc010c79a3c9fb194d0007bb76183",
+          "bytes": 30864
+        }
+      ],
+      "disposition": "Exact native PC00103 homodimer retained.",
+      "record_edges": [
+        "mg-assembly-P13669"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mngr-repression",
+      "claim": "MngR represses mngAB and autoregulates mngR. Its proposed MG-P ligand is not direct binding evidence.",
+      "status": "repression_supported_ligand_unresolved",
+      "locator": "Regulation/regulator,regulated-entity,mode; Protein/comment",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PC00103.xml",
+          "sha256": "439b03bfe361bf11f2334606e2a9208c5727a36fc06bea13318da1e837d3e442",
+          "bytes": 25298
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-10703.xml",
+          "sha256": "7a1545fe61fea91b410683069a84ca2162a96efe401f97a8f2d732ea01ea16e4",
+          "bytes": 12908
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-6274.xml",
+          "sha256": "c68eacda5fecd56904705d4e475f4aec4b44cb44039e46820284abad4cd72c8b",
+          "bytes": 12902
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-5259.xml",
+          "sha256": "1cefc41a761df04bca8b24da6723e00cc81fb9c2af7b000c0601c16faad32cf5",
+          "bytes": 12800
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-5260.xml",
+          "sha256": "82ed6c89ae34cb0937b6e70c929e6e430ff4f352eb25fd18d89d9566d5496223",
+          "bytes": 12084
+        }
+      ],
+      "disposition": "mngAB repression and mngR autorepression retained; MG-P direct ligand unresolved. Both native repeated operator-regulation records retained; mngB additionalTUs44203/44204 have unreported regulation, not demonstrated absence.",
+      "record_edges": [
+        "mg-mngr-repress-945355",
+        "mg-mngr-repress-945359",
+        "mg-mngr-autorepress"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "farr-caution",
+      "claim": "High-concentration fatty-acid/acyl-CoA displacement does not establish physiological fatty-acid regulation by MngR; denaturation is an alternative.",
+      "status": "conflicting_historical_interpretation",
+      "locator": "UniProt CAUTION; native Protein/comment",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/P13669.json",
+          "sha256": "65368a54513e2a59ea3d4cf5da450a93873afbbdc320cb23d37b1a1fc4a7a897",
+          "bytes": 15848
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PC00103.xml",
+          "sha256": "439b03bfe361bf11f2334606e2a9208c5727a36fc06bea13318da1e837d3e442",
+          "bytes": 25298
+        }
+      ],
+      "disposition": "High-concentration fatty-acyl displacement is not modeled as physiological ligand control; denaturation/damage alternative and historical interpretation remain explicit.",
+      "record_edges": [
+        "mg-mngr-autorepress"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "cdar-regulation",
+      "claim": "CdaR contributes to garPLRK expression by genetic reporter/complementation evidence; effects do not prove direct small-molecule binding.",
+      "status": "primary_genetic_regulation",
+      "locator": "Results: regulatory mutants and complementation; Regulation/mode",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC111340.html",
+          "sha256": "558ddd8487022da44e22f533f49a4f2d8d9c433fd2cdfa3bd6613449c702c391",
+          "bytes": 133189
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-5033.xml",
+          "sha256": "e6039c46cb96924dabde65ba437024968c6d6d1f2f40c58647680f72046a9a9a",
+          "bytes": 8250
+        }
+      ],
+      "disposition": "Genetic/reporter/pRM1 rescue and positive autoregulation retained. P297S and near-terminalTn5 are assay constructs; paper391-aa/current385-aa sequence numbering conflict retained. Inducers affect expression, not demonstrated direct ligand binding.",
+      "record_edges": [
+        "mg-gark-reg-cdar",
+        "mg-cdar-auto",
+        "mg-induction-16659-947632",
+        "mg-induction-16659-944860",
+        "mg-induction-30612-947632",
+        "mg-induction-30612-944860",
+        "mg-induction-16537-947632",
+        "mg-induction-16537-944860"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "hns-regulation",
+      "claim": "hns651 increases garP transcription in the tested K-12 strains at23/37°C; this is gene-expression control, not direct GarK inhibition.",
+      "status": "primary_transcript_measurement",
+      "locator": "Fig5 and corresponding results; strains DL1504/DL1947",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC1951813.html",
+          "sha256": "7a689c9afca6f7e648a1398406f02ed63d4dadf9b330f827c88f59908159c01d",
+          "bytes": 272057
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-9114.xml",
+          "sha256": "10eb27f6dcecdc01ef911df5c191b655c8d2b40f1f91fc226fd21aa990fa05f1",
+          "bytes": 7725
+        }
+      ],
+      "disposition": "Transcript regulation retained with exact DL1504/DL1947,hns651,M9glycerol,23/37°C context. Variable oligomers not forced into a fixed complex.",
+      "record_edges": [
+        "mg-gark-reg-hns",
+        "mg-location-P0ACF8"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "fnr-regulation",
+      "claim": "Native REG0-5032 annotates positive FNR regulation of garP; inspected primary access is metadata/abstract, so binding-site directness remains limited.",
+      "status": "native_annotation_primary_access_gap",
+      "locator": "Regulation mode/evidence/comment; article metadata",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-5032.xml",
+          "sha256": "14e831d21be5ba98007f9db6f64d7f600ccf8c9c1e4130aa4a3c2d723329ecfb",
+          "bytes": 9541
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMID16377617.json",
+          "sha256": "07d183cdd69a5e4f3552c07389683896fd763428ddbd43c9bd05e092011c6ded",
+          "bytes": 8695
+        }
+      ],
+      "disposition": "Native positive transcriptomic annotation retained; primaryfulltext unavailable and putative binding site sequence not shown. No promoter-binding edge invented.",
+      "record_edges": [
+        "mg-gark-reg-fnr"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "fur-conflict",
+      "claim": "Native Fur negative mode conflicts with primary intragenic garP EMSA, unknown internal-element function and discussion of prior garPLRK activation; do not assert established promoter repression.",
+      "status": "sign_and_site_conflict",
+      "locator": "Regulation/mode; Methods oligos, Fig3B, Discussion garPLRK and internal sites",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-REG0-10783.xml",
+          "sha256": "3b003815f62d0f7f0d367b68419f5f02eaa5f5e7d1578119f070e00a7e458716",
+          "bytes": 8887
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC2189734.xml",
+          "sha256": "1b76ee4b6636acba83191bf1c51c3ba7b44708754deb99682baadcf42c941719",
+          "bytes": 195650
+        }
+      ],
+      "disposition": "Unsigned regulates preserves native negative mode versus primary intragenicgarP binding and prior activation; unknown internal-element function prevents an asserted repression edge.",
+      "record_edges": [
+        "mg-gark-reg-fur"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "fur-assembly",
+      "claim": "Native Fur-Fe2 complex CPLX0-7639 explicitly contains two PD00260 subunits and two ferrous ions.",
+      "status": "supported",
+      "locator": "Protein/component/coefficient; dblink",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-CPLX0-7639.xml",
+          "sha256": "32762ef971faf2479be58fc219aeff71d30e8e0bc2d57cd51f1c8f263dab83de",
+          "bytes": 416057
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PD00260.xml",
+          "sha256": "12c859fd42a45bf88393a4d7ad67db0c0ee1687c891f8422622d98149b527b97",
+          "bytes": 52687
+        }
+      ],
+      "disposition": "Exact native2Fur+2Fe2+ component stoichiometry retained, including native FE+2→CHEBI29033 bridge.",
+      "record_edges": [
+        "mg-assembly-P0A9A9",
+        "mg-fur-iron"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "fnr-assembly",
+      "claim": "Native CPLX0-7797 specifies two FNR PD00197/P0A9E5 subunits; Fe-S loading must be separately grounded before asserting an exact state.",
+      "status": "assembly_supported_state_qualified",
+      "locator": "Protein/component/coefficient; dblink",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-CPLX0-7797.xml",
+          "sha256": "dbc83229f049a23bdb15689c1ae8ba13def540b5eb6434874812ee26edd01a5d",
+          "bytes": 741236
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-PD00197.xml",
+          "sha256": "97fa8ecdc640c4cc36cb0ce4417a405b40bfc06e0afb4ea129e6a35701941497",
+          "bytes": 113605
+        }
+      ],
+      "disposition": "Exact dimer retained; newly inspected issuing UniProt original supports oneCHEBI49883 cluster/subunit. State qualifiers preserve low-oxygen active state, not measured MG-culture occupancy.",
+      "record_edges": [
+        "mg-assembly-P0A9E5",
+        "mg-fnr-cluster",
+        "mg-oxygen-fnr"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "ptsi-2og-conflict",
+      "claim": "2-oxoglutarate inhibits PtsI;2011 noncompetitive and2013 competitive EIC interpretations differ. Isolated-domain assays and reagent-contamination discussion must remain explicit.",
+      "status": "mechanistic_interpretation_conflict",
+      "locator": "2011 Fig3/EI assay;2013 inhibition assay and Discussion",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC3218208.html",
+          "sha256": "7927dbecb579eec4ed26aff341111427a6781aec957e41db410b76a044fc0eed",
+          "bytes": 197514
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC3735840.html",
+          "sha256": "b56b8289d68bcc2f4ce84603cc38d9bed5bf7a3c94edf47c6ea7f0e83e279a9a",
+          "bytes": 192490
+        }
+      ],
+      "disposition": "Distinct2011 His-tagged intactEI isotope-exchange and2013 EIC261–575 PEP-hydrolysis observations retained. Competitive/noncompetitive interpretations, R465A probe, EIN1–249, batch-contamination alternative and possible mixed intactEI effects remain explicit.",
+      "record_edges": [
+        "mg-2og-full-ei",
+        "mg-2og-eic"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "tmar-context",
+      "claim": "TmaR controls PtsI localization/sequestration in general sugar studies; tagged and phosphorylation-mutant constructs do not establish MG-specific control or fixed TmaR–EI stoichiometry.",
+      "status": "context_not_mg_specific",
+      "locator": "Results Figs3–6; methods point to supplementary material",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC7812783.html",
+          "sha256": "c57c88b00532828f68be092c2fd71840711803dc98b7378bf56a31a78c3e0283",
+          "bytes": 265900
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-G7087-MONOMER.xml",
+          "sha256": "d1bdf9815976d93455f53b0e021ef95b0ba9b34112fe4fa05280b96b6cc6a834",
+          "bytes": 29226
+        }
+      ],
+      "disposition": "General sugar-use spatial regulation retained with TmaR/EI tags and Y72/Y122 variants; supplements unavailable, no fixed TmaR–EI assembly or MG-specific effect claimed.",
+      "record_edges": [
+        "mg-tmar-ptsi"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "mngr-2025-context",
+      "claim": "Synthetic-promoter MngR experiments and computational ligand predictions do not establish native MngR effectors or natural operator behavior.",
+      "status": "context_only",
+      "locator": "Methods synthetic circuits; computational input prediction MngR discussion",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC11806353.xml",
+          "sha256": "772ef401c13c995af2c96e30cba799fbccd89487f837ccf6b4d493891f6dbd2c",
+          "bytes": 173251
+        },
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PMC12494820.xml",
+          "sha256": "81077ebaf1d1619b2274ca3ec5aa69b92122e7bd60195541ac224e60c87629f3",
+          "bytes": 158729
+        }
+      ],
+      "disposition": "Context-only disposition: synthetic promoter relocation, mCherry/linker and titratable MngR expression inPMC11806353 do not establish native operator behavior. Computational ligand predictions inPMC12494820 do not validate MG-P, M6P or glycerate as direct MngR ligands. Both full original bodies retained; no native causal edges added.",
+      "record_edges": [],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    },
+    {
+      "key": "opaque-pathbank-interface",
+      "claim": "The frozen InhibitorySubPathwayControl is an Interaction joining2PG and an opaque gluconeogenesis pathway; its name does not establish biological inhibition.",
+      "status": "unresolved_interface",
+      "locator": "SubPathwayControls/109883 and Pathway SMP0000839",
+      "original_bindings": [
+        {
+          "path": "/private/tmp/pathwaymech-next-228-preflight-20261012/raw/PW002096.owl",
+          "sha256": "473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8",
+          "bytes": 42234
+        }
+      ],
+      "disposition": "Opaque native Interaction-associated pathway retained as source-context membership, not biological inhibition, new core chemistry, or measured gluconeogenic flux. Its unresolved adapter gate is separate from biological uncertainty.",
+      "record_edges": [
+        "mg-opaque-pathbank-child"
+      ],
+      "other_locations": [
+        "research/mannosylglycerate-degradation.md",
+        "derived/scope-and-conflicts.json"
+      ],
+      "status_in_successor": "retained_or_explicitly_disposed"
+    }
+  ],
+  "all29_accounted": true
+}

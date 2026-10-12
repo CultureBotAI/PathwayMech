@@ -1,0 +1,30 @@
+from pathlib import Path
+import datetime, hashlib, json, subprocess, shutil, os
+O=Path('/private/tmp/pathwaymech-next-228-author-20261012')
+P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012')
+B=Path('/private/tmp/pathwaymech-next-226-20261012')
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p): return dict(path=str(p),bytes=Path(p).stat().st_size,sha256=sha(p))
+for d in ['draft','derived','receipts','candidate','research']: (O/d).mkdir(exist_ok=True)
+m=json.loads((P/'artifact-manifest.json').read_text())
+checks=[dict(**r,valid=(P/r['path']).stat().st_size==r['bytes'] and sha(P/r['path'])==r['sha256']) for r in m['files']]
+assert len(checks)==209 and all(x['valid'] for x in checks)
+base_files=[bind(p) for p in sorted((B/'data/pathways').glob('*.yaml'))]
+intake=dict(at=datetime.datetime.now(datetime.timezone.utc).isoformat(),preflight_manifest=bind(P/'artifact-manifest.json'),preflight_handoff=bind(P/'AUTHOR-HANDOFF.md'),preflight_all_files=checks,actual_base=str(B),head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=B,text=True).strip(),tree=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=B,text=True).strip(),status=subprocess.check_output(['git','status','--porcelain=v1'],cwd=B,text=True),actual_records=base_files,prospective_lyxose_original=bind('/private/tmp/pathwaymech-next-227-author-20261012/draft/l-lyxose-degradation.yaml'),prospective_lyxose_correction=bind('/private/tmp/pathwaymech-next-227-science-correction-20261012/draft/l-lyxose-degradation.yaml'),lyxose_correction_status='Issues438/439 successor exists; independent root acceptance not assumed',source_exhaustion=False)
+(O/'derived/intake.json').write_text(json.dumps(intake,indent=2)+'\n')
+for name in ['src','scripts','conf','templates']:
+ shutil.copytree(B/name,O/'candidate'/name,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__','.ruff_cache'))
+for name in ['pyproject.toml','uv.lock','justfile']:
+ if (B/name).exists(): shutil.copy2(B/name,O/'candidate'/name)
+impl=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012/candidate')
+for name in ['scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py','src/pathwaymech/pathbank_provenance.py']:
+ shutil.copy2(impl/name,O/'candidate'/name)
+pattern=r'PWY0-1300|SMP0002108|PW002096|RXN0-5216|RXN0-2522|RHEA:33308|RHEA:2786[67]|mannosyl.{0,12}glycerate|M310980200|14645248'
+searches=[]
+for name,root in [('actual-base',B),('workspace',Path.cwd())]:
+ cmd=['rg','--no-ignore','--hidden','--follow','-n','-i','--glob','!.git/**','--glob','!.venv/**',pattern,str(root)]
+ r=subprocess.run(cmd,capture_output=True,text=True)
+ (O/'receipts'/f'dedup-{name}.txt').write_text(r.stdout)
+ searches.append(dict(command=cmd,exit_code=r.returncode,stdout=bind(O/'receipts'/f'dedup-{name}.txt'),stderr=r.stderr,includes_hidden_ignored_followed=True))
+(O/'derived/dedup-searches.json').write_text(json.dumps(searches,indent=2)+'\n')
+print(json.dumps(dict(preflight_artifacts=len(checks),actual_records=len(base_files),head=intake['head'],searches=[(x['exit_code'],x['stdout']['bytes']) for x in searches])))

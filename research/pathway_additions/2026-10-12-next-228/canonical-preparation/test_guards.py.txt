@@ -1,0 +1,113 @@
+"""Source-bound failure probes for the preparation's preservation guards."""
+
+import copy
+import unittest
+from pathlib import Path
+
+from common import (
+    HERE,
+    OUTPUT,
+    load,
+    preserve,
+    validate_manifest,
+    validate_output,
+    validate_updates,
+)
+
+
+class SourceBoundGuards(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.old_manifest = load(HERE / "captured/baseline/manifest.json")
+        cls.manifest = load(HERE / "captured/proposals/manifest.json")
+        cls.old_rhea = load(HERE / "captured/baseline/rhea-updates.json")
+        cls.rhea = load(HERE / "captured/proposals/rhea-updates.json")
+        cls.old = load(HERE / "captured/baseline/sources.json")
+        cls.expected = load(HERE / "expected-native-comparison.json")["snapshots"]["sources"]
+
+    def test_actual_shared_zip_path_is_accepted_without_collapsing_members(self):
+        paths = validate_manifest(self.old_manifest, self.manifest)
+        rows = [r for r in self.manifest if r["path"] == "pathbank-primary-biopax-original.zip"]
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({r["archive"]["member"] for r in rows}, {"PW002100.owl", "PW002096.owl"})
+        self.assertEqual({r["archive"]["root"] for r in rows}, {"SMP0002112", "SMP0002108"})
+        self.assertEqual(paths[rows[0]["path"]], rows[0]["sha256"])
+
+    def test_shared_zip_conflicting_hash_rejected(self):
+        bad = copy.deepcopy(self.manifest)
+        bad[-1]["sha256"] = "0" * 64
+        with self.assertRaises(AssertionError):
+            validate_manifest(self.old_manifest, bad)
+
+    def test_previous_manifest_reordering_rejected(self):
+        bad = copy.deepcopy(self.manifest)
+        bad[0], bad[1] = bad[1], bad[0]
+        with self.assertRaises(AssertionError):
+            validate_manifest(self.old_manifest, bad)
+
+    def test_prior_typed_zip_member_relabeling_rejected(self):
+        bad = copy.deepcopy(self.manifest)
+        row = next(r for r in bad[:717] if r["kind"] == "pathbank-biopax-zip")
+        row["archive"]["member"] = "PW002096.owl"
+        with self.assertRaises(AssertionError):
+            validate_manifest(self.old_manifest, bad)
+
+    def test_duplicate_source_key_rejected(self):
+        bad = copy.deepcopy(self.manifest)
+        bad[-1]["key"] = bad[0]["key"]
+        with self.assertRaises(AssertionError):
+            validate_manifest(self.old_manifest, bad)
+
+    def test_source_path_escape_rejected(self):
+        bad = copy.deepcopy(self.manifest)
+        bad[-1]["path"] = "../outside.zip"
+        with self.assertRaises(AssertionError):
+            validate_manifest(self.old_manifest, bad)
+
+    def test_actual_snapshot_preservation_accepted(self):
+        preserve(self.old, self.expected)
+
+    def test_old_term_deletion_rejected(self):
+        bad = copy.deepcopy(self.expected)
+        del bad["terms"]["UniProtKB:P76268"]
+        with self.assertRaises(AssertionError):
+            preserve(self.old, bad)
+
+    def test_stale_duplicate_provenance_overwrite_rejected(self):
+        bad = copy.deepcopy(self.expected)
+        bad["terms"]["UniProtKB:P76268"]["source"] = "lyxose-correction-UniProtKB-P76268"
+        with self.assertRaises(AssertionError):
+            preserve(self.old, bad)
+
+    def test_old_metadata_hash_mutation_rejected(self):
+        bad = copy.deepcopy(self.expected)
+        bad["sources"][next(iter(self.old["sources"]))]["sha256"] = "0" * 64
+        with self.assertRaises(AssertionError):
+            preserve(self.old, bad)
+
+    def test_actual_rhea_order_is_preserved(self):
+        validate_updates(self.old_rhea, self.rhea)
+
+    def test_prior_rhea_selector_removal_rejected(self):
+        bad = copy.deepcopy(self.rhea)
+        bad["ids"].remove("RHEA:23881")
+        with self.assertRaises(AssertionError):
+            validate_updates(self.old_rhea, bad)
+
+    def test_duplicate_rhea_selector_rejected(self):
+        bad = copy.deepcopy(self.rhea)
+        bad["ids"].append(bad["ids"][0])
+        with self.assertRaises(AssertionError):
+            validate_updates(self.old_rhea, bad)
+
+    def test_maintained_output_path_rejected(self):
+        with self.assertRaises(AssertionError):
+            validate_output(Path("/private/tmp/pathwaymech-next-227-20261012"))
+
+    def test_only_new_external_output_allowed(self):
+        self.assertFalse(OUTPUT.exists())
+        validate_output(OUTPUT)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

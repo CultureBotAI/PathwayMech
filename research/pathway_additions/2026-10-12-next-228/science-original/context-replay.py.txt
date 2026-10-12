@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,hashlib,re,sys,importlib.util
+from dataclasses import asdict
+P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012');O=Path(__file__).parent
+p=P/'imodulondb/imodulondb.py';spec=importlib.util.spec_from_file_location('reviewer_imodulondb',p);mod=importlib.util.module_from_spec(spec);sys.modules[spec.name]=mod;spec.loader.exec_module(mod)
+rec=json.loads((P/'imodulondb/live/receipts.json').read_text());responses={};bound=[]
+for x in rec:
+ body=Path(x['path']).read_bytes();h=hashlib.sha256(body).hexdigest();assert h==x['sha256'] and x['status']==200;responses[x['url']]=json.loads(body);bound.append({k:x[k] for k in ['url','path','sha256','status']})
+used=[]
+def transport(url):used.append(url);return responses[url]
+c=mod.ImodulonDBClient(transport=transport);datasets=[asdict(x) for x in c.organism_datasets()];q={x:asdict(c.search('e_coli','precise_mg1655',x)) for x in ['mngA','mngB','mngR','hrsA','farR','garK','cdaR','ptsI','ptsH','mannosylglycerate']};m=c.imodulon_genes('e_coli','precise_mg1655',38)
+report={'mode':'independent offline replay of exact frozen API bodies; no new live claims','bindings':bound,'urls_used':used,'queries':q,'module38':asdict(m),'verdict':'computational context only; no causal/sign/ligand or biological-absence implication'}
+(O/'imodulon-independent-replay.json').write_text(json.dumps(report,indent=2)+'\n');assert {x.gene_name for x in m.in_imodulon}.issuperset({'garK','cdaR'})
+# Replay the assembled primary-text projection from the exact retained web observations.
+observed={};conflicts=[];obsbind=[]
+for p in sorted((P/'derived').glob('Sampaio2004-web-*.json')):
+ s=json.loads(p.read_text());obsbind.append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+ for line in s.splitlines():
+  match=re.match(r'L(\d+):\s?(.*)',line)
+  if match:
+   n=int(match[1]);text=match[2]
+   observed.setdefault(n,set()).add(text)
+assembled=(P/'derived/Sampaio2004-assembled.txt').read_text();comp=[]
+for line in assembled.splitlines():
+ match=re.match(r'L(\d+):\s?(.*)',line)
+ if match:comp.append({'line':int(match[1]),'exact_observed':match[2] in observed.get(int(match[1]),set())})
+assert all(x['exact_observed'] for x in comp)
+(O/'sampaio-projection-replay.json').write_text(json.dumps({'observation_bindings':obsbind,'assembled_sha256':hashlib.sha256(assembled.encode()).hexdigest(),'lines':len(comp),'all_lines_exact_observed':True,'projection_is_original_publisher_pdf':False,'overlap_variants':[n for n,v in observed.items() if len(v)>1]},indent=2)+'\n')
+print('Frozen API replay passed,',len(q),'queries,',len(m.in_imodulon),'module members; primary-text projection exact observed lines',len(comp))

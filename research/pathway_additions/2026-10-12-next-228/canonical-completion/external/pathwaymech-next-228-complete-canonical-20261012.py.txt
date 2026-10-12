@@ -1,0 +1,166 @@
+"""Complete interrupted MG postchecks without changing or rerunning either build."""
+import datetime
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+PREP = Path('/private/tmp/pathwaymech-next-228-canonical-preparation-20261012')
+BUILD = Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')
+DIAG = Path('/private/tmp/pathwaymech-next-228-canonical-diagnosis-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-228-canonical-completion-20261012')
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def bind(path):
+    path = Path(path)
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            digest.update(block)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest.hexdigest()}
+
+
+def check(row, base=None):
+    path = Path(row['path'])
+    if base is not None and not path.is_absolute():
+        assert '..' not in path.parts
+        path = base / path
+    actual = bind(path)
+    assert actual['sha256'] == row['sha256'], str(path)
+    if 'bytes' in row:
+        assert actual['bytes'] == row['bytes'], str(path)
+    return actual
+
+
+def write(name, value):
+    with (OUT / name).open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+def inventory(root):
+    return [Path(line) for line in subprocess.check_output(
+        ['rg', '--files', '--no-ignore', '--hidden', '--follow', str(root)], text=True
+    ).splitlines()]
+
+
+def main():
+    assert not OUT.exists() and not OUT.is_symlink()
+    check({'path': str(PREP / 'handoff.json'), 'sha256': '6e8b03018c4aa0c2829c02eff905e9b1f4a480e3efa9f55414621e643eb7b577'})
+    check({'path': str(PREP / 'artifact-manifest.json'), 'sha256': '48abc652a9f9f92d14221e11fbcf98a2f7c575d1a12aa81694e572ec02f1ccf3'})
+    check({'path': str(DIAG / 'handoff.json'), 'sha256': '1560731288bb4a8bf151ce23ba6d6a627233850c90a7f821e7d80c4cfdc69ae8'})
+    check({'path': str(DIAG / 'artifact-manifest.json'), 'sha256': 'e53b21fee2b2df9d0c993dd80c5cf4dd01b2560f286ea466904e0f25ab34de26'})
+    for row in load(PREP / 'artifact-manifest.json')['artifacts']:
+        check(row)
+    for row in load(DIAG / 'artifact-manifest.json')['files']:
+        check(row, DIAG)
+    capture = load(PREP / 'capture.json')
+    commands = load(BUILD / 'commands.json')
+    ledger = load(BUILD / 'execution-ledger.json')['executions']
+    assert [r['name'] for r in ledger] == ['source_builder', 'ontology_builder']
+    for row in ledger:
+        assert row['exit_code'] == 0 and row['seconds'] > 0
+        assert row['command'] == commands[row['name']]
+        assert row['cwd'] == commands['cwd'] == str(BUILD)
+        assert row['environment'] == commands['environment']
+        assert row == load(BUILD / (row['name'] + '-execution.json'))
+        check(row['stdout']); check(row['stderr'])
+    actual = {k: load(BUILD / (k + '.json')) for k in ('sources', 'ontology')}
+    expected = load(PREP / 'expected-native-comparison.json')['snapshots']
+    baseline = {k: load(PREP / 'captured/baseline' / (k + '.json')) for k in actual}
+    differences = {}
+    for kind in actual:
+        assert set(actual[kind]) == set(expected[kind]) == set(baseline[kind])
+        for key in set(actual[kind]) - {'terms', 'sources'}:
+            assert actual[kind][key] == expected[kind][key] == baseline[kind][key]
+        differences[kind] = {}
+        for section in ('terms', 'sources'):
+            assert all(actual[kind][section].get(k) == v for k, v in baseline[kind][section].items())
+            differences[kind][section] = [
+                {'id': key, 'expected': expected[kind][section].get(key), 'actual': actual[kind][section].get(key)}
+                for key in sorted(set(expected[kind][section]) | set(actual[kind][section]))
+                if expected[kind][section].get(key) != actual[kind][section].get(key)
+            ]
+    assert differences == load(DIAG / 'independent-exact-differences.json')
+    assert differences == load(BUILD / 'proposal-comparison.json')['against_actual_baseline_plus_proposal_additions']
+    accessions = {'P0A8M6', 'P0A9A9', 'P0AA04', 'P0ACF8', 'P13669', 'P23524', 'P37047', 'P54745', 'P54746'}
+    assert {r['id'] for r in differences['sources']['terms']} == {'UniProtKB:' + x for x in accessions} | {'PathBank:SMP0002108'}
+    assert {r['id'] for r in differences['sources']['sources']} == {'uniprot-mg-' + x for x in accessions}
+    for row in differences['sources']['terms']:
+        if row['id'] == 'PathBank:SMP0002108':
+            assert row['actual'] is None
+        else:
+            assert row['actual'] == {**row['expected'], 'source': 'uniprot-ecoli-reviewed-cofactors'}
+            assert row['id'] not in baseline['sources']['terms']
+    assert all(r['actual'] is None for r in differences['sources']['sources'])
+    assert differences['ontology'] == {'terms': [], 'sources': []}
+    counts = {k: {s: len(v[s]) for s in ('terms', 'sources')} for k, v in actual.items()}
+    assert counts == {'sources': {'terms': 2433, 'sources': 575}, 'ontology': {'terms': 1951, 'sources': 5}}
+    originals = []
+    for row in capture['source_originals']:
+        current = check({**row, 'path': str(BUILD / 'originals' / row['cache_relative_path'])})
+        originals.append({**current, 'cache_relative_path': row['cache_relative_path'], 'resolved_path': str(Path(current['path']).resolve())})
+    assert len(originals) == 738
+    sql = []
+    for row in capture['sql_originals']:
+        stat = Path(row['path']).stat()
+        assert stat.st_size == row['bytes'] and stat.st_mtime_ns == row['mtime_ns']
+        metadata = actual['ontology']['sources'][row['source_key']]
+        assert metadata['sha256'] == row['sha256']
+        sql.append({'pinned_original': row, 'native_metadata': metadata, 'fresh_stat_matches': True, 'full_hash_scope': 'Actual completed native ontology builder; not redundantly rehashed by this postcheck.'})
+    staged = load(BUILD / 'staged-bindings.json')['files']
+    for row in staged:
+        check(row)
+    assert {str(p) for d in ('runtime', 'corpus', 'baseline') for p in inventory(BUILD / d)} == {r['path'] for r in staged}
+    for name in ('manifest.json', 'rhea-updates.json'):
+        assert (BUILD / name).read_bytes() == (PREP / 'captured/proposals' / name).read_bytes()
+    manifest = load(BUILD / 'manifest.json')
+    old_manifest = load(PREP / 'captured/baseline/manifest.json')
+    assert len(manifest) == 738 and len(old_manifest) == 717 and manifest[:717] == old_manifest
+    assert len({r['key'] for r in manifest}) == 738
+    updates = load(BUILD / 'rhea-updates.json')
+    old_updates = load(PREP / 'captured/baseline/rhea-updates.json')
+    assert len(updates['ids']) == len(set(updates['ids'])) == 20
+    assert len(old_updates['ids']) == 19 and updates['ids'][:19] == old_updates['ids']
+    assert {k:v for k,v in updates.items() if k != 'ids'} == {k:v for k,v in old_updates.items() if k != 'ids'}
+    check(capture['target']['captured'])
+    assert bind(BUILD / 'corpus/mannosylglycerate-degradation.yaml')['sha256'] == 'b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6'
+    failures = [p for p in inventory(BUILD) if p.name.startswith('failure-') and p.suffix == '.txt']
+    assert failures and all('unexpected native output' in p.read_text() for p in failures)
+    # Bind all real build files, including the failed comparison; exact original symlinks are bound separately.
+    build_inventory = [bind(p) for p in sorted(inventory(BUILD)) if not p.is_symlink()]
+    OUT.mkdir()
+    write('verification.json', {
+        'status': 'postchecks_passed_with_independently_diagnosed_comparison_differences',
+        'at': datetime.datetime.now(datetime.UTC).isoformat(),
+        'preparation': bind(PREP / 'handoff.json'), 'diagnosis': bind(DIAG / 'handoff.json'),
+        'script': bind(__file__), 'execution_ledger': bind(BUILD / 'execution-ledger.json'),
+        'original_wrapper_failure': [bind(p) for p in failures],
+        'baseline_scope': capture['scope'], 'old_records_exact': 228, 'corpus_records': 229,
+        'source_originals_freshly_hashed': originals, 'sql_native_hash_checks': sql,
+        'staged_files_verified': len(staged), 'old_objects_exact': True,
+        'exact_differences': differences, 'actual_counts': counts,
+        'build_artifact_bindings': build_inventory,
+        'maintained_adoption': False, 'full_integration_gates': False,
+        'independent_canonical_acceptance': False,
+        'original_build_or_preparation_mutation': False, 'builders_rerun': False,
+        'source_exhausted': False,
+    })
+    rows = [bind(OUT / 'verification.json'), bind(__file__)]
+    write('artifact-manifest.json', {'artifacts': rows, 'count': len(rows)})
+    write('handoff.json', {
+        'status': 'full_native_build_postchecks_complete_pending_independent_canonical_audit',
+        'manifest': bind(OUT / 'artifact-manifest.json'), 'verification': bind(OUT / 'verification.json'),
+        'outputs': {name: bind(BUILD / name) for name in ('sources.json', 'ontology.json', 'manifest.json', 'rhea-updates.json')},
+        'target_sha256': capture['target']['captured']['sha256'],
+        'actual_counts': counts, 'maintained_adoption': False, 'independent_canonical_acceptance': False,
+    })
+    print(json.dumps({'handoff': bind(OUT / 'handoff.json'), 'counts': counts}))
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,52 @@
+from pathlib import Path
+import json,copy,sys,hashlib,csv,io
+from lxml import etree
+O=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-228-author-20261012');D=json.loads((O/'parsed-target.json').read_text());B=json.loads((A/'derived/reference-bindings.json').read_text());P=json.loads((O/'independent-probes.json').read_text());S=next(x['observed'] for x in P['checks'] if x['probe']=='all native core and linked chemical sides');E={x['id']:x for x in D['mechanistic_edges']};expected=set()
+for s in S:
+ e=E[s['edge']]; expected.add((e['subject'],e['predicate'],e['object']))
+reactions={s['native'] for s in S};selected={'MetaCyc:RXN0-5216','RHEA:27378','RHEA:33308','RHEA:23881'}
+def side_errors(d):
+ observed={(e['subject'],e['predicate'],e['object']) for e in d['mechanistic_edges'] if e['predicate'] in ['consumes','produces'] and ({e['subject'],e['object']} & selected)}
+ return observed!=expected
+checks=[]
+def run(name,mutate,detector):
+ d=copy.deepcopy(D);mutate(d);rejected=detector(d);assert rejected,name;checks.append({'control':name,'rejected':True,'source_basis':'independent-probes.json / original issuing objects, not author validation expectation table'})
+def edge(d,id):return next(e for e in d['mechanistic_edges'] if e['id']==id)
+run('generic hydrolysis product changed to alpha anomer',lambda d:edge(d,'mg-RXN0-5216-produces-58735').update(object='CHEBI:60332'),side_errors)
+run('PEP consumed a second time at entry',lambda d:d['mechanistic_edges'].append({'subject':'CHEBI:58702','predicate':'consumes','object':'RHEA:33308'}),side_errors)
+run('free histidine substituted for HPr protein',lambda d:edge(d,'mg-RXN0-2522-produces-P0AA04').update(object='CHEBI:29979'),side_errors)
+run('reverse glycerate kinase direction',lambda d:edge(d,'mg-GKI-RXN-consumes-30616').update(subject='RHEA:27378',predicate='produces',object='CHEBI:30616'),side_errors)
+# The native side frame, not the existing qualifier, determines the state expected.
+def state_errors(d):
+ for s in S:
+  if not s['frame'].startswith('Hpr-'):continue
+  e=edge(d,s['edge']);q=e.get('endpoint_qualifiers',[]);state='unphosphorylated' if s['frame']=='Hpr-Histidine' else 'phosphorylated';role='subject' if s['side']=='left' else 'object'
+  if len(q)!=1 or q[0]['endpoint']!=role or 'His15 '+state not in q[0]['description']:return True
+ return False
+run('HPr donor qualifier moved to wrong endpoint',lambda d:edge(d,'mg-RXN0-2522-consumes-P0AA04')['endpoint_qualifiers'][0].update(endpoint='object'),state_errors)
+run('HPr acceptor falsely called phosphorylated',lambda d:edge(d,'mg-2.7.3.9-RXN-consumes-P0AA04')['endpoint_qualifiers'][0].update(description='His15 phosphorylated HPr'),state_errors)
+run('HPr state qualifier dropped',lambda d:edge(d,'mg-RXN0-2522-produces-P0AA04').pop('endpoint_qualifiers'),state_errors)
+# Source endpoint identity from issuing native polypeptide, including rejected frozen accession.
+t=etree.parse('/private/tmp/pathwaymech-next-228-preflight-20261012/raw/ECOLI-HRSA-MONOMER.xml');accession=t.xpath('string(/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]/dblink-oid)');assert accession=='P54745'
+run('frozen PathBank wrong MngR protein used as transporter',lambda d:edge(d,'mg-mnga-catalysis').update(subject='UniProtKB:P13669'),lambda d:edge(d,'mg-mnga-catalysis')['subject']!='UniProtKB:'+accession)
+# Evidence locator controls explicitly demonstrate the existing finding.
+j=json.loads(Path(B['UniProtKB:P08839']['path']).read_text())
+def has189(kind):return any(x['type']==kind and x['location']['start']['value']==189 for x in j['features'])
+assert has189('Active site') and not has189('Modified residue');checks.append({'control':'P08839 Tyr122 Modified residue cannot ground His189','rejected':True,'positive_control':'Active site His189 exists','actual_draft_defect':True})
+# Native source-marker is typed Interaction, not a biochemical Control assertion.
+t=etree.parse(B['PathBank:SMP0002108']['path']);n={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'};i=t.xpath('//bp:Interaction[@rdf:ID="SubPathwayControls/109883"]',namespaces=n)[0]
+assert not i.xpath('bp:controlType',namespaces=n)
+run('InhibitorySubPathway label promoted to biological inhibition',lambda d:edge(d,'mg-opaque-pathbank-child').update(predicate='inhibits'),lambda d:edge(d,'mg-opaque-pathbank-child')['predicate'] not in ['has_part','part_of'])
+assert not side_errors(D) and not state_errors(D)
+(O/'domain-negative-controls.json').write_text(json.dumps({'controls':checks,'count':len(checks),'all_rejected':True,'existing_source_locator_finding_is_not_hidden_as_a_pass':True},indent=2)+'\n')
+# Native read-only single-target shape, LinkML, existing identifier gate, and KGX serialization.
+sys.path.insert(0,str(A/'candidate/src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.kgx import render_kgx
+v=validate_record(D);strict=strict_errors([A/'draft/mannosylglycerate-degradation.yaml'],A/'candidate');ids=identifier_errors(A/'candidate');kgx=render_kgx([v]);edges=list(csv.DictReader(io.StringIO(kgx['edges.tsv']),delimiter='\t'));assert not strict and len(ids)==1 and "PathBank:SMP0000839" in ids[0]
+assert len(edges)==75 and sum(len(json.loads(e['endpoint_qualifiers'] or '[]')) for e in edges)==13
+for name,body in kgx.items():(O/('review-'+name)).write_text(body)
+(O/'native-single-record-checks.json').write_text(json.dumps({'shape':'passed','strict_errors':strict,'identifier_errors':ids,'identifier_status':'known separate required native child adapter gap; not a scientific identity substitution','KGX_edges':len(edges),'KGX_qualifiers':13,'whole_corpus_tests_or_canonical_build':False,'no_author_packet_writes':True},indent=2)+'\n')
+print('Independent domain controls',len(checks),'rejected; native shape and strict passed; known one required child identity gap retained; KGX75/13.')

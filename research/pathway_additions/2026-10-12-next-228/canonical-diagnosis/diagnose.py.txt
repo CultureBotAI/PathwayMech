@@ -1,0 +1,118 @@
+from pathlib import Path
+import json,hashlib,sys,importlib.util,copy,shutil,datetime,zipfile,subprocess
+import yaml
+from lxml import etree
+B=Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')
+P=Path('/private/tmp/pathwaymech-next-228-canonical-preparation-20261012')
+A=Path('/private/tmp/pathwaymech-next-228-author-20261012')
+D=Path(__file__).parent
+sys.path.insert(0,str(B/'runtime/src'))
+spec=importlib.util.spec_from_file_location('mg_actual_source_builder',B/'runtime/scripts/build_source_identifier_snapshot.py');builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
+from pathwaymech.identifiers import identifier_errors,_load_authority
+from pathwaymech.schema import validate_record
+def load(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):
+ p=Path(p);return {'path':str(p),'resolved_path':str(p.resolve()),'bytes':p.stat().st_size,'sha256':sha(p)}
+def save(n,x):(D/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def equal_old(old,new):return all(new[s].get(k)==v for s in ['terms','sources']for k,v in old[s].items())
+manifest=load(B/'manifest.json');actual={s:load(B/(s+'.json'))for s in ['sources','ontology']};old={s:load(B/'baseline'/(s+'.json'))for s in actual};expected=load(B/'expected-native-comparison.json')['snapshots']
+target_path=B/'corpus/mannosylglycerate-degradation.yaml';target=yaml.safe_load(target_path.read_text());observed=[]
+for p in [B/'sources.json',B/'ontology.json',B/'manifest.json',B/'rhea-updates.json',target_path,P/'handoff.json',P/'artifact-manifest.json',B/'runtime/scripts/build_source_identifier_snapshot.py',B/'runtime/src/pathwaymech/identifiers.py',B/'runtime/src/pathwaymech/schema.py',A/'derived/reference-bindings.json']:
+ observed.append(bind(p))
+preservation={s:{'old_terms':len(old[s]['terms']),'actual_terms':len(actual[s]['terms']),'old_metadata':len(old[s]['sources']),'actual_metadata':len(actual[s]['sources']),'all_old_terms_equal':all(actual[s]['terms'].get(k)==v for k,v in old[s]['terms'].items()),'all_old_metadata_equal':all(actual[s]['sources'].get(k)==v for k,v in old[s]['sources'].items()),'new_terms':sorted(actual[s]['terms'].keys()-old[s]['terms'].keys()),'new_metadata':sorted(actual[s]['sources'].keys()-old[s]['sources'].keys())}for s in actual}
+assert all(equal_old(old[s],actual[s])for s in actual)
+assert manifest[:717]==load(B/'baseline/manifest.json')
+assert load(B/'rhea-updates.json')['ids'][:19]==load(B/'baseline/rhea-updates.json')['ids']
+save('preservation.json',preservation)
+executions=[]
+for name in ['source_builder','ontology_builder']:
+ e=load(B/(name+'-execution.json'));assert e['exit_code']==0
+ for output in ['stdout','stderr']:assert sha(e[output]['path'])==e[output]['sha256']
+ executions.append(e);observed.append(bind(B/(name+'-execution.json')))
+save('execution-proof.json',executions)
+
+bulk_entry=next(e for e in manifest if e['key']=='uniprot-ecoli-reviewed-cofactors');singles=[e for e in manifest if e['key'].startswith('uniprot-mg-')]
+assert len(singles)==9
+bulk_path=B/'originals'/bulk_entry['path'];assert sha(bulk_path)==bulk_entry['sha256'];bulk=load(bulk_path);observed.append(bind(bulk_path))
+def native_name(e):
+ p=e['proteinDescription'];names=[]
+ for v in [p.get('recommendedName',{}),*p.get('submissionNames',[]),*p.get('alternativeNames',[])]:
+  if v.get('fullName',{}).get('value'):names.append(v['fullName']['value'])
+  names.extend(vv['value']for vv in v.get('shortNames',[]))
+ return {'label':names[0],'synonyms':sorted(set(names[1:])-{names[0]})}
+rows=[]
+for e in singles:
+ p=B/'originals'/e['path'];j=load(p);assert sha(p)==e['sha256'];observed.append(bind(p))
+ hits=[(i,b)for i,b in enumerate(bulk['results'])if b.get('primaryAccession')==j['primaryAccession']];assert len(hits)==1
+ i,b=hits[0];curie='UniProtKB:'+j['primaryAccession'];assert curie not in old['sources']['terms'];assert j['organism']['taxonId']==b['organism']['taxonId']==83333
+ name=native_name(j);assert name==native_name(b);assert {k:v for k,v in actual['sources']['terms'][curie].items()if k!='source'}==name
+ assert actual['sources']['terms'][curie]['source']==bulk_entry['key']
+ assert e['key']not in actual['sources']['sources']
+ parser_bulk=[v for v in builder.uniprot_terms(bulk)if v[0]==curie];parser_single=list(builder.uniprot_terms(j));assert len(parser_bulk)==1 and parser_bulk==parser_single
+ rows.append({'id':curie,'bulk_original':bind(bulk_path),'bulk_row':i,'bulk_selected_object':b,'single_original':bind(p),'single_issuing_identity':{k:j.get(k)for k in ['primaryAccession','entryAudit','proteinDescription','organism','genes']},'independent_native_name':name,'parser_replay_equal':True,'actual_term':actual['sources']['terms'][curie],'expected_term':expected['sources']['terms'][curie],'bulk_manifest_index':manifest.index(bulk_entry),'single_manifest_index':manifest.index(e),'single_source_metadata_absent_as_unused':True})
+save('nine-uniprot-source-diagnoses.json',rows)
+
+# Bounded production builder replay on ten original files and only the nine real
+# target IDs. Diagnostic fixture only; never added to actual corpus or selector.
+fixture=D/'bounded-replay';fixture.mkdir(exist_ok=True);rec=fixture/'records';rec.mkdir(exist_ok=True)
+ids=[r['id']for r in rows];fixture_record={'id':ids[0],'participants':[{'id':i}for i in ids[1:]],'references':[next(r for r in target['references']if r['id']=='PathBank:SMP0002108')]}
+(rec/'actual-nine-ids.yaml').write_text(yaml.safe_dump(fixture_record,sort_keys=False))
+original_order=[bulk_entry,*singles];(fixture/'original-order-manifest.json').write_text(json.dumps(original_order,indent=2)+'\n')
+out=builder.build_snapshot(fixture/'original-order-manifest.json',rec,B/'originals')
+assert len(out['terms'])==9 and list(out['sources'])==[bulk_entry['key']]
+assert out['terms']=={i:actual['sources']['terms'][i]for i in ids}
+save('bounded-replay/actual-order-output.json',out)
+# Sensitivity control, not a proposed manifest change: reversing sources must
+# select nine fresh source objects, while labels stay exactly identical.
+(fixture/'reversed-order-control.json').write_text(json.dumps([*singles,bulk_entry],indent=2)+'\n')
+reverse=builder.build_snapshot(fixture/'reversed-order-control.json',rec,B/'originals')
+assert len(reverse['sources'])==9 and all(reverse['terms'][i]['source']=='uniprot-mg-'+i.split(':')[1]for i in ids)
+assert all({k:v for k,v in reverse['terms'][i].items()if k!='source'}=={k:v for k,v in out['terms'][i].items()if k!='source'}for i in ids)
+save('bounded-replay/reversed-order-control-output.json',reverse)
+
+# Declared node selection and the full bibliography are different contracts.
+declared={target['id']}|{n['id']for key in ['taxa','participants','reactions','gene_clusters']for n in target.get(key,[])}
+refs=target['references'];assert len(refs)==len({r['id']for r in refs})==62
+target_only=D/'target-only';target_only.mkdir(exist_ok=True);shutil.copyfile(target_path,target_only/target_path.name)
+assert builder.corpus_ids(target_only)==declared
+assert 'PathBank:SMP0002108'not in declared and 'PathBank:SMP0000839'in declared
+allterms=actual['sources']['terms']|actual['ontology']['terms'];assert not(declared-allterms.keys())
+reference_bindings=load(A/'derived/reference-bindings.json');original_target=yaml.safe_load((A/'draft/mannosylglycerate-degradation.yaml').read_text());assert refs==original_target['references']
+refrows=[]
+for r in refs:
+ binding=reference_bindings[r['id']];assert sha(binding['path'])==binding['sha256']
+ if 'source_sha256'in r:assert r['source_sha256']==binding['sha256']
+ else:assert r['id']=='PMID:14645248' and binding['reference_hash_is_original_body']is False
+ refrows.append({'reference':r,'declared_node':r['id']in declared,'present_in_authority':r['id']in allterms,'bound_evidence':bind(binding['path']),'reference_hash_is_original_body':binding['reference_hash_is_original_body']})
+save('all-62-reference-role-diagnosis.json',{'target':bind(target_path),'references_unchanged_from_original_author':True,'declared_ids':sorted(declared),'declared_id_count':len(declared),'missing_declared_ids':[],'references':refrows,'policy':'Bibliography references require valid local citation/evidence relationships, not universal named-node authority terms. Evidence originals and access limits remain bound separately.'})
+pathbank=next(e for e in manifest if e['key']=='pathbank-primary-2019-PW002096-SMP0002108')
+archive=B/'originals'/pathbank['path'];assert sha(archive)==pathbank['sha256']
+with zipfile.ZipFile(archive)as z:
+ assert z.namelist().count(pathbank['archive']['member'])==1;body=z.read(pathbank['archive']['member'])
+assert len(body)==pathbank['archive']['member_bytes'] and hashlib.sha256(body).hexdigest()==pathbank['archive']['member_sha256']
+parsed=builder._pathbank_archive_terms(archive,url=pathbank['url'],sha256=pathbank['sha256'],archive=pathbank['archive'])
+parsed=list(parsed);root_matches=[r for r in parsed if r[0]=='PathBank:SMP0002108'];assert len(root_matches)==1
+metadata=actual['sources']['sources'][pathbank['key']];assert metadata['pathway_accessions']==['SMP0002108','SMP0000839'] and metadata['archive']==pathbank['archive']
+save('pathbank-reference-role.json',{'manifest_entry':pathbank,'archive_binding':bind(archive),'native_root_term_parsed':root_matches[0],'native_child_term_parsed':[r for r in parsed if r[0]=='PathBank:SMP0000839'],'actual_metadata':metadata,'root_only_in_references':True,'root_omitted_from_terms_by_current_contract':True,'child_declared_and_present':actual['sources']['terms']['PathBank:SMP0000839'],'require_new_root_selector':False,'evidence_caveat':'Root biological source identity still required and verified here; bibliography-only absence from compact terms is not source nonexistence.'})
+
+# Real consumers against untouched actual outputs copied to an external root.
+C=D/'consumer';(C/'conf').mkdir(parents=True,exist_ok=True);(C/'data/pathways').mkdir(parents=True,exist_ok=True);(C/'data/identifier_authorities').mkdir(parents=True,exist_ok=True)
+shutil.copyfile(B/'runtime/conf/identifier_policy.yaml',C/'conf/identifier_policy.yaml');shutil.copyfile(target_path,C/'data/pathways'/target_path.name)
+for s in actual:shutil.copyfile(B/(s+'.json'),C/'data/identifier_authorities'/(s+'.json'))
+validate_record(target);positive=identifier_errors(C);assert positive==[]
+tests=[{'name':'actual-target-schema','pass':True},{'name':'actual-authority-consumer','pass':not positive,'errors':positive},{'name':'bounded-first-source-replay','pass':True},{'name':'reverse-order-sensitivity','pass':True}]
+def negative(name,mutate,token):
+ source=copy.deepcopy(actual['sources']);mutate(source);p=C/'data/identifier_authorities/sources.json';p.write_text(json.dumps(source,indent=2)+'\n');errors=identifier_errors(C);assert errors and any(token in e for e in errors),(name,errors)
+ tests.append({'name':name,'pass':True,'errors':errors});shutil.copyfile(B/'sources.json',p)
+negative('remove-required-new-protein',lambda d:d['terms'].pop('UniProtKB:P54746'),'ID_NOT_FOUND')
+negative('remove-declared-native-child',lambda d:d['terms'].pop('PathBank:SMP0000839'),'ID_NOT_FOUND')
+negative('remove-selected-source-provenance',lambda d:d['sources'].pop(bulk_entry['key']),'missing source provenance')
+negative('mismatch-PathBank-root-provenance',lambda d:d['sources'][pathbank['key']]['archive'].update(root='SMP9999999'),'invalid selected PathBank pathway identities')
+bad=copy.deepcopy(actual['ontology']);key=next(iter(old['ontology']['terms']));bad['terms'][key]['label']='tampered';assert not equal_old(old['ontology'],bad);tests.append({'name':'old-ontology-object-drift-detected','pass':True})
+assert identifier_errors(C)==[]
+save('consumer-checks.json',tests)
+for row in observed:assert sha(row['path'])==row['sha256']
+save('observed-bindings.json',observed)
+save('diagnosis.json',{'status':'expected_native_selection_differences_explained_no_output_rewrite','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'actual_counts':{s:{k:len(actual[s][k])for k in ['terms','sources']}for s in actual},'nine_uniprot_terms':'Same original accession/taxon/labels/synonyms; earlier bulk source wins exactly as production code specifies. Nine later metadata objects are unused and omitted, while fresh source originals remain bound scientific references.','PathBank_root':'Valid exact native reference identity, not a declared named node; intentionally unselected under source corpus_ids and identifier _named_nodes. Parent archive provenance remains in selected child metadata.','preserved_old_objects':True,'declared_ids_covered':len(declared),'references_bound':62,'consumer_checks':len(tests),'all_passed':True,'new_scientific_review':False,'canonical_final_acceptance':False,'required_recovery':'Root must perform remaining full-build postchecks (all original/staged bindings, SQL pin/stat/source metadata, exact outputs) and seal a truthful successor verification using actual2433/575/1951/5 counts. No extra root selector, source reorder, manually inserted term, or output label rewrite is warranted.'})
+print(json.dumps({'status':'PASS','nine_source_differences':len(rows),'declared_ids':len(declared),'references':len(refs),'checks':len(tests),'preserved_old_objects':True,'actual_counts':{s:{k:len(actual[s][k])for k in ['terms','sources']}for s in actual}},indent=2))

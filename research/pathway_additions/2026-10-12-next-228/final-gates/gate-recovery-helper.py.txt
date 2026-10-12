@@ -1,0 +1,91 @@
+"""Resume only the DNS-failed vendored gate and the two unexecuted gates."""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+PACKAGE = Path('/private/tmp/pathwaymech-next-228-integration-preparation-20261012')
+sys.path.insert(0, str(PACKAGE))
+from common import (BASE, ROOT, PYTHON, TARGET_SHA, binding, inventory, load, now,
+                    validate_base, verify, verify_adopted, verify_package,
+                    verify_render_history, write_new)
+
+OLD = Path('/private/tmp/pathwaymech-next-228-maintained-gates-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-228-maintained-gates-recovery-20261012')
+
+
+def main():
+    validate_base(ROOT, BASE, clean=False)
+    verify_package()
+    verify_adopted(ROOT)
+    original = load(OLD / 'execution.json')
+    inputs = load(OLD / 'inputs.json')
+    assert original['status'] == 'failed' and original['base'] == BASE
+    assert [r['name'] for r in original['receipts']] == [
+        'render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored']
+    assert all(r['exit_code'] == 0 for r in original['receipts'][:-1])
+    assert original['receipts'][-1]['exit_code'] == 1
+    assert 'nodename nor servname provided' in (OLD / 'vendored.stderr').read_text()
+    for receipt in original['receipts']:
+        for key in ('stdout', 'stderr'):
+            verify(receipt[key]['path'], receipt[key])
+    verify_render_history(ROOT, inputs['render_history_inputs'])
+    generated_paths = set(load(PACKAGE / 'expected-changes.json')['allowed_generated_paths'])
+    before = {r['relative_path']: r for r in inputs['all_maintained_inputs']}
+    current = {r['relative_path']: r for r in inventory(ROOT, exclude_runtime=True)}
+    changed = []
+    for path in set(before) | set(current):
+        if path in generated_paths:
+            continue
+        a, b = before.get(path), current.get(path)
+        if a is None or b is None or (a['sha256'], a['bytes']) != (b['sha256'], b['bytes']):
+            changed.append(path)
+    assert not changed, sorted(changed)
+    assert not OUT.exists()
+    OUT.mkdir()
+    write_new(OUT / 'recovery-inputs.json', {
+        'at': now(), 'helper': binding(__file__), 'original_failure': binding(OLD / 'execution.json'),
+        'original_inputs': binding(OLD / 'inputs.json'), 'unchanged_non_generated_inputs': True,
+        'scope': 'Retain six successful original commands; retry DNS-failed vendored check and execute the two remaining checks. No original receipt is modified.'})
+    env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+           'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT),
+           'RUFF_CACHE_DIR': str(OLD / 'ruff-cache')}
+    commands = [
+        ('vendored', ['bash', 'scripts/check_vendored_sync.sh']),
+        ('diff-check', ['git', 'diff', '--check']),
+        ('site-current', [str(PYTHON), '-B', '-c',
+                          'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'])]
+    receipts = original['receipts'][:-1]
+    for name, command in commands:
+        verify_render_history(ROOT, inputs['render_history_inputs'])
+        start = now()
+        result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
+        out, err = OUT / (name + '.stdout'), OUT / (name + '.stderr')
+        out.write_bytes(result.stdout)
+        err.write_bytes(result.stderr)
+        receipts.append({'name': name, 'command': command, 'cwd': str(ROOT),
+            'environment': {k: env[k] for k in ('PYTHONDONTWRITEBYTECODE', 'UV_NO_SYNC', 'PYTHONPATH', 'RUFF_CACHE_DIR')},
+            'started_at': start, 'finished_at': now(), 'exit_code': result.returncode,
+            'stdout': binding(out), 'stderr': binding(err)})
+        write_new(OUT / (name + '-execution.json'), receipts[-1])
+        print(name, result.returncode, flush=True)
+        if result.returncode:
+            write_new(OUT / 'failure.json', {'status': 'failed', 'receipts': receipts})
+            return result.returncode
+    verify_adopted(ROOT)
+    verify_render_history(ROOT, inputs['render_history_inputs'])
+    write_new(OUT / 'execution.json', {
+        'status': 'passed', 'base': BASE, 'target_sha256': TARGET_SHA, 'receipts': receipts,
+        'inputs': binding(OLD / 'inputs.json'),
+        'original_failure': binding(OLD / 'execution.json'),
+        'recovery_inputs': binding(OUT / 'recovery-inputs.json'),
+        'generated_files': [{'relative_path': p, **binding(ROOT / p)} for p in sorted(generated_paths)],
+        'render_history_inputs': inputs['render_history_inputs'],
+        'history_verified_after_site_current': True,
+        'scope': 'Six passed original commands plus network-retried vendored and two remaining checks; immutable original DNS failure retained. Later dossier/review changes need separate checks.',
+        'preservation': 'pending separate helper', 'saved_scientific_review': 'pending root'})
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

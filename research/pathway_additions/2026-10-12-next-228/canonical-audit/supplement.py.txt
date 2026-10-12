@@ -1,0 +1,39 @@
+"""Additional original-source identity controls and explicit MetaCyc version joins."""
+from pathlib import Path
+import gzip,hashlib,importlib.util,json,sys
+from xml.etree import ElementTree as ET
+D=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012');P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012')
+sys.path.insert(0,str(B/'runtime/src'))
+def mod(name,p):
+ s=importlib.util.spec_from_file_location(name,p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+builder=mod('builder',B/'runtime/scripts/build_source_identifier_snapshot.py');onto=mod('ontology',B/'runtime/scripts/build_ontology_identifier_snapshot.py')
+def bind(p):
+ raw=p.read_bytes();return {'path':str(p),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+def save(n,obj):(D/n).write_text(json.dumps(obj,indent=2)+'\n')
+versions=[]
+for frame in ['PWY0-1300','MANNCAT-PWY','COLANSYN-PWY']:
+ p=P/'raw'/('META-'+frame+'.xml');root=ET.parse(p).getroot();md=root.find('metadata');pgdb=md.find('PGDB');obj=root.find('Pathway')
+ assert md.findtext('query')=='META:'+frame and pgdb.attrib=={'orgid':'META','version':'27.0'}
+ assert obj.get('ID')=='META:'+frame
+ versions.append({'pathway':frame,'original_XML':bind(p),'native_metadata':ET.tostring(md,encoding='unicode'),'native_identity':obj.attrib,'version':'27.0','scope':'Separately retained exact-frame original XML independently establishes MetaCyc PGDB release; HTML footer alone is only Pathway Tools software version.'})
+save('metacyc-release-joins.json',versions)
+controls=[]
+def reject(name,fn):
+ try:fn()
+ except ValueError as error:controls.append({'name':name,'rejected':True,'error':str(error)})
+ else:raise AssertionError(name)
+manifest=json.loads((B/'manifest.json').read_text());e=next(e for e in manifest if e['key']=='pathbank-primary-2019-PW002096-SMP0002108')
+bp='{http://www.biopax.org/release/biopax-level3.owl#}';rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+root=ET.parse(D/'native-PW002096.owl').getroot();primary=next(x for x in root.findall(bp+'Pathway')if x.get(rdf+'about')=='http://identifiers.org/smpdb/SMP0002108')
+for c in list(primary):
+ if c.get(rdf+'resource')in ['#SubPathwayControls/109883','#PathwaySubPathway/109883']:primary.remove(c)
+(D/'control-unattached-child.owl').write_bytes(ET.tostring(root))
+reject('PathBank-native-child-detached-from-primary',lambda:list(builder.pathbank_terms(root,url=e['url'],archive_root=e['archive']['root'])))
+root=ET.parse(D/'native-PW002096.owl').getroot();child=next(x for x in root.findall(bp+'Pathway')if x.get(rdf+'about')=='http://identifiers.org/smpdb/SMP0000839');child.set(rdf+'about','http://identifiers.org/smpdb/SMP9999999')
+(D/'control-child-URI-xref-disagreement.owl').write_bytes(ET.tostring(root))
+reject('PathBank-child-URI-xref-disagreement',lambda:list(builder.pathbank_terms(root,url=e['url'],archive_root=e['archive']['root'])))
+node=ET.parse(D/'native-RHEA-33308.xml').getroot();rh='{http://rdf.rhea-db.org/}';node.find(rh+'status').set(rdf+'resource','http://rdf.rhea-db.org/Obsolete');root=ET.Element(rdf+'RDF');root.append(node)
+fixture=D/'control-rhea-obsolete.rdf.gz';fixture.write_bytes(gzip.compress(ET.tostring(root),mtime=0));entry=json.loads((B/'rhea-updates.json').read_text());entry.update(path=fixture.name,sha256=bind(fixture)['sha256'],ids=['RHEA:33308']);mf=D/'control-rhea-obsolete-manifest.json';mf.write_text(json.dumps(entry,indent=2)+'\n')
+reject('Rhea-original-derived-obsolete-status',lambda:onto.read_rhea_updates(mf,D,{'RHEA:33308'}))
+save('supplemental-negative-controls.json',controls)
+print(json.dumps({'metacyc_release_joins':len(versions),'supplemental_controls':len(controls),'all_passed':True}))

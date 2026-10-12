@@ -1,0 +1,84 @@
+from pathlib import Path
+import json,hashlib,re,gzip,datetime
+from lxml import etree,html
+O=Path(__file__).parent
+A=Path('/private/tmp/pathwaymech-next-228-author-20261012')
+C=Path('/private/tmp/pathwaymech-next-228-science-correction-20261012')
+D=json.loads((O/'parsed-target.json').read_text());edges={e['id']:e for e in D['mechanistic_edges']}
+B=json.loads((A/'derived/reference-bindings.json').read_text())
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def save(name,x):(O/name).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+cache={};verified=[]
+for ref in D['references']:
+ b=B[ref['id']];p=Path(b['path']);h=cache.setdefault(str(p),sha(p))
+ assert h==b['sha256'] and p.stat().st_size==b['bytes'],ref['id']
+ if 'source_sha256' in ref:assert h==ref['source_sha256']
+ else:assert ref['id']=='PMID:14645248' and 'projection' in ref['source_version']
+ verified.append({'id':ref['id'],**b,'fresh_sha256':h})
+save('fresh-reference-bindings.json',verified)
+raw=Path(B['PMID:14645248']['path']).read_text();line_values={}
+for m in re.finditer(r'(?:^|\n)L(\d+): ?(.*?)(?=\nL\d+:|\Z)',raw,re.S):line_values[int(m[1])]=m[2]
+primary=[]
+for i,e in enumerate(edges['mg-mnga-catalysis']['evidence'][3:],3):
+ m=re.search(r'L(\d+)[–-]L(\d+)',e['source_locator']);assert m
+ lo,hi=map(int,m.groups());text='\n'.join('L'+str(n)+': '+line_values.get(n,'[inline label merged in retained projection]') for n in range(lo,hi+1))
+ assert lo in line_values and hi in line_values
+ primary.append({'edge_id':'mg-mnga-catalysis','evidence_index':i,'claim':e['source_assertion'],'locator':e['source_locator'],'source':B[e['reference_id']],'text':text})
+tree=html.fromstring(Path(B['PMID:10762278']['path']).read_bytes())
+for eid in ['mg-gark-reg-cdar','mg-cdar-auto']:
+ for i,e in enumerate(edges[eid]['endpoint_qualifiers'][0]['evidence']):
+  if e['reference_id']!='PMID:10762278':continue
+  xpath=e['source_locator'].removeprefix('XPath ')
+  nodes=tree.xpath(xpath);assert nodes
+  primary.append({'edge_id':eid,'qualifier_evidence_index':i,'claim':e['source_assertion'],'locator':xpath,'source':B[e['reference_id']],'text':'\n'.join(' '.join(n.itertext()) for n in nodes)})
+# Independently selected complete nearby Results paragraphs retain context, not just authored snippets.
+sections=[]
+for number in [5,6]:
+ xpath=f'/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[{number}]'
+ nodes=tree.xpath(xpath);assert len(nodes)==1
+ sections.append({'locator':xpath,'text':' '.join(nodes[0].itertext())})
+save('fresh-primary-locator-replay.json',primary);save('source-selected-cdar-context.json',sections)
+proteins={k:json.loads(Path(B['UniProtKB:'+k]['path']).read_bytes()) for k in ['P37047','P08839','P0ACF8']}
+cdar=proteins['P37047'];assert cdar['primaryAccession']=='P37047' and cdar['sequence']['length']==385
+ptsi=proteins['P08839'];active=[f for f in ptsi['features'] if f['type']=='Active site' and f['location']['start']['value']==189]
+assert len(active)==1
+modified=[f for f in ptsi['features'] if f['type']=='Modified residue'];assert all(f['location']['start']['value']!=189 for f in modified)
+hns=proteins['P0ACF8'];loc=[x for x in hns['comments'] if x['commentType']=='SUBCELLULAR LOCATION'];sub=[x for x in hns['comments'] if x['commentType']=='SUBUNIT'];assert loc and sub
+save('fresh-uniprot-selections.json',{'P37047':{'accession':cdar['primaryAccession'],'length':cdar['sequence']['length'],'genes':cdar['genes']},'P08839':{'active189':active,'modified':modified,'function':[x for x in ptsi['comments'] if x['commentType']=='FUNCTION']},'P0ACF8':{'location':loc,'subunit':sub}})
+RDF='http://www.w3.org/1999/02/22-rdf-syntax-ns#';RH='http://rdf.rhea-db.org/'
+required=[]
+for edge in D['mechanistic_edges']:
+ for i,e in enumerate(edge['evidence']):
+  if e['reference_id'] in {'RHEA:27378','RHEA:33308','RHEA:23881'}:
+   triples=[]
+   for part in e['source_locator'].split('; '):
+    m=re.fullmatch(r'(http://rdf\.rhea-db\.org/\S+) rh:(\w+) (http://rdf\.rhea-db\.org/\S+)',part);assert m,part
+    triples.append((m[1],RH+m[2],m[3]))
+   assert len(triples)==3
+   required.append({'edge_id':edge['id'],'evidence_index':i,'reference_id':e['reference_id'],'triples':triples,'assertion':e['source_assertion']})
+assert len(required)==13
+subjects={t[0] for x in required for t in x['triples']};found=set();projections={}
+source=Path(B['RHEA:27378']['path'])
+with gzip.open(source,'rb') as f:
+ for _,node in etree.iterparse(f,events=('end',),huge_tree=True):
+  about=node.get('{'+RDF+'}about')
+  if about:
+   if about in subjects:
+    projections.setdefault(about,[]).append(etree.tostring(node,encoding='unicode'))
+    for child in node:
+     obj=child.get('{'+RDF+'}resource')
+     if obj is not None:
+      predicate=etree.QName(child).namespace+etree.QName(child).localname
+      found.add((about,predicate,obj))
+   node.clear()
+   while node.getprevious() is not None:del node.getparent()[0]
+for x in required:
+ assert all(tuple(t) in found for t in x['triples']),x
+ for a,p,b in x['triples']:
+  assert (a,RH+'coefficient1',b) not in found
+save('fresh-rhea-triple-replay.json',{'source':B['RHEA:27378'],'uses':required,'all39declared_triples_exist':True,'selected_original_objects':projections,'selected_resource_triples':sorted(found)})
+print('Fresh rehashed62references; primary10uses; UniProt3objects; Rhea13uses/39triples passed')

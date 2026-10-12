@@ -1,0 +1,137 @@
+import datetime
+import json
+import subprocess
+from pathlib import Path
+
+from prepare_correction import OUT, bind, load, write
+
+
+def main():
+    assert not (OUT / 'handoff.json').exists()
+    validation = load(OUT / 'derived/validation.json')
+    preservation = load(OUT / 'derived/final-input-preservation.json')
+    assert not validation['strict_errors'] and not validation['identifier_errors']
+    assert preservation['runtime_code_exact'] == 222
+    checks = load(OUT / 'derived/helper-checks.json')
+    assert checks['focused_lint']['exit_code'] == 0
+    for row in checks['compiled_in_memory_without_bytecode']:
+        assert bind(row['path']) == row
+    final_receipts = {}
+    for name in ['source_replay', 'verify_correction', 'ledgers', 'final_checks']:
+        candidates = sorted((OUT / 'receipts').glob('*-' + name + '.json'))
+        assert candidates
+        receipt = load(candidates[-1])
+        assert receipt['exit_code'] == 0
+        assert receipt['script'] == bind(OUT / (name + '.py'))
+        final_receipts[name] = bind(candidates[-1])
+    readme = '''# MG scientific correction successor
+
+This immutable external package addresses accepted findings in issues 441–443.
+Read handoff.json, research/mannosylglycerate-degradation.md and
+ derived/finding-dispositions.json first. The exact semantic delta and unchanged
+object proof identify the entire scope of the correction. Original scientific
+findings, review and author packets are preserved and externally bound.
+
+Actual final command receipts retain successful and failed attempts. The initial
+block-only YAML serializer failed on shared anchors; no-alias serialization then
+passed exact semantic restoration. The first H-NS replay check was case-sensitive;
+its corrected original-backed replay passed. An intermediate research table used
+the wrong ledger key and was corrected. Full repository-style lint of these
+external helpers failed chiefly on line length; focused syntax/name/import lint
+passes. No full helper style, full canonical, whole-corpus or independent scientific
+acceptance claim is made.
+
+Root must independently review this successor, then own full MG canonical building
+and audit, maintained adoption/review/history save, complete gates and visual QA,
+issue resolution, PR/merge and branch cleanup. All current changes are external.
+'''
+    (OUT / 'README.md').write_text(readme)
+    paths = subprocess.run(
+        ['rg', '--files', '--hidden', '--no-ignore', '--follow', str(OUT)],
+        capture_output=True, text=True, check=True,
+    ).stdout.splitlines()
+    rows = []
+    for value in sorted(paths):
+        path = Path(value)
+        assert path.is_file() and not path.is_symlink()
+        row = bind(path)
+        row['path'] = str(path.relative_to(OUT))
+        rows.append(row)
+    assert not any(row['path'] in {'artifact-manifest.json', 'handoff.json'} for row in rows)
+    write('artifact-manifest.json', {
+        'schema': 'immutable-external-artifact-manifest-v1',
+        'scope': 'All hidden, ignored and followed external package files; '
+                 'manifest and handoff excluded to avoid self-reference.',
+        'artifacts': rows,
+    })
+    target = bind(OUT / 'draft/mannosylglycerate-degradation.yaml')
+    handoff = {
+        'schema': 'scientific-correction-successor-handoff-v1',
+        'sealed_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'author': '/root/mannosylglycerate_preflight/mg_authorities',
+        'status': 'author corrections complete; independent successor review pending',
+        'target': target,
+        'intended_owner': 'data/pathways/mannosylglycerate-degradation.yaml',
+        'prior_target': load(OUT / 'input-bindings.json')['old_target'],
+        'finding_keys': [row['finding_key'] for row in load(OUT / 'derived/finding-dispositions.json')],
+        'issues': [row['url'] for row in load(OUT / 'derived/finding-dispositions.json')],
+        'coverage': {
+            'edges': 75, 'participants': 44, 'reaction_context_nodes': 6, 'taxa': 2,
+            'core_events': 2, 'native_chemical_sides': 17, 'references': 62,
+            'qualifiers': 15, 'evidence_uses': 176, 'inherited_preflight_claims': 29,
+            'changed_edges': 18, 'unchanged_edges': 57, 'semantic_field_operations': 22,
+            'Rhea_exact_triples': 39, 'semantic_negative_controls': 25,
+            'source_specific_negative_controls': 67,
+        },
+        'inputs': bind(OUT / 'input-bindings.json'),
+        'runtime': bind(OUT / 'runtime-bindings.json'),
+        'manifest': {**bind(OUT / 'artifact-manifest.json'), 'artifact_count': len(rows)},
+        'final_receipts': final_receipts,
+        'artifacts': {
+            name: bind(OUT / name) for name in [
+                'research/mannosylglycerate-degradation.md',
+                'derived/finding-dispositions.json', 'derived/exact-semantic-delta.json',
+                'derived/unchanged-object-proof.json', 'derived/primary-assay-replay.json',
+                'derived/rhea-exact-original-replay.json', 'derived/uniprot-assertion-replay.json',
+                'derived/all-evidence-locator-replay.json', 'derived/reference-original-replay.json',
+                'derived/scope-and-conflicts.json', 'derived/all-preflight-claim-dispositions.json',
+                'derived/edge-to-source-coverage.json', 'derived/source-to-edge-coverage.json',
+                'derived/validation.json', 'derived/graph-page-kgx-roundtrip.json',
+                'derived/semantic-negative-controls.json', 'derived/final-input-preservation.json',
+                'derived/helper-checks.json',
+            ]
+        },
+        'limits': [
+            'Scientific author correction only; no independent successor acceptance.',
+            'Bounded source/ontology composition preserves actual lyxose 563 source metadata; '
+            'MG proposal composition has 584. No full MG canonical build.',
+            'Sampaio full text remains an author-uploaded web observation projection, not publisher PDF. '
+            'No original/reference access level or scientific claim is upgraded.',
+            'All original author/review/adapter packets and 62 reference bindings reverified unchanged.',
+            'Native page/graph/KGX text and structure verified; no browser visual QA or whole-corpus gates.',
+            'Original aliases expanded during serialization; exact parsed-object preservation proven.',
+            'Failed helper attempts retained; focused syntax/name/import lint passes, '
+            'full helper formatting-style pass not claimed.',
+            'No maintained, shared-cache, Git, GitHub, install or synchronization writes.',
+        ],
+        'root_next_actions': [
+            'Independently review successor against all three original findings and primary originals.',
+            'Run/audit full MG canonical build from exact accepted lyxose outputs with accepted adapter.',
+            'Guard maintained adoption, history and structured-review save; run complete repository gates.',
+            'Inspect page/network visually, resolve issues, and handle PR/merge/branch cleanup.',
+        ],
+    }
+    write('handoff.json', handoff)
+    # Re-read every sealed byte after writing the handoff; make no further packet writes.
+    for row in rows:
+        actual = bind(OUT / row['path'])
+        assert (actual['bytes'], actual['sha256']) == (row['bytes'], row['sha256'])
+    print(json.dumps({
+        'handoff': bind(OUT / 'handoff.json'),
+        'manifest': bind(OUT / 'artifact-manifest.json'),
+        'artifacts': len(rows), 'target': target,
+    }, indent=2))
+
+
+if __name__ == '__main__':
+    main()

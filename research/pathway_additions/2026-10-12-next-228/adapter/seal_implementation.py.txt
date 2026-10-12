@@ -1,0 +1,219 @@
+from pathlib import Path
+import datetime
+import difflib
+import hashlib
+import json
+
+A = Path(__file__).parent
+H = Path('/private/tmp/pathwaymech-next-228-author-20261012/authority-preparation')
+L = Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012')
+
+
+def bind(path):
+    path = Path(path)
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def write(name, value):
+    (A / name).write_text(json.dumps(value, indent=2) + '\n')
+
+
+def verify_packet(directory, handoff_sha):
+    handoff = bind(directory / 'handoff.json')
+    assert handoff['sha256'] == handoff_sha
+    manifest = json.loads((directory / 'artifact-manifest.json').read_text())
+    rows = manifest.get('files', manifest.get('artifacts'))
+    for row in rows:
+        actual = bind(directory / row['path'])
+        assert (actual['bytes'], actual['sha256']) == (row['bytes'], row['sha256']), row['path']
+    return {'handoff': handoff, 'manifest': bind(directory / 'artifact-manifest.json'),
+            'artifacts_verified': len(rows)}
+
+
+prior_packets = {
+    'lyxose_implementation': verify_packet(
+        L, '971cd166de47b8c11b4181a97991ba3abc3c4460a675959de753da8dbd4993c8'),
+    'mg_authority_proposals': verify_packet(
+        H, '01e918d38b31b0acccfb29f12f602830982178a206e5e1884f1c50c1f632807d'),
+}
+baseline = json.loads((A / 'baseline-code-bindings.json').read_text())
+changed = []
+unchanged = []
+diff = []
+for row in baseline['files']:
+    actual = bind(row['candidate']['path'])
+    if actual['sha256'] == row['candidate']['sha256']:
+        unchanged.append(row['relative_path'])
+        continue
+    # Changed files are all based on immutable accepted overlay originals.
+    assert bind(row['original']['path']) == row['original']
+    changed.append({'relative_path': row['relative_path'], 'before': row['original'],
+                    'after': actual, 'requires_accepted_lyxose_overlay': row['lyxose_overlay']})
+    diff.extend(difflib.unified_diff(
+        Path(row['original']['path']).read_text().splitlines(keepends=True),
+        Path(actual['path']).read_text().splitlines(keepends=True),
+        fromfile='a/' + row['relative_path'], tofile='b/' + row['relative_path']))
+expected = {'docs/IDENTIFIERS.md', 'scripts/build_source_identifier_snapshot.py',
+            'tests/test_pathbank_identifier_authority.py'}
+assert {row['relative_path'] for row in changed} == expected
+actual_paths = {str(p.relative_to(A / 'candidate')) for p in (A / 'candidate').rglob('*')
+                if p.is_file()}
+assert actual_paths == {row['relative_path'] for row in baseline['files']}
+assert len(unchanged) == 219
+write('code-delta.json', {'base_head': baseline['base_head'], 'base_tree': baseline['base_tree'],
+                        'required_overlay': baseline['lyxose_handoff'],
+                        'changed_files': changed, 'unchanged_count': len(unchanged),
+                        'unchanged_files': unchanged})
+(A / 'implementation.patch').write_text(''.join(diff))
+write('code-copy-plan.json', {
+    'instruction': 'Apply only after accepting the exact six-file lyxose overlay on the sealed '
+                   'ribose base. Verify before hashes or review any newer adopted base explicitly. '
+                   'No automatic maintained copy is performed by this packet.',
+    'files': changed,
+})
+checks = json.loads((A / 'check-executions.json').read_text())
+assert all(check['returncode'] == 0 for check in checks)
+for check in checks:
+    assert bind(check['stdout']['path']) == check['stdout']
+    assert bind(check['stderr']['path']) == check['stderr']
+assert '500 passed' in (A / 'focused-tests.stdout').read_text()
+assert (A / 'lint.stdout').read_text().strip() == 'All checks passed!'
+replay = json.loads((A / 'real-source-replay.json').read_text())
+summary = json.loads((A / 'replay.stdout').read_text())
+assert replay['status'] == 'pass'
+assert summary['old_originals_preserved'] == 11
+assert summary['old_native_terms_preserved'] == 368
+assert summary['actual_original_negative_controls_rejected'] == 53
+for row in replay['prior_pathbank_original_regressions']:
+    assert bind(row['original']['path']) == row['original']
+copy_plan = json.loads((A / 'new-originals-copy-plan.json').read_text())
+for row in copy_plan:
+    assert bind(row['original']['path']) == row['original']
+write('tool-terminal-receipts.json', {
+    'note': 'Tool output identifiers retained from the actual session. No new run or inferred '
+            'execution time is represented here; timed subprocess receipts are in check-executions.json.',
+    'prepare_candidate': {'terminal': 'a1084e', 'exit_code': 0,
+                          'result': '222 exact base files including six reviewed lyxose overlay files'},
+    'initial_original_probe': {'terminal': '60d1aa', 'exit_code': 0,
+                               'output': bind(A / 'initial-original-probe.json')},
+    'retained_first_check_attempt': {
+        'directory': str(A / 'retained-attempts/focused-attempt1'),
+        'result': '500 tests passed; lint E501 failed on one test line, then corrected',
+        'receipt': bind(A / 'retained-attempts/focused-attempt1/check-executions.json'),
+    },
+    'final_checks': {'launch': '265c5b', 'session_id': 66578, 'terminal': 'fc774d', 'exit_code': 0,
+                     'receipt': bind(A / 'check-executions.json')},
+    'real_source_replay': {'launch': 'c66ee2', 'session_id': 26512,
+                           'terminal': '6d09ad', 'exit_code': 0,
+                           'stdout': bind(A / 'replay.stdout'),
+                           'stderr': bind(A / 'replay.stderr'),
+                           'result': bind(A / 'real-source-replay.json')},
+})
+write('final-verification.json', {
+    'verified_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'prior_packets': prior_packets,
+    'candidate_files': 222, 'changed_files': 3, 'unchanged_files': 219,
+    'candidate_inventory_includes_hidden_ignored_and_symlink_files': True,
+    'all_bound_test_outputs_verified': True,
+    'all_11_prior_originals_rehashed': True,
+    'mg_whole_original_zip_rehashed': True,
+    'source_proposal_preservation': replay['preservation'],
+    'counts_are_prospective_proposal_composition_not_merged_canonical': True,
+})
+
+(A / 'IMPLEMENTATION-HANDOFF.md').write_text('''# MG PathBank identity adapter implementation
+
+This external candidate adds the native primary-owned Interaction attachment needed to identify the two PathBank pathways in the unchanged MG archive member. It is ready for independent code review; no full canonical build or scientific acceptance is claimed.
+
+## Base and change boundary
+
+The candidate copies committed ribose `b70ed36907b4c434d967f4456456be3b480415ae` (tree `428c9ff0ab1294c2e4b5d6059d45a40ddf096974`) and overlays the exact accepted six-file lyxose adapter. `baseline-code-bindings.json` binds all 222 files. The three changed files are the source snapshot builder, its PathBank tests, and `docs/IDENTIFIERS.md`; 219 copied files are byte-identical. The identifier consumer and typed archive provenance validator remain unchanged. `code-delta.json`, `implementation.patch`, and `code-copy-plan.json` define the exact incremental adoption boundary.
+
+Both earlier packets remain sealed: all 280 lyxose implementation artifacts and all 229 MG authority-preparation artifacts were rehashed successfully during final verification. This packet does not alter their claims or prior gap ledgers.
+
+## Behavior
+
+The new branch resolves an Interaction owned by the requested primary Pathway through a direct component, an ordered PathwayStep, or both redundant paths. It requires the observed literal source marker, exactly one resolved local SmallMolecule and one different native Pathway participant, the compound's native reference, and an empty child with its exact marker, native accession/URI agreement, and direct title. It validates pointer shape, object types, local identities, namespace/base, literal cardinalities, and duplicate or dangling attachment paths. It does not scan arbitrary descendants or hardcode the MG accessions, member filename, or numeric fragments.
+
+The existing direct/ordered SubPathway branch remains supported. Generic source markers are excluded from pathway synonyms. These structural names establish source identity only: no inhibition predicate, inhibitor mechanism, directed dependency, chemical equivalence, or child chemistry is inferred.
+
+## Original-derived output
+
+`two-term-build.json` is produced by the native source builder from the whole unchanged official ZIP, selecting `PW002096.owl`. It contains:
+
+- `PathBank:SMP0002108`: `2-O-alpha-Mannosyl-D-glycerate Degradation`.
+- `PathBank:SMP0000839`: `Gluconeogenesis from L-Malic Acid`.
+
+Both labels come from the source, with empty synonyms. Typed metadata independently binds the 27,782,843-byte ZIP (`b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44`) and 42,234-byte member (`473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8`). Root-first `pathway_accessions` contains exactly the proven two accessions. The existing consumer accepts this bounded output. `new-originals-copy-plan.json` directs reuse of the exact complete ZIP; no source bytes were rewritten.
+
+## Validation
+
+The final focused suite passed **500 tests**, and Ruff passed. Actual commands, start/end times, exit codes, and output hashes are in `check-executions.json`. The first attempt's 500 passing tests and one E501 lint failure are retained under `retained-attempts/focused-attempt1`; the test line wrap was corrected before the final passing run.
+
+`real-source-replay.json` records exact before/after parsing of all 11 previously supported PathBank originals, followed by bounded production builds preserving all 368 native terms and all 11 complete source metadata objects. Original-derived lyxose direct-only, ordered-only and redundant paths all retain the same output. The three corresponding MG modes pass. Fifty-three actual-original malformed member/archive/provenance controls are rejected, including owner paths, types, markers, pointer/cardinality errors, conflicting identity, expanded child, foreign namespace/base, unrelated pathways, changed original hashes/lengths/root and duplicate member names. Synthetic tests use different local identities and accessions. The malformed ZIPs are explicitly derivatives, never source authority.
+
+## Prospective proposal composition and remaining root-owned work
+
+The optional complete source proposal appends these two native terms and one typed source entry to the previously sealed MG helper proposal. It preserves exactly **2,432 source terms, 584 source metadata objects, and 737 manifest entries**, yielding **2,434 / 585 / 738**. These are **prospective proposal-composition counts, not merged canonical counts**. They include the helper's prospective lyxose composition.
+
+Root has separately approved following the native ordered lyxose builder even when the existing frozen P76268 original is selected before a fresh UniProt source, producing 563 rather than the earlier proposed 564 source metadata objects. This implementation changes no source ordering. The full MG canonical build must start from the exact accepted lyxose canonical outputs, preserve all adopted terms/metadata/provenance, and add MG originals through the native builder. Do not overwrite that accepted output with these prospective totals.
+
+Independent root review, adoption, a full original-backed canonical build, whole-corpus gates, final scientific record review, and any Git/GitHub work remain pending. No maintained files, shared cache, Git state, GitHub state, or environments were changed by this implementation task; no package installation or synchronization occurred. Public-release licensing remains deferred as instructed.
+''')
+
+rows = []
+for path in sorted(A.rglob('*')):
+    if not path.is_file() or path.name in {'artifact-manifest.json', 'handoff.json'}:
+        continue
+    bound = bind(path)
+    bound['path'] = str(path.relative_to(A))
+    if path.is_symlink():
+        bound['symlink_target'] = str(path.resolve())
+    rows.append(bound)
+write('artifact-manifest.json', {
+    'scope': 'All external implementation artifacts, including candidate files, retained failed '
+             'lint evidence, derivative tests, original symlink bytes and external Ruff cache; '
+             'excludes only this manifest and final handoff.',
+    'files': rows,
+})
+handoff = {
+    'status': 'sealed_external_implementation_ready_for_independent_root_review',
+    'created': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'base_head': baseline['base_head'], 'base_tree': baseline['base_tree'],
+    'required_lyxose_overlay': baseline['lyxose_handoff'],
+    'prior_packets': prior_packets,
+    'changed_files': changed,
+    'assessment': bind(A / 'IMPLEMENTATION-HANDOFF.md'),
+    'artifact_manifest': bind(A / 'artifact-manifest.json'),
+    'artifact_count': len(rows),
+    'code_delta': bind(A / 'code-delta.json'),
+    'code_patch': bind(A / 'implementation.patch'),
+    'code_copy_plan': bind(A / 'code-copy-plan.json'),
+    'check_executions': bind(A / 'check-executions.json'),
+    'tool_terminal_receipts': bind(A / 'tool-terminal-receipts.json'),
+    'original_source_replay': bind(A / 'real-source-replay.json'),
+    'two_term_manifest': bind(A / 'two-term-manifest.json'),
+    'two_term_build': bind(A / 'two-term-build.json'),
+    'new_originals_copy_plan': bind(A / 'new-originals-copy-plan.json'),
+    'prospective_source_proposal': bind(A / 'complete-source-proposal.json'),
+    'prospective_manifest_proposal': bind(A / 'complete-source-manifest-proposal.json'),
+    'proposal_count_caveat': 'Prospective composition only. Full MG build must start from exact '
+                           'accepted lyxose canonical output and preserve native ordered provenance; '
+                           'no source reordering or merged canonical counts are claimed.',
+    'final_verification': bind(A / 'final-verification.json'),
+    'tests': {'focused': 500, 'lint': 'pass', 'previous_originals': 11,
+              'preserved_previous_native_terms': 368, 'preserved_previous_metadata': 11,
+              'lyxose_original_positive_routes': 3, 'mg_original_positive_routes': 3,
+              'actual_original_negative_controls_rejected': 53,
+              'new_native_terms': 2, 'new_typed_source_metadata': 1},
+    'maintained_writes': False, 'shared_cache_writes': False,
+    'git_github_mutations': False, 'environment_installs': False,
+    'full_canonical_build': False, 'full_corpus_gates': False,
+    'scientific_acceptance': False, 'independent_review': 'pending_root',
+}
+write('handoff.json', handoff)
+print(json.dumps({'handoff': bind(A / 'handoff.json'),
+                  'artifact_manifest': bind(A / 'artifact-manifest.json'),
+                  'artifact_count': len(rows), 'changed_files': len(changed),
+                  'unchanged_files': len(unchanged)}, indent=2))

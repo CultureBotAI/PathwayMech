@@ -1,0 +1,95 @@
+import json
+import os
+import subprocess
+from pathlib import Path
+
+from prepare_correction import (
+    ADAPTER,
+    ADAPTER_REVIEW,
+    AUTHOR,
+    OUT,
+    REVIEW,
+    bind,
+    load,
+    packet,
+    write,
+)
+
+
+def main():
+    scripts = sorted(OUT.glob('*.py'))
+    for path in scripts:
+        compile(path.read_bytes(), str(path), 'exec')
+    command = [
+        '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python',
+        '-B', '-m', 'ruff', 'check', '--no-cache', '--select', 'E4,E7,E9,F,I',
+        *map(str, scripts),
+    ]
+    result = subprocess.run(
+        command, capture_output=True, text=True,
+        env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1', UV_NO_SYNC='1'),
+    )
+    write('derived/helper-checks.json', {
+        'compiled_in_memory_without_bytecode': [bind(path) for path in scripts],
+        'focused_lint': {
+            'command': command, 'exit_code': result.returncode,
+            'stdout': result.stdout, 'stderr': result.stderr,
+            'scope': 'Syntax, undefined/unused names and imports for external research helpers. '
+                     'Full repository-style helper lint was attempted and failed chiefly on long '
+                     'scientific text; that actual attempt is retained, and full style pass is not claimed.',
+        },
+    })
+    assert result.returncode == 0, result.stdout + result.stderr
+    packets = {
+        'author': packet(
+            AUTHOR, 'f86be00b99dd8182c71fc1c7e493ab130c924f907edb64c7335c68dd610594fd', 612,
+        ),
+        'review': packet(
+            REVIEW, '36cbadc214456c366a4d579909daedd128458b398eac594f0670fbdc839e5b7a', 53,
+        ),
+        'adapter': packet(
+            ADAPTER, '68b1dd25ad72c8655c6c8d7876b3f7e2409c3c6b1a0cf3a29e7b2f806eb962e3', 317,
+        ),
+        'adapter_review': packet(
+            ADAPTER_REVIEW,
+            '34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed', 20,
+        ),
+    }
+    runtime = load(OUT / 'runtime-bindings.json')
+    for row in runtime['code']:
+        assert bind(row['original']['path']) == row['original']
+        assert bind(row['candidate']['path']) == row['candidate']
+    for row in runtime['authority_composition'].values():
+        for field in ['accepted_base', 'native_proposal_input', 'output']:
+            assert bind(row[field]['path']) == row[field]
+        base, candidate = load(row['accepted_base']['path']), load(row['output']['path'])
+        assert all(candidate['terms'][key] == value for key, value in base['terms'].items())
+        assert all(candidate['sources'][key] == value for key, value in base['sources'].items())
+    for row in load(OUT / 'derived/reference-original-replay.json'):
+        assert bind(row['path']) == row['actual']
+    inventory_cmd = ['rg', '--files', '--hidden', '--no-ignore', '--follow', str(OUT)]
+    inventory = subprocess.run(inventory_cmd, capture_output=True, text=True, check=True)
+    files = sorted(inventory.stdout.splitlines())
+    assert not any(Path(path).is_symlink() for path in files)
+    assert not any('__pycache__' in Path(path).parts or '.git' in Path(path).parts for path in files)
+    write('derived/final-input-preservation.json', {
+        'packets': packets,
+        'original_reference_bindings_reverified': 62,
+        'runtime_code_exact': len(runtime['code']),
+        'accepted_lyxose_source_and_ontology_objects_exact': True,
+        'authority_composition': runtime['authority_composition'],
+        'no_original_packet_mutations': True,
+        'inventory_command': inventory_cmd,
+        'inventory_scope': 'All hidden, ignored and followed files included; external package only.',
+        'files_observed': files,
+    })
+    print(json.dumps({
+        'prior_packet_artifacts_reverified': 1002,
+        'reference_bindings_reverified': 62,
+        'runtime_code_files_exact': len(runtime['code']),
+        'helper_compile': 'pass', 'focused_helper_lint': 'pass',
+    }))
+
+
+if __name__ == '__main__':
+    main()

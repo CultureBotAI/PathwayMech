@@ -180,11 +180,13 @@ does not itself establish pathway membership or catalytic function.
 
 An exact official per-pathway download URL
 (`https://pathbank.org/view/SMP.../download?type=owl_markup`) can select the
-primary definition from an export that also contains attached `SubPathway`
+primary definition from an export that also contains attached pathway
 interface stubs. The request must agree with the native SMPDB assertion; neither
 the first XML object nor the filename selects the pathway. Extra Pathway objects
-must be explicitly attached stubs containing native Interaction objects, not
-unrelated or expanded definitions. The selected primary pathway supplies its
+must be explicitly attached stubs in a supported native format, not unrelated
+or expanded definitions. The original `SubPathway` format contains native
+Interaction objects and attaches directly through the primary pathway
+components or ordered steps. The selected primary pathway supplies its
 canonical pathway term. A directly attached, validated interface also supplies
 its exact SMPDB identity and one direct, nonempty biological `displayName` as a
 canonical title. Duplicate, empty, nested, or generic `SubPathway` display names
@@ -199,6 +201,20 @@ one Pathway. Native Interaction objects are not emitted as reaction authorities.
 Compartment-scoped physical objects keep distinct local IDs even when they share
 a chemical reference; identity alone does not assert material transfer or exact
 chemical equivalence between those objects.
+
+A second closed format has an empty `InhibitorySubPathway` interface attached
+through an Interaction owned by the primary pathway. A direct component pointer
+or an exact `PathwayStep`/`stepProcess` chain must reach that Interaction. The
+Interaction has the native `InhibitorySubPathwayControl` marker and exactly two
+participants: one resolved local SmallMolecule and one independently accessioned
+Pathway. The compound retains its `SubPathwayInhibitor` marker and resolved native
+SmallMoleculeReference; the child has a single biological displayName and matching
+SMPDB unification identity, with no expanded pathway content. Duplicate, dangling,
+extra or unsupported participants, fields, markers and ownership paths fail.
+Generic marker names are not biological title synonyms. Neither these names nor
+this attachment authorizes an inhibition edge, chemical equivalence, directed
+pathway dependency or child reaction membership. This branch supplies only the
+issuing pathway identity; it does not scan arbitrary descendant interactions.
 
 PathBank's external chemical and protein cross-reference labels are not emitted
 as ChEBI or UniProt authority terms: those identifiers still require their own

@@ -1,0 +1,81 @@
+from pathlib import Path
+import json,yaml,hashlib,subprocess,os,datetime,csv,io,html
+O=Path('/private/tmp/pathwaymech-next-228-author-20261012');A=O/'authority-preparation';P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012');PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):return dict(path=str(p),bytes=Path(p).stat().st_size,sha256=sha(p))
+def write(n,v):(O/'derived'/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+# Verify the immutable delegated packet before using its output.
+m=json.loads((A/'artifact-manifest.json').read_text());rows=m.get('files',m.get('artifacts'));assert rows is not None
+checks=[]
+for a in rows:
+ p=A/a['path'];checks.append(dict(path=str(p),valid=p.stat().st_size==a['bytes'] and sha(p)==a['sha256']))
+assert len(checks)==229 and all(c['valid'] for c in checks)
+write('authority-helper-intake.json',dict(handoff=bind(A/'handoff.json'),manifest=bind(A/'artifact-manifest.json'),checks=checks))
+executions=[]
+for script in ['verify.py','ledgers.py']:
+ start=datetime.datetime.now(datetime.timezone.utc).isoformat();env=os.environ.copy();env['PYTHONDONTWRITEBYTECODE']='1';cmd=[PY,'-B',str(O/script)]
+ p=subprocess.run(cmd,capture_output=True,text=True,env=env);out=O/'receipts'/('final-'+script+'.stdout');err=O/'receipts'/('final-'+script+'.stderr');out.write_text(p.stdout);err.write_text(p.stderr)
+ executions.append(dict(command=cmd,started=start,finished=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=p.returncode,stdout=bind(out),stderr=bind(err),script=bind(O/script)))
+ assert p.returncode==0,p.stdout+'\n'+p.stderr
+write('final-command-executions.json',executions)
+target=O/'draft/mannosylglycerate-degradation.yaml';r=yaml.safe_load(target.read_text());v=json.loads((O/'derived/validation.json').read_text());es=r['mechanistic_edges'];claims=json.loads((O/'derived/all-preflight-claim-dispositions.json').read_text())['claims']
+# No graph projection may silently drop evidence or endpoint state/construct assertions.
+kgx=list(csv.DictReader(io.StringIO((O/'rendered/edges.tsv').read_text()),delimiter='\t'));remaining=list(kgx);kgchecks=[]
+for e in es:
+ matches=[x for x in remaining if x['subject']==e['subject'] and x['object']==e['object'] and json.loads(x['evidence'])==e['evidence'] and (json.loads(x['endpoint_qualifiers']) if x['endpoint_qualifiers'] else [])==e.get('endpoint_qualifiers',[])]
+ assert len(matches)==1,e['id'];remaining.remove(matches[0]);kgchecks.append(dict(edge=e['id'],complete_evidence_and_qualifiers_preserved=True))
+assert not remaining
+page=next((O/'candidate/pages/records').glob('*.html'));body=html.unescape(page.read_text())
+pagechecks={text:text in body for text in ['His15 phosphorylated','His15 unphosphorylated','noncompetitive','MG-phosphate hydrolysis','PathBank:SMP0000839','regulates']};assert all(pagechecks.values())
+write('graph-export-roundtrip.json',dict(target=bind(target),page=bind(page),edge_checks=kgchecks,page_checks=pagechecks))
+named=[dict(id=r['id'],label=r['label'],role='record')]+[dict(**n,role=section) for section in ['taxa','participants','reactions'] for n in r[section]]
+write('final-named-identifiers.json',named)
+authority_selection=json.loads((A/'author-selection-bridge.json').read_text())
+write('final-authority-selection-bridge.json',dict(delegated_selection=bind(A/'author-selection-bridge.json'),final_target=bind(target),named_ids=sorted(n['id'] for n in named),note='Same53 identifiers as authority helper selection. Two opaque external MetaCyc pathway contexts moved from participants to reactions(category pathway) so has_input correctly preserves outgoing interface chemical context. Core remains2, totalreaction/contextnodes6.'))
+table='\n'.join('| '+e['id']+' | '+e['subject']+' | '+e['predicate']+' | '+e['object']+' | '+', '.join(sorted({x['reference_id'] for x in e['evidence']}))+' | '+e['description'].replace('|','\\|')+' |' for e in es)
+text=f'''# Pathway mechanism research: 2-O-alpha-mannosyl-D-glycerate degradation
+
+## Pathway scope
+
+The exact issuing definition is **MetaCyc:PWY0-1300**, native PGDB27.0. Its two reaction-list members are RXN0-5216 and GKI-RXN, ordered hydrolysis then glycerate2-phosphorylation. MngA uptake/phosphorylation and PtsI–HPr energy coupling are linked context, not additional core members. This external candidate is based on actual227 records and the explicitly prospective L-lyxose addition; it does not invent a maintained228-record baseline.
+
+K-12 MC4100 and specified mutant/plasmid derivatives provide the strongest whole-route culture and genetics evidence. Issuing EcoCyc/Entrez MG1655 and UniProtK12 identities anchor reference proteins; they do not relabel those assays. The adopted ribose working base was observed at9dc303d and later committed unchanged atb70ed369/tree428c9ff0. Exact files/hashes are in `derived/intake.json` and `derived/base-commit-bridge.json`.
+
+## Mechanistic summary
+
+The core hydrolysis consumes one MG-P and one water and produces one anomer-unspecified D-mannopyranose6-phosphate and one(R)-glycerate. Glycerate2-kinase consumes one glycerate and oneATP, producing one2PG, oneADP and onehydron. Rhea27378 provides the exact forward kinase direction. Native RXN0-5216 is retained for hydrolysis because alpha-specific Rhea27867/CHEBI60332 would silently increase product-anomer specificity.
+
+EntryRhea33308 exchanges extracellular MG plus phosphohistidyl HPr for intracellular MG-P plus histidyl HPr. ContextRhea23881 uses PEP and HPr to produce pyruvate and phospho-HPr. Each coefficient is one. HPr is represented by source-backed P0AA04 His15 state qualifiers, not free histidine; the phosphate is charged to PEP only once. MngA is a single658-aa EIIABC chain; His87/Cys192 remain putative relay sites. PtsI is an exact native homodimer; its His189 intermediate supplies HPr. The independently issued MetaCyc assembly and its native polypeptide original preserve the component bridge without weakening the narrower EcoCyc adapter.
+
+MngB is represented as enabling the assigned hydrolysis because the inspected work supports physiology and surrogate mannosidase activity, not purified MG-P turnover. The annotated one divalent metal per subunit is similarity-based, with exact ion/assembly/occupancy unresolved. GarK product specificity is supported by engineered quadruple-deletion complementation and is qualified for the expression construct. Native MngR, FNR and Fur assemblies retain exact component stoichiometry, including2Fe2+ in the named Fur complex. FNR cluster/O2 effects remain state-specific general regulator context.
+
+MngR repression/autorepression and CdaR activation/autoregulation target exact genes. MG and the three CdaR-inducing carbon sources are expression observations, not proven direct ligands. H-NS evidence is a strain/temperature-specific garP transcript comparison projected through the exactTU482 gene membership. FNRgarP directness is limited by native annotation and unavailable primary full text. Fur is unsigned because the native negative mode conflicts with primary intragenic binding, unknown element function, and discussion of prior operon activation. The2011 full-EI and2013EIC alpha-ketoglutarate inhibition interpretations remain separate. TmaR spatial control retains tags, mutants and non-MG-specific scope.
+
+Native alpha-M6P outgoing links to MANNCAT-PWY/COLANSYN-PWY are represented as opaque pathway-context nodes with the exact chemical input. They are kept separate from the generic hydrolysis product; no unobserved anomerization is inserted. The frozen PathBank interface SMP0000839 is retained through the original Interaction context. Its label does not establish biological inhibition or expanded child chemistry.
+
+## Evidence table
+
+Every row is a paraphrased, located assertion. Full edge evidence and qualifier evidence are in the YAML and the bidirectional source/edge ledgers; no database statement is presented as a quotation from its cited paper.
+
+| Edge | Subject | Predicate | Object | References | Scope and limits |
+| --- | --- | --- | --- | --- | --- |
+{table}
+
+## Gaps
+
+All29accepted preflight claims/conflicts are retained or explicitly disposed in `derived/all-preflight-claim-dispositions.json`. `derived/scope-and-conflicts.json` records exact strains, constructs, negative observations, additional native transcription units, excluded scopes and unresolved measurements. Full accepted preflight bodies and observations are copied unchanged in `originals/preflight`; the helper's independent native identities and copy plan are sealed in `authority-preparation`.
+
+The2004full article was read through retained author-uploaded web observations coveringL86–L2902. Its projection is not a publisher PDF and is not assigned an original-paper hash in the record. Other full primary bodies are original PMCXML/HTML. Several historical enzyme/FNR/FarR papers remain abstract-only; the1969`.pdf`response is an HTML challenge. TmaR supplements remain unavailable. No claims are upgraded from those access levels.
+
+iModulonDB is computational context only: the retained PRECISEMG1655 ten-query replay returns SugarDiacid module38 for garK/cdaR. No Mng module result is not an absence claim. No causal edge derives from this context.
+
+The complete source-backed identifier gate remains **blocked for PathBank:SMP0000839**. The same original archive shape also blocks rootSMP0002108 as a named-identity probe. The bounded extension requirements preserve exact ZIP/member provenance and primary-owned Interaction→empty InhibitorySubPathway attachment; no hand-seeded identifier or label is supplied. Independent implementation/review and full canonical/corpus gates are root-owned. Scientific review of this external target is still pending; public-release licensing is deferred and source exhaustion remains false.
+
+## Candidate YAML
+
+Exact candidate: `draft/mannosylglycerate-degradation.yaml`, SHA256`{sha(target)}`. It contains44participants, six reaction/context nodes,75edges,62references and13endpoint qualifiers. Only two reaction nodes are core; four chemistry events contribute17side edges(9core+8entry/energy).
+
+Final recorded checks: schema/strict pass;{v['locator_count']}located evidence instances and62reference hashes pass;75KGXedges preserve complete evidence/qualifiers; single-record page renders; eight meaningful scientific mutations are rejected. Identifier validation returns exactly the required PathBank child gap. These checks do not claim a whole-corpus build, independent scientific approval, maintained edits or Git/GitHub writes.
+'''
+(O/'research/mannosylglycerate-degradation.md').write_text(text)
+print(json.dumps(dict(target=bind(target),verified_helper_artifacts=len(checks),locators=v['locator_count'],graph_edges=len(kgchecks),page_checks=pagechecks)))

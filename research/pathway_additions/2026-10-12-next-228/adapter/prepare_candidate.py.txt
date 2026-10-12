@@ -1,0 +1,19 @@
+from pathlib import Path
+import json,hashlib,shutil,subprocess,datetime
+A=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-226-20261012');L=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');K=A/'candidate'
+def bind(p):p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+assert subprocess.check_output(['git','-C',str(B),'rev-parse','HEAD'],text=True).strip()=='b70ed36907b4c434d967f4456456be3b480415ae'
+h=json.loads((L/'handoff.json').read_text());assert bind(L/'handoff.json')['sha256']=='971cd166de47b8c11b4181a97991ba3abc3c4460a675959de753da8dbd4993c8'
+manifest=json.loads((L/'artifact-manifest.json').read_text());key='files' if 'files' in manifest else 'artifacts'
+for row in manifest[key]:
+ d=bind(L/row['path']);assert d['bytes']==row['bytes'] and d['sha256']==row['sha256']
+overlay={str(Path(x['after']['path']).relative_to(L/'candidate')):x['after'] for x in h['changed_files']};rows=[]
+paths=[]
+for sub in ['src','scripts','tests','conf','docs']:
+ paths += [p for p in (B/sub).rglob('*') if p.is_file() and '__pycache__' not in p.parts]
+paths += [B/x for x in ['pyproject.toml','uv.lock','CLAUDE.md']]
+byrel={str(p.relative_to(B)):p for p in paths}
+for rel,x in overlay.items():assert bind(x['path'])==x;byrel[rel]=Path(x['path'])
+for rel,p in sorted(byrel.items()):
+ q=K/rel;q.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,q);assert bind(q)['sha256']==bind(p)['sha256'];rows.append({'relative_path':rel,'original':bind(p),'candidate':bind(q),'lyxose_overlay':rel in overlay})
+(A/'baseline-code-bindings.json').write_text(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base_head':'b70ed36907b4c434d967f4456456be3b480415ae','base_tree':'428c9ff0ab1294c2e4b5d6059d45a40ddf096974','lyxose_handoff':bind(L/'handoff.json'),'lyxose_manifest':bind(L/'artifact-manifest.json'),'lyxose_artifacts_verified':len(manifest[key]),'overlay_files':sorted(overlay),'files':rows},indent=2)+'\n');print('copied',len(rows),'exact base files including',len(overlay),'reviewed lyxose overlay files')

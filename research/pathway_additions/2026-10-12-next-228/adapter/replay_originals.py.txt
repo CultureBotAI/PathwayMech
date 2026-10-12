@@ -1,0 +1,161 @@
+"""Bounded original replay; no canonical corpus build or scientific endorsement."""
+from pathlib import Path
+from xml.etree import ElementTree as E
+import json,hashlib,copy,sys,importlib.util,zipfile,warnings
+A=Path(__file__).parent;K=A/'candidate';I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');H=Path('/private/tmp/pathwaymech-next-228-author-20261012/authority-preparation');B=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012')
+sys.path[:0]=[str(K/'src'),str(K)]
+from scripts import build_source_identifier_snapshot as new
+from pathwaymech.identifiers import _load_authority
+spec=importlib.util.spec_from_file_location('accepted_lyxose_builder',I/'candidate/scripts/build_source_identifier_snapshot.py');old=importlib.util.module_from_spec(spec);spec.loader.exec_module(old)
+BP='{http://www.biopax.org/release/biopax-level3.owl#}';RDF='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';XML='{http://www.w3.org/XML/1998/namespace}'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def dump(n,d):(A/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+def parse(builder,p,e):
+ kwargs={'url':e['url'],'version':e['version']}
+ if e['kind']=='pathbank-biopax-zip':kwargs.update(archive=e['archive'],sha256=e['sha256'])
+ return list(builder.source_terms(e['kind'],p,**kwargs))
+full=json.loads((H/'source-manifest-proposal.json').read_text());prior_entries=[e for e in full if e['kind'].startswith('pathbank')];assert len(prior_entries)==11
+cache=A/'original-cache';cache.mkdir(exist_ok=True);reg=[];all_ids=set();reg_entries=[]
+for e in prior_entries:
+ candidates=[B/'originals'/e['path'],I/'original-cache'/e['path'],H/'original-cache'/e['path']]
+ p=next((p for p in candidates if p.is_file()),None);assert p is not None,{'unlocated_prior_manifest_path':e['path'],'checked':list(map(str,candidates))};assert sha(p)==e['sha256']
+ before=parse(old,p,e);after=parse(new,p,e);assert before==after
+ q=cache/e['path']
+ if not q.exists():q.symlink_to(p.resolve())
+ assert sha(q)==e['sha256'];all_ids.update(x[0] for x in before);reg_entries.append(e);reg.append({'key':e['key'],'entry':e,'original':bind(p.resolve()),'term_count':len(before),'exact_parser_outputs_preserved':True})
+# Exercise native builder metadata/provenance as well as term parsers for all old PathBank inputs.
+sel=A/'previous-pathbank-selection';sel.mkdir(exist_ok=True);(sel/'identifiers.yaml').write_text(json.dumps({'id':sorted(all_ids)[0],'participants':[{'id':i} for i in sorted(all_ids)[1:]]}))
+mp=A/'previous-pathbank-manifest.json';mp.write_text(json.dumps(reg_entries,indent=2)+'\n');before=old.build_snapshot(mp,sel,cache);after=new.build_snapshot(mp,sel,cache);assert before==after;dump('previous-pathbank-native-build.json',after)
+# Prove the two previously supported lyxose attachment routes still behave identically.
+lyx=next(e for e in prior_entries if e['kind']=='pathbank-biopax-zip');archive=cache/lyx['path'];member=zipfile.ZipFile(archive).read(lyx['archive']['member']);r=E.fromstring(member)
+pr=next(n for n in r.findall(BP+'Pathway') if n.get(RDF+'about').endswith('/SMP0002112'));ch=next(n for n in r.findall(BP+'Pathway') if n.get(RDF+'about').endswith('/SMP0121065'));uri=ch.get(RDF+'about');lyx_modes=[]
+for mode in ['direct_only','ordered_only','both']:
+ t=copy.deepcopy(r);p=next(n for n in t.findall(BP+'Pathway') if n.get(RDF+'about')==pr.get(RDF+'about'))
+ if mode=='ordered_only':
+  for link in list(p.findall(BP+'pathwayComponent')):
+   if link.get(RDF+'resource')==uri:p.remove(link)
+ if mode=='direct_only':
+  for node in t:
+   if node.tag in {BP+'PathwayStep',BP+'BiochemicalPathwayStep'}:
+    for link in list(node.findall(BP+'stepProcess')):
+     if link.get(RDF+'resource')==uri:node.remove(link)
+ a=list(old.pathbank_terms(t,url=lyx['url'],archive_root=lyx['archive']['root']));b=list(new.pathbank_terms(t,url=lyx['url'],archive_root=lyx['archive']['root']));assert a==b and any(x[0]=='PathBank:SMP0121065' for x in b);lyx_modes.append({'mode':mode,'exact_outputs':True,'terms':len(b)})
+entry=json.loads((H/'unresolved-pathbank-source-manifest.json').read_text())[0];original=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip');assert sha(original)==entry['sha256'];body=zipfile.ZipFile(original).read(entry['archive']['member']);assert hashlib.sha256(body).hexdigest()==entry['archive']['member_sha256'] and len(body)==entry['archive']['member_bytes'];root=E.fromstring(body)
+try:parse(old,original,entry)
+except ValueError as e:old_failure=str(e)
+else:raise AssertionError('Unexpected prior adapter scope')
+q=cache/entry['path']
+if not q.exists():q.symlink_to(original)
+assert sha(q)==entry['sha256']
+records=A/'bounded-selection';records.mkdir(exist_ok=True);(records/'identifiers.yaml').write_text('id: PathBank:SMP0002108\nlabel: selector only\nparticipants:\n  - id: PathBank:SMP0000839\n    label: selector only\n')
+manifest=A/'two-term-manifest.json';manifest.write_text(json.dumps([entry],indent=2)+'\n');built=new.build_snapshot(manifest,records,cache);dump('two-term-build.json',built)
+assert set(built['terms'])=={'PathBank:SMP0002108','PathBank:SMP0000839'}
+assert built['terms']['PathBank:SMP0002108']['label']=='2-O-alpha-Mannosyl-D-glycerate Degradation';assert built['terms']['PathBank:SMP0000839']['label']=='Gluconeogenesis from L-Malic Acid'
+assert built['sources'][entry['key']]['pathway_accessions']==['SMP0002108','SMP0000839'];assert built['sources'][entry['key']]['archive']==entry['archive'];assert _load_authority(A/'two-term-build.json')==built['terms']
+assert all(not t['synonyms'] for t in built['terms'].values());assert 'Inhibitory' not in json.dumps(built)
+
+def handles(r):
+ primary=next(n for n in r.findall(BP+'Pathway') if n.get(RDF+'about').endswith('/SMP0002108'))
+ child=next(n for n in r.findall(BP+'Pathway') if n.get(RDF+'about').endswith('/SMP0000839'))
+ bridge=next(n for n in r if n.get(RDF+'ID')=='SubPathwayControls/109883')
+ compound=next(n for n in r if n.get(RDF+'ID')=='Compound/PW_C001870')
+ step=next(n for n in r if n.get(RDF+'ID')=='PathwaySubPathway/109883')
+ xref=next(n for n in r if n.get(RDF+'ID')=='Reference/SMPDB_SMP0000839')
+ reference=next(n for n in r if n.get(RDF+'ID')=='CompoundReference/PW_C001870')
+ return primary,child,bridge,compound,step,xref,reference
+
+def remove_direct(p):
+ for link in list(p.findall(BP+'pathwayComponent')):
+  if link.get(RDF+'resource')=='#SubPathwayControls/109883':p.remove(link)
+def remove_ordered(p):
+ for link in list(p.findall(BP+'pathwayOrder')):
+  if link.get(RDF+'resource')=='#PathwaySubPathway/109883':p.remove(link)
+positive=[]
+for mode in ['direct_only','ordered_only','both']:
+ t=copy.deepcopy(root);p,*_=handles(t)
+ if mode=='ordered_only':remove_direct(p)
+ if mode=='direct_only':remove_ordered(p)
+ terms=list(new.pathbank_terms(t,url=entry['url'],archive_root=entry['archive']['root']));assert [x for x in terms if '/' not in x[0]]==[(i,v['label'],v['synonyms']) for i,v in built['terms'].items()] or set(x[0] for x in terms if '/' not in x[0])==set(built['terms'])
+ assert next(x for x in terms if x[0]=='PathBank:SMP0000839')[1:] == ('Gluconeogenesis from L-Malic Acid',[]);positive.append({'mode':mode,'term_count':len(terms),'native_names_preserved':True})
+# Derivatives below are clearly separated and are never authority inputs.
+mut=A/'adversarial-derivatives';mut.mkdir(exist_ok=True);negative=[]
+def reject(name,call,artifact=None):
+ try:call()
+ except (ValueError,E.ParseError) as e:negative.append({'name':name,'rejected':True,'error_type':type(e).__name__,'error':str(e),'derivative':bind(artifact) if artifact else None});return
+ raise AssertionError('Accepted negative control '+name)
+def malformed(name,change):
+ t=copy.deepcopy(root);change(t);b=E.tostring(t);p=mut/(name+'.zip')
+ with zipfile.ZipFile(p,'w') as z:z.writestr(entry['archive']['member'],b)
+ e=copy.deepcopy(entry);e['sha256']=sha(p);e['archive'].update(bytes=p.stat().st_size,member_bytes=len(b),member_sha256=hashlib.sha256(b).hexdigest());reject(name,lambda:parse(new,p,e),p)
+def change(r,name):
+ p,c,b,m,s,x,ref=handles(r);parts=b.findall(BP+'participant');names=b.findall(BP+'name')
+ if name=='unowned':remove_direct(p);remove_ordered(p)
+ elif name=='unowned-marker-elsewhere':
+  remove_direct(p);remove_ordered(p);E.SubElement(c,BP+'pathwayComponent',{RDF+'resource':'#SubPathwayControls/109883'})
+ elif name=='wrong-step-type':s.tag=BP+'BiochemicalPathwayStep'
+ elif name=='wrong-step-relation':s[0].tag=BP+'stepConversion'
+ elif name=='dangling-step':next(z for z in p.findall(BP+'pathwayOrder') if z.get(RDF+'resource')=='#PathwaySubPathway/109883').set(RDF+'resource','#missing-step')
+ elif name=='duplicate-owner':p.append(copy.deepcopy(next(z for z in p.findall(BP+'pathwayComponent') if z.get(RDF+'resource')=='#SubPathwayControls/109883')))
+ elif name=='wrong-interaction-type':b.tag=BP+'Control'
+ elif name=='wrong-interaction-marker':names[-1].text='ArbitraryControl'
+ elif name=='missing-interaction-marker':b.remove(names[-1])
+ elif name=='duplicate-interaction-marker':names[0].text=names[-1].text
+ elif name=='nested-marker':E.SubElement(names[-1],BP+'name').text='nested'
+ elif name=='extra-control-semantics':E.SubElement(b,BP+'controlled',{RDF+'resource':c.get(RDF+'about')})
+ elif name=='extra-participant':E.SubElement(b,BP+'participant',{RDF+'resource':'#Reactions/6116'})
+ elif name=='missing-child-participant':b.remove(parts[-1])
+ elif name=='duplicate-participant':parts[-1].set(RDF+'resource',parts[0].get(RDF+'resource'))
+ elif name=='dangling-participant':parts[-1].set(RDF+'resource','http://identifiers.org/smpdb/SMP0000000')
+ elif name=='participant-inline-text':parts[0].text='another identity'
+ elif name=='participant-inline-entity':E.SubElement(parts[0],BP+'SmallMolecule')
+ elif name=='participant-extra-attribute':parts[0].set('trusted','yes')
+ elif name=='parent-as-child':parts[-1].set(RDF+'resource',p.get(RDF+'about'))
+ elif name=='two-child-participants':parts[0].set(RDF+'resource',p.get(RDF+'about'))
+ elif name=='wrong-compound-type':m.tag=BP+'Protein'
+ elif name=='wrong-compound-marker':m.find(BP+'name').text='GenericEntity'
+ elif name=='dangling-compound-reference':r.remove(ref)
+ elif name=='wrong-compound-reference-type':ref.tag=BP+'ProteinReference'
+ elif name=='expanded-child':E.SubElement(c,BP+'pathwayComponent',{RDF+'resource':'#Reactions/6116'})
+ elif name=='wrong-child-marker':c.find(BP+'name').text='SubPathway'
+ elif name=='duplicate-child-marker':c.append(copy.deepcopy(c.find(BP+'name')))
+ elif name=='empty-child-title':c.find(BP+'displayName').text=' '
+ elif name=='generic-child-title':c.find(BP+'displayName').text='InhibitorySubPathway'
+ elif name=='duplicate-child-title':c.append(copy.deepcopy(c.find(BP+'displayName')))
+ elif name=='nested-child-title':E.SubElement(c.find(BP+'displayName'),BP+'name').text='nested'
+ elif name=='conflicting-child-xref':x.find(BP+'id').text='SMP0000000'
+ elif name=='duplicate-child-xref':c.append(copy.deepcopy(c.findall(BP+'xref')[-1]))
+ elif name=='wrong-child-xref-type':x.tag=BP+'RelationshipXref'
+ elif name=='duplicate-xref-id':x.append(copy.deepcopy(x.find(BP+'id')))
+ elif name=='duplicate-native-child':r.append(copy.deepcopy(c))
+ elif name=='duplicate-native-interaction':r.append(copy.deepcopy(b))
+ elif name=='duplicate-distinct-bridge':
+  other=copy.deepcopy(b);other.set(RDF+'ID','SubPathwayControls/999');r.append(other);E.SubElement(p,BP+'pathwayComponent',{RDF+'resource':'#SubPathwayControls/999'})
+ elif name=='foreign-child-namespace':c.tag='{https://other.example/}Pathway'
+ elif name=='foreign-interaction-namespace':b.tag='{https://other.example/}Interaction'
+ elif name=='nested-xml-base':c.set(XML+'base','https://other.example/')
+ elif name=='wrong-rdf-root':r.tag='NotRDF'
+ elif name=='unrelated-additional-pathway':
+  other=copy.deepcopy(c);other.set(RDF+'about','http://identifiers.org/smpdb/SMP9999999')
+  for link in other.findall(BP+'xref'):other.remove(link)
+  E.SubElement(other,BP+'xref',{RDF+'resource':'#independent-xref'});z=E.SubElement(r,BP+'UnificationXref',{RDF+'ID':'independent-xref'});E.SubElement(z,BP+'db').text='SMPDB';E.SubElement(z,BP+'id').text='SMP9999999';r.append(other)
+ else:raise AssertionError(name)
+for name in ['unowned','unowned-marker-elsewhere','wrong-step-type','wrong-step-relation','dangling-step','duplicate-owner','wrong-interaction-type','wrong-interaction-marker','missing-interaction-marker','duplicate-interaction-marker','nested-marker','extra-control-semantics','extra-participant','missing-child-participant','duplicate-participant','dangling-participant','participant-inline-text','participant-inline-entity','participant-extra-attribute','parent-as-child','two-child-participants','wrong-compound-type','wrong-compound-marker','dangling-compound-reference','wrong-compound-reference-type','expanded-child','wrong-child-marker','duplicate-child-marker','empty-child-title','generic-child-title','duplicate-child-title','nested-child-title','conflicting-child-xref','duplicate-child-xref','wrong-child-xref-type','duplicate-xref-id','duplicate-native-child','duplicate-native-interaction','duplicate-distinct-bridge','foreign-child-namespace','foreign-interaction-namespace','nested-xml-base','wrong-rdf-root','unrelated-additional-pathway']:
+ malformed(name,lambda r:change(r,name))
+for name,edit in [
+ ('wrong-original-zip-hash',lambda e:e.update(sha256='0'*64)),('wrong-original-zip-size',lambda e:e['archive'].update(bytes=e['archive']['bytes']+1)),('wrong-member-hash',lambda e:e['archive'].update(member_sha256='0'*64)),('wrong-member-size',lambda e:e['archive'].update(member_bytes=e['archive']['member_bytes']+1)),('missing-member',lambda e:e['archive'].update(member='PW0000000.owl')),('wrong-selected-root',lambda e:e['archive'].update(root='SMP0000839')),('unacquired-live-url',lambda e:e.update(url='https://pathbank.org/view/SMP0002108/download?type=owl_markup')),('extra-provenance-field',lambda e:e['archive'].update(label='fabricated'))]:
+ e=copy.deepcopy(entry);edit(e);reject(name,lambda:parse(new,original,e))
+p=mut/'duplicate-member-name.zip'
+with zipfile.ZipFile(p,'w') as z:
+ z.writestr(entry['archive']['member'],body)
+ with warnings.catch_warnings():warnings.simplefilter('ignore',UserWarning);z.writestr(entry['archive']['member'],body)
+e=copy.deepcopy(entry);e['sha256']=sha(p);e['archive']['bytes']=p.stat().st_size;reject('duplicate-member-name',lambda:parse(new,p,e),p)
+# Compose only actual native builder output, keeping all old authority objects exact.
+prior=json.loads((H/'source-authority-proposal.json').read_text());proposal=copy.deepcopy(prior)
+for group in ['terms','sources']:
+ assert not (set(proposal[group])&set(built[group]));proposal[group].update(built[group]);assert all(proposal[group][k]==v for k,v in prior[group].items())
+manifest_proposal=copy.deepcopy(full)+[entry];assert manifest_proposal[:-1]==full;assert len({x['key'] for x in manifest_proposal})==len(manifest_proposal)
+dump('complete-source-proposal.json',proposal);dump('complete-source-manifest-proposal.json',manifest_proposal)
+dump('new-originals-copy-plan.json',[{'entry':entry,'original':bind(original),'candidate_symlink':str(q),'member':{'name':entry['archive']['member'],'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest()},'root_adoption':'Reuse exact existing whole ZIP original at manifest cache path; verify bytes/hash. No shared-cache mutation performed.'}])
+dump('real-source-replay.json',{'status':'pass','scope':'Bounded original source parser/build regressions and actual-source derivatives; no full canonical build or scientific acceptance','prior_adapter_mg_failure':old_failure,'prior_pathbank_original_regressions':reg,'prior_pathbank_build_exact':True,'prior_pathbank_build_terms':len(before['terms']),'prior_pathbank_build_sources':len(before['sources']),'lyxose_native_route_regressions':lyx_modes,'mg_native_positive_routes':positive,'mg_original':bind(original),'native_member':entry['archive'],'negative_controls':negative,'new_terms':built['terms'],'new_metadata':built['sources'],'preservation':{'source_terms':len(prior['terms']),'source_metadata':len(prior['sources']),'manifest_entries':len(full),'all_exact':True},'proposal_counts':{'source_terms':len(proposal['terms']),'source_metadata':len(proposal['sources']),'manifest_entries':len(manifest_proposal)}})
+print(json.dumps({'old_originals_preserved':len(reg),'old_native_terms_preserved':len(before['terms']),'old_native_metadata_preserved':len(before['sources']),'lyxose_positive_routes':len(lyx_modes),'mg_positive_routes':len(positive),'actual_original_negative_controls_rejected':len(negative),'new_native_terms':built['terms'],'proposal_counts':{'terms':len(proposal['terms']),'sources':len(proposal['sources']),'manifest_entries':len(manifest_proposal)}},indent=2))

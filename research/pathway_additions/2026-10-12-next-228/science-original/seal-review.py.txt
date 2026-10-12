@@ -1,0 +1,21 @@
+import hashlib,json,pathlib,datetime
+p=pathlib.Path('/private/tmp/pathwaymech-next-228-science-review-20261012')
+def h(x):return hashlib.sha256(x.read_bytes()).hexdigest()
+def write(n,x): (p/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+review=json.loads((p/'review.json').read_text())
+assert review['coverage']=={'edges':75,'existing_qualifiers':13,'references':62,'evidence_uses':164,'preflight_claims':29,'issuing_source_probes':63,'ontology_identities':25,'native_chemical_sides':17,'negative_controls':10}
+assert [(f['severity'],f['key']) for f in review['findings']]==[('major','mg-entry-assay-context-omission'),('major','mg-cdar-assay-endpoint-scope'),('minor','mg-uniprot-rhea-evidence-locator-scope')]
+assert json.loads((p/'final-input-preservation.json').read_text())['unchanged']
+write('final-execution-receipt.json',{'finalize_command':'PYTHONDONTWRITEBYTECODE=1 UV_NO_SYNC=1 /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B '+str(p/'finalize-review.py'),'started_tool_result':'08c6fd; session 54484','completion_tool_result':'d63373','exit_code':0,'stdout_path':'finalize.stdout','stderr_path':'finalize.stderr','full_report_read':'dbee74/0','final_structured_findings_and_preservation_read':'7fab5e/0','runtime_install_or_sync':False,'native_saved_review':False,'maintained_writes':False,'external_candidate_unchanged':True,'separate_adapter_review_parent_report':{'path':'/private/tmp/pathwaymech-next-228-root-adapter-review-20261012/handoff.json','sha256':'34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed','independently_reverified_by_this_reviewer':False},'review_skill':{'path':'/private/tmp/pathwaymech-next-226-20261012/.claude/skills/review-yaml-record/SKILL.md','sha256':h(pathlib.Path('/private/tmp/pathwaymech-next-226-20261012/.claude/skills/review-yaml-record/SKILL.md'))}})
+files=[]
+for f in sorted(p.rglob('*')):
+ if not f.is_file() or f.name in {'artifact-manifest.json','handoff.json'}:continue
+ assert not f.is_symlink(),str(f)
+ files.append({'path':str(f.relative_to(p)),'bytes':f.stat().st_size,'sha256':h(f)})
+write('artifact-manifest.json',{'schema':'external-review-artifacts-v1','root':str(p),'excluded_self_referential_files':['artifact-manifest.json','handoff.json'],'artifact_count':len(files),'artifacts':files})
+handoff={'schema':'independent-scientific-review-handoff-v1','reviewer':'/root/lyxose_author','sealed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'verdict':'changes_requested','findings_by_severity':{'major':2,'minor':1},'finding_keys':[f['key'] for f in review['findings']],'target':review['target'],'coverage':review['coverage'],'author_packet':{'path':'/private/tmp/pathwaymech-next-228-author-20261012','handoff_sha256':'f86be00b99dd8182c71fc1c7e493ab130c924f907edb64c7335c68dd610594fd','manifest_sha256':'eda97e4144c1fa8baa785d08474abeb12e68f10d53ffdfe5a2e67a9f306853a4','artifact_count':612,'preservation':'all artifacts independently rehashed at intake and completion; unchanged'},'manifest':{'path':str(p/'artifact-manifest.json'),'sha256':h(p/'artifact-manifest.json'),'artifact_count':len(files)},'review_artifacts':{n:{'path':str(p/n),'sha256':h(p/n)} for n in ['REVIEW.md','review.json','findings.json','edge-assessments.json','qualifier-assessments.json','source-to-edge-assessments.json','preflight-claim-assessments.json','finding-source-excerpts.json','independent-probes.json','rhea-independent.json','domain-negative-controls.json','native-single-record-checks.json','final-input-preservation.json','final-execution-receipt.json']},'limits':review['limits'],'parent_next_action':'Independently read exact findings and cited originals; root owns issue creation and assignment of immutable scientific successor. This review does not modify the author target or grant merge approval.'}
+write('handoff.json',handoff)
+for entry in files:
+ f=p/entry['path'];assert f.stat().st_size==entry['bytes'];assert h(f)==entry['sha256']
+assert h(p/'artifact-manifest.json')==handoff['manifest']['sha256']
+print(json.dumps({'status':'sealed_and_verified','artifact_count':len(files),'handoff_sha256':h(p/'handoff.json'),'manifest_sha256':h(p/'artifact-manifest.json'),'review_sha256':h(p/'REVIEW.md'),'findings_sha256':h(p/'findings.json')},indent=2))

@@ -1,0 +1,67 @@
+# Full MG degradation author handoff
+
+**External draft complete; independent scientific review and the bounded PathBank identity extension remain required.**
+
+- Record: `MetaCyc:PWY0-1300`, **2-O-alpha-mannosyl-D-glycerate degradation**.
+- Exact draft: `draft/mannosylglycerate-degradation.yaml`; 93,339 bytes; SHA256 `08fe9a6f3f0da2f66c4dc6cd68fc33fbe51a38770b6eeee743751f05f019d088`.
+- Scope: **two core events / nine core chemical-side edges**, plus MngA entry and PtsI–HPr energy context / eight side edges. The two additional native downstream pathway-context nodes are opaque interfaces, not core chemistry.
+- Graph: **44 participants, six reaction/context nodes, two taxa, 75 edges, 62 references, 13 endpoint qualifiers on 12 edges**. There are 53 named identifiers including the record.
+- Every one of the **29 accepted preflight claims/conflicts** is retained or has an explicit source-backed disposition. No source-exhaustion claim is made.
+
+## Provenance and observed baseline
+
+Accepted preflight `/private/tmp/pathwaymech-next-228-preflight-20261012` remains unchanged: handoff SHA256 `b996bb65214e0902da2356b92f83f32a48ff769c035b53be57c45e3fd9e2cd26`, manifest SHA256 `22eda57ee37c0103e6537ff02e7df95993fb0568816f9aab2cfa68ca819920d5`, all 209 listed artifacts verified. Its complete packet is copied unchanged under `originals/preflight`, with per-file original/copy bindings.
+
+Author intake observed actual **227 records** at `9dc303d33d7f798904edf82993211dc53312903d`, with accepted ribose present but staged. The later read-only bridge independently observes committed ribose `b70ed36907b4c434d967f4456456be3b480415ae`, tree `428c9ff0ab1294c2e4b5d6059d45a40ddf096974` and verifies all 227 record bytes unchanged. The earlier observation is preserved rather than rewritten.
+
+The prospective L-lyxose original `fa77f6b451b49863552a7bcc9543ba94cd408f2886e8477d53e3a2464eb9583b` and first issue438/439 successor `ed850bfef8abf66b4f9786a0b1b98cee692aa415aac956d719a47aec6bb20144` were explicitly bound. The authority composition includes that successor's KdgR identities, but does not imply its independent scientific acceptance. Parent reports a further evidence-role clarification successor; no later target or maintained228 baseline is assumed here. Root must compose the finally accepted target.
+
+The delegated authority package is immutable and was independently intaken here: handoff SHA256 `01e918d38b31b0acccfb29f12f602830982178a206e5e1884f1c50c1f632807d`; manifest SHA256 `6236e9d6f6d47268db8bba9054e890a6c49267269c4e1de6bc1acd5293da914a`; all **229 artifacts** verified. It adds 20 source identities, six ontology identities and 20 source manifest entries while preserving adopted/prospective prior objects. Exact native originals, gene/assembly/chemical bridges, Rhea142 side graphs, four source negative controls and copy plans are included. No snapshot label was seeded from this draft.
+
+## Boundary and chemistry decisions
+
+Native PWY0-1300 has exactly RXN0-5216 then GKI-RXN. MG-P hydrolysis retains the anomer-unspecified native product `CHEBI:58735`. Alpha-specific Rhea27867/CHEBI60332 is a documented comparison, not an exact alias. The native outgoing alpha-M6P links to MANNCAT-PWY and COLANSYN-PWY remain separate opaque contexts, with no invented generic-to-alpha conversion.
+
+Forward reactions are `RHEA:33308` for MngA uptake, `RHEA:23881` for PtsI-to-HPr energy transfer, and `RHEA:27378` for glycerate2-kinase. Original master/directional/side/participant/compound objects verify their direction and coefficient1. HPr is P0AA04 with explicit His15 phosphorylated/unphosphorylated endpoint qualifiers; generic Rhea protein residues are not free histidine. PEP is consumed exactly once. ATP is consumed only by the core kinase.
+
+MngA is one EIIABC chain, not three separate subunits. His87/Cys192 remain putative. MngB physiological/surrogate evidence supports an `enables` assignment; the inspected sources do not establish purified MG-P turnover, product anomer, exact metal, or biological assembly. Its one generic divalent metal per subunit is annotated by similarity. GarK includes the engineered product-selection construct and retains historical GK1/GK2 caution.
+
+PtsI is the independently issued `MetaCyc:CPLX0-7938` dimer with a direct META polypeptide-to-P08839 bridge. Native MngR and FNR dimers and Fur2/Fe2+2 assembly are explicit. Optional EcoCyc PtsI and exact modified HPr frames remain genuine originals outside that adapter's narrow shape; their rejected diagnostics are preserved. No source is stripped or rewritten to pass.
+
+## Regulation and evidence limits
+
+MngR repression of mngAB and autorepression of mngR are gene-expression relations. Proposed MG-P ligand binding, historical high-concentration fatty-acyl displacement, synthetic promoter experiments and computational ligand predictions are not turned into validated native ligand edges. CdaR positive regulation/autoregulation and glycerate/glucarate/galactarate/MG induction preserve reporter, mutation and rescue context. The paper391-aa/current385-aa CdaR numbering conflict remains in the construct ledger.
+
+H-NS control is a specific garP transcript comparison projected through native TU482 to garK. FNR activation is a native annotation with primary-fulltext and direct-binding gaps. Fur is deliberately unsigned because native negative mode conflicts with intragenic garP binding, unknown element function and primary discussion of prior operon activation. General FNR cluster/O2 state, PtsI2-oxoglutarate inhibition and TmaR spatial regulation are linked context, not measured MG-specific flux claims. Full-EI versus EIC constructs and inhibition modes remain distinct.
+
+The 2004 primary article is retained as full-text web observations L86–L2902; its assembled projection is **not** mislabelled as an original publisher PDF. The record omits an original-paper SHA for that projection and the external bindings identify its actual kind. All other referenced original hashes replay. Historical abstract-only papers, the1969 HTML challenge response and unavailable TmaR supplements remain explicit access limits. Figures are interpreted from text/captions, not claimed visually inspected.
+
+The full preflight iModulonDB replay remains computational context only: PRECISE MG1655 SugarDiacid module38 includes garK/cdaR. Missing Mng query hits do not prove absence and generate no causal edge.
+
+## PathBank gate requiring separate implementation
+
+The frozen source is the full original ZIP SHA256 `b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44`, exact `PW002096.owl` member SHA256 `473c3b61e69910e3ff52bbfff79daf3e9d1939f4ccf9c2cb8bb8ea96e08b2bb8`. Root `SMP0002108` owns `SubPathwayControls/109883` both directly and through its PathwayStep. This object is an **Interaction** joining2PG and empty `InhibitorySubPathway` child `SMP0000839`; its label does not prove inhibition.
+
+The draft retains this opaque source context and all original attachment objects. It rejects frozen P13669-as-MngA, EC3.2.1.170-as-MG-P-hydrolase, HPr state conflation and membrane placement. The current archive adapter cannot validate the Interaction-attached empty child. **Final identifier validation returns exactly one expected ID_NOT_FOUND for named child PathBank:SMP0000839.** The independent root-identity probe also fails for SMP0002108. Neither identity is fabricated in a proposal.
+
+`authority-preparation/PathBank-adapter-requirements.md` SHA256 `00fb885c8875da72d777e5d30d59e53736e56a3ec5f817a774e1d0a4e2077bf0` gives the bounded original-derived contract and regression/negative requirements. Parent accepted it and owns separate implementation/review. It must not change the scientific interpretation or turn marker names into causal signs.
+
+## Actual validation and handoff contents
+
+Final commands and exact exit codes are in `derived/final-command-executions.json`. The final target passes Python shape validation and closed LinkML validation. **164 evidence locator instances resolve; all 62 reference hashes match their correctly scoped artifacts.** The supported52 named IDs pass; the required PathBank child remains the single explicit complete-gate failure. Eight domain-negative mutations are rejected: dropped core, anomer collapse, PEP double counting, free histidine, lost HPr state, wrong permease accession, erased Fur sign conflict and PathBank label-as-inhibition.
+
+The single-record page renders and the KGX export preserves all75 edges' complete evidence and endpoint qualifiers. Page-content checks preserve both HPr states, construct/regulatory limits and the opaque child. No full canonical build, whole-corpus gate or independent scientific review is claimed. Initial schema/locator authoring failures are retained in receipts and were corrected before these final checks.
+
+Useful entry points:
+
+- `research/mannosylglycerate-degradation.md`: full source-oriented research report and75-edge evidence table.
+- `derived/all-preflight-claim-dispositions.json`: all29 claim dispositions.
+- `derived/scope-and-conflicts.json`: assays, strains, constructs, exclusions, conflicts and remaining unknowns.
+- `derived/source-to-edge-coverage.json`, `derived/edge-to-source-coverage.json`: full bidirectional evidence coverage.
+- `derived/reference-bindings.json`, `derived/reference-original-replay.json`, `derived/evidence-locator-replay.json`: exact source body and locator replay.
+- `derived/semantic-record-overlap.json`, `derived/prior-mention-dispositions.json`, search receipts: hidden/ignored/followed dedup and inherited mentions. Only shared GarK and generalPTS steps overlap actual records; no whole MG pathway duplication was found.
+- `derived/final-named-identifiers.json`: every introduced/reused named identifier and role.
+- `derived/validation.json`, `derived/graph-export-roundtrip.json`, `candidate/pages/records`, `rendered`: actual bounded checks and outputs.
+- `authority-preparation/handoff.json`: native authority proposals and source copy plans.
+
+No maintained record, shared cache, prior sealed review, Git/GitHub object or installed environment was modified by this author. Public-release licensing remains deferred by user instruction. Root should independently review the scientific target, complete the bounded adapter, compose final accepted predecessor proposals, build from original sources and run the full adoption/PR gates.

@@ -1,0 +1,28 @@
+from pathlib import Path
+import json,hashlib,shutil,copy,sys,datetime
+import yaml
+O=Path(__file__).parent;L=Path('/private/tmp/pathwaymech-next-227-science-correction-20261012');A=Path('/private/tmp/pathwaymech-next-227-author-20261012/authority-preparation');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_ontology_identifier_snapshot as ob
+
+def save(n,d):(O/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+D=O.parent/'draft/mannosylglycerate-degradation.yaml';raw=D.read_bytes();r=yaml.safe_load(raw);wanted=set(id for id,label in ob.walk_labels(r));planned={'CHEBI:30612','CHEBI:16537','CHEBI:49883','CHEBI:15379'};wanted|=planned
+ret=O/'retained-candidate-catalog';ret.mkdir(exist_ok=True)
+for n in ['source-authority-proposal.json','source-manifest-proposal.json','source-manifest-additions.json','ontology-authority-proposal.json','validated-identity-catalog.json','authority-preservation.json']:
+ if not (ret/n).exists():shutil.copyfile(O/n,ret/n)
+base_s=json.loads((L/'complete-source-proposal.json').read_text());base_m=json.loads((L/'complete-source-manifest-proposal.json').read_text());base_o=json.loads((A/'ontology-authority-proposal.json').read_text());s=copy.deepcopy(base_s);o=copy.deepcopy(base_o);original_s=json.loads((ret/'source-authority-proposal.json').read_text());original_o=json.loads((ret/'ontology-authority-proposal.json').read_text());original_m=json.loads((ret/'source-manifest-proposal.json').read_text())
+newids=[];news=set();newo=[]
+for id in sorted(wanted):
+ if id in original_s['terms'] and id not in s['terms']:
+  s['terms'][id]=original_s['terms'][id];news.add(s['terms'][id]['source']);newids.append(id)
+ if id in original_o['terms'] and id not in o['terms']:o['terms'][id]=original_o['terms'][id];newo.append(id)
+for k in news:s['sources'][k]=original_s['sources'][k]
+add=[e for e in original_m[len(base_m):] if e['key'] in news];m=copy.deepcopy(base_m)+add
+catalog=json.loads((ret/'validated-identity-catalog.json').read_text());catalog['terms']={k:v for k,v in catalog['terms'].items() if k in wanted};catalog['scope']='Current author draft named IDs plus four explicitly planned chemicals; snapshot is provisional and no final draft seal is claimed.'
+missing=sorted(wanted-set(catalog['terms']));assert missing==['PathBank:SMP0000839'],missing
+save('source-authority-proposal.json',s);save('source-manifest-proposal.json',m);save('source-manifest-additions.json',add);save('ontology-authority-proposal.json',o);save('validated-identity-catalog.json',catalog)
+for old,new in [(base_s,s),(base_o,o)]:
+ for k in ['terms','sources']:assert all(new[k].get(i)==v for i,v in old[k].items())
+assert m[:len(base_m)]==base_m
+save('author-selection-bridge.json',{'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'working_draft':{'path':str(D),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()},'scope':'Provisional author draft plus 4 explicitly planned chemicals; not a sealed final target','draft_named_ids':sorted(set(id for id,label in ob.walk_labels(r))),'planned_additions':sorted(planned),'supported_selected_ids':sorted(catalog['terms']),'required_named_identity_gap':missing,'additional_root_mapping_gap':'PathBank:SMP0002108','candidate_gene_originals_retained':17,'gene_ids_selected':[i for i in sorted(wanted) if i.startswith('Entrez:')],'new_source_ids':newids,'new_ontology_ids':newo,'original_backed_but_unused_new_source_candidates':[i for i in original_s['terms'] if i not in s['terms']],'original_backed_but_unused_new_ontology_candidates':[i for i in original_o['terms'] if i not in o['terms']]})
+old=json.loads((ret/'authority-preservation.json').read_text());old['proposal']={'source_terms':len(s['terms']),'source_metadata':len(s['sources']),'ontology_terms':len(o['terms']),'manifest_entries':len(m),'rhea_ids':20};old['added_source_ids']=newids;old['added_source_manifest_entries']=len(add);old['current_author_selection']='5 genes; unrelated candidate validated identities retained externally only';save('authority-preservation.json',old)
+print(json.dumps({'selected':len(wanted),'supported':len(catalog['terms']),'new_source_ids':len(newids),'new_ontology_ids':len(newo),'new_manifest':len(add),'selected_gene_count':len([i for i in wanted if i.startswith('Entrez:')])}))

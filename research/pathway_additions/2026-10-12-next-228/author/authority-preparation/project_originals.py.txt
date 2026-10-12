@@ -1,0 +1,50 @@
+from pathlib import Path
+import sys,json,hashlib,xml.etree.ElementTree as E,copy
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012/raw');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def save(n,d):(O/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+def top(p):r=E.parse(p).getroot();return r,list(r)[1]
+rows=[];assembly=[];gaps=[]
+for name in ['PC00103','CPLX0-7797','CPLX0-7639','CPLX0-7938']:
+ p=P/f'ECOLI-{name}.xml';r,n=top(p);comps=[]
+ for c in n.findall('component'):
+  x=c[0];frame=x.get('frameid');v={'native':x.attrib,'entity_type':x.tag,'coefficient':int(c.findtext('coefficient'))}
+  if x.tag=='Protein':
+   q=P/f'ECOLI-{frame}.xml';rr,nn=top(q);acc=[x.findtext('dblink-oid') for x in nn.findall('dblink') if x.findtext('dblink-db')=='UNIPROT'];assert len(acc)==1;v.update(uniprot='UniProtKB:'+acc[0],component_original=bind(q))
+  elif frame=='FE+2':v.update(ontology_target='CHEBI:29033',mapping_scope='native Fe2+ elemental ion and ChEBI original charge+2 label; no measured occupancy claim')
+  comps.append(v)
+ assembly.append({'original':bind(p),'root_identity':n.attrib,'name_markup':n.findtext('common-name'),'parents':[x[0].attrib for x in n.findall('parent')],'components':comps,'location':[x[0].attrib for x in n.findall('location')],'comments':[x.text for x in n.findall('comment')]})
+for name in ['CPLX0-7938','PTSH-PHOSPHORYLATED']:
+ p=(P if name=='CPLX0-7938' else O/'raw')/f'ECOLI-{name}.xml';url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+name
+ try:list(sb.source_terms('ecocyc-protein-xml',p,url=url,version='27.0'));raise AssertionError('Expected observed native shape rejection')
+ except ValueError as e:gaps.append({'id':'EcoCyc:'+name,'original':bind(p),'request_url':url,'kind':'ecocyc-protein-xml','actual_exception':str(e),'parents':[x[0].attrib for x in top(p)[1].findall('parent')],'scope':'optional alternate identity, not selected graph endpoint','disposition':'Native original retained; no parser or source changes. Use independently issued MetaCyc PtsI assembly or source-qualified P0AA04 state, respectively.'})
+m=top(O/'raw/META-CPLX0-7938.xml')[1];e=top(P/'ECOLI-CPLX0-7938.xml')[1]
+assert m.findtext('common-name')==e.findtext('common-name')=='PTS enzyme I'
+for a in [m,e]:assert [(x[0].get('frameid'),x.findtext('coefficient')) for x in a.findall('component')]==[('PTSI-MONOMER','2')]
+mc=[x.text for x in m.findall('comment')];ec=[x.text for x in e.findall('comment')]
+save('ptsi-cross-pgdb-bridge.json',{'META_original':bind(O/'raw/META-CPLX0-7938.xml'),'ECOLI_original':bind(P/'ECOLI-CPLX0-7938.xml'),'same_direct_common_name':True,'same_exact_native_component_frame_and_coefficient':True,'META_species':[E.tostring(x,encoding='unicode') for x in m.findall('species')],'ECOLI_PGDB_taxon':[x.findtext('dblink-oid') for x in top(P/'ECOLI-CPLX0-7938.xml')[0].findall('metadata/PGDB/dblink') if x.findtext('dblink-db')=='NCBI-TAXONOMY-DB'],'comment_text_identical':mc==ec,'identity_scope':'Two independently issued PGDB assembly identities. Matching component, label, E.coli provenance support selected MetaCyc:CPLX0-7938 without claiming ECOLI namespace validation.'})
+p=O/'raw/ECOLI-PTSH-PHOSPHORYLATED.xml';n=top(p)[1];hpr=top(P/'ECOLI-PTSH-MONOMER.xml')[1]
+state={'modified_original':bind(p),'base_original':bind(P/'ECOLI-PTSH-MONOMER.xml'),'modified_name_markup':n.findtext('common-name'),'modified_parents':[x[0].attrib for x in n.findall('parent')],'unmodified_links':[x.attrib for x in n.findall('unmodified-form/*')],'modified_links':[x.attrib for x in hpr.findall('modified-form/*')],'modified_features':[E.tostring(x,encoding='unicode') for x in n.findall('has-feature') if 'MODIFIED' in E.tostring(x,encoding='unicode')],'base_features':[E.tostring(x,encoding='unicode') for x in hpr.findall('has-feature') if 'His-15' in E.tostring(x,encoding='unicode') or 'phosphohistidine' in E.tostring(x,encoding='unicode')],'reaction_class_originals':[bind(O/'raw'/('ECOLI-'+x+'.xml')) for x in ['Hpr-Histidine','Hpr-pi-phospho-L-histidines']],'selected_graph_representation':'UniProtKB:P0AA04 with endpoint-specific molecular_state qualifier His15 phosphorylated or unphosphorylated; not a free CHEBI residue metabolite'}
+save('hpr-state-original-projection.json',state);save('native-assembly-projection.json',assembly)
+# All newly obtained exact Gene originals independently bridge native taxon, locus and UniProt cross-references.
+up=[]
+for p in list(P.glob('P*.json'))+list((O/'raw').glob('UniProt-*.json'))+list((O/'raw').glob('uniprot-cdar-*.json')):
+ try:d=json.loads(p.read_text())
+ except ValueError:continue
+ for x in d.get('results',[d]):
+  if 'primaryAccession' not in x:continue
+  up.append({'original':bind(p),'id':'UniProtKB:'+x['primaryAccession'],'organism':x['organism'],'genes':x.get('genes',[]),'sequence':x.get('sequence',{}),'gene_xrefs':[z for z in x.get('uniProtKBCrossReferences',[]) if z['database']=='GeneID'],'selected_comments':[z for z in x.get('comments',[]) if z['commentType'] in ['COFACTOR','SUBUNIT','SUBCELLULAR LOCATION']],'active_sites':[z for z in x.get('features',[]) if z['type'] in ['Active site','Modified residue','Topological domain']]})
+genes=[]
+for p in sorted((O/'raw').glob('Entrez-*-exact.xml')):
+ gid=p.name.split('-')[1];url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml';t,tax=sb._ncbi_gene_record(p,url);assert tax=='511145';n=E.parse(p).getroot()[0];locus=n.findtext('Entrezgene_gene/Gene-ref/Gene-ref_locus-tag');matches=[x for x in up if any(z['id']==gid for z in x['gene_xrefs'])];assert len(matches)==1,(gid,len(matches));assert any(locus==v['value'] for g in matches[0]['genes'] for v in g.get('orderedLocusNames',[]))
+ genes.append({'original':bind(p),'url':url,'native_term':t,'native_taxon':tax,'locus_tag':locus,'uniprot_bridge':{'id':matches[0]['id'],'original':matches[0]['original'],'organism':matches[0]['organism'],'matching_ordered_locus_tag':True},'scope':'Entrez native MG1655 gene anchors; UniProt K12 sequence context does not transform experimental MC4100/other constructs into MG1655 assays'})
+save('gene-native-identity-bridges.json',genes);save('uniprot-original-projection.json',up)
+p=P/'PW002096.owl';rr=E.parse(p).getroot();ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#'};rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+shape=[]
+for n in rr:
+ if n.tag.endswith(('Pathway','Control','Interaction')):shape.append(E.tostring(n,encoding='unicode'))
+gaps.append({'ids':['PathBank:SMP0002108','PathBank:SMP0000839'],'original_member':bind(p),'original_archive':bind(Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip')),'request_url':'https://pathbank.org/downloads/pathbank_primary_biopax.zip','typed_archive':json.loads((O/'pathbank-original-probe.json').read_text())['archive'],'actual_exception':json.loads((O/'pathbank-original-probe.json').read_text())['error'],'native_shape':shape,'scope':'required root mapping and opaque pathway-interface identity; unresolved adapter coverage','disposition':'No source rewrite or fabricated support. Root-owned explicit adapter extension is required if these source IDs are selected.'})
+save('authority-gaps.json',gaps)
+print(json.dumps({'assemblies':len(assembly),'genes':len(genes),'uniprot_originals':len(up),'unresolved_required_ids':['PathBank:SMP0002108','PathBank:SMP0000839']}))
