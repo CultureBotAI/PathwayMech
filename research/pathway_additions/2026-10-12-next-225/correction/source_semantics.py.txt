@@ -1,0 +1,47 @@
+"""Candidate-specific checks of reviewed chemical/source-object/locator defects.
+
+These checks run before schema and complete-record equality checks. They read
+the cited originals and pinned chemical authority; record prose is not identity.
+"""
+import json,sqlite3,re,hashlib,subprocess
+from pathlib import Path
+from lxml import etree as X,html
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-225-author-20261012');P=Path('/private/tmp/pathwaymech-next-225-preflight-20261011')
+def must(x,m):
+ if not x:raise AssertionError(m)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def load_primary(out):
+ p=out/'fresh-YiaY-pages.json';script=P/'pdf-text.js';pdf=P/'raw-regulation-full/YiaY-2014.pdf';r=subprocess.run(['osascript','-l','JavaScript',str(script),str(pdf),str(p)],capture_output=True,text=True);(out/'PDFKit-extraction.json').write_text(json.dumps({'command':['osascript','-l','JavaScript',str(script),str(pdf),str(p)],'returncode':r.returncode,'stdout':r.stdout,'stderr':r.stderr,'original_sha256':sha(pdf),'extractor_sha256':sha(script)},indent=2)+'\n');must(r.returncode==0,'fresh publisher-PDF extraction failed');pages=json.loads(p.read_bytes());must(len(pages)==8,'complete publisher PDF page count');return {'yiay_pages':pages}
+def xmlnodes(ev,bindings):
+ raw=Path(bindings[ev['reference_id']]['path']).read_bytes();must(hashlib.sha256(raw).hexdigest()==bindings[ev['reference_id']]['sha256'],'citation original digest changed');root=X.fromstring(raw,X.XMLParser(resolve_entities=False,no_network=True));xp=ev['source_locator'].split(';')[0].strip();must(xp.startswith('/ptools-xml/'),'native locator must be an exact object path');nodes=root.xpath(xp);must(bool(nodes),'cited native object/locator contains no asserted support: '+ev['reference_id']);return nodes
+def native_text(ev,b):return '\n'.join(''.join(x.itertext()) for x in xmlnodes(ev,b))
+def entry(ref,b):
+ j=json.loads(Path(b[ref]['path']).read_bytes());return j.get('results',[j])[0]
+def evidence(e,ref):
+ rows=[x for x in e['evidence'] if x['reference_id']==ref];must(len(rows)==1,'required exact evidence object missing: '+e['id']+' '+ref);return rows[0]
+def check(d,b,primary):
+ es={e['id']:e for e in d['mechanistic_edges']};e=lambda n:es[f'thr-iii-{n:03d}']
+ # The visible original Table1 was independently read: L-serine0.23,
+ # L-alanine0.81, deleted-control0.20, all 50-fold0.5mM competition.
+ # Bind that intact scan, then independently resolve the endpoint chemistry.
+ scan=A/'raw-transport-scans/PMC213253-scan-3.png';must(sha(scan)=='aeb2925f3f3f459c0f6eee56ab50cb649f418a79dc0315edfb953584089e9f2f','inspected original TdcC assay table changed')
+ con=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+ rows=con.execute('select predicate,value from statements where subject=?',(e(106)['subject'],)).fetchall();con.close();vals={k:[v for kk,v in rows if kk==k] for k,v in rows}
+ must(e(106)['subject']=='CHEBI:17115' and vals.get('rdfs:label')==['L-serine'] and vals.get('IAO:0000115')==['The <small>L</small>-enantiomer of serine.'] and vals.get('chemrof:generalized_empirical_formula')==['C3H7NO3'],'TdcC Table1 competitor must resolve to L-serine, not alanine or a prose label')
+ must(e(106)['object']=='UniProtKB:P0AAD8' and e(106)['predicate']=='inhibits','TdcC competition endpoint or relation changed')
+ ev=e(106)['evidence'][0];must(ev['reference_id']=='PMID:2115866' and '4291' in ev['source_locator'] and 'Table 1' in ev['source_locator'] and '0.5 mM' in ev['source_locator'],'TdcC exact assay locator missing');must('allosteric' in ev['source_assertion'],'competition limitation lost')
+ for n,frame in [(66,'YGJU-MONOMER'),(69,'TDCC-MONOMER')]:
+  ev=e(n)['evidence'][0];t=native_text(ev,b);must(frame in t and 'three systems that can transport threonine' in t,'cited source lacks transporter uptake paragraph: '+e(n)['id']);must(ev['reference_id']=='EcoCyc:THRDLCTCAT-PWY','exact ECOLI uptake object required')
+ ev=e(100)['evidence'][0];t=native_text(ev,b);must('Under anaerobiosis, FNR activates' in t and '12754220' in t and 'direct or indirect' in t,'cited source lacks native FNR anaerobic-expression support');must(ev['reference_id']=='MetaCyc:AMINEOXID-CPLX','native FNR attribution must cite exact complex object');must('complex comment' in ev['source_assertion'] and 'direct promoter binding' in ev['source_assertion'],'FNR object/directness wording changed')
+ for n,frame,rid in [(24,'THREODEHYD-RXN','13162'),(25,'THREOSPON-RXN','25654'),(26,'AMACETOXID-RXN','28187')]:
+  p=evidence(e(n),'MetaCyc:THRDLCTCAT-PWY');nodes=xmlnodes(p,b);must([x.get('frameid') for x in nodes]==[frame],'native pathway membership locator');r=evidence(e(n),'MetaCyc:'+frame);must(native_text(r,b)==rid and e(n)['subject']=='RHEA:'+rid,'native matching reaction Rhea dblink evidence missing')
+ ev=e(30)['evidence'][0];nodes=xmlnodes(ev,b);must([x.get('frameid') for x in nodes]==['PWY-5386'],'exact singular downstream pathway-link target');must('METHYL-GLYOXAL' in ev['source_locator'],'downstream native input scope')
+ ev=evidence(e(33),'EcoCyc:RXN-14249');must(set(x.get('frameid') for x in xmlnodes(ev,b))=={'THREODEHYD-RXN','THREOSPON-RXN'},'composite native reaction-list evidence missing')
+ loc=e(34)['evidence'][0]['source_locator'];must('Table 2' not in loc and all(x in loc for x in ['750','752','Fig. 3','753']),'YiaY locator must use real assay/substrate/figure/cofactor locations');pg=primary['yiay_pages'];must('340 nm' in pg[2]['text'] and 'Exploration of Substrate Spectrum' in pg[3]['text']+pg[4]['text'] and 'Fig. 3.' in pg[4]['text'] and 'Metal Ion Binding and Cofactor Dependence' in pg[5]['text'],'fresh original YiaY page anchors disagree')
+ ev=evidence(e(49),'PMID:22411989');t=html.fromstring(Path(b[ev['reference_id']]['path']).read_bytes());nodes=t.xpath(ev['source_locator'].split(';')[0]);must(len(nodes)==1 and 'Neither enzyme was active with Mg(II), Ca(II), or Cd(II)' in nodes[0].text_content(),'2012 Cd-negative activity locator lacks its own primary support')
+ for n,ref,strings in [(59,'EcoCyc:CPLX0-7797',['[4Fe-4S]','dimerization','disassembly of the dimer']),(60,'EcoCyc:CPLX0-7756',['S. coelicolor','homodimer','18989365'])]:
+  ev=evidence(e(n),ref);t=native_text(ev,b);must(all(x in t for x in strings),'native state caveat locator missing '+e(n)['id'])
+ td=entry('UniProtKB:P0AAD8',b);must(td['sequence']['length']==443,'native current TdcC sequence length');conf=[x['location'] for x in td['features'] if x['type']=='Sequence conflict'];must(any(x['start']['value']==431 and x['end']['value']==443 for x in conf),'native historical sequence conflict missing');must(sha(A/'raw-transport-scans/PMC213253-scan-5.png')=='59f1f968c812f6ea8f841305125f35242bfb0b2dfee1a4115b1da628522eca66','original historical431-residue discussion changed')
+ for n in [104,105,106,107,108]:
+  must(all(s in e(n)['description'] for s in ['431 residues','443','complete assayed sequence is not established','does not identify an engineered truncation']),'historical TdcC provenance inflated or missing');must(any(x['reference_id']=='UniProtKB:P0AAD8' for x in e(n)['evidence']),'historical/current sequence provenance lacks current source')
+ return {'source_semantic_checks':'passed','chemical_identity':'CHEBI:17115 L-serine; exact pinned neutral chemical class','cited_native_objects':['EcoCyc:THRDLCTCAT-PWY','MetaCyc:AMINEOXID-CPLX'],'minor_locator_groups':9,'historical_sequence_note':'uncertainty, not engineered-variant assertion'}

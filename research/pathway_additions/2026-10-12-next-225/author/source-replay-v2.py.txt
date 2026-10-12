@@ -1,0 +1,131 @@
+"""External full-source replay. Exact bytes and source semantics are separate guards."""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import argparse,hashlib,json,gzip,re,copy,collections
+from dataclasses import asdict
+import yaml
+from lxml import etree as X,html
+A=Path(__file__).parent;sys.path[:0]=[str(A/'runtime/src'),str(A/'runtime')]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import kgx_edges,kgx_nodes,write_kgx,LOCAL_PREDICATE_CURIES
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def must(v,msg):
+ if not v:raise AssertionError(msg)
+def digest(path):
+ with Path(path).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def check_bytes(row,raw):must(sha(raw)==row['sha256'],'bound input digest mismatch: '+row['path'])
+def guard(rows):
+ for row in rows:must(digest(row['path'])==row['sha256'],'bound input digest mismatch: '+row['path'])
+def xml(path):return X.parse(str(path),X.XMLParser(resolve_entities=False,no_network=True))
+RH='http://rdf.rhea-db.org/';RDFNS='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+def chemistry(path):
+ raw=gzip.decompress(Path(path).read_bytes()).decode();wrap='<root xmlns:rdf="'+RDFNS+'" xmlns:rh="'+RH+'" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">';starts={};cache={}
+ for m in re.finditer('<rdf:Description rdf:about="([^"]+)">',raw):starts.setdefault(m[1],[]).append(m.start())
+ def get(uri):
+  if uri in cache:return cache[uri]
+  props={}
+  for start in starts.get(uri,[]):
+   end=raw.index('</rdf:Description>',start)+len('</rdf:Description>');node=X.fromstring((wrap+raw[start:end]+'</root>').encode())[0]
+   for c in node:
+    k=X.QName(c).localname;v=c.get('{'+RDFNS+'}resource') or c.text
+    if v not in props.setdefault(k,[]):props[k].append(v)
+  must(bool(props),'missing RDF object '+uri);cache[uri]=props;return props
+ result={}
+ for mid,rid in [('13161','13162'),('25653','25654'),('28186','28187'),('69999','70001'),('28883','28885')]:
+  m=get(RH+mid);must(m['status']==[RH+'Approved'],'native master status');must(RH+rid in m['directionalReaction'],'directional member not native');d=get(RH+rid);sides=(d['substrates'],d['products']);orientation='left_to_right' if sides==([RH+mid+'_L'],[RH+mid+'_R']) else 'right_to_left' if sides==([RH+mid+'_R'],[RH+mid+'_L']) else None;must(orientation,'directional/master side mismatch');rows=[];balance=collections.Counter()
+  for side,pred,sign in [('substrates','consumes',-1),('products','produces',1)]:
+   for uri in d[side]:
+    native=get(uri)
+    for part in native['contains']:
+     coeff=[int(k[8:]) for k,v in native.items() if re.fullmatch('contains[0-9]+',k) and part in v];must(len(coeff)==1,'ambiguous coefficient');pp=get(part);c=get(pp['compound'][0]);cid=c['accession'][0];must(c['chebi']==['http://purl.obolibrary.org/obo/'+cid.replace(':','_')],'compound CURIE mismatch');triple=(cid,pred,'RHEA:'+rid) if side=='substrates' else ('RHEA:'+rid,pred,cid)
+     rows.append({'triple':list(triple),'coefficient':coeff[0],'side_uri':uri,'participant':part,'compound_uri':pp['compound'][0],'formula':c['formula'][0],'charge':c['charge'][0]})
+     must(bool(re.fullmatch(r'(?:[A-Z][a-z]?[0-9]*)+',c['formula'][0])),'unresolved exact formula')
+     for atom,n in re.findall(r'([A-Z][a-z]?)([0-9]*)',c['formula'][0]):balance[atom]+=sign*coeff[0]*int(n or 1)
+     balance['charge']+=sign*coeff[0]*int(c['charge'][0])
+  must(not any(balance.values()),'element/charge imbalance');result['RHEA:'+rid]={'master':'RHEA:'+mid,'orientation':orientation,'equation':d['equation'][0],'rows':rows,'balance':dict(balance)}
+ return result
+parser=argparse.ArgumentParser();parser.add_argument('--contract',type=Path,required=True);parser.add_argument('--contract-sha256',required=True);parser.add_argument('--output',type=Path,required=True);args=parser.parse_args();must(digest(args.contract)==args.contract_sha256,'contract digest mismatch');contract=json.loads(args.contract.read_bytes());args.output.mkdir(exist_ok=False);out=args.output
+print('Verifying complete bound inputs before source extraction',flush=True);guard(contract['inputs']);target=Path(contract['target']['path']);must(digest(target)==contract['target']['sha256'],'target digest');data=yaml.safe_load(target.read_bytes());bindings=json.loads((A/'source-bindings-v5.json').read_bytes());native=chemistry(contract['rhea']['path']);(out/'fresh-native-chemistry.json').write_text(json.dumps(native,indent=2)+'\n');print('Fresh original RDF: all five directions and 23 chemical sides extracted',flush=True)
+P=Path(contract['preflight_directory']);route=xml(P/'raw-retry/META-THRDLCTCAT-PWY.xml');ecoli=xml(P/'raw-retry/ECOLI-THRDLCTCAT-PWY.xml');frames=['THREODEHYD-RXN','THREOSPON-RXN','AMACETOXID-RXN'];core=['RHEA:13162','RHEA:25654','RHEA:28187'];expected=data
+
+def validate(d,source=native,exact=True):
+ model=validate_record(d);es=d['mechanistic_edges'];triples=[(e['subject'],e['predicate'],e['object']) for e in es];nodes={n['id']:n for f in ['participants','reactions','taxa'] for n in d[f]};refs={r['id']:r for r in d['references']};byedge={e['id']:e for e in es}
+ must(d['id']=='MetaCyc:THRDLCTCAT-PWY','exact pathway identity');must(len(es)==111,'complete edge scope')
+ for rt in [route,ecoli]:must(set(rt.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid'))==set(frames),'native complete three-event boundary')
+ must(set(n['id'] for n in d['reactions'])==set(native)|{'GO:0015195','MetaCyc:THREOCAT-PWY','MetaCyc:PWY-5386','PathBank:SMP0000837'},'elementary/uptake/opaque boundary altered')
+ for id in ['MetaCyc:THREOCAT-PWY','MetaCyc:PWY-5386','PathBank:SMP0000837']:must(nodes[id].get('category')=='pathway','opaque interface became chemical reaction')
+ observed=collections.Counter(t for t in triples if t[1] in ['consumes','produces']);source_triples=collections.Counter(tuple(row['triple']) for s in source.values() for row in s['rows']);must(observed==source_triples,'complete native chemical sides mismatch')
+ for id,s in source.items():
+  must(nodes[id]['direction']==s['orientation'],'directional/master orientation mismatch '+id);must(nodes[id]['label']==s['equation'],'native reaction equation mismatch '+id)
+  for row in s['rows']:
+   e=next(e for e in es if (e['subject'],e['predicate'],e['object'])==tuple(row['triple']));ev=e['evidence'][0];must(ev['reference_id']==id,'chemical source reference');must('coefficient '+str(row['coefficient']) in ev['source_assertion'],'chemical coefficient annotation');must(row['participant'] in ev['source_locator'] and row['compound_uri'] in ev['source_locator'] and row['side_uri'] in ev['source_locator'],'native chemical locator changed')
+ for id in core:must((id,'part_of',d['id']) in triples,'core membership omitted')
+ composite=xml(P/'raw-regulatory/ECOLI-RXN-14249.xml');must(set(composite.xpath('/ptools-xml/Reaction/reaction-list/Reaction/@frameid'))==set(frames[:2]),'native composite first-two-step scope')
+ spontaneous=xml(P/'raw-retry/META-THREOSPON-RXN.xml');must(spontaneous.xpath('/ptools-xml/Reaction/spontaneous/text()')==['true'],'native spontaneous flag');must(not any(e['predicate']=='catalyzes' and e['object']==core[1] for e in es),'invented spontaneous catalyst')
+ hyp=next(e for e in es if e['subject']=='MetaCyc:AMINEOXID-CPLX' and e['predicate']=='catalyzes');must(hyp['object']==core[2] and 'HYPOTHETICAL' in hyp['description'] and 'EV-AS-NAS' in hyp['description'],'hypothetical terminal assignment erased');enz=xml(P/'raw-specificity/ECOLI-AMACETOXID-ENZRXN.xml');must(bool(enz.xpath('/ptools-xml/Enzymatic-Reaction/evidence/Evidence-Code[@frameid="EV-AS-NAS"]')),'native terminal evidence code')
+ for rid,n in [('RHEA:13162',5),('RHEA:25654',4),('RHEA:28187',6)]:must(len(source[rid]['rows'])==n,'formal core side count')
+ component_map={'MetaCyc:THREODEHYD-CPLX':('MetaCyc:THREODEHYD-CPLX',{'THREODEHYD-MONOMER':('P07913',4)}),'MetaCyc:AMINEOXID-CPLX':('MetaCyc:AMINEOXID-CPLX',{'AMINEOXID-MONOMER':('P46883',2)}),'MetaCyc:ABC-15-CPLX':('EcoCyc:ABC-15-CPLX',{'LIVF-MONOMER':('P22731',1),'LIVG-MONOMER':('P0A9S7',1),'LIVH-MONOMER':('P0AEX7',1),'LIVM-MONOMER':('P22729',1),'LIVJ-MONOMER':('P0AD96',1)}),'EcoCyc:CPLX0-1521':('EcoCyc:CPLX0-1521',{'EG11415-MONOMER':('P0ABT2',12)}),'EcoCyc:CPLX0-7756':('EcoCyc:CPLX0-7756',{'EG11212-MONOMER':('P0AF63',2)}),'EcoCyc:CPLX0-7797':('EcoCyc:CPLX0-7797',{'PD00197':('P0A9E5',2)})}
+ for cid,(refid,members) in component_map.items():
+  z=xml(bindings[refid]['path']);observed={x.find('Protein').get('frameid'):x.findtext('coefficient') for x in z.xpath('/ptools-xml/Protein/component')};must(observed=={k:str(v[1]) for k,v in members.items()},'native full assembly coefficients')
+  for frame,(acc,coef) in members.items():must((cid,'has_part','UniProtKB:'+acc) in triples,'supported assembly member omitted')
+ for row in json.loads((A/'projections/native-component-identity-bridges.json').read_bytes()):must(xml(row['path']).xpath(row['xpath']+'/text()')==[row['uniprot']],'native monomer bridge')
+ lrp=xml(bindings['EcoCyc:MONOMER0-155']['path']);must(not lrp.xpath('/ptools-xml/Protein/component/coefficient'),'unspecified Lrp-leucine coefficients changed')
+ for obj in ['UniProtKB:P0ACJ0','CHEBI:15603']:must(('EcoCyc:MONOMER0-155','has_part',obj) in triples,'Lrp state membership omitted')
+ # All native-state and construct claims remain atomic. Their exact claims are bound to inspected originals below.
+ for e in expected['mechanistic_edges']:
+  if e.get('endpoint_qualifiers'):
+   got=byedge.get(e['id'],{});must(got.get('endpoint_qualifiers')==e['endpoint_qualifiers'],'source-scoped endpoint qualifier changed '+e['id'])
+ must(('UniProtKB:P0ACJ0','inhibits','Entrez:948139') in triples,'primary Lrp polarity or gene scope changed')
+ must(('CHEBI:15603','activates','Entrez:948139') in triples,'leucine expression scope missing')
+ for e in es:
+  for ev in e['evidence']+[x for q in e.get('endpoint_qualifiers',[]) for x in q['evidence']]:
+   ref=refs[ev['reference_id']];must(ref['source_sha256']==bindings[ref['id']]['sha256'],'unbound evidence original');must(len(ev.get('source_assertion',ev.get('quote','')))<=400,'broad evidence copy')
+  if e['subject'].startswith('Entrez:') and e['predicate']=='enables':
+   loc=e['evidence'][0]['source_locator'].split(';')[0];must(xml(bindings[e['subject']]['path']).xpath(loc+'/text()')==[e['object'].split(':')[1]],'exact gene protein product locator')
+ # The entire input includes prose, native labels, source metadata and all evidence, not only the visible canaries.
+ if exact:must(d==contract['semantic_record'],'complete semantic input differs from source-reviewed author contract')
+ return model
+
+# Resolve the critical primary/native anchors from originals, never derived projections.
+pwml=Path(bindings['PathBank:SMP0002118/PWML']['path']).read_text();frags={}
+for tag in ['sub-pathways','sub-pathway-visualizations']:
+ start=pwml.index('<'+tag+'>');end=pwml.index('</'+tag+'>',start)+len(tag)+3;frags[tag]=X.fromstring(pwml[start:end].encode())
+must(frags['sub-pathways'].xpath('sub-pathway[id="528933"]/sub-pathway-outputs/sub-pathway-output[element-type="Compound"]/element-id/text()')==['109'],'PWML native output identity');must(frags['sub-pathways'].xpath('sub-pathway[id="528933"]/reference-pathway-id/text()')==['581'],'PWML native reference');must(frags['sub-pathway-visualizations'].xpath('sub-pathway-visualization[sub-pathway-id="528933"]/sub_pathway_compound_visualizations/sub-pathway-compound-visualization/side/text()')==['Right'],'PWML native visual side')
+main=html.fromstring(Path(bindings['PMID:9852024']['path']).read_bytes()).text_content();must('Ala at position 301 was Thr' in main and 'Northern blot' in main and '5 mM tryptophan' in main,'SstT source-specific expression/sequence anchors')
+abstract=json.loads(Path(bindings['PMID:12097162']['path']).read_bytes())['resultList']['result'][0]['abstractText'];must('8 successive codons for His' in abstract and '3\'-terminus' in abstract and '20 amino acid residues' in abstract,'SstT purified construct anchors')
+yiay=xml(bindings['NCBIProtein:AAB18566.1']['path']);must(yiay.xpath('/GBSet/GBSeq/GBSeq_accession-version/text()')==['AAB18566.1'] and yiay.xpath('/GBSet/GBSeq/GBSeq_length/text()')==['382'],'versioned YiaY reference');q=json.loads((A/'yiay-identity/recommended-endpoint.json').read_bytes());must('6×His' in q['endpoint_qualifiers'][0]['description'],'YiaY inspected construct anchor');must(sha(Path(bindings['PMID:24651643']['path']).read_bytes())=='b55e386e2aa17b7d9f51f91a91d8b8b825854200cf91fb49522df874b0305275','YiaY whole publisher original')
+model=validate(data);print('Native scope, state, source identity and complete semantic checks passed',flush=True)
+controls=[]
+def negative(name,fn):
+ try:fn()
+ except (AssertionError,ValueError,KeyError) as error:controls.append({'name':name,'rejected':True,'reason':str(error)});return
+ raise AssertionError('negative control escaped: '+name)
+def mutate(name,fn):
+ bad=copy.deepcopy(data);fn(bad);negative(name,lambda:validate(bad))
+for rid in native:mutate('direction-'+rid,lambda d,rid=rid:next(x for x in d['reactions'] if x['id']==rid).update(direction='reversible'))
+for e in [e for e in data['mechanistic_edges'] if e['predicate'] in ['consumes','produces']]:mutate('chemical-side-omission-'+e['id'],lambda d,eid=e['id']:d['mechanistic_edges'].__setitem__(slice(None),[x for x in d['mechanistic_edges'] if x['id']!=eid]))
+for e in [e for e in data['mechanistic_edges'] if e.get('endpoint_qualifiers')]:
+ mutate('qualifier-deletion-'+e['id'],lambda d,eid=e['id']:next(x for x in d['mechanistic_edges'] if x['id']==eid).pop('endpoint_qualifiers'))
+ mutate('qualifier-role-'+e['id'],lambda d,eid=e['id']:next(x for x in d['mechanistic_edges'] if x['id']==eid)['endpoint_qualifiers'][0].update(endpoint='object' if next(x for x in d['mechanistic_edges'] if x['id']==eid)['endpoint_qualifiers'][0]['endpoint']=='subject' else 'subject'))
+for name,fn in [('terminal-established',lambda d:next(e for e in d['mechanistic_edges'] if e['subject']=='MetaCyc:AMINEOXID-CPLX' and e['predicate']=='catalyzes').update(description='Established direct E. coli aminoacetone catalysis.')),('Lrp-native-positive',lambda d:next(e for e in d['mechanistic_edges'] if e['subject']=='UniProtKB:P0ACJ0' and e['object']=='Entrez:948139').update(predicate='activates')),('composite-fourth-reaction',lambda d:d['reactions'].append({'id':'EcoCyc:RXN-14249','label':'Composite fourth reaction','category':'molecular_activity'})),('opaque-as-reaction',lambda d:next(n for n in d['reactions'] if n['id']=='PathBank:SMP0000837').update(category='molecular_activity')),('hidden-prose-change',lambda d:d.update(description=d['description'].replace('HYPOTHETICAL','DEMONSTRATED'))),('reference-version-change',lambda d:d['references'][0].update(source_version='Unbound latest version')),('label-change',lambda d:d['participants'][0].update(label='arbitrary label'))]:mutate(name,fn)
+sourcebad=copy.deepcopy(native);sourcebad['RHEA:28885']['orientation']='left_to_right';negative('native-source-orientation-corruption',lambda:validate(data,source=sourcebad))
+projection=json.loads((A/'projections/rhea-author-chemistry.json').read_bytes());projected={x['id']:x for m in projection['masters'] for x in m['directions']}
+for id,x in native.items():must(projected[id]['orientation']==x['orientation'] and projected[id]['equation']==[x['equation']],'projection disagrees with fresh source')
+for role in ['runtime','source','target','projection']:
+ row=next(x for x in contract['inputs'] if role in x['roles']);raw=Path(row['path']).read_bytes();negative(role+'-byte-corruption',lambda row=row,raw=raw:check_bytes(row,raw+b'\ncorruption'))
+print(len(controls),'input/science controls rejected',flush=True)
+errors=strict_errors([target],A/'runtime');must(not errors,str(errors));rendered=render_site([model]);site=out/'site';site.mkdir()
+for name,value in rendered.items():p=site/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(value)
+write_kgx([model],out/'kgx');kn=[asdict(x) for x in kgx_nodes([model])];ke=[asdict(x) for x in kgx_edges([model])];page=rendered['records/MetaCyc_THRDLCTCAT-PWY.html']
+def verify_exports(edge_rows,body):
+ must(len(edge_rows)==len(data['mechanistic_edges']),'KGX lost edge');tree=html.fromstring(body);graph=tree.xpath('//a[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]');must(len(graph)==len(data['mechanistic_edges']),'graph lost edge')
+ for n,(src,kg,g) in enumerate(zip(data['mechanistic_edges'],edge_rows,graph),1):
+  must((kg['subject'],kg['predicate'],kg['object'])==(src['subject'],LOCAL_PREDICATE_CURIES[src['predicate']],src['object']),'KGX triple changed');must(kg['description']==src['description'] and json.loads(kg['evidence'])==src['evidence'],'KGX claim/evidence changed');must((json.loads(kg['endpoint_qualifiers']) if kg['endpoint_qualifiers'] else [])==src.get('endpoint_qualifiers',[]),'KGX qualifier loss');must(g.get('data-predicate')==src['predicate'] and (g.get('data-subject-id') or g.get('data-subject'))==src['subject'] and (g.get('data-object-id') or g.get('data-object'))==src['object'],'graph native endpoint changed');must(src['description'] in g.get('aria-label'),'graph scope description lost')
+  for q in src.get('endpoint_qualifiers',[]):
+   anchor=f'mechanism-edge-{n}-qualifier-'+q['endpoint'];found=tree.xpath('//*[@id=$id]',id=anchor);must(len(found)==1 and q['description'] in found[0].text_content(),'no-JS adjacent qualifier absent');must(q['description'] in g.get('aria-label'),'graph qualifier absent')
+verify_exports(ke,page);bad=copy.deepcopy(ke);next(x for x in bad if x['endpoint_qualifiers'])['endpoint_qualifiers']='';negative('KGX-qualifier-loss',lambda:verify_exports(bad,page));badpage=page.replace('HYPOTHETICAL TynA assignment','Established TynA assignment');negative('graph-hypothesis-loss',lambda:verify_exports(ke,badpage))
+(out/'kgx-nodes.json').write_text(json.dumps(kn,indent=2)+'\n');(out/'kgx-edges.json').write_text(json.dumps(ke,indent=2)+'\n');(out/'controls.json').write_text(json.dumps(controls,indent=2)+'\n');outputs=[{'path':str(p),'sha256':digest(p),'bytes':p.stat().st_size} for p in sorted(out.rglob('*')) if p.is_file()];(out/'output-bindings.json').write_text(json.dumps(outputs,indent=2)+'\n');print('Final input and output hash guard before success receipt',flush=True);guard(contract['inputs']);guard(outputs);must(digest(args.contract)==args.contract_sha256,'final contract changed');must(digest(target)==contract['target']['sha256'],'final target changed')
+result={'status':'passed','target':contract['target'],'contract_sha256':args.contract_sha256,'source_scope':'Three native core events/15 sides plus two uptake contexts/eight sides; full111-edge graph and complete qualifiers, no independent science acceptance claimed','native_and_closed_schema':'passed','fresh_original_Rhea_directions':{k:v['orientation'] for k,v in native.items()},'chemical_sides':sum(len(x['rows']) for x in native.values()),'nodes':len(kn),'edges':len(ke),'references':len(data['references']),'negative_controls':len(controls),'bound_input_files':len(contract['inputs']),'final_original_runtime_input_output_guards':'passed','canonical_authority':'Two reviewed adapter integrations remain pending; no maintained or full-corpus build claimed','maintained_writes':False};(out/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2),flush=True)

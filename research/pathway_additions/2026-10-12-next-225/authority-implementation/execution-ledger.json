@@ -1,0 +1,50 @@
+{
+  "runtime": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/private/tmp/pathwaymech-next-225-authority-implementation-20261012/candidate/src:/private/tmp/pathwaymech-next-225-authority-implementation-20261012/candidate"
+  },
+  "cwd": "/private/tmp/pathwaymech-next-225-authority-implementation-20261012/candidate",
+  "runs": [
+    {
+      "command": "-m pytest -p no:cacheprovider tests/test_pubchem_identifier_authority.py tests/test_pathbank_identifier_authority.py -q",
+      "log": "logs/focused-first.log",
+      "exit_code": 0,
+      "result": "173 passed"
+    },
+    {
+      "command": "-m pytest -p no:cacheprovider tests/test_pubchem_identifier_authority.py tests/test_pathbank_identifier_authority.py tests/test_source_identifier_snapshot.py tests/test_bigg_identifier_authority.py tests/test_metanetx_identifier_authority.py tests/test_kegg_identifier_authority.py tests/test_ncbi_gene_identifier_authority.py tests/test_ecocyc_identifier_authority.py tests/test_metacyc_protein_authority.py tests/test_metacyc_authority_encoding.py tests/test_rhea_component_authority.py tests/test_identifiers.py -q",
+      "initial_log": "logs/related-first.log",
+      "initial_exit_code": 1,
+      "initial_result": "918 passed; 2 failed due to missing copied fixture dependency",
+      "final_log": "logs/related-final.log",
+      "final_exit_code": 0,
+      "final_result": "922 passed"
+    },
+    {
+      "command": "-m ruff check scripts/build_source_identifier_snapshot.py tests/test_pathbank_identifier_authority.py tests/test_pubchem_identifier_authority.py",
+      "initial_log": "logs/lint-first.log",
+      "initial_exit_code": 1,
+      "initial_result": "3 E501 violations",
+      "final_log": "logs/lint-final.log",
+      "final_exit_code": 0,
+      "final_result": "All checks passed"
+    },
+    {
+      "command": "/private/tmp/pathwaymech-next-225-authority-implementation-20261012/verify-originals.py",
+      "log": "logs/originals.log",
+      "exit_code": 0
+    },
+    {
+      "command": "patch --dry-run -p1 -d /private/tmp/pathwaymech-next-225-authority-implementation-20261012/patch-replay < /private/tmp/pathwaymech-next-225-authority-implementation-20261012/changes.patch",
+      "log": "logs/patch-dry-run.log",
+      "exit_code": 0
+    },
+    {
+      "command": "patch -p1 -d /private/tmp/pathwaymech-next-225-authority-implementation-20261012/patch-replay < /private/tmp/pathwaymech-next-225-authority-implementation-20261012/changes.patch",
+      "log": "logs/patch-replay.log",
+      "exit_code": 0,
+      "result": "All five replayed files match candidate hashes"
+    }
+  ]
+}
