@@ -1,0 +1,101 @@
+"""Full bidirectional source/record disposition dossier; no maintained writes."""
+from pathlib import Path
+import json,hashlib,yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');H=Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+d=yaml.safe_load((A/'draft/ethylene-glycol-degradation.yaml').read_text());es=d['mechanistic_edges'];ctx=json.loads((A/'ledgers/context-assertions.json').read_text());src=json.loads((A/'ledgers/source-bindings.json').read_text());sl=json.loads((P/'source-support-bindings.json').read_text());claims=json.loads((P/'claim-ledger.json').read_text())['claims'];assert len(claims)==50
+for k,v in sl.items():assert sha(v['path'])==v['sha256'],k
+def ids(a,b=None):return [f'eg-{n:03d}' for n in range(a,(b or a)+1)]
+# All fifty source-selected claims have an explicit location and disposition.
+spec={
+1:(ids(1,2)+ids(14),[1,10],[], 'Complete native two-event boundary retained; downstream pathways remain interfaces.'),
+2:(ids(3,7),[1],[],'Exact oxidative first event; reverse/master accessions remain source comparison only.'),
+3:(ids(8,13),[1],[],'Exact second event, water and two product protons retained; native erroneous comment is not used as participant authority.'),
+4:(ids(3,13),[1],[],'Both events independently element/charge balanced; no invented ATP, O2 consumption or proton symport.'),
+5:(ids(17,18)+ids(65,71),[2,4],[],'Exact current polypeptide/Gene/PGDB joins retained; E15 and historical 383-residue numbering distinguished; wrong Shigella GeneID rejected.'),
+6:(ids(19,20)+ids(56,64)+ids(68,69)+ids(72,74),[2,6],[],'Exact AldA reference joins and native cytosol annotation retained without reference-strain growth inference.'),
+7:(ids(17)+ids(19),[4,6],['structural-assemblies'],'Native dimer/tetramer and preparation-specific physical support retained; older dimer estimate not silently promoted.'),
+8:(ids(25),[4],['FucO-mutants'],'One crystal Fe site and substoichiometric solution occupancy distinguished; historical ligands retained.'),
+9:(ids(29,30),[4],[],'Direct Zn inhibition and Fe protection kept with His6 reduction-assay qualifier.'),
+10:(ids(27),[4],['FucO-mutants'],'Two coenzyme sites and engineered cofactor expansion retained as context; no mutant NADPH core.'),
+11:([],[5],['FucO-2023'],'Cooperative reduction, preliminary mechanism and mutant limits retained; no EG-specific kinetic extrapolation.'),
+12:([],[5],['FucO-2023','FucO-mutants'],'Mutant/apo/crystal EG contexts retained; productive wild-type EG ternary complex remains unestablished.'),
+13:(ids(16)+ids(22,24),[2,6],[],'Three direct glycolaldehyde preparations retained separately; 2019 unit conflict disclosed.'),
+14:(ids(36),[6],[],'Direct 1988 glycolaldehyde/NADH inhibition retained with ECL3 assay qualifier.'),
+15:(ids(37,39),[6],['AldA-F180T'],'Opposite activity signs and distinct substrates/constructs retained. 2006 table images visually checked; no esterase value is invented for unmeasured 2 mM Mg.'),
+16:(ids(31,32),[6],[],'Explicit native inhibition retained as native source assertion, not unavailable primary quotation.'),
+17:(ids(31,35),[6],['older-primary-access'],'Limited indexed 1987 context retained. Original PDF unavailable; Km/Kd and OCR limits preserved.'),
+18:([],[6],['AldA-structure'],'Endogenous AldA contamination, structural mechanism and occupancy limits retained. Acquired methods do not establish a His tag on taxadiene synthase, so that preflight wording is corrected.'),
+19:(ids(21,22),[2],[],'E15 selected lineage and unresolved one-versus-two mutations retained; not collapsed onto MG1655.'),
+20:(ids(21,22),[2],['older-primary-access'],'Historical extract activities, product identification and abstract-only enzyme identity paper retained.'),
+21:([],[3],[],'Full seven-condition uptake set retained in prose; unidentified transport cannot supply a molecular signed edge.'),
+22:([],[3],['engineering2021'],'Diffusion proposal/FBA assumption and symport alternative retained as unresolved transport context.'),
+23:(ids(70,74),[8],[],'Exact historical mutant backgrounds, carbon dependence, indirect inducer reasoning and failed direct addition retained.'),
+24:(ids(43)+ids(49,50)+ids(56),[7],[],'CRP-cAMP assembly, proximal physical binding, distal negative result and reporter interpretation retained.'),
+25:([],[7],['unknown-aldA-factor'],'Unidentified crude-extract factor retained without invented protein, ligand-binding relation or stoichiometry.'),
+26:(ids(57,58),[7],[],'ArcA phosphorylation retained on each endpoint; reporter and native site evidence remain distinct.'),
+27:(ids(47,48),[7],[],'IHF alpha/beta assembly and direct unsigned binding retained; tested expression-negative control prevents signed aldA edge.'),
+28:(ids(45,46)+ids(52,55)+ids(60,61),[7],[],'Native DnaA-ATP and FNR states retained; abstract/native expression and computational motif limits explicit.'),
+29:(ids(62,64),[7],['regulation-access-boundaries'],'All three native positive expression assertions retained with explicit possible indirectness.'),
+30:(ids(59),[7],['ArcA-genomics-scope'],'Native aldA-specific genomics claim retained; fresh primary methods checked but no supplemental-row inspection invented.'),
+31:(ids(44)+ids(49,51)+ids(65,66),[8],['regulation-access-boundaries'],'Exact fucAO promoter/TU/gene joins retained, separate internal transcript and fucPIK study boundary explicit.'),
+32:(ids(67),[8],[],'Exact positive SrsR expression edge, source figure and BW25113/ASKA assay qualifier retained.'),
+33:(ids(67),[8],[],'Physical spacer binding attached as regional supporting evidence with separate W3110 protein preparation; no fucO-internal-promoter claim.'),
+34:(ids(43,55),[7,8],[],'All selected regulator chain, assembly and effector identities retained; unspecified coefficients remain absent.'),
+35:(ids(68,69),[7,8],[],'Expression repression distinct from enzyme inhibition; 2002 protein identity/abundance source added independently.'),
+36:(ids(41,42),[4,9],['older-primary-access'],'Oxygen/peroxide native and abstract support retained with oxidative-inactivation and historical variant limits.'),
+37:([],[9],['engineering2021'],'Full-route 2021 engineering retained with constructs, supplementation and modeling limits.'),
+38:([],[9],['engineering2024modules'],'Selected/evolved strains and all four modules retained; inspected Fig.4 resolves inconsistent body wording.'),
+39:([],[9],['engineering2024glycolate'],'Alternative enzymes/deletions retained as engineered parallel context, with medium and strain-naming conflict.'),
+40:([],[9],['older-primary-access'],'2024/2025 abstract-only engineering leads retained without uninspected full-paper mechanisms.'),
+41:([],[10],['reverse-native-enzyme-scope'],'Native archaeal/yeast reverse enzyme activity and its own regulatory context retained outside the E. coli oxidative graph.'),
+42:(ids(17)+ids(19)+ids(79,82),[10],[],'Exact frozen primary root/two biochemical events/two catalyses and assemblies retained in original scope ledger.'),
+43:(ids(79,82),[10],[],'Both attached children and chemical participants represented as unsigned structural membership.'),
+44:(ids(3,13)+ids(80)+ids(82),[10],[],'Neutral acid/anion, NAD species, incompatible BioCyc xref and reversibility conflicts retained.'),
+45:(ids(75,78),[10],[],'All three native glycolate interfaces plus parent preserved. Fresh original also confirms META in-pathway parent, beyond preflight wording.'),
+46:([],[3,7],['unknown-aldA-factor','engineering2021'],'Scoped unresolved identities kept explicitly, not turned into universal absence assertions.'),
+47:(ids(21,26)+ids(29,30)+ids(36,40)+ids(54,61)+ids(67),[2,4,5,6,7,8,9],['AldA-structure','AldA-F180T','FucO-2023'],'All 21 represented endpoint qualifiers and 15 source-preparation ledger rows retained; prose-only constructs are not unqualified graph subjects.'),
+48:(ids(40),[4],[],'Native high-NAD reactivation retained as distinct activity context with inactivated-state qualifier; abstract does not supply concentration.'),
+49:([],[10],['adjacent-native-scope'],'All specified adjacent native functions retained as scope context rather than additional complete pathways.'),
+50:(ids(25,26)+ids(41,42)+ids(70,74),[4,8],[],'Preparation-specific manganese and condition-dependent activity/expression conflicts retained rather than absolute respiratory rules.')}
+assert set(spec)==set(range(1,51));rows=[]
+for n,c in enumerate(claims,1):
+ ei,paras,contexts,decision=spec[n];assert all(e in {x['id'] for x in es} for e in ei);assert all(k in {x['key'] for x in ctx} for k in contexts)
+ rows.append(dict(key=c['key'],preflight_disposition=c['disposition'],preflight_claim_locator=f'claim-ledger.json claims[{n-1}]',source_bindings=[dict(key=k,**sl[k]) for k in c['source_keys']],author_disposition=decision,record_edges=ei,record_description_paragraphs=paras,context_assertion_keys=contexts,limits=c['required_limits_or_qualifiers']))
+save('claim-dispositions.json',dict(preflight_claim_ledger=dict(path=str(P/'claim-ledger.json'),sha256=sha(P/'claim-ledger.json')),target_sha256=sha(A/'draft/ethylene-glycol-degradation.yaml'),all_50_disposed=True,claims=rows))
+paras=d['description'].split('\n\n');save('description-source-crosswalk.json',[dict(paragraph=i+1,text=p,claim_keys=[r['key'] for r in rows if i+1 in r['record_description_paragraphs']],source_bindings=[b for r in rows if i+1 in r['record_description_paragraphs'] for b in r['source_bindings']]) for i,p in enumerate(paras)])
+refrows=[]
+for r in d['references']:
+ uses=[]
+ for e in es:
+  if any(v['reference_id']==r['id'] for v in e['evidence']):uses.append(dict(edge=e['id'],role='edge assertion or identity/source join'))
+  for q in e.get('endpoint_qualifiers',[]):
+   if any(v['reference_id']==r['id'] for v in q['evidence']):uses.append(dict(edge=e['id'],role='endpoint '+q['endpoint']+' '+q['kind']))
+ for c in ctx:
+  if any(v['reference_id']==r['id'] for v in c['evidence']):uses.append(dict(context=c['key'],role='bounded non-graph assertion'))
+ if r['id']=='PMID:3308886':uses.append(dict(description_paragraph=6,role='limited indexed primary text; original PDF unavailable'))
+ assert uses,r['id'];refrows.append(dict(reference=r,original=src[r['id']],uses=uses))
+save('reference-coverage.json',refrows)
+save('construct-source-dispositions.json',dict(source_ledger=dict(path=str(P/'construct-and-assay-ledger.json'),sha256=sha(P/'construct-and-assay-ledger.json')),rows=json.loads((P/'construct-and-assay-ledger.json').read_text())['rows'],qualifiers=json.loads((A/'ledgers/constructs.json').read_text()),correction='2007 endogenous untagged AldA is supported; taxadiene-synthase tag is not asserted from the acquired methods. Other missing earlier expression constructs remain unknown.'))
+save('source-conflicts-and-limits.json',dict(selected_conflicts=[r for r in rows if int(r['key'][2:4]) in [3,5,7,8,10,11,12,13,15,17,18,19,22,23,25,27,28,29,30,31,33,36,37,38,39,40,41,44,46,47,50]],no_claim_of_source_exhaustion=True,licensing='User defers public-release data licensing; original source license strings remain unchanged.',authority='All reference bodies are bound independently of first-native-source canonical identity metadata. Full EG canonical build remains pending.'))
+report='''# Ethylene glycol degradation author dossier
+
+The external candidate preserves the complete two-event MetaCyc PWY0-1280 boundary with FucO dimer and AldA tetramer, 11 exact Rhea chemical sides, and two H+ products in the second event. It contains 82 mechanistic edges, 90 source references, 61 named identifiers and 21 endpoint qualifiers. All 50 preflight claims have explicit edge, description or bounded context dispositions. This is author work, not independent scientific acceptance or maintained integration.
+
+`claim-dispositions.json` is the complete source-to-record matrix. `description-source-crosswalk.json`, `reference-coverage.json`, `ledgers/evidence-original-selectors.json`, and `edge-source-crosswalk.json` provide the reverse traversal. Each actual evidence use is bound to an unchanged original and exact locator; image-only table values have explicit visual-observation bindings. `construct-source-dispositions.json` preserves the 15 source preparation rows plus every represented endpoint qualifier.
+
+Core and assay conditions remain distinct. E15-selected G1/G3/EG3 extracts are not MG1655 reference preparations; historical 383-residue FucO numbering is not silently remapped to current 382 residues. Fe occupancy differs from crystal site count. The direct 1988 glycolaldehyde NADH inhibition differs from 2006 propionaldehyde inhibition and NADH esterase activation. The 2006 Table6 has no esterase measurement at 2 mM Mg; only its measured values are retained. The 2019 Vmax/kcat conversion inconsistency remains disclosed. The 2007 acquired methods support endogenous untagged AldA in a pBSET taxadiene-synthase preparation, but do not establish the latter protein's His tag; the draft corrects that preflight wording.
+
+Regulatory evidence keeps source roles. Native promoter/TU/gene joins ground all fifteen native regulatory assertions. CRP-cAMP proximal binding is distinct from the distal negative result. ArcA endpoints retain phosphorylation. FNR motifs and MarA/SoxS/Rob expression evidence do not become direct binding. IHF alpha/beta assembly and binding have no signed aldA effect because the tested mutants had no significant effect. SrsR regional binding and BW25113 expression use separate preparations. The unidentified aldA binding factor and unresolved EG transport remain explicit, with the complete uptake comparison retained in prose.
+
+All native glycolate interfaces and the superpathway remain opaque boundary context. Both PathBank children retain unsigned generic Interaction participants. Neutral glycolic acid, glycolate, NAD species, the contradictory BioCyc glycolaldehyde xref, and first-event reversibility remain source conflicts. Archaeal and yeast reverse activities are bounded context, not new taxa experimentally established for the complete oxidative route. Native adjacent functions and engineered modules are retained without expanding the core. No ordinary wild-type MG1655 EG-growth claim is made.
+
+The complete 1983 and 1988 PDFs, acquired primary XML/HTML bodies and native sources were inspected. The oldest 1987 PDF and several other cited full papers remain unavailable; corresponding evidence is explicitly indexed-text, abstract or native annotation. The 2023 earlier expression methods/supplement and 2014 aldA-specific supplemental rows are not claimed read. Paper-specific acquisition and construct limits are retained from the immutable preflight and in each author disposition.
+
+The baseline is 228 actual lyxose-inclusive maintained records plus the independently accepted prospective MG target, 229 records total before EG. Ignored/hidden/followed inventory and semantic core comparison found no complete EG duplicate; 17 prior research/catalog mentions remain preserved. Accepted MG authority objects are preserved exactly by the source-derived EG proposal; root owns the later full canonical build and exact committed-tree bridge. The record and every generated check artifact remain external.
+
+The bounded validation receipts report actual schema, strict, complete identifier, page/KGX, original replay, native-adapter and adversarial-control outcomes. No whole-corpus tests, full canonical build, independent scientific review, maintained adoption, PR or merge is claimed by this packet. Source exhaustion is not claimed. Public-release licensing is deferred as instructed; provenance and upstream terms remain intact.
+'''
+(A/'RESEARCH.md').write_text(report)
+print('50 complete claim dispositions;',len(refrows),'reference uses; 10 description paragraphs and 15 construct rows bound')

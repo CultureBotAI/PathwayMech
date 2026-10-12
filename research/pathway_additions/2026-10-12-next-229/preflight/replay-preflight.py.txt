@@ -1,0 +1,87 @@
+from pathlib import Path
+import json,hashlib,copy,re,zipfile,subprocess,datetime
+from collections import Counter
+from lxml import etree
+O=Path(__file__).parent;L=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+checks=[]
+def check(name,result,detail):
+ checks.append({'name':name,'pass':bool(result),'detail':detail})
+ assert result,name
+
+chem=json.loads((O/'derived/rhea-preflight-chemistry.json').read_text())
+check('Rhea-original-binding',sha(chem['source'])==chem['sha256'],chem['source'])
+directions={d['id']:d for m in chem['masters']for d in m['directions']}
+expected={
+ 'RHEA:27631':{'substrates':{'CHEBI:30742':1,'CHEBI:57540':1},'products':{'CHEBI:17071':1,'CHEBI:57945':1,'CHEBI:15378':1}},
+ 'RHEA:20002':{'substrates':{'CHEBI:17071':1,'CHEBI:57540':1,'CHEBI:15377':1},'products':{'CHEBI:29805':1,'CHEBI:57945':1,'CHEBI:15378':2}}}
+def signature(d):return {s:{p['properties']['accession'][0]:p['coefficient']for p in ps}for s,ps in d['sides'].items()}
+def balance(d):
+ c=Counter()
+ for side,ps in d['sides'].items():
+  for p in ps:
+   coef=p['coefficient']*(-1 if side=='substrates'else 1)
+   for atom,n in re.findall(r'([A-Z][a-z]?)(\d*)',p['properties']['formula'][0]):c[atom]+=coef*int(n or 1)
+   c['charge']+=coef*int(p['properties']['charge'][0])
+ return {k:v for k,v in c.items()if v}
+for rid,e in expected.items():
+ check(rid+'-exact-side-signature',signature(directions[rid])==e,e)
+ check(rid+'-independent-balance',not balance(directions[rid]),balance(directions[rid]))
+controls=[]
+def reject(name,d,rid):
+ ok=signature(d)!=expected[rid]
+ controls.append({'name':name,'rejected':ok,'balance_imbalance':balance(d)})
+ assert ok,name
+d=copy.deepcopy(directions['RHEA:20002']);d['sides']['products'][-1]['coefficient']=99
+# Find proton explicitly; do not rely on participant ordering.
+d=copy.deepcopy(directions['RHEA:20002'])
+for p in d['sides']['products']:
+ if p['properties']['accession'][0]=='CHEBI:15378':p['coefficient']=1
+reject('event2-missing-second-proton',d,'RHEA:20002')
+d=copy.deepcopy(directions['RHEA:27631']);d['sides']['substrates'],d['sides']['products']=d['sides']['products'],d['sides']['substrates'];reject('event1-reversed-route',d,'RHEA:27631')
+d=copy.deepcopy(directions['RHEA:27631'])
+for p in d['sides']['substrates']:
+ if p['properties']['accession'][0]=='CHEBI:57540':p['properties']['accession'][0]='CHEBI:57945'
+reject('NAD-and-NADH-identity-swap',d,'RHEA:27631')
+d=copy.deepcopy(directions['RHEA:20002']);d['sides']['substrates']=[p for p in d['sides']['substrates']if p['properties']['accession'][0]!='CHEBI:15377'];reject('hydrolytic-water-omitted',d,'RHEA:20002')
+
+for org in ['META','ECOLI']:
+ p=L/'raw'/f'{org}-PWY0-1280.xml';r=etree.parse(str(p));rx=r.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid')
+ check(org+'-native-two-core-events',set(rx)=={'GLYCOLALDREDUCT-RXN','GLYCOLALD-DEHYDROG-RXN'} and len(rx)==2,rx)
+
+z=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip')
+check('frozen-ZIP-hash',sha(z)=='b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44',str(z))
+with zipfile.ZipFile(z)as f:
+ members=[n for n in f.namelist()if n=='PW002093.owl'];check('unique-exact-member',len(members)==1,members);body=f.read(members[0])
+check('original-ZIP-member-body',hashlib.sha256(body).hexdigest()=='816294f1b72d38f4a23a3bd44f31d990c50f1d4dee5c57de978b2079c7e36ed7' and body==(O/'raw/PathBank-PW002093.owl').read_bytes(),'No extracted-wrapper or seed substitution')
+ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+r=etree.fromstring(body);root=r.xpath('bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002105"]',namespaces=ns)
+check('exact-primary-root',len(root)==1,len(root))
+parts=root[0].xpath('bp:pathwayComponent/@rdf:resource',namespaces=ns)
+check('whole-root-membership',set(parts)=={'#Reactions/6109','#ReactionCatalysis/6070','#Reactions/5957','#ReactionCatalysis/5920','http://identifiers.org/smpdb/SMP0000847','http://identifiers.org/smpdb/SMP0002052'},parts)
+check('not-DARABCAT-root',root[0].get('{'+ns['rdf']+'}about')!='http://identifiers.org/smpdb/SMP0002052','Root/child ambiguity negative control')
+check('all-native-Interaction-objects-unsigned',len(r.findall('bp:Interaction',ns))==2 and not r.xpath('bp:Interaction/bp:controlType',namespaces=ns),'Interaction109875/109876 have participant, no native control sign')
+controls.append({'name':'invent-inhibitory-PathBank-child-sign','rejected':not bool(r.xpath('bp:Interaction/bp:controlType[text()="INHIBITION"]',namespaces=ns))})
+
+for acc,gene,n in [('P0A9S1','fucO',382),('P25553','aldA',479)]:
+ p=O/'raw'/f'retry-UniProt-{acc}.json';a=json.loads(p.read_text())
+ check(acc+'-issuing-identity',a['primaryAccession']==acc and a['sequence']['length']==n and a['genes'][0]['geneName']['value']==gene,{'sequence_length':n,'gene':gene,'entryAudit':a['entryAudit']})
+r=etree.parse(str(O/'raw/NCBI-genes.xml'))
+for gid,gene,locus in [('947273','fucO','b2799'),('945672','aldA','b1415')]:
+ e=r.xpath('//Entrezgene[Entrezgene_track-info/Gene-track/Gene-track_geneid="'+gid+'"]');check(gid+'-single-original-gene',len(e)==1,len(e))
+ check(gid+'-gene-locus',e[0].xpath('string(Entrezgene_gene/Gene-ref/Gene-ref_locus)')==gene and e[0].xpath('string(Entrezgene_gene/Gene-ref/Gene-ref_locus-tag)')==locus,{'gene':gene,'locus':locus})
+ check(gid+'-MG1655-not-Shigella','MG1655'in e[0].xpath('string(Entrezgene_source/BioSource/BioSource_org/Org-ref/Org-ref_taxname)'),gid)
+
+fig=O/'raw/PMC9181523-Fig5.jpg';check('SrsR-figure5-original-md5',hashlib.md5(fig.read_bytes()).hexdigest()=='6544e5c68eaec2196647b513e26cb3b9','Exact graphic processing-instruction checksum from PMC XML; visually read original')
+for p in ['raw/PMC9181523.xml','raw/PMC10087678.xml','raw/PMC6900487.xml','raw/PMC3974632.xml']:
+ t=etree.parse(str(O/p));check(p+'-true-article-body',bool(t.xpath('/article/body')),str(O/p))
+check('misleading-main-ECOLI-body-excluded','<html'in (O/'raw/ECOLI-PD00257.xml').read_text().lower(),'HTML200 is not source authority XML; mirror original kept separately')
+
+bindings=json.loads((O/'source-support-bindings.json').read_text())
+for key,x in bindings.items():check('source-binding-'+key,sha(x['path'])==x['sha256'],x['path'])
+claims=json.loads((O/'claim-ledger.json').read_text())['claims'];check('claim-count-and-unique-keys',len(claims)==50 and len({c['key']for c in claims})==50,len(claims))
+check('all-claim-source-keys-exist',all(k in bindings for c in claims for k in c['source_keys']),'Every claim points to original-bound source keys')
+check('complete-required-mechanism-coverage',all(any(key in c['key']for c in claims)for key in ['event1','event2','assemblies','metal','zinc','NADH-direct','uptake-effects','IHF-binding','unknown-ald-regulator','SrsR-fucO-expression','PathBank-children','FucO-reactivation']), 'Mechanism checklist, not a schema or independent scientific review')
+report={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'mode':'preflight-source replay; no candidate YAML, no canonical acceptance','checks':checks,'negative_controls':controls,'all_passed':all(x['pass']for x in checks)and all(x['rejected']for x in controls),'source_exhaustion':False}
+(O/'preflight-replay.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'checks':len(checks),'negative_controls':len(controls),'all_passed':report['all_passed']}))

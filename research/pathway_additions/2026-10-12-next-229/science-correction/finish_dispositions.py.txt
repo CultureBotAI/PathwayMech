@@ -1,0 +1,23 @@
+"""Complete an unsealed claim-key join and bind actual root-created issue receipts."""
+from pathlib import Path
+import json, hashlib
+C=Path(__file__).parent
+path=C/'claim-dispositions.json';before=hashlib.sha256(path.read_bytes()).hexdigest();x=json.loads(path.read_text())
+row=next(r for r in x['claims'] if r['key']=='EG09-FucO-zinc')
+key='FucO-prior-Cu-Cd-report'
+if key not in row['context_assertion_keys']:
+    row['context_assertion_keys'].append(key)
+    row['author_disposition']+=' Earlier Cu/Cd inhibition is retained as a 2005 prior-work report, not as part of its direct Zn/Fe experiment.'
+path.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+receipt=Path('/private/tmp/pathwaymech-next-229-issues-20261012/issue-creation.json')
+actual=json.loads(receipt.read_text())
+issues={'eg-fuco-cu-cd-context-omission':446,'eg-fuco-iron-occupancy-construct-conflation':447}
+d=json.loads((C/'dispositions.json').read_text())
+for f in d['findings']:
+    f['issue_number']=issues[f['issue_key']]
+    f['issue_url']='https://github.com/CultureBotAI/PathwayMech/issues/'+str(f['issue_number'])
+d['root_issue_creation_receipt']={'path':str(receipt),'sha256':hashlib.sha256(receipt.read_bytes()).hexdigest(),'bytes':receipt.stat().st_size}
+d['issue_status']='Open; root owns eventual acceptance and PR-linked closure; no issue mutation by this author.'
+(C/'dispositions.json').write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+(C/'preseal-dossier-completion.json').write_text(json.dumps(dict(reason='Initial dossier builder used a nonmatching EG09 key; the target was unaffected. This step completes the correct EG09-FucO-zinc join and records actual subsequently supplied issue IDs.',claim_file_before=before,claim_file_after=hashlib.sha256(path.read_bytes()).hexdigest(),issue_receipt=d['root_issue_creation_receipt'],actual_issue_receipt=actual),indent=2)+'\n')
+print('Both correction contexts joined to original EG08/EG09 claims; actual issues 446/447 bound')

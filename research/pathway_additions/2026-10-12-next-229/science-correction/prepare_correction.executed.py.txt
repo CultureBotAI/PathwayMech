@@ -1,0 +1,126 @@
+"""Bounded immutable EG successor; original author and review packets are read-only."""
+from pathlib import Path
+import copy, datetime, difflib, hashlib, json, shutil
+from lxml import html, etree
+import yaml
+
+C=Path(__file__).parent
+A=Path('/private/tmp/pathwaymech-next-229-author-20261012')
+R=Path('/private/tmp/pathwaymech-next-229-science-review-20261012')
+P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012')
+def sha(p):
+    with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):
+    p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def save(n,v):
+    p=C/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def read(n):return json.loads((A/n).read_text())
+
+assert sha(A/'handoff.json')=='2b42932ab2af013959191e75373213eb4875254f28a49745b6163a812215667a'
+assert sha(R/'handoff.json')=='41bc34c098e852a3f1e2f13f1f97ec318742a220494603e4e1ee45019a9ac3ec'
+verified=[]
+for root,expected in [(A,'2443ea3e67a6fb34f344cff30ccfaf686f56a9e6bf81778c5f787776e32ad1ef'),(R,'66423788d3a3fb249f02537fe483649bd6efc84dcc8589dfc338a2adc56b5c70')]:
+    assert sha(root/'artifact-manifest.json')==expected
+    entries=json.loads((root/'artifact-manifest.json').read_text())['artifacts']
+    for row in entries:
+        p=Path(row['path']);assert sha(p)==row['sha256'] and p.stat().st_size==row['bytes'],p
+    verified.append(dict(handoff=bind(root/'handoff.json'),manifest=bind(root/'artifact-manifest.json'),all_artifacts_freshly_verified=len(entries)))
+save('predecessor-intake.json',dict(at=datetime.datetime.now(datetime.timezone.utc).isoformat(),packets=verified,scope='All 360 author and 43 independent review artifact hashes; no source cache or original packet writes.'))
+oldpath=A/'draft/ethylene-glycol-degradation.yaml';old=yaml.safe_load(oldpath.read_text());d=copy.deepcopy(old)
+assert sha(oldpath)=='c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704'
+paragraphs=d['description'].split('\n\n');oldparagraph=paragraphs[3]
+paragraphs[3]=( 'Current FucO P0A9S1 is 382 residues, whereas the 2005/2023 papers use historical 383-residue numbering and older P11549 context. '
+    'Their Asp196/His200/His263/His277 Fe ligands, G17D/G97E/D39G, N-terminal deletion and I7L/L8V engineering labels are not silently renumbered onto the current reference. '
+    'The pQE32/pCM1 N-terminal His6 preparation in M15(pREP4) supports the one-Fe-site crystal observation. '
+    'Separately, solution metal analysis compared D196L/H200A/H200F mutants with WT containing 0.53 Fe atom/subunit. '
+    'Methods assign WT/mutant site-directed-mutagenesis preparations to pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa; this Methods/Results join supports the cleaved-WT comparator attribution, not a measured occupancy for the His6 crystal preparation. '
+    'His267 is not the Fe ligand formerly proposed. N-terminal strand exchange supports the dimer; historical deltaN10 loses assembly/activity. '
+    'Two NAD sites per dimer and D39G cofactor expansion do not create a wild-type NADPH core. '
+    'Older partially purified mutant enzyme also used added manganese; that preparation-specific alternative is retained. '
+    'The 2005 paper reports earlier Cu(II)/Cd(II) inhibition of FucO, citing PMID4306747. Its retained older-source evidence is abstract/landing material, not an inspected full experimental body; no Cu/Cd dose or direct assay is inferred. The 2005 Figure 4 experiment separately tests Zn/Fe.' )
+d['description']='\n\n'.join(paragraphs)
+edge=next(e for e in d['mechanistic_edges'] if e['id']=='eg-025')
+oldevidence=copy.deepcopy(edge['evidence'][1]);oldqualifier=copy.deepcopy(edge['endpoint_qualifiers'][0])
+edge['evidence'][1]['source_assertion']='The His6 pCM1 crystal identifies one Fe site per chain, coordinated by Asp196, His200, His263 and His277 in historical numbering; His267 is not a ligand. The separate WT/mutant solution metal comparison is retained in construct-qualified context.'
+edge['endpoint_qualifiers'][0]['description']='2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). This qualifier applies to the crystal-site evidence; the separate cleaved-WT solution comparison is contextualized in the record description. Current P0A9S1 is 382 residues.'
+assert all(len(x)<=400 for x in [edge['evidence'][1]['source_assertion'],edge['endpoint_qualifiers'][0]['description']])
+target=C/'draft/ethylene-glycol-degradation.yaml';target.parent.mkdir(parents=True,exist_ok=True)
+assert not target.exists(), 'Do not rewrite an existing correction target'
+target.write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=110))
+(C/'target.diff').write_text(''.join(difflib.unified_diff(oldpath.read_text().splitlines(True),target.read_text().splitlines(True),fromfile=str(oldpath),tofile=str(target))))
+
+source=read('ledgers/source-bindings.json')['PMID:15995211'];assert sha(source['path'])==source['sha256']
+t=html.parse(source['path']);base='/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section'
+selectors={'crystal':base+'/section[2]/section[3]/p[1]','cleaved':base+'/section[2]/section[3]/p[2]','metal':base+'/section[3]/section[2]/p[1]','earlier':base+'/section[3]/section[2]/p[2]','reference40':'//li[@id="r40"]'}
+proofs={k:dict(binding=source,xpath=x,observed=[etree.tostring(e,encoding='unicode') for e in t.xpath(x)],text=' '.join(t.xpath(x)[0].itertext())) for k,x in selectors.items()}
+assert all(v['observed'] for v in proofs.values())
+assert all(w in proofs['cleaved']['text'] for w in ['wild-type and mutant','factor Xa','pCM2','BL21(DE3)'])
+assert '0.53 atom/subunit' in proofs['metal']['text'] and 'examined in parallel as a control' in proofs['metal']['text']
+assert all(w in proofs['earlier']['text'] for w in ['Cu','Cd','reported'])
+assert t.xpath(selectors['reference40']+'//a[contains(@href,"4306747")]')
+save('fresh-correction-original-proofs.json',proofs)
+def ev(key,text):
+    assert len(text)<=400
+    return dict(reference_id='PMID:15995211',source_assertion=text,source_locator='XPath '+selectors[key])
+newcontexts=[
+ dict(key='FucO-prior-Cu-Cd-report',text='The 2005 source reports earlier Cu(II)/Cd(II) FucO inhibition and cites PMID4306747. Retained evidence for the older paper is abstract/landing material; its full experimental body was not inspected. Figure 4 tests Zn/Fe, so no Cu/Cd dose, EG oxidation effect, binding mechanism or new causal edge is asserted.',evidence=[
+     ev('earlier','The 2005 discussion reports earlier FucO inhibition by Cu(II) and Cd(II), citing reference 40. This is prior-work context; the adjacent Figure 4 experiment addresses Zn/Fe.'),
+     ev('reference40','Reference 40 links the earlier oxidoreductase study to PMID4306747. This citation identifies the prior report; it does not supply a freshly inspected older experimental body.')]),
+ dict(key='FucO-cleaved-WT-solution-metal-comparator',text='The 0.53 Fe atom/subunit WT solution comparator occurs in a site-directed-mutant comparison. Methods assign those WT/mutant preparations to pCM2 GST/factor-Xa cleavage in BL21(DE3). This is an explicit Methods/Results attribution, distinct from pCM1 His6 crystal-site evidence, and is not universal iron occupancy.',evidence=[
+     ev('cleaved','Methods state that WT and mutant FucO preparations for site-directed-mutagenesis studies used pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa to avoid the His6 tag.'),
+     ev('metal','Results compare D196L, H200A and H200F metal contents with WT examined in parallel, reporting 0.53 Fe atom/subunit for WT. Read with the preparation Methods, this supports the cleaved-WT comparator attribution, not His6 crystal occupancy.')])]
+ctx=read('ledgers/context-assertions.json')+newcontexts;save('ledgers/context-assertions.json',ctx)
+ledger=read('ledgers/evidence-original-selectors.json')
+matched=0
+for row in ledger:
+    if row['evidence']==oldevidence:row['evidence']=edge['evidence'][1];matched+=1
+assert matched==1
+for c in newcontexts:
+    for e in c['evidence']:
+        xp=e['source_locator'][6:]
+        ledger.append(dict(evidence=e,binding=source,selector_type='xpath',selector=xp,observed=[etree.tostring(x,encoding='unicode') for x in t.xpath(xp)]))
+save('ledgers/evidence-original-selectors.json',ledger)
+save('ledgers/edges.json',d['mechanistic_edges'])
+constructs=[dict(edge_id=e['id'],qualifier=q) for e in d['mechanistic_edges'] for q in e.get('endpoint_qualifiers',[])]
+save('ledgers/constructs.json',constructs)
+shutil.copyfile(A/'ledgers/source-bindings.json',C/'ledgers/source-bindings.json')
+for name in ['ledgers/participants.json','ledgers/reactions.json']:
+    if (A/name).exists():shutil.copyfile(A/name,C/name)
+cd=read('construct-source-dispositions.json');cd['qualifiers']=constructs
+cd['successor_correction']={'key':'eg-fuco-iron-occupancy-construct-conflation','crystal':'pCM1/pQE32 His6 in M15(pREP4); eg-025 crystal evidence only','solution':'pCM2/pGEX3X GST/factor-Xa-cleaved WT and mutants in BL21(DE3); 0.53 WT comparator','attribution':'Methods/Results contextual join, explicitly identified as such; no simultaneous mixed construct','evidence':newcontexts[1]['evidence']}
+save('construct-source-dispositions.json',cd)
+claims=read('claim-dispositions.json');claims['target_sha256']=sha(target)
+for row in claims['claims']:
+    if row['key']=='EG08-FucO-metal':
+        row['author_disposition']='One crystal Fe site remains on eg-025 with the His6 pCM1 qualifier. The 0.53 solution WT comparator is now separately contextualized via the Methods/Results cleaved-pCM2 join; historical numbering remains unchanged.'
+        row['context_assertion_keys'].append(newcontexts[1]['key'])
+    if row['key']=='EG09-Zn-Fe-competition':
+        row['context_assertion_keys'].append(newcontexts[0]['key'])
+        row['author_disposition']+=' Earlier Cu/Cd inhibition is retained as a 2005 prior-work report, not as part of its direct Zn/Fe experiment.'
+claims['correction_findings']=[dict(issue_key=f['issue_key'],context_assertion_keys=[c['key'] for c in newcontexts],record_description_paragraphs=[4],record_edges=['eg-025'] if 'occupancy' in f['issue_key'] else [],status='author_correction_prepared_pending_independent_successor_review') for f in json.loads((R/'findings.json').read_text())]
+save('claim-dispositions.json',claims)
+des=read('description-source-crosswalk.json');assert des[3]['text']==oldparagraph;des[3]['text']=paragraphs[3];des[3]['successor_context_keys']=[c['key'] for c in newcontexts];des[3]['successor_evidence']=[e for c in newcontexts for e in c['evidence']];save('description-source-crosswalk.json',des)
+refs=read('reference-coverage.json')
+for row in refs:
+    if row['reference']['id']=='PMID:15995211':row['uses'].extend(dict(context=c['key'],role='bounded non-graph assertion') for c in newcontexts)
+save('reference-coverage.json',refs)
+for n in ['source-conflicts-and-limits.json','source-acquisition-crosswalk.json']:
+    x=read(n);x['successor_context_corrections']=newcontexts;save(n,x)
+report=(A/'RESEARCH.md').read_text()
+report=report.replace('Fe occupancy differs from crystal site count.', 'The pCM1 His6 crystal Fe site is now separated from the solution WT 0.53 comparator, attributed contextually to cleaved pCM2 WT/mutant preparations by joining the exact Methods and Results. Earlier Cu/Cd inhibition is retained only as the 2005 report of prior work; the older full experimental body was not inspected, and Figure 4 supplies Zn/Fe evidence only.')
+report+='\nThis immutable successor addresses the two exact minor findings in the sealed independent review. It changes three record string fields: description, eg-025 evidence[1].source_assertion and eg-025 endpoint_qualifiers[0].description. All 82 edge identities, 90 references, 61 named identifiers and 21 qualifier identities remain exact. The prior author packet, original review and root canonical build remain historical inputs, not silently retargeted tests. Independent acceptance and root maintained finalization remain pending.\n'
+(C/'RESEARCH.md').write_text(report)
+def delta(a,b,path=''):
+    if type(a)!=type(b):return [dict(path=path,before=a,after=b)]
+    if isinstance(a,dict):
+        assert a.keys()==b.keys(),path
+        return sum((delta(a[k],b[k],path+'/'+k) for k in a),[])
+    if isinstance(a,list):
+        assert len(a)==len(b),path
+        return sum((delta(x,y,path+'/'+str(i)) for i,(x,y) in enumerate(zip(a,b))),[])
+    return [] if a==b else [dict(path=path,before=a,after=b)]
+changes=delta(old,d)
+assert {x['path'] for x in changes}=={'/description','/mechanistic_edges/24/evidence/1/source_assertion','/mechanistic_edges/24/endpoint_qualifiers/0/description'}
+save('record-semantic-delta.json',dict(old_target=bind(oldpath),target=bind(target),field_changes=changes,unchanged_edges=81,changed_edge_identity_preserved='eg-025',declared_reference_objects_exact=old['references']==d['references'],named_identity_fields_exact=all(old[k]==d[k] for k in ['id','label','participants','reactions','taxa']),root_full_build_target='Original c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704; this correction was not its input. Production selector comparison will establish the bounded bridge.'))
+save('dispositions.json',dict(predecessor_review=bind(R/'handoff.json'),findings=[dict(issue_key=f['issue_key'],severity=f['severity'],status='author_fix_prepared_pending_independent_reassessment',source_proof=f['source_proof'],acceptance_checks=f['acceptance_checks'],context_keys=[c['key'] for c in newcontexts],preservation='No source-body, reference, declared identity, edge identity, reaction side, assembly count or authority input changes') for f in json.loads((R/'findings.json').read_text())]))
+print(json.dumps(dict(target=bind(target),field_changes=len(changes),edges=len(d['mechanistic_edges']),references=len(d['references']),context_assertions=len(ctx),selector_observations=len(ledger))))

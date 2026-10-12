@@ -1,0 +1,77 @@
+"""Seal this external authority proposal packet; never writes maintained state."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+
+O = Path(__file__).parent
+
+
+def bind(path):
+    path = Path(path)
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest}
+
+
+def save(name, data):
+    (O / name).write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+
+def main():
+    assert not (O / 'handoff.json').exists(), 'Packet already sealed; use a separate successor'
+    assert json.loads((O / 'native-checks.json').read_bytes())['status'] == 'passed'
+    assert json.loads((O / 'final-checks.json').read_bytes())['status'] == 'passed'
+    for path in O.glob('*.py'):
+        compile(path.read_bytes(), str(path), 'exec')
+    history = json.loads((O / 'validation-history.json').read_bytes())
+    history['successful_receipts'].extend([
+        {'terminal': 'e09b37', 'exit_code': 0, 'command': 'check_native_proposals.py',
+         'result': 'Final replay: 37 checks passed, including five negative controls'},
+        {'terminal': '869b3b', 'exit_code': 0, 'command': 'finish_packet.py',
+         'result': '55 original bindings recorded; all non-SQL bodies freshly rehashed'}])
+    save('validation-history.json', history)
+    inventory_path = O / 'package-inventory.txt'
+    inventory_path.write_text('')
+    command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(O)]
+    result = subprocess.run(command, check=True, capture_output=True)
+    paths = sorted(Path(p.decode()) for p in result.stdout.split(b'\0') if p)
+    paths = [p for p in paths if p.name not in {'artifact-manifest.json', 'handoff.json'}]
+    inventory_path.write_text('\n'.join(str(p.relative_to(O)) for p in paths) + '\n')
+    artifacts = []
+    for path in paths:
+        item = bind(path)
+        item.update(relative_path=str(path.relative_to(O)), resolved_path=str(path.resolve()), symlink=path.is_symlink())
+        artifacts.append(item)
+    save('artifact-manifest.json', {'scope': 'All hidden/ignored/followed package files except manifest and handoff; original-cache symlinks bind complete unchanged external originals',
+                                  'inventory_command': command, 'artifact_count': len(artifacts), 'artifacts': artifacts})
+    for item in artifacts:
+        assert all(bind(item['path'])[k] == item[k] for k in ('path', 'bytes', 'sha256'))
+    proposals = {n: bind(O / 'proposals' / n) for n in ('sources.json', 'ontology.json', 'manifest.json', 'rhea-updates.json')}
+    save('handoff.json', {
+        'status': 'sealed_original_derived_authority_proposals_pending_root_full_canonical_build',
+        'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'artifact_manifest': bind(O / 'artifact-manifest.json'), 'artifact_count': len(artifacts),
+        'report': bind(O / 'REPORT.md'), 'accepted_prospective_base': bind('/private/tmp/pathwaymech-next-228-root-canonical-review-intake-20261012.json'),
+        'proposals': proposals, 'preservation': bind(O / 'authority-preservation.json'),
+        'source_cache_copy_plan': bind(O / 'source-cache-copy-plan.json'), 'source_cache_observation': bind(O / 'source-cache-observation.json'),
+        'originals': bind(O / 'all-original-bindings.json'), 'original_count': 55,
+        'selection': bind(O / 'working-labels.json'), 'selected_identifiers': 61,
+        'proposed_counts': {'source_terms': 2454, 'source_metadata': 587, 'ontology_terms': 1957,
+                            'ontology_metadata': 5, 'source_manifest_entries': 750, 'rhea_selectors': 22},
+        'additions': {'source_terms': 21, 'source_metadata': 12, 'ontology_terms': 6,
+                      'manifest_entries': 12, 'rhea_selectors': 2, 'cache_originals': 11, 'existing_ZIP_reused': 1},
+        'checks': [bind(O / name) for name in ['native-checks.json', 'source-order-check.json', 'interface-locator-checks.json',
+                   'final-checks.json', 'uniprot-frozen-vs-fresh.json', 'validation-history.json']],
+        'full_canonical_build': False, 'scientific_acceptance': False, 'maintained_adoption': False,
+        'writes': 'External packet only; no maintained, shared-cache, Git, GitHub, install or sync mutations',
+        'remaining_root_tasks': ['Review sealed authority proposals and exact-original copy plan.',
+                                'Combine with independently sealed author record; run root-owned full native canonical build on actual accepted prospective MG outputs.',
+                                'Independently assess scientific scope and preserve predecessor objects; adopt only after required root acceptance.']})
+    print(json.dumps({'handoff': bind(O / 'handoff.json'), 'manifest': bind(O / 'artifact-manifest.json'),
+                      'artifact_count': len(artifacts), 'status': 'sealed'}))
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,15 @@
+from pathlib import Path
+import json,hashlib,os,subprocess,datetime
+O=Path(__file__).parent;L=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012');R=Path('/private/tmp/pathwaymech-next-226-20261012')
+def h(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+assert h(L/'handoff.json')=='52d19a0dbca309c2a5bc42eec2ae8188902e31da4112d143ce8fec4838595ec8';assert h(L/'artifact-manifest.json')=='4e585854345e0807da2eb7697754b2ed019bed412aa3a24b40e1f68610aa4203'
+m=json.load(open(L/'artifact-manifest.json'))['files'];assert len(m)==52
+for x in m:
+ p=L/x['path'];assert h(p)==x['sha256'] and p.stat().st_size==x['bytes']
+a={str((Path(d)/n).relative_to(L)) for d,ds,fs in os.walk(L,followlinks=True) for n in fs};assert a=={x['path'] for x in m}|{'handoff.json','artifact-manifest.json'}
+def git(*a):return subprocess.check_output(['git',*a],cwd=R,text=True).strip()
+prospective=[]
+for p,expect,status in [(Path('/private/tmp/pathwaymech-next-227-science-correction-v2-20261012/draft/l-lyxose-degradation.yaml'),'8ca651dc70a0dda2620ba09719a4e6861517d39f1736ca1971f283900accc121','scientifically and canonically accepted prospective'),(Path('/private/tmp/pathwaymech-next-228-author-20261012/draft/mannosylglycerate-degradation.yaml'),'08fe9a6f3f0da2f66c4dc6cd68fc33fbe51a38770b6eeee743751f05f019d088','authored, science corrections pending')]:
+ assert h(p)==expect;prospective.append({'path':str(p),'sha256':expect,'status':status})
+j={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'lead_handoff':str(L/'handoff.json'),'lead_handoff_sha256':h(L/'handoff.json'),'lead_manifest_sha256':h(L/'artifact-manifest.json'),'lead_artifacts_verified':52,'hidden_ignored_followed_inventory_exact':True,'observed_base':{'root':str(R),'HEAD':git('rev-parse','HEAD'),'tree':git('rev-parse','HEAD^{tree}'),'main':git('rev-parse','main'),'main_tree':git('rev-parse','main^{tree}'),'tracked_status':git('status','--porcelain','--untracked-files=no')},'prospective_records':prospective,'source_exhaustion':False}
+(O/'derived/intake.json').write_text(json.dumps(j,indent=2)+'\n');print(json.dumps(j,indent=2))

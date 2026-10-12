@@ -1,0 +1,125 @@
+"""Assemble a current scoped successor without rewriting its historical predecessor."""
+import copy
+import hashlib
+import json
+import os
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-229-whitespace-review-20261012')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+DOSSIER = 'research/pathway_additions/2026-10-12-next-229/whitespace-correction'
+PREDECESSOR = '20261012T054951Z-ethylene-glycol-degradation'
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def bind(path):
+    body = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
+
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+
+def write(path, document):
+    with Path(path).open('x') as stream:
+        json.dump(document, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+proof_path = ROOT / DOSSIER / 'execution/proof/proof.json'
+gates_path = ROOT / DOSSIER / 'execution/corrective-gates/execution.json'
+proof, gates = load(proof_path), load(gates_path)
+assert proof['status'] == gates['status'] == 'passed'
+old_path = ROOT / 'reviews/structured' / PREDECESSOR / 'review.yaml'
+assert bind(old_path)['sha256'] == '5959e8090e90823cdf6570366b29704f904c044721bf1de46dbfa3959f4d4774'
+old = yaml.safe_load(old_path.read_text())
+assert len(old['assessments']) == 90 and not old['findings']
+OUT.mkdir()
+paths = {row['path'] for row in old['source']['inputs']}
+paths.update(str(p.relative_to(ROOT)) for p in (ROOT / DOSSIER).rglob('*') if p.is_file())
+paths.update(str(p.relative_to(ROOT)) for p in (ROOT / 'history/records/ethylene-glycol-degradation').rglob('*') if p.is_file())
+paths.update(str(p.relative_to(ROOT)) for p in old_path.parent.iterdir() if p.is_file())
+write(OUT / 'inspect-inputs.json', sorted(paths))
+command = [PYTHON, '-B', '/private/tmp/pathwaymech-next-229-finalization-preparation-20261012/inspect_with_inputs.py',
+    '--input-list', str(OUT / 'inspect-inputs.json'), '--targets', '/private/tmp/pathwaymech-next-229-finalization-preparation-20261012/targets.yaml']
+started = now()
+r = subprocess.run(command, cwd=ROOT, capture_output=True,
+    env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONPATH': str(ROOT / 'src')})
+(OUT / 'inspect.stdout').write_bytes(r.stdout)
+(OUT / 'inspect.stderr').write_bytes(r.stderr)
+write(OUT / 'inspection.json', {'command': command, 'started_at': started, 'finished_at': now(),
+    'exit_code': r.returncode, 'stdout': bind(OUT / 'inspect.stdout'), 'stderr': bind(OUT / 'inspect.stderr')})
+r.check_returncode()
+inspection = json.loads(r.stdout)
+doc = copy.deepcopy(old)
+doc['source'] = inspection['source']
+doc['targets'] = inspection['targets']
+doc['started_at'] = started
+doc['finished_at'] = now()
+doc['review_id'] = datetime.fromisoformat(doc['finished_at']).strftime('%Y%m%dT%H%M%SZ') + '-ethylene-glycol-bibliography'
+doc['title'] = 'Ethylene glycol degradation: bibliography correction and preserved scientific review'
+doc['scope']['selection'] = 'Exact MetaCyc:PWY0-1280 SHA256 c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de'
+doc['scope']['description'] = 'Full82-edge record assessed by explicit unchanged scientific inheritance; current root scope is two bibliography title suffixes, corrective history/rendering and exact preservation.'
+doc['reviewer'] = {'identity': 'Codex /root', 'kind': 'agent', 'independence': 'self_review',
+    'independence_basis': 'Root applied two bibliography title trims and assesses their exact semantic/derived bridge. All90 prior assessments are preserved as inherited observations; independent source science remains explicitly inherited, not newly re-performed.'}
+doc['summary'] = 'Two trailing-whitespace title suffixes are corrected for issue449. Current native/strict/identifier, render/export/site checks and exact preservation passed. All science,82edge identities,90references and21qualifiers remain; four new EG reference_metadata cells and current curation-history rendering are the only derived correction scope. Earlier2394passed/3skipped full tests remain a historical8e52 observation.'
+doc['related_reviews'] = [{'repository': 'CultureBotAI/PathwayMech', 'review_id': PREDECESSOR,
+    'relationship': 'Preserved predecessor; all90 assessments inherited through exact two-title semantic and derived-output bridge.'}]
+new_evidence = [
+    ('bibliography-predecessor', 'prior_review', str(old_path.relative_to(ROOT)), 'Exact unchanged saved predecessor; historical source and whole-test scope retained.'),
+    ('bibliography-proposal', 'validation', DOSSIER + '/proposal/receipt.json', 'External exact two-title/collector/derived-output comparison; not a maintained execution.'),
+    ('bibliography-proof', 'validation', str(proof_path.relative_to(ROOT)), 'Root actual post-correction preservation including747old and11new sourcecache originals, unchanged nodes/context/allotheredgecells and graph SVG.'),
+    ('bibliography-gates', 'validation', str(gates_path.relative_to(ROOT)), 'Actual current native/strict/identifier, rendering, KGX and site-current commands.'),
+    ('bibliography-history', 'validation', DOSSIER + '/execution/adoption/history-execution.json', 'Actual native EDIT curation completed before corrective render; review adds no history.'),
+    ('bibliography-staging-failure', 'validation', DOSSIER + '/execution/failed-staging/execution.json', 'Actual pre-correction staged check failed; no commit happened. This observation is retained, not relabelled a successful gate.'),
+]
+for identifier, kind, path, summary in new_evidence:
+    doc['evidence'].append({'evidence_id': identifier, 'kind': kind, 'reference': path,
+        'accessed_at': now(), 'snapshot_sha256': bind(ROOT / path)['sha256'], 'support': 'supports', 'summary': summary})
+for check in doc['checks']:
+    check['name'] = 'Historical predecessor: ' + check['name']
+    check['scope_note'] = 'Actual earlier8e52 observation before two title trims and corrective history. Retained as historical evidence; not a fresh command or assertion of current input bytes.'
+for row in gates['receipts']:
+    assert row['exit_code'] == 0
+    doc['checks'].append({'check_id': 'bibliography-' + row['name'], 'name': 'Current corrective ' + row['name'],
+        'status': 'passed', 'required': True, 'target_ids': ['MetaCyc:PWY0-1280'],
+        'summary': 'Actual current corrective command passed; exact streams and timestamps retained.',
+        'command': ' '.join(row['command']), 'exit_code': 0, 'evidence_ids': ['bibliography-gates'],
+        'scope_note': 'Currentc247 title successor; does not claim a repeated full suite.'})
+doc['checks'].append({'check_id': 'bibliography-preservation', 'name': 'Current exact bibliography/representation preservation',
+    'status': 'passed', 'required': True, 'target_ids': ['MetaCyc:PWY0-1280'],
+    'summary': 'All protected oldfiles/sourcecache originals retained; exactly two title strings and four new EG metadata cells changed. Nodes, all other11469edge cells, complete SVG and sourcecontext bytes unchanged; pre-render EDIT history exact.',
+    'evidence_ids': ['bibliography-proof']})
+doc['assessments'].append({'assessment_id': 'external-issue-449', 'area': 'consistency', 'topic': 'bibliography-title-whitespace',
+    'outcome': 'supported', 'target_ids': ['MetaCyc:PWY0-1280'],
+    'summary': 'Issue449 correction supported: exactly two bibliography title suffixes trimmed. Originalsource bodies/IDs/URL/version/hash, scientific statements, edges/qualifiers and canonical collector identities unchanged. Current generatedpage has no trailing whitespace; staged-diff retry remains later. Externalissue disposition is recorded here without fabricating a native predecessor finding.',
+    'evidence_ids': ['bibliography-predecessor', 'bibliography-proposal', 'bibliography-proof', 'bibliography-gates', 'bibliography-history', 'bibliography-staging-failure']})
+doc['links'] = list(dict.fromkeys(doc['links'] + ['https://github.com/CultureBotAI/PathwayMech/issues/449']))
+doc['limitations'] = [
+    'Root self-review of two title trims and integration. Full biological science is explicitly inherited from the saved predecessor and its independent original/successor source reviews; no new all-literature review.',
+    *[x for x in old['limitations'] if x.startswith('Older unavailable')],
+    'Full2394passed/3skipped tests and earlier whole gates ran on historical8e52 before this correction. They were not rerun for two bibliography title trims; current corrective checks are separately bound.',
+    'The graph SVG is unchanged from root-viewed predecessor; no new browser focus/keyboard/interaction exercise.',
+    'Native persistence/check, final staging, PR/adversarial review, hostedCI, merge and issue closure follow this observation; no future success is claimed.',
+    'Source exhaustion is false; public-release licensing remains separate.',
+]
+doc['notes'] = ['All90 predecessor assessments remain exactly inherited through the current bridge.',
+    'The failed staged check and external proposal/proof helper-assumption failures are retained; none is a current successful gate.',
+    'Issue449 was not in the saved predecessor findings, so no fabricated native previous_occurrences or terminal finding is created.',
+    'Protocol prose used MODIFY; actual supported native history event EDIT was used before render. Review persistence adds no history.']
+assert doc['assessments'][:90] == old['assessments'] and len(doc['assessments']) == 91
+assert not doc['findings'] and doc['completion'] == 'completed' and doc['verdict'] == 'pass_with_limitations'
+write(OUT / 'assembled-review.json', doc)
+write(OUT / 'assembly.json', {'status': 'pending_root_read_and_native_save', 'review': bind(OUT / 'assembled-review.json'),
+    'inspection': bind(OUT / 'inspection.json'), 'predecessor': bind(old_path), 'proof': bind(proof_path),
+    'assessment_count': len(doc['assessments']), 'check_count': len(doc['checks']), 'input_count': len(doc['source']['inputs'])})
+print((OUT / 'assembly.json').read_text())

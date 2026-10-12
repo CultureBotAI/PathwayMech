@@ -1,0 +1,19 @@
+"""Compare frozen selected identity facets with full fresh issuing entries, without replacement."""
+from pathlib import Path
+import json,hashlib,sys
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+rows=json.loads((O/'source-original-bindings.json').read_bytes());entry=next(r for r in rows if r['entry']['key']=='uniprot-ecoli-reviewed-cofactors');frozen={x['primaryAccession']:x for x in json.loads(Path(entry['original']['path']).read_bytes())['results']};frozen_terms={t[0]:t for t in sb.source_terms('uniprot',Path(entry['original']['path']))}
+projections=json.loads((O/'uniprot-source-projections.json').read_bytes());output=[]
+for row in projections:
+ acc=row['id'].split(':')[1];p=Path(row['original']['path']);d=json.loads(p.read_bytes());fresh=next(x for x in d.get('results',[d]) if x['primaryAccession']==acc);old=frozen[acc];freshterm=next(t for t in sb.source_terms('uniprot',p) if t[0]==row['id']);oldterm=frozen_terms[row['id']]
+ oldt=old.get('organism',{}).get('taxonId');newt=fresh['organism']['taxonId'];assert oldt==newt==83333
+ identity={'accession':acc,'label':oldterm[1],'synonyms':sorted(set(oldterm[2])),'taxon_id':oldt};newidentity={'accession':acc,'label':freshterm[1],'synonyms':sorted(set(freshterm[2])),'taxon_id':newt}
+ comments={key:{'frozen':[x for x in old.get('comments',[]) if x['commentType']==key],'fresh':[x for x in fresh.get('comments',[]) if x['commentType']==key]} for key in ['COFACTOR','CAUTION']}
+ changes={key:v for key,v in comments.items() if v['frozen']!=v['fresh']}
+ output.append({'id':row['id'],'frozen_original':entry['original'],'frozen_source_metadata':entry['entry'],'fresh_original':row['original'],'fresh_entry_audit':fresh.get('entryAudit'),'frozen_entry_audit_present':'entryAudit' in old,'frozen_identity':identity,'fresh_identity':newidentity,'identity_facets_equal':identity==newidentity,'identity_facet_changes':{k:{'frozen':identity[k],'fresh':newidentity[k]} for k in identity if identity[k]!=newidentity[k]},'common_annotation_changes':changes,'full_protein_description_equal':old.get('proteinDescription')==fresh.get('proteinDescription'),'fields_missing_from_frozen':sorted(set(fresh)-set(old)),'frozen_comments_selected_by_request':['COFACTOR','CAUTION'],'comparison_scope':'Identity/label/synonyms/taxon independently compared; selected common annotation types compared. Frozen field-limited response has no full scientific-content equality claim. Fresh full source remains scientific evidence, not a release refresh or first-source override.'})
+(O/'uniprot-frozen-vs-fresh.json').write_text(json.dumps({'status':'comparison_complete_preserve_native_order','identities':output,'identity_changes':[x['id'] for x in output if not x['identity_facets_equal']],'annotation_changes':[x['id'] for x in output if x['common_annotation_changes']],'whole_scientific_content_equal_claimed':False},indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'identities':len(output),'identity_changes':[x['id'] for x in output if not x['identity_facets_equal']],'annotation_changes':[x['id'] for x in output if x['common_annotation_changes']]}))

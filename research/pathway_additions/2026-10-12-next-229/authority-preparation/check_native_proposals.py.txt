@@ -1,0 +1,45 @@
+"""Bounded checks of selected original authorities; never a full canonical build."""
+from pathlib import Path
+import copy,datetime,hashlib,json,sys
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+results=[]
+def check(name,test):
+ test();results.append({'name':name,'status':'passed'})
+def require(test,message='condition failed'):assert test,message
+def rejects(name,call,expected):
+ try:call()
+ except ValueError as e:
+  assert expected in str(e),(expected,str(e));results.append({'name':name,'status':'rejected_as_required','actual_exception':str(e)})
+ else:raise AssertionError(name+' unexpectedly accepted')
+source=json.loads((O/'incremental-source-build.json').read_bytes());ontology=json.loads((O/'incremental-ontology-build.json').read_bytes());records=O/'bounded-selection';manifest=O/'incremental-source-manifest.json'
+check('native selected source replay exact',lambda:require(sb.build_snapshot(manifest,records,O/'original-cache')==source))
+for row in json.loads((O/'source-original-bindings.json').read_bytes()):
+ check('original SHA '+row['entry']['key'],lambda row=row:require(bind(row['original']['path'])==row['original']))
+check('selected source identities count30',lambda:require(len(source['terms'])==30))
+check('selected source metadata respects original ordering17',lambda:require(len(source['sources'])==17))
+check('all selected chemical/ontology labels from native extraction',lambda:require(len(ontology['terms'])==31))
+check('frozen/fresh identity comparison explicit',lambda:require(not json.loads((O/'uniprot-frozen-vs-fresh.json').read_bytes())['whole_scientific_content_equal_claimed']))
+genes=json.loads((O/'gene-identity-bridges.json').read_bytes());check('exact MG1655 two core gene joins',lambda:require(len(genes['selected'])==2 and all(g['taxon']=='NCBITaxon:511145' and g['exact_geneid_locus_refseq_join'] for g in genes['selected'])))
+check('Shigella gene not selected',lambda:require(genes['cross_species_negative']['taxon']=='NCBITaxon:624' and not genes['cross_species_negative']['selected']))
+u='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='
+rejects('actual exact gene body wrong requested gene',lambda:sb._ncbi_gene_record(O/'raw/Entrez-947273-exact.xml',u+'945672&rettype=xml'),'native ID and requested ID disagree')
+rejects('original multigene response not single-gene authority',lambda:sb._ncbi_gene_record(P/'raw/NCBI-genes.xml',u+'947273&rettype=xml'),'exactly one direct Entrezgene')
+pb=json.loads((O/'pathbank-original-probe.json').read_bytes());a=Path(pb['original_archive']['path']);url='https://pathbank.org/downloads/pathbank_primary_biopax.zip'
+check('whole ZIP native three named identities',lambda:require({x[0] for x in sb._pathbank_archive_terms(a,url=url,sha256=pb['original_archive']['sha256'],archive=pb['archive']) if '/' not in x[0]}=={'PathBank:SMP0002105','PathBank:SMP0002052','PathBank:SMP0000847'}))
+child=copy.deepcopy(pb['archive']);child['root']='SMP0002052'
+rejects('native opaque child cannot become root definition',lambda:sb._pathbank_archive_terms(a,url=url,sha256=pb['original_archive']['sha256'],archive=child),'primary pathway definition')
+wrong=copy.deepcopy(pb['archive']);wrong['member_bytes']+=1
+rejects('wrong bound member byte count',lambda:sb._pathbank_archive_terms(a,url=url,sha256=pb['original_archive']['sha256'],archive=wrong),'bound byte count')
+rejects('unsupported native phospho-ArcA shape retained',lambda:list(sb.source_terms('ecocyc-protein-xml',P/'raw/ECOLI-PHOSPHO-ARCA.xml',url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PHOSPHO-ARCA',version='27.0')),'exactly one direct parent')
+assemblies=json.loads((O/'assembly-native-bridges.json').read_bytes())
+for a in assemblies:
+ if a['id'] in {'EcoCyc:CPLX0-226','EcoCyc:CPLX0-7650','EcoCyc:MONOMER0-160','EcoCyc:PC00027'}:check('no invented component coefficient '+a['id'],lambda a=a:require(all(x['coefficient'] is None for x in a['components'])))
+sides=json.loads((O/'rhea-side-locators.json').read_bytes())['side_assertions'];check('all11 exact core chemical sides',lambda:require(len(sides)==11 and {x['reaction'] for x in sides}=={'RHEA:27631','RHEA:20002'}))
+check('event2 explicit native proton coefficient2',lambda:require(len([x for x in sides if x['reaction']=='RHEA:20002' and x['directional_predicate']=='products' and x['chemical']=='CHEBI:15378' and x['coefficient']==2 and x['coefficient_predicate'].endswith('contains2')])==1))
+check('no forced mercury identity',lambda:require(all(i not in ontology['terms'] for i in ['CHEBI:49644','CHEBI:20435','CHEBI:28886'])))
+(O/'native-checks.json').write_text(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed','scope':'selected native authority and original-join checks; no graph scope/scientific acceptance or full canonical build','checks':results,'positive_checks':sum(x['status']=='passed' for x in results),'negative_controls':sum(x['status']=='rejected_as_required' for x in results),'mutations':'external packet only'},indent=2)+'\n')
+print(json.dumps({'checks':len(results),'negative_controls':sum(x['status']=='rejected_as_required' for x in results),'status':'passed'}))

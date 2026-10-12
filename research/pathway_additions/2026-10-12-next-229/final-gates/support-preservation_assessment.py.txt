@@ -1,0 +1,51 @@
+"""Assess an actual preservation receipt without approving display differences."""
+import argparse
+from support import *
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--gates', required=True, type=Path)
+    parser.add_argument('--preservation', required=True, type=Path)
+    parser.add_argument('--output', required=True, type=Path)
+    args = parser.parse_args()
+    verify_support()
+    out = external_new(args.output)
+    assert_head(); gates, inputs = verify_gates(args.gates)
+    observed = load(args.preservation)
+    assert observed['target_sha256'] == TARGET_SHA
+    assert observed['gate_receipt'] == bind(args.gates)
+    assert observed['old_record_count'] == observed['old_page_count'] == 229
+    for key in ('baseline', 'baseline_kgx'):
+        verify(observed[key])
+    baseline = load(observed['baseline']['path'])
+    assert baseline['head'] == BASE and baseline['tree'] == TREE
+    assert observed['old_review_bundles'] == baseline['counts']['structured_review_bundles']
+    for group, values in observed['retained_files'].items():
+        assert values['checked'] == len(baseline[group]) and not values['changed_or_missing']
+        for row in baseline[group]:
+            verify(row, ROOT / row['relative_path'])
+    assert observed['old_edge_cells_exact'] and not observed['lost_contexts']
+    for field in ('unexpected_context_nodes', 'unapproved_old_file_changes', 'changed_old_cache_files'):
+        assert not observed[field]
+    assert observed['new_edges'] == 82
+    # Report exact node display delta; this helper never issues its own approval.
+    for field in ('approved_node_display_delta', 'approved_extra_files'):
+        if observed.get(field):
+            verify(observed[field])
+    write(out, {'status': 'passed' if observed['status'] == 'passed' else 'needs_root_review',
+        'at': now(), 'target_sha256': TARGET_SHA, 'preservation': bind(args.preservation),
+        'gate_receipt': bind(args.gates), 'gate_inputs': gates['inputs'],
+        'full_current_nongenerated_inventory_verified': True,
+        'full_render_history_inventory_verified': True,
+        'old_record_count': 229, 'old_page_count': 229,
+        'old_review_bundles': observed['old_review_bundles'],
+        'old_edges': observed['old_edges'], 'old_source_contexts': observed['old_source_contexts'],
+        'new_edges': observed['new_edges'], 'new_nodes': observed['new_nodes'],
+        'new_source_contexts': observed['new_source_contexts'],
+        'node_display_delta': observed['node_display_delta'],
+        'unresolved_problems': observed['problems'],
+        'scope': 'Adds exact current gate-input and full-history checks to sealed preservation helper. No new display-cell or extra-file approval, no fresh scientific rereview and no maintained writes.'})
+
+if __name__ == '__main__':
+    main()

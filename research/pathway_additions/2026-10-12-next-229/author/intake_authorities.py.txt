@@ -1,0 +1,28 @@
+from pathlib import Path
+import hashlib,json,shutil,sys,yaml
+A=Path(__file__).parent;H=Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012');B=Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+assert sha(H/'handoff.json')=='eac1603ffb4d1b8879de82b5a308593aa00c5ca4fbbd986ff5cfcb2cccd6e491'
+assert sha(H/'artifact-manifest.json')=='01975ada726d2e59bfb1c5ec4351e9d2013d78df585541964ff9df65b8a022ac'
+m=json.loads((H/'artifact-manifest.json').read_text());checked=[]
+for x in m['artifacts']:
+ p=Path(x['path']);assert p.stat().st_size==x['bytes'] and sha(p)==x['sha256'],p;checked.append(x)
+for n in ['sources','ontology']:
+ old=json.loads((B/(n+'.json')).read_text());new=json.loads((H/'proposals'/(n+'.json')).read_text())
+ for section in ['sources','terms']:assert all(new[section][k]==v for k,v in old[section].items())
+old=json.loads((B/'manifest.json').read_text());new=json.loads((H/'proposals/manifest.json').read_text());assert new[:len(old)]==old
+oldr=json.loads((B/'rhea-updates.json').read_text());newr=json.loads((H/'proposals/rhea-updates.json').read_text());assert newr['ids'][:len(oldr['ids'])]==oldr['ids']
+copy=A/'authority-replay'
+if not copy.exists():shutil.copytree(H,copy,symlinks=True,ignore=shutil.ignore_patterns('artifact-manifest.json','handoff.json'))
+root=A/'identifier-root';(root/'data/pathways').mkdir(parents=True,exist_ok=True);(root/'data/identifier_authorities').mkdir(parents=True,exist_ok=True);(root/'conf').mkdir(exist_ok=True)
+shutil.copyfile(A/'draft/ethylene-glycol-degradation.yaml',root/'data/pathways/ethylene-glycol-degradation.yaml')
+for n in ['sources.json','ontology.json']:shutil.copyfile(H/'proposals'/n,root/'data/identifier_authorities'/n)
+shutil.copyfile(A/'runtime/conf/identifier_policy.yaml',root/'conf/identifier_policy.yaml')
+sys.path.insert(0,str(A/'runtime/src'))
+from pathwaymech.identifiers import identifier_errors
+errs=identifier_errors(root);assert not errs,errs
+d=yaml.safe_load((A/'draft/ethylene-glycol-degradation.yaml').read_text());nodes=[d]+d['participants']+d['reactions']+d['taxa'];labels=json.loads((H/'working-labels.json').read_text());assert {n['id'] for n in nodes}==set(labels)
+assert all(n['label']==labels[n['id']] for n in nodes),[(n['id'],n['label'],labels[n['id']]) for n in nodes if n['label']!=labels[n['id']]]
+result=dict(authority_handoff_sha256=sha(H/'handoff.json'),manifest_sha256=sha(H/'artifact-manifest.json'),verified_artifacts=len(checked),all_prior_objects_preserved=True,target_sha256=sha(A/'draft/ethylene-glycol-degradation.yaml'),named_nodes=len(nodes),selected_label_equality='all exact',identifier_errors=errs,provisional_status='Accepted prospective MG plus original-derived EG incremental proposals. EG full canonical build, scientific acceptance and maintained integration pending.',replay_copy=str(copy),copied_source_bindings=checked)
+(A/'authority-intake.json').write_text(json.dumps(result,indent=2)+'\n');print(len(checked),'authority artifacts verified;',len(nodes),'exact labels; identifiers passed')

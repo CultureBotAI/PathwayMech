@@ -1,0 +1,24 @@
+"""Acquire exact issuing originals externally; do not rewrite successful bodies."""
+import concurrent.futures,datetime,hashlib,json,urllib.request
+from pathlib import Path
+O=Path(__file__).parent
+jobs=[]
+for acc in ['P0ACK8','P03004','P0ACH5','P0A9E2','P0ACI0','P52044']:
+ jobs.append((f'UniProt-{acc}.json','https://rest.uniprot.org/uniprotkb/'+acc+'.json'))
+for gene in ['947273','945672']:
+ jobs.append((f'Entrez-{gene}-exact.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gene+'&rettype=xml'))
+for frame in ['PWY0-1280','GLYCOL-GLYOXDEG-PWY']:
+ jobs.append((f'META-{frame}.html','https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object='+frame))
+for frame in ['CAMP','FUCULOSE-1P']:
+ jobs.append((f'META-{frame}.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame))
+def fetch(job):
+ name,url=job;p=O/'raw'/name;assert not p.exists()
+ d={'url':url,'destination':str(p),'at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech authority research'}),timeout=40) as r:
+   b=r.read();d.update(status=r.status,response_url=r.url,content_type=r.headers.get('Content-Type'))
+  p.write_bytes(b);d.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+ except Exception as e:d.update(error=str(e),type=type(e).__name__)
+ print(name,d.get('status',d.get('error')),flush=True);return d
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:rows=list(pool.map(fetch,jobs))
+(O/'acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')

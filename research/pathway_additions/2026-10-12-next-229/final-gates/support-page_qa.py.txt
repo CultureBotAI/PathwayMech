@@ -1,0 +1,107 @@
+"""Read-only exact EG page/SVG checks and external static preview; visual review follows."""
+import argparse
+from html.parser import HTMLParser
+import re
+import subprocess
+import xml.etree.ElementTree as ET
+import yaml
+from support import *
+
+class Parsed(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.ids, self.links, self.text = [], [], []
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if 'id' in values:
+            self.ids.append(values['id'])
+        if values.get('href', '').startswith('#'):
+            self.links.append(values['href'][1:])
+    def handle_data(self, data):
+        self.text.append(data)
+
+def inspect_page(record, text):
+    parsed = Parsed(); parsed.feed(text)
+    assert len(parsed.ids) == len(set(parsed.ids)), 'Duplicate HTML IDs'
+    assert set(parsed.links) <= set(parsed.ids), 'Unresolved local anchors'
+    matches = re.findall(r'<svg\b[^>]*class="pathway-network-svg".*?</svg>', text, re.S)
+    assert len(matches) == 1
+    svg = ET.fromstring(matches[0])
+    links = list(svg.iter('{http://www.w3.org/2000/svg}a'))
+    edges = [e for e in links if 'graph-edge' in e.get('class', '').split()]
+    nodes = [e for e in links if 'graph-node' in e.get('class', '').split()]
+    native = [(e['subject'], e['predicate'], e['object']) for e in record['mechanistic_edges']]
+    actual = [(e.get('data-subject-id', e.get('data-subject')), e.get('data-predicate'),
+               e.get('data-object-id', e.get('data-object'))) for e in edges]
+    assert actual == native
+    assert [e.get('href') for e in edges] == ['#mechanism-edge-' + str(i + 1) for i in range(len(native))]
+    rendered = {e.get('data-base-node-id', e.get('data-node-id')) for e in nodes}
+    declared = {e['id'] for field in ('participants', 'reactions') for e in record[field]}
+    assert declared <= rendered
+    assert {x for edge in native for x in (edge[0], edge[2])} <= rendered
+    assert len({e.get('data-node-id') for e in nodes}) == len(nodes)
+    visible = ' '.join(' '.join(parsed.text).split())
+    qualifiers, uses = [], []
+    for edge in record['mechanistic_edges']:
+        uses.extend(edge['evidence'])
+        for qualifier in edge.get('endpoint_qualifiers', []):
+            qualifiers.append(qualifier)
+            uses.extend(qualifier.get('evidence', []))
+    for row in qualifiers:
+        assert ' '.join(row['description'].split()) in visible
+    for row in uses:
+        for field in ('source_assertion', 'quote'):
+            if row.get(field):
+                assert ' '.join(row[field].split()) in visible, field
+    for ref in record['references']:
+        assert ref['id'] in visible
+    return matches[0], {'html_ids': len(parsed.ids), 'fragment_links': len(parsed.links),
+        'display_nodes': len(nodes), 'unique_biological_graph_nodes': len(rendered),
+        'edges': len(edges), 'qualifiers': len(qualifiers), 'evidence_uses': len(uses),
+        'references': len(record['references']), 'native_ordered_triples_match': True,
+        'declared_component_coverage_complete': True, 'all_qualifier_evidence_text_present': True}
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--gates', required=True, type=Path)
+    parser.add_argument('--output', required=True, type=Path)
+    args = parser.parse_args()
+    assert_head(); gates = load(args.gates)
+    assert gates['base'] == BASE and gates['receipts'][0]['name'] == 'render'
+    render = gates['receipts'][0]
+    assert render['exit_code'] == 0 and render['cwd'] == str(ROOT)
+    verify(render['stdout']); verify(render['stderr'])
+    inputs_path = Path(gates.get('inputs', {}).get('path', args.gates.parent / 'inputs.json'))
+    gate_inputs = load(inputs_path)
+    assert_history(ROOT, gate_inputs['render_history_inputs'])
+    out = external_new(args.output)
+    record = yaml.safe_load((ROOT / TARGET_REL).read_bytes())
+    svg, counts = inspect_page(record, (ROOT / PAGE_REL).read_text())
+    assert (counts['edges'], counts['qualifiers'], counts['references'], counts['evidence_uses']) == (82, 21, 90, 190)
+    css_path = ROOT / 'src/pathwaymech/assets/pathway-network.css'
+    css = css_path.read_text().split('@media')[0]
+    for name, value in dict(re.findall(r'(--graph-[a-z]+):\s*(#[0-9a-fA-F]+)', css)).items():
+        css = css.replace('var(' + name + ')', value)
+    styled = svg.replace('>', '><style>' + css + '</style>', 1)
+    ET.fromstring(styled)
+    out.mkdir(); (out / 'original.svg').write_text(svg); (out / 'styled.svg').write_text(styled)
+    (out / 'gates-observation.json').write_bytes(args.gates.read_bytes())
+    command = ['/usr/local/bin/rsvg-convert', '-b', 'white', '-w', '1600', '-o', str(out / 'overview.png'), str(out / 'styled.svg')]
+    started = now(); result = subprocess.run(command, capture_output=True)
+    (out / 'preview.stdout').write_bytes(result.stdout); (out / 'preview.stderr').write_bytes(result.stderr)
+    receipt = {'status': 'passed' if result.returncode == 0 else 'failed', 'started_at': started,
+        'finished_at': now(), 'target': bind(ROOT / TARGET_REL), 'page': bind(ROOT / PAGE_REL),
+        'css': bind(css_path), 'helper': bind(__file__),
+        'gate_observation': bind(out / 'gates-observation.json'), 'render_receipt': render, **counts,
+        'command': command, 'exit_code': result.returncode,
+        'stdout': bind(out / 'preview.stdout'), 'stderr': bind(out / 'preview.stderr'),
+        'scope': 'Exact ordered native triples, all components, unique IDs, fragments, all21 qualifier descriptions,190 evidence statements and90 reference identities. Static SVG only. Root visual observation required separately; browser interactions untested.'}
+    if result.returncode == 0:
+        receipt['overview'] = bind(out / 'overview.png')
+    write(out / 'receipt.json', receipt)
+    result.check_returncode()
+    assert_history(ROOT, gate_inputs['render_history_inputs'])
+    print(json.dumps(receipt, indent=2))
+
+if __name__ == '__main__':
+    main()

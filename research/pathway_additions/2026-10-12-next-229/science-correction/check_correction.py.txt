@@ -1,0 +1,109 @@
+"""Fresh bounded source, preservation, native validation and export checks."""
+from pathlib import Path
+import copy,csv,hashlib,importlib.util,json,shutil,sys
+from lxml import etree,html
+import yaml
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-229-author-20261012')
+sys.path.insert(0,str(A/'runtime/src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import render_kgx
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):
+    p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def save(n,x):
+    p=C/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+oldp=A/'draft/ethylene-glycol-degradation.yaml';newp=C/'draft/ethylene-glycol-degradation.yaml'
+old=yaml.safe_load(oldp.read_text());new=yaml.safe_load(newp.read_text());record=validate_record(new)
+errs=strict_errors([newp],C);assert not errs,errs
+assert len(new['mechanistic_edges'])==82 and len(new['references'])==90
+for field in set(old)-{'description','mechanistic_edges'}:assert new[field]==old[field],field
+changed=[]
+for a,b in zip(old['mechanistic_edges'],new['mechanistic_edges']):
+    assert tuple(a[k] for k in ['id','subject','predicate','object'])==tuple(b[k] for k in ['id','subject','predicate','object'])
+    if a!=b:changed.append(a['id'])
+assert changed==['eg-025']
+e=next(e for e in new['mechanistic_edges'] if e['id']=='eg-025')
+assert '0.53' not in json.dumps(e), 'Solution occupancy must not be scoped to the pCM1 crystal edge'
+assert e['endpoint_qualifiers'][0]['evidence']==old['mechanistic_edges'][24]['endpoint_qualifiers'][0]['evidence']
+rollback=copy.deepcopy(new);rollback['description']=old['description'];rollback['mechanistic_edges'][24]['evidence'][1]['source_assertion']=old['mechanistic_edges'][24]['evidence'][1]['source_assertion'];rollback['mechanistic_edges'][24]['endpoint_qualifiers'][0]['description']=old['mechanistic_edges'][24]['endpoint_qualifiers'][0]['description'];assert rollback==old
+
+modules={}
+for name in ['build_source_identifier_snapshot','build_ontology_identifier_snapshot']:
+    path=A/'runtime/scripts'/(name+'.py');spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);sys.modules[name]=m;spec.loader.exec_module(m);modules[name]=m
+source_old=modules['build_source_identifier_snapshot'].corpus_ids(oldp.parent);source_new=modules['build_source_identifier_snapshot'].corpus_ids(newp.parent);assert source_old==source_new
+o=modules['build_ontology_identifier_snapshot'];prefixes={'CHEBI','GO','NCBITaxon','RHEA'}
+ontology_old=o.walk_identifiers(old,prefixes);ontology_new=o.walk_identifiers(new,prefixes);assert ontology_old==ontology_new
+assert o.walk_labels(old)==o.walk_labels(new)
+root=C/'identifier-root';(root/'data/pathways').mkdir(parents=True,exist_ok=True);(root/'data/identifier_authorities').mkdir(exist_ok=True);(root/'conf').mkdir(exist_ok=True)
+shutil.copyfile(newp,root/'data/pathways/ethylene-glycol-degradation.yaml')
+authority_inputs=[]
+for n in ['sources.json','ontology.json']:
+    src=A/'identifier-root/data/identifier_authorities'/n;dst=root/'data/identifier_authorities'/n;shutil.copyfile(src,dst);assert sha(src)==sha(dst);authority_inputs.append(dict(original=bind(src),copy=bind(dst)))
+src=A/'runtime/conf/identifier_policy.yaml';dst=root/'conf/identifier_policy.yaml';shutil.copyfile(src,dst);authority_inputs.append(dict(original=bind(src),copy=bind(dst)))
+errors=identifier_errors(root);assert not errors,errors
+save('authority-input-bridge.json',dict(original_target=bind(oldp),corrected_target=bind(newp),source_builder=bind(A/'runtime/scripts/build_source_identifier_snapshot.py'),ontology_builder=bind(A/'runtime/scripts/build_ontology_identifier_snapshot.py'),source_selected_before=sorted(source_old),source_selected_after=sorted(source_new),ontology_selected_before=sorted(ontology_old),ontology_selected_after=sorted(ontology_new),selected_ids_exact=True,labels_and_all_reference_objects_exact=True,manifest_and_rhea_selectors='No changes proposed; all existing authority input objects remain read-only.',actual_identifier_gate_inputs=authority_inputs,identifier_errors=errors,canonical_scope='Root full native build used original c248 target, not this successor. Exact unchanged production selectors/labels establish a prospective semantic bridge, subject to root canonical-output intake; no full builder run claimed here.'))
+
+bindings=json.loads((C/'ledgers/source-bindings.json').read_text());checked=[]
+for rid,b in bindings.items():
+    assert sha(b['path'])==b['sha256'],rid;checked.append(dict(reference_id=rid,**b))
+assert len(checked)==90;save('fresh-reference-bindings.json',checked)
+ledger=json.loads((C/'ledgers/evidence-original-selectors.json').read_text());oldledger=json.loads((A/'ledgers/evidence-original-selectors.json').read_text())
+assert len(ledger)==199
+assert ledger[:37]==oldledger[:37]
+assert [i for i,(a,b) in enumerate(zip(oldledger,ledger)) if a!=b]==[37]
+assert all(ledger[37][k]==oldledger[37][k] for k in set(oldledger[37])-{'evidence'})
+fresh=[]
+for row in [ledger[37],*ledger[195:]]:
+    b=row['binding'];t=html.parse(b['path']);vals=t.xpath(row['selector']);observed=[etree.tostring(q,encoding='unicode') for q in vals];assert observed==row['observed'];fresh.append(row)
+save('fresh-corrected-selector-replay.json',fresh)
+contexts=json.loads((C/'ledgers/context-assertions.json').read_text());ctx={x['key']:x for x in contexts}
+assert len(contexts)==17
+assert 'abstract/landing' in ctx['FucO-prior-Cu-Cd-report']['text']
+assert 'Methods/Results' in ctx['FucO-cleaved-WT-solution-metal-comparator']['text']
+proof=json.loads((C/'fresh-correction-original-proofs.json').read_text())
+def check_source_roles(selectors):
+    t=html.parse(bindings['PMID:15995211']['path'])
+    text={k:' '.join(t.xpath(v)[0].itertext()) for k,v in selectors.items()}
+    assert all(x in text['crystal'] for x in ['pCM1','His','crystallization'])
+    assert all(x in text['cleaved'] for x in ['pCM2','factor Xa','wild-type and mutant','BL21(DE3)'])
+    assert all(x in text['metal'] for x in ['0.53 atom/subunit','examined in parallel'])
+    assert all(x in text['earlier'] for x in ['reported','Cu','Cd'])
+    assert t.xpath(selectors['reference40']+'//a[contains(@href,"4306747")]')
+sel={k:v['xpath'] for k,v in proof.items()};check_source_roles(sel);neg=[]
+for name,key,value in [('cleaved-methods-substituted-by-crystal','cleaved',sel['crystal']),('solution-metal-substituted-by-crystal','metal',sel['crystal']),('prior-work-substituted-by-metal-assay','earlier',sel['metal']),('wrong-cited-primary','reference40','//li[@id="r39"]')]:
+    bad=dict(sel);bad[key]=value
+    try:check_source_roles(bad)
+    except AssertionError:neg.append(dict(name=name,result='rejected',mutated_selector=bad[key]))
+    else:raise AssertionError(name)
+try:assert '0.53' not in json.dumps(old['mechanistic_edges'][24])
+except AssertionError:neg.append(dict(name='restore-original-pCM1-only-solution-assignment',result='rejected',reason='Original eg-025 would again attach the solution occupancy to the pCM1-only qualifier.'))
+else:raise AssertionError('Original construct conflation did not fail')
+save('source-role-negative-controls.json',dict(original_selected_sources_pass=True,negative_controls=neg,scope='Four mutated original-source roles plus original record construct-regression control; not inference of a Cu/Cd direct assay.'))
+
+for kind,files in [('pages',render_site([record],source_paths={record.id:'data/pathways/ethylene-glycol-degradation.yaml'})),('kgx',render_kgx([record]))]:
+    for n,v in files.items():
+        p=C/'candidate-checks'/kind/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(v)
+rows=list(csv.DictReader((C/'candidate-checks/kgx/edges.tsv').open(),delimiter='\t'));t=html.parse(str(C/'candidate-checks/pages/records/MetaCyc_PWY0-1280.html'))
+links=t.xpath('//*[local-name()="svg" and contains(@class,"pathway-network-svg")]//*[local-name()="a" and contains(@class,"graph-edge")]');assert len(rows)==len(links)==82
+cross=[];qualifiers=0
+for i,edge in enumerate(new['mechanistic_edges'],1):
+    row=next(x for x in rows if '_'+edge['id']+'_' in x['id']);assert (row['subject'],row['object'])==(edge['subject'],edge['object']);assert json.loads(row['evidence'])==edge['evidence']
+    expected=edge.get('endpoint_qualifiers',[]);assert (json.loads(row['endpoint_qualifiers']) if row['endpoint_qualifiers'] else [])==expected
+    link=next(x for x in links if x.get('href')=='#mechanism-edge-'+str(i))
+    assert (link.get('data-subject-id') or link.get('data-subject'),link.get('data-predicate'),link.get('data-object-id') or link.get('data-object'))==(edge['subject'],edge['predicate'],edge['object'])
+    ev=list(edge['evidence'])
+    for q in expected:
+        qualifiers+=1;ev.extend(q['evidence']);assert q['description'] in link.get('aria-label')
+        els=t.xpath('//*[@id=$id]',id=f'mechanism-edge-{i}-qualifier-{q["endpoint"]}');assert len(els)==1 and q['description'] in ''.join(els[0].itertext())
+    joined=[]
+    for v in ev:
+        matches=[(j,l) for j,l in enumerate(ledger) if l['evidence']==v];assert matches
+        joined.append(dict(evidence=v,ledger_rows=[j for j,_ in matches],originals=[l['binding'] for _,l in matches]))
+    cross.append(dict(edge_id=edge['id'],subject=edge['subject'],predicate=edge['predicate'],object=edge['object'],evidence_original_bindings=joined))
+assert qualifiers==21;save('edge-source-crosswalk.json',cross)
+page=' '.join(t.getroot().itertext());assert all(x in page for x in ['Cu(II)/Cd(II)','Methods/Results join','0.53 Fe atom/subunit','not an inspected full experimental body'])
+save('candidate-checks/results.json',dict(target=bind(newp),schema='pass',strict_errors=errs,identifier_errors=errors,edges=82,references=90,named_identifiers=len(source_new),edge_evidence_uses=sum(len(e['evidence']) for e in new['mechanistic_edges']),qualifier_evidence_uses=sum(len(q['evidence']) for e in new['mechanistic_edges'] for q in e.get('endpoint_qualifiers',[])),qualifiers=qualifiers,selector_observations=199,all_graph_identities_exact=True,all_export_evidence_and_qualifiers_exact=True,description_context_present=True,source_role_negative_controls=len(neg),full_tests=False,full_canonical_build=False,visual_browser_review=False,independent_scientific_acceptance=False))
+print('Passed: native schema/strict/identifier, exact production source/ontology selectors, 90 original hashes, 5 corrected selector replays, 5 negatives, all 82 KGX/SVG edge identities and 21 qualifiers')

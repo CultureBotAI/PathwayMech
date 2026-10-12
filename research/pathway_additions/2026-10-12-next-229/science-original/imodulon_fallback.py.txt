@@ -1,0 +1,29 @@
+import dataclasses, hashlib, importlib.util, json, sys, urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+OUT=Path(__file__).parent
+SOURCE=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/src/kg_microbe_sources/imodulondb.py')
+spec=importlib.util.spec_from_file_location('review_imodulon_adapter', SOURCE)
+m=importlib.util.module_from_spec(spec); sys.modules[spec.name]=m; spec.loader.exec_module(m)
+receipts=[]
+def transport(url):
+    p=OUT/('imodulon-api-'+hashlib.sha256(url.encode()).hexdigest()+'.json')
+    r={'url':url,'started':datetime.now(timezone.utc).isoformat(),'path':str(p)}
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'kg-microbe-sources/1','Accept':'application/json'}),timeout=20) as response:
+            raw=response.read(); p.write_bytes(raw)
+            r.update(status=response.status,final_url=response.url,bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())
+        return json.loads(raw)
+    except Exception as e:
+        r['error']=repr(e); raise
+    finally:
+        receipts.append(r); (OUT/'imodulon-api-receipts.json').write_text(json.dumps(receipts,indent=2)+'\n')
+c=m.ImodulonDBClient(transport=transport)
+report={'adapter':{'path':str(SOURCE),'sha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest()},'console_status':'Unavailable in prescribed pinned runtime: missing dotenv; exact stderr retained. Standalone unchanged adapter imported with explicit original-response transport, no dependency installation.', 'limits':'Computational expression context only; no absence, binding, catalysis, direction, or whole-pathway growth inference.'}
+report['datasets']=[dataclasses.asdict(x) for x in c.organism_datasets()]
+assert any(x['organism_id']=='e_coli' and 'precise_mg1655' in x['datasets'] for x in report['datasets'])
+report['searches']={q:dataclasses.asdict(c.search('e_coli','precise_mg1655',q)) for q in ['fucO','aldA','b2799','b1415']}
+t=c.imodulon_genes('e_coli','precise_mg1655',73)
+report['component73']={'key':m.imodulon_key('e_coli','precise_mg1655',73),'threshold':t.threshold,'all_rows':len(t.genes),'in_component':[dataclasses.asdict(x) for x in t.in_imodulon],'target_rows':[dataclasses.asdict(x) for x in t.genes if x.gene_id in {'b2799','b1415'}]}
+(OUT/'imodulon-context.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'datasets':len(report['datasets']),'queries':list(report['searches']),'component73_in':len(t.in_imodulon),'target_rows':report['component73']['target_rows']}))

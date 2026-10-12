@@ -1,0 +1,209 @@
+from __future__ import annotations
+
+import copy
+import csv
+import hashlib
+import importlib.util
+import io
+import json
+from pathlib import Path
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-229-whitespace-repair-20261012')
+REL = 'data/pathways/ethylene-glycol-degradation.yaml'
+EXPECTED = '8e52beb1ff5b8d60c0888b9d0930340cff751febd4fb8ef82ded384a94d84af4'
+sys.path.insert(0, str(ROOT / 'src'))
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import render_kgx
+from pathwaymech.schema import validate_record
+from pathwaymech.site_display import load_site_history
+from pathwaymech.yaml_io import load_pathway_records, pathway_files
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': sha(raw)}
+
+
+def load_module(name, relative):
+    spec = importlib.util.spec_from_file_location(name, ROOT / relative)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def kgx_delta(old, new, diffs):
+    assert old['nodes.tsv'] == new['nodes.tsv']
+    old_rows = list(csv.DictReader(io.StringIO(old['edges.tsv']), delimiter='\t'))
+    new_rows = list(csv.DictReader(io.StringIO(new['edges.tsv']), delimiter='\t'))
+    assert len(old_rows) == len(new_rows)
+    changes = []
+    by_id = {item['reference_id']: item for item in diffs}
+    for left, right in zip(old_rows, new_rows):
+        if left == right:
+            continue
+        assert {key for key in left if left[key] != right[key]} == {'reference_metadata'}
+        references = json.loads(left['reference_metadata'])
+        changed_refs = []
+        for reference in references:
+            if reference['id'] in by_id:
+                change = by_id[reference['id']]
+                assert reference['title'] == change['old']
+                reference['title'] = change['new']
+                changed_refs.append(reference['id'])
+        assert references == json.loads(right['reference_metadata'])
+        changes.append({'edge_id': left['id'], 'field': 'reference_metadata',
+                        'title_reference_ids': changed_refs})
+    expected_suffixes = ['_eg-025_', '_eg-029_', '_eg-030_', '_eg-069_']
+    assert len(changes) == 4
+    assert all(any(suffix in item['edge_id'] for item in changes) for suffix in expected_suffixes)
+    return {'nodes_byte_equal': True, 'edge_rows': len(old_rows),
+            'all_other_edge_cells_exact': True, 'changes': changes}
+
+
+def main():
+    started = now()
+    raw = (ROOT / REL).read_bytes()
+    assert sha(raw) == EXPECTED
+    index_path = Path(subprocess.check_output(
+        ['git', '-C', str(ROOT), 'rev-parse', '--git-path', 'index'], text=True).strip())
+    index_before = binding(index_path)
+    status_before = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain=v1', '-z'])
+    doc = yaml.safe_load(raw)
+    replacements = [
+        (b'Escherichia coli \xe2\x80\xa0    \\n"', b'Escherichia coli \xe2\x80\xa0"'),
+        (b'Catabolite Repression in  Escherichia coli \\n"', b'Catabolite Repression in  Escherichia coli"'),
+    ]
+    revised = raw
+    for old, new in replacements:
+        assert revised.count(old) == 1
+        revised = revised.replace(old, new)
+    revised_doc = yaml.safe_load(revised)
+    expected_doc = copy.deepcopy(doc)
+    diffs = []
+    for index, identifier in [(14, 'PMID:15995211'), (70, 'PMID:12003946')]:
+        ref = expected_doc['references'][index]
+        assert ref['id'] == identifier
+        old = ref['title']
+        ref['title'] = old.rstrip()
+        assert old != ref['title']
+        diffs.append({'path': f'references[{index}].title', 'reference_id': identifier,
+                      'old': old, 'new': ref['title'], 'operation': 'rstrip of this title only'})
+    assert revised_doc == expected_doc
+    assert all(ref['title'] == ref['title'].rstrip() for ref in revised_doc['references'])
+    for directory, content in [('original', raw), ('successor', revised)]:
+        dest = OUT / directory / Path(REL).name
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_bytes(content)
+
+    source = load_module('eg_whitespace_source', 'scripts/build_source_identifier_snapshot.py')
+    ontology = load_module('eg_whitespace_ontology', 'scripts/build_ontology_identifier_snapshot.py')
+    old_source = source.corpus_ids(OUT / 'original')
+    new_source = source.corpus_ids(OUT / 'successor')
+    ontology_prefixes = {'CHEBI', 'GO', 'NCBITaxon', 'RHEA'}
+    old_ontology = ontology.walk_identifiers(doc, ontology_prefixes)
+    new_ontology = ontology.walk_identifiers(revised_doc, ontology_prefixes)
+    assert old_source == new_source
+    assert old_ontology == new_ontology
+    old_record = validate_record(doc)
+    new_record = validate_record(revised_doc)
+    single_kgx = kgx_delta(render_kgx([old_record]), render_kgx([new_record]), diffs)
+
+    records = load_pathway_records(ROOT / 'data/pathways')
+    paths = {yaml.safe_load(p.read_bytes())['id']: p.relative_to(ROOT).as_posix()
+             for p in pathway_files(ROOT / 'data/pathways')}
+    histories = load_site_history(ROOT)
+    old_site = render_site(records, paths, histories)
+    new_records = [new_record if item.id == old_record.id else item for item in records]
+    assert sum(item.id == old_record.id for item in records) == 1
+    new_site = render_site(new_records, paths, histories)
+    assert old_site.keys() == new_site.keys()
+    actual_match = [path for path, text in old_site.items()
+                    if (ROOT / 'pages' / path).read_bytes() == text.encode()]
+    assert len(actual_match) == len(old_site)
+    changed_pages = [path for path in old_site if old_site[path] != new_site[path]]
+    assert set(changed_pages) == {'records/MetaCyc_PWY0-1280.html', 'downloads/edges.tsv',
+                                  'downloads/manifest.json', 'index.html'}
+    corpus_kgx = kgx_delta({name: old_site['downloads/' + name] for name in ['nodes.tsv', 'edges.tsv']},
+                          {name: new_site['downloads/' + name] for name in ['nodes.tsv', 'edges.tsv']}, diffs)
+    old_manifest = json.loads(old_site['downloads/manifest.json'])
+    new_manifest = json.loads(new_site['downloads/manifest.json'])
+    expected_manifest = copy.deepcopy(old_manifest)
+    expected_manifest['version'] = new_manifest['version']
+    expected_manifest['files']['edges.tsv']['sha256'] = sha(new_site['downloads/edges.tsv'].encode())
+    assert new_manifest == expected_manifest
+    old_fingerprint = old_manifest['version'].removeprefix('sha256:')
+    new_fingerprint = new_manifest['version'].removeprefix('sha256:')
+    assert old_site['index.html'].count(old_fingerprint) == 1
+    assert old_site['index.html'].replace(old_fingerprint, new_fingerprint) == new_site['index.html']
+    page = 'records/MetaCyc_PWY0-1280.html'
+    expected_page = old_site[page]
+    for item in diffs:
+        assert expected_page.count(item['old']) == 1
+        expected_page = expected_page.replace(item['old'], item['new'])
+    assert new_site[page] == expected_page
+    assert not [i for i, line in enumerate(new_site[page].splitlines(), 1) if line != line.rstrip()]
+    (OUT / 'original-render.html').write_text(old_site[page])
+    (OUT / 'successor-render.html').write_text(new_site[page])
+    render_diff = subprocess.run(['git', 'diff', '--no-index', '--check',
+                                 str(OUT / 'original-render.html'),
+                                 str(OUT / 'successor-render.html')], capture_output=True)
+    (OUT / 'external-render-diff-check.stdout').write_bytes(render_diff.stdout)
+    (OUT / 'external-render-diff-check.stderr').write_bytes(render_diff.stderr)
+    assert render_diff.returncode in (0, 1)
+    assert render_diff.stdout == render_diff.stderr == b''
+    assert (ROOT / REL).read_bytes() == raw
+    assert binding(index_path) == index_before
+    assert subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain=v1', '-z']) == status_before
+    receipt = {
+        'status': 'external_proposal_passed_not_maintained_adoption',
+        'started_at': started, 'finished_at': now(),
+        'original': binding(OUT / 'original' / Path(REL).name),
+        'successor': binding(OUT / 'successor' / Path(REL).name),
+        'semantic_changes': diffs,
+        'exactly_two_title_fields_changed': True,
+        'source_collectors_equal': {'identifiers': sorted(old_source), 'count': len(old_source)},
+        'ontology_collectors_equal': {'prefixes': sorted(ontology_prefixes),
+                                     'identifiers': sorted(old_ontology), 'count': len(old_ontology)},
+        'source_reference_id_url_version_hashes_and_all_evidence_unchanged': True,
+        'schema_validation_old_and_new': 'passed',
+        'single_record_kgx': single_kgx,
+        'whole_corpus_kgx': corpus_kgx,
+        'whole_site': {'records': len(records), 'files': len(old_site),
+                       'current_maintained_render_exact': True, 'changed': changed_pages,
+                       'exact_change': 'two title suffixes in record page and four EG reference_metadata cells; resulting export manifest hash and homepage fingerprint; current history held fixed',
+                       'all_other_rendered_files_byte_equal': True},
+        'new_render_trailing_whitespace_lines': [],
+        'external_render_diff_check': {'exit_code': render_diff.returncode,
+                                       'stdout': binding(OUT / 'external-render-diff-check.stdout'),
+                                       'stderr': binding(OUT / 'external-render-diff-check.stderr')},
+        'original_render': binding(OUT / 'original-render.html'),
+        'successor_render': binding(OUT / 'successor-render.html'),
+        'maintained_target_unchanged': True, 'index_unchanged': index_before,
+        'maintained_git_status_unchanged': True,
+        'limitations': ['No maintained files, Git index, history, review, or shared cache were changed.',
+                        'External render comparison holds current history fixed; root must add truthful curation history before maintained render.',
+                        'Historical full gates apply to original 8e52 target; no rerun or false current-target gate attestation is made.',
+                        'Proposal does not itself address or save a successor native review.'],
+    }
+    (OUT / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps({'receipt': binding(OUT / 'receipt.json'),
+                      'successor': receipt['successor'], 'site_files': len(old_site),
+                      'changes': diffs}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

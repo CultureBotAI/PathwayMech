@@ -1,0 +1,290 @@
+{
+  "claim-dispositions.json": [
+    {
+      "path": "/claims/7/author_disposition",
+      "before": "One crystal Fe site and substoichiometric solution occupancy distinguished; historical ligands retained.",
+      "after": "One crystal Fe site remains on eg-025 with the His6 pCM1 qualifier. The 0.53 solution WT comparator is now separately contextualized via the Methods/Results cleaved-pCM2 join; historical numbering remains unchanged."
+    },
+    {
+      "path": "/claims/7/context_assertion_keys/1",
+      "before": null,
+      "after": "FucO-cleaved-WT-solution-metal-comparator"
+    },
+    {
+      "path": "/claims/8/author_disposition",
+      "before": "Direct Zn inhibition and Fe protection kept with His6 reduction-assay qualifier.",
+      "after": "Direct Zn inhibition and Fe protection kept with His6 reduction-assay qualifier. Earlier Cu/Cd inhibition is retained as a 2005 prior-work report, not as part of its direct Zn/Fe experiment."
+    },
+    {
+      "path": "/claims/8/context_assertion_keys/0",
+      "before": null,
+      "after": "FucO-prior-Cu-Cd-report"
+    },
+    {
+      "path": "/correction_findings",
+      "before": null,
+      "after": [
+        {
+          "issue_key": "eg-fuco-cu-cd-context-omission",
+          "context_assertion_keys": [
+            "FucO-prior-Cu-Cd-report",
+            "FucO-cleaved-WT-solution-metal-comparator"
+          ],
+          "record_description_paragraphs": [
+            4
+          ],
+          "record_edges": [],
+          "status": "author_correction_prepared_pending_independent_successor_review"
+        },
+        {
+          "issue_key": "eg-fuco-iron-occupancy-construct-conflation",
+          "context_assertion_keys": [
+            "FucO-prior-Cu-Cd-report",
+            "FucO-cleaved-WT-solution-metal-comparator"
+          ],
+          "record_description_paragraphs": [
+            4
+          ],
+          "record_edges": [
+            "eg-025"
+          ],
+          "status": "author_correction_prepared_pending_independent_successor_review"
+        }
+      ]
+    },
+    {
+      "path": "/target_sha256",
+      "before": "c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704",
+      "after": "8e52beb1ff5b8d60c0888b9d0930340cff751febd4fb8ef82ded384a94d84af4"
+    }
+  ],
+  "construct-source-dispositions.json": [
+    {
+      "path": "/qualifiers/4/qualifier/description",
+      "before": "2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). The crystal site count is distinct from solution Fe occupancy. Paper residue numbers are retained; current P0A9S1 is 382 residues.",
+      "after": "2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). This qualifier applies to the crystal-site evidence; the separate cleaved-WT solution comparison is contextualized in the record description. Current P0A9S1 is 382 residues."
+    },
+    {
+      "path": "/successor_correction",
+      "before": null,
+      "after": {
+        "key": "eg-fuco-iron-occupancy-construct-conflation",
+        "crystal": "pCM1/pQE32 His6 in M15(pREP4); eg-025 crystal evidence only",
+        "solution": "pCM2/pGEX3X GST/factor-Xa-cleaved WT and mutants in BL21(DE3); 0.53 WT comparator",
+        "attribution": "Methods/Results contextual join, explicitly identified as such; no simultaneous mixed construct",
+        "evidence": [
+          {
+            "reference_id": "PMID:15995211",
+            "source_assertion": "Methods state that WT and mutant FucO preparations for site-directed-mutagenesis studies used pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa to avoid the His6 tag.",
+            "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[3]/p[2]"
+          },
+          {
+            "reference_id": "PMID:15995211",
+            "source_assertion": "Results compare D196L, H200A and H200F metal contents with WT examined in parallel, reporting 0.53 Fe atom/subunit for WT. Read with the preparation Methods, this supports the cleaved-WT comparator attribution, not His6 crystal occupancy.",
+            "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1]"
+          }
+        ]
+      }
+    }
+  ],
+  "ledgers/context-assertions.json": [
+    {
+      "path": "/15",
+      "before": null,
+      "after": {
+        "key": "FucO-prior-Cu-Cd-report",
+        "text": "The 2005 source reports earlier Cu(II)/Cd(II) FucO inhibition and cites PMID4306747. Retained evidence for the older paper is abstract/landing material; its full experimental body was not inspected. Figure 4 tests Zn/Fe, so no Cu/Cd dose, EG oxidation effect, binding mechanism or new causal edge is asserted.",
+        "evidence": [
+          {
+            "reference_id": "PMID:15995211",
+            "source_assertion": "The 2005 discussion reports earlier FucO inhibition by Cu(II) and Cd(II), citing reference 40. This is prior-work context; the adjacent Figure 4 experiment addresses Zn/Fe.",
+            "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[2]"
+          },
+          {
+            "reference_id": "PMID:15995211",
+            "source_assertion": "Reference 40 links the earlier oxidoreductase study to PMID4306747. This citation identifies the prior report; it does not supply a freshly inspected older experimental body.",
+            "source_locator": "XPath //li[@id=\"r40\"]"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/16",
+      "before": null,
+      "after": {
+        "key": "FucO-cleaved-WT-solution-metal-comparator",
+        "text": "The 0.53 Fe atom/subunit WT solution comparator occurs in a site-directed-mutant comparison. Methods assign those WT/mutant preparations to pCM2 GST/factor-Xa cleavage in BL21(DE3). This is an explicit Methods/Results attribution, distinct from pCM1 His6 crystal-site evidence, and is not universal iron occupancy.",
+        "evidence": [
+          {
+            "reference_id": "PMID:15995211",
+            "source_assertion": "Methods state that WT and mutant FucO preparations for site-directed-mutagenesis studies used pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa to avoid the His6 tag.",
+            "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[3]/p[2]"
+          },
+          {
+            "reference_id": "PMID:15995211",
+            "source_assertion": "Results compare D196L, H200A and H200F metal contents with WT examined in parallel, reporting 0.53 Fe atom/subunit for WT. Read with the preparation Methods, this supports the cleaved-WT comparator attribution, not His6 crystal occupancy.",
+            "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1]"
+          }
+        ]
+      }
+    }
+  ],
+  "ledgers/constructs.json": [
+    {
+      "path": "/4/qualifier/description",
+      "before": "2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). The crystal site count is distinct from solution Fe occupancy. Paper residue numbers are retained; current P0A9S1 is 382 residues.",
+      "after": "2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). This qualifier applies to the crystal-site evidence; the separate cleaved-WT solution comparison is contextualized in the record description. Current P0A9S1 is 382 residues."
+    }
+  ],
+  "ledgers/edges.json": [
+    {
+      "path": "/24/endpoint_qualifiers/0/description",
+      "before": "2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). The crystal site count is distinct from solution Fe occupancy. Paper residue numbers are retained; current P0A9S1 is 382 residues.",
+      "after": "2005 ECL1-derived historical 383-residue FucO in pQE32/pCM1, N-terminal His6, produced in M15(pREP4). This qualifier applies to the crystal-site evidence; the separate cleaved-WT solution comparison is contextualized in the record description. Current P0A9S1 is 382 residues."
+    },
+    {
+      "path": "/24/evidence/1/source_assertion",
+      "before": "The structure identifies Asp196, His200, His263 and His277 as Fe ligands in historical numbering; H267 is not a ligand. WT solution Fe content was about 0.53 atom per subunit, despite one crystallographic site.",
+      "after": "The His6 pCM1 crystal identifies one Fe site per chain, coordinated by Asp196, His200, His263 and His277 in historical numbering; His267 is not a ligand. The separate WT/mutant solution metal comparison is retained in construct-qualified context."
+    }
+  ],
+  "description-source-crosswalk.json": [
+    {
+      "path": "/3/successor_context_keys",
+      "before": null,
+      "after": [
+        "FucO-prior-Cu-Cd-report",
+        "FucO-cleaved-WT-solution-metal-comparator"
+      ]
+    },
+    {
+      "path": "/3/successor_evidence",
+      "before": null,
+      "after": [
+        {
+          "reference_id": "PMID:15995211",
+          "source_assertion": "The 2005 discussion reports earlier FucO inhibition by Cu(II) and Cd(II), citing reference 40. This is prior-work context; the adjacent Figure 4 experiment addresses Zn/Fe.",
+          "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[2]"
+        },
+        {
+          "reference_id": "PMID:15995211",
+          "source_assertion": "Reference 40 links the earlier oxidoreductase study to PMID4306747. This citation identifies the prior report; it does not supply a freshly inspected older experimental body.",
+          "source_locator": "XPath //li[@id=\"r40\"]"
+        },
+        {
+          "reference_id": "PMID:15995211",
+          "source_assertion": "Methods state that WT and mutant FucO preparations for site-directed-mutagenesis studies used pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa to avoid the His6 tag.",
+          "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[3]/p[2]"
+        },
+        {
+          "reference_id": "PMID:15995211",
+          "source_assertion": "Results compare D196L, H200A and H200F metal contents with WT examined in parallel, reporting 0.53 Fe atom/subunit for WT. Read with the preparation Methods, this supports the cleaved-WT comparator attribution, not His6 crystal occupancy.",
+          "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1]"
+        }
+      ]
+    },
+    {
+      "path": "/3/text",
+      "before": "Current FucO P0A9S1 is 382 residues, whereas the 2005/2023 papers use historical 383-residue numbering and older P11549 context. Their Asp196/His200/His263/His277 Fe ligands, G17D/G97E/D39G, N-terminal deletion and I7L/L8V engineering labels are not silently renumbered onto the current reference. The structure has one Fe site per chain but solution WT Fe occupancy was about 0.53. His267 is not the Fe ligand formerly proposed. N-terminal strand exchange supports the dimer; historical deltaN10 loses assembly/activity. The pQE32/pCM1 His6 preparation in M15(pREP4) differs from pGEX3X/pCM2 in BL21 and its cleaved WT/mutant preparations. Two NAD sites per dimer and D39G cofactor expansion do not create a wild-type NADPH core. Older partially purified mutant enzyme also used added manganese; that preparation-specific alternative is retained.",
+      "after": "Current FucO P0A9S1 is 382 residues, whereas the 2005/2023 papers use historical 383-residue numbering and older P11549 context. Their Asp196/His200/His263/His277 Fe ligands, G17D/G97E/D39G, N-terminal deletion and I7L/L8V engineering labels are not silently renumbered onto the current reference. The pQE32/pCM1 N-terminal His6 preparation in M15(pREP4) supports the one-Fe-site crystal observation. Separately, solution metal analysis compared D196L/H200A/H200F mutants with WT containing 0.53 Fe atom/subunit. Methods assign WT/mutant site-directed-mutagenesis preparations to pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa; this Methods/Results join supports the cleaved-WT comparator attribution, not a measured occupancy for the His6 crystal preparation. His267 is not the Fe ligand formerly proposed. N-terminal strand exchange supports the dimer; historical deltaN10 loses assembly/activity. Two NAD sites per dimer and D39G cofactor expansion do not create a wild-type NADPH core. Older partially purified mutant enzyme also used added manganese; that preparation-specific alternative is retained. The 2005 paper reports earlier Cu(II)/Cd(II) inhibition of FucO, citing PMID4306747. Its retained older-source evidence is abstract/landing material, not an inspected full experimental body; no Cu/Cd dose or direct assay is inferred. The 2005 Figure 4 experiment separately tests Zn/Fe."
+    }
+  ],
+  "source-conflicts-and-limits.json": [
+    {
+      "path": "/successor_context_corrections",
+      "before": null,
+      "after": [
+        {
+          "key": "FucO-prior-Cu-Cd-report",
+          "text": "The 2005 source reports earlier Cu(II)/Cd(II) FucO inhibition and cites PMID4306747. Retained evidence for the older paper is abstract/landing material; its full experimental body was not inspected. Figure 4 tests Zn/Fe, so no Cu/Cd dose, EG oxidation effect, binding mechanism or new causal edge is asserted.",
+          "evidence": [
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "The 2005 discussion reports earlier FucO inhibition by Cu(II) and Cd(II), citing reference 40. This is prior-work context; the adjacent Figure 4 experiment addresses Zn/Fe.",
+              "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[2]"
+            },
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "Reference 40 links the earlier oxidoreductase study to PMID4306747. This citation identifies the prior report; it does not supply a freshly inspected older experimental body.",
+              "source_locator": "XPath //li[@id=\"r40\"]"
+            }
+          ]
+        },
+        {
+          "key": "FucO-cleaved-WT-solution-metal-comparator",
+          "text": "The 0.53 Fe atom/subunit WT solution comparator occurs in a site-directed-mutant comparison. Methods assign those WT/mutant preparations to pCM2 GST/factor-Xa cleavage in BL21(DE3). This is an explicit Methods/Results attribution, distinct from pCM1 His6 crystal-site evidence, and is not universal iron occupancy.",
+          "evidence": [
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "Methods state that WT and mutant FucO preparations for site-directed-mutagenesis studies used pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa to avoid the His6 tag.",
+              "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[3]/p[2]"
+            },
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "Results compare D196L, H200A and H200F metal contents with WT examined in parallel, reporting 0.53 Fe atom/subunit for WT. Read with the preparation Methods, this supports the cleaved-WT comparator attribution, not His6 crystal occupancy.",
+              "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1]"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "source-acquisition-crosswalk.json": [
+    {
+      "path": "/successor_context_corrections",
+      "before": null,
+      "after": [
+        {
+          "key": "FucO-prior-Cu-Cd-report",
+          "text": "The 2005 source reports earlier Cu(II)/Cd(II) FucO inhibition and cites PMID4306747. Retained evidence for the older paper is abstract/landing material; its full experimental body was not inspected. Figure 4 tests Zn/Fe, so no Cu/Cd dose, EG oxidation effect, binding mechanism or new causal edge is asserted.",
+          "evidence": [
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "The 2005 discussion reports earlier FucO inhibition by Cu(II) and Cd(II), citing reference 40. This is prior-work context; the adjacent Figure 4 experiment addresses Zn/Fe.",
+              "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[2]"
+            },
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "Reference 40 links the earlier oxidoreductase study to PMID4306747. This citation identifies the prior report; it does not supply a freshly inspected older experimental body.",
+              "source_locator": "XPath //li[@id=\"r40\"]"
+            }
+          ]
+        },
+        {
+          "key": "FucO-cleaved-WT-solution-metal-comparator",
+          "text": "The 0.53 Fe atom/subunit WT solution comparator occurs in a site-directed-mutant comparison. Methods assign those WT/mutant preparations to pCM2 GST/factor-Xa cleavage in BL21(DE3). This is an explicit Methods/Results attribution, distinct from pCM1 His6 crystal-site evidence, and is not universal iron occupancy.",
+          "evidence": [
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "Methods state that WT and mutant FucO preparations for site-directed-mutagenesis studies used pGEX3X/pCM2 in BL21(DE3), with GST removed by factor Xa to avoid the His6 tag.",
+              "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[3]/p[2]"
+            },
+            {
+              "reference_id": "PMID:15995211",
+              "source_assertion": "Results compare D196L, H200A and H200F metal contents with WT examined in parallel, reporting 0.53 Fe atom/subunit for WT. Read with the preparation Methods, this supports the cleaved-WT comparator attribution, not His6 crystal occupancy.",
+              "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1]"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "reference-coverage.json": [
+    {
+      "path": "/14/uses/8",
+      "before": null,
+      "after": {
+        "context": "FucO-prior-Cu-Cd-report",
+        "role": "bounded non-graph assertion"
+      }
+    },
+    {
+      "path": "/14/uses/9",
+      "before": null,
+      "after": {
+        "context": "FucO-cleaved-WT-solution-metal-comparator",
+        "role": "bounded non-graph assertion"
+      }
+    }
+  ]
+}

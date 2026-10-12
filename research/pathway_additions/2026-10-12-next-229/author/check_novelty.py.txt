@@ -1,0 +1,21 @@
+from pathlib import Path
+import json,hashlib,subprocess,yaml,datetime
+A=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-227-20261012');M=Path('/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+assert sha(M)=='b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6'
+cmd=['rg','--files','--hidden','--no-ignore','--follow',str(B/'data/pathways')]
+r=subprocess.run(cmd,text=True,capture_output=True);assert r.returncode==0
+files=[Path(x) for x in r.stdout.splitlines() if x.endswith(('.yaml','.yml'))];assert len(files)==228,len(files)
+rows=[];shared=[];target=[]
+for p in files+[M]:
+ d=yaml.safe_load(p.read_text());core={e['subject'] for e in d['mechanistic_edges'] if e['predicate']=='part_of' and e['object']==d['id']}
+ rows.append(dict(path=str(p),sha256=sha(p),id=d['id'],label=d['label'],core=sorted(core)))
+ if d['id'] in ['MetaCyc:PWY0-1280','PathBank:SMP0002105'] or ('ethylene' in d['label'].lower() and 'glycol' in d['label'].lower()) or core=={'RHEA:27631','RHEA:20002'}:target.append(d['id'])
+ overlap=core&{'RHEA:27631','RHEA:20002'}
+ if overlap:shared.append(dict(id=d['id'],shared_events=sorted(overlap),all_core=sorted(core),assessment='Shared enzyme/chemistry context is not the complete two-event EG record'))
+assert len({r['id'] for r in rows})==229 and not target
+cmd2=['rg','--files-with-matches','--hidden','--no-ignore','--follow','--glob','!.git/**','--glob','!*.lock','PWY0-1280|SMP0002105|ethylene glycol degradation',str(B)]
+r2=subprocess.run(cmd2,text=True,capture_output=True);assert r2.returncode in [0,1]
+(A/'novelty-prior-mentions.txt').write_text(r2.stdout);(A/'novelty-search.stderr').write_text(r2.stderr)
+out=dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scope='228 actual maintained lyxose-inclusive records plus accepted external MG target; MG is not claimed maintained or merged. Maintained files only read.',inventory_command=cmd,search_command=cmd2,ignored_hidden_followed=True,records=rows,shared_event_contexts=shared,complete_candidate_duplicates=target,prior_mentions_count=len(r2.stdout.splitlines()),prior_mentions_preserved=True)
+(A/'novelty-corpus-proof.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({k:v for k,v in out.items() if k!='records'}))

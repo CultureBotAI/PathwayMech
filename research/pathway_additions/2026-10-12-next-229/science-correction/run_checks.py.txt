@@ -1,0 +1,12 @@
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess,sys
+C=Path(__file__).parent;P='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'}
+out=C/'validation';out.mkdir(exist_ok=True);rows=[]
+for name in ['finish_dispositions.py','check_correction.py']:
+    path=C/name;cmd=[P,'-B',str(path)];started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+    r=subprocess.run(cmd,cwd=C,env=env,capture_output=True,text=True)
+    receipt=dict(command=cmd,cwd=str(C),started_utc=started,finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=r.returncode,stdout=r.stdout,stderr=r.stderr,script_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),environment={'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'},scope='External bounded successor; no full builders, maintained tests or scientific acceptance claim.')
+    p=out/(name+'.json');assert not p.exists();p.write_text(json.dumps(receipt,indent=2)+'\n');rows.append(dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),exit_code=r.returncode));print(name,r.returncode,r.stdout,r.stderr,flush=True)
+    if r.returncode:sys.exit(r.returncode)
+(out/'commands.json').write_text(json.dumps(rows,indent=2)+'\n')

@@ -1,0 +1,86 @@
+"""Independent original-to-original joins and native coefficients; no invented identities."""
+from pathlib import Path
+import hashlib,json,sys,xml.etree.ElementTree as E
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');L=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def node(p,tag='Protein'):return E.parse(p).getroot().find(tag)
+def xrefs(n):return [{k:x.findtext('dblink-'+k) for k in ['db','oid','relationship']} for x in n.findall('dblink')]
+def accession(n):
+ a=[r['oid'] for r in xrefs(n) if r['db']=='UNIPROT'];assert len(a)==1;return a[0]
+def compound_bridge(frame):
+ p=O/'raw'/('ECOLI-'+frame+'.xml');n=node(p,'Compound')
+ assert n is not None and n.get('frameid')==frame and n.get('orgid')=='ECOLI'
+ ch=[r['oid'] for r in xrefs(n) if r['db']=='CHEBI' and r['relationship']=='unification'];assert len(ch)==1
+ return {'chemical_mapping':'CHEBI:'+ch[0],'component_original':bind(p),'native_compound_identity':n.attrib,'native_unification_xrefs':xrefs(n),'mapping_scope':'Exact direct ECOLI compound unification; no occupancy coefficient inferred'}
+# Preserve complete originals and select entries by their exact primary accession.
+up_sources=[P/'raw/retry-UniProt-P0A9S1.json',P/'raw/retry-UniProt-P25553.json',P/'raw/regulators-uniprot.json',P/'raw/ihf-issuing.json']+sorted((O/'raw').glob('UniProt-*.json'))
+ups={}
+for p in up_sources:
+ d=json.loads(p.read_bytes())
+ for x in d.get('results',[d]):
+  if 'primaryAccession' not in x:continue
+  if x['primaryAccession'] in ups:assert ups[x['primaryAccession']]['entry']==x
+  ups[x['primaryAccession']]={'original':bind(p),'entry':x}
+selected=['P0A9S1','P25553','P0ACJ8','P0ACK8','P0A9E5','P03004','P0A9Q1','P52044','P0ACH5','P0A9E2','P0ACI0','P0A6X7','P0A6Y1']
+monomers={
+ 'LACTALDREDUCT-MONOMER':L/'raw/ECOLI-LACTALDREDUCT-MONOMER.xml',
+ 'LACTALDDEHYDROG-MONOMER':L/'raw/ECOLI-LACTALDDEHYDROG-MONOMER.xml',
+ 'PD00257':P/'raw/mirror-ECOLI-PD00257.xml',
+ **{f:P/'raw'/('ECOLI-'+f+'.xml') for f in ['PD00444','PD00197','PD03831','ARCA-MONOMER','G7518-MONOMER','PD00365','PD00406','PD04418']},
+ **{f:O/'raw'/('ECOLI-'+f+'.xml') for f in ['PD00347','PD00348']}}
+bridges=[]
+for frame,p in monomers.items():
+ n=node(p);a=accession(n);assert a in selected;u=ups[a];d=u['entry'];assert d['organism']['taxonId']==83333
+ n_genes=[x.attrib for x in n.findall('gene/Gene')]
+ dbx=xrefs(n);native_refseq={x['oid'] for x in dbx if x['db']=='REFSEQ'};u_refseq={x['id'].split('.')[0] for x in d.get('uniProtKBCrossReferences',[]) if x['database']=='RefSeq'}
+ assert native_refseq & u_refseq,(frame,native_refseq,u_refseq)
+ bridges.append({'native_id':'EcoCyc:'+frame,'native_original':bind(p),'native_label':n.findtext('common-name'),'native_gene_frames':n_genes,'native_unification_xrefs':dbx,'uniprot_id':'UniProtKB:'+a,'uniprot_original':u['original'],'primary_accession_exact':True,'native_refseq_overlap':sorted(native_refseq&u_refseq),'uniprot_taxon':d['organism'],'uniprot_genes':d.get('genes',[]),'uniprot_sequence_length':d.get('sequence',{}).get('length'),'uniprot_GeneID_xrefs':[x for x in d.get('uniProtKBCrossReferences',[]) if x['database']=='GeneID'],'native_locations':[x.attrib for x in n.findall('location/*')],'uniprot_locations':[x for x in d.get('comments',[]) if x['commentType']=='SUBCELLULAR LOCATION'],'scope':'Exact issuing accession/refseq join; native ECOLI model MG1655 and UniProt K12 accession do not identify historical or engineered assay strains.'})
+assert {b['uniprot_id'] for b in bridges}=={'UniProtKB:'+a for a in selected}
+# Gene core positives and independently issuing cross-species counterexample.
+genes=[]
+for gid,acc,symbol,locus,ref in [('947273','P0A9S1','fucO','b2799','NP_417279'),('945672','P25553','aldA','b1415','NP_415933')]:
+ p=O/'raw'/('Entrez-'+gid+'-exact.xml');url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml';term,tax=sb._ncbi_gene_record(p,url);n=E.parse(p).getroot()[0]
+ assert term[0]=='Entrez:'+gid and term[1]==symbol and tax=='511145'
+ assert n.findtext('Entrezgene_gene/Gene-ref/Gene-ref_locus-tag')==locus
+ d=ups[acc]['entry'];assert gid in [x['id'] for x in d['uniProtKBCrossReferences'] if x['database']=='GeneID']
+ assert any(locus==x['value'] for g in d['genes'] for x in g.get('orderedLocusNames',[]))
+ assert ref in [x.text for x in n.findall('.//Gene-commentary_accession')]
+ genes.append({'id':term[0],'label':term[1],'native_term':term,'original':bind(p),'taxon':'NCBITaxon:'+tax,'locus_tag':locus,'reference_protein':ref,'uniprot_id':'UniProtKB:'+acc,'uniprot_original':ups[acc]['original'],'exact_geneid_locus_refseq_join':True})
+multi=P/'raw/NCBI-genes.xml';wrong=next(n for n in E.parse(multi).getroot() if n.findtext('Entrezgene_track-info/Gene-track/Gene-track_geneid')=='93779199');wrongtax=next(x.findtext('Dbtag_tag/Object-id/Object-id_id') for x in wrong.findall('Entrezgene_source/BioSource/BioSource_org/Org-ref/Org-ref_db/Dbtag') if x.findtext('Dbtag_db')=='taxon')
+assert wrongtax=='624'
+wrongscope={'uniprot_id':'UniProtKB:P0A9S1','native_GeneID_xref':'93779199','issuing_gene_original':bind(multi),'locator':'/Entrezgene-Set/Entrezgene[Gene-track_geneid=93779199]','organism':wrong.findtext('Entrezgene_source/BioSource/BioSource_org/Org-ref/Org-ref_taxname'),'taxon':'NCBITaxon:'+wrongtax,'locus':wrong.findtext('Entrezgene_gene/Gene-ref/Gene-ref_locus'),'selected':False,'reason':'Native Shigella sonnei taxon624 cannot replace MG1655 taxon511145 core anchor despite shared UniProt cross-reference'}
+# Assembly parts use native coefficient only; absent stays null.
+assemblies=[]
+for row in json.loads((O/'source-original-bindings.json').read_bytes()):
+ if row['entry']['kind']!='ecocyc-protein-xml':continue
+ p=Path(row['original']['path']);n=node(p);parts=[]
+ for c in n.findall('component'):
+  item=c[0];f=item.get('frameid');part={'native_type':item.tag,'native_identity':item.attrib,'coefficient':int(c.findtext('coefficient')) if c.find('coefficient') is not None else None,'coefficient_scope':'explicit native integer' if c.find('coefficient') is not None else 'not asserted by source'}
+  if item.tag=='Protein' and f in monomers:part.update(uniprot_id='UniProtKB:'+accession(node(monomers[f])),component_original=bind(monomers[f]))
+  elif item.tag=='Protein' and f=='PC00004':part.update(assembly_id='EcoCyc:PC00004')
+  elif item.tag=='Compound':part.update(compound_bridge(f))
+  parts.append(part)
+ assemblies.append({'id':'EcoCyc:'+n.get('frameid'),'original':row['original'],'label':n.findtext('common-name'),'parents':[x[0].attrib for x in n.findall('parent')],'components':parts,'comments':[x.text for x in n.findall('comment')]})
+assert next(r for r in assemblies if r['id']=='EcoCyc:LACTALDREDUCT-CPLX')['components'][0]['coefficient']==2
+assert next(r for r in assemblies if r['id']=='EcoCyc:ALD-CPLX')['components'][0]['coefficient']==4
+arc=node(P/'raw/ECOLI-PHOSPHO-ARCA.xml');state={'native_original':bind(P/'raw/ECOLI-PHOSPHO-ARCA.xml'),'unmodified_original':bind(P/'raw/ECOLI-ARCA-MONOMER.xml'),'native_modified_identity':arc.attrib,'parents':[x[0].attrib for x in arc.findall('parent')],'unmodified_links':[x.attrib for x in arc.findall('unmodified-form/*')],'features':[E.tostring(x,encoding='unicode') for x in arc.findall('has-feature')],'selected_endpoint':'UniProtKB:P0A9Q1','representation':'Author chose source-backed phosphorylated molecular_state qualifier; no new phosphoprotein CURIE or adapter bypass','native_adapter_gate':'EcoCyc source requires exactly one direct parent'}
+chem=[]
+for org,frames in [('ECOLI',['ATP','CAMP','FUCULOSE-1P']),('META',['CAMP','FUCULOSE-1P'])]:
+ for f in frames:
+  p=O/'raw'/(org+'-'+f+'.xml');n=node(p,'Compound');ch=[x['oid'] for x in xrefs(n) if x['db']=='CHEBI' and x['relationship']=='unification'];assert len(ch)==1
+  chem.append({'native_id':('EcoCyc:' if org=='ECOLI' else 'MetaCyc:')+f,'original':bind(p),'native_identity':n.attrib,'label':n.findtext('common-name'),'exact_CHEBI_xref':'CHEBI:'+ch[0],'native_unification_xrefs':xrefs(n),'formula':[x.text for x in n.findall('chemical-formula')],'scope':'Native compound unification to exact issuing ontology species; no binding stoichiometry inferred'})
+# Both issuing PGDB originals define the same selected superpathway membership.
+parent=[]
+for org in ['META','ECOLI']:
+ p=O/'raw'/(org+'-GLYCOL-GLYOXDEG-PWY.xml');n=node(p,'Pathway');assert n is not None
+ parent.append({'original':bind(p),'native_identity':n.attrib,'label':n.findtext('common-name'),'sub_pathways':[x.attrib for x in n.findall('sub-pathways/Pathway')]})
+assert {x['frameid'] for x in parent[0]['sub_pathways']}=={x['frameid'] for x in parent[1]['sub_pathways']}=={'PWY0-1280','GLYOXDEG-PWY','GLYCOLATEMET-PWY'}
+save('gene-identity-bridges.json',{'selected':genes,'cross_species_negative':wrongscope});save('protein-identity-bridges.json',bridges);save('assembly-native-bridges.json',assemblies);save('ArcA-state-adapter-disposition.json',state);save('effector-chemical-bridges.json',chem);save('native-superpathway-bridge.json',parent)
+save('uniprot-source-projections.json',[{'id':'UniProtKB:'+a,'original':ups[a]['original'],'entryAudit':ups[a]['entry']['entryAudit'],'proteinDescription':ups[a]['entry']['proteinDescription'],'genes':ups[a]['entry'].get('genes',[]),'sequence':ups[a]['entry'].get('sequence',{}),'comments':[x for x in ups[a]['entry'].get('comments',[]) if x['commentType'] in {'SUBUNIT','COFACTOR','ACTIVITY REGULATION','SUBCELLULAR LOCATION'}],'features':[x for x in ups[a]['entry'].get('features',[]) if x['type'] in {'Active site','Binding site','Modified residue'}]} for a in selected])
+print(json.dumps({'protein_joins':len(bridges),'exact_gene_joins':len(genes),'assemblies':len(assemblies),'wrong_Shigella_gene_rejected':True,'state_qualifier_native_original_retained':True}))

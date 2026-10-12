@@ -1,0 +1,29 @@
+"""Read selected issuing Semantic SQL and Rhea originals without seeding labels."""
+from pathlib import Path
+import datetime,hashlib,json,sqlite3,sys
+O=Path(__file__).parent;C=Path('/private/tmp/pathwaymech-curation-authorities');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_ontology_identifier_snapshot as ob
+
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+ids={'CHEBI:'+i for i in ['30742','57540','17071','57945','15378','15377','29805','29033','29035','29105','18420','15379','16240','58165','57846','30616','17754','17234','17497']}
+ids.update(['GO:0005829','NCBITaxon:562','NCBITaxon:83333','NCBITaxon:511145'])
+terms={};sources={};replays=[]
+for prefix,db in [('CHEBI','chebi'),('GO','go'),('NCBITaxon','ncbitaxon')]:
+ selected=sorted(i for i in ids if i.startswith(prefix+':'));p=C/(db+'.db')
+ with sqlite3.connect(p.resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as c:
+  meta=ob.read_source(c,p);key=db+'-'+meta['version'];ts,missing=ob.extract_terms(c,selected,key);assert not missing,missing
+  raw={i:[{'predicate':q[0],'object':q[1],'value':q[2]} for q in c.execute('SELECT predicate,object,value FROM statements WHERE subject=?',(i,))] for i in selected}
+ terms.update(ts);sources[key]=meta;replays.append({'prefix':prefix,'original':bind(p),'source':meta,'terms':ts,'native_rows':raw});print(prefix,len(ts),flush=True)
+# Only these two directional events are selected; full predecessor Rhea order is not composed here.
+r={'key':'rhea-rdf-142','path':'rhea-142.rdf.gz','url':'https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz','version':'Rhea142; release 2026-09-02; retrieved 2026-10-10','license':'CC-BY-4.0','sha256':bind(C/'rhea.rdf.gz')['sha256'],'ids':['RHEA:27631','RHEA:20002']}
+cache=O/'original-cache';dest=cache/r['path'];dest.symlink_to(C/'rhea.rdf.gz') if not dest.exists() else None
+save('incremental-rhea-manifest.json',r)
+key,meta,ts=ob.read_rhea_updates(O/'incremental-rhea-manifest.json',cache,set(r['ids']));terms.update(ts);sources[key]=meta
+replays.append({'prefix':'RHEA','original':bind(C/'rhea.rdf.gz'),'source':meta,'terms':ts})
+save('ontology-native-replay.json',replays);save('incremental-ontology-build.json',{'version':1,'sources':sources,'terms':terms})
+save('ontology-selection-status.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Author-selected provisional issuing terms only; no full canonical build or composed snapshot','ids':sorted(terms),'conditional_ids':['NCBITaxon:511145'],'native_labels_only':True})
+print(json.dumps({i:t['label'] for i,t in terms.items()},ensure_ascii=False))

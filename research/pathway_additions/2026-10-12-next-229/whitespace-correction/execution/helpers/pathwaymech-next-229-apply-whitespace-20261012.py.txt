@@ -1,0 +1,125 @@
+"""Apply exactly two reviewed title trims, then record real curation before render."""
+import copy
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+PACKAGE = Path('/private/tmp/pathwaymech-next-229-whitespace-repair-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-229-whitespace-execution-20261012')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+REL = 'data/pathways/ethylene-glycol-degradation.yaml'
+DOSSIER = 'research/pathway_additions/2026-10-12-next-229/whitespace-correction'
+sys.path.insert(0, '/private/tmp/pathwaymech-next-229-integration-preparation-20261012')
+from common import inventory
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def bind(path):
+    raw = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+assert bind(PACKAGE / 'handoff.json')['sha256'] == '8a66428ac9d7b27000c34ee572c649fbb51029b463a90175a485864c50fe0b20'
+assert bind(PACKAGE / 'manifest.json')['sha256'] == '1419cdb555b4e06c0b174dcab727f771961a436719fc8ed7495b2cc239dc4e7c'
+rows = json.loads((PACKAGE / 'manifest.json').read_text())['artifacts']
+actual = {str(p.relative_to(PACKAGE)) for p in PACKAGE.rglob('*') if p.is_file()}
+assert all(not p.is_symlink() for p in PACKAGE.rglob('*'))
+assert actual == {r['relative_path'] for r in rows} | {'manifest.json', 'handoff.json'}
+assert len(rows) == 27
+for row in rows:
+    assert bind(PACKAGE / row['relative_path']) == {k: row[k] for k in ('path', 'bytes', 'sha256')}
+proposal = json.loads((PACKAGE / 'receipt.json').read_text())
+assert bind(ROOT / REL)['sha256'] == proposal['original']['sha256']
+old = yaml.safe_load((ROOT / REL).read_text())
+new = yaml.safe_load((PACKAGE / 'successor/ethylene-glycol-degradation.yaml').read_text())
+expected = copy.deepcopy(old)
+for index, identifier in ((14, 'PMID:15995211'), (70, 'PMID:12003946')):
+    assert expected['references'][index]['id'] == identifier
+    expected['references'][index]['title'] = expected['references'][index]['title'].rstrip()
+assert expected == new
+assert old['mechanistic_edges'] == new['mechanistic_edges']
+for row in json.loads(Path('/private/tmp/pathwaymech-next-229-commit-execution-20261012/inputs.json').read_text()):
+    current = bind(ROOT / row['path'])
+    assert (current['bytes'], current['sha256']) == (row['bytes'], row['sha256']), row['path']
+assert json.loads(Path('/private/tmp/pathwaymech-next-229-final-preservation-20261012.json').read_text())['status'] == 'passed'
+OUT.mkdir()
+before = inventory(ROOT, exclude_runtime=True)
+write(OUT / 'before-inventory.json', before)
+write(OUT / 'root-intake.json', {
+    'status': 'accepted', 'at': now(), 'package': bind(PACKAGE / 'handoff.json'),
+    'read': 'Root read full protocol, receipt, archive plan, exact scalar changes and collector/KGX scope. Rehashed closed27-artifact package and all staged commit-input bytes; independently checked exactly two title rstrip operations and all other YAML objects identical.',
+    'corrections_to_protocol': ['Use supported native event EDIT, not nonexistent MODIFY.',
+        'Use evidence-linked issue449 disposition assessment; do not fabricate resolved native finding without previous_occurrences.'],
+    'limitations': 'Earlier full gates are historical8e52 observations. Fresh corrective execution and current successor review remain pending.',
+})
+destination = ROOT / DOSSIER / 'proposal'
+destination.mkdir(parents=True)
+plan = json.loads((PACKAGE / 'archive-plan.json').read_text())
+mappings = []
+for row in plan['allowlist']:
+    source = Path(row['source']['path'])
+    assert bind(source) == row['source']
+    target = destination / row['destination']
+    assert '..' not in Path(row['destination']).parts
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open('xb') as stream:
+        stream.write(source.read_bytes())
+    mappings.append({'source': bind(source), 'destination': bind(target)})
+for relative in plan['also_include']:
+    source = PACKAGE / relative
+    target = destination / relative
+    with target.open('xb') as stream:
+        stream.write(source.read_bytes())
+    mappings.append({'source': bind(source), 'destination': bind(target)})
+write(ROOT / DOSSIER / 'proposal-archive-map.json', mappings)
+shutil.copyfile(PACKAGE / 'successor/ethylene-glycol-degradation.yaml', ROOT / REL)
+assert bind(ROOT / REL)['sha256'] == 'c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de'
+command = [PYTHON, '-B', str(ROOT / 'scripts/new_history_record.py'),
+    '--kind', 'record', '--slug', 'ethylene-glycol-degradation', '--target-root', 'data/pathways',
+    '--event', 'EDIT', '--outcome', 'changed', '--sections', 'references',
+    '--summary', 'Trim trailing whitespace from two ethylene-glycol bibliography titles.',
+    '--details', 'Issue449: the staged page check found trailing whitespace from the source-derived titles of PMID:15995211 and PMID:12003946. Applied only rstrip to those two title scalars, retaining substantive text, the dagger, all identifiers, source hashes, edge/qualifier evidence and scientific scope. The accepted external comparison preserves61 source and31 ontology selectors and all230 pathway scientific objects; only four new EG reference_metadata cells and derived page/export fingerprints change. Original author packets, the saved review and earlier full gates remain unchanged historical observations. This is a real corrective curation event before rerendering. Current corrective checks, successor review, commit and merge remain subsequent work.',
+    '--actor-name', 'codex', '--actor-type', 'ai_agent', '--agent-tool', 'Codex', '--issue', '449']
+start = now()
+result = subprocess.run(command, cwd=ROOT, capture_output=True,
+    env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONPATH': str(ROOT / 'src')})
+(OUT / 'history.stdout').write_bytes(result.stdout)
+(OUT / 'history.stderr').write_bytes(result.stderr)
+execution = {'started_at': start, 'finished_at': now(), 'command': command,
+    'exit_code': result.returncode, 'stdout': bind(OUT / 'history.stdout'), 'stderr': bind(OUT / 'history.stderr')}
+write(OUT / 'history-execution.json', execution)
+result.check_returncode()
+prior_history = {r['relative_path']: r for r in before if r['relative_path'].startswith('history/')}
+after_history = inventory(ROOT, 'history')
+added = [r for r in after_history if r['relative_path'] not in prior_history]
+assert len(added) == 1 and len(after_history) == len(prior_history) + 1
+for row in prior_history.values():
+    current = bind(ROOT / row['relative_path'])
+    assert (current['sha256'], current['bytes']) == (row['sha256'], row['bytes'])
+write(OUT / 'render-history-inputs.json', after_history)
+receipt = {'status': 'adopted_history_created_pending_corrective_checks', 'at': now(),
+    'original': proposal['original'], 'successor': bind(ROOT / REL),
+    'before_inventory': bind(OUT / 'before-inventory.json'), 'history': added[0],
+    'history_execution': bind(OUT / 'history-execution.json'), 'intake': bind(OUT / 'root-intake.json'),
+    'note': 'Two title scalars only; native EDIT event before future render. Earlier full gates and review remain historical.'}
+write(OUT / 'adoption.json', receipt)
+write(ROOT / DOSSIER / 'adoption.json', receipt)
+shutil.copyfile(OUT / 'root-intake.json', ROOT / DOSSIER / 'root-intake.json')
+print(json.dumps(receipt, indent=2))

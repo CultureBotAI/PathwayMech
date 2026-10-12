@@ -1,0 +1,114 @@
+import gzip, hashlib, json, re, subprocess
+from collections import Counter, defaultdict
+from pathlib import Path
+from lxml import etree, html
+import yaml
+OUT=Path(__file__).parent
+A=Path('/private/tmp/pathwaymech-next-229-author-20261012')
+P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012')
+TARGET=A/'draft/ethylene-glycol-degradation.yaml'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(name,x): (OUT/name).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def norm(s): return ' '.join(s.split())
+assert sha(TARGET)=='c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704'
+target=yaml.safe_load(TARGET.read_text())
+refs=json.loads((A/'ledgers/source-bindings.json').read_text())
+obs=json.loads((A/'ledgers/evidence-original-selectors.json').read_text())
+binds=[]
+for ref,b in refs.items():
+    p=Path(b['path']); assert p.stat().st_size==b['bytes'] and sha(p)==b['sha256'],ref
+    binds.append({'reference_id':ref,**b})
+save('original-bindings-verified.json',binds)
+graphs=target['mechanistic_edges']; uses=[]
+for edge in graphs:
+    for evidence in edge['evidence']:uses.append({'edge':edge['id'],'role':'edge','evidence':evidence})
+    for q in edge.get('endpoint_qualifiers',[]):
+        for evidence in q['evidence']:uses.append({'edge':edge['id'],'role':q['endpoint']+' '+q['kind'],'evidence':evidence})
+for u in uses:
+    u['rows']=[i for i,r in enumerate(obs) if r['evidence']==u['evidence']]
+    assert u['rows'],u
+assert len(graphs)==82
+save('graph-evidence-coverage.json',{'target_sha256':sha(TARGET),'edges':len(graphs),'roles':dict(Counter(x['role'] for x in uses)),'uses':uses})
+trees={}
+def tree(path):
+    if path not in trees:
+        raw=Path(path).read_bytes()
+        trees[path]=html.fromstring(raw).getroottree() if path.endswith('.html') else etree.fromstring(raw).getroottree()
+    return trees[path]
+RDF='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+RH='http://rdf.rhea-db.org/'
+needed={RH+n for n in ['27630','27631','27632','27633','20001','20002','20003','20004','27630_L','27630_R','20001_L','20001_R']}
+for r in obs:
+    if r['selector_type']=='rhea_side':needed.update([r['selector']['participant'],r['observed']['compound_uri']])
+rdf=defaultdict(lambda:defaultdict(list)); rdfraw=defaultdict(list)
+with gzip.open('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz','rb') as f:
+    for _,e in etree.iterparse(f,events=['end'],tag=RDF+'Description'):
+        uri=e.get(RDF+'about')
+        if uri in needed:
+            rdfraw[uri].append(etree.tostring(e,encoding='unicode'))
+            for c in e:
+                key=etree.QName(c).localname; value=c.get(RDF+'resource') or c.text
+                if value not in rdf[uri][key]:rdf[uri][key].append(value)
+        e.clear()
+save('rhea-original-selected-objects.json',dict(rdf)); save('rhea-original-selected-xml.json',dict(rdfraw))
+replays=[]; failures=[]
+for i,r in enumerate(obs):
+    typ=r['selector_type']; s=r['selector']; b=r['binding']; observed=r['observed']; raw=Path(b['path']).read_bytes()
+    assert hashlib.sha256(raw).hexdigest()==b['sha256'] and len(raw)==b['bytes']
+    if typ=='xpath':
+        found=tree(b['path']).xpath(s); actual=[etree.tostring(e,encoding='unicode') for e in found]
+        # Exact raw object serializations, with harmless parser whitespace normalized.
+        passed=[norm(v) for v in actual]==[norm(v) for v in observed]
+    elif typ in ('uniprot_comment','uniprot_bulk_comment'):
+        j=json.loads(raw)
+        if typ=='uniprot_bulk_comment':
+            selected=[z for z in j['results'] if z['primaryAccession']==s['accession']]; assert len(selected)==1
+            j=selected[0]; kind=s['comment']
+        else:kind=s; assert j['primaryAccession']==r['evidence']['reference_id'].split(':',1)[1]
+        actual=[c for c in j['comments'] if c['commentType']==kind]; passed=actual==observed
+    elif typ=='pdf_text':
+        assert sha(s['extraction_path'])==s['extraction_sha256']
+        fresh=OUT/('PMID-6336729-fresh.txt' if r['evidence']['reference_id']=='PMID:6336729' else 'PMID-3129413-fresh.txt')
+        passed=s['needle'] in fresh.read_text(); actual={'needle':s['needle'],'fresh_extraction':str(fresh),'sha256':sha(fresh)}
+    elif typ=='rhea_side':
+        reaction=RH+s['reaction'].split(':')[1]; sides=rdf[reaction][s['side']]; assert len(sides)==1
+        pp=s['participant']; assert pp in rdf[sides[0]]['contains']; cu=rdf[pp]['compound'];assert len(cu)==1
+        coeff=[int(k[8:]) for k,v in rdf[sides[0]].items() if re.fullmatch(r'contains\d+',k) and pp in v];assert len(coeff)==1
+        actual={'participant':pp,'compound_uri':cu[0],'coefficient':coeff[0],'properties':dict(rdf[cu[0]])};passed=actual==observed
+    else:raise ValueError(typ)
+    replays.append({'row':i,'evidence':r['evidence'],'binding':b,'selector_type':typ,'selector':s,'passed':passed,'actual':actual})
+    if not passed: failures.append(i)
+save('all-evidence-original-replay.json',replays)
+print('Selectors',len(replays),'failures',failures,flush=True)
+assert not failures, failures
+# Fresh replay the complete retained article projections used for independent reading.
+bodyproof=[]
+for name,rawname in [('PMC1866264','retry-page-PMC1866264.html'),('PMC2242541','retry-page-PMC2242541.html'),('PMC1169507','page-PMC1169507.html'),('Limon1997','Limon1997-delivered.html'),('PMC9181523','PMC9181523.xml'),('PMC2248313','retry-page-PMC2248313.html'),('PMC10087678','PMC10087678.xml'),('PMC6900487','PMC6900487.xml'),('PMC3974632','PMC3974632.xml'),('PMC135075','retry-page-PMC135075.html')]:
+    derived=P/'derived'/f'{name}-paragraphs.json'; original=P/'raw'/rawname
+    rows=json.loads(derived.read_text()); t=tree(str(original))
+    for r in rows:
+        nodes=t.xpath(r['xpath']);assert len(nodes)==1,(name,r['xpath'])
+        # The inherited projections normalize spaces at inline markup differently.
+        # Compare all text characters after whitespace removal, without losing tokens.
+        assert re.sub(r'\s+','',''.join(nodes[0].itertext()))==re.sub(r'\s+','',r['text']),(name,r['xpath'])
+    bodyproof.append({'original':str(original),'sha256':sha(original),'projection':str(derived),'projection_sha256':sha(derived),'all_rows_replayed':len(rows)})
+save('article-projection-replays.json',bodyproof)
+# Exact graph sides and independent element/charge balance.
+balance=[]
+for rx in ['RHEA:27631','RHEA:20002']:
+    source={};delta=Counter(); charge=0
+    for side,sgn,pred in [('substrates',-1,'has_input'),('products',1,'has_output')]:
+        uri=rdf[RH+rx.split(':')[1]][side][0]
+        for p in rdf[uri]['contains']:
+            c=rdf[rdf[p]['compound'][0]]; co=[int(k[8:]) for k,v in rdf[uri].items() if re.fullmatch(r'contains\d+',k) and p in v][0]
+            cid=c['accession'][0]; source[(pred,cid)]=co
+            for element,count in re.findall(r'([A-Z][a-z]?)(\d*)',c['formula'][0]):delta[element]+=sgn*co*int(count or '1')
+            charge+=sgn*co*int(c['charge'][0])
+    # Native schema has no numeric stoichiometry slot: require the explicit coefficient
+    # in each edge description, then independently compare it to issuing containsN.
+    actual={(e['predicate'],e['object']):int(re.search(r'coefficient (\d+)',e['description']).group(1)) for e in graphs if e['subject']==rx and e['predicate'] in ['has_input','has_output']}
+    assert source==actual,(rx,source,actual)
+    assert not any(delta.values()) and charge==0
+    balance.append({'reaction':rx,'sides':[{'predicate':k[0],'chemical':k[1],'coefficient':v} for k,v in source.items()],'element_delta':dict(delta),'charge_delta':charge})
+save('independent-chemistry.json',balance)
+print(json.dumps({'reference_bindings':len(binds),'graph_evidence_uses':len(uses),'selectors':len(replays),'body_projection_sources':len(bodyproof),'balanced_core_events':len(balance)}))

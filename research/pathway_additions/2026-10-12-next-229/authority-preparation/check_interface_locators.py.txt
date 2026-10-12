@@ -1,0 +1,107 @@
+"""Replay exact Rhea triples and native PathBank interfaces from unchanged originals."""
+from pathlib import Path
+from urllib.parse import urljoin
+import gzip
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+import zipfile
+
+O = Path(__file__).parent
+RDF = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+BP = '{http://www.biopax.org/release/biopax-level3.owl#}'
+RH = 'http://rdf.rhea-db.org/'
+
+
+def binding(path):
+    path = Path(path)
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest}
+
+
+def main():
+    locators = json.loads((O / 'rhea-side-locators.json').read_bytes())
+    source = Path(locators['original']['path'])
+    assert binding(source)['sha256'] == locators['original']['sha256']
+    raw = gzip.decompress(source.read_bytes()).decode()
+    wrapper = '<root xmlns:rdf="' + RDF[1:-1] + '" xmlns:rh="' + RH + '" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">'
+    wanted = {uri for row in locators['side_assertions'] for uri in
+              (RH + row['reaction'].split(':')[1], row['side_uri'], row['participant_uri'], row['compound_uri'])}
+    props = {uri: {} for uri in wanted}
+    for match in re.finditer(r'<rdf:Description rdf:about="([^"]+)">', raw):
+        if match[1] not in wanted:
+            continue
+        end = raw.index('</rdf:Description>', match.start()) + len('</rdf:Description>')
+        node = ET.fromstring(wrapper + raw[match.start():end] + '</root>')[0]
+        for child in node:
+            key = child.tag[1:].replace('}', '', 1)
+            value = child.get(RDF + 'resource') or child.text
+            if value not in props[match[1]].setdefault(key, []):
+                props[match[1]][key].append(value)
+    checked = []
+    for row in locators['side_assertions']:
+        assert row['side_uri'] in props[RH + row['reaction'].split(':')[1]][RH + row['directional_predicate']]
+        assert row['participant_uri'] in props[row['side_uri']][row['coefficient_predicate']]
+        native_counts = [int(k.removeprefix(RH + 'contains')) for k, v in props[row['side_uri']].items()
+                         if re.fullmatch(re.escape(RH) + 'contains[0-9]+', k) and row['participant_uri'] in v]
+        assert native_counts == [row['coefficient']]
+        assert props[row['participant_uri']][RH + 'compound'] == [row['compound_uri']]
+        assert props[row['compound_uri']][RH + 'accession'] == [row['chemical']]
+        assert props[row['compound_uri']][RH + 'name'] == [row['name']]
+        checked.append(row)
+    assert len(checked) == 11
+    pb = json.loads((O / 'pathbank-original-probe.json').read_bytes())
+    assert binding(pb['original_archive']['path']) == pb['original_archive']
+    with zipfile.ZipFile(pb['original_archive']['path']) as archive:
+        member = archive.read(pb['archive']['member'])
+    assert len(member) == pb['archive']['member_bytes']
+    assert hashlib.sha256(member).hexdigest() == pb['archive']['member_sha256']
+    xml = ET.fromstring(member)
+    base = xml.get('{http://www.w3.org/XML/1998/namespace}base')
+    def subject(node):
+        return urljoin(base, '#' + node.get(RDF + 'ID')) if node.get(RDF + 'ID') else node.get(RDF + 'about')
+    index = {subject(n): n for n in xml if subject(n)}
+    def links(node, predicate):
+        return [urljoin(base, n.get(RDF + 'resource')) for n in node.findall(BP + predicate)]
+    def xrefs(node):
+        return [{'uri': u, 'db': index[u].findtext(BP + 'db'), 'id': index[u].findtext(BP + 'id')}
+                for u in links(node, 'xref')]
+    root_uri = 'http://identifiers.org/smpdb/' + pb['archive']['root']
+    root = index[root_uri]
+    assert root.tag == BP + 'Pathway'
+    children = []
+    for child_uri in links(root, 'pathwayComponent'):
+        child = index[child_uri]
+        if child.tag != BP + 'Pathway':
+            continue
+        components = []
+        for interaction_uri in links(child, 'pathwayComponent'):
+            interaction = index[interaction_uri]
+            assert interaction.tag == BP + 'Interaction'
+            participants = []
+            for participant_uri in links(interaction, 'participant'):
+                participant = index[participant_uri]
+                references = [{'uri': uri, 'xref': xrefs(index[uri]),
+                               'chemical_formula': index[uri].findtext(BP + 'chemicalFormula')}
+                              for uri in links(participant, 'entityReference')]
+                participants.append({'uri': participant_uri, 'native_type': participant.tag,
+                                     'label': participant.findtext(BP + 'displayName'),
+                                     'native_names': [n.text for n in participant.findall(BP + 'name')],
+                                     'references': references})
+            components.append({'uri': interaction_uri, 'native_type': interaction.tag, 'participants': participants})
+        children.append({'uri': child_uri, 'label': child.findtext(BP + 'displayName'),
+                         'xrefs': xrefs(child), 'components': components})
+    assert {c['uri'].rsplit('/', 1)[1] for c in children} == {'SMP0002052', 'SMP0000847'}
+    output = {'status': 'passed', 'rhea_original': binding(source), 'rhea_exact_native_triples': checked,
+              'pathbank_archive': pb['original_archive'], 'pathbank_member': pb['archive'],
+              'root_uri': root_uri, 'root_direct_components': links(root, 'pathwayComponent'),
+              'children': children,
+              'scope': 'Native attachment and issuing cross-reference identity only. Generic Interaction has no inferred scientific sign or direction; acid and anion remain distinct.'}
+    (O / 'interface-locator-checks.json').write_text(json.dumps(output, indent=2, ensure_ascii=False) + '\n')
+    print(json.dumps({'status': 'passed', 'rhea_sides': len(checked), 'native_pathbank_children': len(children)}))
+
+
+if __name__ == '__main__':
+    main()

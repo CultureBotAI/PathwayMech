@@ -1,0 +1,93 @@
+from pathlib import Path
+import json, hashlib, subprocess, datetime, re, shutil
+import yaml
+from lxml import etree
+
+O=Path(__file__).parent
+L=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012')
+R=Path('/private/tmp/pathwaymech-next-226-20261012')
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(name,x): (O/name).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def bind(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+
+# Preserve the original actual-227 observation; do not recast a later checkout as its baseline.
+a=json.loads((O/'derived/novelty-v2-all-records.json').read_text())
+old=[]; idmatches=[]; chemicalmatches=[]; cues=[]
+candidate_ids={'MetaCyc:PWY0-1280','EcoCyc:PWY0-1280','PathBank:SMP0002105','SMPDB:SMP0002105'}
+families={'RHEA:27630','RHEA:27631','RHEA:27632','RHEA:27633','RHEA:20001','RHEA:20002','RHEA:20003','RHEA:20004','MetaCyc:GLYCOLALDREDUCT-RXN','MetaCyc:GLYCOLALD-DEHYDROG-RXN'}
+signatures=[({'CHEBI:30742','CHEBI:57540'},{'CHEBI:17071','CHEBI:57945','CHEBI:15378'}),({'CHEBI:17071','CHEBI:57540','CHEBI:15377'},{'CHEBI:29805','CHEBI:57945','CHEBI:15378'})]
+for row in a['all_records']:
+ p=Path(row['path']); assert sha(p)==row['sha256'],str(p)
+ d=yaml.safe_load(p.read_text()); rr=[]
+ for rx in d.get('reactions',[]):
+  sides={k:[] for k in ['substrates','products']}
+  for e in d.get('mechanistic_edges',[]):
+   if e.get('predicate')=='consumes' and e.get('object')==rx['id']: sides['substrates'].append(e['subject'])
+   if e.get('predicate')=='produces' and e.get('subject')==rx['id']: sides['products'].append(e['object'])
+  rr.append({'id':rx['id'],'label':rx.get('label'),'direction':rx.get('direction'),**sides})
+  s,t=set(sides['substrates']),set(sides['products'])
+  for i,(cs,ct) in enumerate(signatures,1):
+   if (s==cs and t==ct)or(s==ct and t==cs): chemicalmatches.append({'record':d['id'],'reaction':rx['id'],'candidate_event':i})
+  if rx['id']in families:idmatches.append({'record':d['id'],'reaction':rx['id']})
+ if d['id']in candidate_ids:idmatches.append({'record':d['id'],'kind':'pathway'})
+ if re.search(r'ethylene glycol|ethane.?1.?2.?diol|glycolaldehyde|fucO|aldA|PWY0-1280|SMP0002105',p.read_text(),re.I):cues.append({'path':str(p),'id':d['id'],'sha256':sha(p)})
+ old.append({'path':str(p),'id':d['id'],'sha256':sha(p),'prospective':row['prospective'],'reactions':rr})
+save('derived/novelty-v3-adjudication.json',{'observed_at':a['at'],'baseline':{k:a[k]for k in ['root','head','tree','actual_record_count','prospective_count']},'ignored_hidden_included':True,'followed_links':True,'search_argv':a['search_argv'],'search_result_sha256':sha(O/'derived/novelty-v2-search.stdout'),'matched_files':a['matched_files'],'method':'All maintained/prospective YAML parsed in full. Exact IDs and coefficient-free directed participant sets compared in both orientations; text and activity labels adjudicated separately. This is NOT a claim of existing-record stoichiometric validation. V1/V2 default coefficient=1 was inappropriate for assertion-encoded multiplicities; V3 removes it. Candidate exact coefficients are independently proved by original Rhea RDF.','id_matches':idmatches,'exact_participant_side_matches':chemicalmatches,'text_cued_records':cues,'all_records':old,'conclusion':'No exact candidate identity or complete candidate reaction signature represented at the recorded actual 227 plus two prospective targets. GldA reverse promiscuity and shared metabolites do not duplicate the two-event source-defined oxidative pathway.'})
+assert not idmatches and not chemicalmatches
+
+# Actual issuing frames only, with explicit source version and source-local selectors.
+native=[]
+for p in sorted(list((O/'raw').glob('*.xml'))+list((L/'raw').glob('*.xml'))):
+ try:r=etree.parse(str(p))
+ except etree.XMLSyntaxError:continue
+ if r.getroot().tag!='ptools-xml':continue
+ for e in r.getroot():
+  if e.get('detail')!='full' or not e.get('frameid'):continue
+  native.append({**bind(p),'id':e.get('ID'),'frameid':e.get('frameid'),'type':e.tag,'version':r.xpath('string(/ptools-xml/metadata/PGDB/@version)'),'locator':r.getpath(e),'label':e.findtext('common-name'),'unification_xrefs':[{'db':x.findtext('dblink-db'),'id':x.findtext('dblink-oid')}for x in e.findall('dblink')if x.findtext('dblink-relationship')=='unification'],'components':[{'frameids':x.xpath('./*/@frameid'),'coefficient':x.findtext('coefficient')}for x in e.findall('component')],'genes':e.xpath('./gene/*/@frameid')})
+save('derived/native-issuing-identity-proposals.json',{'status':'source-derived proposals, not canonical cache insertions or a passing identifier gate','frames':native})
+
+# Bind every read/reused external original, including the sealed lead packet, baseline and prior reports.
+external=[]
+for p in sorted(L.rglob('*')):
+ if p.is_file():external.append(bind(p))
+for p in [Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz'),Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip')]:external.append(bind(p))
+for row in a['all_records']:external.append(bind(row['path']))
+for rel in ['research/pathway_additions/2026-10-10-next/methylglyoxal-protein-projection.json','research/pathway_additions/2026-10-10-next/current-screening/pathbank-screening.tsv']:
+ external.append(bind(R/rel))
+save('external-original-bindings.json',external)
+
+# Every acquisition receipt is preserved, including HTTP-success challenge pages and failed downloads.
+receipts=[]
+for p in sorted((O/'derived').glob('*receipts.json'))+sorted((O/'derived').glob('acquisition-*.json')):
+ receipts.append({'receipt':str(p),'sha256':sha(p),'data':json.loads(p.read_text())})
+save('source-acquisition-index.json',{'receipts':receipts,'exceptions':[{'job':'jobs9.json','outcome':'Exit 1: refused overwrite of existing Baldoma1987-jbc.pdf; concurrent Limon1997-full.html was created before failure. No complete receipt was emitted.','orphan_body':bind(O/'raw/Limon1997-full.html'),'url':json.loads((O/'jobs9.json').read_text())[0][1],'content_note':'173-byte delivery URL response, not full article; actual body acquired separately as Limon1997-delivered.html.'}],'misleading_extensions':['Hidalgo1997.pdf is publisher HTML','ECOLI-PD00257.xml is main-site HTML, not a native frame','PMC11401383-supp.docx is challenge HTML, not DOCX','PMC528793-page.html and PMC94201-page.html are challenge responses','Other PDF/XML-suffixed failure bodies must be assessed through status/signature receipts, never treated as full literature.']})
+
+# Read-receipt claims are scoped to actually inspected original body text, not all supplements or cited literature.
+reads=[
+ ('Boronat1983','6336729','root raw/Boronat1983-frenoy.pdf','all six pages extracted text; printed 135–138 visual inherited root; fresh all-text read','ffb0cb/0;4793d9/0;c2f84d/0;e1a9b6/0','No transport protein identified; selected E15/G3/EG3, not MG1655'),
+ ('Caballero1983','6345530','root raw/PMID6345530-pubmed.xml','authoritative abstract only','root identity-paper-assessment.json','No full PDF obtained'),
+ ('Baldoma1987','3308886','raw/Baldoma1987-web-read.json;raw/Baldoma1987-web-read2.json;raw/Baldoma1987-web-read3.json','indexed primary-author paper text, major body sections/table text; not original PDF','web turn1040view0–4;turn1041view0–6;turn1042view0–6','Retained response lines 463–2471 with small 880–894 gap; first 0–462 observed but not fully retained. Original PDF unavailable; OCR table alignment uncertainty retained'),
+ ('Baldoma1988','3275622','raw/Baldoma1988-mirror.pdf','six-page original PDF all extracted text; all six pages rendered','10ad55/0','PDF render does not itself claim visual inspection of every panel'),
+ ('Montella2005','15995211','raw/page-PMC1169507.html','full body paragraphs and embedded tables/captions','71a70a/0;09a01e/0;e1a9b6/0','Glycolaldehyde reduction zinc assay, not EG oxidation-specific assay'),
+ ('RodriguezZavala2006','16731973','raw/retry-page-PMC2242541.html','full body paragraphs and six freshly acquired table images visually read','ac6488/0;7cfb6f/0;237d59/0;c0da2b/0','Propionaldehyde cofactor/product inhibition assay distinguished from direct glycolaldehyde Table 1'),
+ ('DiCostanzo2007','17173928','raw/retry-page-PMC1866264.html','full body paragraphs and captions','8062f5/0;089631/0;caf0fb/0','Crystal structures and proposed lactaldehyde mechanism, not direct glycolaldehyde covalent intermediates'),
+ ('RodriguezZavala2008','18218709','raw/retry-page-PMC2248313.html','full body paragraphs; three fresh table images visually read','caf0fb/0;089631/0;c0da2b/0','Supplements unread; F180T engineering/propionaldehyde assays'),
+ ('FucO2023','36002154','raw/PMC10087678.xml','full body paragraphs including tables and captions','250508/0;12bf69/0','Supplement FEBS-290-465-s001.pdf unread; source numbering retained'),
+ ('Glycoptimus2019','31850327','raw/PMC6900487.xml','full body paragraphs and embedded tables','e6d516/0;6ea0c1/0','Supplement unread; direct AldA assay useful, engineered ribulose route not EG pathway boundary'),
+ ('Eppler2002','PMC135075','raw/retry-page-PMC135075.html','full body paragraphs and tables','db21c4/0;6cdf35/0','AldA protein repression; malT-specific downstream causal chain not automatically transferred'),
+ ('Limon1997','9202484','raw/Limon1997-delivered.html','all 63 extracted paragraphs from issuing publisher body','41ee72/0;1fc62d/0','Table 1 full cells/figure-image panels not acquired; body-stated strain details only'),
+ ('SrsR2022','35682733','raw/PMC9181523.xml','all body paragraphs, all floats/captions and Table 1; Figure 5 original image acquired and visually read','8739ab/0;41ee72/0;1fc62d/0;functions image result preceding d2dfaa/0','Figure 5 directly includes fucO; spacer binding does not resolve a separate fucO promoter'),
+ ('Federowicz2014','24699140','raw/PMC3974632.xml','all body paragraphs and supplement captions','3fe3b4/0;35feb3/0;68c524/0','Gene-specific supplemental rows and GEO data unread; do not claim fresh aldA-specific primary ChIP proof'),
+ ('Engineering2021','33482812','root raw/PMC7821661.xml','full body paragraphs and embedded tables/captions','40e305/0;d67afe/0;3e581c/0','Supplement unread; 2 g/L yeast extract limits sole-carbon wording'),
+ ('Engineering2024modules','39272202','root raw/PMC11401383.xml','full body paragraphs; Figure 4 freshly acquired and visually inspected','d726c0/0;f0c086/0;a0ec3d/0;07aaf6/0;turn1032image','Supplement DOCX acquisition was HTML failure; Fig 4/body module contradiction retained'),
+ ('Engineering2024glycolate','38645974','root raw/PMC11031724.xml','full 75-line body extraction and Table 1','a772fe/0;5d0c37/0','Figures/supplement not freshly inspected; MG1655 versus DE3 and yeast-extract confounds retained'),
+]
+save('source-read-receipts.json',{'read_scope':'Independent preflight source reads; tool chunk identifiers record actual session outcomes. Extraction/binding alone is not a full-paper-read claim.','sources':[dict(zip(['key','id','body','read_level','receipts','limits'],r))for r in reads],'abstract_only_pmids':['4306747','1917845','1684935','9851711','1730033','8120011','9525938','27671251','36434094','28265724','620072','11160809','16377617','12067348','2834341','10601201','15520470','30810277','39079834','41308929','10071223','2203757'],'abstract_read_receipt':'871570/0 and derived/regulation-additional-abstracts.json; additional 45ac03/0 re-read PMID2203757/12003946/10071223; native frame comments are separate secondary annotations','late_native_comment_read':'957a37/0: complete selected FucO/AldA monomer comments and complex components; no claim that every cited paper was freshly read','unread_primary_leads':['Blikstad & Widersten 2010 functional characterization (cited by 2023 expression methods)','supplementary files explicitly identified above']})
+
+# This is task-local Swift compilation cache, not evidence, not a repository or shared cache.
+c=O/'swift-module-cache'
+if c.exists():
+ count=sum(1 for p in c.rglob('*')if p.is_file());shutil.rmtree(c)
+ save('derived/local-build-cache-cleanup.json',{'path':str(c),'files_removed':count,'scope':'Only task-created disposable Swift module cache; no source or original evidence removed.'})
+print(json.dumps({'novelty_actual':a['actual_record_count'],'prospective':a['prospective_count'],'exact_id_matches':len(idmatches),'chemical_matches':len(chemicalmatches),'issuing_frames':len(native),'external_bindings':len(external),'source_read_rows':len(reads)}))

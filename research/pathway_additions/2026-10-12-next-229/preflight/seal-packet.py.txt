@@ -1,0 +1,36 @@
+from pathlib import Path
+import hashlib,json,subprocess,datetime
+O=Path(__file__).parent
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+assert not (O/'artifact-manifest.json').exists() and not (O/'handoff.json').exists(),'Do not modify sealed packet'
+replay=json.loads((O/'preflight-replay.json').read_text());assert replay['all_passed']
+claims=json.loads((O/'claim-ledger.json').read_text())['claims'];assert len(claims)==50
+novel=json.loads((O/'derived/novelty-v3-adjudication.json').read_text());assert not novel['id_matches'] and not novel['exact_participant_side_matches']
+assert '143/6/mic-143-6-2085.html' in json.loads((O/'source-acquisition-index.json').read_text())['exceptions'][0]['url']
+assert all(Path(x['path']).exists() and sha(x['path'])==x['sha256']for x in json.loads((O/'source-support-bindings.json').read_text()).values())
+save('packet-validation.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'claim_count':50,'source_support_bindings_verified':54,'replay_checks':len(replay['checks']),'negative_controls':len(replay['negative_controls']),'novelty_baseline':novel['baseline'],'all_passed':True,'not_run':['YAML schema','strict schema','identifier gate','render','full tests','lint','canonical build'],'source_exhaustion':False})
+rows=[]
+for p in sorted(O.rglob('*')):
+ if p.is_file():
+  assert not p.is_symlink(),p
+  rows.append({'path':str(p.relative_to(O)),'bytes':p.stat().st_size,'sha256':sha(p)})
+save('artifact-manifest.json',{'schema':'external-preflight-manifest-v1','root':str(O),'excludes':['artifact-manifest.json','handoff.json'],'files':rows})
+save('handoff.json',{
+ 'status':'sealed-positive-full-pathway-preflight-with-explicit-access-and-identity-gates',
+ 'candidate_id':'MetaCyc:PWY0-1280','label':'ethylene glycol degradation',
+ 'native_aliases':['EcoCyc:PWY0-1280','PathBank:SMP0002105'],
+ 'author_ready':True,'author_ready_meaning':'Full exact source-defined route is viable and novel; every selected mechanism/context has an evidence-backed disposition. Unread peripheral originals and unresolved molecular details remain explicit, not invented. No YAML or canonical gate has passed in this preflight.',
+ 'full_scope':{'core_events':['RHEA:27631','RHEA:20002'],'core_side_assertions':11,'claim_dispositions':50,'construct_rows':15,'transport':'Unresolved identity/coupling; no fabricated reaction','native_children':['PathBank:SMP0002052','PathBank:SMP0000847']},
+ 'baseline':novel['baseline'],'prospective_records':json.loads((O/'derived/intake.json').read_text())['prospective_records'],
+ 'artifacts':{'author_handoff':{'path':'AUTHOR-HANDOFF.md','sha256':sha(O/'AUTHOR-HANDOFF.md')},'manifest':{'path':'artifact-manifest.json','sha256':sha(O/'artifact-manifest.json'),'files':len(rows)},'claim_ledger':{'path':'claim-ledger.json','sha256':sha(O/'claim-ledger.json')},'source_bindings':{'path':'source-support-bindings.json','sha256':sha(O/'source-support-bindings.json')},'external_bindings':{'path':'external-original-bindings.json','sha256':sha(O/'external-original-bindings.json')},'replay':{'path':'preflight-replay.json','sha256':sha(O/'preflight-replay.json')},'command_outcomes':{'path':'COMMAND-OUTCOMES.md','sha256':sha(O/'COMMAND-OUTCOMES.md')}},
+ 'validation':{'preflight_checks':len(replay['checks']),'negative_controls':len(replay['negative_controls']),'all_passed':True,'yaml_schema_strict_identifiers_canonical':'not run; no candidate YAML in task'},
+ 'read_limits':'source-read-receipts.json and remaining-gaps.json are mandatory parts of handoff',
+ 'mutations':'external task folder only; no maintained/shared-cache/Git/GitHub/install/sync changes',
+ 'source_exhaustion':False,
+ 'next':'Full authoring with disposition of every claim, source-specific constructs and inference qualifiers; then independent scientific review, exact-target gates and canonical build before adoption.'})
+actual=subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(O)],text=True).splitlines()
+expected={str(O/r['path'])for r in rows}|{str(O/'artifact-manifest.json'),str(O/'handoff.json')}
+assert set(actual)==expected,(set(actual)-expected,expected-set(actual))
+for r in rows:assert sha(O/r['path'])==r['sha256']
+print(json.dumps({'handoff':str(O/'handoff.json'),'handoff_sha256':sha(O/'handoff.json'),'manifest_sha256':sha(O/'artifact-manifest.json'),'manifest_files':len(rows),'author_handoff_sha256':sha(O/'AUTHOR-HANDOFF.md'),'ignored_hidden_followed_inventory_exact':True,'all_manifest_hashes_verified':True},indent=2))

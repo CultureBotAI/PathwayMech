@@ -1,0 +1,67 @@
+"""Seal the complete external author packet after all real bounded receipts pass."""
+from pathlib import Path
+import json,hashlib,subprocess,collections,datetime,shutil,ast
+from lxml import html
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012');H=Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert not (A/'handoff.json').exists(),'sealed author packet must not be rewritten'
+target=A/'draft/ethylene-glycol-degradation.yaml';ts=sha(target);d=yaml.safe_load(target.read_text())
+assert len(d['mechanistic_edges'])==82 and len(d['references'])==90
+commands=json.loads((A/'validation/commands.json').read_text());assert len(commands)==8 and all(r['exit']==0 for r in commands)
+for r in commands:assert sha(r['path'])==r['sha256']
+for f in ['source-replay-checks.json','candidate-checks/result.json','candidate-checks/export-proof.json','authority-intake.json','claim-dispositions.json']:
+ assert json.loads((A/f).read_text())['target_sha256']==ts,f
+assert json.loads((A/'authority-replay/native-checks.json').read_text())['status']=='passed'
+assert len(json.loads((A/'claim-dispositions.json').read_text())['claims'])==50
+for q in json.loads((A/'runtime-bindings.json').read_text()):assert sha(q['path'])==q['sha256'] and sha(A/'runtime'/q['relative'])==q['sha256']
+# Selected original receipts and parent acceptances remain exact.
+intakes=[]
+for p,expected in [(P/'handoff.json','0394996ee385c3f5b2c61fbf4f9c1ab537a4750ff3f136ddfa4f3d2efb328984'),(H/'handoff.json','eac1603ffb4d1b8879de82b5a308593aa00c5ca4fbbd986ff5cfcb2cccd6e491'),(Path('/private/tmp/pathwaymech-next-228-root-canonical-review-intake-20261012.json'),'5123e4c35f5f155c397f0a6bdbf059b4f725940fe6cacfe074675c20a05a664d'),(Path('/private/tmp/pathwaymech-next-229-root-authority-preparation-intake-20261012.json'),'ac2842c928e7ba17735a7b4c0263886c46a2b5d40fa1a51c5836f55f80ff724d')]:
+ assert sha(p)==expected;intakes.append(bind(p))
+originals=[]
+for item in json.loads((H/'all-original-bindings.json').read_text())['originals']:
+ b=item['binding'];assert sha(b['path'])==b['sha256'] and Path(b['path']).stat().st_size==b['bytes'];originals.append(b)
+save('authority-originals-final-rehash.json',dict(whole_originals_verified=len(originals),bindings=originals))
+# Static DOM check complements the exact graph/evidence/qualifier export proof.
+p=A/'candidate-checks/pages/records/MetaCyc_PWY0-1280.html';tree=html.parse(str(p));ids=tree.xpath('//@id');dups=[v for v,n in collections.Counter(ids).items() if n>1];local=[x for x in tree.xpath('//@href') if x.startswith('#') and x[1:]];missing=[x for x in local if x[1:] not in ids];assert not dups and not missing
+save('candidate-checks/static-dom-receipt.json',dict(target=bind(target),page=bind(p),html_ids=len(ids),local_fragment_links=len(local),duplicate_ids=dups,unresolved_local_links=missing,scope='Deterministic static DOM and SVG payload checks; no browser interaction or visual layout review claimed'))
+tested=[]
+for q in sorted(A.glob('author_*.py')):ast.parse(q.read_text());tested.append(bind(q))
+for f in ['replay_sources.py','check_candidate.py','check_exports.py','intake_authorities.py','write_assessment.py','check_provenance.py','run_bounded_checks.py']:ast.parse((A/f).read_text());tested.append(bind(A/f))
+save('final-input-bindings.json',dict(timing='Post-run binding of unchanged author and check inputs; no pre-gate checkpoint claimed.',target=bind(target),author_and_validation_scripts=tested,runtime_inputs=json.loads((A/'runtime-bindings.json').read_text()),authority_packet=bind(H/'handoff.json'),accepted_inputs=intakes))
+# Swift's generated module cache is disposable compiler state, not source or evidence.
+cache=A/'transient';cache_files=sum(1 for p in cache.rglob('*') if p.is_file()) if cache.exists() else 0
+if cache.exists():shutil.rmtree(cache)
+save('transient-cleanup.json',dict(removed_path=str(cache),removed_generated_cache_files=cache_files,scope='Only this packet native Swift module cache; no originals, maintained files or shared caches removed'))
+replay=json.loads((A/'source-replay-checks.json').read_text());counts=dict(edges=82,references=90,named_identifiers=61,participants=49,reactions=8,core_events=2,chemical_sides=11,endpoint_qualifiers=21,actual_edge_evidence_uses=sum(len(e['evidence']) for e in d['mechanistic_edges']),actual_qualifier_evidence_uses=sum(len(q['evidence']) for e in d['mechanistic_edges'] for q in e.get('endpoint_qualifiers',[])),ledger_original_observations=len(replay['literal_original_replays']),native_regulatory_joins=len(replay['native_regulations']),primary_contrast_probes=len(replay['primary_contrast_probes']),science_negative_controls=len(replay['negative_controls']),authority_replay_checks=37,authority_negative_controls=5)
+text=f'''The complete external ethylene glycol degradation candidate is ready for independent scientific review and the root-owned full canonical build.
+
+Target: `{target}`\nSHA256: `{ts}`
+
+The candidate has 82 edges, 90 references, 61 named identifiers and 21 endpoint qualifiers. Its exact two-event core has 11 chemical sides, including two protons in RHEA:20002. All 50 preflight claims and all 15 preparation rows have explicit dispositions. Actual graph evidence uses are 162 edge uses plus 28 qualifier uses; the 195 original-selector observations also include non-graph context and must not be mistaken for the graph-use count.
+
+Read `RESEARCH.md`, `claim-dispositions.json`, `source-conflicts-and-limits.json`, `construct-source-dispositions.json`, `reference-coverage.json`, `ledgers/context-assertions.json` and `source-replay-checks.json`. `edge-source-crosswalk.json` and `description-source-crosswalk.json` support bidirectional assessment. `source-acquisition-crosswalk.json` distinguishes source-body hashes from citation URLs; 73 of 90 references have exact path/digest HTTP receipt matches in its scoped collector. The others remain bound to unchanged original bodies and available native metadata, without a fabricated HTTP receipt. FNR uses the exact retained multi-accession query URL and selects P0A9E5 only.
+
+All eight final bounded commands exited zero: author assembly; original/source-selected replay; native schema/strict/render; exact diagram/KGX export proof; complete identifier/native-label intake; independent execution of the helper's 37 native checks; disposition coverage; acquisition-provenance crosswalk. The source-selected checks include 12 adversarial controls, and native authority replay includes five more. Every graph edge, evidence item and endpoint qualifier survives KGX and native SVG/table output. Static HTML has {len(ids)} unique IDs and {len(local)} resolved local links. These are deterministic output checks, not browser or visual layout acceptance. Actual commands/stdout/stderr/timestamps are JSON wrappers under `validation/`; exploratory failures remain in `author-validation-history.json`.
+
+Authority packet: `{H}/handoff.json`, SHA eac1603ffb4d1b8879de82b5a308593aa00c5ca4fbbd986ff5cfcb2cccd6e491. All 168 sealed artifacts and 55 whole-original bindings were freshly verified. Root separately accepted authority preparation at ac2842c928e7ba17735a7b4c0263886c46a2b5d40fa1a51c5836f55f80ff724d. Its proposed sources2454/587, ontology1957/5, manifest750 and Rhea22 preserve the accepted prospective MG base exactly. Copy plan requires 11 new whole originals plus unchanged ZIP reuse. `authority-replay/` is an explicitly mutable copied replay, not a replacement for the original immutable seal. No source terms were manually inserted. The unselected PHOSPHO-ARCA shape remains rejected; graph endpoints use source-qualified phosphorylated P0A9Q1.
+
+Baseline: 228 actual lyxose-inclusive maintained records plus accepted MG target b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6, hence 229 before EG and 230 prospectively. The MG authority baseline is root-accepted prospective output, not a claim of maintained/merged MG. Parent reported lyxose committed/pushed while this author worked; root owns the exact commit/tree bridge. `novelty-corpus-proof.json` binds all 229 actual record files, with ignored/hidden/followed searches and no complete EG duplicate. Seventeen prior research/catalog mentions remain untouched.
+
+Preflight refinements: the native META original also carries the glycol superpathway parent; the acquired 2007 methods support endogenous untagged AldA but do not establish a His tag on the co-purified taxadiene synthase; visual Table6 replay finds no 2 mM Mg esterase measurement. The record keeps measured values and exact source limits. No foreign reverse-activity regulation is transferred into the E. coli oxidative core, and no unknown transporter or TF is invented. All primary full-text gaps and native/abstract-only evidence scopes remain explicit.
+
+No whole-corpus tests, full EG canonical build, independent scientific acceptance, maintained adoption/history/review, Git/GitHub operation or install/sync occurred. Root must obtain independent scientific review, run the full native source+ontology builds from originals with prior-ID preservation, then perform maintained gates and publication workflow. No source-exhaustion claim. Public-release licensing remains deferred as instructed.
+'''
+(A/'AUTHOR-HANDOFF.md').write_text(text)
+save('final-counts.json',counts)
+r=subprocess.run(['rg','--files','--hidden','--no-ignore','--follow','-0',str(A)],capture_output=True);assert r.returncode==0,r.stderr
+paths=sorted(Path(x.decode()) for x in r.stdout.split(b'\0') if x)
+items=[bind(p) for p in paths if p.name not in ['artifact-manifest.json','handoff.json']]
+save('artifact-manifest.json',dict(scope='All author packet files, hidden/ignored/followed; manifest and handoff excluded from self-hash. Original-cache symlinks bind full unchanged originals. Disposable compiler cache was removed with receipt.',artifacts=items,artifact_count=len(items)))
+handoff=dict(status='sealed_complete_external_author_candidate_pending_independent_scientific_review_and_full_canonical_build',created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),target=bind(target),report=bind(A/'AUTHOR-HANDOFF.md'),manifest=bind(A/'artifact-manifest.json'),artifact_count=len(items),counts=counts,accepted_inputs=intakes,authority_handoff=bind(H/'handoff.json'),actual_validation_commands=bind(A/'validation/commands.json'),source_replay=bind(A/'source-replay-checks.json'),novelty=bind(A/'novelty-corpus-proof.json'),full_canonical_build=False,independent_scientific_acceptance=False,maintained_adoption=False,source_exhaustion=False,writes='Only this external author packet and its private disposable compiler cache; original sealed packets, maintained files, shared caches and Git/GitHub untouched')
+save('handoff.json',handoff)
+print(json.dumps(dict(handoff=bind(A/'handoff.json'),manifest=bind(A/'artifact-manifest.json'),target=bind(target),artifact_count=len(items),counts=counts),indent=2))

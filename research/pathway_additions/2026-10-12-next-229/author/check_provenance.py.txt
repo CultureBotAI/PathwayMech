@@ -1,0 +1,35 @@
+"""Rebind source receipts without treating citation resolver URLs as fetch receipts."""
+from pathlib import Path
+import json,hashlib,subprocess
+A=Path(__file__).parent
+sources=json.loads((A/'ledgers/source-bindings.json').read_text())
+dirs={Path(v['path']).parent.parent for v in sources.values() if Path(v['path']).parent.name=='raw' and any(q.name.startswith('pathwaymech-next-') for q in Path(v['path']).parents)}
+dirs|={Path('/private/tmp/pathwaymech-next-229-preflight-20261012'),Path('/private/tmp/pathwaymech-next-229-root-leads-20261012'),Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012')}
+records=[];inspected=[]
+def walk(v,file):
+ if isinstance(v,dict):
+  if isinstance(v.get('path'),str) and any(k in v for k in ['url','request_url','final_url']) and any(k in v for k in ['sha256','status','http_status']):records.append((file,v))
+  for x in v.values():walk(x,file)
+ elif isinstance(v,list):
+  for x in v:walk(x,file)
+for root in sorted(dirs):
+ if not root.is_dir():continue
+ r=subprocess.run(['rg','--files','--hidden','--no-ignore','--follow',str(root)],text=True,capture_output=True)
+ for name in r.stdout.splitlines():
+  p=Path(name)
+  if p.suffix=='.json' and any(x in p.name for x in ['acquisition','receipts']):
+   try:v=json.loads(p.read_text())
+   except (ValueError,UnicodeError):continue
+   inspected.append(dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest()));walk(v,p)
+out=[]
+for ref,b in sources.items():
+ matches=[]
+ for file,v in records:
+  if v.get('path')==b['path'] and v.get('sha256')==b['sha256']:
+   item={k:v[k] for k in ['path','url','request_url','final_url','at','status','http_status','content_type','bytes','sha256'] if k in v}
+   if item not in [x['receipt'] for x in matches]:matches.append(dict(container=str(file),receipt=item))
+ out.append(dict(reference_id=ref,body_binding=b,citation_or_resolver_url=b['url'],matching_fetch_receipts=matches,fetch_receipt_status='exact path and digest match' if matches else 'no matching fetch receipt found in scoped receipt files; no new retrieval claim'))
+fnr=next(x for x in out if x['reference_id']=='UniProtKB:P0A9E5')
+assert any(x['receipt'].get('url')==fnr['citation_or_resolver_url'] for x in fnr['matching_fetch_receipts'])
+(A/'source-acquisition-crosswalk.json').write_text(json.dumps(dict(scope='Available acquisition/receipt JSON under each selected original parent and explicit packets; ignored/hidden/followed inventory. Citation URLs are not treated as HTTP acquisition proofs.',inspected_receipts=inspected,references=out),indent=2)+'\n')
+print(len(out),'source bodies;',sum(bool(r['matching_fetch_receipts']) for r in out),'with exact matching acquisition receipts; FNR full multi-accession request exact')

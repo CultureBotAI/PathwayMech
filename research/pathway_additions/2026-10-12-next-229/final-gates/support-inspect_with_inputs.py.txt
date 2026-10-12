@@ -1,0 +1,23 @@
+"""Call unchanged native inspect using an external exact input-list; never save."""
+import argparse
+import runpy
+from support import *
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--input-list', required=True, type=Path)
+    parser.add_argument('--targets', required=True, type=Path)
+    args = parser.parse_args()
+    paths = load(args.input_list)
+    assert isinstance(paths, list) and len(paths) == len(set(paths))
+    argv = ['--repo-root', str(ROOT), '--schema', str(ROOT / 'schema/record_review.yaml'),
+            'inspect', '--targets', str(args.targets)]
+    for item in paths:
+        path = Path(item)
+        assert not path.is_absolute() and '..' not in path.parts and str(path) not in ('', '.')
+        argv += ['--input', str(path)]
+    native = runpy.run_path(str(ROOT / 'scripts/record_review.py'), run_name='eg_native_inspection')
+    return native['main'](argv)
+
+if __name__ == '__main__':
+    raise SystemExit(main())

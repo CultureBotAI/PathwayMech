@@ -1,0 +1,123 @@
+"""Shared exact-byte guards; no maintained writes occur in this module."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+from datetime import datetime, timezone
+
+HERE = Path(__file__).resolve().parent
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+BASE = 'ed6337d0adbcee81f962c80391e12c0dcc084908'
+TREE = '82e2e9834ac89bb2c99219163a6596cdf079d094'
+TARGET_REL = 'data/pathways/ethylene-glycol-degradation.yaml'
+PAGE_REL = 'pages/records/MetaCyc_PWY0-1280.html'
+TARGET_ID = 'MetaCyc:PWY0-1280'
+TARGET_SHA = '8e52beb1ff5b8d60c0888b9d0930340cff751febd4fb8ef82ded384a94d84af4'
+DOSSIER_REL = 'research/pathway_additions/2026-10-12-next-229'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+PREP = Path('/private/tmp/pathwaymech-next-229-integration-preparation-20261012')
+GATE_NAMES = ['render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored', 'diff-check', 'site-current']
+ENV = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+def bind(path):
+    path = Path(path)
+    body = path.read_bytes()
+    return {'path': str(path), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
+
+def verify(item, path=None):
+    current = bind(path or item['path'])
+    assert current['bytes'] == item['bytes'] and current['sha256'] == item['sha256'], current['path']
+    return current
+
+def write(path, data):
+    with Path(path).open('x') as stream:
+        json.dump(data, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+def external_new(path):
+    path = Path(path).absolute()
+    assert path.parent.is_dir() and path.parent.resolve().is_relative_to(Path('/private/tmp'))
+    assert not path.exists() and not path.is_symlink()
+    assert not path.resolve().is_relative_to(ROOT.resolve())
+    assert not path.resolve().is_relative_to(HERE.resolve())
+    return path
+
+def files(root, relative='.'):
+    command = ['rg', '--files', '-uu', '-L', '-g', '!.git', '-g', '!.git/**',
+               '-g', '!.venv', '-g', '!.venv/**', relative]
+    result = subprocess.run(command, cwd=root, capture_output=True, text=True)
+    assert result.returncode in (0, 1) and not result.stderr, result.stderr
+    rows = sorted(str(Path(p)) for p in result.stdout.splitlines())
+    assert len(rows) == len(set(rows))
+    return rows
+
+def inventory(root, relative='.'):
+    return [{'relative_path': p, **bind(root / p)} for p in files(root, relative)]
+
+def assert_head(root=ROOT):
+    for expression, expected in [('HEAD', BASE), ('HEAD^{tree}', TREE)]:
+        actual = subprocess.check_output(['git', 'rev-parse', expression], cwd=root, text=True).strip()
+        assert actual == expected
+    assert bind(root / TARGET_REL)['sha256'] == TARGET_SHA
+
+def assert_inventory(root, previous, generated):
+    old = {r['relative_path']: r for r in previous}
+    produced = {r['relative_path']: r for r in generated}
+    assert len(old) == len(previous) and len(produced) == len(generated)
+    current = set(files(root))
+    assert current - set(produced) == set(old) - set(produced), 'Unbound maintained input addition/removal'
+    for relative in current:
+        verify(produced.get(relative, old.get(relative)), root / relative)
+
+def assert_history(root, expected):
+    assert set(files(root, 'history')) == {r['relative_path'] for r in expected}, 'History inventory changed'
+    for row in expected:
+        verify(row, root / row['relative_path'])
+
+def verify_gates(path, root=ROOT):
+    """Bind actual commands/logs, entire current inventory, and full render history."""
+    gates = load(path)
+    assert gates['status'] == 'passed' and gates['base'] == BASE
+    assert gates['target_sha256'] == TARGET_SHA
+    assert [r['name'] for r in gates['receipts']] == GATE_NAMES
+    assert gates['history_verified_after_site_current'] is True
+    verify(gates['inputs'])
+    inputs = load(gates['inputs']['path'])
+    assert inputs['render_history_inputs'] == gates['render_history_inputs']
+    for row in gates['receipts']:
+        assert row['exit_code'] == 0 and row['cwd'] == str(root)
+        assert row['started_at'] and row['finished_at'] and row['command']
+        for key in ('stdout', 'stderr'):
+            verify(row[key])
+    assert_inventory(root, inputs['all_maintained_inputs'], gates['generated_files'])
+    assert_history(root, gates['render_history_inputs'])
+    # Recovery receipts must preserve and bind the actual failed attempt. Fresh
+    # passes have no invented failure or retry. Arbitrary unbound retries fail.
+    if 'original_failure' in gates or 'recovery_inputs' in gates:
+        assert 'original_failure' in gates and 'recovery_inputs' in gates
+        verify(gates['original_failure']); verify(gates['recovery_inputs'])
+        failed = load(gates['original_failure']['path'])
+        assert failed['status'] == 'failed' and any(r['exit_code'] for r in failed['receipts'])
+        for row in failed['receipts']:
+            for key in ('stdout', 'stderr'):
+                verify(row[key])
+    return gates, inputs
+
+
+def verify_support():
+    handoff = load(HERE / 'handoff.json')
+    verify(handoff['manifest'])
+    manifest = load(handoff['manifest']['path'])
+    rows = manifest['artifacts']
+    assert len(rows) == handoff['artifact_count']
+    assert set(files(HERE)) == {row['relative_path'] for row in rows} | {'handoff.json', 'artifact-manifest.json'}
+    for row in rows:
+        verify(row, HERE / row['relative_path'])

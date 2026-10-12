@@ -1,0 +1,113 @@
+"""External EG authoring helpers; sources are read-only, every assertion is bound."""
+from pathlib import Path
+import hashlib,json,sqlite3
+from lxml import etree,html
+
+A=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-229-preflight-20261012')
+L=Path('/private/tmp/pathwaymech-next-229-root-leads-20261012')
+H=Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012')
+C=Path('/private/tmp/pathwaymech-curation-authorities')
+B=json.loads((P/'source-support-bindings.json').read_text())
+refs={}; sources={}; ledger=[]; E=[]; participants=[]; reactions=[]
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def binding(p):
+ p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def save(name,x):
+ p=A/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def ref(id,p,title,url,version):
+ p=Path(p)
+ if id in refs:
+  assert refs[id]['source_sha256']==sha(p),(id,p);return id
+ refs[id]=dict(id=id,title=title,url=url,source_version=version,source_sha256=sha(p))
+ sources[id]={**binding(p),'url':url,'version':version};return id
+def evidence(id,text,loc,typ,selector,observed):
+ assert 0<len(text)<=400,(len(text),text)
+ e=dict(reference_id=id,source_assertion=text,source_locator=loc)
+ ledger.append(dict(evidence=e,binding=sources[id],selector_type=typ,selector=selector,observed=observed));return e
+def original(frame,org='ECOLI'):
+ names=[f'{org}-{frame}.xml',f'retry-{org}-{frame}.xml']
+ for root in [P/'raw',L/'raw',H/'raw',Path('/private/tmp/pathwaymech-next-227-preflight-20261012/raw'),Path('/private/tmp/pathwaymech-next-227-author-20261012/regulator-authorities/raw')]:
+  for n in names:
+   if (root/n).is_file():
+    try:t=etree.parse(str(root/n))
+    except etree.XMLSyntaxError:continue
+    if t.getroot().tag=='ptools-xml' and t.findtext('metadata/query')==f'{org}:{frame}':return root/n
+ if frame=='PC00027':
+  for row in json.loads((H/'source-original-bindings.json').read_text()):
+   if row['entry'].get('url','').endswith('ECOLI:PC00027'):return Path(row['original']['path'])
+ raise FileNotFoundError((frame,org))
+def xe(frame,text,xpath,org='ECOLI'):
+ p=original(frame,org);prefix='EcoCyc' if org=='ECOLI' else 'MetaCyc'
+ t=etree.parse(str(p)); assert t.getroot().get('ptools-version')=='27.0'
+ assert t.findtext('metadata/query')==f'{org}:{frame}'
+ id=ref(prefix+':'+frame,p,f'{prefix} {frame}: native original',f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id={org}:{frame}','PGDB 27.0; unmodified original XML retrieved 2026-10-12; evidence class and nested scope retained')
+ vals=t.xpath(xpath);assert vals,(frame,xpath)
+ return evidence(id,text,'XPath '+xpath,'xpath',xpath,[etree.tostring(v,encoding='unicode') if isinstance(v,etree._Element) else str(v) for v in vals])
+def upath(acc):
+ for d in [H/'raw',P/'raw',Path('/private/tmp/pathwaymech-next-227-author-20261012/regulator-authorities/raw')]:
+  for n in [f'UniProt-{acc}.json',f'retry-UniProt-{acc}.json']:
+   if (d/n).is_file():
+    try:v=json.loads((d/n).read_text())
+    except (ValueError,UnicodeError):continue
+    if v.get('primaryAccession')==acc:return d/n
+ raise FileNotFoundError(acc)
+def ue(acc,ctype,text):
+ p=upath(acc);d=json.loads(p.read_text());assert d['primaryAccession']==acc
+ id=ref('UniProtKB:'+acc,p,d['proteinDescription']['recommendedName']['fullName']['value'],f'https://rest.uniprot.org/uniprotkb/{acc}.json','Complete issuing UniProt JSON; retrieved 2026-10-12; entryAudit retained')
+ vals=[v for v in d['comments'] if v['commentType']==ctype];assert vals,(acc,ctype)
+ return evidence(id,text,f'comments[commentType={ctype}]','uniprot_comment',ctype,vals)
+PMIDS={'1983':'6336729','1983identity':'6345530','1987':'3308886','1988':'3275622','2005':'15995211','2006':'16731973','2007':'17173928','2008':'18218709','2023':'36002154','2019':'31850327','1997':'9202484','2022':'35682733','2014':'24699140','2021':'33482812','2024modules':'39272202','2024glycolate':'38645974','2002':'12003946'}
+PROJ={'2005':'PMC1169507','2006':'PMC2242541','2007':'PMC1866264','2008':'PMC2248313','2023':'PMC10087678','2019':'PMC6900487','1997':'Limon1997','2022':'PMC9181523','2014':'PMC3974632','2002':'PMC135075'}
+def paper_ref(key):
+ p=Path(B[key]['path']);t=etree.parse(str(p)) if p.suffix=='.xml' else html.parse(str(p))
+ if p.suffix=='.xml':
+  ids=t.xpath('/article/front/article-meta/article-id[@pub-id-type="pmid"]/text()');title=' '.join(t.xpath('/article/front/article-meta/title-group/article-title//text()'))
+ else:
+  ids=t.xpath('//meta[@name="citation_pmid"]/@content');title=' '.join(t.xpath('//hgroup/h1//text()')) or ' '.join(t.xpath('//meta[@name="citation_title"]/@content')) or ' '.join(t.xpath('//h1//text()'))
+ pm=ids[0] if ids else PMIDS[key]
+ if key!='2002':assert pm==PMIDS[key],(key,pm)
+ assert title,(key,p)
+ return ref('PMID:'+pm,p,title,f'https://pubmed.ncbi.nlm.nih.gov/{pm}/','Inspected primary body; exact XML/HTML original and located paragraph/figure; access limits recorded separately'),t
+def pe(key,n,text):
+ id,t=paper_ref(key)
+ if isinstance(n,int):
+  rows=json.loads((P/'derived'/f'{PROJ[key]}-paragraphs.json').read_text())
+  if isinstance(rows,dict):rows=rows.get('paragraphs',rows.get('rows'))
+  row=rows[n-1];xp=row['xpath']
+ else:xp=n
+ vals=t.xpath(xp);assert vals,(key,n,xp)
+ return evidence(id,text,'XPath '+xp,'xpath',xp,[etree.tostring(q,encoding='unicode') for q in vals])
+def pube(pmid,text):
+ rows=json.loads((A/'derived/abstract-original-intake.json').read_text());row=next(x for x in rows if x['pmid']==pmid)
+ id=ref('PMID:'+pmid,row['path'],row['title'],f'https://pubmed.ncbi.nlm.nih.gov/{pmid}/','Exact PubMed abstract from unmodified NCBI batch; full paper not acquired; abstract-only claims')
+ xp=f'//PubmedArticle[MedlineCitation/PMID="{pmid}"]/MedlineCitation/Article/Abstract'
+ vals=etree.parse(row['path']).xpath(xp);assert vals
+ return evidence(id,text,'XPath '+xp,'xpath',xp,[etree.tostring(q,encoding='unicode') for q in vals])
+def pdfe(key,text,locator,needle):
+ p=Path(B[key]['path']);ex=L/'boronat1983-preview/all-pages.txt' if key=='1983' else P/'derived/Baldoma1988-preview/all-pages.txt'
+ raw=ex.read_text();assert needle in raw,(key,needle)
+ title='Experimental evolution of a metabolic pathway for ethylene glycol utilization by Escherichia coli' if key=='1983' else 'Metabolism of L-fucose and L-rhamnose in Escherichia coli: aerobic-anaerobic regulation of L-lactaldehyde dissimilation'
+ id=ref('PMID:'+PMIDS[key],p,title,f'https://pubmed.ncbi.nlm.nih.gov/{PMIDS[key]}/','Complete primary PDF; retained extraction and rendered page images; exact historical strain/preparation scope')
+ return evidence(id,text,locator,'pdf_text',{'extraction_path':str(ex),'extraction_sha256':sha(ex),'needle':needle},needle)
+def edge(s,p,o,*ev,description=None,qualifiers=None):
+ assert ev;x=dict(id=f'eg-{len(E)+1:03d}',subject=s,predicate=p,object=o,description=description or ev[0]['source_assertion'],evidence=list(ev))
+ if qualifiers:x['endpoint_qualifiers']=qualifiers
+ E.append(x);return x
+def qual(endpoint,kind,desc,*ev):
+ assert 0<len(desc)<=400,(len(desc),desc);return dict(endpoint=endpoint,kind=kind,description=desc,evidence=list(ev))
+def ont(id):
+ db={'CHEBI':'chebi','GO':'go','NCBITaxon':'ncbitaxon'}[id.split(':')[0]]
+ with sqlite3.connect((C/(db+'.db')).resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as con:
+  vals=con.execute('select value from statements where subject=? and predicate="rdfs:label"',(id,)).fetchall()
+ assert len(vals)==1,(id,vals);return vals[0][0]
+def node(id,cat,label=None):
+ if any(x['id']==id for x in participants):return id
+ if label is None:
+  if id.startswith('UniProtKB:'):
+   try:label=json.loads(upath(id.split(':')[1]).read_text())['proteinDescription']['recommendedName']['fullName']['value']
+   except FileNotFoundError:label=json.loads((H/'incremental-source-build.json').read_text())['terms'][id]['label']
+  elif id.startswith(('EcoCyc:','MetaCyc:')):
+   org='ECOLI' if id.startswith('EcoCyc:') else 'META';t=etree.parse(str(original(id.split(':')[1],org)));label=t.xpath('/ptools-xml/*[@detail="full"]/common-name/text()')[0]
+  else:label=ont(id)
+ participants.append(dict(id=id,label=label,category=cat));return id

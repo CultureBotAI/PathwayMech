@@ -1,0 +1,90 @@
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-229-20261012')
+NATIVE = Path('/private/tmp/pathwaymech-next-229-whitespace-native-20261012')
+ASSEMBLY = Path('/private/tmp/pathwaymech-next-229-whitespace-review-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-229-finalize-bibliography-20261012')
+DEST = ROOT / 'research/pathway_additions/2026-10-12-next-229/whitespace-correction/native-finalization'
+sys.path.insert(0, '/private/tmp/pathwaymech-next-229-integration-preparation-20261012')
+from common import inventory
+
+
+def bind(path):
+    body = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
+
+
+def verify(row):
+    actual = bind(row['path'])
+    assert actual['sha256'] == row['sha256'], row['path']
+    assert actual['bytes'] == row['bytes'], row['path']
+
+
+def write(path, data):
+    with path.open('x') as stream:
+        json.dump(data, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+execution = json.loads((NATIVE / 'execution.json').read_text())
+assert execution['status'] == 'passed'
+assert [r['name'] for r in execution['receipts']] == ['validate', 'save', 'check']
+for row in execution['receipts']:
+    assert row['exit_code'] == 0
+    verify(row['stdout']); verify(row['stderr'])
+verify(execution['saved_yaml']); verify(execution['saved_markdown']); verify(execution['assembly'])
+doc = json.loads((NATIVE / 'root-assessed-review.json').read_text())
+assert len(doc['source']['inputs']) == 479
+history = json.loads(Path('/private/tmp/pathwaymech-next-229-whitespace-execution-20261012/render-history-inputs.json').read_text())
+assert inventory(ROOT, 'history') == history
+for row in doc['source']['inputs']:
+    path = ROOT / row['path']
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == row['sha256'], path
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip() == 'ed6337d0adbcee81f962c80391e12c0dcc084908'
+before = inventory(ROOT, exclude_runtime=True)
+OUT.mkdir()
+write(OUT / 'before.json', before)
+DEST.mkdir()
+mappings = []
+sources = [(prefix, path, path.relative_to(directory))
+           for prefix, directory in [('assembly', ASSEMBLY), ('successful-execution', NATIVE)]
+           for path in sorted(directory.rglob('*')) if path.is_file()]
+sources += [('helpers', Path(path), Path(path).name) for path in [
+    '/private/tmp/pathwaymech-next-229-assemble-whitespace-review-20261012.py',
+    '/private/tmp/pathwaymech-next-229-save-whitespace-review-20261012.py',
+    __file__,
+]]
+for prefix, source, relative in sources:
+    target = DEST / prefix / relative
+    if target.suffix == '.py':
+        target = target.with_name(target.name + '.txt')
+    body = source.read_bytes()
+    text = body.decode('utf-8')
+    if any(line.rstrip() != line for line in text.splitlines()) or text.endswith('\n\n'):
+        target = target.with_name(target.name + '.json')
+        body = (json.dumps({'serialization': 'lossless-utf8-json', 'original': bind(source), 'text': text}, indent=2, ensure_ascii=False) + '\n').encode()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open('xb') as stream:
+        stream.write(body)
+    mappings.append({'source': bind(source), 'archived': bind(target)})
+write(DEST / 'archive-map.json', mappings)
+after = inventory(ROOT, exclude_runtime=True)
+before_by_path = {r['relative_path']: r for r in before}
+after_by_path = {r['relative_path']: r for r in after}
+assert set(before_by_path) <= set(after_by_path)
+assert all(after_by_path[path] == row for path, row in before_by_path.items())
+new = sorted(set(after_by_path) - set(before_by_path))
+assert all(path.startswith(str(DEST.relative_to(ROOT)) + '/') for path in new)
+assert inventory(ROOT, 'history') == history
+for row in doc['source']['inputs']:
+    assert hashlib.sha256((ROOT / row['path']).read_bytes()).hexdigest() == row['sha256']
+write(OUT / 'receipt.json', {'status': 'passed', 'native_execution': bind(NATIVE / 'execution.json'),
+    'current_review': execution['saved_yaml'], 'all479_source_inputs_exact': True,
+    'all_before_files_exact': True, 'whole_render_history_exact': True,
+    'new_archive_files': new, 'archive_map': bind(DEST / 'archive-map.json'),
+    'late_history_written': False})
+print(json.dumps({'status': 'passed', 'new_archive_files': len(new), 'receipt': bind(OUT / 'receipt.json')}))
