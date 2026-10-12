@@ -1,0 +1,11 @@
+--- dom_audit.py
++++ dom_audit_corrected.py
+@@ -54,7 +54,7 @@
+ for i,n in enumerate(d['taxa']+d['participants']+d['reactions'],1):
+  s=norm(dom.get_element_by_id(f'component-{i}').text_content())
+  assert n['id'] in s and norm(n['label']) in s
+- if n.get('direction'):assert n['direction'] in s
++ if n.get('direction'):assert n['direction'].replace('_',' ') in s
+ for i,ref in enumerate(d['references'],1):
+  s=norm(dom.get_element_by_id(f'reference-{i}').text_content())
+  assert ref['id'] in s

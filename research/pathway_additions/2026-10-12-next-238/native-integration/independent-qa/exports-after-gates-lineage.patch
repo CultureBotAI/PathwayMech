@@ -1,0 +1,24 @@
+--- exports_currentness.py
++++ exports_currentness_after_gates.py
+@@ -28,7 +28,13 @@
+ for p in paths[3:]:
+  a=json.loads(p.read_text());terms.update(a['terms']);authorities.append({'source':pin(p),'terms':len(a['terms']),'owners':len(a['sources'])})
+ for row in node_checks:assert row['id'] in terms
+-ins=json.loads((H/'native-inspection.json').read_text());current=[]
++oldins=json.loads((H/'native-inspection.json').read_text())
++newins=json.loads((H/'native-inspection-after-gates.json').read_text())
++a={x['path']:x for x in oldins['source']['inputs']};b={x['path']:x for x in newins['source']['inputs']}
++assert a.keys()==b.keys()
++changes=[{'path':k,'before':a[k]['sha256'],'after':b[k]['sha256']} for k in a if a[k]!=b[k]]
++assert {x['path'] for x in changes}=={'output/kgx/nodes.tsv','output/kgx/edges.tsv'},changes
++ins=json.loads((H/'native-inspection-after-gates.json').read_text());current=[]
+ for x in ins['source']['inputs']:
+  b=pin(R/x['path']);assert b['sha256']==x['sha256'],x['path'];current.append(b)
+ cmd=['rg','--files','--no-ignore','--hidden',str(R/'reviews/structured')]
+@@ -41,5 +47,5 @@
+  targets=y.get('targets',[]) if isinstance(y,dict) else []
+  if any(x.get('target_id')==record.id or x.get('path')==str(T.relative_to(R)) for x in targets):prior.append({'file':pin(f),'targets':targets,'findings':y.get('findings',[])})
+ assert initial==[pin(p) for p in paths]
+-result={'status':'pass','target':pin(T),'exports_and_authorities_at_start_and_finish':initial,'authority_counts':authorities,'identities_checked':len(node_checks),'node_contexts':node_checks,'whole_edge_rows':edge_checks,'whole_source_mappings':actualmaps,'native_inspection_inputs_still_exact':current,'previous_review_search':{'argv':cmd,'exit_code':p.returncode,'hidden_ignored_included':True,'literal_symlink_policy':'rg inventory does not follow directory symlinks; no recursive alias traversal','yaml_reviews':len(allreviews),'files':allreviews,'exact_target_matches':prior},'scope':'Single-record projections compared against actual whole maintained exports. Whole-corpus gates are separately root owned.'}
++result={'status':'pass','explicit_phase_changes':changes,'prior_failed_check':'exports_currentness-execution.json: pre-phase2 KGX lacked the newly generated target. Original failed run retained; no biological or helper correction.','target':pin(T),'exports_and_authorities_at_start_and_finish':initial,'authority_counts':authorities,'identities_checked':len(node_checks),'node_contexts':node_checks,'whole_edge_rows':edge_checks,'whole_source_mappings':actualmaps,'native_inspection_inputs_still_exact':current,'previous_review_search':{'argv':cmd,'exit_code':p.returncode,'hidden_ignored_included':True,'literal_symlink_policy':'rg inventory does not follow directory symlinks; no recursive alias traversal','yaml_reviews':len(allreviews),'files':allreviews,'exact_target_matches':prior},'scope':'Single-record projections compared against actual whole maintained exports. Whole-corpus gates are separately root owned.'}
+ (H/'exports-currentness.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: 20 authority IDs, 20 whole local node contexts, 21 whole edge rows, 10 SSSOM mappings, original native inspection current; prior exact target bundles',len(prior))

@@ -1,0 +1,18 @@
+--- validate_proposal_final.py
++++ validate_proposal_ready.py
+@@ -6,10 +6,10 @@
+ def pin(p):
+  p=Path(p);b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ def now():return datetime.now(timezone.utc).isoformat()
+-argv=[P,'-B',str(R/'scripts/record_review.py'),'--repo-root',str(R),'--schema',str(R/'schema/record_review.yaml'),'validate',str(H/'completed-review-final.yaml')]
+-inputs=[pin(__file__),pin(H/'completed-review-final.yaml'),pin(R/'scripts/record_review.py'),pin(R/'schema/record_review.yaml')]
++argv=[P,'-B',str(R/'scripts/record_review.py'),'--repo-root',str(R),'--schema',str(R/'schema/record_review.yaml'),'validate',str(H/'completed-review-ready.yaml')]
++inputs=[pin(__file__),pin(H/'completed-review-ready.yaml'),pin(R/'scripts/record_review.py'),pin(R/'schema/record_review.yaml')]
+ env={'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1'};start=now();tick=time.monotonic()
+-with (H/'native-validate-final.stdout').open('xb') as out,(H/'native-validate-final.stderr').open('xb') as err:code=subprocess.run(argv,cwd=R,env={**os.environ,**env},stdout=out,stderr=err,check=False).returncode
+-(H/'native-validate-final-execution.json').write_text(json.dumps({'started_at':start,'finished_at':now(),'seconds':time.monotonic()-tick,'argv':argv,'cwd':str(R),'environment':env,'exit_code':code,'inputs_at_start':inputs,'stdout':pin(H/'native-validate-final.stdout'),'stderr':pin(H/'native-validate-final.stderr')},indent=2)+'\n')
+-assert pin(H/'completed-review-final.yaml')==inputs[1]
++with (H/'native-validate-ready.stdout').open('xb') as out,(H/'native-validate-ready.stderr').open('xb') as err:code=subprocess.run(argv,cwd=R,env={**os.environ,**env},stdout=out,stderr=err,check=False).returncode
++(H/'native-validate-ready-execution.json').write_text(json.dumps({'started_at':start,'finished_at':now(),'seconds':time.monotonic()-tick,'argv':argv,'cwd':str(R),'environment':env,'exit_code':code,'inputs_at_start':inputs,'stdout':pin(H/'native-validate-ready.stdout'),'stderr':pin(H/'native-validate-ready.stderr')},indent=2)+'\n')
++assert pin(H/'completed-review-ready.yaml')==inputs[1]
+ print('native validate only',code);raise SystemExit(code)

@@ -1,0 +1,15 @@
+--- inspect_inputs.py
++++ inspect_after_gates.py
+@@ -8,8 +8,8 @@
+  p=Path(p);b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ def now():return datetime.now(timezone.utc).isoformat()
+ plan=json.loads((PLAN/'planned-commands.json').read_bytes());started=now();tick=time.monotonic()
+-inputs=[bind(PLAN/'handoff.json'),bind(PLAN/'planned-commands.json'),bind(PLAN/'targets.yaml'),bind(__file__),bind(plan['inspect'][2])]
+-with (H/'native-inspection.json').open('xb') as out,(H/'native-inspection.stderr').open('xb') as err:
++inputs=[bind(Path('/private/tmp/pathwaymech-next-238-local-native-execution-20261012/final-gates/completion.json')),bind(PLAN/'handoff.json'),bind(PLAN/'planned-commands.json'),bind(PLAN/'targets.yaml'),bind(__file__),bind(plan['inspect'][2])]
++with (H/'native-inspection-after-gates.json').open('xb') as out,(H/'native-inspection-after-gates.stderr').open('xb') as err:
+  result=subprocess.run(plan['inspect'],cwd=plan['cwd'],env={**os.environ,**plan['environment']},stdout=out,stderr=err,check=False)
+-receipt={'started_at':started,'finished_at':now(),'seconds':time.monotonic()-tick,'argv':plan['inspect'],'cwd':plan['cwd'],'environment':plan['environment'],'exit_code':result.returncode,'inputs_at_start':inputs,'stdout':bind(H/'native-inspection.json'),'stderr':bind(H/'native-inspection.stderr'),'scope':'Native input capture only; no saved review or scientific verdict.'}
+-(H/'inspect-execution.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({'exit_code':result.returncode,'receipt':bind(H/'inspect-execution.json')},indent=2));raise SystemExit(result.returncode)
++receipt={'started_at':started,'finished_at':now(),'seconds':time.monotonic()-tick,'argv':plan['inspect'],'cwd':plan['cwd'],'environment':plan['environment'],'exit_code':result.returncode,'inputs_at_start':inputs,'stdout':bind(H/'native-inspection-after-gates.json'),'stderr':bind(H/'native-inspection-after-gates.stderr'),'scope':'Native input capture only; no saved review or scientific verdict.'}
++(H/'inspect-after-gates-execution.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({'exit_code':result.returncode,'receipt':bind(H/'inspect-after-gates-execution.json')},indent=2));raise SystemExit(result.returncode)

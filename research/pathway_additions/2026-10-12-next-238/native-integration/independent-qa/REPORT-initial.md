@@ -1,0 +1,13 @@
+# Record238 maintained scientific review — assessment in progress
+
+Fresh review of the exact maintained 5′-deoxyadenosine degradation I record finds no supported new scientific defect. The complete available2012 and2020 main texts, native route/protein/assembly/activity contexts and current identity/chemical evidence support all10paragraphs and21edges with their explicit scope limits. Each paragraph and complete edge has a separately recorded fresh rationale and whole-content hash.
+
+This reviewer authored the earlier eligibility/source preflight, authority design and canonical preparation. Deoxy authored the scientific record; Aceto performed the earlier full scientific review. The current reviewer is independent of the draft and makes fresh biological judgments, while technical acceptance of self-authored planning remains inherited from root/separate peers.
+
+Native inspection began at22:18:35UTC and completed successfully before substantive judgment. All40original source bodies and their receipt lineage were freshly checked. The bounded native audit passed20identities,10mappings,328native slots,155locators,34Rhea subjects/45blocks,ninechemical sides andsixkinetic slots. Primary access limits remain explicit; no figure-body or SI reading is claimed.
+
+Actual maintained HTML has10complete paragraphs,20namedidentities,23graph display nodes,21arrows,fivequalifiedinstances and42references. Every local anchor resolves; complete edge/evidence/qualifier text survives in adjacent tables and graph accessibility text. The actual SVG is byte-exact to the earlier accepted static preview. I personally viewed the full new static light raster. Dense junction labels, truncated construct/state captions and tall whitespace remain visual limits; no browser result is claimed.
+
+Two original DOM-helper attempts failed because their expectations used raw direction spelling and demanded reference hashes in a UI that displays URLs/versions. Both original helpers, executions and streams are retained; their bounded corrections preserve all biological assertions and were rerun successfully. A later export check stopped because the maintained KGX was still at the pre-phase2 state and did not yet contain this new record. This is a preserved premature-phase observation, not a product defect. The target/DOM/source checks are valid, but final KGX/currentness review and a new native inspection must bind the completed gate state.
+
+Final gate/root-QA bindings, the completed native proposal and permission to save remain pending. No maintained review, product/code/cache/Git/GitHub write has been made by this review. The packet is not yet sealed and this report is not a completed native review verdict.
