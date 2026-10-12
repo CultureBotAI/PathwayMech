@@ -1,0 +1,159 @@
+"""Independent source replay against the external draft; not scientific acceptance."""
+from pathlib import Path
+from collections import Counter
+from dataclasses import asdict
+import copy,hashlib,json,re,sqlite3,sys
+from lxml import etree,html
+import yaml
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import kgx_nodes,kgx_edges,write_kgx,LOCAL_PREDICATE_CURIES
+A=Path('/private/tmp/pathwaymech-next-226-author-20261012');P=Path('/private/tmp/pathwaymech-next-226-preflight-20261012');C=Path('/private/tmp/pathwaymech-curation-authorities')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,x): (A/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def must(x,msg):
+ if not x:raise AssertionError(msg)
+def guard(row):must(sha(row['path'])==row['sha256'],'changed input '+row['path'])
+target=A/'draft/ribose-phosphorylation.yaml';target_hash=sha(target);d=yaml.safe_load(target.read_text());model=validate_record(d)
+refs=json.loads((A/'reference-original-bindings.json').read_text());led=json.loads((A/'edge-evidence-ledger.json').read_text())
+for x in refs.values():guard(x)
+for x in json.loads((A/'runtime-bindings.json').read_text()):must(sha(x['external'])==x['sha256'],'runtime changed')
+for r in d['references']:must(r['source_sha256']==refs[r['id']]['sha256'],'reference mismatch '+r['id'])
+replayed=[]
+for item in led:
+ guard(item['binding']);p=Path(item['binding']['path'])
+ if item['selector_type']=='xpath':
+  values=etree.parse(str(p)).xpath(item['selector'])
+  observed=[etree.tostring(v,encoding='unicode') if isinstance(v,etree._Element) else str(v) for v in values]
+  # BioC text nodes are element text projections rather than serialized elements.
+  if item['evidence']['reference_id']=='PMID:34428301':observed=[v.text for v in values]
+  must(observed==item['observed'],'locator/body changed '+str(item['selector']))
+ elif item['selector_type']=='uniprot_comment':
+  observed=[v for v in json.loads(p.read_text())['comments'] if v['commentType']==item['selector']]
+  must(observed==item['observed'],'UniProt claim changed')
+ elif item['selector_type']=='uniprot_bulk_crossref':
+  v=item['selector'];entry=next(x for x in json.loads(p.read_text())['results'] if x['primaryAccession']==v['accession'])
+  observed=[x for x in entry['uniProtKBCrossReferences'] if x['database']==v['database'] and x['id']==v['id']]
+  must(observed==item['observed'],'UniProt bulk cross-reference changed')
+ elif item['selector_type']=='rhea_original_replay':
+  guard(item['projection'])
+  original=json.loads((P/'projections/rhea-preflight-chemistry.json').read_text())
+  fresh=json.loads((A/'projections/rhea-preflight-chemistry.json').read_text());must(fresh==original,'fresh Rhea original replay differs')
+ else:raise AssertionError('unknown selector '+item['selector_type'])
+ replayed.append(item['evidence'])
+for e in d['mechanistic_edges']:
+ for v in e['evidence']:must(v in replayed,'unreplayed evidence '+e['id']+' '+v['reference_id'])
+
+rhea=json.loads((A/'projections/rhea-preflight-chemistry.json').read_text());rd={x['id']:x for m in rhea['masters'] for x in m['directions']}
+def sidechem(rx,side):return [(x['properties']['accession'][0],x['coefficient']) for x in rd[rx]['sides'][side]]
+def native(frame,org='ECOLI'):
+ fs=list(P.glob('raw-*/'+org+'-'+frame+'.xml'))+list(A.glob('raw-*/'+org+'-'+frame+'.xml'))
+ matches=[]
+ for p in fs:
+  t=etree.parse(str(p));o=t.xpath('/ptools-xml/*[@detail="full" and @orgid=$org and @frameid=$frame]',org=org,frame=frame)
+  if o:matches.append((p,o[0]))
+ must(len(matches)==1,'native ambiguous '+frame);return matches[0]
+def chemical(frame,org='ECOLI'):
+ p,o=native(frame,org);ids=o.xpath('dblink[dblink-db="CHEBI"]/dblink-oid/text()');must(len(ids)==1,'compound missing exact ChEBI '+frame);return 'CHEBI:'+ids[0]
+expected={
+ 'RHEA:25433':dict(direction='left_to_right',inputs=sidechem('RHEA:25433','substrates'),outputs=sidechem('RHEA:25433','products')),
+ 'MetaCyc:RXN-14904':dict(direction='right_to_left',inputs=[(chemical('CPD0-1108'),1)],outputs=[(chemical('CPD-10330','META'),1)]),
+}
+p,mut=native('RXN-14904','META');must(mut.findtext('spontaneous')=='true' and mut.findtext('reaction-direction')=='REVERSIBLE','spontaneous source mismatch')
+must(mut.xpath('left/Compound/@frameid')==['CPD-10330'] and mut.xpath('right/Compound/@frameid')==['CPD0-1108'],'wrong spontaneous sides')
+must(mut.find('common-name') is None,'unexpected source name')
+_,pw=native('RIBOKIN-PWY','META');must(set(pw.xpath('reaction-list/Reaction/@frameid'))=={'RXN0-5304','RIBOKIN-RXN'},'native boundary changed')
+comment=pw.findtext('comment');must('CPD-10330' in comment and 'CPD-15318' in comment and 'spontaneous' in comment,'missing native specific pathway context')
+refine={'CHEBI:47013':chemical('CPD-10330','META'),'CHEBI:78346':chemical('CPD-15318','META')}
+expected['MetaCyc:RIBOKIN-RXN']=dict(direction='left_to_right',inputs=[(refine.get(x,x),n) for x,n in sidechem('RHEA:13698','substrates')],outputs=[(refine.get(x,x),n) for x,n in sidechem('RHEA:13698','products')])
+native_map={'D-Ribopyranose':chemical('D-Ribopyranose'),'ATP':'CHEBI:30616','ADP':'CHEBI:456216','WATER':'CHEBI:15377','PROTON':'CHEBI:15378','Pi':'CHEBI:43474'}
+_,tr=native('ABC-28-RXN');transport=[]
+for s in ['left','right']:
+ for v in tr.findall(s):
+  frame=v.find('Compound').get('frameid');must(frame in native_map,'unknown native transport participant');coeff=int(v.findtext('coefficient') or 1);comp=v.find('compartment/cco').get('frameid');transport.append(dict(side=s,frame=frame,chemical=native_map[frame],coefficient=coeff,compartment=comp))
+expected['MetaCyc:ABC-28-RXN']=dict(direction='left_to_right',inputs=[(x['chemical'],x['coefficient']) for x in transport if x['side']=='left'],outputs=[(x['chemical'],x['coefficient']) for x in transport if x['side']=='right'])
+must(tr.findtext('reaction-direction')=='PHYSIOL-LEFT-TO-RIGHT','transport direction changed')
+must(next(x for x in transport if x['frame']=='D-Ribopyranose' and x['side']=='left')['compartment']=='CCO-OUT','wrong external side')
+must(next(x for x in transport if x['frame']=='D-Ribopyranose' and x['side']=='right')['compartment']=='CCO-IN','wrong internal side')
+
+chems={}
+with sqlite3.connect((C/'chebi.db').resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as c:
+ for id in sorted({x for v in expected.values() for k in ['inputs','outputs'] for x,n in v[k]}):
+  stmt=c.execute("select predicate,value from statements where subject=? and predicate in ('rdfs:label','chemrof:generalized_empirical_formula','chemrof:charge','chemrof:inchi_string')",(id,)).fetchall();props=dict(stmt);must(len(stmt)==4,'missing chemical property '+id);chems[id]=props
+balances={}
+for rx,v in expected.items():
+ atoms=Counter()
+ for side,sign in [('inputs',-1),('outputs',1)]:
+  for id,n in v[side]:
+   props=chems[id];f=props['chemrof:generalized_empirical_formula'];must(re.fullmatch(r'(?:[A-Z][a-z]?[0-9]*)+',f),'unparsed formula')
+   for a,k in re.findall(r'([A-Z][a-z]?)(\d*)',f):atoms[a]+=sign*n*int(k or 1)
+   atoms['charge']+=sign*n*int(props['chemrof:charge'])
+ balance={k:v for k,v in atoms.items() if v};must(not balance,'unbalanced '+rx);balances[rx]=balance
+
+def check_draft(x):
+ validate_record(x);edges=x['mechanistic_edges'];nodes={v['id']:v for v in x['reactions']};participants={v['id']:v for v in x['participants']}
+ for rx,v in expected.items():
+  must(rx in nodes,'event removed '+rx);must(nodes[rx]['direction']==v['direction'],'direction wrong '+rx)
+  gotin=Counter(e['subject'] for e in edges if e['predicate']=='consumes' and e['object']==rx);gotout=Counter(e['object'] for e in edges if e['predicate']=='produces' and e['subject']==rx)
+  must(gotin==Counter(dict(v['inputs'])) and gotout==Counter(dict(v['outputs'])),'side mismatch '+rx)
+ must({e['subject'] for e in edges if e['predicate']=='part_of' and e['object']==x['id']}=={'RHEA:25433','MetaCyc:RXN-14904','MetaCyc:RIBOKIN-RXN'},'core boundary changed')
+ must(not any(e['predicate']=='catalyzes' and e['object']=='MetaCyc:RXN-14904' for e in edges),'invented catalyst')
+ must({e['subject'] for e in edges if e['predicate']=='catalyzes' and e['object']=='RHEA:25433'}=={'EcoCyc:CPLX0-7646','EcoCyc:CPLX0-7645'},'lost alternative pyranase')
+ for frame,acc,n in [('RBSA-MONOMER','P04983',1),('RBSC-MONOMER','P0AGI1',2),('RBSB-MONOMER','P02925',1)]:
+  _,o=native('ABC-28-CPLX');co=o.xpath('component[Protein[@frameid=$frame]]/coefficient/text()',frame=frame);must(co==[str(n)],'unexpected native assembly')
+  matches=[e for e in edges if (e['subject'],e['predicate'],e['object'])==('EcoCyc:ABC-28-CPLX','has_part','UniProtKB:'+acc)];must(len(matches)==1,'missing ABC component')
+  must(any(f'{n} copy/copies of {frame}' in ev['source_assertion'] for ev in matches[0]['evidence']),'assembly count unfaithful')
+ for id in ['MetaCyc:NONOXIPENT-PWY','MetaCyc:PWY0-662']:must(nodes[id]['category']=='pathway','opaque boundary lost')
+ must('RHEA:13698' not in nodes and 'RHEA:29904' not in nodes,'generic/transport alias falsely adopted')
+ for prefix,sign in [('UniProtKB:P0ACQ0','inhibits'),('EcoCyc:CPLX0-226','activates')]:
+  actual={e['object'] for e in edges if e['subject']==prefix and e['predicate']==sign};must(actual=={'Entrez:'+str(n) for n in [948267,948264,948262,948261,948260,948266]},'transcription targets/sign wrong')
+ must(any(e['subject']=='UniProtKB:P31463' and e['predicate']=='inhibits' and e['object']=='Entrez:948267' for e in edges),'YidZ sign/target wrong')
+ must(all(participants[e['object']]['category']=='gene' for e in edges if e['subject']=='UniProtKB:P31463'),'YidZ catalytic promotion')
+ for phrase in ['7.1/15.3','6.2/18.9','C-terminal 8-myc','does not claim an exact Rhea synonym','A2-C2-B1']:
+  must(phrase in x['description'],'scientific limitation lost '+phrase)
+check_draft(d)
+controls=[]
+def neg(name,mutation):
+ bad=copy.deepcopy(d);mutation(bad)
+ try:check_draft(bad)
+ except (AssertionError,ValueError) as e:controls.append(dict(name=name,rejected=True,reason=str(e)));return
+ raise AssertionError('negative control accepted '+name)
+neg('remove-spontaneous-event',lambda x:x['reactions'].__setitem__(slice(None),[r for r in x['reactions'] if r['id']!='MetaCyc:RXN-14904']))
+neg('reverse-spontaneous-direction',lambda x:next(r for r in x['reactions'] if r['id']=='MetaCyc:RXN-14904').update(direction='left_to_right'))
+neg('delete-ATP-consumption',lambda x:x['mechanistic_edges'].__setitem__(slice(None),[e for e in x['mechanistic_edges'] if not (e['subject']=='CHEBI:30616' and e['object']=='MetaCyc:RIBOKIN-RXN')]))
+neg('lose-FucU-alternative',lambda x:x['mechanistic_edges'].__setitem__(slice(None),[e for e in x['mechanistic_edges'] if not (e['subject']=='EcoCyc:CPLX0-7645' and e['predicate']=='catalyzes')]))
+def false_generic(x):
+ x['participants'].append(dict(id='CHEBI:47013',label='D-ribofuranose',category='small_molecule'))
+ next(e for e in x['mechanistic_edges'] if e['subject']=='CHEBI:45506' and e['predicate']=='consumes').update(subject='CHEBI:47013')
+neg('replace-alpha-with-generic-kinase-substrate',false_generic)
+neg('drop-RbsB',lambda x:x['mechanistic_edges'].__setitem__(slice(None),[e for e in x['mechanistic_edges'] if not (e['subject']=='EcoCyc:ABC-28-CPLX' and e['object']=='UniProtKB:P02925')]))
+neg('reverse-YidZ-regulatory-sign',lambda x:next(e for e in x['mechanistic_edges'] if e['subject']=='UniProtKB:P31463').update(predicate='activates'))
+neg('collapse-opaque-interface-to-activity',lambda x:next(r for r in x['reactions'] if r['id']=='MetaCyc:PWY0-662').update(category='molecular_activity'))
+neg('erase-construct-limits',lambda x:x.update(description=x['description'].replace('C-terminal 8-myc','untagged')))
+
+def verify_bound_bytes(row,raw):
+ must(hashlib.sha256(raw).hexdigest()==row['sha256'],'bound-byte corruption rejected')
+for role,row in [('source',refs['MetaCyc:RXN-14904']),('target',dict(path=str(target),sha256=target_hash)),('runtime',dict(path=json.loads((A/'runtime-bindings.json').read_text())[0]['external'],sha256=json.loads((A/'runtime-bindings.json').read_text())[0]['sha256'])),('projection',dict(path=str(A/'projections/rhea-preflight-chemistry.json'),sha256=sha(A/'projections/rhea-preflight-chemistry.json')))]:
+ raw=Path(row['path']).read_bytes();verify_bound_bytes(row,raw)
+ try:verify_bound_bytes(row,raw+b'\nNOT-ORIGINAL')
+ except AssertionError as e:controls.append(dict(name=role+'-byte-corruption',rejected=True,reason=str(e)))
+ else:raise AssertionError('corruption accepted '+role)
+
+errors=strict_errors([target],A/'runtime');must(not errors,str(errors));files=render_site([model],{model.id:str(target)})
+out=A/'verified-render';out.mkdir(exist_ok=True)
+for n,s in files.items():p=out/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(s)
+write_kgx([model],A/'verified-kgx');kn=[asdict(v) for v in kgx_nodes([model])];ke=[asdict(v) for v in kgx_edges([model])]
+page=files['records/MetaCyc_RIBOKIN-PWY.html'];tree=html.fromstring(page);arrows=tree.xpath('//a[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]')
+must(len(ke)==len(d['mechanistic_edges'])==len(arrows),'graph/export edge loss')
+for edge,k,g in zip(d['mechanistic_edges'],ke,arrows):
+ must((edge['subject'],LOCAL_PREDICATE_CURIES[edge['predicate']],edge['object'])==(k['subject'],k['predicate'],k['object']),'KGX triple loss')
+ must(k['description']==edge['description'] and json.loads(k['evidence'])==edge['evidence'],'KGX scope/evidence loss')
+ must(g.get('data-predicate')==edge['predicate'] and (g.get('data-subject-id') or g.get('data-subject'))==edge['subject'] and (g.get('data-object-id') or g.get('data-object'))==edge['object'],'SVG native triple loss')
+ must(edge['description'] in g.get('aria-label'),'SVG scope description loss')
+for x in refs.values():guard(x)
+must(sha(target)==target_hash,'target changed during replay')
+save('chemistry-replay.json',dict(expected=expected,core_events=3,core_sides=9,transport_sides=7,chemical_authority_statements=chems,formula_charge_balance=balances,native_transport_slots=transport,kinase_refinement=refine,unadopted_generic_rhea=rd['RHEA:13698'],unadopted_furanose_transport_rhea=rd['RHEA:29904']))
+save('negative-controls.json',controls)
+save('validation-result.json',dict(status='passed_external_replay_not_scientific_acceptance',target=dict(path=str(target),sha256=target_hash),reference_originals=len(refs),replayed_evidence_rows=len(replayed),schema_and_closed_schema='passed',nodes=len(kn),edges=len(ke),SVG_edges=len(arrows),core_events=3,core_sides=9,transport_sides=7,negative_controls=len(controls),identity='All supported named IDs independently resolved; exact unnamed RXN-14904 remains an explicit adapter gap',maintained_writes=False))
+print(json.dumps(json.loads((A/'validation-result.json').read_text()),indent=2))

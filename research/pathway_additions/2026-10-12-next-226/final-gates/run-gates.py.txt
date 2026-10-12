@@ -1,0 +1,25 @@
+"""Prepared maintained gate runner; inert until root explicitly executes it."""
+import argparse,json,os,subprocess
+from pathlib import Path
+from common import *
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--root',required=True,type=Path);parser.add_argument('--base',required=True);parser.add_argument('--adoption-receipt',required=True,type=Path);parser.add_argument('--output',required=True,type=Path);a=parser.parse_args()
+    root=validate_base(a.root,a.base,clean=False);verify_package();verify_accepted();verify_adopted(root);external_new(a.output,root)
+    adoption=load(a.adoption_receipt);assert adoption['status']=='adopted_pending_maintained_gates_and_saved_review'and adoption['base']==a.base and adoption['root']==str(root)
+    verify(root/TARGET_REL,adoption['target']);verify(adoption['baseline']['path'],adoption['baseline']);verify(adoption['baseline_kgx']['path'],adoption['baseline_kgx'])
+    baseline=load(adoption['baseline']['path'])
+    for group in ['records','pages','reviews','history']:
+        for item in baseline[group]:verify(root/item['relative_path'],item)
+    env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(root/'src')+os.pathsep+str(root)}
+    py=[str(PYTHON),'-B'];commands=[('render',py+['-c','from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())']),('skills',py+['scripts/validate_claude_skills.py']),('validate',py+['-c','from pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())']),('tests',py+['-m','pytest','-q']),('lint',py+['-m','ruff','check','.']),('kgx',py+['-c','from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())']),('vendored',['bash','scripts/check_vendored_sync.sh']),('diff-check',['git','diff','--check'])]
+    a.output.mkdir();receipts=[];input_bindings={'target':binding(root/TARGET_REL),'baseline_receipt':binding(a.adoption_receipt),'canonical_handoff':binding(BUILD/'handoff.json'),'helper':binding(__file__),'at':now()};write_new(a.output/'inputs.json',input_bindings)
+    for name,command in commands:
+        start=now();result=subprocess.run(command,cwd=root,env=env,capture_output=True)
+        (a.output/(name+'.stdout')).write_bytes(result.stdout);(a.output/(name+'.stderr')).write_bytes(result.stderr)
+        receipt={'name':name,'command':command,'cwd':str(root),'environment':{k:env[k]for k in ['PYTHONDONTWRITEBYTECODE','UV_NO_SYNC','PYTHONPATH']},'started_at':start,'finished_at':now(),'exit_code':result.returncode,'stdout':binding(a.output/(name+'.stdout')),'stderr':binding(a.output/(name+'.stderr'))};receipts.append(receipt)
+        (a.output/'execution.json').write_text(json.dumps({'status':'running'if result.returncode==0 else'failed','base':a.base,'receipts':receipts},indent=2)+'\n');print(name,result.returncode,flush=True)
+        if result.returncode:return result.returncode
+    verify_adopted(root)
+    (a.output/'execution.json').write_text(json.dumps({'status':'passed','base':a.base,'receipts':receipts,'scope':'Actual maintained commands completed. Later dossier/review changes and final staged whitespace require separate checks; this receipt does not claim PR/CI/merge completion.','preservation':'pending separate helper','saved_scientific_review':'pending root verification'},indent=2)+'\n');return 0
+if __name__=='__main__':raise SystemExit(main())

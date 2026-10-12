@@ -1,0 +1,40 @@
+[
+  {
+    "action": "Initial new-test execution",
+    "result": "12 fixture-construction failures and 134 passes; erroneous root paths for side/direction/flag mutations were corrected before final run",
+    "terminal": "bc8081",
+    "full_initial_output": "Tool output truncated; not represented as a complete retained log"
+  },
+  {
+    "action": "Initial broader suite collection",
+    "result": "Missing unmodified ontology builder in external partial tree; copied unchanged base scripts externally",
+    "log": "logs/authority-suite-initial-collection-error.log",
+    "exit_code": 2
+  },
+  {
+    "action": "Complete relevant authority/identifier regression suite",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=candidate/src:candidate /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_metacyc_reaction_authority.py tests/test_metacyc_protein_authority.py tests/test_metacyc_complex_naming.py tests/test_metacyc_authority_encoding.py tests/test_ecocyc_identifier_authority.py tests/test_identifiers.py tests/test_source_identifier_snapshot.py tests/test_identifier_snapshot_builders.py tests/test_pathbank_identifier_authority.py tests/test_pubchem_identifier_authority.py tests/test_bigg_identifier_authority.py tests/test_kegg_identifier_authority.py tests/test_metanetx_identifier_authority.py tests/test_ncbi_gene_identifier_authority.py",
+    "workdir": "/private/tmp/pathwaymech-next-226-authority-implementation-20261012/candidate",
+    "log": "logs/authority-suite.log",
+    "exit_code": 0
+  },
+  {
+    "action": "Ruff changed Python files",
+    "command": "python -B -m ruff check --no-cache scripts/build_source_identifier_snapshot.py src/pathwaymech/identifiers.py tests/test_metacyc_reaction_authority.py",
+    "log": "logs/ruff.log",
+    "exit_code": 0
+  },
+  {
+    "action": "Authentic source, prior-adapter and complete unchanged draft replay",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=candidate/src:candidate python -B verify-originals.py",
+    "log": "logs/actual-replay.log",
+    "exit_code": 0
+  },
+  {
+    "action": "Patch replay against copied accepted threonine baseline",
+    "command": "patch --batch -p1 -i changes.patch",
+    "log": "logs/patch-replay.log",
+    "exit_code": 0,
+    "verification": "Every candidate/base file compared byte-for-byte with replayed tree; exactly four changed files"
+  }
+]

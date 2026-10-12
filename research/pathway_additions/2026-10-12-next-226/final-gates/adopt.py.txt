@@ -1,0 +1,60 @@
+"""Guarded ribose adoption. Default is read-only; --apply enables reviewed writes."""
+import argparse,json
+from pathlib import Path
+from common import *
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--root',required=True,type=Path);parser.add_argument('--base',required=True);parser.add_argument('--baseline-receipt',required=True,type=Path);parser.add_argument('--receipt-output',required=True,type=Path);parser.add_argument('--apply',action='store_true');a=parser.parse_args()
+    root=validate_base(a.root,a.base);verify_package();verify_accepted();verify_captured226(root);external_new(a.receipt_output,root)
+    captured=load(a.baseline_receipt);assert captured['status']=='actual_merged226_baseline_captured'and captured['base']==a.base
+    verify(captured['baseline']['path'],captured['baseline']);verify(captured['kgx']['path'],captured['kgx']);base=load(captured['baseline']['path']);assert base['head']==a.base and base['root']==str(root)and base['tree']==git(root,'rev-parse','HEAD^{tree}')
+    for group in ['records','pages','reviews','history','authority_inputs','implementation_inputs']:
+        for item in base[group]:verify(root/item['relative_path'],item)
+    for group,relative in [('records','data/pathways'),('pages','pages/records'),('reviews','reviews/structured'),('history','history')]:
+        assert {r['relative_path']for r in inventory(root,relative)}=={r['relative_path']for r in base[group]},('Baseline inventory changed',group)
+    actual_implementation={r['relative_path']for directory in ['src','scripts','tests','conf','docs','.claude']for r in inventory(root,directory)}
+    assert actual_implementation=={r['relative_path']for r in base['implementation_inputs']},'Implementation inventory changed after capture'
+    old_source=load(root/'data/identifier_authorities/sources.json');old_ontology=load(root/'data/identifier_authorities/ontology.json');expected=load(BUILD/'expected-additions.json')
+    for kind,old,expected_terms in [('sources',old_source,expected['source_terms']),('ontology',old_ontology,expected['ontology_terms'])]:
+        new=load(BUILD/(kind+'.json'));assert old['version']==new['version']
+        for group in ['terms','sources']:
+            for key,value in old[group].items():assert new[group].get(key)==value,(kind,group,key)
+        assert {key:value for key,value in new['terms'].items() if key not in old['terms']}==expected_terms
+    assert (len(expected['source_terms']),len(expected['ontology_terms']))==(24,7)
+    old_manifest=load(root/'conf/identifier_sources.json');new_manifest=load(BUILD/'manifest.json');assert len(old_manifest)==682 and new_manifest[:682]==old_manifest and new_manifest[682:]==expected['source_manifest']
+    old_rhea=load(root/'conf/rhea_identifier_updates.json');new_rhea=load(BUILD/'rhea-updates.json');assert new_rhea['ids']==old_rhea['ids']+['RHEA:25433'];assert {k:v for k,v in old_rhea.items()if k!='ids'}=={k:v for k,v in new_rhea.items()if k!='ids'}
+    changes=load(BUILD/'code-change-bindings.json')['changes']
+    for item in changes:
+        relative=safe_relative(item['relative_path']);p=root/relative;verify(item['candidate']['path'],item['candidate'])
+        if item['baseline']is None:assert not p.exists()and not p.is_symlink()
+        else:verify(p,item['baseline'])
+    originals=load(BUILD/'new-originals-copy-plan.json')['new_originals'];assert len(originals)==16
+    for item in originals:
+        verify(item['source']['path'],item['source']);dest=CACHE/safe_relative(item['cache_relative_path'])
+        if dest.exists()or dest.is_symlink():verify(dest,item['source'])
+    plan=load(PACKAGE/'dossier-plan.json');dossier=root/safe_relative(plan['root']);assert plan['root']==DOSSIER_REL and not dossier.exists()and not dossier.is_symlink()
+    for item in plan['mappings']:
+        safe_relative(item['destination']);verify(item['source']['path'],item['source'])
+    target=root/TARGET_REL;assert not target.exists()and not target.is_symlink();assert sha(BUILD/'corpus/ribose-phosphorylation.yaml')==TARGET_SHA
+    if not a.apply:
+        print(json.dumps({'status':'all_guards_passed_no_mutation','base':a.base,'baseline_receipt':binding(a.baseline_receipt),'planned_record':TARGET_REL,'planned_dossier_files':len(plan['mappings']),'planned_new_originals':16,'apply_required':True},indent=2));return
+    # All input, immutable baseline, destination and accepted-result guards precede mutation.
+    copied=[]
+    for item in originals:
+        dest=CACHE/item['cache_relative_path']
+        if not dest.exists():
+            dest.parent.mkdir(parents=True,exist_ok=True)
+            with dest.open('xb')as stream:stream.write(Path(item['source']['path']).read_bytes())
+            copied.append(str(dest))
+    for item in changes:(root/item['relative_path']).write_bytes(Path(item['candidate']['path']).read_bytes())
+    for source,dest in [('sources.json','data/identifier_authorities/sources.json'),('ontology.json','data/identifier_authorities/ontology.json'),('manifest.json','conf/identifier_sources.json'),('rhea-updates.json','conf/rhea_identifier_updates.json')]: (root/dest).write_bytes((BUILD/source).read_bytes())
+    with target.open('xb')as stream:stream.write((BUILD/'corpus/ribose-phosphorylation.yaml').read_bytes())
+    archive=[]
+    for item in plan['mappings']:
+        dest=dossier/item['destination'];dest.parent.mkdir(parents=True,exist_ok=True)
+        with dest.open('xb')as stream:stream.write(Path(item['source']['path']).read_bytes())
+        verify(dest,item['source']);archive.append({'source':item['source'],'destination':str(dest.relative_to(root))})
+    verify_adopted(root)
+    receipt={'at':now(),'status':'adopted_pending_maintained_gates_and_saved_review','root':str(root),'base':a.base,'base_tree':base['tree'],'baseline_receipt':binding(a.baseline_receipt),'baseline':captured['baseline'],'baseline_kgx':captured['kgx'],'target':binding(target),'canonical_handoff':binding(BUILD/'handoff.json'),'dossier_plan':binding(PACKAGE/'dossier-plan.json'),'new_cache_copies':copied,'new_source_ids':sorted(expected['source_terms']),'new_ontology_ids':sorted(expected['ontology_terms']),'implementation_changes':changes,'issues_pending_merge':[436],'maintained_gates':'pending','preservation':'pending','saved_scientific_review':'pending','pull_request':'pending','merge':'pending','source_exhaustion':False}
+    write_new(dossier/'archive-map.json',archive);write_new(dossier/'adoption.json',receipt);write_new(a.receipt_output,receipt);print(json.dumps(receipt,indent=2))
+if __name__=='__main__':main()
