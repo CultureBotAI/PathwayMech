@@ -137,9 +137,17 @@ primary definition from an export that also contains attached `SubPathway`
 interface stubs. The request must agree with the native SMPDB assertion; neither
 the first XML object nor the filename selects the pathway. Extra Pathway objects
 must be explicitly attached stubs containing native Interaction objects, not
-unrelated or expanded definitions. Only the selected primary pathway supplies a
-canonical pathway term. An interface's independently downloaded definition can
-provide its own canonical title. Legacy archive inputs still require exactly
+unrelated or expanded definitions. The selected primary pathway supplies its
+canonical pathway term. A directly attached, validated interface also supplies
+its exact SMPDB identity and one direct, nonempty biological `displayName` as a
+canonical title. Duplicate, empty, nested, or generic `SubPathway` display names
+fail; the generic `SubPathway` marker is not a synonym. Conflicting native pathway
+names across inputs fail before corpus selection, including a child versus a
+separately supplied primary definition. Matching names retain the first source's
+provenance. This is issuing-source identity/name support, not a claim to have
+retrieved the interface's complete definition or established its chemistry.
+Only the primary pathway scopes local graph identifiers; no child chemistry or
+local graph expansion is inferred. Legacy archive inputs still require exactly
 one Pathway. Native Interaction objects are not emitted as reaction authorities.
 Compartment-scoped physical objects keep distinct local IDs even when they share
 a chemical reference; identity alone does not assert material transfer or exact
@@ -223,6 +231,28 @@ an OAK Semantic SQL database digest covers the uncompressed SQLite database,
 while its source URL identifies the ontology release. Without this field the
 digest denotes the unmodified bytes returned by the source URL. These are
 provenance digests of the inputs, not checksums of the derived JSON file.
+
+The `pubchem-compound-property-json` source kind accepts one original PubChem
+PUG REST property response. Its request must be exactly
+`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/<CID>/property/Title,IUPACName,MolecularFormula,InChIKey/JSON`,
+with one positive numeric CID. The single native `PropertyTable.Properties`
+object must carry that same integer CID and all four requested properties.
+Only its nonempty `Title` supplies the canonical `PubChem` name. The adapter
+rejects malformed or non-UTF-8 JSON, duplicate keys, nonfinite numbers, error
+objects, multiple compounds, missing/empty/malformed fields and mismatched IDs.
+Conflicting titles for a CID fail before corpus selection. Original bytes must
+match the manifest digest; missing required PubChem terms remain blocking.
+
+PubChem uses canonical-label policy with no contextual exemption. The adapter
+does not promote `IUPACName`, cross-database identifiers or separately downloaded
+synonym lists to accepted names. Formula and InChIKey validate the response
+shape and do not establish equality with another chemical source. A provenance
+version such as `PubChem PUG REST CID 78645 property snapshot retrieved 2026-10-12`
+records an acquisition snapshot; this response supplies neither a native entry
+version nor a global release. Hash the complete unmodified response and retain
+its actual acquisition receipt externally. Optional synonym evidence needs its
+own original digest. Keep the issuing source's terms and license-review scope;
+do not infer a new release or license from a successful HTTP response.
 
 KEGG authority extraction accepts three explicit native REST flatfile kinds:
 `kegg-module-flatfile` for `M` plus five digits with ENTRY type `Pathway Module`,

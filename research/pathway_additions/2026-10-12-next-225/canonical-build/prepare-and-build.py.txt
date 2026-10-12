@@ -1,0 +1,313 @@
+"""Build full threonine authority projections externally from sealed native inputs."""
+from pathlib import Path
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+import traceback
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-225-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-225-canonical-build-20261012')
+BASE = Path('/private/tmp/pathwaymech-next-225-integration-preparation-20261012')
+CORRECTION = Path('/private/tmp/pathwaymech-next-225-correction-20261012')
+SCIENCE = Path('/private/tmp/pathwaymech-next-225-science-successor-review-20261012')
+IMPL = Path('/private/tmp/pathwaymech-next-225-authority-implementation-20261012')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+DB_ROOT = CACHE.parent
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+HEAD = '6b6747ae6e14a9904efd7da9cbcca16398855582'
+TARGET_SHA = '5e003a44a1519e0a121a39819b334e57feee397e033d6db2ccec01399898daa7'
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def row(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+
+def check(binding):
+    path = Path(binding['path'])
+    assert path.is_file(), path
+    if 'bytes' in binding:
+        assert path.stat().st_size == binding['bytes'], path
+    assert sha(path) == binding['sha256'], path
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def bindings(value):
+    if isinstance(value, dict):
+        if {'path', 'sha256'} <= set(value):
+            yield value
+        for item in value.values():
+            yield from bindings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from bindings(item)
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
+
+
+def intake():
+    seals = [
+        (CORRECTION / 'handoff.json', 'cc8b4e49a249532e65d4f0b6aa95c3a11fc48199e67ed46cd1bed4d61ae7b03a'),
+        (SCIENCE / 'handoff.json', '9c499ad4136d88c9f728e51271614b7086c5effc24f2316a3f0c30e1f5f459d6'),
+        (IMPL / 'handoff.json', '5228d9440bc7c4fcf054c1898c24bb0253fcf639c3521fc06d20c3b17a179fa1'),
+        (CORRECTION / 'authority-proposal-v2.json', 'dcb9eea174b6c1d8cd4592fd4e63f7ef35c8734c1d07e30b6b82b26098b27dc6'),
+        (IMPL / 'candidate/scripts/build_source_identifier_snapshot.py', '450431a6d21518d3d3229b38d7285525d1d5d52e38f0f649093b454150744ae0'),
+    ]
+    for path, digest in seals:
+        check({'path': str(path), 'sha256': digest})
+    seal_results = []
+    for package in (CORRECTION, SCIENCE, IMPL):
+        handoff = load(package / 'handoff.json')
+        checked = list(bindings(handoff))
+        for item in checked:
+            check(item)
+        artifact_manifest = load(package / 'artifact-manifest.json')
+        artifacts = artifact_manifest if isinstance(artifact_manifest, list) else artifact_manifest['artifacts']
+        for item in artifacts:
+            check(item)
+        seal_results.append({'package': str(package), 'handoff': row(package / 'handoff.json'),
+                             'artifact_count': len(artifacts), 'handoff_bindings': len(checked)})
+    science = load(SCIENCE / 'handoff.json')
+    assert science['status'] == 'sealed_independent_scientific_successor_accepted'
+    assert science['unresolved_findings'] == 0
+    assert science['target']['sha256'] == TARGET_SHA
+    review_path = Path('/private/tmp/pathwaymech-next-225-authority-root-review-20261012/review.json')
+    check({'path': str(review_path), 'sha256': 'b43ec5c5bd8c4f10c5faab2e51a4b4d55213115f33e1e7871b5d602e508ab828'})
+    review = load(review_path)
+    assert not review['findings'] and review['status'].startswith('accepted_')
+    baseline = load(BASE / 'baseline.json')
+    for item in bindings(load(BASE / 'baseline-receipt.json')):
+        check(item)
+    assert git('rev-parse', 'HEAD') == HEAD == baseline['head']
+    assert not git('status', '--porcelain', '--untracked-files=no')
+    actual = set(subprocess.check_output(['rg', '--files', '-uu', '-L', 'data/pathways'], cwd=ROOT, text=True).splitlines())
+    assert actual == {item['relative_path'] for item in baseline['records']}
+    for item in baseline['records'] + baseline['authority_inputs'] + baseline['implementation_inputs']:
+        check(item)
+    old = {kind: load(ROOT / f'data/identifier_authorities/{kind}.json') for kind in ('sources', 'ontology')}
+    assert (len(old['sources']['terms']), len(old['sources']['sources'])) == (2328, 510)
+    assert (len(old['ontology']['terms']), len(old['ontology']['sources'])) == (1906, 5)
+    manifest = load(ROOT / 'conf/identifier_sources.json')
+    proposal = load(CORRECTION / 'authority-proposal-v2.json')
+    additions = proposal['minimal_original_manifest_additions']
+    assert len(manifest) == 663 and len(additions) == 19
+    assert len(proposal['new_terms_reusing_old_metadata']) == 13
+    assert len(proposal['selections']) == proposal['named_ids'] == 84
+    original_bindings = {}
+    for entry in manifest:
+        for source in [entry] + ([entry['version_source']] if 'version_source' in entry else []):
+            rel = Path(source['path'])
+            assert not rel.is_absolute() and '..' not in rel.parts
+            path = CACHE / rel
+            assert rel.as_posix() not in original_bindings or original_bindings[rel.as_posix()]['sha256'] == source['sha256']
+            original_bindings[rel.as_posix()] = {'path': str(path), 'sha256': source['sha256'], 'bytes': path.stat().st_size, 'cache_relative_path': rel.as_posix()}
+    for item in original_bindings.values():
+        check(item)
+    assert len(original_bindings) == 664
+    for item in additions:
+        check({'path': item['original_path'], 'sha256': item['entry']['sha256'], 'bytes': item['bytes']})
+        assert item['entry']['path'] not in original_bindings
+    assert len({entry['key'] for entry in manifest + [item['entry'] for item in additions]}) == 682
+    assert len({entry['path'] for entry in manifest + [item['entry'] for item in additions]}) == 682
+    dbs = []
+    for prefix, file, key in [('CHEBI', 'chebi.db', 'chebi-255'), ('GO', 'go.db', 'go-2026-07-26'), ('NCBITaxon', 'ncbitaxon.db', 'ncbitaxon-2026-07-12'), ('RHEA', 'rhea.db', 'rhea-139')]:
+        path = DB_ROOT / file
+        item = {'path': str(path), 'sha256': old['ontology']['sources'][key]['sha256'], 'bytes': path.stat().st_size, 'prefix': prefix, 'source_key': key, 'mtime_ns': path.stat().st_mtime_ns}
+        check(item)
+        dbs.append(item)
+    updates = load(ROOT / 'conf/rhea_identifier_updates.json')
+    new_rhea = [item['id'] for item in proposal['selections'] if item['disposition'] == 'new_selected_Rhea142_term']
+    assert new_rhea == ['RHEA:13162', 'RHEA:25654', 'RHEA:28187', 'RHEA:70001', 'RHEA:28885']
+    assert len(updates['ids']) == 10 and not set(new_rhea) & set(updates['ids'])
+    updates['ids'].extend(new_rhea)
+    check({'path': str(CACHE / updates['path']), 'sha256': updates['sha256']})
+    retained = sorted(set(old['sources']['terms']) | set(old['ontology']['terms']))
+    assert len(retained) == 4234
+    target = Path(science['target']['path'])
+    check(science['target'])
+    target_data = yaml.safe_load(target.read_bytes())
+    named = [target_data['id']] + [item['id'] for key in ('taxa', 'participants', 'reactions') for item in target_data.get(key, [])]
+    assert set(named) == {item['id'] for item in proposal['selections']} and len(set(named)) == 84
+    return locals()
+
+
+def prepare(data):
+    assert not OUT.exists() and not OUT.is_symlink()
+    OUT.mkdir()
+    (OUT / 'corpus').mkdir()
+    (OUT / 'originals').mkdir()
+    (OUT / 'baseline').mkdir()
+    shutil.copyfile(__file__, OUT / 'prepare-and-build.py')
+    for item in data['baseline']['records']:
+        dest = OUT / 'corpus' / Path(item['relative_path']).relative_to('data/pathways')
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(item['path'], dest)
+        check({**item, 'path': str(dest)})
+    target_out = OUT / 'corpus/l-threonine-degradation-iii.yaml'
+    shutil.copyfile(data['target'], target_out)
+    assert sha(target_out) == TARGET_SHA
+    (OUT / 'corpus/_authority_retention').mkdir()
+    selector = {'id': data['retained'][0], 'participants': [{'id': identifier} for identifier in data['retained'][1:]]}
+    (OUT / 'corpus/_authority_retention/selector.yaml').write_text(yaml.safe_dump(selector, sort_keys=False))
+    for item in data['original_bindings'].values():
+        dest = OUT / 'originals' / item['cache_relative_path']
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.symlink_to(item['path'])
+    for item in data['additions']:
+        dest = OUT / 'originals' / item['entry']['path']
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with dest.open('xb') as stream:
+            stream.write(Path(item['original_path']).read_bytes())
+        check({'path': str(dest), 'sha256': item['entry']['sha256'], 'bytes': item['bytes']})
+    for kind in ('sources', 'ontology'):
+        shutil.copyfile(ROOT / f'data/identifier_authorities/{kind}.json', OUT / f'baseline/{kind}.json')
+    shutil.copyfile(ROOT / 'conf/identifier_sources.json', OUT / 'baseline/manifest.json')
+    shutil.copyfile(ROOT / 'conf/rhea_identifier_updates.json', OUT / 'baseline/rhea-updates.json')
+    shutil.copyfile(CORRECTION / 'authority-proposal-v2.json', OUT / 'authority-proposal-v2.json')
+    write(OUT / 'manifest.json', data['manifest'] + [item['entry'] for item in data['additions']])
+    write(OUT / 'rhea-updates.json', data['updates'])
+    write(OUT / 'retention-identifiers.json', {'ids': data['retained'], 'count': len(data['retained']), 'labels_supplied': False, 'build_only': True})
+    write(OUT / 'source-original-bindings.json', {'existing': list(data['original_bindings'].values()), 'new': data['additions']})
+    write(OUT / 'ontology-original-bindings.json', {'originals': data['dbs']})
+    write(OUT / 'seal-intake.json', {'at': now(), 'seals': data['seal_results'], 'root_review': row(data['review_path']), 'baseline_receipt': row(BASE / 'baseline-receipt.json'), 'baseline': row(BASE / 'baseline.json')})
+    corpus = [row(p) for p in sorted((OUT / 'corpus').rglob('*')) if p.is_file()]
+    write(OUT / 'corpus-bindings.json', {'files': corpus, 'actual_record_count': 226, 'baseline_records': data['baseline']['records'], 'target': row(target_out), 'retention_selector_count': 1, 'inventory_includes_ignored_and_hidden': True})
+    source_cmd = [PYTHON, '-B', str(IMPL / 'candidate/scripts/build_source_identifier_snapshot.py'), '--manifest', str(OUT / 'manifest.json'), '--cache-dir', str(OUT / 'originals'), '--records', str(OUT / 'corpus'), '--output', str(OUT / 'sources.json')]
+    ontology_cmd = [PYTHON, '-B', str(ROOT / 'scripts/build_ontology_identifier_snapshot.py')]
+    for item in data['dbs']:
+        ontology_cmd += ['--source', item['prefix'] + '=' + item['path']]
+    ontology_cmd += ['--corpus', str(OUT / 'corpus'), '--rhea-updates', str(OUT / 'rhea-updates.json'), '--cache-dir', str(OUT / 'originals'), '--output', str(OUT / 'ontology.json')]
+    commands = {'cwd': str(ROOT), 'environment': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONPATH': str(ROOT / 'src') + ':' + str(ROOT)}, 'source_builder': source_cmd, 'ontology_builder': ontology_cmd}
+    write(OUT / 'commands.json', commands)
+    receipt = {'at': now(), 'head': HEAD, 'records': 226, 'retention_ids': 4234, 'manifest_entries': 682, 'old_original_symlinks': 664, 'new_original_copies': 19, 'rhea_update_ids': 15, 'maintained_writes': False, 'shared_cache_writes': False, 'builder': row(IMPL / 'candidate/scripts/build_source_identifier_snapshot.py'), 'ontology_builder': row(ROOT / 'scripts/build_ontology_identifier_snapshot.py')}
+    write(OUT / 'preparation.json', receipt)
+    print('INPUT_CAPTURE_COMPLETE ' + json.dumps(receipt), flush=True)
+    return commands
+
+
+def execute(name, command, commands):
+    start = now()
+    tick = time.monotonic()
+    with (OUT / (name + '.stdout')).open('xb') as stdout, (OUT / (name + '.stderr')).open('xb') as stderr:
+        process = subprocess.run(command, cwd=commands['cwd'], env={**os.environ, **commands['environment']}, stdout=stdout, stderr=stderr)
+    receipt = {'name': name, 'command': command, 'cwd': commands['cwd'], 'environment': commands['environment'], 'started_at': start, 'finished_at': now(), 'duration_seconds': round(time.monotonic() - tick, 3), 'exit_code': process.returncode, 'stdout': row(OUT / (name + '.stdout')), 'stderr': row(OUT / (name + '.stderr'))}
+    write(OUT / (name + '-execution.json'), receipt)
+    print('BUILDER_TERMINAL ' + json.dumps(receipt), flush=True)
+    return receipt
+
+
+def verify(data, executions):
+    assert all(item['exit_code'] == 0 for item in executions), executions
+    proposal = data['proposal']
+    source_ids = {item['id'] for item in proposal['minimal_original_manifest_additions'] + proposal['new_terms_reusing_old_metadata']}
+    ontology_ids = {item['id'] for item in proposal['selections'] if item['disposition'] in ('new_selected_ontology_term', 'new_selected_Rhea142_term')}
+    assert (len(source_ids), len(ontology_ids)) == (32, 18)
+    outputs = {kind: load(OUT / (kind + '.json')) for kind in ('sources', 'ontology')}
+    results = {}
+    for kind, expected in [('sources', source_ids), ('ontology', ontology_ids)]:
+        old = data['old'][kind]
+        new = outputs[kind]
+        assert new['version'] == old['version']
+        for identifier, value in old['terms'].items():
+            assert new['terms'].get(identifier) == value, (kind, identifier)
+        for key, value in old['sources'].items():
+            assert new['sources'].get(key) == value, (kind, key)
+        added = set(new['terms']) - set(old['terms'])
+        assert added == expected, (kind, sorted(added - expected), sorted(expected - added))
+        expected_metadata = {item['entry']['key'] for item in data['additions']} if kind == 'sources' else set()
+        assert set(new['sources']) - set(old['sources']) == expected_metadata
+        for item in proposal['selections']:
+            if item['id'] in added:
+                term = new['terms'][item['id']]
+                assert term['label'] == item['label'], (item['id'], term, item['label'])
+                if 'synonyms' in item:
+                    assert sorted(term['synonyms']) == sorted(item['synonyms']), (item['id'], term)
+        results[kind] = {'old_terms_preserved': len(old['terms']), 'old_metadata_preserved': len(old['sources']), 'new_terms': {identifier: new['terms'][identifier] for identifier in sorted(added)}, 'new_metadata_keys': sorted(expected_metadata), 'total_terms': len(new['terms']), 'total_metadata': len(new['sources']), 'output': row(OUT / (kind + '.json'))}
+    assert (len(outputs['sources']['terms']), len(outputs['sources']['sources'])) == (2360, 529)
+    assert (len(outputs['ontology']['terms']), len(outputs['ontology']['sources'])) == (1924, 5)
+    for item in data['additions']:
+        entry = item['entry']
+        meta = outputs['sources']['sources'][entry['key']]
+        assert meta == {key: entry[key] for key in ('url', 'version', 'license', 'sha256')}, (entry, meta)
+        assert outputs['sources']['terms'][item['id']]['source'] == entry['key']
+    for item in proposal['new_terms_reusing_old_metadata']:
+        assert outputs['sources']['terms'][item['id']]['source'] == item['source']
+    for item in proposal['selections']:
+        if item['disposition'] == 'new_selected_Rhea142_term':
+            assert outputs['ontology']['terms'][item['id']]['source'] == 'rhea-rdf-142'
+    manifest = load(OUT / 'manifest.json')
+    assert manifest[:663] == data['manifest'] and len(manifest) == 682
+    previous_updates = load(OUT / 'baseline/rhea-updates.json')
+    updates = load(OUT / 'rhea-updates.json')
+    assert updates['ids'][:10] == previous_updates['ids'] and len(updates['ids']) == 15
+    assert {k: v for k, v in updates.items() if k != 'ids'} == {k: v for k, v in previous_updates.items() if k != 'ids'}
+    for item in load(OUT / 'corpus-bindings.json')['files']:
+        check(item)
+    for item in data['original_bindings'].values():
+        check(item)
+    for item in data['additions']:
+        check({'path': str(OUT / 'originals' / item['entry']['path']), 'sha256': item['entry']['sha256'], 'bytes': item['bytes']})
+    for item in data['dbs']:
+        path = Path(item['path'])
+        assert path.stat().st_size == item['bytes'] and path.stat().st_mtime_ns == item['mtime_ns']
+        assert outputs['ontology']['sources'][item['source_key']]['sha256'] == item['sha256']
+    # Each complete SQL database was freshly hashed before preparation and by the
+    # native builder. Final size/mtime guards do not substitute for those hashes.
+    for item in (OUT / 'preparation.json', OUT / 'commands.json'):
+        assert item.is_file()
+    result = {'at': now(), 'status': 'full_native_builds_passed_exact_old_preservation_and_expected_additions', 'target_sha256': TARGET_SHA, 'baseline_head': HEAD, 'actual_records': 226, 'retention_ids': 4234, 'results': results, 'manifest_entries': 682, 'old_manifest_entries_preserved': 663, 'rhea_update_ids': 15, 'old_rhea_ids_and_metadata_preserved': True, 'all_captured_corpus_files_unchanged': True, 'all_original_digests_verified': True, 'maintained_writes': False, 'shared_cache_writes': False, 'git_github_actions': False, 'source_exhaustion': False}
+    write(OUT / 'verification.json', result)
+    print('VERIFICATION ' + json.dumps({k: v for k, v in result.items() if k != 'results'}), flush=True)
+    return result
+
+
+def main():
+    data = intake()
+    commands = prepare(data)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(execute, name, commands[name], commands) for name in ('source_builder', 'ontology_builder')]
+        executions = [future.result() for future in futures]
+    write(OUT / 'execution-ledger.json', {'executions': executions})
+    verify(data, executions)
+    print('READY_FOR_SEAL', flush=True)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception:
+        traceback.print_exc()
+        if OUT.exists():
+            failure = OUT / ('failure-' + str(time.time_ns()) + '.txt')
+            failure.write_text(traceback.format_exc())
+        raise

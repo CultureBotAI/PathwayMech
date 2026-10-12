@@ -1,0 +1,101 @@
+{
+  "status": "passed",
+  "receipts": [
+    {
+      "name": "render",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())"
+      ],
+      "started_at": "2026-10-12T01:27:03.112893+00:00",
+      "finished_at": "2026-10-12T01:27:36.616309+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "skills",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "scripts/validate_claude_skills.py"
+      ],
+      "started_at": "2026-10-12T01:27:36.616694+00:00",
+      "finished_at": "2026-10-12T01:27:36.715018+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "validate",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())"
+      ],
+      "started_at": "2026-10-12T01:27:36.715394+00:00",
+      "finished_at": "2026-10-12T01:29:42.308001+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "tests",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "started_at": "2026-10-12T01:29:42.308611+00:00",
+      "finished_at": "2026-10-12T01:41:22.005610+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "lint",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "started_at": "2026-10-12T01:41:22.006473+00:00",
+      "finished_at": "2026-10-12T01:41:22.273320+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "kgx",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())"
+      ],
+      "started_at": "2026-10-12T01:41:22.274669+00:00",
+      "finished_at": "2026-10-12T01:41:42.125405+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "vendored",
+      "command": [
+        "bash",
+        "scripts/check_vendored_sync.sh"
+      ],
+      "started_at": "2026-10-12T01:41:42.126044+00:00",
+      "finished_at": "2026-10-12T01:41:45.997295+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at": "2026-10-12T01:41:45.997793+00:00",
+      "finished_at": "2026-10-12T01:41:47.657994+00:00",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Actual maintained gates; unstaged diff-check does not cover later untracked/staged dossier packaging."
+}

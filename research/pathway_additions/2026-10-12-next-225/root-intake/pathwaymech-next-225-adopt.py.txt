@@ -1,0 +1,149 @@
+"""Adopt the reviewed threonine target after complete native authority builds."""
+from pathlib import Path
+from datetime import datetime, timezone
+import argparse
+import hashlib
+import json
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-225-20261012')
+BASE = '6b6747ae6e14a9904efd7da9cbcca16398855582'
+TREE = 'bdf8dc9c13e68e807c12ea8e7b3b3830d1ea97cc'
+BUILD = Path('/private/tmp/pathwaymech-next-225-canonical-build-20261012')
+CORRECTION = Path('/private/tmp/pathwaymech-next-225-correction-20261012')
+IMPL = Path('/private/tmp/pathwaymech-next-225-authority-implementation-20261012')
+SCIENCE = Path('/private/tmp/pathwaymech-next-225-science-successor-review-20261012')
+PREP = Path('/private/tmp/pathwaymech-next-225-integration-preparation-20261012')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+PLAN = Path('/private/tmp/pathwaymech-next-225-dossier-staging-plan-20261012.json')
+TARGET_SHA = '5e003a44a1519e0a121a39819b334e57feee397e033d6db2ccec01399898daa7'
+
+
+def load(p):
+    return json.loads(p.read_bytes())
+
+
+def sha(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def binding(p):
+    return {'path': str(p), 'sha256': sha(p), 'bytes': p.stat().st_size}
+
+
+def verify(p, row):
+    assert p.is_file() and not p.is_symlink(), p
+    assert sha(p) == row['sha256'], p
+    if 'bytes' in row:
+        assert p.stat().st_size == row['bytes'], p
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--build-handoff-sha256', required=True)
+    args = parser.parse_args()
+    git = lambda *a: subprocess.check_output(['git', *a], cwd=ROOT, text=True).strip()
+    assert git('rev-parse', 'HEAD') == BASE
+    assert git('rev-parse', 'HEAD^{tree}') == TREE
+    assert git('branch', '--show-current') == 'feat/pathway-next-225-20261012'
+    assert not git('diff', '--name-only') and not git('diff', '--cached', '--name-only')
+    assert git('ls-files', '--others', '--exclude-standard') == '.venv'
+    assert sha(BUILD / 'handoff.json') == args.build_handoff_sha256
+    assert sha(SCIENCE / 'handoff.json') == '9c499ad4136d88c9f728e51271614b7086c5effc24f2316a3f0c30e1f5f459d6'
+    assert sha(CORRECTION / 'handoff.json') == 'cc8b4e49a249532e65d4f0b6aa95c3a11fc48199e67ed46cd1bed4d61ae7b03a'
+    assert sha(IMPL / 'handoff.json') == '5228d9440bc7c4fcf054c1898c24bb0253fcf639c3521fc06d20c3b17a179fa1'
+    assert sha(PLAN) == 'e9571fb12c8eb54035f9e4825ccbb20937721936830e568631b8eaeb810ebddc'
+    base = load(PREP / 'baseline.json')
+    actual = set(subprocess.check_output(['rg', '--files', '-uu', '-L', 'data/pathways'], cwd=ROOT, text=True).splitlines())
+    assert actual == {r['relative_path'] for r in base['records']}
+    for group in ('records', 'pages', 'reviews', 'history', 'authority_inputs', 'implementation_inputs'):
+        for row in base[group]:
+            verify(ROOT / row['relative_path'], row)
+    target = CORRECTION / 'draft/l-threonine-degradation-iii.yaml'
+    assert sha(target) == TARGET_SHA
+    assert sha(BUILD / 'corpus/l-threonine-degradation-iii.yaml') == TARGET_SHA
+    proposal = load(CORRECTION / 'authority-proposal-v2.json')
+    old_sources = load(ROOT / 'data/identifier_authorities/sources.json')
+    old_ontology = load(ROOT / 'data/identifier_authorities/ontology.json')
+    new_sources = load(BUILD / 'sources.json')
+    new_ontology = load(BUILD / 'ontology.json')
+    for old, new in ((old_sources, new_sources), (old_ontology, new_ontology)):
+        assert old['version'] == new['version']
+        for group in ('terms', 'sources'):
+            assert all(new[group].get(k) == v for k, v in old[group].items())
+    new_source_ids = set(new_sources['terms']) - set(old_sources['terms'])
+    new_ontology_ids = set(new_ontology['terms']) - set(old_ontology['terms'])
+    expected_ids = {r['id'] for r in proposal['selections']} - set(old_sources['terms']) - set(old_ontology['terms'])
+    assert new_source_ids.isdisjoint(new_ontology_ids)
+    assert new_source_ids | new_ontology_ids == expected_ids
+    assert (len(new_source_ids), len(new_ontology_ids)) == (32, 18)
+    assert (len(new_sources['terms']), len(new_sources['sources'])) == (2360, 529)
+    assert (len(new_ontology['terms']), len(new_ontology['sources'])) == (1924, 5)
+    old_manifest = load(ROOT / 'conf/identifier_sources.json')
+    new_manifest = load(BUILD / 'manifest.json')
+    additions = proposal['minimal_original_manifest_additions']
+    assert len(old_manifest) == 663 and len(additions) == 19
+    assert new_manifest[:663] == old_manifest and len(new_manifest) == 682
+    assert {r['key']: r for r in new_manifest[663:]} == {r['entry']['key']: r['entry'] for r in additions}
+    old_rhea = load(ROOT / 'conf/rhea_identifier_updates.json')
+    new_rhea = load(BUILD / 'rhea-updates.json')
+    assert {k: v for k, v in old_rhea.items() if k != 'ids'} == {k: v for k, v in new_rhea.items() if k != 'ids'}
+    assert set(new_rhea['ids']) - set(old_rhea['ids']) == {'RHEA:13162', 'RHEA:25654', 'RHEA:28187', 'RHEA:70001', 'RHEA:28885'}
+    assert len(new_rhea['ids']) == 15 and set(old_rhea['ids']) <= set(new_rhea['ids'])
+    changes = load(IMPL / 'changes.json')
+    for row in changes:
+        p = ROOT / row['path']
+        if row['base_sha256'] is None:
+            assert not p.exists() and not p.is_symlink(), p
+        else:
+            assert sha(p) == row['base_sha256'], p
+        assert sha(IMPL / 'candidate' / row['path']) == row['candidate_sha256']
+    plan = load(PLAN)
+    dossier = ROOT / plan['root']
+    assert not dossier.exists()
+    for row in plan['mappings']:
+        verify(Path(row['source']['path']), row['source'])
+        rel = Path(row['destination'])
+        assert not rel.is_absolute() and '..' not in rel.parts
+    for row in additions:
+        verify(Path(row['original_path']), {'sha256': row['entry']['sha256'], 'bytes': row['bytes']})
+        rel = Path(row['entry']['path'])
+        assert not rel.is_absolute() and '..' not in rel.parts
+        p = CACHE / rel
+        if p.exists() or p.is_symlink():
+            verify(p, {'sha256': row['entry']['sha256'], 'bytes': row['bytes']})
+    record = ROOT / 'data/pathways/l-threonine-degradation-iii.yaml'
+    assert not record.exists() and not record.is_symlink()
+
+    # All preconditions pass before any maintained or shared-cache write.
+    copied = []
+    for row in additions:
+        p = CACHE / row['entry']['path']
+        if not p.exists():
+            p.parent.mkdir(parents=True, exist_ok=True)
+            with p.open('xb') as out:
+                out.write(Path(row['original_path']).read_bytes())
+            copied.append(str(p))
+    for row in changes:
+        (ROOT / row['path']).write_bytes((IMPL / 'candidate' / row['path']).read_bytes())
+    for source, dest in [('manifest.json', 'conf/identifier_sources.json'), ('rhea-updates.json', 'conf/rhea_identifier_updates.json'), ('sources.json', 'data/identifier_authorities/sources.json'), ('ontology.json', 'data/identifier_authorities/ontology.json')]:
+        (ROOT / dest).write_bytes((BUILD / source).read_bytes())
+    with record.open('xb') as out:
+        out.write(target.read_bytes())
+    archives = []
+    for row in plan['mappings']:
+        p = dossier / row['destination']
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with p.open('xb') as out:
+            out.write(Path(row['source']['path']).read_bytes())
+        verify(p, row['source'])
+        archives.append({'source': row['source'], 'destination': str(p.relative_to(ROOT))})
+    receipt = {'at': datetime.now(timezone.utc).isoformat(), 'status': 'adopted_pending_maintained_gates', 'root': str(ROOT), 'base': BASE, 'base_tree': TREE, 'record': str(record.relative_to(ROOT)), 'target_sha256': sha(record), 'old_records_preserved': 225, 'authority_additions': {'source_ids': sorted(new_source_ids), 'ontology_ids': sorted(new_ontology_ids)}, 'source_terms': 2360, 'ontology_terms': 1924, 'manifest_entries': 682, 'new_rhea142_ids': sorted(set(new_rhea['ids']) - set(old_rhea['ids'])), 'new_cache_copies': copied, 'implementation': changes, 'canonical_handoff': binding(BUILD / 'handoff.json'), 'source_exhaustion': False, 'issues_pending_merge': [432, 433, 434, 435]}
+    (dossier / 'archive-map.json').write_text(json.dumps(archives, indent=2) + '\n')
+    (dossier / 'adoption.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    Path('/private/tmp/pathwaymech-next-225-adoption-20261012.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == '__main__':
+    main()

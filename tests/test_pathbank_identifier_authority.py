@@ -236,8 +236,13 @@ def test_exact_requested_root_selected_independently_of_pathway_order(position):
     root.insert(position, primary)
     terms = list(pathbank_terms(root, url=DOWNLOAD))
     assert terms[0] == (PATHWAY, "Native pathway title", [])
-    assert all(identifier == PATHWAY or identifier.startswith(PATHWAY + "/")
-               for identifier, _, _ in terms)
+    children = {"PathBank:" + accession for accession in ["SMP9999998", "SMP9999997", "SMP9999996"]}
+    assert all(
+        identifier == PATHWAY or identifier in children or identifier.startswith(PATHWAY + "/")
+        for identifier, _, _ in terms
+    )
+    assert {identifier for identifier, _, _ in terms if identifier in children} == children
+    assert all(names == [] for identifier, _, names in terms if identifier in children)
     assert not any("SubPathwayInteractions" in identifier for identifier, _, _ in terms)
 
 
@@ -339,7 +344,11 @@ def test_pathway_step_attachment_does_not_invent_an_interaction_authority():
     ET.SubElement(primary, BP + "pathwayOrder", {RDF + "resource": "#interface-step"})
     step = ET.SubElement(root, BP + "PathwayStep", {RDF + "ID": "interface-step"})
     ET.SubElement(step, BP + "stepProcess", {RDF + "resource": stub.get(RDF + "about")})
-    assert list(pathbank_terms(root, url=DOWNLOAD)) == list(pathbank_terms(native_source()))
+    terms = list(pathbank_terms(root, url=DOWNLOAD))
+    assert ("PathBank:SMP9999998", "Adjacent native pathway", []) in terms
+    assert [term for term in terms if term[0] != "PathBank:SMP9999998"] == list(
+        pathbank_terms(native_source())
+    )
 
 
 @pytest.mark.parametrize("existing", [True, False])
@@ -356,5 +365,147 @@ def test_wrong_native_root_cannot_write_or_replace_output(tmp_path, monkeypatch,
         "--cache-dir", str(tmp_path), "--output", str(output),
     ])
     with pytest.raises(ValueError, match="PathBank"):
+        main()
+    assert output.read_bytes() == b"prior authority\n" if existing else not output.exists()
+
+
+@pytest.mark.parametrize("problem", [
+    "missing", "empty", "blank", "duplicate", "conflicting", "nested", "generic", "lower-generic",
+])
+def test_attached_child_requires_one_direct_biological_title(problem):
+    root = native_source()
+    stub = add_stub(root)
+    name = stub.find(BP + "displayName")
+    if problem == "missing":
+        stub.remove(name)
+    elif problem in {"empty", "blank", "generic", "lower-generic"}:
+        name.text = {"empty": None, "blank": " \t", "generic": "SubPathway",
+                     "lower-generic": "subpathway"}[problem]
+    elif problem in {"duplicate", "conflicting"}:
+        ET.SubElement(stub, BP + "displayName").text = (
+            name.text if problem == "duplicate" else "Conflicting child"
+        )
+    else:
+        ET.SubElement(name, "nested").text = "additional name"
+    with pytest.raises(ValueError, match="PathBank attached pathway"):
+        list(pathbank_terms(root, url=DOWNLOAD))
+
+
+def child_fixture(tmp_path, *, second_name=None, separate_primary=False):
+    manifest, records, record, path = authority_fixture(tmp_path)
+    record["id"] = "PathBank:SMP9999998"
+    record["label"] = "Adjacent native pathway"
+    record["participants"] = []
+    record["reactions"] = []
+    path.write_text(yaml.safe_dump(record))
+    entries = json.loads(manifest.read_text())
+    root = native_source()
+    add_stub(root)
+    first = tmp_path / entries[0]["path"]
+    first.write_bytes(ET.tostring(root))
+    entries[0].update(url=DOWNLOAD, sha256=hashlib.sha256(first.read_bytes()).hexdigest())
+    if second_name is not None:
+        if separate_primary:
+            root = native_source()
+            root.find(BP + "Pathway").set(
+                RDF + "about", "http://identifiers.org/smpdb/SMP9999998",
+            )
+            root.find(BP + "UnificationXref").find(BP + "id").text = "SMP9999998"
+            root.find(BP + "Pathway").find(BP + "displayName").text = second_name
+        else:
+            root.findall(BP + "Pathway")[-1].find(BP + "displayName").text = second_name
+        second = tmp_path / "second.owl"
+        second.write_bytes(ET.tostring(root))
+        entries.append({**entries[0], "key": "second", "path": second.name,
+                        "url": DOWNLOAD.replace("SMP9999999", "SMP9999998")
+                        if separate_primary else DOWNLOAD,
+                        "sha256": hashlib.sha256(second.read_bytes()).hexdigest()})
+    manifest.write_text(json.dumps(entries))
+    return manifest, records, record, path, entries
+
+
+def test_child_canonical_term_has_no_generic_alias_or_inferred_local_graph(tmp_path):
+    manifest, records, _, _, _ = child_fixture(tmp_path)
+    snapshot = build_snapshot(manifest, records, tmp_path)
+    assert snapshot["terms"] == {
+        "PathBank:SMP9999998": {
+            "label": "Adjacent native pathway", "synonyms": [], "source": "native",
+        },
+    }
+    policy = yaml.safe_load(Path("conf/identifier_policy.yaml").read_text())
+    policy["namespaces"] = {"PathBank": policy["namespaces"]["PathBank"]}
+    policy["contextual_labels"] = [
+        rule for rule in policy["contextual_labels"]
+        if rule["namespace"] == "PathBank" and rule["record_prefixes"] == ["PathBank"]
+    ]
+    (tmp_path / "conf").mkdir()
+    (tmp_path / "conf/identifier_policy.yaml").write_text(yaml.safe_dump(policy))
+    authority = tmp_path / "data/identifier_authorities/sources.json"
+    authority.parent.mkdir()
+    authority.write_text(json.dumps(snapshot))
+    assert identifier_errors(tmp_path) == []
+    path = records / "pathway.yaml"
+    record = yaml.safe_load(path.read_text())
+    record["label"] = "SubPathway"
+    path.write_text(yaml.safe_dump(record))
+    assert any("LABEL_MISMATCH" in error for error in identifier_errors(tmp_path))
+
+
+@pytest.mark.parametrize("selected", [True, False])
+@pytest.mark.parametrize("reverse", [True, False])
+@pytest.mark.parametrize("separate_primary", [True, False])
+def test_child_name_conflicts_fail_before_selection_and_preserve_output(
+    tmp_path, monkeypatch, selected, reverse, separate_primary,
+):
+    manifest, records, record, path, entries = child_fixture(
+        tmp_path, second_name="Different title", separate_primary=separate_primary,
+    )
+    if not selected:
+        record.update(id=PATHWAY, label="Native pathway title")
+        path.write_text(yaml.safe_dump(record))
+    if reverse:
+        manifest.write_text(json.dumps(entries[::-1]))
+    output = tmp_path / "output.json"
+    previous = b"previous reviewed authority\n"
+    output.write_bytes(previous)
+    monkeypatch.setattr(sys, "argv", [
+        "builder", "--manifest", str(manifest), "--records", str(records),
+        "--cache-dir", str(tmp_path), "--output", str(output),
+    ])
+    with pytest.raises(ValueError, match="conflicting PathBank native pathway names"):
+        main()
+    assert output.read_bytes() == previous
+
+
+def test_agreeing_child_and_primary_names_keep_first_provenance(tmp_path):
+    manifest, records, _, _, _ = child_fixture(
+        tmp_path, second_name="Adjacent native pathway", separate_primary=True,
+    )
+    result = build_snapshot(manifest, records, tmp_path)
+    assert result["terms"]["PathBank:SMP9999998"] == {
+        "label": "Adjacent native pathway", "synonyms": [], "source": "native",
+    }
+    assert set(result["sources"]) == {"native"}
+
+
+@pytest.mark.parametrize("existing", [True, False])
+def test_invalid_unselected_child_cannot_publish_selected_parent(tmp_path, monkeypatch, existing):
+    manifest, records, record, path, entries = child_fixture(tmp_path)
+    record.update(id=PATHWAY, label="Native pathway title")
+    path.write_text(yaml.safe_dump(record))
+    original = tmp_path / entries[0]["path"]
+    root = ET.parse(original).getroot()
+    root.findall(BP + "Pathway")[-1].find(BP + "displayName").text = " "
+    original.write_bytes(ET.tostring(root))
+    entries[0]["sha256"] = hashlib.sha256(original.read_bytes()).hexdigest()
+    manifest.write_text(json.dumps(entries))
+    output = tmp_path / "output.json"
+    if existing:
+        output.write_bytes(b"prior authority\n")
+    monkeypatch.setattr(sys, "argv", [
+        "builder", "--manifest", str(manifest), "--records", str(records),
+        "--cache-dir", str(tmp_path), "--output", str(output),
+    ])
+    with pytest.raises(ValueError, match="PathBank attached pathway"):
         main()
     assert output.read_bytes() == b"prior authority\n" if existing else not output.exists()

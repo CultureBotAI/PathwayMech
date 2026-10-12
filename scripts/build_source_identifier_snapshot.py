@@ -7,7 +7,8 @@ gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,
 metacyc-protein-xml, ecocyc-protein-xml, ecocyc-rna-xml, ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
-bigg-universal-metabolite-json and bigg-universal-reaction-json. Source files are
+bigg-universal-metabolite-json, bigg-universal-reaction-json and
+pubchem-compound-property-json. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -18,6 +19,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import math
 import re
 import tarfile
 from collections.abc import Iterator
@@ -36,7 +38,7 @@ import yaml
 SOURCE_NAMESPACES = frozenset(
     {
         "BiGG", "EC", "EcoCyc", "Entrez", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank",
-        "Reactome", "SGD",
+        "PubChem", "Reactome", "SGD",
         "UniProtKB", "WikiPathways", "gomodel", "RHEA-COMP", "KEGG", "metanetx.chemical",
     }
 )
@@ -284,6 +286,7 @@ def pathbank_terms(
         return accession
 
     pathways = root.findall(bp + "Pathway")
+    child_terms: list[tuple[str, str, list[str]]] = []
     requested = _pathbank_request(url)
     if requested is None:
         if len(pathways) != 1:
@@ -347,11 +350,25 @@ def pathbank_terms(
                 raise ValueError(
                     "PathBank additional pathways must be attached native interface stubs"
                 )
+            display_names = other.findall(bp + "displayName")
+            if (
+                len(display_names) != 1 or len(display_names[0])
+                or not (display_names[0].text or "").strip()
+            ):
+                raise ValueError("PathBank attached pathway requires one direct displayName")
+            child_name = display_names[0].text.strip()
+            if child_name.casefold() == "subpathway":
+                raise ValueError("PathBank attached pathway requires a biological displayName")
+            # The issuing source names this exact attached pathway. Its generic
+            # SubPathway marker is not a synonym, and its interface is not an
+            # independently retrieved or expanded biochemical definition.
+            child_terms.append(("PathBank:" + native_accession(other), child_name, []))
     names = labels(pathway)
     if not names:
         raise ValueError("PathBank pathway lacks a native label")
     identifier = "PathBank:" + accession
     yield identifier, names[0], names[1:]
+    yield from child_terms
 
     graph_types = {
         bp + kind for kind in (
@@ -1296,6 +1313,67 @@ def _bigg_version(entry: dict[str, Any], cache_dir: Path) -> tuple[str, str]:
     return version, body["last_updated"]
 
 
+def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
+    """Bind one native compound Title to its exact official CID property request."""
+    request = re.fullmatch(
+        r"https://pubchem\.ncbi\.nlm\.nih\.gov/rest/pug/compound/cid/([1-9][0-9]*)/"
+        r"property/Title,IUPACName,MolecularFormula,InChIKey/JSON", url,
+    )
+    if request is None:
+        raise ValueError("PubChem requires the exact official single-CID property URL")
+
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"PubChem source repeats JSON key {key!r}")
+            result[key] = value
+        return result
+
+    def nonfinite(value: str) -> None:
+        raise ValueError(f"PubChem source contains nonfinite JSON value {value}")
+
+    def finite_float(value: str) -> float:
+        number = float(value)
+        if not math.isfinite(number):
+            nonfinite(value)
+        return number
+
+    try:
+        body = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique,
+                          parse_constant=nonfinite, parse_float=finite_float)
+    except (UnicodeError, json.JSONDecodeError) as error:
+        raise ValueError("PubChem source requires original UTF-8 JSON") from error
+    if not isinstance(body, dict) or body.keys() != {"PropertyTable"}:
+        raise ValueError("PubChem source requires one native PropertyTable")
+    table = body["PropertyTable"]
+    if not isinstance(table, dict) or table.keys() != {"Properties"}:
+        raise ValueError("PubChem source requires one native Properties array")
+    rows = table["Properties"]
+    if not isinstance(rows, list) or len(rows) != 1:
+        raise ValueError("PubChem source requires exactly one compound property object")
+    compound = rows[0]
+    if not isinstance(compound, dict) or compound.keys() != {
+        "CID", "Title", "IUPACName", "MolecularFormula", "InChIKey",
+    }:
+        raise ValueError("PubChem source lacks the requested native compound properties")
+    if type(compound["CID"]) is not int or compound["CID"] != int(request[1]):
+        raise ValueError("PubChem request and native CID disagree")
+    for field in ("Title", "IUPACName", "MolecularFormula", "InChIKey"):
+        value = compound[field]
+        if (
+            not isinstance(value, str) or not value.strip()
+            or any(ord(char) < 32 or 127 <= ord(char) <= 159
+                   or 0xD800 <= ord(char) <= 0xDFFF for char in value)
+        ):
+            raise ValueError(f"PubChem source has an invalid native {field}")
+    if not re.fullmatch(r"[A-Z]{14}-[A-Z]{10}-[A-Z]", compound["InChIKey"]):
+        raise ValueError("PubChem source has an invalid native InChIKey")
+    # Neither IUPACName nor a separately downloaded synonym list is promoted.
+    # Formula and InChIKey establish response shape, not cross-source equivalence.
+    return "PubChem:" + request[1], compound["Title"].strip(), []
+
+
 def source_terms(
     kind: str, path: Path, *, url: str | None = None, version: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
@@ -1330,6 +1408,8 @@ def source_terms(
         yield term
     elif kind in BIGG_SOURCE_TYPES:
         yield _bigg_record(kind, path, url or "")
+    elif kind == "pubchem-compound-property-json":
+        yield _pubchem_record(path, url or "")
     elif kind in KEGG_SOURCE_TYPES:
         yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
     elif kind == "metanetx-chemical-html":
@@ -1365,6 +1445,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     bigg_versions: dict[str, str] = {}
     ecocyc_assertions: dict[str, tuple] = {}
     ecocyc_versions: set[str] = set()
+    pubchem_assertions: dict[str, str] = {}
+    pathbank_assertions: dict[str, str] = {}
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
@@ -1423,6 +1505,18 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 entry["kind"], path, url=entry["url"], version=entry["version"],
             )
         for identifier, label, synonyms in parsed_terms:
+            if identifier.startswith("PubChem:"):
+                if entry["kind"] != "pubchem-compound-property-json":
+                    raise ValueError(
+                        "PubChem identifiers require native compound property authority"
+                    )
+                if identifier in pubchem_assertions and pubchem_assertions[identifier] != label:
+                    raise ValueError(f"conflicting PubChem native names for {identifier}")
+                pubchem_assertions[identifier] = label
+            if entry["kind"] == "pathbank-biopax" and "/" not in identifier:
+                if identifier in pathbank_assertions and pathbank_assertions[identifier] != label:
+                    raise ValueError(f"conflicting PathBank native pathway names for {identifier}")
+                pathbank_assertions[identifier] = label
             if identifier.startswith("EcoCyc:") and entry["kind"] not in ECOCYC_SOURCE_TYPES:
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
