@@ -4,9 +4,10 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,
-metacyc-protein-xml, ncbi-entrezgene-xml,
+metacyc-protein-xml, ecocyc-protein-xml, ecocyc-rna-xml, ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
-kegg-reaction-flatfile, kegg-compound-flatfile and metanetx-chemical-html. Source files are
+kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
+bigg-universal-metabolite-json and bigg-universal-reaction-json. Source files are
 never generated from curated labels. The corpus only selects which identifiers
 to retain, keeping the checked-in authority small and provenance auditable.
 """
@@ -20,6 +21,7 @@ import json
 import re
 import tarfile
 from collections.abc import Iterator
+from datetime import date, datetime
 from html import unescape
 from html.entities import name2codepoint
 from html.parser import HTMLParser
@@ -33,10 +35,22 @@ import yaml
 
 SOURCE_NAMESPACES = frozenset(
     {
-        "EC", "Entrez", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank", "Reactome", "SGD",
+        "BiGG", "EC", "EcoCyc", "Entrez", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank",
+        "Reactome", "SGD",
         "UniProtKB", "WikiPathways", "gomodel", "RHEA-COMP", "KEGG", "metanetx.chemical",
     }
 )
+
+BIGG_SOURCE_TYPES = {
+    "bigg-universal-metabolite-json": "metabolites",
+    "bigg-universal-reaction-json": "reactions",
+}
+
+ECOCYC_SOURCE_TYPES = {
+    "ecocyc-protein-xml": ("Protein", {"Protein-Complexes", "Protein-Small-Molecule-Complexes"}),
+    "ecocyc-rna-xml": ("RNA", {"Regulatory-RNAs"}),
+}
+ECOCYC_HOST = "bf2i-artsymbiocyc.insa-lyon.fr"
 
 
 def corpus_ids(root: Path) -> set[str]:
@@ -506,10 +520,10 @@ def _metacyc_protein_request(url: str, *, legacy: bool = False) -> tuple[str, st
     return query, parsed.hostname
 
 
-def metacyc_protein_terms(
+def _metacyc_protein_identity(
     path: Path, *, url: str, version: str,
-) -> list[tuple[str, str, list[str]]]:
-    """Extract one full META Protein; nested names and references are not terms."""
+) -> tuple[ElementTree.Element, str]:
+    """Validate the request, native service/version and one full Protein instance."""
     requested, host = _metacyc_protein_request(url)
     root = ElementTree.fromstring(
         path.read_bytes(), parser=ElementTree.XMLParser(target=_MetaCycProteinTreeBuilder()),
@@ -559,22 +573,255 @@ def metacyc_protein_terms(
         or "resource" in protein.attrib or protein.get("class", "false") != "false"
     ):
         raise ValueError("MetaCyc protein source has mismatched or unresolved top-level identity")
-    native_name = text(protein, "common-name")
-    if protein.find("common-name").get("datatype") != "string":
+    return protein, frame
+
+
+def _metacyc_protein_one(parent: ElementTree.Element, tag: str) -> ElementTree.Element:
+    nodes = parent.findall(tag)
+    if len(nodes) != 1:
+        raise ValueError(f"MetaCyc protein source requires exactly one {tag}")
+    return nodes[0]
+
+
+def _metacyc_protein_label(
+    parent: ElementTree.Element, frame: str, *, activity_frame: str | None = None,
+) -> str:
+    """Decode a native name after its owning Protein or activity is validated."""
+    node = _metacyc_protein_one(parent, "common-name")
+    if len(node) or not (node.text or "").strip():
+        raise ValueError("MetaCyc protein source requires one nonempty common-name")
+    if node.get("datatype") != "string" or (
+        activity_frame is not None and node.attrib != {"datatype": "string"}
+    ):
         raise ValueError("MetaCyc protein common-name must be a native string")
     name = _MetaCycProteinName()
-    name.feed(native_name)
+    name.feed(node.text.strip())
     name.close()
     label = " ".join("".join(name.parts).split())
+    unresolved = {frame, "META:" + frame, "MetaCyc:" + frame}
+    if activity_frame is not None:
+        unresolved.update({activity_frame, "META:" + activity_frame, "MetaCyc:" + activity_frame})
     if (
         name.tags or not label or "<" in label or ">" in label
         or re.search(r"&(?:#|[A-Za-z][A-Za-z0-9]*;)", label)
         or any(not _metacyc_protein_name_character(ord(char)) for char in label)
-        or label in {frame, requested, "MetaCyc:" + frame}
+        or label in unresolved
         or label.casefold().startswith(("error", "unknown", "not found"))
     ):
         raise ValueError("MetaCyc protein source lacks a resolved native common-name")
+    return label
+
+
+def _metacyc_protein_reference(node: ElementTree.Element, frame: str, resource: str) -> None:
+    if (
+        len(node) or (node.text or "").strip()
+        or node.attrib != {"resource": resource, "orgid": "META", "frameid": frame}
+    ):
+        raise ValueError("MetaCyc protein source requires an exact empty native reference")
+
+
+def _metacyc_complex_activity(
+    protein: ElementTree.Element, frame: str,
+) -> tuple[ElementTree.Element, str]:
+    """Resolve the sole native enzyme-name relation for an unnamed homomer.
+
+    Pathway Tools documents linked enzymatic-reaction names as protein names
+    when COMMON-NAME is absent. This bounded case requires a native homomer
+    and an exact enzyme back-reference; it is not a descendant-name search.
+    """
+    parent = _metacyc_protein_one(protein, "parent")
+    parent_class = _metacyc_protein_one(parent, "Protein")
+    if (
+        len(parent) != 1 or len(parent_class) or (parent_class.text or "").strip()
+        or parent_class.attrib != {
+            "resource": "getxml?META:Protein-Complexes", "orgid": "META",
+            "frameid": "Protein-Complexes", "class": "true",
+        }
+    ):
+        raise ValueError(
+            "MetaCyc enzyme-name fallback requires native Protein-Complexes membership"
+        )
+    component = _metacyc_protein_one(protein, "component")
+    subunit = _metacyc_protein_one(component, "Protein")
+    subunit_frame = subunit.get("frameid", "")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", subunit_frame) or subunit_frame == frame:
+        raise ValueError("MetaCyc enzyme-name fallback has an invalid component frame")
+    _metacyc_protein_reference(subunit, subunit_frame, "getxml?META:" + subunit_frame)
+    coefficient = _metacyc_protein_one(component, "coefficient")
+    if (
+        len(coefficient) or coefficient.attrib != {"datatype": "integer"}
+        or not re.fullmatch(r"[1-9][0-9]*", (coefficient.text or "").strip())
+        or int(coefficient.text.strip()) < 2
+    ):
+        raise ValueError("MetaCyc enzyme-name fallback requires a homomer coefficient at least two")
+    catalyzes = _metacyc_protein_one(protein, "catalyzes")
+    activity = _metacyc_protein_one(catalyzes, "Enzymatic-Reaction")
+    activity_frame = activity.get("frameid", "")
+    if (
+        len(catalyzes) != 1 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", activity_frame)
+        or activity.get("ID") != "META:" + activity_frame or activity.get("orgid") != "META"
+        or activity.get("detail") not in {"low", "full"}
+        or set(activity.attrib) != {"ID", "orgid", "frameid", "detail"}
+    ):
+        raise ValueError(
+            "MetaCyc enzyme-name fallback requires one resolved native Enzymatic-Reaction"
+        )
+    enzyme = _metacyc_protein_one(activity, "enzyme")
+    if len(enzyme) != 1:
+        raise ValueError("MetaCyc enzyme-name fallback requires one exact enzyme back-reference")
+    _metacyc_protein_reference(_metacyc_protein_one(enzyme, "Protein"), frame, "#META:" + frame)
+    reaction = _metacyc_protein_one(activity, "reaction")
+    native_reaction = _metacyc_protein_one(reaction, "Reaction")
+    reaction_frame = native_reaction.get("frameid", "")
+    if len(reaction) != 1 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", reaction_frame):
+        raise ValueError(
+            "MetaCyc enzyme-name fallback requires one exact native reaction reference"
+        )
+    _metacyc_protein_reference(native_reaction, reaction_frame, "getxml?META:" + reaction_frame)
+    return activity, activity_frame
+
+
+def metacyc_protein_terms(
+    path: Path, *, url: str, version: str,
+) -> list[tuple[str, str, list[str]]]:
+    """Extract one native Protein name, including a guarded homomer enzyme name."""
+    protein, frame = _metacyc_protein_identity(path, url=url, version=version)
+    if protein.findall("common-name"):
+        # Any direct slot takes precedence, including an invalid one that must fail.
+        label = _metacyc_protein_label(protein, frame)
+    else:
+        activity, activity_frame = _metacyc_complex_activity(protein, frame)
+        label = _metacyc_protein_label(activity, frame, activity_frame=activity_frame)
     return [("MetaCyc:" + frame, label, [])]
+
+
+class _EcoCycTreeBuilder(ElementTree.TreeBuilder):
+    def doctype(self, name: str, pubid: str | None, system: str | None) -> None:
+        raise ValueError("EcoCyc XML must not contain a DOCTYPE")
+
+
+def _ecocyc_one(parent: ElementTree.Element, tag: str) -> ElementTree.Element:
+    nodes = parent.findall(tag)
+    if len(nodes) != 1:
+        raise ValueError(f"EcoCyc source requires exactly one direct {tag}")
+    return nodes[0]
+
+
+def _ecocyc_text(parent: ElementTree.Element, tag: str, *, native: bool = False) -> str:
+    node = _ecocyc_one(parent, tag)
+    if (len(node) or node.attrib != ({"datatype": "string"} if native else {})
+            or not (node.text or "").strip()):
+        raise ValueError(f"EcoCyc source requires one nonempty native {tag}")
+    return node.text.strip()
+
+
+def _ecocyc_name(node: ElementTree.Element, frame: str) -> str:
+    if (len(node) or node.attrib != {"datatype": "string"}
+            or not (node.text or "").strip()
+            or any(not _metacyc_protein_name_character(ord(c)) for c in node.text)):
+        raise ValueError("EcoCyc name/alias requires one safe native string")
+    name = _MetaCycProteinName()
+    try:
+        name.feed(node.text.strip())
+        name.close()
+    except ValueError as error:
+        raise ValueError("EcoCyc name/alias contains unsafe markup") from error
+    label = " ".join("".join(name.parts).split())
+    if (
+        name.tags or not label or "<" in label or ">" in label
+        or re.search(r"&(?:#|[A-Za-z][A-Za-z0-9]*;)", label)
+        or any(not _metacyc_protein_name_character(ord(c)) for c in label)
+        or label in {frame, "ECOLI:" + frame, "EcoCyc:" + frame}
+        or label.casefold().startswith(("error", "unknown", "not found"))
+    ):
+        raise ValueError("EcoCyc source lacks a resolved native name/alias")
+    return label
+
+
+def _ecocyc_record(
+    kind: str, path: Path, *, url: str, version: str,
+) -> tuple[tuple[str, str, list[str]], str]:
+    """Read one ECOLI complex or regulatory RNA, never a nested frame or xref.
+
+    The observed service serializes its HTTPS transport as HTTP on port 443.
+    This literal compatibility case does not permit HTTP issuing requests.
+    """
+    request = re.fullmatch(
+        rf"https://{re.escape(ECOCYC_HOST)}/getxml\?id=(ECOLI:([A-Za-z0-9][A-Za-z0-9_.-]*))",
+        url,
+    )
+    if request is None:
+        raise ValueError("EcoCyc source requires an exact native HTTPS ECOLI request")
+    requested, frame = request.groups()
+    root = ElementTree.fromstring(
+        path.read_bytes(), parser=ElementTree.XMLParser(target=_EcoCycTreeBuilder()),
+    )
+    tag, parent_classes = ECOCYC_SOURCE_TYPES[kind]
+    if root.tag != "ptools-xml" or len(root) != 2:
+        raise ValueError("EcoCyc source requires native metadata and one direct entity")
+    metadata, entity = _ecocyc_one(root, "metadata"), _ecocyc_one(root, tag)
+    base = root.get("{http://www.w3.org/XML/1998/namespace}base", "")
+    if (
+        set(root.attrib) != {"ptools-version", "{http://www.w3.org/XML/1998/namespace}base"}
+        or base not in {url, f"http://{ECOCYC_HOST}:443/getxml?{requested}"}
+        or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", version)
+        or root.get("ptools-version") != version
+    ):
+        raise ValueError("EcoCyc XML base or native version disagrees with the request")
+    if metadata.attrib or sorted(n.tag for n in metadata) != sorted(
+        ["url", "service_name", "query", "num_results", "PGDB"]
+    ):
+        raise ValueError("EcoCyc source has malformed native metadata")
+    if (
+        _ecocyc_text(metadata, "url") not in {
+            f"https://{ECOCYC_HOST}/", f"http://{ECOCYC_HOST}:443/",
+        }
+        or _ecocyc_text(metadata, "service_name") != "getxml"
+        or _ecocyc_text(metadata, "query") != requested
+        or _ecocyc_text(metadata, "num_results") != "1"
+    ):
+        raise ValueError("EcoCyc service/query identity mismatch")
+    pgdb = _ecocyc_one(metadata, "PGDB")
+    if (
+        pgdb.attrib != {"orgid": "ECOLI", "version": version}
+        or sorted(n.tag for n in pgdb) != ["dblink", "species", "strain"]
+        or _ecocyc_text(pgdb, "species", native=True) != "Escherichia coli"
+        or _ecocyc_text(pgdb, "strain", native=True) != "K-12 substr. MG1655"
+    ):
+        raise ValueError("EcoCyc PGDB/version/species/strain mismatch")
+    taxonomy = _ecocyc_one(pgdb, "dblink")
+    if (
+        taxonomy.attrib or sorted(n.tag for n in taxonomy) != sorted(
+            ["dblink-db", "dblink-oid", "dblink-relationship", "dblink-URL"]
+        )
+        or _ecocyc_text(taxonomy, "dblink-db") != "NCBI-TAXONOMY-DB"
+        or _ecocyc_text(taxonomy, "dblink-oid") != "511145"
+        or _ecocyc_text(taxonomy, "dblink-relationship") != "unification"
+        or _ecocyc_text(taxonomy, "dblink-URL") != (
+            "http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=511145"
+        )
+    ):
+        raise ValueError("EcoCyc native taxon mismatch")
+    if entity.attrib != {"ID": requested, "orgid": "ECOLI", "frameid": frame, "detail": "full"}:
+        raise ValueError("EcoCyc source has a mismatched or unresolved top-level identity")
+    parent = _ecocyc_one(entity, "parent")
+    parent_class = _ecocyc_one(parent, tag)
+    parent_frame = parent_class.get("frameid", "")
+    if (
+        len(parent) != 1 or parent.attrib or (parent.text or "").strip()
+        or len(parent_class) or (parent_class.text or "").strip()
+        or parent_frame not in parent_classes
+        or parent_class.attrib != {
+            "resource": "getxml?ECOLI:" + parent_frame, "orgid": "ECOLI",
+            "frameid": parent_frame, "class": "true",
+        }
+    ):
+        raise ValueError("EcoCyc source has a mismatched native RNA/complex parent class")
+    label = _ecocyc_name(_ecocyc_one(entity, "common-name"), frame)
+    synonyms = [_ecocyc_name(node, frame) for node in entity.findall("synonym")]
+    if len(set(synonyms)) != len(synonyms) or label in synonyms:
+        raise ValueError("EcoCyc source contains duplicate native names/aliases")
+    return ("EcoCyc:" + frame, label, sorted(synonyms)), parent_frame
 
 
 def rhea_component_terms(path: Path) -> Iterator[tuple[str, str, list[str]]]:
@@ -938,6 +1185,117 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
     return ("Entrez:" + gid, label, sorted(set(synonyms) - {label})), taxon
 
 
+def _bigg_json(path: Path) -> dict[str, Any]:
+    """Reject ambiguous JSON, including duplicate keys in nested source objects."""
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"BiGG source repeats JSON key {key!r}")
+            result[key] = value
+        return result
+
+    def nonfinite(value: str) -> None:
+        raise ValueError(f"BiGG source contains nonfinite JSON value {value}")
+
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique,
+                           parse_constant=nonfinite)
+    except (UnicodeError, json.JSONDecodeError) as error:
+        raise ValueError("BiGG source requires original JSON, not HTML or an error page") from error
+    if not isinstance(value, dict):
+        raise ValueError("BiGG source requires one JSON object")
+    return value
+
+
+def _bigg_record(kind: str, path: Path, url: str) -> tuple[str, str, list[str]]:
+    """Extract only a universal native identity and name, never model chemistry."""
+    category = BIGG_SOURCE_TYPES[kind]
+    request = re.fullmatch(
+        r"https://bigg\.ucsd\.edu/api/v2/universal/" + category
+        + r"/([A-Za-z0-9][A-Za-z0-9_]*)", url,
+    )
+    if request is None:
+        raise ValueError("BiGG source requires an exact official universal API URL of its kind")
+    body = _bigg_json(path)
+    common = {"bigg_id", "name", "old_identifiers", "database_links"}
+    lists = (
+        {"compartments_in_models", "charges", "formulae"} if category == "metabolites"
+        else {"models_containing_reaction", "metabolites"}
+    )
+    fields = common | lists
+    if category == "reactions":
+        fields |= {"reaction_string", "pseudoreaction"}
+    if body.keys() != fields or any(not isinstance(body[key], list) for key in lists):
+        raise ValueError("BiGG body must be one native universal object of the requested kind")
+    if body["bigg_id"] != request[1]:
+        raise ValueError("BiGG native bigg_id and requested identity disagree")
+    label = body["name"]
+    if (
+        not isinstance(label, str) or not label.strip()
+        or any(char in label for char in "<>")
+        or any(not _metacyc_protein_name_character(ord(char)) for char in label)
+        or label.strip() == body["bigg_id"]
+        or label.strip().casefold() in {"unknown", "error", "not found", "not-found", "null"}
+    ):
+        raise ValueError("BiGG source requires one resolved native name")
+    if (
+        not isinstance(body["database_links"], dict)
+        or not isinstance(body["old_identifiers"], list)
+        or any(not isinstance(item, str) or not item.strip() for item in body["old_identifiers"])
+    ):
+        raise ValueError("BiGG source has malformed native cross-reference containers")
+    if category == "reactions" and (
+        type(body["pseudoreaction"]) is not bool
+        or not isinstance(body["reaction_string"], str) or not body["reaction_string"].strip()
+    ):
+        raise ValueError("BiGG reaction source lacks its native reaction fields")
+    # Old identifiers are accessions, not name synonyms. Cross-database links,
+    # model bounds, formulae and the displayed universal arrow are not exported.
+    return "BiGG:" + request[1], label.strip(), []
+
+
+def _bigg_version(entry: dict[str, Any], cache_dir: Path) -> tuple[str, str]:
+    """Bind a BiGG manifest release to a separately hashed native version original."""
+    companion = entry.get("version_source")
+    if not isinstance(companion, dict) or companion.keys() != {"url", "path", "sha256"}:
+        raise ValueError("BiGG source requires a hashed native version_source companion")
+    if companion["url"] != "https://bigg.ucsd.edu/api/v2/database_version":
+        raise ValueError("BiGG version source requires the exact official API URL")
+    if not isinstance(companion["path"], str) or not companion["path"]:
+        raise ValueError("BiGG version source requires a relative cache path")
+    relative = Path(companion["path"])
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError("BiGG version source requires a relative cache path")
+    path = cache_dir / relative
+    if hashlib.sha256(path.read_bytes()).hexdigest() != companion["sha256"]:
+        raise ValueError("BiGG native version bytes do not match their declared digest")
+    body = _bigg_json(path)
+    if body.keys() != {"api_version", "bigg_models_version", "last_updated"}:
+        raise ValueError("BiGG version source requires the native database version object")
+    version = body["bigg_models_version"]
+    if (
+        body["api_version"] != "v2" or not isinstance(version, str)
+        or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version)
+        or not isinstance(body["last_updated"], str)
+        or not re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{1,6})?",
+                            body["last_updated"])
+    ):
+        raise ValueError("BiGG version source has an unsupported release or API version")
+    match = re.fullmatch(r"BiGG Models " + re.escape(version) + r"; retrieved (\d{4}-\d{2}-\d{2})",
+                         entry["version"])
+    if match is None:
+        raise ValueError("BiGG manifest release and native database version disagree")
+    try:
+        date.fromisoformat(match[1])
+        datetime.fromisoformat(body["last_updated"])
+    except ValueError as error:
+        raise ValueError(
+            "BiGG version provenance has an invalid native or acquisition date"
+        ) from error
+    return version, body["last_updated"]
+
+
 def source_terms(
     kind: str, path: Path, *, url: str | None = None, version: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
@@ -965,9 +1323,13 @@ def source_terms(
         yield from metacyc_terms(path.read_bytes().decode("utf-8", errors="surrogateescape"))
     elif kind == "metacyc-protein-xml":
         yield from metacyc_protein_terms(path, url=url or "", version=version or "")
+    elif kind in ECOCYC_SOURCE_TYPES:
+        yield _ecocyc_record(kind, path, url=url or "", version=version or "")[0]
     elif kind == "ncbi-entrezgene-xml":
         term, _ = _ncbi_gene_record(path, url or "")
         yield term
+    elif kind in BIGG_SOURCE_TYPES:
+        yield _bigg_record(kind, path, url or "")
     elif kind in KEGG_SOURCE_TYPES:
         yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
     elif kind == "metanetx-chemical-html":
@@ -999,6 +1361,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metacyc_names: dict[str, set[str]] = {}
     metacyc_xml_ids: set[str] = set()
     gene_assertions: dict[str, tuple[str, tuple[str, ...], str]] = {}
+    bigg_assertions: dict[str, tuple[str, str, str, str]] = {}
+    bigg_versions: dict[str, str] = {}
+    ecocyc_assertions: dict[str, tuple] = {}
+    ecocyc_versions: set[str] = set()
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
@@ -1019,7 +1385,32 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         metadata["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
-        if entry["kind"] == "ncbi-entrezgene-xml":
+        if entry["kind"] in BIGG_SOURCE_TYPES:
+            version = _bigg_version(entry, cache_dir)
+            if version[0] in bigg_versions and bigg_versions[version[0]] != version[1]:
+                raise ValueError("conflicting BiGG native database version observations")
+            bigg_versions[version[0]] = version[1]
+            term = _bigg_record(entry["kind"], path, entry["url"])
+            identifier, label, _ = term
+            assertion = (entry["kind"], label, *version)
+            if identifier in bigg_assertions and bigg_assertions[identifier] != assertion:
+                raise ValueError(f"conflicting BiGG native identity assertions for {identifier}")
+            bigg_assertions[identifier] = assertion
+            parsed_terms = [term]
+        elif entry["kind"] in ECOCYC_SOURCE_TYPES:
+            term, parent_class = _ecocyc_record(
+                entry["kind"], path, url=entry["url"], version=entry["version"],
+            )
+            identifier, label, synonyms = term
+            assertion = (entry["kind"], parent_class, label, tuple(synonyms), entry["version"])
+            if identifier in ecocyc_assertions and ecocyc_assertions[identifier] != assertion:
+                raise ValueError(f"conflicting EcoCyc native identity assertions for {identifier}")
+            ecocyc_assertions[identifier] = assertion
+            ecocyc_versions.add(entry["version"])
+            if len(ecocyc_versions) != 1:
+                raise ValueError("conflicting EcoCyc native PGDB versions")
+            parsed_terms = [term]
+        elif entry["kind"] == "ncbi-entrezgene-xml":
             term, taxon = _ncbi_gene_record(path, entry["url"])
             identifier, label, synonyms = term
             assertion = (label, tuple(synonyms), taxon)
@@ -1032,6 +1423,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 entry["kind"], path, url=entry["url"], version=entry["version"],
             )
         for identifier, label, synonyms in parsed_terms:
+            if identifier.startswith("EcoCyc:") and entry["kind"] not in ECOCYC_SOURCE_TYPES:
+                raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
+            if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
+                raise ValueError("BiGG identifiers require native universal JSON authority")
             if entry["kind"] in {"metacyc-protein-xml", "metacyc-html"}:
                 names = metacyc_names.setdefault(identifier, set())
                 names.add(label)

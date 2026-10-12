@@ -1,0 +1,290 @@
+"""Source-bound external author verification, including future-schema qualifiers.
+This is not a canonical authority/schema/build pass. It does not read cached chemistry
+projections as its source oracle. Curated assertion locking is not independent science.
+"""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import argparse,json,hashlib,gzip,re,copy,collections,os,sqlite3
+from datetime import datetime,timezone
+from lxml import etree,html
+import yaml
+A=Path(__file__).resolve().parent
+BASE=Path('/private/tmp/pathwaymech-next-223-author-20261011')
+import importlib.util
+_spec=importlib.util.spec_from_file_location('regulatory_source',A/'regulatory-source.py');regulatory=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(regulatory)
+RH='http://rdf.rhea-db.org/'
+NS={'rh':RH,'rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+R='MetaCyc:GLCMANNANAUT-PWY'
+SELECTED=['RHEA:67741','RHEA:67737','RHEA:23297','RHEA:25254','RHEA:25259','RHEA:22937','RHEA:12173','RHEA:28989','RHEA:49241','RHEA:23881']
+MASTERS=['67740','67736','23296','25253','25257','22936','12172','28987','49240','23880']
+def sha_bytes(b):return hashlib.sha256(b).hexdigest()
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  while chunk:=f.read(8*1024*1024):h.update(chunk)
+ return h.hexdigest()
+def ensure(cond,msg):
+ if not cond:raise ValueError(msg)
+def canonical(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def guard(items):
+ for e in items:
+  ensure(sha(e['path'])==e['sha256'],'input/runtime/output hash binding failed: '+e['path'])
+def native_xml(body,expected=None):
+ t=etree.fromstring(body,etree.XMLParser(resolve_entities=False,no_network=True))
+ ensure(t.tag=='ptools-xml','not native Pathway Tools XML')
+ m=t.find('metadata');ensure(m is not None,'missing metadata')
+ q=m.findtext('query');ensure(q and q.startswith('META:'),'wrong query scope')
+ ensure(m.findtext('num_results')=='1','non-single native result')
+ pg=m.find('PGDB');ensure(pg is not None and pg.get('orgid')=='META' and pg.get('version')=='27.0' and t.get('ptools-version')=='27.0','native PGDB/version mismatch')
+ objects=[x for x in t if x.tag!='metadata'];ensure(len(objects)==1,'non-single top-level native object')
+ x=objects[0];ensure(x.get('ID')==q and x.get('orgid')=='META' and x.get('frameid')==q[5:],'native identity mismatch')
+ if expected:ensure(q=='META:'+expected,'native request/identity mismatch')
+ return x
+
+def fresh_rhea(path):
+ raw=gzip.decompress(Path(path).read_bytes()).decode();starts=collections.defaultdict(list);cache={}
+ for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',raw):starts[m[1]].append(m.start())
+ wrapper='<root '+' '.join(f'xmlns:{k}="{v}"' for k,v in NS.items())+'>'
+ def get(uri):
+  if uri in cache:return cache[uri]
+  ensure(uri in starts,'missing original Rhea object '+uri);p={}
+  for start in starts[uri]:
+   end=raw.index('</rdf:Description>',start)+len('</rdf:Description>');x=etree.fromstring((wrapper+raw[start:end]+'</root>').encode())[0]
+   for c in x:
+    k=c.tag.split('}',1)[1];v=c.get('{'+NS['rdf']+'}resource') or c.text
+    if v not in p.setdefault(k,[]):p[k].append(v)
+  cache[uri]=p;return p
+ def side(uri):
+  p=get(uri);rows=[]
+  for pi in p['contains']:
+   cs=[int(k[8:]) for k,v in p.items() if re.fullmatch('contains[0-9]+',k) and pi in v]
+   ensure(len(cs)==1,'missing/ambiguous Rhea coefficient');cu=get(pi)['compound'][0];c=get(cu)
+   effective=c
+   if c.get('reactivePart'):
+    ensure(len(c['reactivePart'])==1,'ambiguous reactive part');effective=get(c['reactivePart'][0])
+   rows.append({'id':c['accession'][0].replace('GENERIC:','RHEA-COMP:'),'label':c['name'][0],'coefficient':cs[0],'compound_uri':cu,'compound':c,'reactive_part':effective if effective is not c else None})
+  return rows
+ result={}
+ for mid in MASTERS:
+  mu=RH+mid;m=get(mu);ensure(m.get('status')==[RH+'Approved'],'non-approved Rhea master')
+  for du in m['directionalReaction']:
+   d=get(du);i=d['accession'][0]
+   if i not in SELECTED:continue
+   pair=(d.get('substrates'),d.get('products'));lr=([mu+'_L'],[mu+'_R']);rl=(lr[1],lr[0])
+   ensure(pair in [lr,rl],'directional sides do not match master L/R')
+   orient='left_to_right' if pair==lr else 'right_to_left';sides={k:[x for u in d[k] for x in side(u)] for k in ['substrates','products']}
+   bal=collections.Counter();complete=True;used_reactive=False
+   for k,sign in [('substrates',-1),('products',1)]:
+    for x in sides[k]:
+     c=x['reactive_part'] or x['compound'];used_reactive|=bool(x['reactive_part']);formula=c.get('formula',[''])[0]
+     if not formula or not re.fullmatch(r'(?:[A-Z][a-z]?[0-9]*)+',formula) or 'charge' not in c:complete=False;continue
+     for atom,n in re.findall(r'([A-Z][a-z]?)([0-9]*)',formula):bal[atom]+=sign*x['coefficient']*int(n or 1)
+     bal['charge']+=sign*x['coefficient']*int(c['charge'][0])
+   nonzero={k:v for k,v in bal.items() if v}
+   if complete:ensure(not nonzero,'fresh source formula/charge imbalance: '+i)
+   result[i]={'master':'RHEA:'+mid,'orientation':orient,'equation':d['equation'][0],'native_sides':{k:d[k] for k in ['substrates','products']},'sides':sides,'native_balanced_flag':m.get('isChemicallyBalanced'),'balance_scope':'reactive-part delta, with generic carrier context retained' if complete and used_reactive else 'whole small molecules' if complete else 'not computable from complete formula/charge; native Rhea flag retained','calculated_imbalance':nonzero if complete else None}
+ ensure(set(result)==set(SELECTED),'Rhea selected family completeness mismatch');return result
+
+def fresh_native(paths):
+ result={}
+ for p in paths:
+  x=native_xml(Path(p).read_bytes(),Path(p).stem);n=x.get('frameid');ensure(n not in result,'duplicate native frame originals');result[n]=x
+ parent=result['GLCMANNANAUT-PWY'];children={x.get('frameid') for x in parent.findall('reaction-list/Pathway')}
+ ensure(children=={'PWY0-1324','GLUAMCAT-PWY'},'full native two-child boundary changed')
+ expected={'PWY0-1324':{'RXN0-7389','RXN0-7390','NANK-RXN','NANE-RXN'},'GLUAMCAT-PWY':{'NAG6PDEACET-RXN','GLUCOSAMINE-6-P-DEAMIN-RXN'}}
+ for n,rxns in expected.items():
+  ensure({x.get('frameid') for x in result[n].findall('reaction-list/Reaction')}==rxns,'native complete child boundary mismatch: '+n)
+  for lay in result[n].findall('reaction-layout'):
+   q=lay.find('Reaction')
+   if q is not None:ensure(lay.findtext('direction')==('R2L' if q.get('frameid')=='RXN0-7389' else 'L2R'),'native pathway-specific direction mismatch')
+ return result
+
+def model_reaction(path):
+ m=json.loads(Path(path).read_text());ensure(m.get('id')=='iML1515','wrong model identity')
+ rs=[r for r in m['reactions'] if r['id']=='ACMANAptspp'];ensure(len(rs)==1,'nonunique coupled transport');r=rs[0]
+ ensure(r['lower_bound']==0 and r['upper_bound']>0,'coupled transport model orientation mismatch')
+ ensure(r['metabolites']=={'acmana_p':-1.0,'acmanap_c':1.0,'pep_c':-1.0,'pyr_c':1.0},'coupled ManNAc chemistry mismatch')
+ ensure(set(re.findall(r'b[0-9]+',r['gene_reaction_rule']))=={'b2415','b2416','b1817','b1818','b1819'} and ' or ' not in r['gene_reaction_rule'],'PTS full component rule mismatch')
+ ms={q['id']:q for q in m['metabolites']};balance=collections.Counter()
+ for k,c in r['metabolites'].items():
+  q=ms[k]
+  for a,n in re.findall(r'([A-Z][a-z]?)([0-9]*)',q['formula']):balance[a]+=c*int(n or 1)
+  balance['charge']+=c*q['charge']
+ ensure(not any(balance.values()),'model chemistry not balanced')
+ return {'id':'BiGG:ACMANAptspp','direction':'left_to_right','reaction':r,'metabolites':{k:ms[k] for k in r['metabolites']},'balance':dict(balance)}
+
+def fresh_proteins(paths,record):
+ wanted={p['id'].split(':',1)[1] for p in record['participants'] if p['id'].startswith('UniProtKB:')};result={}
+ for item in paths:
+  p=Path(item['path'])
+  if p.suffix!='.json' or p.parent.name!='raw':continue
+  try:j=json.loads(p.read_text())
+  except (ValueError,UnicodeError):continue
+  if not isinstance(j,dict):continue
+  for row in [j] if 'primaryAccession' in j else j.get('results',[]):
+   if not isinstance(row,dict) or row.get('primaryAccession') not in wanted:continue
+   k=row['primaryAccession'];ensure(row.get('entryType')=='UniProtKB reviewed (Swiss-Prot)','non-reviewed selected protein')
+   ensure(row['organism']['taxonId']==83333,'protein is not the selected K-12 authority scope')
+   if k in result:ensure(result[k]['native']==row,'conflicting duplicate protein originals')
+   result[k]={'path':str(p),'sha256':sha(p),'native':row}
+ ensure(set(result)==wanted,'missing exact selected protein originals');return result
+
+def native_assemblies(native,proteins,record):
+ es=record['mechanistic_edges'];expected=[];projection=[]
+ for node in record['participants']:
+  if node.get('category')!='complex' or not node['id'].startswith('MetaCyc:'):continue
+  frame=node['id'].split(':',1)[1];x=native[frame]
+  for comp in x.findall('component'):
+   fid=comp.find('Protein').get('frameid');coef=comp.findtext('coefficient')
+   ensure(coef and coef.isdigit() and int(coef)>0,'native assembly coefficient missing')
+   matches=[k for k,v in proteins.items() if any(q['database']=='BioCyc' and q['id']=='MetaCyc:'+fid for q in v['native'].get('uniProtKBCrossReferences',[]))]
+   ensure(len(matches)==1,'ambiguous/missing exact native component-to-UniProt cross-reference: '+fid)
+   up='UniProtKB:'+matches[0];pair=(node['id'],'has_part',up);expected.append(pair)
+   ee=[e for e in es if (e['subject'],e['predicate'],e['object'])==pair]
+   ensure(len(ee)==1,'fresh native assembly component missing/duplicated: '+fid)
+   ensure(any(q.get('reference_id')==node['id'] and f'component {fid} coefficient {coef}.' in q.get('source_assertion','') for q in ee[0]['evidence']),'fresh native assembly coefficient mismatch: '+fid)
+   projection.append({'complex':node['id'],'native_component':fid,'uniprot':up,'coefficient':int(coef),'edge_id':ee[0]['id']})
+ actual=[(e['subject'],e['predicate'],e['object']) for e in es if e['predicate']=='has_part' and e['subject']!=R and not e['subject'].startswith('EcoCyc:')]
+ ensure(collections.Counter(actual)==collections.Counter(expected),'unexpected/incomplete native assembly edges')
+ for state,base in [('PTSH-PHOSPHORYLATED','PTSH-MONOMER'),('URIDYLYL-PII','PROTEIN-PII'),('CPLX0-8568','PIIPROTEIN-CPLX')]:
+  ensure(native[state].find('unmodified-form/Protein').get('frameid')==base,'native modified-state base mismatch')
+ ensure(not native['CPLX0-8568'].findall('component'),'modified PII assembly now has explicit components; reassessment required')
+ for reg,protein in [('REG0-12822','PTSH-MONOMER'),('REG0-12825','URIDYLYL-PII'),('REG0-12826','NANE-MONOMER')]:
+  x=native[reg];ensure(x.findtext('mode')=='+' and x.find('regulator/Protein').get('frameid')==protein and x.find('regulated-entity/Enzymatic-Reaction/reaction/Reaction').get('frameid')=='GLUCOSAMINE-6-P-DEAMIN-RXN','native regulatory state/back-reference mismatch')
+ return projection
+
+def transport_identity(model):
+ c=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+ keys={i:c.execute("SELECT value FROM statements WHERE subject=? AND predicate='chemrof:inchi_key_string'",(i,)).fetchone()[0] for i in ['CHEBI:17122','CHEBI:58557']};c.close()
+ originals={}
+ for key,model_id,chebi in [('acmana','acmana_p','CHEBI:17122'),('acmanap','acmanap_c','CHEBI:58557')]:
+  j=json.loads((BASE/'raw'/('bigg-'+key+'.json')).read_text());ensure(j['bigg_id']==key,'universal BiGG identity mismatch')
+  mk=model['metabolites'][model_id]['annotation']['inchi_key'];uk=[q['id'] for q in j['database_links']['InChI Key']]
+  ensure(mk==uk and len(uk)==1,'BiGG model/universal structural annotation mismatch')
+  originals[key]={'native_name':j['name'],'model_inchikey':mk[0],'universal_inchikey':uk[0],'chebi_id':chebi,'chebi_inchikey':keys[chebi],'exact_inchikey_match':mk[0]==keys[chebi]}
+ ensure(not originals['acmana']['exact_inchikey_match'] and originals['acmanap']['exact_inchikey_match'],'source structure conflict changed; scientific reassessment required')
+ return {'source_assertions':originals,'interpretation':'Keep native BiGG identities separate. Substrate annotation conflicts with exact CHEBI:17122; no interconversion or exact alias is inferred. Product InChIKey matches CHEBI:58557, while the universal model identity remains separately represented.'}
+
+def validate_candidate(record,rhea,model,native,contract,schema,proteins):
+ schema_diagnostics=[]
+ try:schema.validate_record(record)
+ except schema.ValidationError as exc:
+  schema_diagnostics=exc.errors
+  ensure(all(re.fullmatch(r'.+ has unsupported prefix: EcoCyc',x) for x in schema_diagnostics),'unexpected generic schema failure: '+str(schema_diagnostics))
+ regulatory.validate(record,regulatory.fresh_sources())
+ es=record['mechanistic_edges'];rr={r['id']:r for r in record['reactions']}
+ ensure(record['id']==R,'wrong candidate identity')
+ ensure(len({e['id'] for e in es})==len(es),'duplicate edge ID')
+ # Fresh direction checks occur before contract comparison, so controls cannot pass merely by matching sides.
+ for i,d in rhea.items():ensure(i in rr and rr[i].get('direction')==d['orientation'],'fresh-source directional mismatch: '+i)
+ bi='BiGG:ACMANAptspp';ensure(rr.get(bi,{}).get('direction')==model['direction'],'fresh-source directional mismatch: '+bi)
+ expected=[]
+ for i,d in rhea.items():
+  for side,p in [('substrates','consumes'),('products','produces')]:
+   for x in d['sides'][side]:expected.append((x['id'],p,i) if side=='substrates' else (i,p,x['id']))
+ bm={'acmana_p':'BiGG:acmana','acmanap_c':'BiGG:acmanap','pep_c':'CHEBI:58702','pyr_c':'CHEBI:15361'}
+ for mi,c in model['reaction']['metabolites'].items():expected.append((bm[mi],'consumes',bi) if c<0 else (bi,'produces',bm[mi]))
+ actual=[(e['subject'],e['predicate'],e['object']) for e in es if e['predicate'] in ['consumes','produces']]
+ ensure(collections.Counter(actual)==collections.Counter(expected),'fresh-source complete chemical side mismatch')
+ assemblies=native_assemblies(native,proteins,record)
+ # Every native core maps into the represented full child. No truncated native pathway.
+ for ni,ri in contract['native_core_map'].items():
+  child='MetaCyc:PWY0-1324' if ni in ['RXN0-7389','RXN0-7390','NANK-RXN','NANE-RXN'] else 'MetaCyc:GLUAMCAT-PWY'
+  ensure(any(e['subject']==ri and e['predicate']=='part_of' and e['object']==child for e in es),'omitted native core membership: '+ni)
+ for ch in ['MetaCyc:PWY0-1324','MetaCyc:GLUAMCAT-PWY']:
+  ensure(any(e['subject']==R and e['predicate']=='has_part' and e['object']==ch for e in es),'omitted complete child')
+ refids={r['id'] for r in record['references']};categories={p['id']:p.get('category') for p in record['participants']}
+ for e in es:
+  qs=e.get('endpoint_qualifiers',[]);ensure(isinstance(qs,list),'qualifier list shape');roles=[]
+  for q in qs:
+   ensure(set(q)=={'endpoint','kind','description','evidence'},'qualifier closed shape')
+   ensure(q['endpoint'] in ['subject','object'],'invalid qualifier role');roles.append(q['endpoint'])
+   ensure(categories.get(e[q['endpoint']]) in ['protein','complex'],'qualifier non-protein endpoint')
+   ensure(q['kind'] in ['experimental_construct','molecular_state'],'invalid qualifier kind')
+   ensure(isinstance(q['description'],str) and 0<len(q['description'].strip())<=400,'invalid qualifier description')
+   errors=[];schema._validate_evidence(q['evidence'],refids,'endpoint_qualifiers.evidence',errors);ensure(not errors,'qualifier evidence: '+str(errors))
+  ensure(len(roles)==len(set(roles)),'duplicate qualifier role')
+  # Scope statements are author curated from intact primary anchors and remain atomic.
+  ensure(e.get('endpoint_qualifiers')==contract['evidence_by_edge'][e['id']].get('endpoint_qualifiers'),'source-bound endpoint qualification mismatch: '+e['id'])
+ ensure({k:record[k] for k in ['taxa','participants','reactions']}==contract['node_sections'],'curated identity/role/label scope mismatch')
+ ensure([{k:e[k] for k in ['id','subject','predicate','object']} for e in es]==contract['structural_edges'],'curated complete structural scope mismatch')
+ ensure({e['id']:{k:e[k] for k in ['evidence','endpoint_qualifiers'] if k in e} for e in es}==contract['evidence_by_edge'],'curated evidence/provenance mutation')
+ ensure(record['references']==contract['references'],'reference binding mutation')
+ ensure(record['description']==contract['record_description'],'record scope description mutation')
+ return {'directional_reactions_checked':len(rhea)+1,'complete_chemical_edges':len(expected),'native_core_reactions':6,'native_children':2,'fresh_native_assembly_components':len(assemblies),'selected_reviewed_K12_proteins':len(proteins),'EcoCyc_native_components':3,'EcoCyc_expression_controls':2,'pending_schema_diagnostics':schema_diagnostics,'qualified_edges':sum(bool(e.get('endpoint_qualifiers')) for e in es),'status':'source-bound scientific checks pass; EcoCyc schema/policy and canonical production validation remain pending'}
+
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--record',type=Path,default=A/'draft/amino-sugar-superpathway.future-schema.yaml');ap.add_argument('--output',type=Path,required=True);args=ap.parse_args()
+ ensure(not args.output.exists(),'output must be a fresh successor directory');args.output.mkdir()
+ manifest_path=A/'source-manifest.json';manifest=json.loads(manifest_path.read_text());contract=json.loads((A/'science-contract.json').read_text())
+ active=[*manifest['inputs'],*manifest['runtime'],{'path':str(manifest_path),'sha256':sha(manifest_path)},{'path':str(Path(__file__)),'sha256':sha(__file__)},{'path':str(args.record),'sha256':sha(args.record)}]
+ guard(active)
+ ensure(sha(args.record)==manifest['record_sha256'],'selected target is not the declared author target')
+ sys.path.insert(0,manifest['runtime_source_root']);import pathwaymech.schema as schema
+ ensure(str(Path(schema.__file__).resolve())==str(Path(manifest['runtime_source_root'])/'pathwaymech/schema.py'),'wrong imported schema runtime')
+ record=yaml.safe_load(args.record.read_text());rhea=fresh_rhea(manifest['rhea_path']);native=fresh_native(manifest['native_xml_paths']);model=model_reaction(BASE/'raw/bigg-iML1515.json');proteins=fresh_proteins(manifest['inputs'],record);transport=transport_identity(model)
+ # Every inspected primary anchor is freshly extracted from its intact original.
+ for row in json.loads((BASE/'primary-inspection-ledger.json').read_text())['inspections']:
+  ensure(sha(row['path'])==row['sha256'],'primary source hash mismatch');t=html.fromstring(Path(row['path']).read_bytes())
+  for q in row['inspected_sections']:
+   xs=t.xpath(q['xpath']);ensure(len(xs)==1,'primary anchor missing or ambiguous');text=xs[0].text_content() if row['text_extraction']=='lxml.text_content.raw' else ' '.join(xs[0].text_content().split());ensure(sha_bytes(text.encode())==q['text_sha256'],'primary anchor text mismatch: '+row['PMCID']+':'+str(q['id']))
+ positive=validate_candidate(record,rhea,model,native,contract,schema,proteins);controls=[]
+ def reject(name,f,reason=None):
+  try:f()
+  except Exception as ex:
+   if reason:ensure(reason in str(ex),'wrong control rejection '+name+': '+str(ex))
+   controls.append({'name':name,'rejected':True,'reason':str(ex)});return
+  raise ValueError('false-pass control '+name)
+ def testrecord(m):return validate_candidate(m,rhea,model,native,contract,schema,proteins)
+ for i in [*SELECTED,'BiGG:ACMANAptspp']:
+  m=copy.deepcopy(record);q=next(x for x in m['reactions'] if x['id']==i);q['direction']='right_to_left' if q['direction']=='left_to_right' else 'left_to_right'
+  reject('direction-mutation:'+i,lambda m=m:testrecord(m),'fresh-source directional mismatch')
+  m=copy.deepcopy(record);j=next(j for j,e in enumerate(m['mechanistic_edges']) if e['predicate']=='consumes' and e['object']==i);del m['mechanistic_edges'][j]
+  reject('missing-chemical-side:'+i,lambda m=m:testrecord(m),'fresh-source complete chemical side mismatch')
+ for e in record['mechanistic_edges']:
+  if not e.get('endpoint_qualifiers'):continue
+  for name,fn in [('delete',lambda q:q.pop('endpoint_qualifiers')),('role-swap',lambda q:[z.__setitem__('endpoint','object' if z['endpoint']=='subject' else 'subject') for z in q['endpoint_qualifiers']]),('state-wording',lambda q:q['endpoint_qualifiers'][-1].__setitem__('description','Native Met1-NagB; unqualified native state.')),('evidence-loss',lambda q:q['endpoint_qualifiers'][0].__setitem__('evidence',[]))]:
+   m=copy.deepcopy(record);q=next(x for x in m['mechanistic_edges'] if x['id']==e['id']);fn(q);reject('qualifier-'+name+':'+e['id'],lambda m=m:testrecord(m))
+ m=copy.deepcopy(record);m['mechanistic_edges'][0]['evidence'][0]['reference_id']='PMID:99999999';reject('undeclared-reference',lambda:testrecord(m))
+ # Issue425 controls check source-derived signs, exact states, RNA identity and composition.
+ for n in [110,111,112,113,114]:
+  m=copy.deepcopy(record);m['mechanistic_edges']=[e for e in m['mechanistic_edges'] if e['id']!=f'amino-{n:03d}'];reject('issue425-omission:'+str(n),lambda m=m:testrecord(m),'fresh EcoCyc expression/assembly edge mismatch')
+ for n in [110,111]:
+  m=copy.deepcopy(record);e=next(e for e in m['mechanistic_edges'] if e['id']==f'amino-{n:03d}');e['predicate']='inhibits' if e['predicate']=='activates' else 'activates';reject('issue425-sign:'+str(n),lambda m=m:testrecord(m),'fresh EcoCyc expression/assembly edge mismatch')
+ m=copy.deepcopy(record);e=next(e for e in m['mechanistic_edges'] if e['id']=='amino-105');e['subject']='UniProtKB:P0ACJ8';reject('issue425-unbound-CRP-substitution',lambda:testrecord(m),'fresh EcoCyc expression/assembly edge mismatch')
+ m=copy.deepcopy(record);next(n for n in m['participants'] if n['id']=='EcoCyc:RNA0-241')['category']='gene';reject('issue425-SgrS-gene-confusion',lambda:testrecord(m),'EcoCyc selected node type/identity mismatch')
+ m=copy.deepcopy(record);e=next(e for e in m['mechanistic_edges'] if e['id']=='amino-111');e['evidence'][0]['source_assertion']='SgrT directly inhibits assembled ManXYZ transport in all MG1655 amino-sugar growth conditions.';reject('issue425-direct-transport-overclaim',lambda:testrecord(m),'SgrS synthesis/strain-scope wording missing')
+ m=copy.deepcopy(record);e=next(e for e in m['mechanistic_edges'] if e['id']=='amino-113');e['evidence'][0]['source_assertion']='The complex has exactly two cAMP molecules.';reject('issue425-invented-cAMP-occupancy',lambda:testrecord(m),'curated evidence/provenance mutation')
+ for name,frame,xpath,value in [('taxon','RNA0-241','metadata/PGDB/dblink/dblink-oid','83333'),('query','RNA0-241','metadata/query','META:RNA0-241'),('version','RNA0-241','metadata/PGDB',None)]:
+  tree=etree.fromstring(regulatory.PATHS[frame].read_bytes())
+  if name=='version':tree.find(xpath).set('version','26.0')
+  else:tree.find(xpath).text=value
+  reject('issue425-native-'+name,lambda tree=tree,frame=frame:regulatory.fresh_sources({frame:etree.tostring(tree)}))
+ modified=regulatory.fresh_sources();modified['PC00004'].find('component/coefficient').text='3';reject('issue425-native-homodimer-coefficient',lambda:regulatory.inspect_sources(modified),'homodimer component coefficient mismatch')
+ modified=regulatory.fresh_sources();etree.SubElement(modified['CPLX0-226'].find('component'),'coefficient').text='2';reject('issue425-native-bound-occupancy-added',lambda:regulatory.inspect_sources(modified),'composition/occupancy mismatch')
+ modified=regulatory.fresh_sources();modified['CPLX0-226'].xpath('.//Regulation[@ID="ECOLI:REG0-5729"]')[0].find('mode').text='-';reject('issue425-native-expression-sign',lambda:regulatory.inspect_sources(modified),'positive expression orientation mismatch')
+ # Native original identity/version controls use the actual parser with mutated source bytes.
+ source=native['CPLX-165'];body=Path(next(p for p in manifest['native_xml_paths'] if Path(p).name=='CPLX-165.xml')).read_bytes()
+ bad_query=etree.fromstring(body);bad_query.find('metadata/query').text='META:CPLX-167'
+ reject('bad-native-source-query',lambda:native_xml(etree.tostring(bad_query)),'identity mismatch')
+ reject('bad-native-source-version',lambda:native_xml(body.replace(b"version='27.0'",b"version='26.0'")),'version mismatch')
+ reject('bad-native-source-body',lambda:native_xml(b'<html>captcha</html>'),'not native')
+ mutated_native=copy.deepcopy(native);mutated_native['CPLX-165'].find('component/coefficient').text='99'
+ reject('native-assembly-coefficient-mutation',lambda:validate_candidate(record,rhea,model,mutated_native,contract,schema,proteins),'fresh native assembly coefficient mismatch')
+ m=copy.deepcopy(record);m['mechanistic_edges']=[e for e in m['mechanistic_edges'] if not (e['subject']=='MetaCyc:ACNEULY-CPLX' and e['predicate']=='has_part')]
+ reject('native-assembly-component-omission',lambda:testrecord(m),'fresh native assembly component missing')
+ # Guard functions used by the success path are exercised on external copies only.
+ for name,original in [('record-input',args.record),('runtime-input',Path(schema.__file__)),('source-input',Path(next(p for p in manifest['native_xml_paths'] if Path(p).name=='CPLX-165.xml')))]:
+  p=args.output/(name+'-control.bin');b=original.read_bytes();p.write_bytes(b+b'\nmutation');reject(name+'-hash-guard',lambda p=p,b=b:guard([{'path':str(p),'sha256':sha_bytes(b)}]),'hash binding failed')
+ payload={'record_id':record['id'],'EcoCyc_native_projection':regulatory.validate(record,regulatory.fresh_sources()),'rhea':rhea,'coupled_transport':model,'transport_identity_conflict':transport,'native_assembly_components':native_assemblies(native,proteins,record),'protein_sequence_scope':{k:{'path':v['path'],'sha256':v['sha256'],'entry_audit':v['native']['entryAudit'],'organism':v['native']['organism'],'sequence_length':v['native']['sequence']['length'],'sequence_sha256':sha_bytes(v['native']['sequence']['value'].encode())} for k,v in proteins.items()},'source_bound_validation':positive,'endpoint_qualifiers':{e['id']:e['endpoint_qualifiers'] for e in record['mechanistic_edges'] if e.get('endpoint_qualifiers')}}
+ outputs={'projection.json':json.dumps(payload,indent=2)+'\n','controls.json':json.dumps(controls,indent=2)+'\n'}
+ for n,s in outputs.items():(args.output/n).write_text(s)
+ accepted=[{'path':str(args.output/n),'sha256':sha_bytes(s.encode())} for n,s in outputs.items()]
+ bad=args.output/'bad-output-control.json';bad.write_text(outputs['projection.json']+'mutation');reject('output-projection-hash-guard',lambda:guard([{'path':str(bad),'sha256':accepted[0]['sha256']}]),'hash binding failed')
+ # Refresh controls output including the output guard before terminal publication binding.
+ outputs['controls.json']=json.dumps(controls,indent=2)+'\n';(args.output/'controls.json').write_text(outputs['controls.json']);accepted[1]['sha256']=sha_bytes(outputs['controls.json'].encode())
+ guard(accepted);guard(active)
+ receipt={'status':'PASS_EXTERNAL_SCIENTIFIC_REPLAY_PENDING_ECOCYC_PRODUCTION_SUPPORT','at':datetime.now(timezone.utc).isoformat(),'record_path':str(args.record),'record_sha256':sha(args.record),'manifest_sha256':sha(manifest_path),'helper_sha256':sha(__file__),'source_count':len(manifest['inputs']),'runtime_bindings':manifest['runtime'],'positive':positive,'negative_controls':len(controls),'all_controls_rejected':all(x['rejected'] for x in controls),'accepted_outputs':accepted,'all_inputs_rehashed_through_publication':True,'limitations':['Current native generic schema reports only the explicitly retained unsupported EcoCyc prefix; no namespace substitution, policy exemption or production pass is claimed.','Not a canonical production authority rebuild or full closed-schema gate.','Endpoint qualifier validation here implements the accepted author proposal externally; independent implementation/science review required.','Curated assertion/provenance locking preserves source-scoped author interpretation and is not independent verification of its truth.','Generic protein reaction balance uses reactive parts where complete; no whole-protein atom-count assertion.']}
+ (args.output/'success.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt,indent=2))
+if __name__=='__main__':main()

@@ -1,0 +1,83 @@
+"""Archive selected exact reports and inert helpers; never adopt maintained files."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,re,gzip,base64
+OUT=Path(__file__).parent;STAGE=OUT/'staged-v2';STAGE.mkdir();BASE='research/pathway_additions/2026-10-11-next-223';TMP=Path('/private/tmp')
+selected=[]
+def group(label,stem,names):
+ root=TMP/('pathwaymech-next-223-'+stem)
+ for name in names.split():selected.append((label+'/'+name,root/name))
+group('preflight','preflight-20261011','handoff.json artifact-manifest.json assessment.md semantic-dedup.json additional-record-dedup.json bounded-queue-crosscheck.json frozen-queue-binding.json complex-name-evidence-and-gap.json protein-authority-scope.json pathbank-version-delta.json execution-receipts.json')
+group('author-original','author-20261011','handoff.json artifact-manifest.json assessment.md predecessor-binding.json science-contract.json edge-evidence-coverage.json primary-inspection-ledger.json source-manifest.json authority-proposal.json bigg-authority-proposal.json endpoint-qualification-proposal.md execution-receipts.json final-preservation.json source-replay.py build-draft.py extract-rhea-author-attempt1.py extract-rhea-author.py replay-attempt3/success.json replay-attempt3/controls.json logs/replay-attempt1-terminal.log logs/replay-attempt2-terminal.log logs/replay-attempt3-terminal.log logs/prepare-handoff-ledgers-terminal.log logs/prepare-handoff-ledgers-successor-terminal.log')
+group('correction','correction-20261011','handoff.json artifact-manifest.json assessment.md delta.json science-contract.json edge-evidence-coverage.json authority-addendum.json source-manifest.json primary-inspection-successor.json review-original-lineage.json locator-correction-receipt.json execution-receipts.json final-preservation.json source-replay.py source-replay-v2.py regulatory-source.py correct-native-locator.py prepare-correction.py replay-attempt2/success.json replay-attempt2/controls.json replay-terminal-attempt1.log replay-terminal-attempt2.log draft/amino-sugar-superpathway.future-schema.yaml')
+group('science-original','science-review-20261011','handoff.json artifact-manifest.json report.md review.json issue-425-finding.md issue-425-fulltext-addendum.md execution-receipts.json input-bindings.json additional-input-bindings.json late-source-bindings.json node-assessment-ledger.json edge-assessment-ledger.json reference-identity-ledger.json supplemental-checks.json runtime-and-baseline.json intake-result.json independent-checks.py complete-review.py checks-attempt1.stdout.log checks-attempt1.stderr.log complete-review.stdout.log complete-review.stderr.log regulatory-acquisition-receipt-v3.json regulatory-acquisition-receipt-v4.json')
+group('science-successor','science-successor-review-20261011','handoff.json artifact-manifest.json report.md review.json execution-receipts.json final-package-verification.json attempt1-diagnostic.json check-successor.py check-successor-v2.py check-successor.stdout.log check-successor.stderr.log check-successor-v2.stdout.log check-successor-v2.stderr.log attempt2/result.json attempt2/controls.json attempt2/fresh-delta.json attempt2/input-bindings.json')
+group('complex-proposal','complex-authority-20261011','handoff.json assessment.md proposal-checks.json check-proposal-attempt1.json check-proposal-attempt2.json execution-receipt.json check-proposal.py check-proposal-v2.py check-proposal-v3.py')
+group('complex-implementation','authority-implementation-20261011','handoff.json artifact-manifest.json assessment.md baseline-binding.json scoped-change-audit.json implementation.diff terminal-receipt.json seal-attempt1-receipt.json initial-attempt/receipt.json validation-run-1/result.json validation-run-1/retained-reproduction.json validation-run-1/authentic-source-checks.json validation-run-1/authentic-cli.receipt.json validation-run-1/focused-pytest.receipt.json validation-run-1/focused-pytest.stdout.log validation-run-1/ruff.receipt.json validation-run-1/ruff.stdout.log validation-run-1/retained-cli.receipt.json validation-run-1/retained-cli.stdout.log validate.py')
+group('endpoint-implementation','endpoint-implementation-20261011','handoff.json artifact-manifest.json assessment.md baseline-binding.json implementation-files.json implementation.diff terminal-receipt.json visual-inspection.json initial-attempt/lint-receipt.json initial-attempt/pytest-receipt.json cli-test-lint-attempt/receipt.json validation-run-1/result.json validation-run-1/source-replay.json validation-run-1/legacy-corpus-output-accounting.json validation-run-1/focused-pytest.receipt.json validation-run-1/focused-pytest.stdout.log validation-run-1/ruff.receipt.json validation-run-1/ruff.stdout.log validation-run-1/corpus-render.receipt.json validation-run-1/corpus-render.stdout.log validate.py')
+group('bigg-contract','bigg-contract-review-20261011','handoff.json assessment.md assessment.json')
+group('bigg-implementation','bigg-implementation-20261011','handoff.json assessment.json assessment.md file-scope.json change.patch.json tool-receipts.json current-corpus-projection.json verify-implementation.py verify-implementation-retention-v2.py authentic-controls.py authentic-controls-v2.py checks-attempt1/disposition.json checks-final/disposition.json checks-retention-v2/execution.json checks-retention-v2/preservation.json checks-retention-v2/maintained-preservation.json checks-retention-v2/selection-scope.json checks-retention-v2/focused.stdout checks-retention-v2/lint.stdout checks-retention-v2/baseline-cli.stdout checks-retention-v2/augmented-cli.stdout authentic-controls-v2/results.json')
+group('ecocyc-contract','ecocyc-contract-review-20261011','handoff.json assessment.md assessment.json input-bindings.json support-search.json execution-notes.json')
+group('ecocyc-implementation','ecocyc-implementation-20261011','handoff.json assessment.json assessment.md file-scope.json change.patch.json tool-receipts.json verify-implementation.py authentic-controls.py corrected-target-compatibility-attempt1.json corrected-target-compatibility-v2.json corrected-target-compatibility-v2.py checks-attempt1/disposition.json checks-attempt1/execution.json checks-attempt1/focused.stdout checks-attempt1/focused.stderr checks-final/execution.json checks-final/preservation.json checks-final/maintained-preservation.json checks-final/selection-scope.json checks-final/focused.stdout checks-final/lint.stdout checks-final/baseline-cli.stdout checks-final/augmented-cli.stdout authentic-controls/results.json')
+group('ecocyc-independent','ecocyc-code-review-20261011','handoff.json artifact-manifest.json report.md review.json terminal-receipts.json contract-verification.json provisional-diff-bindings.json provisional-full.diff independent-probes.py independent-probes-v2.py independent-probes.stdout independent-probes.stderr independent-probes-v2.stdout independent-probes-v2.stderr probes-attempt1/positive-cli.receipt.json probes-attempt1/positive-cli.stderr probes-attempt2/results.json probes-attempt2/input-bindings.json policy-and-svg-probes.py policy-and-svg-probes.stdout policy-and-svg-probes.stderr policy-and-svg/results.json verify-seal.py sealed-package-verification.json')
+group('authority-selection-original','authority-selection-20261011','handoff.json artifact-manifest.json assessment.md baseline-bindings.json selection-proposal.json integration-plan.md manifest-delta.json expected-source-term-delta.json ontology-id-delta.json existing-term-selection-retention.json native-bulk-reuse.json existing-source-conflicts-before-filtering.json new-native-assertions-before-filtering.json final-verification.json execution-receipts.json prepare-selection.py')
+group('authority-selection-successor','authority-selection-successor-20261011','handoff.json artifact-manifest.json assessment.md baseline-bridge.json proposal.json all22-manifest-additions.json expected-source-delta.json new-ecocyc-manifest-entries.json new-ecocyc-original-lineage.json new-ecocyc-assertions-before-filtering.json final-verification.json execution-receipts.json prepare-successor.py')
+group('canonical-ontology','canonical-ontology-20261011','execution.json preservation.json build.stdout build.stderr')
+group('canonical-sources-preparation','canonical-sources-20261011','preparation.json manifest.json expected-delta.json original-bindings-before.json')
+group('dedup-bridge','dedup-bridge-20261011','result.json query-verification.json yaml-errors.json')
+group('imodulondb-followup','imodulondb-20261011','assessment.md context-assessment.json datasets-attempt1.receipt.json datasets-attempt1.stderr datasets-attempt2.receipt.json datasets-attempt2.stdout nanR-search.receipt.json nagC-search.receipt.json crp-search.receipt.json sgrS-search.receipt.json manX-search.receipt.json 34-summary.receipt.json 29-summary.receipt.json 1-summary.receipt.json 74-summary.receipt.json')
+for name in ['regulation-issue.md','science-root-acceptance.json','science-successor-root-acceptance.json','correction-root-verification.json','ecocyc-proposal.md','canonical-ontology.py','prepare-source-build.py','adopt-reviewed-code.py']:
+ selected.append(('root/'+name,TMP/('pathwaymech-next-223-'+name)))
+for label,stem,names in [('root-author','author-root-verification-20261011','result.json'),('root-complex','complex-root-review-20261011','review.json'),('root-endpoint','endpoint-root-review-20261011','binding.json review.json'),('root-code-adoption','reviewed-code-adoption-20261011','receipt.json complex-baseline-bridge.json endpoint-baseline-bridge.json'),('root-bigg','bigg-root-review-20261011','review.json native-positive-projection.json'),('root-bigg-adoption','bigg-adoption-20261011','adoption.json actual-merged-baseline-bridge.json package-verification.json combined-execution.json combined-focused.log lint.log diff-check.log'),('root-ecocyc-adoption','ecocyc-root-adoption-20261011','verification.json adoption.json'),('visual-original','graph-root-preview-20261011','render-receipt.json visual-review.json'),('visual-successor','correction-graph-preview-v2-20261011','receipt.json complex-crops-receipt.json visual-review.json')]:group(label,stem,names)
+for name in ['baseline.json','baseline-kgx.json','baseline-receipt.json','baseline-attempt1.json','capture-baseline.py','capture-baseline-v2.py','preserve-maintained.py','run-maintained-gates.py','history-commands.json','helper-static-check.json']:
+ selected.append(('integration-preparation/'+name,OUT/name))
+group('canonical-sources-result','canonical-sources-20261011','execution.json preservation.json build.stdout build.stderr')
+group('root-data-adoption','data-adoption-20261011','receipt.json')
+group('maintained-render','maintained-render-20261011','receipt.json')
+missing=[str(p) for _,p in selected if not p.is_file()]
+if missing:
+ (OUT/'assembly-missing-inputs.json').write_text(json.dumps(missing,indent=2)+'\n')
+ raise SystemExit('Missing explicitly selected input(s): '+repr(missing))
+def sha(data):return hashlib.sha256(data).hexdigest()
+forbidden={'headers','request_headers','response_headers','cookies','set-cookie','cookie'}
+def project(obj):
+ removed=0
+ if isinstance(obj,dict):
+  result={}
+  for k,v in obj.items():
+   if k.casefold() in forbidden:removed+=1;continue
+   clean,n=project(v);result[k]=clean;removed+=n
+  return result,removed
+ if isinstance(obj,list):
+  result=[]
+  for value in obj:
+   clean,n=project(value);result.append(clean);removed+=n
+  return result,removed
+ return obj,0
+mapping=[];external=[]
+for relative,source in selected:
+ if (source.name in {'artifact-manifest.json','baseline-binding.json','baseline-bindings.json','final-verification.json','final-package-verification.json','sealed-package-verification.json','package-verification.json','actual-merged-baseline-bridge.json','complex-baseline-bridge.json','endpoint-baseline-bridge.json','original-bindings-before.json','manifest.json','semantic-dedup.json','protein-authority-scope.json'} or (source.name=='handoff.json' and source.stat().st_size>50000)):
+  raw=source.read_bytes();external.append({'label':relative,'external_path':str(source),'sha256':sha(raw),'bytes':len(raw),'disposition':'Complete immutable artifact remains external; compact dossier retains relevant assessments, results and exact digest binding instead of duplicating its full inventory.'});continue
+
+ raw=source.read_bytes();data=raw;transform='byte_exact';destination=relative
+ if source.suffix=='.json':
+  obj=json.loads(raw);clean,removed=project(obj)
+  if removed:
+   destination=relative.removesuffix('.json')+'.selected-metadata.json'
+   data=(json.dumps({'projection':'Remove HTTP header/cookie fields; original exact bytes remain external and are hash-bound.','omitted_fields':removed,'original_sha256':sha(raw),'metadata':clean},indent=2,ensure_ascii=False)+'\n').encode();transform='explicit_metadata_projection_without_headers_or_cookies'
+ if source.suffix in {'.py','.yaml','.yml','.sh','.cjs'}:destination+='.txt'
+ wrap=source.suffix in {'.log','.diff','.patch','.stdout','.stderr'} or source.name.endswith(('.stdout.log','.stderr.log'))
+ if not wrap and any(line.rstrip(b'\r\n').endswith((b' ',b'\t')) for line in data.splitlines(keepends=True)):wrap=True
+ if wrap:
+  destination+='.bytes.json'
+  data=(json.dumps({'encoding':'utf-8','source_sha256':sha(data),'source_bytes':len(data),'text':data.decode('utf-8')},indent=2,ensure_ascii=False)+'\n').encode();transform+=';lossless_utf8_json_wrapper'
+ assert b'__cf_bm=' not in data and b'JSESSIONID=' not in data and b'cf_clearance=' not in data,source
+ if relative in {'integration-preparation/baseline.json','integration-preparation/baseline-kgx.json'}:
+  destination=relative+'.gzip.json'
+  data=(json.dumps({'encoding':'gzip+base64','source_sha256':sha(raw),'source_bytes':len(raw),'data':base64.b64encode(gzip.compress(raw,mtime=0)).decode()},indent=2)+'\n').encode();transform='lossless_gzip_base64_json_wrapper'
+ target=STAGE/BASE/destination;target.parent.mkdir(parents=True,exist_ok=True)
+ assert not target.exists();target.write_bytes(data)
+ mapping.append({'source':str(source),'source_sha256':sha(raw),'source_bytes':len(raw),'destination':BASE+'/'+destination,'staged_path':str(target),'staged_sha256':sha(data),'staged_bytes':len(data),'transformation':transform})
+(STAGE/BASE/'external-seal-bindings.json').write_text(json.dumps({'scope':'Compact archive exclusions; these originals remain external and were not deleted or rewritten. Source bodies and cloned repositories are not included.','artifacts':external},indent=2)+'\n')
+(OUT/'copy-map-v2.json').write_text(json.dumps({'prepared_at':datetime.now(timezone.utc).isoformat(),'maintained_writes':False,'file_count':len(mapping),'staged_bytes':sum(r['staged_bytes'] for r in mapping),'files':mapping},indent=2)+'\n')
+print(len(mapping),'files',sum(r['staged_bytes'] for r in mapping),'bytes')

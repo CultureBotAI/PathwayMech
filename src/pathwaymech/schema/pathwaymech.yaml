@@ -8,7 +8,8 @@ description: >-
   closed, so an undeclared key is an error. What LinkML cannot state stays in
   src/pathwaymech/schema.py: that edge endpoints resolve to the record, its
   taxa, participants or reactions; that consumes/produces edges have
-  participant/reaction endpoints in the proper direction; that evidence cites
+  participant/reaction endpoints in the proper direction; that qualifiers have
+  unique roles on declared protein/complex participant endpoints; that evidence cites
   a declared reference; that evidence quotes are human-readable instead of raw
   provider XML; and that pathway ids are unique across the corpus. An explicit
   null is an error wherever it appears (the gate generates JSON Schema without
@@ -33,7 +34,7 @@ classes:
       id:
         identifier: true
         required: true
-        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])"
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])"
         description: The pathway's CURIE, e.g. MetaCyc:PWY-5097.
       label:
         required: true
@@ -95,7 +96,7 @@ classes:
     attributes:
       id:
         required: true
-        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])"
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])"
       label:
         required: true
         pattern: "\\S"
@@ -207,6 +208,37 @@ classes:
         description: A node id in this record (checked in src/pathwaymech/schema.py).
       description:
         description: Optional prose about the edge.
+      endpoint_qualifiers:
+        description: >-
+          Source-limited construct or state assertions that are part of this
+          edge claim. At most one per subject/object, on explicitly declared
+          protein or complex participants only (checked by schema.py).
+          Prefer an exact issuing state identifier when available.
+        multivalued: true
+        inlined_as_list: true
+        maximum_cardinality: 2
+        range: EndpointQualifier
+      evidence:
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+        range: EvidenceItem
+
+  EndpointQualifier:
+    description: >-
+      An endpoint qualification is part of the complete edge claim, not a new
+      biological identifier or an assertion of otherwise identical sequence.
+    attributes:
+      endpoint:
+        required: true
+        range: EndpointRoleEnum
+      kind:
+        required: true
+        range: EndpointQualifierKindEnum
+      description:
+        required: true
+        pattern: "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])"
       evidence:
         required: true
         multivalued: true
@@ -256,7 +288,7 @@ classes:
     attributes:
       id:
         required: true
-        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])"
+        pattern: "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])"
       title:
         pattern: "\\S"
       citation:
@@ -299,6 +331,14 @@ classes:
         range: boolean
 
 enums:
+  EndpointRoleEnum:
+    permissible_values:
+      subject:
+      object:
+  EndpointQualifierKindEnum:
+    permissible_values:
+      experimental_construct:
+      molecular_state:
   ReactionDirectionEnum:
     permissible_values:
       left_to_right:
@@ -321,6 +361,8 @@ enums:
       cellular_component:
       molecular_activity:
       biological_process:
+      pathway:
+        description: An explicitly identified child pathway or pathway interface, not an individual biochemical reaction.
   EdgePredicateEnum:
     permissible_values:
       activates:

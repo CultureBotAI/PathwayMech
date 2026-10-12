@@ -1,0 +1,28 @@
+"""Verify exact target shape, explicit categories and citation URL precedence."""
+from pathlib import Path
+import hashlib,html,json,yaml
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import validator,TARGET_CLASS
+from pathwaymech.graph_view import _declared_nodes
+from pathwaymech.kgx import kgx_nodes
+from pathwaymech.cli import _record_page,_reference_url
+out=Path(__file__).parent
+p=Path('/private/tmp/pathwaymech-next-223-correction-20261011/draft/amino-sugar-superpathway.future-schema.yaml')
+digest=hashlib.sha256(p.read_bytes()).hexdigest()
+assert digest=='ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff'
+raw=yaml.safe_load(p.read_bytes());model=validate_record(raw)
+errors=validator().validate(raw,TARGET_CLASS).results;assert not errors,errors
+nodes={n.id:n for n in kgx_nodes([model])};graph=_declared_nodes(model,{})
+for i,category in [('EcoCyc:CPLX0-226','complex'),('EcoCyc:PC00004','complex'),('EcoCyc:RNA0-241','rna')]:
+ assert nodes[i].source_category==category and graph[i]['type_label']==category
+ assert nodes[i].category==('biolink:RNAProduct' if category=='rna' else 'biolink:MacromolecularComplex')
+page=_record_page(model);citations=[]
+for ref in model.references:
+ if ref['id'].startswith('EcoCyc:'):
+  assert html.escape(ref['url'],quote=True) in page
+  fallback='https://ecocyc.org/gene?id='+ref['id'].split(':',1)[1]
+  assert _reference_url(ref['id'])==fallback
+  citations.append({'id':ref['id'],'explicit_url':ref['url'],'explicit_url_preserved':True,'fallback_url':fallback})
+result={'status':'passed','supersedes':'corrected-target-compatibility-attempt1.json','target':str(p),'target_sha256':digest,'native_schema_errors':0,'closed_schema_errors':0,'edges':len(model.mechanistic_edges),'ecocyc_categories':{i:{'kgx':n.category,'source_category':n.source_category,'graph_type':graph[i]['type_label']} for i,n in nodes.items() if i.startswith('EcoCyc:')},'citations':citations,'record_science_acceptance':False,'page_written':False,'whole_corpus_gates':False}
+(out/'corrected-target-compatibility-v2.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result,indent=2))

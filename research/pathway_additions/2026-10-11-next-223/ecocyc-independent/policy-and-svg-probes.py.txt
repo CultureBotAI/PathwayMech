@@ -1,0 +1,24 @@
+from pathlib import Path
+import copy,json,sys
+from xml.etree import ElementTree as ET
+import yaml
+R=Path(__file__).parent;I=Path('/private/tmp/pathwaymech-next-223-ecocyc-implementation-20261011/repo');sys.path[:0]=[str(I),str(I/'src')]
+from pathwaymech.identifiers import identifier_errors
+out=R/'policy-and-svg';out.mkdir();policy=yaml.safe_load((I/'conf/identifier_policy.yaml').read_text());assert policy['namespaces']['EcoCyc']['policy']=='canonical_or_synonym';assert not any(x['namespace']=='EcoCyc' for x in policy['contextual_labels'])
+policy['namespaces']={'EcoCyc':policy['namespaces']['EcoCyc']};policy['contextual_labels']=[]
+snapshot=json.loads((R/'probes-attempt2/positive-snapshot.json').read_text());results=[]
+for case,identifier,label,expected in [('canonical','EcoCyc:RNA0-241','small regulatory RNA SgrS',None),('native_alias','EcoCyc:RNA0-241','RyaA',None),('invented_alias','EcoCyc:RNA0-241','SgrT protein','LABEL_MISMATCH'),('unissued_identifier','EcoCyc:G0-9941','small regulatory RNA SgrS','ID_NOT_FOUND'),('source_context','EcoCyc:RNA0-241','small regulatory RNA SgrS','LABEL_AUTHORITY_UNAVAILABLE')]:
+ root=out/case;(root/'conf').mkdir(parents=True);(root/'data/pathways').mkdir(parents=True);(root/'data/identifier_authorities').mkdir()
+ (root/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(policy));s=copy.deepcopy(snapshot)
+ if case=='source_context':s['terms']['EcoCyc:RNA0-241']['label_kind']='source_context'
+ (root/'data/identifier_authorities/sources.json').write_text(json.dumps(s));(root/'data/pathways/test.yaml').write_text(yaml.safe_dump({'id':identifier,'label':label,'taxa':[],'participants':[],'reactions':[]}))
+ errors=identifier_errors(root);assert any(expected in x for x in errors) if expected else errors==[]
+ results.append({'case':case,'errors':errors,'expected_code':expected})
+html=(R/'probes-attempt2/full-target-graph.html').read_text();start=html.index('<svg xmlns=');end=html.index('</svg>',start)+len('</svg>');svg=ET.fromstring(html[start:end]);ns={'s':'http://www.w3.org/2000/svg'}
+for identifier,category in [('EcoCyc:RNA0-241','rna'),('EcoCyc:CPLX0-226','complex'),('EcoCyc:PC00004','complex')]:
+ found=[a for a in svg.findall('s:a',ns) if a.get('data-node-id')==identifier];assert len(found)==1;a=found[0]
+ assert 'Declared type: '+category in a.get('aria-label')
+ assert 'Declared type: '+category in a.find('s:title',ns).text
+ types=[n.text for n in a.findall('s:text',ns) if n.get('class')=='graph-node-type'];assert types==[category]
+ results.append({'identifier':identifier,'no_javascript_svg_type':category,'aria_label':a.get('aria-label'),'href':a.get('href')})
+(out/'results.json').write_text(json.dumps({'status':'passed','checks':results},indent=2)+'\n');print('5 policy cases and 3 exact static SVG type/accessibility assertions passed')

@@ -1,0 +1,119 @@
+"""Meaningful CLI rejection controls derived from retained original BiGG bodies."""
+import copy
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+OUT = Path(__file__).parent
+ROOT = OUT / 'repo'
+AUTHOR = Path('/private/tmp/pathwaymech-next-223-author-20261011')
+RUN = OUT / 'authentic-controls'
+RUN.mkdir()
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+entries = json.loads((OUT / 'proposal/new-source-entries.json').read_bytes())
+proposal = json.loads((AUTHOR / 'bigg-authority-proposal.json').read_bytes())
+originals = [Path(t['original']['path']) for t in proposal['universal_terms']]
+version_path = Path(proposal['database_version_original']['path'])
+model_path = AUTHOR / 'raw/bigg-iML1515-ACMANAptspp.json'
+assert hashlib.sha256(model_path.read_bytes()).hexdigest() == '684da5e5343239f0f8702ba4a58badcb5199ea503a2fd6bcdea7290151cd2a41'
+bindings = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in [*originals, version_path, model_path]}
+results = []
+for index, name in enumerate([
+    'native-id-mismatch', 'empty-native-name', 'html-error-body', 'duplicate-native-id',
+    'metabolite-as-reaction', 'model-as-universal', 'wrong-release-companion',
+    'changed-version-original', 'native-name-conflict-before-selection',
+    'native-type-collision-before-selection', 'query-request', 'model-endpoint',
+]):
+    case = RUN / name
+    cache = case / 'cache'
+    records = case / 'records'
+    cache.mkdir(parents=True)
+    records.mkdir()
+    (records / 'selector.yaml').write_bytes((OUT / 'selection-corpus/authority-selector-fixture.yaml').read_bytes())
+    selected = copy.deepcopy(entries)
+    for entry, original in zip(selected, originals):
+        (cache / entry['path']).symlink_to(original)
+    (cache / selected[0]['version_source']['path']).symlink_to(version_path)
+    body = json.loads(originals[0].read_bytes())
+    modified = None
+    target = selected[0]
+    if name == 'native-id-mismatch':
+        body['bigg_id'] = 'acmanap'
+        modified = json.dumps(body).encode()
+    elif name == 'empty-native-name':
+        body['name'] = ''
+        modified = json.dumps(body).encode()
+    elif name == 'html-error-body':
+        modified = b'<html>Unavailable API</html>'
+    elif name == 'duplicate-native-id':
+        modified = originals[0].read_bytes().rstrip()[:-1] + b',"bigg_id":"acmana"}'
+    elif name == 'metabolite-as-reaction':
+        target['kind'] = 'bigg-universal-reaction-json'
+        target['url'] = target['url'].replace('metabolites', 'reactions')
+    elif name == 'model-as-universal':
+        target = selected[2]
+        modified = model_path.read_bytes()
+    elif name in ['wrong-release-companion', 'changed-version-original']:
+        if name == 'wrong-release-companion':
+            target['version'] = target['version'].replace('1.6.0', '1.7.0')
+        else:
+            version = json.loads(version_path.read_bytes())
+            version['bigg_models_version'] = '1.7.0'
+            (cache / 'modified-version.json').write_text(json.dumps(version))
+            target['version_source']['path'] = 'modified-version.json'
+            # Retain the declared original digest: byte substitution must fail.
+    elif name in ['native-name-conflict-before-selection', 'native-type-collision-before-selection']:
+        target = copy.deepcopy(selected[0])
+        target['key'] = 'conflicting-original-control'
+        selected.append(target)
+        if name == 'native-name-conflict-before-selection':
+            body['name'] = 'Different source name'
+        else:
+            body = json.loads(originals[2].read_bytes())
+            body.update(bigg_id='acmana', name=proposal['universal_terms'][0]['canonical_label'])
+            target['kind'] = 'bigg-universal-reaction-json'
+            target['url'] = target['url'].replace('metabolites', 'reactions')
+        modified = json.dumps(body).encode()
+        # acmana is unselected; ACMANAptspp remains a supplied positive match.
+        (records / 'selector.yaml').write_text('id: BiGG:ACMANAptspp\nlabel: Selector only\n')
+    elif name == 'query-request':
+        target['url'] += '?id=acmana'
+    elif name == 'model-endpoint':
+        target['url'] = target['url'].replace('/universal/', '/models/iML1515/')
+    if modified is not None:
+        target['path'] = 'modified-body.json'
+        (cache / target['path']).write_bytes(modified)
+        target['sha256'] = hashlib.sha256(modified).hexdigest()
+    manifest = case / 'manifest.json'
+    manifest.write_text(json.dumps(selected, indent=2) + '\n')
+    output = case / 'output.json'
+    existed = index % 2 == 0
+    if existed:
+        output.write_bytes(b'prior independent authority\n')
+    command = [PYTHON, '-B', 'scripts/build_source_identifier_snapshot.py',
+               '--manifest', str(manifest), '--cache-dir', str(cache),
+               '--records', str(records), '--output', str(output)]
+    started = datetime.now(timezone.utc).isoformat()
+    result = subprocess.run(command, cwd=ROOT, capture_output=True,
+                            env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'})
+    (case / 'stdout.log').write_bytes(result.stdout)
+    (case / 'stderr.log').write_bytes(result.stderr)
+    preserved = output.read_bytes() == b'prior independent authority\n' if existed else not output.exists()
+    row = {'name': name, 'command': command, 'started_at': started,
+           'finished_at': datetime.now(timezone.utc).isoformat(), 'exit_code': result.returncode,
+           'expected_nonzero': True, 'output_existed': existed, 'output_preserved': preserved,
+           'native_input_sha256': bindings, 'manifest_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest()}
+    (case / 'receipt.json').write_text(json.dumps(row, indent=2) + '\n')
+    assert result.returncode != 0 and b'BiGG' in result.stderr and preserved, name
+    if 'before-selection' in name:
+        assert b'conflicting BiGG' in result.stderr, name
+    results.append(row)
+for p, expected in bindings.items():
+    assert hashlib.sha256(Path(p).read_bytes()).hexdigest() == expected
+(RUN / 'results.json').write_text(json.dumps({'status': 'passed', 'controls': results,
+                                             'all_originals_unchanged': True}, indent=2) + '\n')
+print(json.dumps({'status': 'passed', 'authentic_derived_negative_controls': len(results),
+                  'all_real_cli_expected_rejections': True, 'all_outputs_preserved': True}))

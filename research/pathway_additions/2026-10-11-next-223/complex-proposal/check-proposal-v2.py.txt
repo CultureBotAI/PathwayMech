@@ -1,0 +1,191 @@
+"""Exercise the external name proposal and unchanged canonical-label policy."""
+
+import copy
+import hashlib
+import json
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+from xml.etree import ElementTree
+
+OUT = Path(__file__).resolve().parent
+PRE = Path('/private/tmp/pathwaymech-next-223-preflight-20261011')
+ROOT = Path('/private/tmp/pathwaymech-next-222-20261011')
+assert __debug__ and sys.dont_write_bytecode
+sys.path.insert(0, str(OUT))
+sys.path.insert(0, str(ROOT / 'src'))
+import yaml
+from pathwaymech.identifiers import identifier_errors
+from prototype import ADAPTER, adapter, terms
+
+bindings = {}
+
+
+def capture(path, expected=None):
+    path = Path(path).absolute()
+    body = path.read_bytes()
+    digest = hashlib.sha256(body).hexdigest()
+    assert expected is None or digest == expected, str(path)
+    row = {'path': str(path), 'resolved_path': str(path.resolve(strict=True)), 'sha256': digest, 'bytes': len(body)}
+    assert str(path) not in bindings or bindings[str(path)] == row
+    bindings[str(path)] = row
+    return body
+
+
+def save(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+started = datetime.now(UTC).isoformat()
+capture(__file__)
+capture(OUT / 'prototype.py')
+capture(ADAPTER, '6a19e47fe29ccce62862ef6fb28ac30b69729dc46c2cae2de14cc6ac6103ddbc')
+capture(ROOT / 'src/pathwaymech/identifiers.py')
+capture(ROOT / 'src/pathwaymech/schema.py')
+capture(ROOT / 'src/pathwaymech/yaml_io.py')
+capture(ROOT / 'docs/IDENTIFIERS.md')
+policy = capture(ROOT / 'conf/identifier_policy.yaml')
+capture(PRE / 'handoff.json', 'a322e22a2e37e96d913ec448ef4c908a3a6d97c6fe9896204ab4205a8c39327f')
+capture(PRE / 'artifact-manifest.json', '7dece35396f520c5b3927a981c13ff79f705bb3822867b27b12439a3f96ea247')
+capture(PRE / 'assessment.md')
+ledger = json.loads(capture(PRE / 'complex-name-evidence-and-gap.json'))['complexes']
+for name in ['complex-authority-presence.json', 'canonical-cache-complex-presence.json',
+             'acquisition-components-receipt.json', 'acquisition-complex-labels-receipt.json']:
+    capture(PRE / name)
+acquisitions = json.loads((PRE / 'acquisition-components-receipt.json').read_text())
+network = json.loads(capture(OUT / 'acquisition-naming-evidence-network.json'))
+capture(OUT / 'acquisition-naming-evidence.json')
+for row in network:
+    capture(row['path'], row['sha256'])
+    if row['path'].endswith('-biocyc.xml'):
+        assert row['status'] == 200 and '/account-required.shtml?' in row['final_url']
+    else:
+        assert row['status'] == 200 and row['final_url'] == row['url']
+
+expected_labels = {'ACNEULY-CPLX': 'N-acetylneuraminate lyase',
+                   'CPLX0-8588': 'N-acetylmannosamine kinase',
+                   'NAG6PDEACET-CPLX': 'N-acetylglucosamine-6-phosphate deacetylase',
+                   'GLUCOSAMINE-6-P-DEAMIN-CPLX': 'glucosamine-6-phosphate deaminase'}
+positive = []
+source_rows = {}
+term_rows = {}
+for row in ledger:
+    path = Path(row['source'])
+    capture(path, row['sha256'])
+    frame = row['id'].split(':')[1]
+    url = 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:' + frame
+    assert any(item.get('path') == str(path) and item.get('sha256') == row['sha256']
+               and item.get('url') == url and item.get('status') == 200 for item in acquisitions)
+    current = None
+    try:
+        current = adapter.metacyc_protein_terms(path, url=url, version='27.0')
+    except ValueError as error:
+        current = {'rejected': str(error)}
+    result, mode = terms(path, url=url, version='27.0')
+    assert result == [(row['id'], expected_labels[frame], [])]
+    if frame == 'CPLX0-8588':
+        assert current == result and mode == 'direct_common_name'
+    else:
+        assert current == {'rejected': 'MetaCyc protein source requires one nonempty common-name'}
+        assert mode == 'single_exact_linked_native_enzyme_name'
+    key = 'external-proposal-' + frame
+    source_rows[key] = {'url': url, 'version': '27.0', 'license': 'Upstream terms; public-release licensing deferred', 'sha256': row['sha256']}
+    term_rows[row['id']] = {'label': expected_labels[frame], 'synonyms': [], 'source': key}
+    positive.append({'id': row['id'], 'source': bindings[str(path)], 'current_adapter': current,
+                     'proposal': result, 'name_derivation': mode, 'native_components': row['components']})
+
+fixtures = OUT / 'negative-fixtures'
+fixtures.mkdir(exist_ok=False)
+original_path = Path(ledger[0]['source'])
+original_root = ElementTree.fromstring(original_path.read_bytes())
+url = source_rows['external-proposal-ACNEULY-CPLX']['url']
+
+
+def mutate(case, change, source_url=url, version='27.0'):
+    root = copy.deepcopy(original_root)
+    change(root)
+    path = fixtures / (case + '.xml')
+    with path.open('xb') as stream:
+        stream.write(ElementTree.tostring(root, encoding='utf-8', xml_declaration=True))
+    try:
+        terms(path, url=source_url, version=version)
+    except (ValueError, ElementTree.ParseError) as error:
+        return {'case': case, 'fixture': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                'url': source_url, 'version': version, 'rejected': str(error)}
+    raise AssertionError('negative control accepted: ' + case)
+
+
+controls = [
+    mutate('wrong-url-frame', lambda root: None, source_url=url.replace('ACNEULY-CPLX', 'NAG6PDEACET-CPLX')),
+    mutate('wrong-pgdb-version', lambda root: None, version='28.0'),
+    mutate('wrong-top-frame', lambda root: root.find('Protein').set('frameid', 'NAG6PDEACET-CPLX')),
+    mutate('top-resource-stub', lambda root: root.find('Protein').set('resource', '#META:ACNEULY-CPLX')),
+    mutate('noncomplex-parent', lambda root: root.find('Protein/parent/Protein').set('frameid', 'Polypeptides')),
+    mutate('missing-component', lambda root: root.find('Protein').remove(root.find('Protein/component'))),
+    mutate('single-monomer', lambda root: setattr(root.find('Protein/component/coefficient'), 'text', '1')),
+    mutate('wrong-component-org', lambda root: root.find('Protein/component/Protein').set('orgid', 'ECOLI')),
+    mutate('wrong-component-resource', lambda root: root.find('Protein/component/Protein').set('resource', 'getxml?META:OTHER-MONOMER')),
+    mutate('extra-catalysis-even-same-name', lambda root: root.find('Protein').append(copy.deepcopy(root.find('Protein/catalyzes')))),
+    mutate('unresolved-activity', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction').set('resource', 'getxml?META:ACNEULY-ENZRXN')),
+    mutate('wrong-activity-id', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction').set('ID', 'META:OTHER-ENZRXN')),
+    mutate('wrong-enzyme-backref-frame', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction/enzyme/Protein').set('frameid', 'ACNEULY-MONOMER')),
+    mutate('wrong-enzyme-backref-resource', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction/enzyme/Protein').set('resource', '#META:NAG6PDEACET-CPLX')),
+    mutate('wrong-enzyme-backref-org', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction/enzyme/Protein').set('orgid', 'ECOLI')),
+    mutate('extra-enzyme-backref', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction/enzyme').append(copy.deepcopy(root.find('Protein/catalyzes/Enzymatic-Reaction/enzyme/Protein')))),
+    mutate('missing-reaction', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction').remove(root.find('Protein/catalyzes/Enzymatic-Reaction/reaction'))),
+    mutate('mismatched-reaction-resource', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction/reaction/Reaction').set('resource', 'getxml?META:NAG6PDEACET-RXN')),
+    mutate('missing-activity-name', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction').remove(root.find('Protein/catalyzes/Enzymatic-Reaction/common-name'))),
+    mutate('nonstring-activity-name', lambda root: root.find('Protein/catalyzes/Enzymatic-Reaction/common-name').set('datatype', 'symbol')),
+    mutate('script-in-activity-name', lambda root: setattr(root.find('Protein/catalyzes/Enzymatic-Reaction/common-name'), 'text', '<script>enzyme</script>')),
+    mutate('blank-direct-name-not-fallback', lambda root: ElementTree.SubElement(root.find('Protein'), 'common-name', {'datatype': 'string'})),
+]
+
+# No new contextual policy rule: the proposed native name must satisfy the
+# existing canonical-or-synonym participant rule, and arbitrary assembly labels
+# or source_context claims must continue to fail on that surface.
+ontology = json.loads(capture(ROOT / 'data/identifier_authorities/ontology.json'))
+go = ontology['terms']['GO:0008150']
+ontology_fixture = {'version': ontology['version'], 'sources': {go['source']: ontology['sources'][go['source']]},
+                    'terms': {'GO:0008150': go}}
+gate_results = []
+for case in ['exact-native-labels', 'assembly-suffix-rejected', 'context-only-rejected', 'missing-complex-rejected']:
+    sandbox = OUT / 'policy-fixtures' / case
+    for relative in ['data/pathways', 'data/identifier_authorities', 'conf']:
+        (sandbox / relative).mkdir(parents=True, exist_ok=False)
+    with (sandbox / 'conf/identifier_policy.yaml').open('xb') as stream:
+        stream.write(policy)
+    snapshot = {'version': 1, 'sources': source_rows, 'terms': copy.deepcopy(term_rows)}
+    record = {'id': 'GO:0008150', 'label': go['label'], 'taxa': [], 'reactions': [],
+              'participants': [{'id': identifier, 'label': row['label']} for identifier, row in term_rows.items()]}
+    if case == 'assembly-suffix-rejected':
+        record['participants'][0]['label'] += ' tetramer'
+    elif case == 'context-only-rejected':
+        for identifier, row in snapshot['terms'].items():
+            if identifier != 'MetaCyc:CPLX0-8588':
+                row['label_kind'] = 'source_context'
+    elif case == 'missing-complex-rejected':
+        snapshot['terms'].pop('MetaCyc:ACNEULY-CPLX')
+    save(sandbox / 'data/identifier_authorities/sources.json', snapshot)
+    save(sandbox / 'data/identifier_authorities/ontology.json', ontology_fixture)
+    with (sandbox / 'data/pathways/proposal-fixture.yaml').open('x') as stream:
+        yaml.safe_dump(record, stream)
+    errors = identifier_errors(sandbox)
+    expected = {'exact-native-labels': [], 'assembly-suffix-rejected': ['LABEL_MISMATCH'],
+                'context-only-rejected': ['LABEL_AUTHORITY_UNAVAILABLE'] * 3,
+                'missing-complex-rejected': ['ID_NOT_FOUND']}[case]
+    assert len(errors) == len(expected) and all(any(code in error for error in errors) for code in expected), (case, errors)
+    gate_results.append({'case': case, 'errors': errors, 'scope': 'Identifier-policy fixture only, not a scientific record or full-corpus gate'})
+
+for row in list(bindings.values()):
+    capture(row['path'], row['sha256'])
+    assert bindings[row['path']] == row
+report = {'status': 'external_proposal_checks_passed; no production implementation or authority adoption',
+          'started_at': started, 'finished_at': datetime.now(UTC).isoformat(),
+          'positive_originals': positive, 'negative_controls': controls, 'unchanged_policy_controls': gate_results,
+          'inputs': list(bindings.values()), 'input_count': len(bindings),
+          'network_alternatives': [{'url': row['url'], 'status': row['status'], 'final_url': row['final_url'], 'sha256': row['sha256']} for row in network]}
+save(OUT / 'proposal-checks.json', report)
+print(json.dumps({'status': report['status'], 'original_positives': len(positive),
+                  'negative_controls': len(controls), 'policy_controls': len(gate_results), 'bound_inputs': len(bindings)}))

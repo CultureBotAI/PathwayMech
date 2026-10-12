@@ -1,0 +1,67 @@
+"""Candidate-scoped native science checks, not a production authority adapter."""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import json,hashlib,sqlite3,copy
+from lxml import etree,html
+C=Path(__file__).parent
+PATHS={'CPLX0-226':C/'review-originals/ECOLI-CPLX0-226.xml','RNA0-241':C/'review-originals/ECOLI-RNA0-241.xml','PC00004':C/'review-originals/ECOLI-PC00004.xml','PD00257':C/'raw-v2/ECOLI-PD00257.xml','CAMP':C/'raw-v2/ECOLI-CAMP.xml'}
+def ensure(c,m):
+ if not c:raise ValueError(m)
+def native(body,fid):
+ t=etree.fromstring(body,etree.XMLParser(resolve_entities=False,no_network=True));ensure(t.tag=='ptools-xml' and t.get('ptools-version')=='27.0','EcoCyc source document/version mismatch')
+ m=t.find('metadata');ensure(m is not None and m.findtext('query')=='ECOLI:'+fid and m.findtext('num_results')=='1','EcoCyc source request mismatch')
+ g=m.find('PGDB');ensure(g is not None and g.get('orgid')=='ECOLI' and g.get('version')=='27.0','EcoCyc PGDB scope mismatch')
+ ensure(g.findtext('strain')=='K-12 substr. MG1655' and g.findtext('dblink/dblink-oid')=='511145','EcoCyc native taxon mismatch')
+ xs=[x for x in t if x.tag!='metadata'];ensure(len(xs)==1,'EcoCyc top-level cardinality mismatch');x=xs[0]
+ ensure(x.get('ID')=='ECOLI:'+fid and x.get('orgid')=='ECOLI' and x.get('frameid')==fid,'EcoCyc native identity mismatch')
+ expected='RNA' if fid=='RNA0-241' else 'Compound' if fid=='CAMP' else 'Protein';ensure(x.tag==expected,'EcoCyc native biological type mismatch')
+ return x
+def fresh_sources(overrides=None):
+ return {k:native((overrides or {}).get(k,p.read_bytes()),k) for k,p in PATHS.items()}
+def link(x,db,oid):return any(q.findtext('dblink-db')==db and q.findtext('dblink-oid')==oid and q.findtext('dblink-relationship')=='unification' for q in x.findall('dblink'))
+def inspect_sources(s):
+ crp,rna,dimer,protein,camp=[s[k] for k in ['CPLX0-226','RNA0-241','PC00004','PD00257','CAMP']]
+ names={'CPLX0-226':'CRP-cyclic-AMP DNA-binding transcriptional dual regulator','RNA0-241':'small regulatory RNA SgrS','PC00004':'DNA-binding transcriptional dual regulator CRP'}
+ for k,label in names.items():ensure(s[k].findtext('common-name')==label,'EcoCyc direct name mismatch')
+ ensure(crp.find('parent/Protein').get('frameid')=='Protein-Small-Molecule-Complexes','CRP native bound-complex class mismatch')
+ ensure(rna.find('parent/RNA').get('frameid')=='Regulatory-RNAs' and rna.find('gene/Gene').get('frameid')=='G0-9941','SgrS RNA/gene scope mismatch')
+ ensure({x.text for x in rna.findall('synonym')}=={'SgrS','RyaA'},'SgrS native synonym mismatch')
+ components=[(q[0].tag,q[0].get('frameid'),q.findtext('coefficient')) for q in crp.findall('component')]
+ ensure(sorted(components)==[('Compound','CAMP',None),('Protein','PC00004',None)],'bound CRP composition/occupancy mismatch')
+ ds=dimer.findall('component');ensure(len(ds)==1 and ds[0].find('Protein').get('frameid')=='PD00257' and ds[0].findtext('coefficient')=='2','CRP homodimer component coefficient mismatch')
+ ensure(link(protein,'UNIPROT','P0ACJ8'),'CRP exact polypeptide unification mismatch')
+ ensure(link(camp,'CHEBI','58165'),'native cAMP unification mismatch')
+ db=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+ vals=db.execute("SELECT value FROM statements WHERE subject='CHEBI:58165' AND predicate='chemrof:inchi_string'").fetchall();db.close()
+ ensure(len(vals)==1 and camp.findtext('inchi')==vals[0][0],'native cAMP exact charged InChI mismatch')
+ regs=[]
+ for fid in ['REG0-5729','REG0-5728']:
+  xs=crp.xpath('.//Regulation[@ID=$id]',id='ECOLI:'+fid);ensure(len(xs)==1,'CRP manXp native regulation missing/ambiguous');x=xs[0]
+  ensure(x.findtext('mode')=='+' and x.find('regulator/Protein').get('frameid')=='CPLX0-226' and x.find('regulated-entity/Promoter').get('frameid')=='PM00276','CRP manXp positive expression orientation mismatch');regs.append(fid)
+ ps=crp.xpath('.//Promoter[common-name="nagEp"]');ensure(len(ps)==1,'nagEp context missing/ambiguous')
+ modes={q.findtext('mode') for q in ps[0].findall('regulated-by/Regulation') if q.find('regulator/Protein') is not None and q.find('regulator/Protein').get('frameid')=='CPLX0-226'}
+ ensure(modes=={'+','-'},'nagEp mixed native modes mismatch')
+ comment=rna.findtext('comment');ensure(all(t in comment for t in ['manX','manYZ','independent translational repression','22988087']),'SgrS source statement missing')
+ primary={}
+ for pmid in ['9484892','22988087']:
+  d=json.loads((C/f'review-originals/PMID{pmid}.json').read_text());rows=d['resultList']['result'];ensure(d['hitCount']==1 and len(rows)==1 and rows[0]['pmid']==pmid,'primary abstract identity mismatch');primary[pmid]=rows[0]['abstractText']
+ ensure('Transcription of manX is strongly dependent' in primary['9484892'] and 'activation' in primary['9484892'],'CRP primary expression support missing')
+ ensure('translational repression' in primary['22988087'] and 'second binding site' in primary['22988087'],'SgrS primary synthesis support missing')
+ ledger=json.loads((C/'primary-inspection-successor.json').read_text());doc=html.fromstring(Path(ledger['original']['path']).read_bytes())
+ for q in ledger['inspected_sections']:
+  xs=doc.xpath(q['xpath']);ensure(len(xs)==1 and hashlib.sha256(xs[0].text_content().encode()).hexdigest()==q['text_sha256'],'Rice12 primary original anchor mismatch')
+ return {'native_names':names,'native_taxon':'NCBITaxon:511145','native_version':'ECOLI27.0','bound_components':components,'CRP_homodimer_coefficient':2,'manXp_positive_regulations':regs,'nagEp_mixed_modes':sorted(modes),'SgrS_gene':'G0-9941','primary_limits':'9484892 abstract only; Rice12 Results/Discussion/Methods inspected, TableS1 not inspected. Native MG1655 identity not generalized to all reporter/mutant assay strains.'}
+def validate(record,s):
+ projection=inspect_sources(s);es={x['id']:x for x in record['mechanistic_edges']};nodes={x['id']:x for x in record['participants']}
+ for i,k in [('CPLX0-226','complex'),('RNA0-241','rna'),('PC00004','complex')]:
+  ensure(nodes.get('EcoCyc:'+i)=={'id':'EcoCyc:'+i,'label':projection['native_names'][i],'category':k},'EcoCyc selected node type/identity mismatch')
+ triples={105:('EcoCyc:CPLX0-226','regulates','MetaCyc:GLUAMCAT-PWY'),110:('EcoCyc:CPLX0-226','activates','MetaCyc:CPLX-165'),111:('EcoCyc:RNA0-241','inhibits','MetaCyc:CPLX-165'),112:('EcoCyc:CPLX0-226','has_part','EcoCyc:PC00004'),113:('EcoCyc:CPLX0-226','has_part','CHEBI:58165'),114:('EcoCyc:PC00004','has_part','UniProtKB:P0ACJ8')}
+ for n,triple in triples.items():
+  e=es.get(f'amino-{n:03d}');ensure(e is not None and tuple(e[k] for k in ['subject','predicate','object'])==triple,'fresh EcoCyc expression/assembly edge mismatch: '+str(n))
+  ensure(not e.get('endpoint_qualifiers'),'exact native EcoCyc endpoint must not revert to avoidable state qualification')
+ actual={(e['subject'],e['predicate'],e['object']) for e in es.values() if e['subject'].startswith('EcoCyc:') and e['predicate']=='has_part'}
+ ensure(actual=={triples[n] for n in [112,113,114]},'EcoCyc assembly extra/missing edge')
+ ensure('not direct stimulation' in es['amino-110']['evidence'][0]['source_assertion'],'CRP expression-scope wording missing')
+ ensure('not direct inhibition' in es['amino-111']['evidence'][0]['source_assertion'] and 'Table S1 was not inspected' in es['amino-111']['evidence'][1]['source_assertion'],'SgrS synthesis/strain-scope wording missing')
+ return projection

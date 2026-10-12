@@ -1,0 +1,150 @@
+"""Prepare a minimal source-authority delta; never invoke a canonical full build."""
+import sys
+sys.dont_write_bytecode = True
+from pathlib import Path
+import hashlib, importlib.util, json, os, shutil
+
+O = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-222-20261011')
+A = Path('/private/tmp/pathwaymech-next-223-author-20261011')
+C = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+M = Path('/private/tmp/pathwaymech-next-223-authority-implementation-20261011')
+B = Path('/private/tmp/pathwaymech-next-223-bigg-implementation-20261011')
+
+def sha(p):
+    h = hashlib.sha256()
+    with Path(p).open('rb') as f:
+        while b := f.read(8 * 1024 * 1024): h.update(b)
+    return h.hexdigest()
+
+def bind(p):
+    p = Path(p)
+    return {'path': str(p), 'sha256': sha(p), 'bytes': p.stat().st_size}
+
+def read(p): return json.loads(Path(p).read_text())
+def save(n, v):
+    with (O / n).open('x') as f: json.dump(v, f, indent=2); f.write('\n')
+
+def module(name, p):
+    spec = importlib.util.spec_from_file_location(name, p)
+    value = importlib.util.module_from_spec(spec); spec.loader.exec_module(value)
+    return value
+
+assert __debug__ and sys.dont_write_bytecode
+baseline = read(O / 'baseline-bindings.json')
+for q in baseline['baseline_files'] + baseline['records'] + [baseline['target'], baseline['author_proposal'], baseline['author_handoff']]:
+    assert sha(q['path']) == q['sha256'], q['path']
+manifest = read(R / 'conf/identifier_sources.json')
+old = read(R / 'data/identifier_authorities/sources.json')
+old_ontology = read(R / 'data/identifier_authorities/ontology.json')
+author = read(A / 'authority-proposal.json')
+bigg_author = read(A / 'bigg-authority-proposal.json')
+classification = read(O / 'target-existing-selection.json')['classifications']
+byid = {t['id']: t for t in author['terms']}
+new_ids = {x['id'] for x in classification if x['classification'] == 'new_source_term_requires_appended_original'}
+complex_builder = module('accepted_complex_source_oracle', M / 'repo/scripts/build_source_identifier_snapshot.py')
+bigg_builder = module('provisional_bigg_source_oracle', B / 'repo/scripts/build_source_identifier_snapshot.py')
+bigg_entries = read(B / 'proposal/new-source-entries.json')
+assert isinstance(bigg_entries, list) and len(bigg_entries) == 3
+entries = []
+lineage = []
+for i in sorted(new_ids):
+    t = byid[i]
+    original = t.get('canonical_html_original', t['original'])
+    assert sha(original['path']) == original['sha256']
+    assert sha(original['receipt_path']) == original['receipt_sha256']
+    assert original['status'] == 200 and original['final_url'] == original['url']
+    if i.startswith('BiGG:'):
+        e = next(x for x in bigg_entries if x['url'] == original['url'])
+        assert e['sha256'] == original['sha256'] and e['version'] == original['version']
+    else:
+        assert i.startswith('MetaCyc:') and original['version'] == '27.0'
+        e = {'key': 'metacyc-' + i.split(':')[1], 'kind': original['kind'],
+             'url': original['url'], 'version': '27.0',
+             'license': 'Upstream terms; public-release licensing deferred',
+             'sha256': original['sha256'],
+             'path': 'amino-sugar-' + i.split(':')[1] + '-27.0-2026-10-11' + Path(original['path']).suffix}
+    assert e['key'] not in {x['key'] for x in manifest}
+    assert e['path'] not in {x['path'] for x in manifest}
+    assert not os.path.lexists(C / e['path']), e['path']
+    entries.append(e)
+    lineage.append({'id': i, 'entry': e, 'whole_original': original,
+                    'author_label_scope': t['label_scope'],
+                    'cache_destination_absent_including_symlink': str(C / e['path'])})
+assert len(entries) == len({e['key'] for e in entries}) == len({e['path'] for e in entries}) == 19
+entries.sort(key=lambda e: e['key'])
+companion = bigg_author['database_version_original']
+assert sha(companion['path']) == companion['sha256']
+assert sha(companion['receipt_path']) == companion['receipt_sha256']
+companions = [e['version_source'] for e in entries if e['kind'].startswith('bigg-')]
+assert all(x == companions[0] for x in companions)
+assert companion['sha256'] == companions[0]['sha256']
+assert not os.path.lexists(C / companions[0]['path'])
+overlay = O / 'version-companion-overlay'; overlay.mkdir()
+shutil.copyfile(companion['path'], overlay / companions[0]['path'])
+assert sha(overlay / companions[0]['path']) == companion['sha256']
+
+new_terms = {x['id']: x['expected_term_if_available'] for x in classification
+             if x['classification'] == 'new_source_term_from_existing_manifest_original'}
+assert len(new_terms) == 17 and not (new_terms.keys() & old['terms'].keys())
+new_metadata = {}
+assertions = []
+for q in lineage:
+    e = q['entry']; original = q['whole_original']; p = Path(original['path'])
+    builder = bigg_builder if e['kind'].startswith('bigg-') else complex_builder
+    if e['kind'].startswith('bigg-'):
+        release, updated = builder._bigg_version(e, overlay)
+        assert (release, updated) == ('1.6.0', '2019-10-31 10:05:54.157598')
+    terms = list(builder.source_terms(e['kind'], p, url=e['url'], version=e['version']))
+    # Full per-original assertion set checked before selecting the target ID.
+    assertions.append({'entry_key': e['key'], 'all_native_assertions_before_selection': terms})
+    assert {i for i, _, _ in terms} == {q['id']}, (q['id'], terms)
+    assert len(terms) == 1
+    i, label, synonyms = terms[0]
+    assert label == byid[i]['canonical_label'], (i, label, byid[i]['canonical_label'])
+    assert i not in new_terms and i not in old['terms'] and i not in old_ontology['terms']
+    new_terms[i] = {'label': label, 'synonyms': sorted(set(synonyms) - {label}), 'source': e['key']}
+    new_metadata[e['key']] = {k: e[k] for k in ['url', 'version', 'license', 'sha256']}
+    assert sha(p) == original['sha256']
+assert len(new_terms) == 36 and len(new_metadata) == 19
+assert not (new_metadata.keys() & old['sources'].keys())
+ontology_delta = read(O / 'ontology-id-delta.json')
+all_target = {}
+for q in classification:
+    i = q['id']
+    all_target[i] = old['terms'].get(i, old_ontology['terms'].get(i, new_terms.get(i, ontology_delta['selected_new_terms'].get(i))))
+assert len(all_target) == 77 and all(all_target.values())
+for q in baseline['baseline_files'] + baseline['records'] + [baseline['target'], baseline['author_proposal'], baseline['author_handoff']]:
+    assert sha(q['path']) == q['sha256'], q['path']
+save('manifest-delta.json', entries)
+save('manifest-proposed.json', manifest + entries)
+save('new-original-lineage.json', {'identity_sources': lineage,
+      'shared_companion': {'whole_original': companion, 'manifest_companion': companions[0],
+                          'external_verification_copy': bind(overlay / companions[0]['path'])},
+      'count': 20, 'native_version_scope': 'META PGDB 27.0; BiGG Models1.6.0 database timestamp2019-10-31, acquired2026-10-11. No assertion that the database release dates equal the retrieval dates.'})
+save('new-native-assertions-before-filtering.json', assertions)
+save('expected-source-term-delta.json', {'status': 'proposal derived through actual native parser functions; not canonical full build',
+      'new_terms': dict(sorted(new_terms.items())), 'new_metadata': dict(sorted(new_metadata.items())),
+      'retained_term_count': 2265, 'retained_metadata_count': 476,
+      'expected_term_count': 2301, 'expected_metadata_count': 495,
+      'retention_rule': 'Exact old object equality for every old term and metadata entry; select all historical IDs, including21 retained-unused terms. Do not filter to current corpus alone.'})
+save('target-selected-terms.json', {'target_sha256': author['record_sha256'], 'named_count':77, 'terms':all_target})
+save('selection-proposal.json', {'status': 'bounded target-specific external proposal; pending issue425 science successor and actual combined canonical build',
+      'target': baseline['target'], 'author_proposal': baseline['author_proposal'],
+      'counts': {'baseline_records':223, 'target_named_ids':77, 'existing_manifest_entries':629, 'appended_entries':19,
+                 'proposed_manifest_entries':648, 'new_original_bodies':20, 'old_source_terms':2265, 'new_source_terms':36,
+                 'proposed_source_terms':2301, 'old_source_metadata':476, 'new_source_metadata':19, 'proposed_source_metadata':495,
+                 'old_ontology_terms':1873, 'new_ontology_terms':15, 'proposed_ontology_terms':1888,
+                 'ontology_metadata_retained':5},
+      'source_oracles': [bind(M / 'repo/scripts/build_source_identifier_snapshot.py'), bind(B / 'repo/scripts/build_source_identifier_snapshot.py')],
+      'approved_complex_handoff': bind(M / 'handoff.json'),
+      'provisional_bigg_entries': bind(B / 'proposal/new-source-entries.json'),
+      'actual_merged_baseline_parent_attestation': {'source': 'root collaboration message, not an independent Git observation',
+                 'commit':'24c91a1b232f2879281003c4abfab70a624b9016', 'tree':'95f0024c852507536d62c754a0e940dbd2d91894', 'merged_at':'2026-10-11T22:59:20Z'},
+      'limitations': ['No canonical full authority output written.', 'BiGG implementation independent acceptance and final combined runtime remain root responsibilities.',
+                     'Issue425 requires a separate scientific successor; this77-ID target must not be adopted as final science.',
+                     'No licensing clearance inferred.', 'No whole-source exhaustion claim.',
+                     'Only the two ontology originals needed for additions were freshly rehashed; root full build must verify all ontology originals.']})
+print(json.dumps({'status':'minimal proposal passed', 'new_manifest_entries':len(entries), 'new_bodies':20,
+                  'reused_existing_native_terms':17, 'new_source_terms':len(new_terms), 'new_ontology_terms':15,
+                  'all223_record_and_baseline_bindings_unchanged':True, 'canonical_full_build_executed':False}, indent=2))

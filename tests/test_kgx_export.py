@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathwaymech.kgx import (
     EDGE_COLUMNS,
     LOCAL_PREDICATE_CURIES,
     NODE_COLUMNS,
+    _tsv,
     kgx_edges,
     kgx_nodes,
     write_kgx,
@@ -201,6 +203,27 @@ def test_write_kgx_uses_lf_tsv_with_stable_headers(tmp_path: Path) -> None:
     assert edges_path.read_text(encoding="utf-8").splitlines()[0] == "\t".join(
         EDGE_COLUMNS
     )
+    for path in (nodes_path, edges_path):
+        assert all(not line.endswith(("\t", " ")) for line in path.read_text().splitlines())
+    assert all(line.endswith('\t""') for line in edges_path.read_text().splitlines()[1:])
+    with edges_path.open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream, delimiter="\t"))
+    assert len(rows) == 2
+    assert all(tuple(row) == EDGE_COLUMNS and row["endpoint_qualifiers"] == "" for row in rows)
+
+
+def test_tsv_empty_terminal_fields_round_trip_without_changing_populated_cells() -> None:
+    values = ["", None, '""', '"', 'a "quoted" value', "β-D-glucose",
+              json.dumps({"label": 'a "quote"', "control": "\t\n"}), " \t\n "]
+    rendered = _tsv(("first", "middle", "last"), [
+        {"first": str(index), "middle": "", "last": value}
+        for index, value in enumerate(values)
+    ])
+    rows = list(csv.DictReader(io.StringIO(rendered), delimiter="\t"))
+    expected = ["", "", *values[2:-1], ""]
+    assert rows == [{"first": str(index), "middle": "", "last": value}
+                    for index, value in enumerate(expected)]
+    assert all(not line.endswith(("\t", " ")) for line in rendered.splitlines())
 
 
 def test_phb_polymer_is_exported_as_a_chemical_entity(tmp_path: Path) -> None:

@@ -1,0 +1,345 @@
+"""Fresh scientific projections from intact originals, independent of author replay."""
+import collections
+import copy
+import gzip
+import hashlib
+import json
+import re
+import sqlite3
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+from lxml import etree, html
+import yaml
+
+OUT = Path(__file__).resolve().parent
+A = Path('/private/tmp/pathwaymech-next-223-author-20261011')
+P = Path('/private/tmp/pathwaymech-next-223-preflight-20261011')
+SUPPORT = Path('/private/tmp/pathwaymech-next-223-endpoint-implementation-20261011/repo/src')
+DEST = OUT / 'checks-attempt1'
+DEST.mkdir()
+started = datetime.now(UTC).isoformat()
+assert sys.dont_write_bytecode
+sys.path.insert(0, str(SUPPORT))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import TARGET_CLASS, validator
+
+def digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+def save(name, value):
+    with (DEST / name).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+record = yaml.safe_load((A / 'draft/amino-sugar-superpathway.future-schema.yaml').read_text())
+assert digest(A / 'draft/amino-sugar-superpathway.future-schema.yaml') == 'a6c42b952683c9b3b69b11b800ea6b9b32f9d2380e8e851e4328c3091581cb0c'
+validate_record(record)
+strict_result = validator().validate(record, TARGET_CLASS)
+assert not strict_result.results, strict_result.results
+nodes = [record, *record['taxa'], *record['participants'], *record['reactions']]
+assert len(nodes) == len({n['id'] for n in nodes}) == 77
+assert len(record['participants']) == 61 and len(record['reactions']) == 14
+assert len(record['mechanistic_edges']) == 109 and len(record['references']) == 59
+print('Native and closed-schema shape passed.', flush=True)
+
+# Stream complete RDF repeatedly for the finite reachable object closure. This
+# does not use the author's string-index parser or cached chemistry projection.
+RH = 'http://rdf.rhea-db.org/'
+RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+directions = {n['id'][5:]: n for n in record['reactions'] if n['id'].startswith('RHEA:')}
+rdf = {}
+def fetch(uris):
+    wanted = set(uris) - rdf.keys()
+    if not wanted:
+        return
+    found = collections.defaultdict(lambda: collections.defaultdict(list))
+    with gzip.open('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz', 'rb') as stream:
+        for _, element in etree.iterparse(stream, events=('end',), tag='{'+RDF+'}Description',
+                                         resolve_entities=False, no_network=True):
+            uri = element.get('{'+RDF+'}about')
+            if uri in wanted:
+                for child in element:
+                    key = etree.QName(child).localname
+                    value = child.get('{'+RDF+'}resource') or child.text
+                    if value not in found[uri][key]:
+                        found[uri][key].append(value)
+            element.clear()
+            while element.getprevious() is not None:
+                del element.getparent()[0]
+    assert wanted == found.keys(), wanted - found.keys()
+    rdf.update({uri: dict(fields) for uri, fields in found.items()})
+
+fetch(RH+i for i in directions)
+side_uris = {side for i in directions for role in ['substrates', 'products'] for side in rdf[RH+i][role]}
+master_uris = {side.rsplit('_', 1)[0] for side in side_uris}
+fetch(side_uris | master_uris)
+fetch(participant for side in side_uris for participant in rdf[side]['contains'])
+fetch(rdf[participant]['compound'][0] for side in side_uris for participant in rdf[side]['contains'])
+fetch(reactive for fields in list(rdf.values()) for reactive in fields.get('reactivePart', []))
+chemistry = {}
+triples = []
+for identifier, node in directions.items():
+    uri = RH + identifier
+    fields = rdf[uri]
+    substrate, product = fields['substrates'][0], fields['products'][0]
+    master = substrate.rsplit('_', 1)[0]
+    assert master == product.rsplit('_', 1)[0]
+    assert rdf[master]['status'] == [RH + 'Approved'] and uri in rdf[master]['directionalReaction']
+    orientation = 'left_to_right' if substrate.endswith('_L') else 'right_to_left'
+    assert node['direction'] == orientation and node['label'] == fields['equation'][0]
+    sides = {}
+    balance = collections.Counter()
+    complete_balance = True
+    for role, predicate, sign in [('substrates', 'consumes', -1), ('products', 'produces', 1)]:
+        side = rdf[fields[role][0]]
+        rows = []
+        for participant in side['contains']:
+            coefficient = [int(key[8:]) for key, values in side.items()
+                           if re.fullmatch('contains[0-9]+', key) and participant in values]
+            assert len(coefficient) == 1
+            compound = rdf[rdf[participant]['compound'][0]]
+            curie = compound['accession'][0].replace('GENERIC:', 'RHEA-COMP:')
+            n = coefficient[0]
+            assert n == 1, 'Record evidence must retain every native coefficient'
+            triples.append((curie, predicate, node['id']) if sign < 0 else (node['id'], predicate, curie))
+            effective = rdf[compound['reactivePart'][0]] if compound.get('reactivePart') else compound
+            formula = effective.get('formula', [''])[0]
+            if not re.fullmatch(r'(?:[A-Z][a-z]?[0-9]*)+', formula) or 'charge' not in effective:
+                complete_balance = False
+            else:
+                for atom, count in re.findall(r'([A-Z][a-z]?)([0-9]*)', formula):
+                    balance[atom] += sign * n * int(count or 1)
+                balance['charge'] += sign * n * int(effective['charge'][0])
+            rows.append({'id': curie, 'coefficient': n, 'participant_uri': participant,
+                         'native_compound': compound, 'reactive_part': effective if effective != compound else None})
+        sides[role] = rows
+    if complete_balance:
+        assert not any(balance.values()), (identifier, balance)
+    chemistry[node['id']] = {'orientation': orientation, 'equation': fields['equation'][0],
+        'master': master, 'sides': sides, 'balance_calculated': complete_balance,
+        'nonzero_atom_charge_delta': {k: v for k, v in balance.items() if v} if complete_balance else None,
+        'native_balance_flag': rdf[master].get('isChemicallyBalanced')}
+save('fresh-rhea.json', chemistry)
+print('Fresh RDF directions, complete sides and available balances passed.', flush=True)
+
+native = {}
+native_rows = {}
+for path in [*P.joinpath('raw').glob('*.xml'), *A.joinpath('raw').glob('*.xml')]:
+    try:
+        root = etree.fromstring(path.read_bytes(), etree.XMLParser(resolve_entities=False, no_network=True))
+    except etree.XMLSyntaxError:
+        continue
+    if root.tag != 'ptools-xml' or root.findtext('metadata/num_results') != '1':
+        continue
+    objects = [child for child in root if child.tag != 'metadata']
+    assert len(objects) == 1
+    obj = objects[0]
+    identifier = obj.get('frameid')
+    assert root.findtext('metadata/query') == obj.get('ID') == 'META:' + identifier
+    assert obj.get('orgid') == 'META'
+    assert root.find('metadata/PGDB').get('version') == '27.0'
+    if identifier in native:
+        assert etree.tostring(native[identifier]) == etree.tostring(obj)
+    native[identifier] = obj
+    native_rows[identifier] = {'path': str(path), 'sha256': digest(path), 'kind': obj.tag}
+parent = native['GLCMANNANAUT-PWY']
+children = {x.get('frameid') for x in parent.findall('reaction-list/Pathway')}
+assert children == {'GLUAMCAT-PWY', 'PWY0-1324'}
+mapping = {'RXN0-7389': 'RHEA:67741', 'RXN0-7390': 'RHEA:23297', 'NANK-RXN': 'RHEA:25254',
+           'NANE-RXN': 'RHEA:25259', 'NAG6PDEACET-RXN': 'RHEA:22937', 'GLUCOSAMINE-6-P-DEAMIN-RXN': 'RHEA:12173'}
+native_memberships = []
+native_ordering = []
+for child in children:
+    for reaction in native[child].findall('reaction-list/Reaction'):
+        rid = reaction.get('frameid')
+        native_memberships.append((mapping[rid], 'part_of', 'MetaCyc:' + child))
+    for layout in native[child].findall('reaction-layout'):
+        rid = layout.find('Reaction').get('frameid')
+        assert layout.findtext('direction') == ('R2L' if rid == 'RXN0-7389' else 'L2R')
+for pathway in [parent, *(native[child] for child in children)]:
+    for order in pathway.findall('reaction-ordering'):
+        after = order.find('Reaction').get('frameid')
+        for before in order.findall('predecessor-reactions/Reaction'):
+            native_ordering.append((mapping[before.get('frameid')], 'provides_input_for', mapping[after]))
+assert len(native_memberships) == 6 and len(native_ordering) == 5
+assert parent.find('pathway-link/Compound').get('frameid') == 'FRUCTOSE-6P'
+assert parent.find('pathway-link/link-target/Pathway').get('frameid') == 'GLYCOLYSIS'
+
+proteins = {}
+for path in [*P.joinpath('raw').glob('*.json'), *A.joinpath('raw').glob('*.json')]:
+    value = json.loads(path.read_bytes())
+    if not isinstance(value, dict):
+        continue
+    entries = [value] if 'primaryAccession' in value else value.get('results', [])
+    for entry in entries:
+        if isinstance(entry, dict) and 'primaryAccession' in entry:
+            accession = entry['primaryAccession']
+            if accession in proteins:
+                assert proteins[accession]['entry'] == entry
+            proteins[accession] = {'entry': entry, 'path': str(path)}
+selected_proteins = {}
+for node in record['participants']:
+    if not node['id'].startswith('UniProtKB:'):
+        continue
+    accession = node['id'].split(':')[1]
+    entry = proteins[accession]['entry']
+    assert entry['entryType'] == 'UniProtKB reviewed (Swiss-Prot)'
+    assert entry['organism']['taxonId'] == 83333
+    assert node['label'] == entry['proteinDescription']['recommendedName']['fullName']['value']
+    sequence = entry['sequence']['value']
+    assert len(sequence) == entry['sequence']['length']
+    selected_proteins[accession] = {'original': proteins[accession]['path'], 'entry_audit': entry['entryAudit'],
+        'organism': entry['organism'], 'sequence_sha256': hashlib.sha256(sequence.encode()).hexdigest(),
+        'length': len(sequence), 'genes': entry.get('genes'), 'comments': entry.get('comments'),
+        'BioCyc_refs': [x['id'] for x in entry.get('uniProtKBCrossReferences', []) if x['database'] == 'BioCyc']}
+assert len(selected_proteins) == 17
+assembly = []
+for node in record['participants']:
+    if node.get('category') != 'complex':
+        continue
+    frame = node['id'].split(':')[1]
+    for component in native[frame].findall('component'):
+        component_id = component.find('Protein').get('frameid')
+        coefficient = int(component.findtext('coefficient'))
+        choices = [identifier for identifier, values in selected_proteins.items()
+                   if 'MetaCyc:' + component_id in values['BioCyc_refs']]
+        assert len(choices) == 1
+        assembly.append({'subject': node['id'], 'object': 'UniProtKB:' + choices[0],
+                         'component': component_id, 'coefficient': coefficient})
+assert len(assembly) == 11
+states = {}
+for state in ['PTSH-PHOSPHORYLATED', 'URIDYLYL-PII', 'CPLX0-8568']:
+    states[state] = {'base': native[state].find('unmodified-form/Protein').get('frameid'),
+                    'name': native[state].findtext('common-name'), 'components': len(native[state].findall('component'))}
+assert states['PTSH-PHOSPHORYLATED']['base'] == 'PTSH-MONOMER'
+assert states['URIDYLYL-PII']['base'] == 'PROTEIN-PII'
+assert states['CPLX0-8568']['base'] == 'PIIPROTEIN-CPLX' and states['CPLX0-8568']['components'] == 0
+save('fresh-native.json', {'objects': native_rows, 'core_memberships': native_memberships,
+    'core_ordering': native_ordering, 'assemblies': assembly, 'states': states})
+save('fresh-proteins.json', selected_proteins)
+
+model = json.loads((A / 'raw/bigg-iML1515.json').read_bytes())
+assert model['id'] == 'iML1515'
+reaction, = [r for r in model['reactions'] if r['id'] == 'ACMANAptspp']
+assert reaction['lower_bound'] == 0 and reaction['upper_bound'] == 1000
+metabolites = {m['id']: m for m in model['metabolites']}
+assert reaction['metabolites'] == {'acmana_p': -1, 'acmanap_c': 1, 'pep_c': -1, 'pyr_c': 1}
+rule = reaction['gene_reaction_rule']
+assert set(re.findall(r'b\d+', rule)) == {'b2415','b2416','b1817','b1818','b1819'} and 'or' not in rule
+assert {g['id']: g['name'] for g in model['genes'] if g['id'] in re.findall(r'b\d+', rule)} == {
+    'b2415': 'ptsH', 'b2416': 'ptsI', 'b1817': 'manX', 'b1818': 'manY', 'b1819': 'manZ'}
+mapping_model = {'acmana_p': 'BiGG:acmana', 'acmanap_c': 'BiGG:acmanap', 'pep_c': 'CHEBI:58702', 'pyr_c': 'CHEBI:15361'}
+model_balance = collections.Counter()
+for name, coefficient in reaction['metabolites'].items():
+    metabolite = metabolites[name]
+    assert metabolite['compartment'] == name.rsplit('_', 1)[1]
+    curie = mapping_model[name]
+    triples.append((curie, 'consumes', 'BiGG:ACMANAptspp') if coefficient < 0 else ('BiGG:ACMANAptspp', 'produces', curie))
+    for atom, count in re.findall(r'([A-Z][a-z]?)(\d*)', metabolite['formula']):
+        model_balance[atom] += coefficient * int(count or 1)
+    model_balance['charge'] += coefficient * metabolite['charge']
+assert not any(model_balance.values())
+connection = sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro', uri=True)
+chemical_terms = {}
+for node in nodes:
+    if node['id'].startswith('CHEBI:'):
+        data = connection.execute('SELECT predicate,value,object FROM statements WHERE subject=?', (node['id'],)).fetchall()
+        assert data
+        labels = {value for predicate, value, obj in data if predicate == 'rdfs:label' or 'Synonym' in predicate}
+        assert node['label'] in labels, (node['id'], node['label'], labels)
+        chemical_terms[node['id']] = {'native_labels': sorted(v for v in labels if v),
+            'structure': {predicate: value for predicate, value, obj in data if predicate in ['chemrof:inchi_key_string', 'chemrof:inchi_string', 'chemrof:generalized_empirical_formula']}}
+connection.close()
+universal = {name: json.loads((A / 'raw' / ('bigg-' + name + '.json')).read_bytes())
+             for name in ['ACMANAptspp', 'acmana', 'acmanap']}
+for name, data in universal.items():
+    assert data['bigg_id'] == name
+    assert next(node for node in nodes if node['id'] == 'BiGG:' + name)['label'] == data['name']
+keys = {name: [item['id'] for item in universal[name]['database_links']['InChI Key']]
+        for name in ['acmana', 'acmanap']}
+assert keys['acmana'] == metabolites['acmana_p']['annotation']['inchi_key']
+assert keys['acmanap'] == metabolites['acmanap_c']['annotation']['inchi_key']
+assert keys['acmana'] != [chemical_terms['CHEBI:17122']['structure']['chemrof:inchi_key_string']]
+assert keys['acmanap'] == [chemical_terms['CHEBI:58557']['structure']['chemrof:inchi_key_string']]
+save('fresh-model-and-chebi.json', {'reaction': reaction, 'model_metabolites': {k: metabolites[k] for k in mapping_model},
+    'chemical_terms': chemical_terms, 'BiGG_InChIKeys': keys, 'substrate_structural_conflict_confirmed': True})
+
+def check_source_shape(candidate):
+    edges = candidate['mechanistic_edges']
+    observed = collections.Counter((e['subject'], e['predicate'], e['object']) for e in edges if e['predicate'] in ['consumes', 'produces'])
+    assert observed == collections.Counter(triples), 'source chemical sides'
+    pairs = {(e['subject'], e['predicate'], e['object']) for e in edges}
+    assert set(native_memberships + native_ordering) <= pairs, 'complete native children/order'
+    for child in children:
+        assert (candidate['id'], 'has_part', 'MetaCyc:' + child) in pairs, 'complete native children'
+    for row in assembly:
+        edge, = [e for e in edges if (e['subject'], e['predicate'], e['object']) == (row['subject'], 'has_part', row['object'])]
+        assert any(f"component {row['component']} coefficient {row['coefficient']}." in item.get('source_assertion', '')
+                   for item in edge['evidence']), 'native assembly coefficient'
+    reactions = {r['id']: r for r in candidate['reactions']}
+    for identifier, data in chemistry.items():
+        assert reactions[identifier]['direction'] == data['orientation'], 'selected physiological direction'
+    assert reactions['BiGG:ACMANAptspp']['direction'] == 'left_to_right', 'model direction'
+    # Reviewer-selected critical scope rules derive from independently read
+    # primary methods and results; they are not a whole author-payload equality.
+    for number, subject, subject_terms in [(107,'MetaCyc:URIDYLYL-PII',['His-tagged','refolded','uridylylated','not repurified']),
+        (108,'UniProtKB:P0A761',['His-tagged','ASKA']), (109,'MetaCyc:PTSH-MONOMER',['nonphosphorylated','His-tagged'])]:
+        edge = next(e for e in edges if e['id'] == f'amino-{number}')
+        assert edge['subject'] == subject and edge['object'] == 'UniProtKB:P0A759' and edge['predicate'] == 'activates', 'exact assay endpoints'
+        q = {item['endpoint']: item for item in edge.get('endpoint_qualifiers', [])}
+        assert set(q) == {'subject', 'object'}, 'both experimental endpoints qualified'
+        assert all(word in q['subject']['description'] for word in subject_terms), 'subject preparation scope'
+        assert all(word in q['object']['description'] for word in ['Ser1-NagB','BW25113','first nagB codon omitted','SUMO','Ulp1','native Met','No sequence equivalence elsewhere']), 'NagB construct scope'
+        assert all(item['kind'] == 'experimental_construct' and item['evidence'] for item in q.values()), 'construct evidence'
+    crp = next(e for e in edges if e['id'] == 'amino-105')
+    assert crp['predicate'] == 'regulates', 'unsigned CRP promoter regulation'
+    q, = crp['endpoint_qualifiers']
+    assert q['endpoint'] == 'subject' and q['kind'] == 'molecular_state' and 'cAMP-bound CRP homodimer' in q['description'], 'CRP state scope'
+    assert next(e for e in edges if e['id'] == 'amino-106')['predicate'] == 'regulates', 'unsigned NagC promoter regulation'
+    assert 'substrate InChIKey conflicts' in candidate['description'], 'structural conflict retained'
+    nanr = next(e for e in edges if e['id'] == 'amino-101')['evidence'][0]['source_assertion']
+    assert 'remained dimeric' in nanr and 'older ligand-induced monomerization' in nanr, 'NanR conflict retained'
+    return True
+
+assert check_source_shape(record)
+controls = []
+def reject(name, mutate):
+    candidate = copy.deepcopy(record)
+    mutate(candidate)
+    try:
+        check_source_shape(candidate)
+    except (AssertionError, KeyError, ValueError) as error:
+        controls.append({'name': name, 'rejected': True, 'reason': str(error)})
+    else:
+        raise AssertionError('Independent false-pass: ' + name)
+    (DEST / ('control-' + name + '.yaml')).write_text(yaml.safe_dump(candidate, sort_keys=False))
+
+def edge(candidate, number):
+    return next(e for e in candidate['mechanistic_edges'] if e['id'] == f'amino-{number:03}')
+
+reject('omit-beta-core', lambda c: c['mechanistic_edges'].remove(edge(c, 7)))
+reject('drop-alpha-chemistry', lambda c: c['mechanistic_edges'].remove(edge(c, 3)))
+reject('remove-PTS-pyruvate', lambda c: c['mechanistic_edges'].remove(edge(c, 46)))
+reject('generic-protein-as-reactive-CHEBI', lambda c: edge(c, 35).update(subject='CHEBI:13193'))
+reject('reverse-NanE', lambda c: next(x for x in c['reactions'] if x['id']=='RHEA:25259').update(direction='left_to_right'))
+reject('six-ManX-subunits', lambda c: edge(c, 58)['evidence'][0].update(source_assertion='META 27.0 assigns component MANX-MONOMER coefficient 6.'))
+reject('lost-Ser1', lambda c: edge(c, 107)['endpoint_qualifiers'].pop())
+reject('native-Met1-restoration', lambda c: edge(c, 108)['endpoint_qualifiers'][1].update(description='Native Met1-NagB'))
+reject('role-swapped-tags', lambda c: [q.update(endpoint='object' if q['endpoint']=='subject' else 'subject') for q in edge(c, 107)['endpoint_qualifiers']])
+reject('phosphorylated-HPr-activation', lambda c: edge(c, 109).update(subject='MetaCyc:PTSH-PHOSPHORYLATED'))
+reject('unmodified-PII-activation', lambda c: edge(c, 107).update(subject='UniProtKB:P0A9Z1'))
+reject('CRP-unqualified', lambda c: edge(c, 105).pop('endpoint_qualifiers'))
+reject('CRP-positive-sign', lambda c: edge(c, 105).update(predicate='activates'))
+reject('discard-BiGG-conflict', lambda c: c.update(description='Complete amino-sugar pathway.'))
+reject('NanR-monomerization', lambda c: edge(c, 101)['evidence'][0].update(source_assertion='Neu5Ac causes NanR monomerization.'))
+save('negative-controls.json', controls)
+save('result.json', {'status': 'passed', 'started': started, 'finished': datetime.now(UTC).isoformat(),
+    'named_nodes': 77, 'participants': 61, 'reaction_context_nodes': 14, 'edges': 109, 'references': 59,
+    'fresh_Rhea_directional_reactions': 10, 'complete_chemical_edges': len(triples), 'native_children': 2,
+    'native_core_steps': 6, 'native_ordering_edges': 5, 'native_assembly_components': 11,
+    'reviewed_K12_protein_entries': 17, 'negative_controls': len(controls),
+    'schema_overlap_disclosure': 'Reviewer authored pending endpoint software; schema pass is compatibility evidence, not independent code review.',
+    'limits': 'Source-specific critical rules supplement human scientific reading; no canonical build, current gates or merged-baseline acceptance.'})
+print('Independent checks passed:', len(triples), 'chemical edges;', len(controls), 'fresh negative controls', flush=True)

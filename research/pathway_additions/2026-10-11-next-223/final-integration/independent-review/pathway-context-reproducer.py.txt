@@ -1,0 +1,18 @@
+from pathlib import Path
+import json
+import yaml
+from pathwaymech.schema import validate_record
+from pathwaymech.kgx import kgx_nodes
+ROOT=Path('/private/tmp/pathwaymech-next-223-20261011')
+OUT=Path('/private/tmp/pathwaymech-next-223-final-adversarial-20261011')
+new=validate_record(yaml.safe_load((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_text()))
+old=validate_record(yaml.safe_load((ROOT/'data/pathways/n-acetylglucosamine-degradation-i.yaml').read_text()))
+ids={'MetaCyc:PWY0-1324','MetaCyc:GLUAMCAT-PWY','MetaCyc:GLYCOLYSIS'}
+res={}
+for name,records in [('old-only',[old]),('new-only',[new]),('old-new',[old,new]),('new-old',[new,old])]:
+ res[name]={n.id:n.category for n in kgx_nodes(records) if n.id in ids}
+assert res['old-only']['MetaCyc:GLUAMCAT-PWY']=='biolink:Pathway'
+assert res['new-only']=={i:'biolink:BiochemicalReaction' for i in ids}
+assert res['old-new']['MetaCyc:GLUAMCAT-PWY']==res['new-old']['MetaCyc:GLUAMCAT-PWY']=='biolink:BiochemicalReaction|biolink:Pathway'
+(OUT/'pathway-context-reproducer-results.json').write_text(json.dumps(res,indent=2)+'\n')
+print(json.dumps(res))

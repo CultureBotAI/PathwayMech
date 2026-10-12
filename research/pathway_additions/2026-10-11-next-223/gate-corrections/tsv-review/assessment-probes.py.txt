@@ -1,0 +1,32 @@
+from pathlib import Path
+import csv,io,json,hashlib,subprocess
+from pathwaymech.kgx import _tsv,_cell
+ROOT=Path('/private/tmp/pathwaymech-next-223-20261011');OUT=Path('/private/tmp/pathwaymech-next-223-tsv-remedy-review-20261011')
+def propose(text):return text.replace('\t\n','\t""\n')
+def parse(text):return list(csv.DictReader(io.StringIO(text,newline=''),delimiter='\t'))
+results=[]
+for name in ['nodes.tsv','edges.tsv']:
+ original=(ROOT/'pages/downloads'/name).read_text();fixed=propose(original)
+ before=parse(original);after=parse(fixed)
+ assert before==after
+ assert all(not line.endswith((' ','\t')) for line in fixed.splitlines())
+ if name=='nodes.tsv':assert original==fixed
+ else:
+  assert len(before)==10922
+  empty=sum(r['endpoint_qualifiers']=='' for r in before);assert empty==10919
+  assert original.count('\t\n')==empty
+  assert all(json.loads(r['endpoint_qualifiers']) for r in after if r['endpoint_qualifiers'])
+  (OUT/'edges-proposed.tsv').write_text(fixed,newline='')
+ results.append({'name':name,'rows':len(before),'parsed_rows_exact':True,'original_sha256':hashlib.sha256(original.encode()).hexdigest(),'proposed_sha256':hashlib.sha256(fixed.encode()).hexdigest(),'changed':original!=fixed,'final_empty_rows':sum(r.get('endpoint_qualifiers')=='' for r in before)})
+synthetic=[{'left':'ID:'+str(i),'middle':'inner "quoted" β & text\t\r\n','tail':v} for i,v in enumerate(['',None,'""','"','quoted "tail"','μ',json.dumps({'note':'contains escaped \\t and \\n, "quotes"','empty':''}), ' \t\n'])]
+original=_tsv(('left','middle','tail'),synthetic);fixed=propose(original)
+assert parse(fixed)==parse(original)==[{key:_cell(row.get(key)) for key in ('left','middle','tail')} for row in synthetic]
+assert fixed.count('\t""\n')==3
+assert all(not line.endswith((' ','\t')) for line in fixed.splitlines())
+results.append({'name':'synthetic empty/null/literal quotes/unicode/JSON/normalized whitespace endings','rows':len(synthetic),'parsed_rows_exact':True})
+# Standalone whitespace check; no maintained staging or Git configuration changes.
+r=subprocess.run(['git','diff','--no-index','--check','/dev/null',str(OUT/'edges-proposed.tsv')],text=True,capture_output=True)
+assert not r.stdout and not r.stderr,(r.returncode,r.stdout[:200],r.stderr[:200])
+results.append({'name':'proposed full edge TSV no-index whitespace check','exit_code':r.returncode,'stdout':r.stdout,'stderr':r.stderr})
+x={'recommendation':'A: lossless quote of empty final TSV field','checks':results,'maintained_files_modified':False,'gate_scope':'Read-only actual TSV parse equivalence plus external synthetic and no-index whitespace checks; not full maintained tests.'}
+(OUT/'assessment-results.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x))

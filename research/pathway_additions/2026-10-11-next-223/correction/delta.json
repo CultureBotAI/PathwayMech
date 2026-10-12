@@ -1,0 +1,229 @@
+{
+  "issue": 425,
+  "old_target": {
+    "path": "/private/tmp/pathwaymech-next-223-author-20261011/draft/amino-sugar-superpathway.future-schema.yaml",
+    "sha256": "a6c42b952683c9b3b69b11b800ea6b9b32f9d2380e8e851e4328c3091581cb0c",
+    "bytes": 77353
+  },
+  "new_target": {
+    "path": "/private/tmp/pathwaymech-next-223-correction-20261011/draft/amino-sugar-superpathway.future-schema.yaml",
+    "sha256": "ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff",
+    "bytes": 83088
+  },
+  "unchanged_old_edges": 108,
+  "changed_old_edges": {
+    "amino-105": {
+      "old": {
+        "id": "amino-105",
+        "subject": "UniProtKB:P0ACJ8",
+        "predicate": "regulates",
+        "object": "MetaCyc:GLUAMCAT-PWY",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc:CPLX-167",
+            "source_assertion": "The native NagE description names regulation by NagC together with the cAMP-CRP complex. This edge preserves promoter-regulation context without assigning a universal positive sign.",
+            "source_locator": "Protein/comment, paragraph beginning Expression of the nagE monocistronic operon"
+          },
+          {
+            "reference_id": "PMID:7791215",
+            "source_assertion": "The primary abstract reports cAMP/CAP effects on NagC apparent binding to wild-type versus super-operators. Full text was not inspected; no additional promoter-architecture result is inferred.",
+            "source_locator": "Issuing Europe PMC primary abstract"
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "subject",
+            "kind": "molecular_state",
+            "description": "cAMP-bound CRP homodimer in the reported Nag promoter regulatory context; no claim about other CRP targets.",
+            "evidence": [
+              {
+                "reference_id": "UniProtKB:P0ACJ8",
+                "source_assertion": "CRP is a homodimer whose DNA binding is activated by cAMP.",
+                "source_locator": "comments[commentType=FUNCTION and SUBUNIT]"
+              }
+            ]
+          }
+        ]
+      },
+      "new": {
+        "id": "amino-105",
+        "subject": "EcoCyc:CPLX0-226",
+        "predicate": "regulates",
+        "object": "MetaCyc:GLUAMCAT-PWY",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc:CPLX-167",
+            "source_assertion": "The native NagE description names regulation by NagC together with the cAMP-CRP complex. This edge preserves promoter-regulation context without assigning a universal positive sign.",
+            "source_locator": "Protein/comment, paragraph beginning Expression of the nagE monocistronic operon"
+          },
+          {
+            "reference_id": "PMID:7791215",
+            "source_assertion": "The primary abstract reports cAMP/CAP effects on NagC apparent binding to wild-type versus super-operators. Full text was not inspected; no additional promoter-architecture result is inferred.",
+            "source_locator": "Issuing Europe PMC primary abstract"
+          },
+          {
+            "reference_id": "EcoCyc:CPLX0-226",
+            "source_assertion": "The exact cAMP-bound CRP complex is issued in ECOLI 27.0 for K-12 substr. MG1655 (NCBITaxon:511145). Native nagEp regulations have both signs; this contextual Nag edge remains unsigned.",
+            "source_locator": "Protein/common-name; metadata/PGDB; regulated promoter nagEp and modes"
+          }
+        ]
+      }
+    }
+  },
+  "added_participants": [
+    {
+      "id": "EcoCyc:CPLX0-226",
+      "label": "CRP-cyclic-AMP DNA-binding transcriptional dual regulator",
+      "category": "complex"
+    },
+    {
+      "id": "EcoCyc:RNA0-241",
+      "label": "small regulatory RNA SgrS",
+      "category": "rna"
+    },
+    {
+      "id": "EcoCyc:PC00004",
+      "label": "DNA-binding transcriptional dual regulator CRP",
+      "category": "complex"
+    }
+  ],
+  "added_edges": [
+    {
+      "id": "amino-110",
+      "subject": "EcoCyc:CPLX0-226",
+      "predicate": "activates",
+      "object": "MetaCyc:CPLX-165",
+      "evidence": [
+        {
+          "reference_id": "EcoCyc:CPLX0-226",
+          "source_assertion": "ECOLI 27.0 MG1655 regulations REG0-5729 and REG0-5728 positively regulate manXp with the cAMP-bound CRP complex. This edge concerns ManXYZ expression, not direct stimulation of assembled transporter catalysis.",
+          "source_locator": "Protein/regulates/Regulation[@frameid=REG0-5729]; nested regulated-entity/Promoter/regulated-by/Regulation[@frameid=REG0-5728]; mode, regulator and manXp PM00276"
+        },
+        {
+          "reference_id": "PMID:9484892",
+          "source_assertion": "The primary abstract reports cAMP/CAP-dependent manX transcription and class II promoter activation. Full article methods and experimental strain details were not inspected; no universal amino-sugar growth-condition effect is inferred.",
+          "source_locator": "Europe PMC exact MED result, abstractText"
+        }
+      ]
+    },
+    {
+      "id": "amino-111",
+      "subject": "EcoCyc:RNA0-241",
+      "predicate": "inhibits",
+      "object": "MetaCyc:CPLX-165",
+      "evidence": [
+        {
+          "reference_id": "PMID:22988087",
+          "source_assertion": "SgrS represses ManXYZ synthesis through two manXYZ mRNA binding sites: the manX coding site and the manX-manY intergenic site independently control manX and manYZ translation. manZ is coupled to manY; both sites support efficient message degradation and full 2DG-stress recovery. This is not direct inhibition of assembled transport or an SgrT protein effect.",
+          "source_locator": "PMC3479541, Results sec2-sec8, Discussion s2; Figs. 1-7"
+        },
+        {
+          "reference_id": "PMID:22988087",
+          "source_assertion": "Reporter, binding-site mutant, RNase E mutant, footprinting and stress-growth assays support the mechanism. Main-text methods name CS104/JH derivatives and DJ480; Table S1 was not inspected. These assay backgrounds are not all asserted to be unmodified MG1655 or identical to the native SgrS sequence.",
+          "source_locator": "PMC3479541, Materials and Methods s3/sec11-sec16; Figs. 1-6"
+        },
+        {
+          "reference_id": "EcoCyc:RNA0-241",
+          "source_assertion": "The native ECOLI 27.0 MG1655 record identifies the regulatory RNA SgrS, aliases SgrS/RyaA, distinct from its G0-9941 gene and the SgrT protein. Its first comment paragraph cites Rice12 for independent manX and manYZ translational repression.",
+          "source_locator": "RNA/common-name, synonym, gene; metadata/PGDB; RNA/comment paragraph1"
+        }
+      ]
+    },
+    {
+      "id": "amino-112",
+      "subject": "EcoCyc:CPLX0-226",
+      "predicate": "has_part",
+      "object": "EcoCyc:PC00004",
+      "evidence": [
+        {
+          "reference_id": "EcoCyc:CPLX0-226",
+          "source_assertion": "The ECOLI 27.0 MG1655 cAMP-bound complex explicitly contains protein complex PC00004 and compound CAMP. No component coefficient is supplied here; no bound-complex occupancy or numerical stoichiometry is inferred.",
+          "source_locator": "Protein/component/Protein[@frameid=PC00004]; component/Compound[@frameid=CAMP]"
+        }
+      ]
+    },
+    {
+      "id": "amino-113",
+      "subject": "EcoCyc:CPLX0-226",
+      "predicate": "has_part",
+      "object": "CHEBI:58165",
+      "evidence": [
+        {
+          "reference_id": "EcoCyc:CPLX0-226",
+          "source_assertion": "CAMP is an explicit component of the native cAMP-bound CRP complex; its component coefficient is absent. This records composition without asserting cAMP occupancy.",
+          "source_locator": "Protein/component/Compound[@frameid=CAMP]"
+        },
+        {
+          "reference_id": "EcoCyc:CAMP",
+          "source_assertion": "The exact ECOLI CAMP compound has a CHEBI58165 unification link and a charged InChI matching the issuing ChEBI compound. Its identity is distinct from any inferred binding occupancy.",
+          "source_locator": "Compound/dblink[dblink-db=CHEBI]; Compound/inchi"
+        }
+      ]
+    },
+    {
+      "id": "amino-114",
+      "subject": "EcoCyc:PC00004",
+      "predicate": "has_part",
+      "object": "UniProtKB:P0ACJ8",
+      "evidence": [
+        {
+          "reference_id": "EcoCyc:PC00004",
+          "source_assertion": "The ECOLI 27.0 MG1655 CRP protein complex contains component PD00257 with coefficient 2. This establishes the protein homodimer, without inferring a cAMP coefficient for the separately named bound complex.",
+          "source_locator": "Protein/component/Protein[@frameid=PD00257]; component/coefficient"
+        },
+        {
+          "reference_id": "EcoCyc:PD00257",
+          "source_assertion": "The exact ECOLI polypeptide PD00257 has a native UniProt P0ACJ8 unification link. Native MG1655 provenance and the reviewed K-12 UniProt sequence scope remain distinct.",
+          "source_locator": "Protein/dblink[dblink-db=UNIPROT][dblink-relationship=unification]"
+        }
+      ]
+    }
+  ],
+  "added_references": [
+    {
+      "id": "EcoCyc:CPLX0-226",
+      "title": "CRP-cyclic-AMP DNA-binding transcriptional dual regulator (ECOLI 27.0; MG1655)",
+      "url": "https://ecocyc.org/ECOLI/NEW-IMAGE?object=CPLX0-226"
+    },
+    {
+      "id": "EcoCyc:RNA0-241",
+      "title": "small regulatory RNA SgrS (ECOLI 27.0; MG1655)",
+      "url": "https://ecocyc.org/ECOLI/NEW-IMAGE?object=RNA0-241"
+    },
+    {
+      "id": "EcoCyc:PC00004",
+      "title": "DNA-binding transcriptional dual regulator CRP (ECOLI 27.0; MG1655)",
+      "url": "https://ecocyc.org/ECOLI/NEW-IMAGE?object=PC00004"
+    },
+    {
+      "id": "EcoCyc:CAMP",
+      "title": "cyclic-AMP native identity and ChEBI unification (ECOLI 27.0; MG1655)",
+      "url": "https://ecocyc.org/ECOLI/NEW-IMAGE?object=CAMP"
+    },
+    {
+      "id": "EcoCyc:PD00257",
+      "title": "CRP polypeptide native identity and UniProt unification (ECOLI 27.0; MG1655)",
+      "url": "https://ecocyc.org/ECOLI/NEW-IMAGE?object=PD00257"
+    },
+    {
+      "id": "PMID:9484892",
+      "title": "Control of the expression of the manXYZ operon in Escherichia coli: Mlc is a negative regulator of the mannose PTS.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/9484892"
+    },
+    {
+      "id": "PMID:22988087",
+      "title": "Small RNA binding-site multiplicity involved in translational regulation of a polycistronic mRNA.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/22988087"
+    }
+  ],
+  "counts": {
+    "named_nodes": 80,
+    "edges": 114,
+    "references": 66,
+    "qualified_edges": 3,
+    "endpoint_qualifiers": 6,
+    "core_reactions": 6,
+    "entry_contexts": 3
+  },
+  "all_other_fields_unchanged": true
+}

@@ -36,7 +36,9 @@ def _declared_nodes(record: object, labels: dict[str, str]) -> dict[str, dict]:
                 continue
             category = item.get("category")
             kind = "participant"
-            if field == "reactions":
+            if category == "pathway":
+                kind = "pathway"
+            elif field == "reactions":
                 kind = "reaction"
             elif field == "taxa":
                 kind = "taxon"
@@ -108,6 +110,43 @@ def _levels(nodes: dict, edges: list[dict]) -> dict[str, int]:
     return levels
 
 
+def _qualifier_detail(qualifier: dict) -> str:
+    detail = qualifier["kind"].replace("_", " ") + ": " + qualifier["description"]
+    for evidence in qualifier["evidence"]:
+        detail += "; Evidence " + evidence["reference_id"] + ": "
+        detail += evidence.get("quote", evidence.get("source_assertion", ""))
+        if evidence.get("source_locator"):
+            detail += " (" + evidence["source_locator"] + ")"
+    return detail
+
+
+def _qualified_endpoints(nodes: dict, edges: list[dict]) -> list[dict]:
+    """Add per-edge display instances; biological IDs and input edges stay intact."""
+    displayed = []
+    for number, edge in enumerate(edges, 1):
+        view = dict(edge)
+        for qualifier in edge.get("endpoint_qualifiers", []):
+            role = qualifier["endpoint"]
+            identifier = edge[role]
+            base = nodes[identifier]
+            key = f"qualified-endpoint-{number}-{role}"
+            while key in nodes:
+                key += "-display"
+            kind = qualifier["kind"].replace("_", " ")
+            label = base["label"] + " [" + kind + ": " + textwrap.shorten(
+                qualifier["description"], width=100, placeholder="…",
+            ) + "]"
+            nodes[key] = {
+                **base, "label": label, "type_label": kind, "identifier": identifier,
+                "detail": base["detail"] + "; " + _qualifier_detail(qualifier),
+                "anchor": f"mechanism-edge-{number}-qualifier-{role}",
+            }
+            view[role] = key
+            view["_native_" + role] = identifier
+        displayed.append(view)
+    return displayed
+
+
 def _shape(kind: str, x: float, y: float, width: float, height: float) -> str:
     attrs = 'class="graph-node-shape" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"'
     if kind == "chemical":
@@ -165,6 +204,7 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
                 'mechanistic edges. Component or cluster membership alone does not establish '
                 'a mechanistic connection.</p></section>')
     nodes = _declared_nodes(record, labels)
+    edges = _qualified_endpoints(nodes, edges)
     levels = _levels(nodes, edges)
     uid = "pathway-graph-" + hashlib.sha256(json.dumps(
         [record.id, nodes, edges], sort_keys=True, default=str,
@@ -198,7 +238,7 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
            '<select id="graph-node-picker"><option value="">Find a node…</option>']
     for key, node in nodes.items():
         out.append(f'<option value="{_escape(key)}">{_escape(node["label"])} '
-                   f'— {_escape(key)}</option>')
+                   f'— {_escape(node.get("identifier", key))}</option>')
     out += ['</select></div><ul class="graph-legend" aria-label="Network legend">']
     legend = {"reaction": "Reaction / activity", "chemical": "Chemical / cofactor",
               "protein": "Protein / complex", "participant": "Other participant",
@@ -258,16 +298,25 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
             lx, ly = sx + _GAP / 2, sy - 6
         predicate = edge["predicate"]
         kind = "context" if predicate in _CONTEXT else "mechanism"
-        detail = f'{subject} — {predicate} → {obj}'
+        native_subject = edge.get("_native_subject", subject)
+        native_object = edge.get("_native_object", obj)
+        detail = f'{native_subject} — {predicate} → {native_object}'
+        for qualifier in edge.get("endpoint_qualifiers", []):
+            detail += "; " + qualifier["endpoint"] + " " + _qualifier_detail(qualifier)
         if edge.get("description"):
             detail += "; " + plain_label(edge["description"])
         evidence = [item["reference_id"] for item in edge.get("evidence", [])]
         if evidence:
             detail += "; Evidence: " + ", ".join(evidence)
         dashed = ' stroke-dasharray="6 4"' if kind == "context" else ""
+        native_attrs = (
+            f' data-subject-id="{_escape(native_subject)}" '
+            f'data-object-id="{_escape(native_object)}"'
+            if edge.get("endpoint_qualifiers") else ""
+        )
         out.append(
             f'<a class="graph-edge graph-edge-{kind}" data-subject="{_escape(subject)}" '
-            f'data-object="{_escape(obj)}" data-predicate="{_escape(predicate)}" '
+            f'data-object="{_escape(obj)}" data-predicate="{_escape(predicate)}"{native_attrs} '
             f'href="#mechanism-edge-{index + 1}" tabindex="0" aria-label="{_escape(detail)}">'
             f'<title>{_escape(detail)}</title><path class="graph-edge-line" d="{path}" '
             f'fill="none" stroke="#64748b" stroke-width="1.5"{dashed} '
@@ -278,9 +327,14 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
     for number, (key, node) in enumerate(nodes.items(), 1):
         x, y = positions[key]
         title_id = f"{uid}-node-{number}"
-        anchor = component_anchors.get(key) or title_id
+        anchor = node.get("anchor") or component_anchors.get(key) or title_id
+        native_attrs = (
+            f' data-base-node-id="{_escape(node["identifier"])}" data-qualified="true"'
+            if "identifier" in node else ""
+        )
         out.append(f'<a class="graph-node" data-node-id="{_escape(key)}" '
-                   f'data-node-label="{_escape(node["label"])}" data-kind="{node["kind"]}" '
+                   f'data-node-label="{_escape(node["label"])}" '
+                   f'data-kind="{node["kind"]}"{native_attrs} '
                    f'href="#{_escape(anchor)}" tabindex="0" aria-label="{_escape(node["detail"])}">'
                    f'<title id="{title_id}">{_escape(node["detail"])}</title>'
                    + _shape(node["kind"], x, y, _WIDTH, heights[key]))

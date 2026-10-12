@@ -1,0 +1,48 @@
+from pathlib import Path
+from collections import Counter
+from datetime import datetime,timezone
+import csv,hashlib,json,subprocess,os
+import yaml
+OUT=Path(__file__).parent;ROOT=Path('/private/tmp/pathwaymech-next-223-20261011')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def digest(obj):return hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+def save(name,obj):
+ with (OUT/name).open('x') as s:s.write(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+def inventory(rel):
+ result=subprocess.run(['rg','--files','-uu','-L',rel],cwd=ROOT,capture_output=True,text=True)
+ assert result.returncode==0,(rel,result.stderr)
+ paths=sorted(result.stdout.splitlines());rows=[]
+ for name in paths:
+  p=ROOT/name
+  rows.append({'path':name,'sha256':sha(p),'bytes':p.stat().st_size,'resolved_path':str(p.resolve()),'symlink':p.is_symlink()})
+ return rows
+records=inventory('data/pathways');pages=inventory('pages/records');reviews=inventory('reviews/structured');history=inventory('history')
+record_rows=[r for r in records if r['path'].endswith('.yaml')];page_rows=[r for r in pages if r['path'].endswith('.html')]
+review_rows=[r for r in reviews if r['path'].endswith('/review.yaml')];assert len(record_rows)==223 and len(page_rows)==223 and len(review_rows)==96
+assert len(reviews)==192
+for row in review_rows:
+ parent=ROOT/Path(row['path']).parent;assert sorted(p.name for p in parent.iterdir())==['review.md','review.yaml']
+ids=[yaml.safe_load((ROOT/r['path']).read_bytes())['id'] for r in record_rows];assert len(set(ids))==223
+assert 'MetaCyc:GLCMANNANAUT-PWY' not in ids
+assert not (ROOT/'data/pathways/amino-sugar-superpathway.yaml').exists()
+def table(rel):
+ with (ROOT/rel).open(newline='') as stream:
+  reader=csv.DictReader(stream,delimiter='\t');rows=list(reader);columns=reader.fieldnames
+ assert len({r['id'] for r in rows})==len(rows)
+ assert all(None not in r for r in rows)
+ return columns,rows
+node_columns,nodes=table('pages/downloads/nodes.tsv');edge_columns,edges=table('pages/downloads/edges.tsv')
+assert 'endpoint_qualifiers' not in edge_columns
+contexts=0;baseline_nodes={}
+for row in nodes:
+ parsed=json.loads(row['source_contexts'] or '[]');assert isinstance(parsed,list)
+ identities=Counter(digest(x) for x in parsed);contexts+=len(parsed)
+ baseline_nodes[row['id']]={'display':{k:v for k,v in row.items() if k!='source_contexts'},'context_hash_counts':dict(identities),'context_count':len(parsed)}
+kgx={'node_columns':node_columns,'edge_columns':edge_columns,'node_count':len(nodes),'edge_count':len(edges),'source_context_count':contexts,'nodes':baseline_nodes,'edges':{r['id']:digest(r) for r in edges},'files':[{ 'path':r,'sha256':sha(ROOT/r),'bytes':(ROOT/r).stat().st_size} for r in ['pages/downloads/nodes.tsv','pages/downloads/edges.tsv','output/kgx/nodes.tsv','output/kgx/edges.tsv']]}
+assert sha(ROOT/'pages/downloads/nodes.tsv')==sha(ROOT/'output/kgx/nodes.tsv')
+assert sha(ROOT/'pages/downloads/edges.tsv')==sha(ROOT/'output/kgx/edges.tsv')
+save('baseline-kgx.json',kgx)
+base={'captured_at':datetime.now(timezone.utc).isoformat(),'root':str(ROOT),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'status':subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],cwd=ROOT,text=True),'record_count':len(record_rows),'page_count':len(page_rows),'structured_review_bundles':len(review_rows),'structured_review_files':len(reviews),'history_yaml_count':sum(r['path'].endswith('.yaml') for r in history),'record_ids':ids,'records':records,'pages':pages,'reviews':reviews,'history':history,'kgx_summary':{k:kgx[k] for k in ['node_count','edge_count','source_context_count','node_columns','edge_columns']},'kgx_baseline_sha256':sha(OUT/'baseline-kgx.json'),'inventory_command':['rg','--files','-uu','-L'],'ignored_hidden_and_symlink_targets_included':True,'absence_claim_scope':'New target path and exact record ID absent from the complete maintained data/pathways inventory. Broader candidate dedup is separately archived.'}
+save('baseline.json',base)
+save('baseline-receipt.json',{'status':'captured_before_record_authority_adoption','baseline_sha256':sha(OUT/'baseline.json'),'kgx_baseline_sha256':sha(OUT/'baseline-kgx.json'),'captured_at':base['captured_at'],'record_count':223,'page_count':223,'structured_review_bundles':96,'history_yaml_count':base['history_yaml_count'],**base['kgx_summary']})
+print(json.dumps(json.loads((OUT/'baseline-receipt.json').read_bytes()),indent=2))

@@ -1,0 +1,107 @@
+from pathlib import Path
+import copy, csv, hashlib, io, json, re, sys
+from xml.etree import ElementTree as ET
+import yaml
+ROOT=Path('/private/tmp/pathwaymech-next-223-20261011')
+OUT=Path('/private/tmp/pathwaymech-next-223-final-adversarial-20261011')
+CACHE=Path('/private/tmp/pathwaymech-curation-authorities/sources')
+sys.path.insert(0,str(ROOT))
+from pathwaymech.schema import validate_record, ValidationError
+from pathwaymech.graph_view import graph_html
+from pathwaymech.kgx import kgx_edges
+from pathwaymech.wikipathways import _unique_edges
+from scripts.build_source_identifier_snapshot import source_terms, _bigg_version
+results=[]
+def check(name, fn):
+ fn(); results.append({'name':name,'passed':True})
+def reject(fn):
+ try: fn()
+ except (ValueError, ValidationError): return
+ raise AssertionError('Expected rejection')
+raw=yaml.safe_load((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_text())
+record=validate_record(raw)
+qualified=[e for e in raw['mechanistic_edges'] if e.get('endpoint_qualifiers')]
+assert len(qualified)==3 and sum(len(e['endpoint_qualifiers']) for e in qualified)==6
+svg=graph_html(record,{},{}); start=svg.index('<svg xmlns='); svg=ET.fromstring(svg[start:svg.index('</svg>',start)+6])
+links=svg.findall('.//{http://www.w3.org/2000/svg}a')
+nodes={a.get('data-node-id'):a for a in links if a.get('data-node-id')}
+edges=[a for a in links if a.get('data-predicate')]
+assert len(nodes)==85 and len(edges)==114
+for n,(e,v) in enumerate(zip(raw['mechanistic_edges'],edges,strict=True),1):
+ for q in e.get('endpoint_qualifiers',[]):
+  role=q['endpoint']; key=v.get('data-'+role)
+  assert key != e[role]
+  assert v.get('data-'+role+'-id')==e[role]
+  assert nodes[key].get('data-base-node-id')==e[role]
+  assert q['description'] in nodes[key].get('aria-label')
+  assert nodes[key].get('href')==f'#mechanism-edge-{n}-qualifier-{role}'
+results.append({'name':'actual record: all 114 graph edges and 6 isolated endpoint qualifications','passed':True})
+rows=kgx_edges([record])
+for e,row in zip(raw['mechanistic_edges'],rows,strict=True):
+ assert json.loads(row.endpoint_qualifiers or '[]')==e.get('endpoint_qualifiers',[])
+ refs={ev['reference_id'] for ev in e['evidence']}
+ refs.update(ev['reference_id'] for q in e.get('endpoint_qualifiers',[]) for ev in q['evidence'])
+ assert set(row.source_records.split('|'))==refs
+ assert {x['id'] for x in json.loads(row.reference_metadata)}==refs
+results.append({'name':'actual record: KGX lossless qualification payload and complete citation sets','passed':True})
+for change in ['remove','swap','evidence','kind','wording','role_order']:
+ mutated=copy.deepcopy(raw)
+ e=next(e for e in mutated['mechanistic_edges'] if e['id']=='amino-107')
+ original=next(e for e in raw['mechanistic_edges'] if e['id']=='amino-107')
+ if change=='remove': e.pop('endpoint_qualifiers')
+ elif change=='swap':
+  for q in e['endpoint_qualifiers']:q['endpoint']={'subject':'object','object':'subject'}[q['endpoint']]
+ elif change=='evidence':e['endpoint_qualifiers'][0]['evidence'][0]['source_locator']='Changed preparation methods'
+ elif change=='kind':e['endpoint_qualifiers'][0]['kind']='molecular_state'
+ elif change=='wording':e['endpoint_qualifiers'][0]['description']='Distinct preparation'
+ elif change=='role_order':e['endpoint_qualifiers'].reverse()
+ new=kgx_edges([validate_record(mutated)])[106].id
+ old=rows[106].id
+ assert (new==old)==(change=='role_order')
+ assert len(_unique_edges([original,e]))==(1 if change=='role_order' else 2)
+ results.append({'name':'actual claim identity mutation '+change,'passed':True})
+for problem in ['qualify_chemical','qualify_rna','ambiguous_type','role_array','evidence_ref_array']:
+ mutated=copy.deepcopy(raw); e=mutated['mechanistic_edges'][106]
+ if problem=='qualify_chemical':e['subject']='CHEBI:15377'
+ elif problem=='qualify_rna':e['subject']='EcoCyc:RNA0-241'
+ elif problem=='ambiguous_type':mutated['reactions'].append({'id':e['subject'],'label':'Ambiguous activity'})
+ elif problem=='role_array':e['endpoint_qualifiers'][0]['endpoint']=[]
+ else:e['endpoint_qualifiers'][0]['evidence'][0]['reference_id']=[]
+ check('actual record rejects '+problem,lambda: reject(lambda:validate_record(mutated)))
+entries=json.loads((ROOT/'conf/identifier_sources.json').read_text())
+selected=[e for e in entries if e['kind'].startswith(('ecocyc','bigg')) or e['key'] in {'metacyc-ACNEULY-CPLX','metacyc-GLUCOSAMINE-6-P-DEAMIN-CPLX','metacyc-NAG6PDEACET-CPLX'}]
+for e in selected:
+ path=CACHE/e['path']; before=hashlib.sha256(path.read_bytes()).hexdigest(); assert before==e['sha256']
+ got=list(source_terms(e['kind'],path,url=e['url'],version=e['version'])); assert len(got)==1
+ if e['kind'].startswith('bigg'): _bigg_version(e,CACHE)
+ results.append({'name':'authentic parser positive '+e['key'],'passed':True,'sha256':before,'term':got[0]})
+ def parse_mutated(body, url=None):
+  suffix='.json' if e['kind'].startswith('bigg') else '.xml'
+  p=OUT/('mutation'+suffix);p.write_bytes(body)
+  return list(source_terms(e['kind'],p,url=url or e['url'],version=e['version']))
+ if e['kind'].startswith('ecocyc'):
+  tree=ET.fromstring(path.read_bytes()); tree.find('metadata/PGDB/strain').text='K-12 substr. W3110'
+  check(e['key']+' rejects different strain',lambda:reject(lambda:parse_mutated(ET.tostring(tree))))
+  tree=ET.fromstring(path.read_bytes()); entity=tree.find('RNA' if 'rna' in e['kind'] else 'Protein'); entity.find('parent')[0].set('orgid','META')
+  check(e['key']+' rejects namespace crossing',lambda:reject(lambda:parse_mutated(ET.tostring(tree))))
+  tree=ET.fromstring(path.read_bytes()); entity=tree.find('RNA' if 'rna' in e['kind'] else 'Protein'); entity.find('common-name').set('resource','getxml?ECOLI:OTHER')
+  check(e['key']+' rejects unresolved common-name reference',lambda:reject(lambda:parse_mutated(ET.tostring(tree))))
+ elif e['kind'].startswith('bigg'):
+  body=json.loads(path.read_bytes()); body['bigg_id'] += '_c'
+  check(e['key']+' rejects model-compartment identity',lambda:reject(lambda:parse_mutated(json.dumps(body).encode())))
+  body=json.loads(path.read_bytes());body['database_links']={'ChEBI':[{'id':'CHEBI:FAKE'}]}
+  got=list(source_terms(e['kind'],path,url=e['url'],version=e['version']))
+  assert parse_mutated(json.dumps(body).encode())==got
+  results.append({'name':e['key']+' never imports changed cross-database alias','passed':True})
+  body=path.read_bytes().decode(); body=body.rstrip(); body=body[:-1]+',"bigg_id":"duplicate"}'
+  check(e['key']+' rejects duplicate native identifier key',lambda:reject(lambda:parse_mutated(body.encode())))
+ else:
+  tree=ET.fromstring(path.read_bytes()); p=tree.find('Protein'); p.find('component/coefficient').text='1'
+  check(e['key']+' rejects loss of homomer scope',lambda:reject(lambda:parse_mutated(ET.tostring(tree))))
+  tree=ET.fromstring(path.read_bytes());tree.find('Protein/catalyzes/Enzymatic-Reaction/enzyme/Protein').set('resource','#META:OTHER')
+  check(e['key']+' rejects activity belonging to another complex',lambda:reject(lambda:parse_mutated(ET.tostring(tree))))
+  tree=ET.fromstring(path.read_bytes());ET.SubElement(tree.find('Protein'),'common-name',datatype='string').text=' '
+  check(e['key']+' never hides invalid direct name with fallback',lambda:reject(lambda:parse_mutated(ET.tostring(tree))))
+ assert hashlib.sha256(path.read_bytes()).hexdigest()==before
+(OUT/'probe-results.json').write_text(json.dumps({'results':results,'passed':len(results),'target_sha256':hashlib.sha256((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_bytes()).hexdigest()},indent=2)+'\n')
+print(json.dumps({'passed':len(results),'target_sha256':hashlib.sha256((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_bytes()).hexdigest()}))

@@ -1,0 +1,163 @@
+"""Verify external BiGG adapter against authentic originals and retained corpus."""
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+
+import yaml
+
+OUT = Path(__file__).parent
+ROOT = OUT / 'repo'
+MAINTAINED = Path('/private/tmp/pathwaymech-next-222-20261011')
+AUTHOR = Path('/private/tmp/pathwaymech-next-223-author-20261011')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+RUN = OUT / 'checks-final'
+RUN.mkdir()
+OVERLAY = OUT / 'originals-overlay'
+OVERLAY.mkdir()
+PROPOSAL = OUT / 'proposal'
+PROPOSAL.mkdir()
+assert sys.dont_write_bytecode
+assert Path(sys.prefix).resolve() == Path(PYTHON).parent.parent.resolve()
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+def save(path, data):
+    path.open('x').write(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+def capture(path):
+    path = Path(path)
+    return {'path': str(path), 'resolved_path': str(path.resolve()),
+            'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+proposal = json.loads((AUTHOR / 'bigg-authority-proposal.json').read_bytes())
+assert sha(AUTHOR / 'bigg-authority-proposal.json') == 'fb5a5c9ed7d772d9df79edf5d997cb9e455adc01bd7f4949a88822ef8d8ff038'
+original_manifest = json.loads((ROOT / 'conf/identifier_sources.json').read_bytes())
+before = json.loads((ROOT / 'data/identifier_authorities/sources.json').read_bytes())
+assert len(original_manifest) == 629
+assert len(before['terms']) == 2265 and len(before['sources']) == 476
+bindings = [capture(AUTHOR / name) for name in ['bigg-authority-proposal.json', 'authority-proposal.json']]
+entries = []
+originals = []
+version = proposal['database_version_original']
+assert sha(version['path']) == version['sha256']
+version_name = 'bigg-database-version-2026-10-11.json'
+(OVERLAY / version_name).symlink_to(version['path'])
+bindings.append(capture(version['path']))
+for term in proposal['universal_terms']:
+    native = term['original']
+    assert sha(native['path']) == native['sha256']
+    assert native['url'] == native['final_url'] and native['status'] == 200
+    assert sha(native['receipt_path']) == native['receipt_sha256']
+    kind = native['kind'].removeprefix('proposed-')
+    filename = 'bigg-' + term['id'].split(':')[1] + '-2026-10-11.json'
+    entry = {'key': 'bigg-universal-' + term['id'].split(':')[1], 'kind': kind,
+             'url': native['url'], 'version': native['version'],
+             'license': 'Upstream terms; public-release licensing deferred',
+             'sha256': native['sha256'], 'path': filename,
+             'version_source': {'url': version['url'], 'path': version_name,
+                                'sha256': version['sha256']}}
+    entries.append(entry)
+    (OVERLAY / filename).symlink_to(native['path'])
+    bindings.extend([capture(native['path']), capture(native['receipt_path'])])
+for entry in original_manifest:
+    origin = CACHE / entry['path']
+    destination = OVERLAY / entry['path']
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.symlink_to(origin)
+    originals.append({'key': entry['key'], 'path': str(origin),
+                      'resolved_path': str(origin.resolve()), 'sha256': entry['sha256']})
+
+def verify_original(row):
+    assert str(Path(row['path']).resolve()) == row['resolved_path'], row['path']
+    assert sha(row['path']) == row['sha256'], row['path']
+    return {**row, 'bytes': Path(row['path']).stat().st_size}
+
+with ThreadPoolExecutor(max_workers=4) as pool:
+    originals = list(pool.map(verify_original, originals))
+save(PROPOSAL / 'new-source-entries.json', entries)
+save(PROPOSAL / 'identifier_sources.json', original_manifest + entries)
+save(RUN / 'source-inputs-before.json', originals + bindings)
+save(RUN / 'runtime.json', {'executable': sys.executable, 'prefix': sys.prefix,
+                          'version': sys.version, 'executable_sha256': sha(sys.executable),
+                          'yaml': capture(yaml.__file__), 'cwd': str(ROOT),
+                          'uv_sync_executed': False,
+                          'builder': capture(ROOT / 'scripts/build_source_identifier_snapshot.py'),
+                          'lock': capture(ROOT / 'uv.lock')})
+
+spec = importlib.util.spec_from_file_location('external_source_builder', ROOT / 'scripts/build_source_identifier_snapshot.py')
+builder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(builder)
+positives = []
+for term, entry in zip(proposal['universal_terms'], entries):
+    parsed = list(builder.source_terms(entry['kind'], Path(term['original']['path']), url=entry['url']))
+    assert parsed == [(term['id'], term['canonical_label'], [])]
+    positives.append({'id': term['id'], 'source': term['original'], 'emitted': parsed})
+save(RUN / 'authentic-positive.json', positives)
+
+# A selector fixture is deliberately not a biological record or the next223 draft.
+records = OUT / 'selection-corpus'
+shutil.copytree(ROOT / 'data/pathways', records)
+fixture = {'id': 'BiGG:ACMANAptspp', 'label': proposal['universal_terms'][2]['canonical_label'],
+           'taxa': [], 'participants': [{'id': t['id'], 'label': t['canonical_label']}
+                                      for t in proposal['universal_terms'][:2]], 'reactions': []}
+(records / 'authority-selector-fixture.yaml').write_text(yaml.safe_dump(fixture))
+assert len(list((ROOT / 'data/pathways').rglob('*.yaml'))) == 223
+assert len(list(records.rglob('*.yaml'))) == 224
+
+commands = [
+    ('lint', [PYTHON, '-B', '-m', 'ruff', 'check', 'scripts/build_source_identifier_snapshot.py', 'tests/test_bigg_identifier_authority.py']),
+    ('focused', [PYTHON, '-B', '-m', 'pytest', '-q', *sorted(str(p.relative_to(ROOT)) for p in (ROOT / 'tests').glob('test_*authorit*.py')), 'tests/test_source_identifier_snapshot.py', 'tests/test_identifiers.py', 'tests/test_identifier_snapshot_builders.py']),
+    ('baseline-cli', [PYTHON, '-B', 'scripts/build_source_identifier_snapshot.py', '--manifest', str(ROOT / 'conf/identifier_sources.json'), '--cache-dir', str(OVERLAY), '--records', str(ROOT / 'data/pathways'), '--output', str(RUN / 'baseline-sources.json')]),
+    ('augmented-cli', [PYTHON, '-B', 'scripts/build_source_identifier_snapshot.py', '--manifest', str(PROPOSAL / 'identifier_sources.json'), '--cache-dir', str(OVERLAY), '--records', str(records), '--output', str(RUN / 'augmented-sources.json')]),
+]
+receipts = []
+for name, command in commands:
+    started = datetime.now(timezone.utc).isoformat()
+    result = subprocess.run(command, cwd=ROOT, capture_output=True,
+                            env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+                                 'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)})
+    (RUN / (name + '.stdout')).write_bytes(result.stdout)
+    (RUN / (name + '.stderr')).write_bytes(result.stderr)
+    receipts.append({'name': name, 'command': command, 'started_at': started,
+                     'finished_at': datetime.now(timezone.utc).isoformat(), 'exit_code': result.returncode})
+    (RUN / 'execution.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(name, result.returncode, result.stdout.decode()[-1200:], result.stderr.decode()[-1200:], flush=True)
+    assert result.returncode == 0, name
+
+baseline = json.loads((RUN / 'baseline-sources.json').read_bytes())
+after = json.loads((RUN / 'augmented-sources.json').read_bytes())
+assert baseline == before
+assert all(after['terms'][key] == value for key, value in before['terms'].items())
+assert all(after['sources'][key] == value for key, value in before['sources'].items())
+assert len(after['terms']) == 2268 and len(after['sources']) == 479
+assert set(after['terms']) - before['terms'].keys() == {t['id'] for t in proposal['universal_terms']}
+for term, entry in zip(proposal['universal_terms'], entries):
+    assert after['terms'][term['id']] == {'label': term['canonical_label'], 'synonyms': [], 'source': entry['key']}
+save(RUN / 'preservation.json', {'status': 'passed', 'baseline_exact': True,
+                               'old_terms': 2265, 'old_source_metadata': 476,
+                               'all_old_values_byte_semantics_exact': True,
+                               'new_terms': 3, 'new_source_metadata': 3,
+                               'manifest_before': 629, 'manifest_after': 632,
+                               'new_original_bodies': 4,
+                               'baseline_record_count': 223,
+                               'augmented_scope': '223 unchanged records plus one identifier-selection fixture; no next223 biology or endpoint/complex adapter changes',
+                               'baseline_snapshot_sha256': sha(RUN / 'baseline-sources.json'),
+                               'augmented_snapshot_sha256': sha(RUN / 'augmented-sources.json')})
+with ThreadPoolExecutor(max_workers=4) as pool:
+    verified_after = list(pool.map(verify_original, originals + bindings))
+save(RUN / 'source-inputs-after.json', verified_after)
+baseline_bindings = json.loads((OUT / 'baseline.json').read_bytes())['files']
+for item in baseline_bindings:
+    assert sha(item['path']) == item['sha256'], item['path']
+save(RUN / 'maintained-preservation.json', {'status': 'passed', 'unchanged_original_copied_files': len(baseline_bindings), 'maintained_writes': False, 'shared_cache_writes': False, 'git_mutations': False})
+print('full_source_and_maintained_preservation_passed', flush=True)

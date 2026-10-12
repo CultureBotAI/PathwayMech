@@ -1,0 +1,70 @@
+"""Real CLI rejection controls derived from intact independently acquired native bodies."""
+from pathlib import Path
+from datetime import datetime,timezone
+from xml.etree import ElementTree as ET
+import hashlib,json,os,subprocess,sys,copy
+import yaml
+OUT=Path(__file__).parent;ROOT=OUT/'repo';RUN=OUT/'authentic-controls';RUN.mkdir()
+entries=json.loads((OUT/'proposal/new-source-entries.json').read_bytes())
+positives=json.loads((OUT/'proposal/authentic-positive.json').read_bytes())
+byid={r['id']: (r,e) for r,e in zip(positives,entries)}
+row,base=byid['EcoCyc:PC00004'];original=Path(row['original_path']); original_bytes=original.read_bytes()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
+results=[]
+cases=['wrong_taxon','wrong_pgdb','wrong_query','wrong_type','duplicate_name','empty_name',
+       'bad_alias','missing_name_no_fallback','duplicate_pgdb','html_error','utf16_doctype',
+       'wrong_base_port','wrong_service_host','http_transport','wrong_release','wrong_parent',
+       'conflicting_alias_before_filter','conflicting_parent_before_filter','rna_as_protein',
+       'wrong_strain','duplicate_taxon','nested_name']
+for idx,name in enumerate(cases):
+ run=RUN/name;run.mkdir();tree=ET.fromstring(original_bytes);entry=dict(base)
+ entity=tree.find('Protein');body=None;more=[]
+ if name=='wrong_taxon':tree.find('metadata/PGDB/dblink/dblink-oid').text='562'
+ elif name=='wrong_pgdb':tree.find('metadata/PGDB').set('orgid','META')
+ elif name=='wrong_query':tree.find('metadata/query').text='ECOLI:CPLX0-226'
+ elif name=='wrong_type':entity.tag='Gene'
+ elif name=='duplicate_name':entity.append(copy.deepcopy(entity.find('common-name')))
+ elif name=='empty_name':entity.find('common-name').text=' '
+ elif name=='bad_alias':entity.find('synonym').text='<script>bad</script>'
+ elif name=='missing_name_no_fallback':
+  label=entity.find('common-name');entity.remove(label);ET.SubElement(entity,'nested').append(label)
+ elif name=='duplicate_pgdb':tree.find('metadata').append(copy.deepcopy(tree.find('metadata/PGDB')))
+ elif name=='html_error':body=b'<html><body>Request denied</body></html>'
+ elif name=='utf16_doctype':
+  body=('<?xml version="1.0" encoding="utf-16"?><!DOCTYPE ptools-xml [<!ENTITY poison "bad">]>'+ET.tostring(tree,encoding='unicode')).encode('utf-16')
+ elif name=='wrong_base_port':tree.set('{http://www.w3.org/XML/1998/namespace}base',tree.get('{http://www.w3.org/XML/1998/namespace}base').replace(':443/',':80/'))
+ elif name=='wrong_service_host':tree.find('metadata/url').text='http://example.org:443/'
+ elif name=='http_transport':entry['url']=entry['url'].replace('https:','http:')
+ elif name=='wrong_release':entry['version']='28.0'
+ elif name=='wrong_parent':entity.find('parent/Protein').set('orgid','META')
+ elif name.startswith('conflicting_'):
+  second=copy.deepcopy(tree)
+  if name=='conflicting_alias_before_filter':second.find('Protein/synonym').text='Different native alias'
+  else:
+   parent=second.find('Protein/parent/Protein');parent.set('frameid','Protein-Small-Molecule-Complexes');parent.set('resource','getxml?ECOLI:Protein-Small-Molecule-Complexes')
+  p=run/'conflict.xml';p.write_bytes(ET.tostring(second));more=[{**entry,'path':p.name,'key':'conflict','sha256':sha(p)}]
+ elif name=='rna_as_protein':
+  native,entry=byid['EcoCyc:RNA0-241'];entry=dict(entry);entry['kind']='ecocyc-protein-xml';body=Path(native['original_path']).read_bytes()
+ elif name=='wrong_strain':tree.find('metadata/PGDB/strain').text='other strain'
+ elif name=='duplicate_taxon':tree.find('metadata/PGDB').append(copy.deepcopy(tree.find('metadata/PGDB/dblink')))
+ elif name=='nested_name':ET.SubElement(entity.find('common-name'),'b').text='nested'
+ p=run/'source.xml';p.write_bytes(body if body is not None else ET.tostring(tree));entry.update(path=p.name,key='native',sha256=sha(p))
+ manifest=run/'manifest.json';write(manifest,[entry]+more)
+ records=run/'records';records.mkdir();(records/'ids.yaml').write_text(yaml.safe_dump({'id':'EcoCyc:UNSELECTED' if name.startswith('conflicting_') else 'EcoCyc:PC00004'}))
+ output=run/'output.json';exists=idx%2==0
+ if exists:output.write_bytes(b'prior verified snapshot\n')
+ command=[sys.executable,'-B','scripts/build_source_identifier_snapshot.py','--manifest',str(manifest),'--cache-dir',str(run),'--records',str(records),'--output',str(output)]
+ inputs=[{'path':str(q),'sha256':sha(q)} for q in [manifest,p,records/'ids.yaml',*[run/e['path'] for e in more]]]
+ start=datetime.now(timezone.utc).isoformat();result=subprocess.run(command,cwd=ROOT,capture_output=True,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(ROOT/'src')+os.pathsep+str(ROOT)})
+ (run/'stdout').write_bytes(result.stdout);(run/'stderr').write_bytes(result.stderr)
+ assert result.returncode!=0,(name,result.stdout,result.stderr)
+ assert b'EcoCyc' in result.stderr,(name,result.stderr)
+ assert output.read_bytes()==b'prior verified snapshot\n' if exists else not output.exists()
+ assert all(sha(r['path'])==r['sha256'] for r in inputs)
+ receipt={'name':name,'command':command,'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':result.returncode,'expected_failure':True,'existing_output':exists,'output_untouched':True,'input_bindings':inputs}
+ write(run/'receipt.json',receipt);results.append(receipt)
+assert original.read_bytes()==original_bytes
+for native in positives:assert sha(native['original_path'])==native['original_sha256']
+write(RUN/'results.json',{'status':'passed','negative_real_cli_controls':len(results),'all_original_bytes_unchanged':True,'builder_sha256':sha(ROOT/'scripts/build_source_identifier_snapshot.py'),'results':results})
+print(len(results),'authentic negative CLI controls passed')

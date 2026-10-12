@@ -41,6 +41,7 @@ ALLOWED_CURIE_PREFIXES = {
     "DOI",
     "EC",
     "ECO",
+    "EcoCyc",
     "Ensembl",
     "Entrez",
     "GO",
@@ -93,7 +94,10 @@ ALLOWED_EDGE_PREDICATES = {
 NODE_CATEGORIES = {
     "chemical_entity", "small_molecule", "lipid", "polymer", "protein", "gene", "dna", "rna",
     "cofactor", "complex", "cellular_component", "molecular_activity", "biological_process",
+    "pathway",
 }
+
+ENDPOINT_QUALIFIER_KINDS = {"experimental_construct", "molecular_state"}
 
 
 class ValidationError(ValueError):
@@ -178,6 +182,16 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
             for field in ("participants", "reactions")
             for node in (record.get(field) if isinstance(record.get(field), list) else [])
             if isinstance(node, dict) and isinstance(node.get("id"), str)
+        },
+        qualified_participants={
+            identifier
+            for identifier in participants - reactions - taxa - {record.get("id")}
+            if all(
+                isinstance(node.get("category"), str)
+                and node["category"] in {"protein", "complex"}
+                for node in record["participants"]
+                if isinstance(node, dict) and node.get("id") == identifier
+            )
         },
     )
     if "curation_history" in record:
@@ -444,6 +458,7 @@ def _validate_edges(
     *,
     record_id: str | None = None,
     categories: dict[str, str | None] | None = None,
+    qualified_participants: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         errors.append("mechanistic_edges must be a list")
@@ -481,7 +496,53 @@ def _validate_edges(
                 categories=categories or {},
             )
         _validate_evidence(item.get("evidence"), reference_ids, f"{path}.evidence", errors)
+        if "endpoint_qualifiers" in item:
+            _validate_endpoint_qualifiers(
+                item, qualified_participants or set(), reference_ids, path, errors,
+            )
     return value
+
+
+def _validate_endpoint_qualifiers(
+    edge: dict[str, Any], participant_ids: set[str], reference_ids: set[str],
+    edge_path: str, errors: list[str],
+) -> None:
+    path = f"{edge_path}.endpoint_qualifiers"
+    qualifiers = edge["endpoint_qualifiers"]
+    if not isinstance(qualifiers, list):
+        errors.append(f"{path} must be a list")
+        return
+    if len(qualifiers) > 2:
+        errors.append(f"{path} must contain at most two qualifiers")
+    roles = set()
+    for index, qualifier in enumerate(qualifiers):
+        item_path = f"{path}[{index}]"
+        if not isinstance(qualifier, dict):
+            errors.append(f"{item_path} must be a mapping")
+            continue
+        if set(qualifier) - {"endpoint", "kind", "description", "evidence"}:
+            errors.append(f"{item_path} has an unsupported qualifier field")
+        role = qualifier.get("endpoint")
+        if not isinstance(role, str) or role not in {"subject", "object"}:
+            errors.append(f"{item_path}.endpoint must be subject or object")
+        else:
+            if role in roles:
+                errors.append(f"{path} may qualify each endpoint only once")
+            roles.add(role)
+            identifier = edge.get(role)
+            if not isinstance(identifier, str) or identifier not in participant_ids:
+                errors.append(
+                    f"{item_path}.endpoint must denote a declared protein or complex participant"
+                )
+        kind = qualifier.get("kind")
+        if not isinstance(kind, str) or kind not in ENDPOINT_QUALIFIER_KINDS:
+            errors.append(f"{item_path}.kind is not supported: {kind!r}")
+        description = qualifier.get("description")
+        if not isinstance(description, str) or not description.strip() or len(description) > 400:
+            errors.append(f"{item_path}.description must be nonempty and at most 400 characters")
+        _validate_evidence(
+            qualifier.get("evidence"), reference_ids, f"{item_path}.evidence", errors,
+        )
 
 
 def _validate_edge_endpoint_types(
@@ -497,7 +558,9 @@ def _validate_edge_endpoint_types(
     categories: dict[str, str | None],
 ) -> None:
     processes = reaction_ids | {record_id}
-    context_categories = {"cellular_component", "biological_process", "molecular_activity"}
+    context_categories = {
+        "cellular_component", "biological_process", "molecular_activity", "pathway",
+    }
     if predicate == "consumes" and (subject not in participant_ids or obj not in processes):
         errors.append(
             f"{path} consumes edges must point from a participant subject "
@@ -541,12 +604,13 @@ def _validate_edge_endpoint_types(
         if obj not in participant_ids or categories.get(obj) != "cellular_component":
             errors.append(f"{path} {predicate} object must be a cellular_component participant")
         if predicate == "occurs_in" and (
-            subject not in processes and categories.get(subject) != "biological_process"
+            subject not in processes
+            and categories.get(subject) not in {"biological_process", "pathway"}
         ):
             errors.append(f"{path} occurs_in subject must be an activity or process")
         if predicate == "located_in" and (
             subject not in participant_ids
-            or categories.get(subject) in {"biological_process", "molecular_activity"}
+            or categories.get(subject) in {"biological_process", "molecular_activity", "pathway"}
         ):
             errors.append(f"{path} located_in subject must be a physical participant")
 
@@ -567,7 +631,7 @@ def _validate_evidence(
             errors.append(f"{item_path} must be a mapping")
             continue
         reference_id = item.get("reference_id")
-        if reference_id not in reference_ids:
+        if not isinstance(reference_id, str) or reference_id not in reference_ids:
             errors.append(f"{item_path}.reference_id is not declared: {reference_id!r}")
         quote = item.get("quote")
         assertion = item.get("source_assertion")

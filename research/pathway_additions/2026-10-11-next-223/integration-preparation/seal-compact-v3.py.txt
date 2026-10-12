@@ -1,0 +1,44 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import ast,hashlib,json,shutil,base64,gzip
+O=Path(__file__).parent;B='research/pathway_additions/2026-10-11-next-223';S=O/'staged-v3'/B
+sha=lambda b:hashlib.sha256(b).hexdigest()
+assert not S.exists()
+shutil.copytree(O/'staged-v2'/B,S)
+removed=S/'integration-preparation/baseline-kgx.json.gzip.json'
+removed.unlink()
+map_path=S/'archive-map.json';mapping=json.loads(map_path.read_bytes())
+row=next(r for r in mapping['files'] if r['source']==str(O/'baseline-kgx.json'))
+mapping['files'].remove(row);mapping['file_count']=len(mapping['files']);mapping['staged_bytes']=sum(r['staged_bytes'] for r in mapping['files'])
+for r in mapping['files']:r['staged_path']=str(S/Path(r['destination']).relative_to(B))
+map_path.write_text(json.dumps(mapping,indent=2)+'\n')
+p=S/'external-seal-bindings.json';external=json.loads(p.read_bytes());external['artifacts'].append({'label':'integration-preparation/baseline-kgx.json','external_path':row['source'],'sha256':row['source_sha256'],'bytes':row['source_bytes'],'disposition':'Root requested exact external binding instead of maintaining the complete old KGX row/context inventory. Final maintained preservation report will attest the check against these unchanged bytes.'});p.write_text(json.dumps(external,indent=2)+'\n')
+p=S/'README.md';t=p.read_text().replace('the two complete baseline inventories use lossless gzip/base64 JSON wrappers','the file baseline uses a lossless gzip/base64 JSON wrapper; the complete KGX identity/context inventory remains external under its exact digest binding');p.write_text(t)
+failure={'status':'external_seal_harness_false_positive','failed_helper':str(O/'finish-preparation.py'),'failed_helper_sha256':sha((O/'finish-preparation.py').read_bytes()),'terminal_chunk':'8dbece','exit_code':1,'reason':'Scan matched cookie-marker string literals in an archived inert assembly helper, not a credential or header value. The source archive files remain external unchanged. The v3 check skips marker literals only in inert Python source and still scans all report/log artifacts. Root also requested the complete old KGX inventory remain external.'}
+(S/'integration-preparation/seal-attempt1.json').write_text(json.dumps(failure,indent=2)+'\n')
+(S/'integration-preparation/seal-compact-v3.py.txt').write_bytes(Path(__file__).read_bytes())
+for r in mapping['files']:
+ raw=Path(r['source']).read_bytes();b=Path(r['staged_path']).read_bytes()
+ assert sha(raw)==r['source_sha256'] and len(raw)==r['source_bytes']
+ assert sha(b)==r['staged_sha256'] and len(b)==r['staged_bytes']
+ if 'lossless_' in r['transformation']:
+  d=json.loads(b);decoded=d['text'].encode() if d['encoding']=='utf-8' else gzip.decompress(base64.b64decode(d['data'],validate=True))
+  assert sha(decoded)==d['source_sha256'] and len(decoded)==d['source_bytes']
+  if not r['transformation'].startswith('explicit_metadata'):assert decoded==raw
+for r in external['artifacts']:
+ b=Path(r['external_path']).read_bytes();assert sha(b)==r['sha256'] and len(b)==r['bytes']
+files=[]
+for p in sorted(S.rglob('*')):
+ assert not p.is_symlink(),str(p)
+ if not p.is_file():continue
+ b=p.read_bytes()
+ assert not any(line.rstrip(b'\r\n').endswith((b' ',b'\t')) for line in b.splitlines(keepends=True)),str(p)
+ assert p.suffix not in {'.py','.yaml','.yml','.sh','.xml','.rdf','.html','.pdf'},str(p)
+ if p.name.endswith('.py.txt'):ast.parse(b)
+ else:assert not any(x in b for x in [b'__cf_bm=',b'JSESSIONID=',b'cf_clearance=']),str(p)
+ files.append({'path':B+'/'+str(p.relative_to(S)),'source':str(p),'sha256':sha(b),'bytes':len(b)})
+manifest={'prepared_at':datetime.now(timezone.utc).isoformat(),'stage':str(S),'file_count':len(files),'total_bytes':sum(r['bytes'] for r in files),'files':files}
+(O/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+handoff={'status':'sealed_compact_integration_preparation','manifest':str(O/'artifact-manifest.json'),'manifest_sha256':sha((O/'artifact-manifest.json').read_bytes()),'files':len(files),'bytes':manifest['total_bytes'],'stage':str(S),'maintained_destination':B,'baseline':str(O/'baseline.json'),'baseline_sha256':sha((O/'baseline.json').read_bytes()),'baseline_kgx':str(O/'baseline-kgx.json'),'baseline_kgx_sha256':sha((O/'baseline-kgx.json').read_bytes()),'preservation_helper':str(O/'preserve-maintained.py'),'preservation_helper_sha256':sha((O/'preserve-maintained.py').read_bytes()),'gate_helper':str(O/'run-maintained-gates.py'),'gate_helper_sha256':sha((O/'run-maintained-gates.py').read_bytes()),'history_commands':str(O/'history-commands.json'),'history_commands_sha256':sha((O/'history-commands.json').read_bytes()),'maintained_writes':False,'full_gates_and_final_governed_review':'pending root-owned successors; do not infer pass from this preparation','verification':'All selected original/staged bytes and excluded inventory bindings rehashed; lossless wrappers decoded and checked; every inert Python source AST parsed; all archived text passed trailing whitespace checks. No maintained gates executed. Complete baseline KGX remains external as requested.','failed_attempts':'Initial baseline equality assumption and first seal secret-marker self-match retained explicitly with successors.'}
+(O/'handoff.json').write_text(json.dumps(handoff,indent=2)+'\n')
+print(json.dumps({'handoff_sha256':sha((O/'handoff.json').read_bytes()),'manifest_sha256':handoff['manifest_sha256'],'files':len(files),'bytes':manifest['total_bytes']},indent=2))

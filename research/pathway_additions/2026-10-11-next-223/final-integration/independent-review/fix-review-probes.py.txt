@@ -1,0 +1,69 @@
+from pathlib import Path
+import copy,hashlib,json
+from xml.etree import ElementTree as ET
+import yaml
+from pathwaymech.schema import validate_record,ValidationError
+from pathwaymech.strict import validator,TARGET_CLASS
+from pathwaymech.kgx import kgx_nodes,kgx_edges
+from pathwaymech.graph_view import graph_html
+ROOT=Path('/private/tmp/pathwaymech-next-223-20261011');OUT=Path('/private/tmp/pathwaymech-next-223-final-adversarial-20261011')
+old_path=Path('/private/tmp/pathwaymech-next-223-correction-20261011/draft/amino-sugar-superpathway.future-schema.yaml')
+old=yaml.safe_load(old_path.read_text());new=yaml.safe_load((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_text())
+ids={'MetaCyc:PWY0-1324','MetaCyc:GLUAMCAT-PWY','MetaCyc:GLYCOLYSIS'}
+stripped=copy.deepcopy(new)
+for n in stripped['reactions']:
+ if n['id'] in ids: assert n.pop('category')=='pathway'
+assert stripped==old
+results=[{'name':'exact three-category delta; all prior nodes, evidence, 114 edges and 6 qualifiers unchanged','passed':True}]
+model=validate_record(new);check=validator();assert not check.validate(new,TARGET_CLASS).results
+results.append({'name':'actual target passes native and strict schemas','passed':True})
+standalone=validate_record(yaml.safe_load((ROOT/'data/pathways/n-acetylglucosamine-degradation-i.yaml').read_text()))
+for order,records in [('new',[model]),('old-new',[standalone,model]),('new-old',[model,standalone])]:
+ ns={n.id:n for n in kgx_nodes(records)}
+ assert all(ns[i].category=='biolink:Pathway' for i in ids)
+ assert all(ns[n['id']].category=='biolink:BiochemicalReaction' for n in new['reactions'] if n['id'].startswith('RHEA:'))
+ results.append({'name':'pathway and real Rhea reaction types '+order,'passed':True})
+assert kgx_edges([validate_record(old)])==kgx_edges([model])
+results.append({'name':'all 114 KGX edge rows exactly preserved through category-only correction','passed':True})
+svg=graph_html(model,{},{});start=svg.index('<svg xmlns=');tree=ET.fromstring(svg[start:svg.index('</svg>',start)+6]); links=tree.findall('.//{http://www.w3.org/2000/svg}a');nodes={n.get('data-node-id'):n for n in links if n.get('data-node-id')}
+assert len(nodes)==85
+for i in ids:
+ assert nodes[i].get('data-kind')=='pathway'
+ assert 'Declared type: pathway' in nodes[i].get('aria-label')
+for n in new['reactions']:
+ if n['id'].startswith('RHEA:'):assert nodes[n['id']].get('data-kind')=='reaction'
+assert len([n for n in links if n.get('data-predicate')])==114
+assert len([n for n in nodes.values() if n.get('data-qualified')=='true'])==6
+results.append({'name':'graph has correct pathway shapes/types, real reactions, all edges and all qualified instances','passed':True})
+# Move one child to participants to exercise physical-role guards rather than
+# merely failing collection membership.
+base=copy.deepcopy(new);child=next(n for n in base['reactions'] if n['id']=='MetaCyc:PWY0-1324');base['reactions'].remove(child);base['participants'].append(child)
+base['participants'].append({'id':'GO:0005737','label':'cytoplasm','category':'cellular_component'})
+base['mechanistic_edges']=[]
+def edge(subject,predicate,obj):return {'id':'independent-role-check','subject':subject,'predicate':predicate,'object':obj,'evidence':[{'reference_id':'PMID:29229699','quote':'Synthetic software role probe.'}]}
+for predicate,subject,obj in [('consumes',child['id'],new['id']),('produces',new['id'],child['id']),('located_in',child['id'],'GO:0005737'),('has_cofactor',child['id'],'CHEBI:29105')]:
+ raw=copy.deepcopy(base);raw['mechanistic_edges']=[edge(subject,predicate,obj)]
+ try:validate_record(raw)
+ except ValidationError:pass
+ else:raise AssertionError('Accepted invalid '+predicate+' pathway role')
+ results.append({'name':'pathway participant rejected as physical/cofactor role '+predicate,'passed':True})
+raw=copy.deepcopy(base);raw['mechanistic_edges']=[edge(child['id'],'occurs_in','GO:0005737')];validate_record(raw)
+results.append({'name':'pathway participant accepted as process occurring in compartment','passed':True})
+raw=copy.deepcopy(base);e=edge(child['id'],'regulates','UniProtKB:P0A759');e['endpoint_qualifiers']=[{'endpoint':'subject','kind':'experimental_construct','description':'Invalid pathway construct','evidence':[{'reference_id':'PMID:29229699','quote':'Synthetic software role probe.'}]}];raw['mechanistic_edges']=[e]
+try:validate_record(raw)
+except ValidationError:pass
+else:raise AssertionError('Accepted protein construct qualifier on pathway')
+results.append({'name':'pathway participant rejected for protein construct qualification','passed':True})
+raw=copy.deepcopy(new);raw['reactions'][0]['category']='Pathway'
+assert check.validate(raw,TARGET_CLASS).results
+try:validate_record(raw)
+except ValidationError:pass
+else:raise AssertionError('Accepted unsupported category casing')
+results.append({'name':'both schemas reject invented category spelling','passed':True})
+prior=json.loads((OUT/'reviewed-bindings.json').read_text())
+for p,h in prior['paths'].items():
+ if p not in {'data/pathways/amino-sugar-superpathway.yaml','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/graph_view.py','src/pathwaymech/kgx.py','docs/CAUSAL_GRAPHS.md'}:
+  assert hashlib.sha256((ROOT/p).read_bytes()).hexdigest()==h,p
+results.append({'name':'all other bound parser, rendering, identity, policy and test bytes unchanged','passed':True})
+output={'passed':len(results),'target_sha256':hashlib.sha256((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_bytes()).hexdigest(),'results':results}
+(OUT/'fix-review-results.json').write_text(json.dumps(output,indent=2)+'\n');print(json.dumps({'passed':len(results),'target_sha256':output['target_sha256']}))
