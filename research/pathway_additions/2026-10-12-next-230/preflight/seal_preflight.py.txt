@@ -1,0 +1,62 @@
+from pathlib import Path
+import datetime, hashlib, json
+
+B=Path(__file__).parent;D=B/'derived'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def binding(p):
+ p=Path(p);return dict(path=str(p.relative_to(B))if p.is_relative_to(B)else str(p),bytes=p.stat().st_size,sha256=sha(p))
+def write(p,v):p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert not (B/'handoff.json').exists(),'Do not mutate a sealed packet'
+checks=[]
+originals=json.loads((D/'all-original-source-index.json').read_text())
+for r in originals:
+ p=Path(r['path']);assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256']
+checks.append(dict(check='all indexed original artifact bytes freshly rehashed',count=len(originals)))
+nov=json.loads((D/'novelty-final-semantic.json').read_text())
+for r in nov['records']:
+ p=Path(r['path']);assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256']
+checks.append(dict(check='all actual/prospective record bytes freshly rehashed',count=len(nov['records'])))
+for r in json.loads((D/'supplement-workbook-provenance.json').read_text()):
+ for k in ['original','readable']:
+  p=Path(r[k]['path']);assert p.stat().st_size==r[k]['bytes'] and sha(p)==r[k]['sha256']
+checks.append(dict(check='all six original/readable workbook bindings freshly verified',count=6))
+for p in sorted(B.rglob('*.json')):json.loads(p.read_text())
+checks.append(dict(check='all packet JSON parses',count=len(list(B.rglob('*.json')))))
+visual=json.loads((D/'visual-read-scope.json').read_text());r=visual['thesis_original'];assert sha(r['path'])==r['sha256']
+checks.append(dict(check='external whole original thesis byte binding verified',sha256=r['sha256']))
+claims=json.loads((D/'claim-dispositions.json').read_text());assert len(claims)==61
+assert len({c['key']for c in claims})==61
+assert sum(len(c['sources'])for c in claims)==166
+assert all(c['authoring_disposition'] and c['sources']for c in claims)
+probes=json.loads((D/'native-authority-probes.json').read_text());assert len(probes['probes'])==27
+assert all(r['status'].startswith('passed')for r in probes['probes'])
+last=json.loads((B/'final-check-execution.json').read_text());assert last['returncode']==0
+bounded=json.loads((D/'bounded-checks.json').read_text());assert bounded['counts']==dict(positive=11,negative=16,claims=61,source_uses=166)
+assert not list(B.rglob('*.yaml')) and not list(B.rglob('*.yml'))
+checks.append(dict(check='61 claims,166 uses,27 probes,11 positive/16 negative checks; no authored YAML',status='passed'))
+write(B/'final-seal-checks.json',dict(status='passed',checks=checks,executed_at_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),limit='Bounded binding/schema-of-packet checks, not a pathway record validation or independent scientific review.'))
+files=sorted(p for p in B.rglob('*')if p.is_file()and p.name not in {'artifact-manifest.json','handoff.json'})
+manifest=[binding(p)for p in files]
+write(B/'artifact-manifest.json',manifest)
+entrypoints=['AUTHOR-HANDOFF.md','CLAIM-INDEX.md','README.md','derived/claim-dispositions.json','derived/construct-context-ledger.json','derived/rhea-core-chemistry.json','derived/novelty-final-semantic.json','derived/prior-research-dispositions.json','derived/native-authority-probes.json','derived/issuing-sql-identity-ledger.json','derived/sql-original-binding-continuity.json','derived/supplement-workbook-provenance.json','derived/supplement-selected-cells.json','derived/later-donor-route-boundary.json','derived/final-provenance-corrections.json','final-check-execution.json','final-seal-checks.json','execution-history.json']
+handoff=dict(
+ schema_version=1,task='next230-full-source-and-novelty-preflight',package=str(B),created_at_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ status='complete preflight submitted for root review; no record authored',
+ candidate=dict(id='MetaCyc:PWY0-1517',label='sedoheptulose bisphosphate bypass',counterparts=['EcoCyc:PWY0-1517','PathBank:SMP0002110'],native_reactions=['RXN0-6541','SEDOBISALDOL-RXN'],directional_core=['RHEA:31444','RHEA:30169'],core_events=2,chemical_sides=8,distinct_core_chemicals=7),
+ coverage=dict(claims=61,bound_source_uses=166,construct_contexts=19,indexed_original_artifacts=166,native_pgdb_xml_bodies=76,full_primary_article_xml_or_bioc_bodies=6,supplement_workbooks=6,native_authority_probes=27,selected_sql_identities=44,prior_research_hit_dispositions=69),
+ novelty=dict(actual_baseline_records=228,prospective_records=2,total=230,observed_head=nov['baseline_head'],observed_tree=nov['baseline_tree'],prospective=['MG b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6','EG successor 8e52beb1ff5b8d60c0888b9d0930340cff751febd4fb8ef82ded384a94d84af4'],hidden_ignored_followed=True,status='No ATP+S7P to SBP event in exact corpus even permissive presence screen; related routes and prior mentions explicitly retained.',coefficient_limit='Final comparison uses presence, not the superseded initial default-coefficient projection.'),
+ validation=dict(native_probes='27 passed',bounded_positive=11,bounded_negative=16,actual_final_execution=binding(B/'final-check-execution.json'),native_query_url_correction_terminal='7245fc/0',finalization_terminal='b91cca/0'),
+ principal_conflicts=['Generic S7P versus alpha-pyranose child','Rhea cleavage30169 versus native bidirectional30170','2009 SBP m/z369 Results versus367 Methods and no authentic standard','MFA supplementary GAP versus measured DHAP product','Small nonzero WT best-fit MFA versus prose no flux','2020 pKD3/pKD4 methods inconsistency and separate ASKA/pET28b constructs','Frozen PathBank PfkB admixture and neutral/dilithium chemical differences','FbaA Zn capacity/occupancy/preparation numbering differences','FbaA old inhibition/no-effect versus2019 activation observations','UniProt FUNCTION GAP wording versus structured DHAP reaction','Cra old FBP model versus later negative binding/effect evidence','CRP native positive regulation versus indirect primary interpretation','Separate PPi pathway and later engineered-strain necessity limit'],
+ source_limits=['Older unavailable papers remain abstract/native-annotation scope.','Journal2020 supplement original bytes unavailable; distinct author-thesis supplement retained and independently inspected.','2022 donor-route caveat uses publisher tool rendering, not acquired local raw HTML.','All XML locators replayed; descriptive structured JSON selectors are not asserted to be executable JSONPath.','SQL original hashes inherited from accepted canonical capture with current unchanged stat; no redundant full SQL rehash.','No whole source-exhaustion or public-license acceptance claim.'],
+ next_candidate=dict(id='MetaCyc:PWY-8178',scope='separate six-event PPi preflight; not part of ATP candidate',handoff='/private/tmp/pathwaymech-next-231-preflight-20261012/handoff.json',handoff_sha256='2a36ac3c08ef24ec5aa4e5556782de5cd266db7e164100bb40ce2af529d40b0a'),
+ entrypoints={p:binding(B/p)for p in entrypoints},artifact_manifest=binding(B/'artifact-manifest.json'),artifact_count=len(manifest),
+ authority_status='Read-only bounded native parser and issuing-identity probes only; no composed proposals or full native canonical build.',
+ authored_record=None,scientific_independent_acceptance=False,source_exhaustion=False,
+ remaining=['Root full preflight intake and authoring authorization','Separate full external record authoring preserving every scope disposition','Native source/ontology proposals against then-accepted corpus and exact originals','Actual target-level strict/identifier/source locator/page/KGX gates and independent scientific adversarial review','Parent-owned maintained integration/full gates/PR/issues/fixes/merge/cleanup'],
+ mutation_boundary=dict(external_only=True,maintained_writes=False,shared_cache_writes=False,git_mutations=False,github_mutations=False,installs=False,full_tests=False,canonical_build=False),
+ immutability='Keep every artifact unchanged. Subsequent work belongs in a separate successor package.'
+)
+write(B/'handoff.json',handoff)
+for r in manifest:
+ p=B/r['path'];assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256']
+print(json.dumps(dict(handoff=binding(B/'handoff.json'),manifest=binding(B/'artifact-manifest.json'),artifact_count=len(manifest),all_manifest_entries_rehashed=True)))

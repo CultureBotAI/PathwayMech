@@ -1,0 +1,43 @@
+from pathlib import Path
+from lxml import etree as E
+import json,hashlib,sqlite3,sys
+B=Path(__file__).parent;D=B/'derived';R=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):p=Path(p);return dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),bytes=p.stat().st_size)
+def save(n,x):(D/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+results=[]
+def probe(kind,p,url,ids,version='27.0'):
+ p=Path(p);r=dict(kind=kind,original=bind(p),url=url,requested_ids=ids,version=version)
+ try:
+  terms=list(sb.source_terms(kind,p,url=url,version=version));r['terms']=[list(x)for x in terms];assert set(ids)<={x[0] for x in terms};r['status']='passed native adapter'
+ except Exception as e:r['status']='unresolved';r['error']=type(e).__name__+': '+str(e)
+ results.append(r)
+for frame in ['6PFK-1-CPX','FRUCBISALD-CLASSII','PC00061','CPLX-127','PC00004','CPLX0-226']:
+ probe('ecocyc-protein-xml',B/'raw'/('ECOLI-'+frame+'.xml'),'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+frame,['EcoCyc:'+frame])
+for gid in ['948412','947415','945908','947210','947176','945295','945651','947567','944804','947867','945080','945347']:
+ p=B/'raw'/('Entrez-'+gid+'-native.xml')
+ if not p.exists():p=B/'raw'/('Entrez-'+gid+'.xml')
+ probe('ncbi-entrezgene-xml',p,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml',['Entrez:'+gid],'NCBI Gene original retrieved2026-10-12')
+for f in ['P0A796.json','P0AB71.json','P0ACP1.json','P0ACJ8.json','P00579.json','regulator-uniprot-query.json','cyo-cyd-uniprot-query.json']:
+ p=B/'raw'/f;j=json.loads(p.read_text());xs=j.get('results',[j]);matches=[r for rp in B.glob('acquisition-*-receipts.json') for r in json.loads(rp.read_text()) if r.get('path')==str(p) and r.get('sha256')==bind(p)['sha256'] and r.get('status')==200];assert matches,f;urls={r['url']for r in matches};assert len(urls)==1,(f,urls);probe('uniprot',p,next(iter(urls)),['UniProtKB:'+x['primaryAccession']for x in xs],'issuing entry original retrieved2026-10-12')
+probe('metacyc-html',B/'root-leads/META-PWY0-1517.html','https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object=PWY0-1517',['MetaCyc:PWY0-1517'],'MetaCyc27.0')
+pb=json.loads((D/'pathbank-whole-original-projection.json').read_text());p=Path(pb['archive']['path']);member=B/'root-leads/PW002098.owl';a=dict(bytes=p.stat().st_size,member='PW002098.owl',member_bytes=member.stat().st_size,member_sha256=bind(member)['sha256'],root='SMP0002110')
+try:
+ ts=list(sb._pathbank_archive_terms(p,url='https://pathbank.org/downloads/pathbank_primary_biopax.zip',sha256=pb['archive']['sha256'],archive=a));assert {'PathBank:SMP0002110','PathBank:SMP0000807','PathBank:SMP0121065'}<={x[0]for x in ts};r=dict(status='passed native archive adapter',terms=ts,archive=a,original=pb['archive'])
+except Exception as e:r=dict(status='unresolved',error=str(e),archive=a,original=pb['archive'])
+results.append(r);save('native-authority-probes.json',dict(runtime_source=bind(R/'scripts/build_source_identifier_snapshot.py'),runtime_identifiers=bind(R/'src/pathwaymech/identifiers.py'),probes=results,scope='Bounded read-only native parsers. No manifest composition, canonical build, author record or maintained adoption.'))
+# Exact original issuing SQL statements; preserve observed stat and accepted build binding, avoid redundant 20GB scan.
+chebi={'CHEBI:'+x for x in ['57483','30616','58335','456216','15378','16897','57642','18420','29105','29033','29035','48828','49786','29036','29108','29103','28938','64755','58702','58189','58165','58674','138881','133984','58272','17368','57595','57925','49299','32966','57634','48775']}
+for f in (B/'raw').glob('ECOLI-*.xml'):
+ try:t=E.parse(str(f));chebi.update('CHEBI:'+x for x in t.xpath('/ptools-xml/Compound/dblink[dblink-db="CHEBI"]/dblink-oid/text()'))
+ except E.XMLSyntaxError:pass
+out=[]
+for db,ids in [('chebi',sorted(chebi)),('rhea',['RHEA:31443','RHEA:31444','RHEA:30167','RHEA:30168','RHEA:30169','RHEA:30170']),('go',['GO:0005737','GO:0005829']),('ncbitaxon',['NCBITaxon:562','NCBITaxon:83333','NCBITaxon:511145','NCBITaxon:679895'])]:
+ p=Path('/private/tmp/pathwaymech-curation-authorities')/(db+'.db');stat=p.stat();c=sqlite3.connect('file:'+str(p)+'?mode=ro',uri=True);terms=[]
+ for ident in ids:
+  rows=c.execute('select subject,predicate,object,value,datatype,language from statements where subject=?',(ident,)).fetchall();labels=[r[3]for r in rows if r[1]=='rdfs:label'];assert len(labels)==1,(ident,labels);terms.append(dict(id=ident,label=labels[0],statements=rows))
+ c.close();out.append(dict(database_path=str(p),resolved_path=str(p.resolve()),stat=dict(size=stat.st_size,mtime_ns=stat.st_mtime_ns),database_hash_authority='Exact original bindings in accepted EG canonical-build; this bounded preflight does not rehash whole SQL',terms=terms))
+save('issuing-sql-identity-ledger.json',out)
+print(json.dumps(dict(probes=len(results),unresolved=[x for x in results if x['status'].startswith('unresolved')],sql_terms=sum(len(x['terms'])for x in out))))

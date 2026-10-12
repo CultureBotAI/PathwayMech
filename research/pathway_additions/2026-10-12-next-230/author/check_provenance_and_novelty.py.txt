@@ -1,0 +1,68 @@
+"""Fresh original/receipt bindings and exact-corpus novelty continuity."""
+from pathlib import Path
+import json,hashlib,subprocess
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');H=Path('/private/tmp/pathwaymech-next-230-authority-preparation-20261012');PP=Path('/private/tmp/pathwaymech-next-231-preflight-20261012')
+def sha(p):
+ with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+sources=json.loads((A/'ledgers/source-bindings.json').read_text());idx=json.loads((P/'derived/all-original-source-index.json').read_text());aliases=json.loads((A/'new-chemical-original-intake.json').read_text())['bindings'];records=[];searched=[]
+for row in json.loads((P/'derived/root-lead-final-continuity.json').read_text())['bindings']:
+ assert sha(row['path'])==sha(row['copy'])==row['sha256']
+ aliases.append(dict(source=row['path'],author_copy=row['copy'],sha256=row['sha256']))
+for x in idx:
+ if x.get('acquisition'):records.append(dict(container=str(P/'derived/all-original-source-index.json'),record=x['acquisition']))
+def walk(v,file):
+ if isinstance(v,dict):
+  if isinstance(v.get('path'),str)and any(k in v for k in ['url','request_url','final_url'])and any(k in v for k in ['sha256','status','http_status']):records.append(dict(container=str(file),record=v))
+  elif isinstance(v.get('name'),str)and v.get('sha256')and v.get('url'):
+   p=file.parent/v['name']
+   if p.is_file()and sha(p)==v['sha256']:records.append(dict(container=str(file),record=v,body_resolved_from_receipt_name=str(p)))
+  for y in v.values():walk(y,file)
+ elif isinstance(v,list):
+  for y in v:walk(y,file)
+for root in [P,H,PP,Path('/private/tmp/pathwaymech-next-230-root-leads-20261012')]:
+ cmd=['rg','--files','--no-ignore','--hidden','--follow','-0',str(root)];r=subprocess.run(cmd,capture_output=True);assert r.returncode==0,(cmd,r.stderr)
+ inspected=[]
+ for n in r.stdout.split(b'\0'):
+  if not n:continue
+  p=Path(n.decode())
+  if p.suffix=='.json'and any(v in p.name for v in ['acquisition','receipt','original-source-index']):
+   try:j=json.loads(p.read_text())
+   except(ValueError,UnicodeError):continue
+   inspected.append(bind(p));walk(j,p)
+ searched.append(dict(command=cmd,exit=r.returncode,stderr=r.stderr.decode(),receipt_files=inspected))
+cross=[]
+for id,b in sources.items():
+ eqpaths={b['path']};eqpaths.update(x['source']for x in aliases if x['author_copy']==b['path']and x['sha256']==b['sha256'])
+ matches=[]
+ for x in records:
+  rec=x['record']
+  if (rec.get('path')or x.get('body_resolved_from_receipt_name'))in eqpaths and rec.get('sha256')==b['sha256']:
+   item={k:rec[k]for k in ['name','path','url','request_url','final_url','at_utc','started_utc','finished_utc','started_at','finished_at','status','http_status','content_type','bytes','sha256']if k in rec}
+   if x.get('body_resolved_from_receipt_name'):item['body_resolved_from_receipt_name']=x['body_resolved_from_receipt_name']
+   if item not in [m['receipt']for m in matches]:matches.append(dict(container=x['container'],receipt=item))
+ role='Whole scientific original body'
+ if id=='PathBank:SMP0002110':role='Exact extracted member of bound whole ZIP; typed archive/member/root authority retains actual acquisition. Citation resolver is not a live member fetch.'
+ if id=='PMID:36286488':role='Publisher web-tool rendering receipt, explicitly not raw HTML; only specified Results/Discussion passages independently read.'
+ cross.append(dict(reference_id=id,binding=b,citation_or_source_url=b['url'],matching_acquisition_receipts=matches,role=role,receipt_status='Exact body path/digest match (or explicitly bound byte-identical author copy)'if matches else'No matching HTTP body receipt in scoped JSON search; no new fetch claimed. Inherited original/archive/tool binding remains explicit.'))
+save('source-acquisition-crosswalk.json',dict(scope='Receipt inventory includes hidden/ignored files and follows symlinks; acquisition metadata remains distinct from publication/resolver URLs.',searches=searched,references=cross))
+# Preserve six original workbook / converted-reader pairs and exact selected-cell projections.
+workbooks=json.loads((P/'derived/supplement-workbook-provenance.json').read_text());wbchecks=[]
+for row in workbooks:
+ for key in ['original','readable']:
+  b=row[key];assert sha(b['path'])==b['sha256']and Path(b['path']).stat().st_size==b['bytes']
+ wbchecks.append(dict(original=row['original'],readable=row['readable'],sheets=row['sheets'],scope='Original and converted complete workbook bytes freshly rehashed; cell-level interpretation and XLS conversion inherit accepted preflight. No new conversion claimed.'))
+save('supplement-binding-continuity.json',dict(pairs=wbchecks,selected_cells=bind(P/'derived/supplement-selected-cells.json'),original_preflight=bind(P/'handoff.json')))
+nov=json.loads((P/'derived/novelty-final-semantic.json').read_text());assert len(nov['records'])==230
+current=[]
+for row in nov['records']:
+ p=Path(row['path']);assert sha(p)==row['sha256']and p.stat().st_size==row['bytes'],p
+ d=yaml.safe_load(p.read_text());assert d['id']==row['id'];assert d['id']!='MetaCyc:PWY0-1517'
+ assert not any(e['potential_ATP_S7P_event']for e in row['related_events'])
+ current.append({k:row[k]for k in ['path','sha256','bytes','id']})
+search=json.loads((P/'derived/novelty-text-search.json').read_text());cmd=search['command'];r=subprocess.run(cmd,capture_output=True,text=True);assert r.returncode in[0,1],r.stderr
+hits=r.stdout.splitlines();previous={x['path']for x in search['files']};assert not(set(hits)-previous),(set(hits)-previous)
+save('novelty-continuity.json',dict(target=bind(A/'draft/sedoheptulose-bisphosphate-bypass.yaml'),original_preflight_semantic=bind(P/'derived/novelty-final-semantic.json'),records=current,record_count=230,all_original_record_bytes_retained=True,semantic_result=nov['status'],fresh_hidden_ignored_followed_search=dict(command=cmd,exit=r.returncode,stderr=r.stderr,matched_files=hits,new_matched_files=sorted(set(hits)-previous)),prior_research_dispositions=bind(P/'derived/prior-research-dispositions.json'),baseline_status='Preflight exact corpus: 228 lyxose-inclusive committed records plus accepted MG and EG prospective record bytes. Parent now reports MG merged and EG adoption in progress; this proof does not relabel the original corpus as an already merged230-record tree.',comparison_limits='Presence-only permissive acid/anomer/charge screening proves no ATP+S7P event in the exact corpus; no default-one stoichiometry inference. Native PPi six-event route remains separately source-defined; no record/hash comparison asserted until separately supplied.',source_exhaustion=False))
+print(len(cross),'reference bindings;',sum(bool(x['matching_acquisition_receipts'])for x in cross),'matching receipt-backed bodies;',len(workbooks),'workbook pairs;',len(current),'exact prior records;',len(hits),'prior-context matches retained')

@@ -1,0 +1,49 @@
+"""Seal independent actual-build audit evidence; never modifies its subject."""
+import audit
+
+checks = audit.load(audit.HERE / 'checks.json')
+logs = audit.load(audit.HERE / 'log-assessment.json')
+assert checks['status'] == 'passed' and len(checks['checks']) == 9
+assert logs['status'] == 'passed' and logs['ATP_label_differences'] == 0
+assert logs['label_differences_count'] == 916
+audit.write('assessment.json', {
+    'at': audit.now(), 'reviewer': '/root/atp_build_preparation_audit',
+    'verdict': 'pass_actual_native_build_with_scope_limits',
+    'blocking_findings': [], 'nonblocking_findings': [],
+    'build': audit.bind(audit.BUILD / 'handoff.json'),
+    'build_manifest': audit.bind(audit.BUILD / 'artifact-manifest.json'),
+    'root_acceptance': audit.bind(audit.ACCEPTANCE),
+    'checks': audit.bind(audit.HERE / 'checks.json'),
+    'logs': audit.bind(audit.HERE / 'log-assessment.json'),
+    'audit_execution': {'started_at': checks['started_at'], 'finished_at': checks['finished_at'],
+        'terminal_result': '56b0b5/0', 'session': 55441, 'exit_code': 0,
+        'command': ['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', str(audit.HERE / 'audit.py'), '--terminal-intake', str(audit.HERE / 'terminal-intake.json'), '--handoff-sha256', '38f95c5b38672f8c23de6deea3e182dd3df7b44ceba5087469bb504e67ffcd93'],
+        'cwd': '/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech',
+        'environment_overrides': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1'}},
+    'supplemental_log_execution': {'terminal_result': '200c7e/0', 'exit_code': 0, 'helper': audit.bind(audit.HERE / 'assess_logs.py')},
+    'full_build_reexecuted_by_auditor': False, 'separate_audit_SQL_full_rehash': False,
+    'actual_native_full_SQL_hashes_verified': 4,
+    'canonical_output_acceptance': True, 'new_scientific_acceptance': False,
+    'maintained_adoption': False, 'actual_merged_base_bridge': False,
+    'limitations': ['Prospective captured EG baseline still needs a separate eventual actual merged-base bridge.',
+        'Scientific successor acceptance belongs to the separately bound root/scientific review records.',
+        'Maintained integration, history/review persistence, gates, PR review/merge/publication and source exhaustion are outside this audit.'],
+})
+rows = [audit.bind(path) for path in sorted(audit.files(audit.HERE))]
+audit.write('artifact-manifest.json', {'scope': 'All audit files including hidden, ignored and followed files before sealing.', 'artifacts': rows, 'count': len(rows)})
+audit.write('handoff.json', {
+    'sealed_at': audit.now(), 'reviewer': '/root/atp_build_preparation_audit',
+    'status': 'completed', 'verdict': 'pass_actual_native_build_with_scope_limits',
+    'blocking_findings': [], 'nonblocking_findings': [],
+    'manifest': audit.bind(audit.HERE / 'artifact-manifest.json'), 'artifact_count': len(rows),
+    'report': audit.bind(audit.HERE / 'REVIEW.md'), 'assessment': audit.bind(audit.HERE / 'assessment.json'),
+    'checks': audit.bind(audit.HERE / 'checks.json'),
+    'build': audit.bind(audit.BUILD / 'handoff.json'),
+    'target_sha256': 'cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101',
+    'actual_native_outputs': {name: audit.bind(audit.BUILD / name) for name in ('sources.json', 'ontology.json', 'manifest.json', 'rhea-updates.json')},
+    'full_build_reexecuted_by_auditor': False, 'canonical_output_acceptance': True,
+    'new_scientific_acceptance': False, 'maintained_adoption': False,
+    'root_next_step': 'Accept actual native outputs, bridge the eventual exact actual merged baseline, then perform maintained adoption and all required curation/review/publication gates.'
+})
+print(audit.bind(audit.HERE / 'handoff.json'))
+print(audit.bind(audit.HERE / 'artifact-manifest.json'))

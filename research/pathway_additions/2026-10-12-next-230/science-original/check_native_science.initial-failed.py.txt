@@ -1,0 +1,69 @@
+import gzip
+import hashlib
+import json
+import sys
+from pathlib import Path
+from lxml import etree
+import yaml
+
+OUT=Path(__file__).parent
+ROOT=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+A=Path('/private/tmp/pathwaymech-next-230-author-20261012')
+P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+sys.path.insert(0,str(ROOT/'src'))
+from pathwaymech.schema import validate_record
+record=yaml.safe_load((A/'draft/sedoheptulose-bisphosphate-bypass.yaml').read_text())
+validate_record(record)
+ns={'rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#','rh':'http://rdf.rhea-db.org/'}
+rdf='{'+ns['rdf']+'}';rh='{'+ns['rh']+'}'
+path=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz')
+b=path.read_bytes();assert hashlib.sha256(b).hexdigest()=='8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf'
+rx={'31444','30169','31443','30167','30168','30170','31443_L','31443_R','30167_L','30167_R'}
+selected={}
+with gzip.open(path,'rb') as stream:
+ for event,elem in etree.iterparse(stream,events=('end',),tag=rdf+'Description'):
+  u=elem.get(rdf+'about','');t=u.rsplit('/',1)[-1]
+  if t in rx or t.startswith(('Participant_31443_','Participant_30167_')) or t.startswith('Compound_'):
+   selected[u]=etree.fromstring(etree.tostring(elem))
+  elem.clear()
+  while elem.getprevious() is not None:del elem.getparent()[0]
+def resource(e,name):
+ return e.find(rh+name).get(rdf+'resource')
+triples=[];chains=[]
+for id in ['31444','30169']:
+ re=selected[ns['rh']+id]
+ for side in ['substrates','products']:
+  se=selected[resource(re,side)]
+  for c in se:
+   tag=etree.QName(c).localname
+   if not tag.startswith('contains') or not tag[8:].isdigit():continue
+   pe=selected[c.get(rdf+'resource')];ce=selected[resource(pe,'compound')]
+   curie=ce.findtext(rh+'accession');n=int(tag[8:])
+   triples.append([curie,'consumes','RHEA:'+id] if side=='substrates' else ['RHEA:'+id,'produces',curie])
+   chains.append({'reaction':'RHEA:'+id,'side':side,'coefficient':n,'chemical':curie,'formula':ce.findtext(rh+'formula'),'charge':ce.findtext(rh+'charge'),'xml':[etree.tostring(v,encoding='unicode') for v in [re,se,pe,ce]]})
+assert len(triples)==8
+observed=[[e['subject'],e['predicate'],e['object']] for e in record['mechanistic_edges'] if e['predicate'] in ['consumes','produces']]
+assert sorted(triples)==sorted(observed)
+assert all(x['coefficient']==1 for x in chains)
+(OUT/'rhea-independent-chains.json').write_text(json.dumps({'original':{'path':str(path),'sha256':hashlib.sha256(b).hexdigest()},'sides':chains},indent=2)+'\n')
+identities=[]
+for p in sorted((P/'raw').glob('Entrez-*-native.xml')):
+ tr=etree.parse(str(p));id=tr.findtext('.//Gene-track_geneid');gene=tr.findtext('.//Gene-ref_locus');locus=tr.findtext('.//Gene-ref_locus-tag');taxa=tr.xpath('//BioSource_org/Org-ref/Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()')
+ identities.append({'file':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'id':id,'gene':gene,'locus':locus,'taxa':taxa})
+expected={'948412':('pfkA','b3916'),'947415':('fbaA','b2925'),'945651':('ptsG','b1101'),'947176':('csrA','b2696'),'945080':('cyoA','b0432'),'945347':('cydB','b0734'),'945908':('fnr','b1334'),'945295':('fur','b0683')}
+for id,(gene,locus) in expected.items():
+ row=next(x for x in identities if x['id']==id)
+ assert (row['gene'],row['locus'])==(gene,locus),(id,row)
+ assert row['taxa']==['511145']
+(OUT/'gene-independent-identities.json').write_text(json.dumps(identities,indent=2)+'\n')
+native=[]
+for file in ['META-PWY0-1517.xml','META-RXN0-6541.xml','META-SEDOBISALDOL-RXN.xml']:
+ p=P/'root-leads'/file;tr=etree.parse(str(p));e=tr.getroot()[1]
+ native.append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'frame':dict(e.attrib),'selected':[{etree.QName(c).localname:etree.tostring(c,encoding='unicode')} for c in e if etree.QName(c).localname in ['reaction-list','reaction-ordering','reaction-layout','reaction-direction','dblink','left','right','taxonomic-range']]})
+(OUT/'native-core-independent.json').write_text(json.dumps(native,indent=2)+'\n')
+negative=[]
+for name,changed in [('omit-proton',[t for t in observed if 'CHEBI:15378' not in t]),('ATP-to-PPi',[[v.replace('CHEBI:30616','CHEBI:33019') for v in t] for t in observed]),('wrong-cleavage-direction',[[v.replace('RHEA:30169','RHEA:30168') for v in t] for t in observed]),('alpha-S7P-substitution',[[v.replace('CHEBI:57483','CHEBI:133984') for v in t] for t in observed]),('duplicate-side',observed+[observed[0]])]:
+ assert sorted(changed)!=sorted(triples)
+ negative.append({'case':name,'rejected':True,'reason':'Differs from complete exact native RDF sides'})
+(OUT/'bounded-native-checks.json').write_text(json.dumps({'native_schema':'passed','complete_rhea_sides':8,'unit_coefficients':True,'gene_taxon_identity_checks':len(expected),'negative_controls':negative},indent=2)+'\n')
+print('Native schema, eight full original Rhea sides, eight exact MG1655 genes and five chemistry negative controls passed.')

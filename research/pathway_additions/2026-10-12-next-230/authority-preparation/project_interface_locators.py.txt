@@ -1,0 +1,48 @@
+"""Exact original Rhea triple locators and unsigned native PathBank attachments."""
+from pathlib import Path
+from urllib.parse import urljoin
+import hashlib,json,zipfile,xml.etree.ElementTree as E
+O=Path(__file__).parent
+
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+r=json.loads((O/'derived/rhea-core-chemistry.json').read_bytes());rows=[]
+for m in r['masters']:
+ for d in m['directions']:
+  if d['id'] not in ['RHEA:31444','RHEA:30169']:continue
+  for pred,parts in d['sides'].items():
+   assert len(d['native_sides'][pred])==1
+   for p in parts:
+    rows.append({'reaction':d['id'],'directional_predicate':pred,'side_uri':d['native_sides'][pred][0],'coefficient_predicate':'http://rdf.rhea-db.org/contains'+str(p['coefficient']),'participant_uri':p['participant'],'compound_uri':p['compound_uri'],'chemical':p['properties']['accession'][0],'name':p['properties']['name'][0],'coefficient':p['coefficient'],'master_original_citations':m['master'].get('citation',[]),'source_scope':'Exact selected directional reaction→side→containsN→participant→compound chain, independently replayed from complete Rhea142 RDF.'})
+assert len(rows)==8 and all(x['coefficient']==1 for x in rows)
+save('rhea-side-locators.json',{'original':bind(r['source']),'side_assertions':rows})
+pb=next(x for x in json.loads((O/'native-candidate-probes.json').read_bytes()) if x['kind']=='pathbank-biopax-zip');assert bind(pb['original']['path'])==pb['original']
+with zipfile.ZipFile(pb['original']['path']) as z:member=z.read(pb['archive']['member'])
+assert hashlib.sha256(member).hexdigest()==pb['archive']['member_sha256'] and len(member)==pb['archive']['member_bytes'];root=E.fromstring(member);base=root.get('{http://www.w3.org/XML/1998/namespace}base');RDF='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';BP='{http://www.biopax.org/release/biopax-level3.owl#}'
+def subject(n):return urljoin(base,'#'+n.get(RDF+'ID')) if n.get(RDF+'ID') else urljoin(base,n.get(RDF+'about')) if n.get(RDF+'about') else None
+idx={subject(n):n for n in root if subject(n)}
+def links(n,p):return [urljoin(base,q.get(RDF+'resource')) for q in n.findall(BP+p)]
+def xrefs(n):return [{'uri':u,'db':idx[u].findtext(BP+'db'),'id':idx[u].findtext(BP+'id')} for u in links(n,'xref')]
+primary_uri='http://identifiers.org/smpdb/SMP0002110';primary=idx[primary_uri];children=[]
+for uri in links(primary,'pathwayComponent'):
+ n=idx[uri]
+ if n.tag!=BP+'Pathway':continue
+ interactions=[]
+ for iu in links(n,'pathwayComponent'):
+  inter=idx[iu];assert inter.tag==BP+'Interaction';participants=[]
+  for pu in links(inter,'participant'):
+   part=idx[pu];assert part.tag==BP+'SmallMolecule';refs=[]
+   for ru in links(part,'entityReference'):
+    ref=idx[ru];refs.append({'uri':ru,'type':ref.tag,'formula':ref.findtext(BP+'chemicalFormula'),'xrefs':xrefs(ref),'structures':[{'uri':su,'format':idx[su].findtext(BP+'structureFormat'),'data':idx[su].findtext(BP+'structureData')} for su in links(ref,'structure')]})
+   participants.append({'uri':pu,'native_type':part.tag,'label':part.findtext(BP+'displayName'),'references':refs,'selected_id':'PathBank:SMP0002110/'+pu.rsplit('#',1)[-1]})
+  interactions.append({'uri':iu,'native_type':inter.tag,'participants':participants})
+ children.append({'uri':uri,'label':n.findtext(BP+'displayName'),'xrefs':xrefs(n),'interactions':interactions})
+assert {x['uri'] for x in children}=={'http://identifiers.org/smpdb/SMP0121065','http://identifiers.org/smpdb/SMP0000807'}
+parts=[p for c in children for i in c['interactions'] for p in i['participants']];assert len(parts)==3
+assert {p['selected_id'] for p in parts}=={'PathBank:SMP0002110/Compound/PW_C000843','PathBank:SMP0002110/Compound/PW_C001019','PathBank:SMP0002110/Compound/PW_C042631'}
+salt=next(p for p in parts if p['selected_id'].endswith('PW_C042631'));assert {r['formula'] for r in salt['references']}=={'C3H5Li2O6P'}
+save('pathbank-interface-locators.json',{'status':'exact unsigned attachments replayed','whole_original':pb['original'],'member_binding':pb['archive'],'primary_uri':primary_uri,'root_components':links(primary,'pathwayComponent'),'children':children,'native_terms':pb['terms'],'scientific_scope':'Structural attachments only; no biological sign, transport, inhibition or anion equivalence inferred. Root stays reference-only unless author explicitly selects it. Dilithium salt identity remains separate from Rhea glycerone phosphate(2-).'})
+print(json.dumps({'rhea_sides':len(rows),'pathbank_children':len(children),'native_compound_attachments':len(parts),'dilithium_identity_retained':True}))

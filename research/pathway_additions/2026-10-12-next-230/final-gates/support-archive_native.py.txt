@@ -1,0 +1,68 @@
+"""Root-only append exact successful and optional failed native receipts; no history."""
+import argparse
+from support import *
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('execution', 'assembly', 'baseline', 'initial-extras', 'output'):
+        parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--failed-execution', type=Path, action='append', default=[])
+    args = parser.parse_args()
+    verify_support()
+    assert_head(); external_new(args.output)
+    execution = load(args.execution / 'execution.json')
+    assert execution['status'] == 'passed' and execution['base'] == BASE
+    assert [r['name'] for r in execution['receipts']] == ['validate', 'save', 'check']
+    verify(execution['serialization'])
+    assert load(execution['serialization']['path'])['validated_after_native_dump'] is True
+    for field in ('saved_yaml', 'saved_markdown', 'assembly', 'gate_receipt'):
+        verify(execution[field])
+    gates = load(execution['gate_receipt']['path'])
+    gates['render_history_inputs'] = load(verify_final_bridge()['inputs']['path'])['render_history_inputs']
+    assert_history(ROOT, gates['render_history_inputs'])
+    for row in execution['receipts']:
+        assert row['exit_code'] == 0
+        for key in ('stdout', 'stderr'):
+            verify(row[key])
+    destination = ROOT / DOSSIER_REL / 'native-finalization'
+    assert not destination.exists(); destination.mkdir()
+    mappings = []
+    sources = [('successful-execution', args.execution), ('assembly', args.assembly)]
+    sources += [('failed-attempt-' + str(i), path) for i, path in enumerate(args.failed_execution)]
+    for prefix, source in sources:
+        assert source.is_relative_to(Path('/private/tmp')) and not source.is_relative_to(ROOT)
+        for relative in files(source):
+            path = source / relative; target = destination / prefix / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if target.suffix == '.py':
+                target = target.with_name(target.name + '.txt')
+            body = path.read_bytes(); text = body.decode('utf-8')
+            if any(line.rstrip() != line for line in text.splitlines()) or text.endswith('\n\n'):
+                target = target.with_name(target.name + '.json')
+                body = (json.dumps({'serialization': 'lossless-utf8-json', 'original': bind(path),
+                                    'text': text}, indent=2, ensure_ascii=False) + '\n').encode()
+            with target.open('xb') as stream:
+                stream.write(body)
+            mappings.append({'source': bind(path), 'archived': bind(target)})
+    write(destination / 'archive-map.json', mappings)
+    baseline = load(args.baseline)
+    assert baseline['head'] == BASE and baseline['tree'] == TREE
+    old = {r['relative_path'] for r in baseline['all_maintained_files']}
+    extras = load(args.initial_extras)
+    for row in extras:
+        assert row['relative_path'] not in old
+        verify(row, ROOT / row['relative_path'])
+    for prefix in (DOSSIER_REL + '/final-gates', DOSSIER_REL + '/native-finalization',
+                   str(Path(execution['saved_yaml']['path']).parent.relative_to(ROOT))):
+        for relative in files(ROOT, prefix):
+            assert relative not in old
+            extras.append({'relative_path': relative, **bind(ROOT / relative)})
+    assert len(extras) == len({r['relative_path'] for r in extras})
+    assert_history(ROOT, gates['render_history_inputs'])
+    write(args.output, extras)
+    print(json.dumps({'archived_files': len(mappings), 'exact_extra_files': len(extras),
+                      'approval': bind(args.output), 'late_history_written': False}, indent=2))
+
+if __name__ == '__main__':
+    main()

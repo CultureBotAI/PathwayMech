@@ -1,0 +1,42 @@
+"""Seal this external preparation after bounded checks; never execute builders."""
+
+import difflib
+
+from common import HERE, OUTPUT, bind, inventory, now, write
+from prepare_and_build import input_check, plan
+
+
+def main():
+    assert not (HERE / "handoff.json").exists() and not OUTPUT.exists()
+    capture, old, expected = input_check()
+    write(HERE / "root-build-commands.json", plan(capture))
+    changes = []
+    for name in ("common.py", "capture_inputs.py", "prepare_and_build.py", "test_build_guards.py", "seal_preparation.py"):
+        before = (HERE / "inspected-predecessor" / name).read_text().splitlines(keepends=True)
+        after = (HERE / name).read_text().splitlines(keepends=True)
+        changes.extend(difflib.unified_diff(before, after, fromfile="accepted-EG/" + name, tofile="ATP/" + name))
+    (HERE / "exact-helper-adaptation.diff").write_text("".join(changes))
+    files = [bind(path) for path in inventory(HERE)]
+    write(HERE / "artifact-manifest.json", {"scope": "All hidden/ignored/followed preparation files before seal; no original copies or symlinks", "artifacts": files, "artifact_count": len(files)})
+    write(HERE / "handoff.json", {
+        "status": "sealed_external_preparation_pending_root_execution_and_independent_audit",
+        "at": now(), "manifest": bind(HERE / "artifact-manifest.json"), "artifact_count": len(files),
+        "report": bind(HERE / "README.md"), "capture": bind(HERE / "capture.json"),
+        "commands": bind(HERE / "root-build-commands.json"),
+        "validation": bind(HERE / "validation-history.json"),
+        "prospective_base_scope": capture["scope"], "observed_head": capture["observed_head"], "observed_tree": capture["observed_tree"],
+        "target": capture["target"]["captured"], "prior_records": 230, "records_with_ATP": 231,
+        "old_source_counts": {"terms": len(old["sources"]["terms"]), "metadata": len(old["sources"]["sources"])},
+        "old_ontology_counts": {"terms": len(old["ontology"]["terms"]), "metadata": len(old["ontology"]["sources"])},
+        "expected_native_counts": expected["expected_counts"], "manifest_entries": 758, "rhea_selectors": 24,
+        "retention_ids": len(capture["retention_ids"]), "source_original_paths": 756, "SQL_originals": 4,
+        "full_build_executed": False, "scientific_acceptance": False,
+        "independent_canonical_acceptance": False, "maintained_adoption": False,
+        "writes": "External preparation only; no maintained/cache/Git/GitHub/install mutations",
+        "remaining_root_tasks": ["Review preparation guards and exact bindings", "Execute the two native builders once", "Independently audit actual canonical outputs and scientific record", "Create the eventual exact maintained-base bridge and adoption separately"],
+    })
+    print(bind(HERE / "handoff.json"))
+
+
+if __name__ == "__main__":
+    main()

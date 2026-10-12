@@ -1,0 +1,59 @@
+"""Read-only corrected-output bridge capture, pending explicit root acceptance."""
+import argparse
+from support import *
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('proof', 'corrective-gates', 'original-gates', 'original-preservation', 'output'):
+        parser.add_argument('--' + name, required=True, type=Path)
+    args = parser.parse_args(); verify_support(); out = external_new(args.output)
+    proof, correction, old = load(args.proof), load(args.corrective_gates), load(args.original_gates)
+    assert proof['status'] == correction['status'] == old['status'] == 'passed'
+    assert proof['target'] == bind(ROOT / TARGET_REL) and proof['target']['sha256'] == TARGET_SHA
+    assert old['target_sha256'] == HISTORICAL_SHA and old['base'] == BASE
+    assert [r['name'] for r in old['receipts']] == GATE_NAMES
+    assert [r['name'] for r in correction['receipts']] == ['render', 'corrective-validation', 'kgx', 'site-current']
+    for stage in (old, correction):
+        for row in stage['receipts']:
+            assert row['exit_code'] == 0 and row['cwd'] == str(ROOT)
+            for key in ('stdout', 'stderr'): verify(row[key])
+    assert proof['actual_gates'] == bind(args.corrective_gates)
+    assert proof['predecessor_preservation'] == bind(args.original_preservation)
+    preservation = load(args.original_preservation)
+    assert preservation['status'] == 'passed' and not preservation['problems']
+    assert preservation['gate_receipt'] == bind(args.original_gates)
+    verify(proof['before_inventory']); before = load(proof['before_inventory']['path'])
+    current = inventory(ROOT); previous = {r['relative_path']: r for r in before}; actual = {r['relative_path']: r for r in current}
+    changed = sorted(p for p, r in previous.items() if actual.get(p, {}).get('sha256') != r['sha256'])
+    expected = sorted([TARGET_REL, PAGE_REL, 'pages/index.html', 'pages/downloads/edges.tsv', 'pages/downloads/manifest.json', 'output/kgx/edges.tsv'])
+    assert changed == proof['changed_paths'] == expected
+    adoption = load(correction['adoption']['path']); verify(correction['adoption'])
+    assert set(actual) - set(previous) == {adoption['history']['relative_path']}
+    verify(adoption['history'], ROOT / adoption['history']['relative_path'])
+    history = inventory(ROOT, 'history')
+    recorded_history = load(Path(correction['adoption']['path']).parent / 'render-history-inputs.json')
+    assert history == recorded_history
+    assert datetime.fromisoformat(adoption['history_execution']['finished_at']) <= datetime.fromisoformat(correction['receipts'][0]['started_at'])
+    for field in ('all_other_before_files_exact', 'all_other_yaml_objects_exact', 'all_11536_edge_rows_other_cells_exact',
+                  'nodes_and_source_contexts_byte_equal', 'old230_record_pages_unchanged', 'old_reviews_and_history_unchanged',
+                  'full_render_history_inputs_exact', 'seven_svg_elements_byte_equal_after_DOM_parse'):
+        assert proof[field] is True
+    for expression, expected_value in [('HEAD', BASE), ('HEAD^{tree}', TREE)]:
+        assert subprocess.check_output(['git', 'rev-parse', expression], cwd=ROOT, text=True).strip() == expected_value
+    cache_check = assert_cache_union()
+    out.mkdir()
+    write(out / 'cache-preservation.json', cache_check)
+    write(out / 'final-inputs.json', {'all_maintained_inputs': current, 'render_history_inputs': history,
+        'scope': 'Actual post-correction inventory; no subsequent file creation or edits are covered.'})
+    envelope = {'status': 'pending_root_acceptance', 'reviewer': None, 'at': now(),
+        'target': bind(ROOT / TARGET_REL), 'historical_target': proof['historical_target'],
+        'corrective_gates': bind(args.corrective_gates), 'historical_gates': bind(args.original_gates),
+        'historical_preservation': bind(args.original_preservation), 'root_metadata_bridge': bind(args.proof),
+        'independent_title_assessment': bind('/private/tmp/pathwaymech-next-230-title-trim-independent-20261012/title-trim-assessment.json'),
+        'inputs': bind(out / 'final-inputs.json'), 'cache_preservation': bind(out / 'cache-preservation.json'), 'helper': bind(__file__),
+        'scope': 'Actual title-only correction with original full gates preserved under historical target. Root must read and accept this envelope in a separate file before dependent execution; preparation does not imply acceptance.'}
+    write(out / 'pending-final-target-envelope.json', envelope)
+    print(json.dumps(bind(out / 'pending-final-target-envelope.json')))
+
+if __name__ == '__main__': main()

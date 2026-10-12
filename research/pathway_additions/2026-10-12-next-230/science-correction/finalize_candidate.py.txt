@@ -1,0 +1,37 @@
+"""Apply separately confirmed root issue453 without changing any graph claim."""
+from pathlib import Path
+import json,hashlib,copy,shutil
+import yaml
+S=Path(__file__).parent;O=Path('/private/tmp/pathwaymech-next-230-author-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def save(n,v):(S/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def js(p):return json.loads(Path(p).read_text())
+rootfinding=Path('/private/tmp/pathwaymech-next-230-root-tableIII-finding-20261012.json');rf=js(rootfinding)
+assert rf['issue_key']=='atp-sbp-f6p-e4p-not-determined'and rf['status']=='confirmed_minor_scientific_description_defect'
+mid=S/'intermediate/five-locator-only.yaml';d=yaml.safe_load(mid.read_text());old=yaml.safe_load((O/'draft/sedoheptulose-bisphosphate-bypass.yaml').read_text())
+before='but no detected E4P';after='with E4P not determined';assert d['description'].count(before)==1;d['description']=d['description'].replace(before,after)
+target=S/'draft/sedoheptulose-bisphosphate-bypass.yaml';target.write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=110))
+ledger=js(S/'intermediate/five-locator-ledger.json');save('ledgers/evidence-original-selectors.json',ledger);save('ledgers/edges.json',d['mechanistic_edges'])
+save('ledgers/constructs.json',[dict(edge_id=e['id'],qualifier=q)for e in d['mechanistic_edges']for q in e.get('endpoint_qualifiers',[])])
+contexts=js(S/'ledgers/context-assertions.json');ctx=next(c for c in contexts if c['key']=='2009-direct-assays');assert ctx['text'].count(before)==1;ctx['text']=ctx['text'].replace(before,after);save('ledgers/context-assertions.json',contexts)
+cov=js(S/'claim-to-record-coverage.json');c=next(c for c in cov if c['claim']=='sbp-10');c['successor_authoring_disposition']='Retain all six TableIII preparations: combined S7P/PfkA/FbaA experiment plus five controls. The F6P comparison E4P cell is blank/not determined. No-metabolite S7P,SBP,DHAP,E4P are ND; F6P/FBP are blank/not determined. Preserve all source calibration uncertainty. Original preflight wording remains historical below.';save('claim-to-record-coverage.json',cov)
+def diff(a,b,path='$'):
+ if isinstance(a,dict):
+  assert isinstance(b,dict)and a.keys()==b.keys();return sum([diff(a[k],b[k],path+'.'+k)for k in a],[])
+ if isinstance(a,list):
+  assert isinstance(b,list)and len(a)==len(b);return sum([diff(x,y,path+f'[{i}]')for i,(x,y)in enumerate(zip(a,b))],[])
+ return []if a==b else[dict(path=path,before=a,after=b)]
+delta=diff(old,d);assert len(delta)==6;assert sum(x['path'].endswith('.source_locator')for x in delta)==5;assert next(x for x in delta if x['path']=='$.description')['after']==old['description'].replace(before,after)
+rollback=copy.deepcopy(d);rollback['description']=old['description']
+for e,orig in zip(rollback['mechanistic_edges'],old['mechanistic_edges']):
+ for a,b in zip(e['evidence'],orig['evidence']):a['source_locator']=b['source_locator']
+ for a,b in zip(e.get('endpoint_qualifiers',[]),orig.get('endpoint_qualifiers',[])):
+  for x,y in zip(a['evidence'],b['evidence']):x['source_locator']=y['source_locator']
+assert rollback==old
+save('semantic-delta.json',dict(original=bind(O/'draft/sedoheptulose-bisphosphate-bypass.yaml'),five_locator_intermediate=bind(mid),final=bind(target),field_changes=delta,exact_changes=6,semantic_rollback_recovers_original=True,unchanged_fields=['id','label','taxa','participants','reactions','references','all67 edge identities/predicates/assertions','all24 qualifier kinds/descriptions/assertions'],scope='Five locator strings plus one bounded description string. No extra graph or authority change.'))
+proof=js(S/'tableIII-cell-proof.json');rows=proof['rows'];measure=rows[6:]
+nometa={r['label']:r['cells'][6]['normalized']for r in rows if r['label']in['S7P','S1,7P','DHAP','E4P','F6P','F1,6P']}
+assert nometa=={'S7P':'ND','S1,7P':'ND','DHAP':'ND','E4P':'ND','F6P':'','F1,6P':''},nometa
+save('tableIII-successor-disposition.json',dict(advisory='ATP-ADV-001',issue_key=rf['issue_key'],issue_url='https://github.com/CultureBotAI/PathwayMech/issues/453',root_finding=bind(rootfinding),issue_body=bind('/private/tmp/pathwaymech-next-230-e4p-issue-20261012.md'),fresh_original_cell_proof=bind(S/'tableIII-cell-proof.json'),preparations=6,composition='Combined S7P/PfkA/FbaA experiment plus five controls; YAML five separate controls retained.',F6P_experiment_E4P='blank = not determined',no_metabolite=nometa,blank_meaning='not determined; never zero or not detected',ND_meaning='not detected; not numerical zero',current_description_replacement={'before':before,'after':after},lineage='The independent whole-record review missed the description defect and its advisory incompletely mapped no-metabolite cells. Original review remains unchanged. This is an additive correction based on fresh author and root primary-cell traversal.',status='Author implemented; independent successor reassessment and root acceptance pending.'))
+print(json.dumps(dict(target=bind(target),exact_string_changes=6,original_graph_claims_unchanged=True)))

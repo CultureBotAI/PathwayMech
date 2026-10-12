@@ -1,0 +1,50 @@
+"""Seal only the new bounded reassessment packet."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+OUT = Path(__file__).parent
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p): return {'path': str(p), 'bytes': Path(p).stat().st_size, 'sha256': sha(p)}
+def save(n, v): (OUT / n).write_text(json.dumps(v, ensure_ascii=False, indent=2) + '\n')
+assessment = json.loads((OUT / 'assessment.json').read_text())
+assert assessment['all_four_findings_resolved']
+assert sha(assessment['target']['path']) == assessment['target']['sha256']
+intake = json.loads((OUT / 'input-intake.json').read_text())
+for packet in intake['packets']:
+    assert sha(packet['handoff']['path']) == packet['handoff']['sha256']
+    assert sha(packet['manifest']['path']) == packet['manifest']['sha256']
+    manifest = json.loads(Path(packet['manifest']['path']).read_text())
+    for item in manifest['artifacts']:
+        assert sha(Path(packet['package']) / item['path']) == item['sha256']
+save('final-validation.json', {'at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+   'target_unchanged': True, 'all_four_input_packets_reverified_unchanged': True,
+   'bounded_reassessment_terminal': 'ddeb2d/0', 'final_selected_passage_read_terminal': 'd58dab/0',
+   'scope': 'External scientific repair reassessment and packet consistency, not native maintained review validation or a canonical build.'})
+command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(OUT)]
+r = subprocess.run(command, check=True, capture_output=True)
+items = []
+for value in sorted(p for p in r.stdout.split(b'\0') if p):
+    p = Path(value.decode())
+    if p.parent == OUT and p.name in ['artifact-manifest.json', 'handoff.json']: continue
+    item = bind(p); item['path'] = str(p.relative_to(OUT)); items.append(item)
+save('artifact-manifest.json', {'scope': 'Every ignored/hidden/followed regular file, excluding only manifest and handoff to avoid circular hashes.',
+    'inventory_command': command, 'inventory_exit': r.returncode, 'inventory_stderr': r.stderr.decode(), 'artifacts': items})
+save('handoff.json', {'package': str(OUT), 'sealed_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'reviewer': '/root/atp_science_review', 'independence': 'independent',
+    'completion': 'completed', 'verdict': 'pass_with_limitations',
+    'scope': 'Bounded independent successor reassessment; all four findings resolved with exact six-field repair and unchanged-content inheritance.',
+    'target': assessment['target'], 'all_four_findings_resolved': True,
+    'artifact_count': len(items), 'manifest': bind(OUT / 'artifact-manifest.json'),
+    'assessment': bind(OUT / 'assessment.json'), 'report': bind(OUT / 'REVIEW.md'),
+    'finding_dispositions': bind(OUT / 'finding-dispositions.json'),
+    'source_proofs': bind(OUT / 'fresh-selector-reassessment.json'), 'table_proof': bind(OUT / 'fresh-tableIII-reassessment.json'),
+    'native_authority_consumer': bind(OUT / 'native-authority-consumer-reassessment.json'),
+    'edge_continuity': bind(OUT / 'edge-assessment-continuity.json'),
+    'prior_review_lineage': assessment['prior_review_lineage'],
+    'native_maintained_review_saved': False, 'full_canonical_build': False,
+    'root_next_step': 'Root acceptance/full canonical audit, maintained adoption and governed native review persistence; GitHub dispositions are root-owned.'})
+for item in items: assert sha(OUT / item['path']) == item['sha256']
+print(json.dumps({'handoff': bind(OUT / 'handoff.json'), 'manifest': bind(OUT / 'artifact-manifest.json'), 'artifacts': len(items)}, indent=2))

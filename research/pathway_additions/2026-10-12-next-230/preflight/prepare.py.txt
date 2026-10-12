@@ -1,0 +1,23 @@
+from pathlib import Path
+import hashlib,json,shutil
+from lxml import etree
+B=Path(__file__).parent;L=Path('/private/tmp/pathwaymech-next-230-root-leads-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,v):(B/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+(B/'raw').mkdir(exist_ok=True);(B/'derived').mkdir(exist_ok=True)
+bindings=[]
+for p in sorted(L.iterdir()):
+ if p.is_file():
+  q=B/'root-leads'/p.name;q.parent.mkdir(exist_ok=True);shutil.copy2(p,q)
+  assert sha(p)==sha(q);bindings.append(dict(path=str(p),copy=str(q),bytes=p.stat().st_size,sha256=sha(p)))
+save('root-lead-intake.json',dict(status='bytes verified; source and scientific assessment in progress',bindings=bindings))
+for pmc in ['PMC2758719','PMC7029132']:
+ t=etree.parse(str(L/(pmc+'.xml')));rows=[]
+ for e in t.xpath('/article/front/article-meta/abstract | /article/body//sec | /article/back | /article/floats-group/*'):
+  if e.tag=='sec' and e.findall('sec'):continue
+  rows.append(dict(locator=t.getpath(e),id=e.get('id'),title=' '.join(e.xpath('./title//text()')),text=' '.join(' '.join(e.itertext()).split())))
+ save('derived/'+pmc+'-full-sections.json',rows)
+ supp=[dict(locator=t.getpath(e),xml=etree.tostring(e,encoding='unicode')) for e in t.xpath('//*[local-name()="supplementary-material"]')]
+ save('derived/'+pmc+'-supplement-locators.json',supp)
+ (B/'derived'/(pmc+'-whole-readable.txt')).write_text('\n\n'.join(r['locator']+' '+str(r['id'])+' '+r['title']+'\n'+r['text'] for r in rows)+'\n')
+print(json.dumps(dict(root_artifacts=len(bindings),primary_sections={p:len(json.loads((B/'derived'/(p+'-full-sections.json')).read_text())) for p in ['PMC2758719','PMC7029132']})))

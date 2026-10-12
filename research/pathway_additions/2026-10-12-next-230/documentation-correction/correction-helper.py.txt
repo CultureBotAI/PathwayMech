@@ -1,0 +1,170 @@
+"""Exact ATP dossier documentation correction and native successor assembly."""
+import copy
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+sys.path.insert(0, '/private/tmp/pathwaymech-next-230-finalization-support-20261012')
+from support import (BASE, ROOT, PYTHON, ENV, TARGET_REL, TARGET_SHA, DOSSIER_REL,
+                     bind, load, write, verify, verify_support, assert_head,
+                     assert_history, files, now)
+
+OUT = Path('/private/tmp/pathwaymech-next-230-readme-correction-20261012')
+DOC = ROOT / DOSSIER_REL
+ADD = DOC / 'documentation-correction'
+OLD_SHA = '65f7d185a7aac77cc05efdf8b5da5ca9404ce17d275effc15a8936f9a09c040b'
+NATIVE = Path('/private/tmp/pathwaymech-next-230-native-finalization-20261012/execution.json')
+BRIDGE = Path('/private/tmp/pathwaymech-next-230-root-final-target-acceptance-20261012.json')
+EXTRAS = Path('/private/tmp/pathwaymech-next-230-approved-extra-files-final-20261012.json')
+
+
+def main():
+    verify_support()
+    assert_head()
+    assert not OUT.exists() and not ADD.exists()
+    inputs = load(load(BRIDGE)['inputs']['path'])
+    wanted = {r['relative_path']: r for r in inputs['all_maintained_inputs']}
+    for row in load(EXTRAS):
+        key = row['relative_path']
+        if key in wanted:
+            assert (row['bytes'], row['sha256']) == (wanted[key]['bytes'], wanted[key]['sha256'])
+        wanted[key] = row
+    assert set(files(ROOT)) == set(wanted)
+    for rel, row in wanted.items():
+        verify(row, ROOT / rel)
+    assert_history(ROOT, inputs['render_history_inputs'])
+    assert bind(DOC / 'README.md')['sha256'] == OLD_SHA
+    prior_native = load(NATIVE)
+    assert prior_native['status'] == 'passed'
+    for key in ('saved_yaml', 'saved_markdown'):
+        verify(prior_native[key])
+    import yaml
+    prior = yaml.safe_load(Path(prior_native['saved_yaml']['path']).read_bytes())
+    assert len(prior['assessments']) == 79 and len(prior['evidence']) == 46
+    OUT.mkdir()
+    write(OUT / 'before.json', list(wanted.values()))
+    ADD.mkdir()
+    (ADD / 'README.initial.md').write_bytes((DOC / 'README.md').read_bytes())
+    copies = [
+        (Path('/private/tmp/pathwaymech-next-230-readme-issue-20261012/receipt.json'), 'issue462.json'),
+        (Path('/private/tmp/pathwaymech-next-230-readme-lineage-issue-20261012.md'), 'issue462-body.md'),
+        (Path('/private/tmp/pathwaymech-next-230-pr-adversarial-review-20261012/initial-findings.json'), 'initial-findings.json'),
+        (Path(__file__), 'correction-helper.py.txt'),
+    ]
+    for source, name in copies:
+        (ADD / name).write_bytes(source.read_bytes())
+    content = '''This dossier preserves the ATP-dependent sedoheptulose-bisphosphate bypass source preflight, original authoring, independent scientific reviews, Table III addendum, and corrections for issues #450–453.
+
+The **historical scientific and full native-build target** is SHA256 `cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101`. The **current maintained record** is SHA256 `6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2`. Their sole parsed-record difference is `references[22].title.rstrip()` for PMID:31464375, resolving [issue #460](https://github.com/CultureBotAI/PathwayMech/issues/460). The [exact correction proof](final-gates/metadata-correction-proof.json), [final target acceptance](final-gates/final-target-bridge.json), and [current corrective gates](final-gates/gates.json) distinguish this bibliography-only successor from the [historical full gates](final-gates/historical-gates.json). The full native build used the historical target; its results are not relabeled as a new full build of the corrected title.
+
+The [saved review](../../../reviews/structured/20261012T072136Z-sedoheptulose-bisphosphate-bypass/review.yaml) and its [rendered report](../../../reviews/structured/20261012T072136Z-sedoheptulose-bisphosphate-bypass/review.md) assess the current record and preserve this bridge. Bibliography entry ownership was subsequently checked for all 94 references: [actual checks](final-gates/additional-receipt-0.json), [independent remediation disposition](final-gates/additional-receipt-1.json), and [issue #461 verification](final-gates/additional-receipt-6.json). The [issue #460 verification](final-gates/additional-receipt-4.json) retains the title correction's external issue evidence.
+
+The [initial README](documentation-correction/README.initial.md) is preserved byte-for-byte as historical documentation (SHA256 `65f7d185a7aac77cc05efdf8b5da5ca9404ce17d275effc15a8936f9a09c040b`). This entrypoint corrects its outdated final-target wording under [issue #462](https://github.com/CultureBotAI/PathwayMech/issues/462); the [correction receipt](documentation-correction/correction.json) records the exact change and preserved original review, archive maps and history. The saved original review's README pin therefore describes the preserved historical copy, while a new successor review captures this current entrypoint. No original review or archive map is rewritten.
+
+All omitted original bodies, partial failed captures, runtime/candidate copies and large outputs remain externally bound by complete sealed manifests. Selected lossless UTF-8 JSON wrappers preserve original bytes; explicitly labeled credential-header projections retain exact original hashes. Archived scripts end in .txt or are losslessly wrapped and do not become new executable repository code. The original three-issue creation ledger remains unchanged; issue #453 has separate authoritative verification and its original body.
+
+The adoption receipt binds the actual merged 230-record EG baseline; preparation receipts retain their earlier prospective status. Root owns maintained integration, history before rendering, corpus preservation, review, visual QA and publication. The documentation correction appends no curation history and changes no biological record, page, export or prior receipt. Source exhaustion is false.
+'''
+    (DOC / 'README.md').write_text(content)
+    # Link inspection includes intended relative paths; the receipt is created next.
+    links = []
+    for link in re.findall(r'\]\(([^)]+)\)', content):
+        if link.startswith('https://'):
+            continue
+        path = (DOC / link).resolve()
+        assert path.is_relative_to(ROOT)
+        if path != ADD / 'correction.json':
+            assert path.is_file(), link
+        links.append({'link': link, 'resolved': str(path)})
+    assert bind(ADD / 'README.initial.md')['sha256'] == OLD_SHA
+    assert bind(ROOT / TARGET_REL)['sha256'] == TARGET_SHA
+    for rel, row in wanted.items():
+        if rel != DOSSIER_REL + '/README.md':
+            verify(row, ROOT / rel)
+    assert_history(ROOT, inputs['render_history_inputs'])
+    started = now()
+    write(ADD / 'correction.json', {
+        'status': 'corrected_and_verified', 'at': started,
+        'issue_key': 'atp-dossier-readme-target-lineage',
+        'issue_url': 'https://github.com/CultureBotAI/PathwayMech/issues/462',
+        'scope': 'Documentation entrypoint only; all earlier maintained inputs except this README remain byte-identical. No new scientific review is claimed.',
+        'before': bind(ADD / 'README.initial.md'), 'after': bind(DOC / 'README.md'),
+        'target': bind(ROOT / TARGET_REL), 'relative_links': links,
+        'historical_review': {k: prior_native[k] for k in ('saved_yaml', 'saved_markdown')},
+        'old_inventory': bind(OUT / 'before.json'),
+        'old_maintained_file_count': len(wanted), 'old_files_unchanged_except_readme': True,
+        'history_count': len(inputs['render_history_inputs']), 'history_unchanged': True,
+        'original_final_checks': bind('/private/tmp/pathwaymech-next-230-final-checks-20261012/execution.json'),
+        'source_pin_change': 'Fresh native inspection follows this explicit documentation reassessment; old review and old archive maps remain immutable.',
+        'helper': bind(__file__),
+    })
+    assert all((DOC / r['link']).is_file() for r in links)
+    added = sorted(str(p.relative_to(ROOT)) for p in ADD.iterdir())
+    new_inputs = sorted(set(r['path'] for r in prior['source']['inputs']) |
+                        set(added) | {str(Path(prior_native[k]['path']).relative_to(ROOT))
+                                      for k in ('saved_yaml', 'saved_markdown')} |
+                        {'.claude/skills/pathwaymech-resolve-reviews/SKILL.md'})
+    write(OUT / 'inputs.json', new_inputs)
+    cmd = [PYTHON, '-B', '/private/tmp/pathwaymech-next-230-finalization-support-20261012/inspect_with_inputs.py',
+           '--input-list', str(OUT / 'inputs.json'), '--targets',
+           '/private/tmp/pathwaymech-next-230-finalization-support-20261012/targets.yaml']
+    result = subprocess.run(cmd, cwd=ROOT, env=ENV, capture_output=True)
+    (OUT / 'inspect.stdout').write_bytes(result.stdout)
+    (OUT / 'inspect.stderr').write_bytes(result.stderr)
+    write(OUT / 'inspect-execution.json', {'command': cmd, 'started_at': started,
+          'finished_at': now(), 'exit_code': result.returncode,
+          'stdout': bind(OUT / 'inspect.stdout'), 'stderr': bind(OUT / 'inspect.stderr')})
+    result.check_returncode()
+    inspected = json.loads(result.stdout)
+    assert inspected['source']['git_revision'] == BASE
+    old_inputs = {r['path']: r for r in prior['source']['inputs']}
+    current_inputs = {r['path']: r for r in inspected['source']['inputs']}
+    changed = [p for p in old_inputs if old_inputs[p] != current_inputs[p]]
+    assert changed == [DOSSIER_REL + '/README.md'], changed
+    doc = copy.deepcopy(prior)
+    doc['source'], doc['targets'] = inspected['source'], inspected['targets']
+    doc['started_at'], doc['finished_at'] = started, now()
+    doc['review_id'] = doc['finished_at'][:19].replace('-', '').replace(':', '') + 'Z-sedoheptulose-bisphosphate-bypass'
+    doc['scientific_review'] = False
+    doc['skill'] = '.claude/skills/pathwaymech-resolve-reviews/SKILL.md'
+    doc['title'] = 'Sedoheptulose bisphosphate bypass: dossier target lineage correction'
+    doc['summary'] = 'Issue462 documentary correction distinguishes historical full-build cd59859d from current title-only successor6ed1607a. Exact initial README and all old reviews, archive maps, history, record, pages and exports remain preserved. All79 previous assessments are retained as inherited context; this observation does not renew scientific approval. Fresh native inspection captures the current README and correction evidence.'
+    doc['scope']['description'] = 'One unchanged pathway and its dossier target-lineage correction; inherited scientific assessments are not a new literature review.'
+    doc['reviewer'] = {'identity': 'Codex /root', 'kind': 'agent', 'independence': 'self_review',
+        'independence_basis': 'Root corrected the dossier README after an independent adversarial finding. This is a provenance reassessment; prior scientific assessments are retained verbatim as inherited context.'}
+    doc['limitations'].append('This successor only reassesses documentation and source-pin continuity. All79 inherited assessments and earlier checks retain their original scope and times. No biological, generated-output or code change and no new full test suite or literature review is claimed.')
+    doc['notes'].append('Issue462 is an external finding, not a saved native occurrence. Its verified correction is an evidence-linked assessment; no native previous_occurrences are fabricated.')
+    doc['links'].append('https://github.com/CultureBotAI/PathwayMech/issues/462')
+    doc['related_reviews'] = [{'repository': 'CultureBotAI/PathwayMech', 'review_id': prior['review_id']}]
+    for evid, filename, summary in [
+        ('readme-correction', 'correction.json', 'Exact documentation correction, local navigation, preserved target/review/history and explicit source-pin reassessment.'),
+        ('readme-initial-finding', 'initial-findings.json', 'Independent initial minor documentation finding; preserved without rewriting.'),
+        ('readme-issue462', 'issue462.json', 'Actual all-states deduplication, issue creation and authoritative OPEN verification; closure remains pending merge.')]:
+        path = ADD / filename
+        doc['evidence'].append({'evidence_id': evid, 'kind': 'validation', 'reference': str(path.relative_to(ROOT)),
+            'accessed_at': now(), 'support': 'supports', 'snapshot_sha256': bind(path)['sha256'], 'summary': summary})
+    evs = ['readme-correction', 'readme-initial-finding', 'readme-issue462']
+    doc['assessments'].append({'assessment_id': 'external-issue-462', 'area': 'representation',
+        'topic': 'atp-dossier-readme-target-lineage', 'outcome': 'supported', 'target_ids': ['MetaCyc:PWY0-1517'],
+        'summary': 'Initial entrypoint incorrectly called historical cd59859d the final target. The current README explicitly distinguishes it from6ed1607a and identifies references[22].title.rstrip(), correction proof, issues460/461 and the saved review. Initial README bytes, all prior reviewed evidence, record, generated artifacts and history remain intact; local navigation resolves. External issue462 closure remains pending merge.',
+        'evidence_ids': evs})
+    doc['checks'].append({'check_id': 'readme-lineage-correction', 'name': 'Exact documentation correction and preserved prior scope',
+        'status': 'passed', 'required': True, 'target_ids': ['MetaCyc:PWY0-1517'],
+        'summary': 'Original README preserved; only maintained README bytes changed; all relative links resolve and fresh native inspection records exactly that one changed old source input.',
+        'evidence_ids': evs, 'scope_note': 'Bounded documentation check; old scientific assessments and gates are inherited, not rerun.'})
+    assert doc['assessments'][:-1] == prior['assessments']
+    assert doc['evidence'][:46] == prior['evidence']
+    assert doc['checks'][:-1] == prior['checks']
+    write(OUT / 'completed-review.json', doc)
+    write(OUT / 'assembly.json', {'status': 'assembled_pending_root_read_native_serialization_save',
+          'at': now(), 'review': bind(OUT / 'completed-review.json'), 'inspection': bind(OUT / 'inspect.stdout'),
+          'gate_receipt': prior_native['gate_receipt'], 'prior_native_execution': bind(NATIVE),
+          'prior_review': prior_native['saved_yaml'], 'changed_old_input': changed,
+          'inherited_assessments_exact': 79, 'inherited_evidence_exact': 46,
+          'correction': bind(ADD / 'correction.json')})
+    print(json.dumps({'assembly': bind(OUT / 'assembly.json'), 'readme': bind(DOC / 'README.md'), 'new_documentation_files': len(added)}))
+
+if __name__ == '__main__':
+    main()

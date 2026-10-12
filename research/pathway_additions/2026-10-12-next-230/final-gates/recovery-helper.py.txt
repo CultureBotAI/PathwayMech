@@ -1,0 +1,70 @@
+"""Resume the failed GitHub fetch and remaining gates; preserve the original run."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+sys.path.insert(0, '/private/tmp/pathwaymech-next-230-integration-preparation-20261012')
+from common import (ROOT, BASE, TARGET_SHA, PACKAGE, binding, load, now,
+                    verify, inventory, verify_gate_input_scope, verify_render_history, write_new)
+
+OLD = Path('/private/tmp/pathwaymech-next-230-maintained-gates-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-230-maintained-gates-recovery-20261012')
+ADOPTION = Path('/private/tmp/pathwaymech-next-230-adoption-20261012.json')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+assert __debug__
+old = load(OLD / 'execution.json')
+assert old['status'] == 'failed' and old['base'] == BASE
+assert [r['name'] for r in old['receipts']] == ['render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored']
+assert [r['exit_code'] for r in old['receipts']] == [0, 0, 0, 0, 0, 0, 1]
+assert 'nodename nor servname provided' in ((OLD / 'vendored.stdout').read_text() + (OLD / 'vendored.stderr').read_text())
+for row in old['receipts']:
+    for key in ('stdout', 'stderr'):
+        verify(row[key]['path'], row[key])
+inputs = load(OLD / 'inputs.json')
+gates = {**old, 'inputs': binding(OLD / 'inputs.json'),
+         'render_history_inputs': inputs['render_history_inputs']}
+verify_gate_input_scope(ROOT, gates, ADOPTION)
+generated = set(load(PACKAGE / 'expected-changes.json')['allowed_generated_paths'])
+current = inventory(ROOT, exclude_runtime=True)
+assert {r['relative_path'] for r in current} - generated == {r['relative_path'] for r in inputs['all_maintained_inputs']} - generated
+OUT.mkdir()
+write_new(OUT / 'recovery-inputs.json', {'at': now(), 'helper': binding(__file__),
+    'original_failure': binding(OLD / 'execution.json'), 'original_inputs': binding(OLD / 'inputs.json'),
+    'all_current_files': current, 'whole_history': inputs['render_history_inputs'],
+    'scope': 'Unchanged nongenerated inputs and complete inventory; rerun only failed fetch and unfinished gates.'})
+env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT),
+       'RUFF_CACHE_DIR': str(OUT / 'ruff-cache')}
+receipts = old['receipts'][:-1]
+for name, command in [
+    ('vendored', ['bash', 'scripts/check_vendored_sync.sh']),
+    ('diff-check', ['git', 'diff', '--check']),
+    ('site-current', [PYTHON, '-B', '-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))']),
+]:
+    verify_gate_input_scope(ROOT, gates, ADOPTION)
+    start = now()
+    result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
+    stdout, stderr = OUT / (name + '.stdout'), OUT / (name + '.stderr')
+    stdout.write_bytes(result.stdout)
+    stderr.write_bytes(result.stderr)
+    receipts.append({'name': name, 'command': command, 'cwd': str(ROOT),
+        'environment': {k: env[k] for k in ('PYTHONDONTWRITEBYTECODE', 'UV_NO_SYNC', 'PYTHONPATH', 'RUFF_CACHE_DIR')},
+        'started_at': start, 'finished_at': now(), 'exit_code': result.returncode,
+        'stdout': binding(stdout), 'stderr': binding(stderr)})
+    (OUT / 'execution.json').write_text(json.dumps({'status': 'running' if not result.returncode else 'failed',
+        'base': BASE, 'receipts': receipts, 'original_failure': binding(OLD / 'execution.json')}, indent=2) + '\n')
+    print(name, result.returncode, flush=True)
+    result.check_returncode()
+verify_gate_input_scope(ROOT, gates, ADOPTION)
+verify_render_history(ROOT, inputs['render_history_inputs'])
+result = {'status': 'passed', 'base': BASE, 'target_sha256': TARGET_SHA,
+    'receipts': receipts, 'inputs': binding(OLD / 'inputs.json'),
+    'generated_files': [{'relative_path': p, **binding(ROOT / p)} for p in sorted(generated)],
+    'render_history_inputs': inputs['render_history_inputs'], 'history_verified_after_site_current': True,
+    'original_failure': binding(OLD / 'execution.json'), 'recovery_inputs': binding(OUT / 'recovery-inputs.json'),
+    'scope': 'Six original successful gates retained; only the network-failed vendored check and two unfinished gates run here. No full test rerun or concealment of failed fetch.',
+    'preservation': 'pending', 'saved_scientific_review': 'pending'}
+(OUT / 'execution.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'status': 'passed', 'execution': binding(OUT / 'execution.json')}))

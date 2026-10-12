@@ -1,0 +1,11 @@
+from pathlib import Path
+import datetime,hashlib,json,urllib.request,urllib.error
+O=Path(__file__).parent;rows=[]
+for frame in ['FRUCTOSE-6P','HIS','GLUTATHIONE']:
+ url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+frame;p=O/'raw'/('ECOLI-'+frame+'.xml');assert not p.exists();row={'frame':frame,'url':url,'path':str(p),'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(url,timeout=45) as r:b=r.read();row.update(status=r.status,content_type=r.headers.get('Content-Type'),final_url=r.url)
+  p.write_bytes(b);row.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+ except Exception as e:row.update(error=type(e).__name__+': '+str(e))
+ rows.append(row);print(json.dumps(row),flush=True)
+(O/'chemical-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')

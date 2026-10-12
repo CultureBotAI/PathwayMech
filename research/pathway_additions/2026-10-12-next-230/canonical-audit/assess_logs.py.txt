@@ -1,0 +1,46 @@
+"""Interpret native log diagnostics against the accepted prior native build."""
+from collections import Counter
+from pathlib import Path
+import audit
+
+prior = Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+current = audit.BUILD
+
+def diagnostics(directory):
+    lines = (directory / 'ontology_builder.stdout').read_text().splitlines()
+    results = []
+    other = []
+    for line in lines:
+        if line.startswith('LABEL_DIFFERENCE\t'):
+            kind, path, identifier, display, authority = line.split('\t')
+            results.append({'record': str(Path(path).relative_to(directory / 'corpus')), 'id': identifier, 'record_label': display, 'authority_label': authority})
+        else:
+            other.append(line)
+    return results, other
+
+before, prior_other = diagnostics(prior)
+after, current_other = diagnostics(current)
+as_counter = lambda rows: Counter(tuple(sorted(row.items())) for row in rows)
+assert as_counter(before) == as_counter(after)
+assert not any(row['record'] == 'sedoheptulose-bisphosphate-bypass.yaml' for row in after)
+assert len(current_other) == 5
+assert current_other[:4] == [
+    'CHEBI: resolved 978/978 from http://purl.obolibrary.org/obo/chebi/255/chebi.owl',
+    'GO: resolved 132/132 from http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn',
+    'NCBITaxon: resolved 38/38 from http://purl.obolibrary.org/obo/ncbitaxon/2026-07-12/ncbitaxon.owl',
+    'RHEA: resolved 791/815 from https://w3id.org/biopragmatics/resources/rhea/139/rhea.ofn',
+]
+assert current_other[-1] == 'Wrote 1963 authority terms to ' + str(current / 'ontology.json')
+audit.write('log-assessment.json', {
+    'at': audit.now(), 'status': 'passed',
+    'prior_stdout': audit.bind(prior / 'ontology_builder.stdout'),
+    'current_stdout': audit.bind(current / 'ontology_builder.stdout'),
+    'all_label_differences': after,
+    'label_differences_count': len(after), 'prior_label_differences_count': len(before),
+    'multiset_equal_to_prior_after_corpus_path_normalization': True,
+    'ATP_label_differences': 0,
+    'other_lines': current_other,
+    'Rhea_resolution_interpretation': '791 SQL-derived terms plus 24 original RDF update terms account for all 815 selected Rhea identifiers; 791/815 does not signify unresolved identifiers.',
+    'scope': 'Native diagnostics are retained, not suppressed. Existing display-label differences are not recast as new ATP defects.'
+})
+print({'status': 'passed', 'inherited_label_differences': len(after), 'new_ATP_label_differences': 0})

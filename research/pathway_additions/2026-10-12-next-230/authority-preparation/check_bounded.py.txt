@@ -1,0 +1,56 @@
+"""Meaningful original-derived authority controls, separate from scientific review."""
+from pathlib import Path
+import copy,hashlib,json,sys,xml.etree.ElementTree as E
+import yaml
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def read(p):return json.loads(Path(p).read_bytes())
+def save(n,x):
+ q=O/n;q.parent.mkdir(parents=True,exist_ok=True);q.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+checks=[]
+def check(name,yes):
+ assert yes,name;checks.append({'name':name,'result':'passed'})
+def rejects(name,call,expected=None):
+ try:call()
+ except (AssertionError,ValueError) as e:
+  if expected is not None:assert expected in str(e),(name,str(e))
+  checks.append({'name':name,'result':'rejected_as_required','exception':type(e).__name__,'message':str(e)})
+ else:raise AssertionError(name+' unexpectedly accepted')
+def require(x,message):assert x,message
+probes=read(O/'native-candidate-probes.json');pb=next(x for x in probes if x['kind']=='pathbank-biopax-zip');arc=Path(pb['original']['path'])
+def archive(a):return sb._pathbank_archive_terms(arc,url=pb['url'],sha256=pb['original']['sha256'],archive=a)
+check('exact typed whole ZIP retains all three selected native compounds',{t[0] for t in archive(pb['archive'])}>={'PathBank:SMP0002110/Compound/PW_C000843','PathBank:SMP0002110/Compound/PW_C001019','PathBank:SMP0002110/Compound/PW_C042631'})
+for field,value,name in [('member_bytes',pb['archive']['member_bytes']+1,'wrong member size'),('member_sha256','0'*64,'wrong member hash'),('root','SMP0121065','opaque child promoted to primary')]:
+ a=copy.deepcopy(pb['archive']);a[field]=value;rejects(name,lambda a=a:archive(a))
+complexrow=next(x for x in probes if x['kind']=='ecocyc-protein-xml' and x['terms'][0][0]=='EcoCyc:6PFK-1-CPX');cp=Path(complexrow['original']['path'])
+rejects('PfkA native original cannot identify PfkB frame',lambda:list(sb.source_terms('ecocyc-protein-xml',cp,url=complexrow['url'].replace('6PFK-1-CPX','6PFK-2-CPX'),version='27.0')))
+rejects('wrong PGDB version rejected',lambda:list(sb.source_terms('ecocyc-protein-xml',cp,url=complexrow['url'],version='28.0')))
+g=next(x for x in probes if x['kind']=='ncbi-entrezgene-xml' and x['terms'][0][0]=='Entrez:948412');gp=Path(g['original']['path'])
+rejects('exact pfkA gene cannot identify fbaA',lambda:sb._ncbi_gene_record(gp,g['url'].replace('948412','947415')))
+rejects('retmode request does not replace native rettype contract',lambda:sb._ncbi_gene_record(gp,g['url'].replace('rettype=xml','retmode=xml')))
+bridges=read(O/'gene-identity-bridges.json');check('both MG1655 core gene joins',all(x['exact_issuing_join'] and x['taxon']=='NCBITaxon:511145' for x in bridges['selected_core']))
+for x in bridges['rejected_cross_species']:rejects('wrong Shigella issuing bridge '+x['id'],lambda x=x:require(x['taxon']=='NCBITaxon:511145','actual issuing taxon differs'))
+assemblies={x['id']:x for x in read(O/'assembly-native-bridges.json')};check('PfkA native four-chain coefficient',assemblies['EcoCyc:6PFK-1-CPX']['components'][0]['coefficient']==4);check('FbaA native two-chain coefficient',assemblies['EcoCyc:FRUCBISALD-CLASSII']['components'][0]['coefficient']==2)
+check('ligand assembly coefficients remain absent',all(p['coefficient'] is None for i in ['EcoCyc:CPLX-127','EcoCyc:CPLX0-226'] for p in assemblies[i]['components']))
+parts=[p for c in read(O/'pathbank-interface-locators.json')['children'] for i in c['interactions'] for p in i['participants']];salt=next(x for x in parts if x['selected_id'].endswith('PW_C042631'));formula=salt['references'][0]['formula']
+rejects('native dilithium salt cannot equal Rhea anion formula',lambda:require(formula=='C3H5O6P','native formula retains two lithium atoms'))
+chem=read(O/'chemical-identity-bridges.json')['rows'];check('three source-native exact reference chemical joins',len(chem)==3 and all(x['formula_and_charge_equal'] and x['inchi_equal'] for x in chem));check('primary assay form not inferred from reference structures',all('does not establish' in x['assay_limit'] for x in chem))
+sides=read(O/'rhea-side-locators.json')['side_assertions'];check('all eight original Rhea side chains',len(sides)==8 and all(x['coefficient']==1 for x in sides));proton=next(x for x in sides if x['chemical']=='CHEBI:15378');check('native kinase proton product',proton['reaction']=='RHEA:31444' and proton['directional_predicate']=='products')
+# Exercise a real native two-source order reversal; identity remains valid but
+# a guard preserving the native base provenance must reject its new metadata.
+c=O/'controls/source-order';(c/'selection').mkdir(parents=True,exist_ok=True);(c/'cache').mkdir(exist_ok=True)
+(c/'selection/id.yaml').write_text(yaml.safe_dump({'id':'UniProtKB:P0A796'}))
+frozen=next(e for e in read(B/'manifest.json') if e['key']=='uniprot-ecoli-reviewed-cofactors');fresh=next(e for e in probes if e['kind']=='uniprot' and any(t[0]=='UniProtKB:P0A796' for t in e['terms']));freshentry={'key':'control-fresh-P0A796','kind':'uniprot','path':'fresh.json','url':fresh['url'],'version':fresh['version'],'license':'CC-BY-4.0','sha256':fresh['original']['sha256']}
+for filename,path in [(frozen['path'],B/'originals'/frozen['path']),('fresh.json',Path(fresh['original']['path']))]:
+ q=c/'cache'/filename
+ if not q.exists():q.symlink_to(path.resolve())
+results=[]
+for name,entries in [('native-order',[frozen,freshentry]),('reversed-order',[freshentry,frozen])]:
+ p=c/(name+'.json');p.write_text(json.dumps(entries,indent=2)+'\n');result=sb.build_snapshot(p,c/'selection',c/'cache');save('controls/source-order/'+name+'-result.json',result);results.append(result)
+check('native original precedence actually selected',results[0]['terms']['UniProtKB:P0A796']['source']==frozen['key'])
+rejects('native-valid fresh-first provenance drift rejected',lambda:require(results[1]['terms']==results[0]['terms'],'reversed originals change retained source provenance'))
+check('fresh-full versus frozen-field-limited comparison explicit',not read(O/'uniprot-frozen-vs-fresh.json')['whole_scientific_content_equal_claimed'])
+save('bounded-checks.json',{'status':'passed','checks':checks,'positive':sum(x['result']=='passed' for x in checks),'negative':sum(x['result']=='rejected_as_required' for x in checks),'scope':'Original-derived native authority guards and exact identity/context discrimination. Not scientific acceptance, full canonical build or maintained gates.'})
+print(json.dumps({'status':'passed','positive':sum(x['result']=='passed' for x in checks),'negative':sum(x['result']=='rejected_as_required' for x in checks)}))

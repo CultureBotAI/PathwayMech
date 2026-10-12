@@ -1,0 +1,57 @@
+"""Bounded original controls, native authority bridge, schema, strict and exports."""
+from pathlib import Path
+import json,hashlib,sys,shutil,copy,csv,importlib.util
+from lxml import etree as X,html
+import yaml
+S=Path(__file__).parent;O=Path('/private/tmp/pathwaymech-next-230-author-20261012');H=Path('/private/tmp/pathwaymech-next-230-authority-preparation-20261012')
+sys.path[:0]=[str(O/'runtime/src'),str(O/'runtime/scripts')]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.cli import render_site
+from pathwaymech.kgx import render_kgx
+import build_source_identifier_snapshot as native
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def js(p):return json.loads(Path(p).read_text())
+def save(n,v):p=S/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+target=S/'draft/sedoheptulose-bisphosphate-bypass.yaml';d=yaml.safe_load(target.read_text());r=validate_record(d);errors=strict_errors([target],S);assert not errors,errors
+assert native.corpus_ids(S/'draft')==native.corpus_ids(O/'draft')==native.corpus_ids(H/'bounded-selection');ids=sorted(native.corpus_ids(S/'draft'));assert len(ids)==62
+root=S/'identifier-root'
+for path in ['data/pathways','data/identifier_authorities','conf']:(root/path).mkdir(parents=True,exist_ok=True)
+shutil.copyfile(target,root/'data/pathways'/target.name)
+for name in ['sources.json','ontology.json']:shutil.copyfile(O/'identifier-root/data/identifier_authorities'/name,root/'data/identifier_authorities'/name)
+shutil.copyfile(O/'runtime/conf/identifier_policy.yaml',root/'conf/identifier_policy.yaml');identifier=identifier_errors(root);assert not identifier,identifier
+old=yaml.safe_load((O/'draft'/target.name).read_text());assert d['references']==old['references']and d['participants']==old['participants']and d['reactions']==old['reactions']and d['taxa']==old['taxa']
+changed=js(S/'changed-selector-proofs.json');ledger=js(S/'ledgers/evidence-original-selectors.json');prior=js(O/'ledgers/evidence-original-selectors.json');positive=[];negative=[]
+def bad(name,fn):
+ try:fn()
+ except(AssertionError,ValueError):negative.append(name);return
+ raise AssertionError('Negative control passed:'+name)
+def demand(v):assert v
+for p in changed:
+ assert sha(p['original']['path'])==p['original']['sha256'];tree=X.parse(p['original']['path']);oldnodes=tree.xpath(p['before_evidence']['source_locator'].removeprefix('XPath '));newnodes=tree.xpath(p['after_evidence']['source_locator'].removeprefix('XPath '));actual=[X.tostring(v,encoding='unicode')for v in newnodes];assert actual==ledger[p['ledger_index']]['observed']
+ if p['edge']=='sbp-018':
+  predicate=lambda nodes:any('HisTrap'in ''.join(x.itertext())for x in nodes)
+ elif p['edge']=='sbp-056':
+  predicate=lambda nodes:any(all(v in ''.join(x.itertext())for v in ['PB12','rpoS','M9','aerobically'])for x in nodes)
+ else:predicate=lambda nodes:any(x.tag=='inchi'and(x.text or'').startswith('InChI=')for x in nodes)
+ demand(predicate(newnodes));bad(p['edge']+' old locator missing exact claimed fact',lambda nodes=oldnodes,pred=predicate:demand(pred(nodes)));positive.append(p['edge']+' exact updated original selector supplies claimed fact')
+changes={p['ledger_index']for p in changed};assert len(changes)==5
+for i,(before,after)in enumerate(zip(prior,ledger)):
+ if i not in changes:assert before==after
+positive.append('All154 unchanged selector observations remain exact; all159 ledger rows retained')
+table=js(S/'tableIII-cell-proof.json');e4p=next(x for x in table['rows']if x['label']=='E4P');assert e4p['cells'][5]['normalized']==''and e4p['cells'][6]['normalized']=='ND';assert 'with E4P not determined'in d['description']and'but no detected E4P'not in d['description'];bad('F6P E4P blank recoded as ND',lambda:demand(e4p['cells'][5]['normalized']=='ND'));bad('No-metabolite E4P ND recoded as blank',lambda:demand(e4p['cells'][6]['normalized']==''));positive.append('TableIII blank versus ND and exact no-metabolite mapping retained')
+for kind,files in [('pages',render_site([r],source_paths={r.id:'data/pathways/'+target.name})),('kgx',render_kgx([r]))]:
+ for name,content in files.items():p=S/'candidate-checks'/kind/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(content)
+rows=list(csv.DictReader((S/'candidate-checks/kgx/edges.tsv').open(),delimiter='\t'));t=html.parse(str(S/'candidate-checks/pages/records/MetaCyc_PWY0-1517.html'));links=t.xpath('//*[local-name()="svg"]//*[local-name()="a" and contains(@class,"graph-edge")]');assert len(rows)==len(links)==len(d['mechanistic_edges'])==67;uses=0;qualifiers=0
+for i,e in enumerate(d['mechanistic_edges'],1):
+ row=next(x for x in rows if '_'+e['id']+'_'in x['id']);assert(row['subject'],row['object'])==(e['subject'],e['object']);assert json.loads(row['evidence'])==e['evidence'];quals=e.get('endpoint_qualifiers',[]);assert(json.loads(row['endpoint_qualifiers'])if row['endpoint_qualifiers']else[])==quals;link=next(l for l in links if l.get('href')=='#mechanism-edge-'+str(i));assert(link.get('data-subject-id')or link.get('data-subject'),link.get('data-predicate'),link.get('data-object-id')or link.get('data-object'))==(e['subject'],e['predicate'],e['object'])
+ evs=e['evidence'][:]
+ for q in quals:
+  qualifiers+=1;evs+=q['evidence'];assert q['description']in link.get('aria-label');assert len(t.xpath('//*[@id=$v]',v=f'mechanism-edge-{i}-qualifier-{q["endpoint"]}'))==1
+ for ev in evs:assert any(x['evidence']==ev for x in ledger);uses+=1
+assert qualifiers==24 and uses==145
+save('candidate-checks/result.json',dict(target=bind(target),schema='pass',strict_errors=errors,identifier_errors=identifier,edges=67,endpoint_qualifiers=qualifiers,edge_qualifier_evidence_uses=uses,references=len(d['references']),source_selector_observations=len(ledger),fresh_original_selector_checks=5,inherited_unchanged_selector_observations=154,positive_checks=positive,negative_controls=negative,scope='Focused external author checks; no independent scientific approval, full tests, full builders or browser interaction.'))
+save('authority-collector-bridge.json',dict(original=bind(O/'draft'/target.name),authority_selection=bind(H/'bounded-selection'/target.name),successor=bind(target),native_collector=bind(O/'runtime/scripts/build_source_identifier_snapshot.py'),same_native_IDs=ids,identities_labels_references_and_authority_inputs_exact=True,proposal_files={name:bind(root/'data/identifier_authorities'/name)for name in ['sources.json','ontology.json']},native_identifier_errors=identifier,full_canonical_build=False))
+print(json.dumps(dict(target_sha256=sha(target),schema='pass',strict='pass',identifiers='pass',edges=67,qualifiers=24,positive=len(positive),negative=len(negative),native_selectors=len(ids))))

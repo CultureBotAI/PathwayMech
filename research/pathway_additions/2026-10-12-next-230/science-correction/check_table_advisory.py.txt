@@ -1,0 +1,21 @@
+from pathlib import Path
+from lxml import etree as X
+import json,hashlib,yaml
+S=Path(__file__).parent;O=Path('/private/tmp/pathwaymech-next-230-author-20261012');P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+source=P/'root-leads/PMC2758719.xml';t=X.parse(str(source));table=t.xpath('/article/body/sec[2]/sec[6]/table-wrap')[0]
+headers=[''.join(e.itertext()).strip()for e in table.xpath('./table/thead/tr/th')]
+rows=[]
+for tr in table.xpath('./table/tbody/tr'):
+ cells=tr.xpath('./td')
+ if len(cells)==7:
+  raw=[''.join(x.itertext())for x in cells]
+  rows.append(dict(label=raw[0].strip(),cells=[dict(column_number=i+1,header=headers[i],raw_text=v,normalized=v.strip(),xpath=t.getpath(cells[i]),xml=X.tostring(cells[i],encoding='unicode'))for i,v in enumerate(raw)]))
+e4p=[x for x in rows if x['label']=='E4P'];assert len(e4p)==1
+assert e4p[0]['cells'][5]['normalized']==''and e4p[0]['cells'][6]['normalized']=='ND'
+dhap=[x for x in rows if x['label']=='DHAP'];assert len(dhap)==1 and dhap[0]['cells'][6]['normalized']=='ND'
+footnotes=[' '.join(''.join(e.itertext()).split())for e in table.xpath('./table-wrap-foot/fn')]
+assert 'Blank: not determined; ND, not detected.'in footnotes
+d=yaml.safe_load((O/'draft/sedoheptulose-bisphosphate-bypass.yaml').read_text());paragraph=next(p for p in d['description'].split('\n\n')if 'TableIII'in p)
+assert 'but no detected E4P'in paragraph
+out=dict(source=dict(path=str(source),sha256=hashlib.sha256(source.read_bytes()).hexdigest()),headers=headers,rows=rows,footnotes=footnotes,current_description_paragraph=paragraph,semantic_finding='F6P both-enzyme E4P is blank/not determined; no-metabolite E4P and DHAP are ND. The description phrase but no detected E4P is unsupported for the F6P condition.',status='Fresh source-cell proof; additional root issue and independent reconciliation pending.')
+(S/'tableIII-cell-proof.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n');print(json.dumps(dict(headers=headers,E4P_F6P=e4p[0]['cells'][5],E4P_no_metabolite=e4p[0]['cells'][6],footnotes=footnotes,current_description=paragraph),ensure_ascii=False,indent=2))

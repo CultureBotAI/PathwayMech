@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-12T06:51:00.343789+00:00",
+  "command": [
+    "gh",
+    "issue",
+    "view",
+    "460",
+    "--repo",
+    "CultureBotAI/PathwayMech",
+    "--json",
+    "number,title,body,state,url,createdAt"
+  ],
+  "exit_code": 0,
+  "issue": {
+    "body": "Finding key: `sbp-reference-title-whitespace`\n\nThe ATP bypass record declares the PMID:31464375 bibliography title with a trailing space and escaped newline at `references[22].title`. Native rendering carries these bytes into the new record page, leaving trailing whitespace on HTML line 732. This would fail the staged whitespace check for the new page.\n\nTarget: `data/pathways/sedoheptulose-bisphosphate-bypass.yaml`, reviewed SHA256 `cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101`.\n\nEvidence: root inspected the exact YAML scalar and the actual maintained-render output. The external observation is `/private/tmp/pathwaymech-next-230-initial-generated-inspection-20261012.json`. Rendered page SHA256: `dbb3e09bb047a2ca7715696a6a4d8a7eb801461bb7d23ec57eda42512e9de855`.\n\nCorrect only the trailing whitespace of this title. Preserve its wording, source binding, every scientific assertion, identifier selector, graph identity, edge/qualifier/evidence object and all other references. Record a native EDIT before rerendering, retain the original accepted scientific/canonical work and full-gate results with their actual target scope, and verify the exact correction and generated metadata delta. Rerender and check native/closed-schema/identifier consumers, KGX, site-current and staged whitespace. Save a current native review that explicitly assesses this external issue.\n\nSeverity: minor; bibliography formatting defect, not a changed biological claim.\n",
+    "createdAt": "2026-10-12T06:44:45Z",
+    "number": 460,
+    "state": "OPEN",
+    "title": "Trim trailing bibliography whitespace in ATP bypass record",
+    "url": "https://github.com/CultureBotAI/PathwayMech/issues/460"
+  },
+  "body_matches": true,
+  "stderr": ""
+}

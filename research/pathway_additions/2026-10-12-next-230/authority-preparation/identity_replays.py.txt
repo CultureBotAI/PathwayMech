@@ -1,0 +1,66 @@
+"""Source-to-source identity comparisons, preserving native release precedence."""
+from pathlib import Path
+import hashlib,json,sys,xml.etree.ElementTree as E
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def read(p):return json.loads(Path(p).read_bytes())
+probes=read(O/'native-candidate-probes.json');fresh={}
+for row in probes:
+ if row['kind']!='uniprot':continue
+ p=Path(row['original']['path']);d=read(p)
+ for item in d.get('results',[d]):
+  key=item['primaryAccession'];assert key not in fresh
+  fresh[key]={'entry':item,'original':row['original'],'request_url':row['url'],'native_term':next(t for t in row['terms'] if t[0]=='UniProtKB:'+key)}
+base_entry=next(e for e in read(B/'manifest.json') if e['key']=='uniprot-ecoli-reviewed-cofactors');fp=B/'originals'/base_entry['path'];assert bind(fp)['sha256']==base_entry['sha256'];frozen={x['primaryAccession']:x for x in read(fp)['results']};fterms={t[0]:t for t in sb.source_terms('uniprot',fp)}
+# Include the comparison-only P69783 in this identity inventory; final graph selectors remain author owned.
+comparison=[]
+for acc,row in sorted(fresh.items()):
+ old=frozen[acc];new=row['entry'];ot=fterms['UniProtKB:'+acc];nt=row['native_term']
+ facets=lambda d,t:{'accession':d['primaryAccession'],'label':t[1],'synonyms':sorted(set(t[2])-{t[1]}),'taxon_id':d['organism']['taxonId']}
+ a,b=facets(old,ot),facets(new,nt);assert a['taxon_id']==b['taxon_id']==83333
+ oldtypes={c['commentType'] for c in old.get('comments',[])}
+ annotations={k:{'frozen':[x for x in old.get('comments',[]) if x['commentType']==k],'fresh':[x for x in new.get('comments',[]) if x['commentType']==k]} for k in sorted(oldtypes)}
+ comparison.append({'id':'UniProtKB:'+acc,'frozen_original':bind(fp),'frozen_source_entry':base_entry,'fresh_original':row['original'],'fresh_request_url':row['request_url'],'frozen_identity':a,'fresh_identity':b,'identity_facets_equal':a==b,'identity_differences':{k:{'frozen':a[k],'fresh':b[k]} for k in a if a[k]!=b[k]},'common_annotation_changes':{k:v for k,v in annotations.items() if v['frozen']!=v['fresh']},'fresh_entry_audit':new.get('entryAudit'),'frozen_entry_audit_present':'entryAudit' in old,'fresh_fields_not_in_frozen':sorted(set(new)-set(old)),'full_description_equal':old.get('proteinDescription')==new.get('proteinDescription'),'precedence':'Preserve prior whole original and native first-source order. Fresh full scientific entry remains separate evidence; no release refresh or full scientific-content equality asserted.'})
+save('uniprot-frozen-vs-fresh.json',{'status':'native-order-preserving comparison complete','identities':comparison,'whole_scientific_content_equal_claimed':False})
+# Native assembly endpoints and explicit coefficients are checked directly from original XML.
+frames=['6PFK-1-CPX','FRUCBISALD-CLASSII','PC00061','CPLX-127','PC00004','CPLX0-226'];assemblies=[];monomers={};compounds={}
+for frame in ['6PFK-1-MONOMER','FRUCTBISALD-CLASSII-MONOMER','PD00521','PD00257']:
+ p=P/'raw'/('ECOLI-'+frame+'.xml');n=E.parse(p).getroot().find('Protein');assert n.get('frameid')==frame and n.get('orgid')=='ECOLI'
+ links=[{'db':x.findtext('dblink-db'),'id':x.findtext('dblink-oid'),'relationship':x.findtext('dblink-relationship')} for x in n.findall('dblink')]
+ acc=[x['id'] for x in links if x['db']=='UNIPROT'];assert len(acc)==1 and acc[0] in fresh
+ native_refseq={x['id'].split('.')[0] for x in links if x['db']=='REFSEQ'};issuing_refseq={x['id'].split('.')[0] for x in fresh[acc[0]]['entry']['uniProtKBCrossReferences'] if x['database']=='RefSeq'};assert native_refseq & issuing_refseq
+ monomers[frame]={'native_original':bind(p),'native_identity':n.attrib,'native_xrefs':links,'uniprot_id':'UniProtKB:'+acc[0],'issuing_original':fresh[acc[0]]['original'],'refseq_overlap':sorted(native_refseq&issuing_refseq),'native_gene_refs':[x.attrib for x in n.findall('gene/*')],'native_locations':[x.attrib for x in n.findall('location/*')],'scope':'Native reference-chain identity only; no historical or engineered construct sequence equality inferred.'}
+for frame,name in [('FRU1P','ECOLI-FRU1P-native.xml'),('CAMP','ECOLI-CAMP.xml')]:
+ p=P/'raw'/name;n=E.parse(p).getroot().find('Compound');assert n.get('frameid')==frame
+ x=[{'db':q.findtext('dblink-db'),'id':q.findtext('dblink-oid'),'relationship':q.findtext('dblink-relationship')} for q in n.findall('dblink')];ch=[q['id'] for q in x if q['db']=='CHEBI' and q['relationship']=='unification'];assert len(ch)==1
+ compounds[frame]={'original':bind(p),'native_identity':n.attrib,'native_CHEBI_xref':'CHEBI:'+ch[0],'native_xrefs':x,'scope':'Native selected ligand identity; assay-specific anomer/occupancy is not inferred.'}
+for frame in frames:
+ p=P/'raw'/('ECOLI-'+frame+'.xml');n=E.parse(p).getroot().find('Protein');assert n.get('frameid')==frame
+ parts=[]
+ for c in n.findall('component'):
+  items=[q for q in c if q.tag in {'Protein','Compound'}];assert len(items)==1;item=items[0];f=item.get('frameid');coef=c.findtext('coefficient');part={'native_type':item.tag,'identity':item.attrib,'coefficient':int(coef) if coef is not None else None,'coefficient_scope':'explicit native integer' if coef is not None else 'not specified','native_component_xml':E.tostring(c,encoding='unicode')}
+  if f in monomers:part['reference_chain_bridge']=monomers[f]
+  elif f in compounds:part['ligand_bridge']=compounds[f]
+  elif item.tag=='Protein' and f in frames:part['native_assembly_endpoint']='EcoCyc:'+f
+  else:raise AssertionError((frame,f))
+  parts.append(part)
+ assemblies.append({'id':'EcoCyc:'+frame,'original':bind(p),'components':parts,'parents':[x[0].attrib for x in n.findall('parent')],'native_common_name':n.findtext('common-name')})
+assert [x['components'][0]['coefficient'] for x in assemblies if x['id'] in {'EcoCyc:6PFK-1-CPX','EcoCyc:FRUCBISALD-CLASSII','EcoCyc:PC00061','EcoCyc:PC00004'}]==[4,2,4,2]
+assert all(q['coefficient'] is None for x in assemblies if x['id'] in {'EcoCyc:CPLX-127','EcoCyc:CPLX0-226'} for q in x['components'])
+save('assembly-native-bridges.json',assemblies);save('protein-native-bridges.json',list(monomers.values()));save('native-ligand-bridges.json',compounds)
+genes=[]
+for gid,acc in [('948412','P0A796'),('947415','P0AB71')]:
+ row=next(x for x in probes if x['kind']=='ncbi-entrezgene-xml' and any(t[0]=='Entrez:'+gid for t in x['terms']));p=Path(row['original']['path']);term,tax=sb._ncbi_gene_record(p,row['url']);n=E.parse(p).getroot()[0];u=fresh[acc]['entry'];locus=n.findtext('Entrezgene_gene/Gene-ref/Gene-ref_locus-tag');ugids={x['id'] for x in u['uniProtKBCrossReferences'] if x['database']=='GeneID'};uloci={x['value'] for g in u['genes'] for x in g.get('orderedLocusNames',[])};nrefs={x.text for x in n.findall('.//Gene-commentary_accession')};urefs={x['id'].split('.')[0] for x in u['uniProtKBCrossReferences'] if x['database']=='RefSeq'};assert tax=='511145' and gid in ugids and locus in uloci and nrefs&urefs
+ genes.append({'id':term[0],'native_term':term,'original':row['original'],'requested_url':row['url'],'taxon':'NCBITaxon:'+tax,'locus':locus,'uniprot_id':'UniProtKB:'+acc,'uniprot_original':fresh[acc]['original'],'refseq_overlap':sorted(nrefs&urefs),'exact_issuing_join':True})
+wrong=[]
+for gid in ['93777982','93779073']:
+ p=P/'raw'/('Entrez-'+gid+'.xml');n=next(n for n in E.parse(p).getroot() if n.findtext('Entrezgene_track-info/Gene-track/Gene-track_geneid')==gid);tax=[x.findtext('Dbtag_tag/Object-id/Object-id_id') for x in n.findall('Entrezgene_source/BioSource/BioSource_org/Org-ref/Org-ref_db/Dbtag') if x.findtext('Dbtag_db')=='taxon'];assert tax==['624'];wrong.append({'id':'Entrez:'+gid,'original':bind(p),'taxon':'NCBITaxon:624','organism':n.findtext('Entrezgene_source/BioSource/BioSource_org/Org-ref/Org-ref_taxname'),'selected':False,'reason':'Issuing Shigella taxon cannot identify the MG1655 reference endpoint.'})
+save('gene-identity-bridges.json',{'selected_core':genes,'rejected_cross_species':wrong})
+print(json.dumps({'fresh_identity_inventory':len(comparison),'identity_changes':[r['id'] for r in comparison if not r['identity_facets_equal']],'common_annotation_changes':[r['id'] for r in comparison if r['common_annotation_changes']],'assemblies':len(assemblies),'core_gene_joins':len(genes),'native_reference_chains':len(monomers)}))

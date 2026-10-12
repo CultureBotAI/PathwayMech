@@ -1,0 +1,54 @@
+"""Verify the immutable authority contribution and bridge actual native selectors."""
+from pathlib import Path
+import hashlib, json, shutil, sys, importlib.util
+import yaml
+A=Path(__file__).parent
+H=Path('/private/tmp/pathwaymech-next-230-authority-preparation-20261012')
+B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert sha(H/'handoff.json')=='3001abcd793a2394b88d44e8f9dc73b769f4a2d21451e4802aae8b1ac4a588c5'
+assert sha(H/'artifact-manifest.json')=='121dbdadeb3504cc521aab144fd5720409266b1c3d5f4da46bd8a125fc6c90be'
+m=json.loads((H/'artifact-manifest.json').read_text())
+for x in m['artifacts']:
+ p=H/x['path'];assert p.stat().st_size==x['bytes'] and sha(p)==x['sha256'],p
+preservation={}
+for n in ['sources','ontology']:
+ old=json.loads((B/(n+'.json')).read_text());new=json.loads((H/'proposals'/(n+'.json')).read_text())
+ for section in ['sources','terms']:assert all(new[section][k]==v for k,v in old[section].items())
+ preservation[n]={section:dict(old=len(old[section]),new=len(new[section]),old_objects_exact=True)for section in ['sources','terms']}
+old=json.loads((B/'manifest.json').read_text());new=json.loads((H/'proposals/manifest.json').read_text());assert new[:len(old)]==old
+oldr=json.loads((B/'rhea-updates.json').read_text());newr=json.loads((H/'proposals/rhea-updates.json').read_text());assert newr['ids'][:len(oldr['ids'])]==oldr['ids']
+root=A/'identifier-root'
+for part in ['data/pathways','data/identifier_authorities','conf']:(root/part).mkdir(parents=True,exist_ok=True)
+target=A/'draft/sedoheptulose-bisphosphate-bypass.yaml'
+shutil.copyfile(target,root/'data/pathways'/target.name)
+for n in ['sources.json','ontology.json']:shutil.copyfile(H/'proposals'/n,root/'data/identifier_authorities'/n)
+shutil.copyfile(A/'runtime/conf/identifier_policy.yaml',root/'conf/identifier_policy.yaml')
+sys.path.insert(0,str(A/'runtime/src'))
+from pathwaymech.identifiers import identifier_errors
+errs=identifier_errors(root);assert not errs,errs
+spec=importlib.util.spec_from_file_location('native_source_builder',A/'runtime/scripts/build_source_identifier_snapshot.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+oldids=mod.corpus_ids(H/'bounded-selection');newids=mod.corpus_ids(A/'draft');assert oldids==newids and len(newids)==62
+prior=yaml.safe_load((H/'bounded-selection'/target.name).read_text());current=yaml.safe_load(target.read_text())
+def nodes(d):return [d]+sum([d.get(k,[])for k in ['participants','reactions','taxa','gene_clusters']],[])
+assert [(n['id'],n['label'])for n in nodes(prior)]==[(n['id'],n['label'])for n in nodes(current)]
+assert [(r['id'],r['source_sha256'])for r in prior['references']]==[(r['id'],r['source_sha256'])for r in current['references']]
+assert [(e['id'],e['subject'],e['predicate'],e['object'])for e in prior['mechanistic_edges']]==[(e['id'],e['subject'],e['predicate'],e['object'])for e in current['mechanistic_edges']]
+differences=[]
+def diff(x,y,path='$'):
+ if type(x)!=type(y):differences.append(dict(path=path,before=x,after=y))
+ elif isinstance(x,dict):
+  assert x.keys()==y.keys(),path
+  for k in x:diff(x[k],y[k],path+'.'+k)
+ elif isinstance(x,list):
+  assert len(x)==len(y),path
+  for i,(a,b)in enumerate(zip(x,y)):diff(a,b,path+f'[{i}]')
+ elif x!=y:differences.append(dict(path=path,before=x,after=y))
+diff(prior,current)
+for x in differences:assert x['path'].endswith(('.description','.source_assertion','.source_locator','.title')),x
+save('authority-selector-bridge.json',dict(prior_target=bind(H/'bounded-selection'/target.name),final_target=bind(target),native_collector=bind(A/'runtime/scripts/build_source_identifier_snapshot.py'),same_native_62_selectors=sorted(newids),same_named_labels=True,same_reference_ID_and_original_hashes=True,same_67_edge_identities=True,exact_field_changes=differences,status='Native authority selectors unchanged; full canonical build pending on this exact final candidate.'))
+save('authority-intake.json',dict(handoff=bind(H/'handoff.json'),manifest=bind(H/'artifact-manifest.json'),verified_artifacts=len(m['artifacts']),preservation=preservation,manifest_prefix_exact=len(old),rhea_prefix_exact=len(oldr['ids']),target=bind(target),identifier_errors=errs,status='Original-backed incremental proposals; not a full canonical build or maintained integration.'))
+print(len(m['artifacts']),'authority artifacts;62 native selectors; identifier consumer passed; prior objects exact;',len(differences),'wording/locator fields changed')

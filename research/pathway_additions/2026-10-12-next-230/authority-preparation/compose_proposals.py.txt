@@ -1,0 +1,107 @@
+"""Compose bounded native proposals from an exact external author draft; never full builders."""
+from pathlib import Path
+import copy,datetime,hashlib,json,sqlite3,sys
+import yaml
+O=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012');C=Path('/private/tmp/pathwaymech-curation-authorities');CACHE=C/'sources'
+sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+
+def read(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+def save(n,x):
+ q=O/n;q.parent.mkdir(parents=True,exist_ok=True);q.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def verified(b):
+ q=Path(b['path']);v=bind(q);assert all(v[k]==b[k] for k in ('path','bytes','sha256')),q
+ return q
+
+def main():
+ assert len(sys.argv)==3,'Pass exact author YAML path and expected SHA256'
+ draft=Path(sys.argv[1]);assert bind(draft)['sha256']==sys.argv[2];data=yaml.safe_load(draft.read_text());assert data['id']=='MetaCyc:PWY0-1517'
+ sourceids={i for i in sb.corpus_ids(draft.parent) if i.partition(':')[0] in sb.SOURCE_NAMESPACES}
+ named={x['id'] for x in [data]+[v for k in ['taxa','participants','reactions','gene_clusters'] for v in data.get(k,[])]}
+ assert sourceids=={i for i in named if i.partition(':')[0] in sb.SOURCE_NAMESPACES},'Draft directory must contain only this selected corpus'
+ ontologyids=ob.walk_identifiers(data,{'CHEBI','GO','NCBITaxon','RHEA'})
+ assert named==sourceids|ontologyids,'All named IDs must be covered by native authority namespaces'
+ intake=read(O/'intake.json')
+ for b in intake['EG_actual_outputs'].values():verified(b)
+ base={n:read(B/n) for n in ['sources.json','ontology.json','manifest.json','rhea-updates.json']};order=read(O/'prior-native-precedence.json');assert order['status']=='passed' and sourceids<=set(order['candidate_ids'])
+ oldfirst={i:t for i,t in order['first_native_terms'].items() if i in sourceids};keys={t['source'] for t in oldfirst.values()};entries=[e for e in base['manifest.json'] if e['key'] in keys];bindings={e['key']:bind(B/'originals'/e['path']) for e in entries};new=[];probes=read(O/'native-candidate-probes.json');missing=sourceids-set(oldfirst)
+ for pos,row in enumerate(probes):
+  hits=missing & {t[0] for t in row['terms']}
+  if not hits:continue
+  kind=row['kind'];p=verified(row['original']);key='atp230-'+kind+'-'+str(pos+1)
+  e={'key':key,'kind':kind,'path':'atp230-'+p.name,'url':row['url'],'version':row['version'],'license':'CC-BY-4.0' if kind=='uniprot' else 'Public domain' if kind=='ncbi-entrezgene-xml' else 'Upstream terms; public-release licensing deferred','sha256':row['original']['sha256']}
+  if kind=='pathbank-biopax-zip':
+   prior=next(e for e in base['manifest.json'] if e['kind']==kind and e['sha256']==row['original']['sha256']);e['path']=prior['path'];e['archive']=row['archive'];e['version']=prior['version'];e['license']=prior['license']
+  assert e['key'] not in {x['key'] for x in base['manifest.json']}
+  entries.append(e);new.append(e);bindings[key]=row['original'];missing-=hits
+ assert not missing,missing
+ cache=O/'original-cache';cache.mkdir(exist_ok=True)
+ for e in entries:
+  p=verified(bindings[e['key']]);assert bind(p)['sha256']==e['sha256'];q=cache/e['path'];q.parent.mkdir(parents=True,exist_ok=True)
+  if q.exists():assert bind(q)['sha256']==e['sha256']
+  else:q.symlink_to(p.resolve())
+ sel=O/'bounded-selection';sel.mkdir(exist_ok=True);target=sel/draft.name;target.write_bytes(draft.read_bytes())
+ save('incremental-source-manifest.json',entries)
+ ss=sb.build_snapshot(O/'incremental-source-manifest.json',sel,cache);assert set(ss['terms'])==sourceids
+ for i,t in oldfirst.items():assert ss['terms'][i]==t,(i,t,ss['terms'][i])
+ expected={**oldfirst}
+ for e in new:
+  p=Path(bindings[e['key']]['path'])
+  for i,label,syn in sb.source_terms(e['kind'],p,url=e['url'],version=e['version'],archive=e.get('archive'),sha256=e['sha256']):
+   if i in sourceids and i not in expected:
+    t={'label':label,'synonyms':sorted(set(syn)-{label}),'source':e['key']}
+    if e['kind'] in {'pathbank-biopax','pathbank-biopax-zip'} and '/' in i:t['label_kind']='source_context'
+    expected[i]=t
+ assert ss['terms']==expected
+ save('incremental-source-build.json',ss)
+ save('source-original-bindings.json',[{'entry':e,'original':bindings[e['key']],'external_cache':str(cache/e['path'])} for e in entries])
+ save('source-order-check.json',{'status':'passed','base_order_probe':bind(O/'prior-native-precedence.json'),'base_manifest_entries':len(base['manifest.json']),'proposed_manifest_entries':len(base['manifest.json'])+len(new),'selected_ids':sorted(sourceids),'prior_first_terms_retained':oldfirst,'first_native_terms':expected,'scope':'Bounded selected native build and prior source-order replay, not a full canonical build'})
+ # Reuse accepted whole-database metadata only after current stat and exact native
+ # release declarations agree; selected terms are freshly extracted by native code.
+ osnap={'version':1,'sources':{},'terms':{}};replays=[];continuity=read(O/'sql-original-binding-continuity.json')['originals']
+ for db,prefix in [('chebi','CHEBI'),('go','GO'),('ncbitaxon','NCBITaxon'),('rhea','RHEA')]:
+  ids=sorted(i for i in ontologyids if i.startswith(prefix+':'))
+  if prefix=='RHEA':ids=[i for i in ids if i in base['ontology.json']['terms'] and base['ontology.json']['terms'][i]['source']!='rhea-rdf-142']
+  if not ids:continue
+  original=next(x for x in continuity if x['accepted_original']['prefix']==prefix);p=Path(original['accepted_original']['path']);st=p.stat();assert st.st_size==original['current_stat']['bytes'] and st.st_mtime_ns==original['current_stat']['mtime_ns'] and str(p.resolve())==original['current_resolved_path']
+  key=original['accepted_original']['source_key'];meta=base['ontology.json']['sources'][key];assert meta['sha256']==original['accepted_original']['sha256']
+  with sqlite3.connect(p.resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as c:
+   prefixes=dict(c.execute('SELECT prefix,base FROM prefix'));decl=list(c.execute("SELECT subject,object FROM statements WHERE predicate='owl:versionIRI'"));assert len(decl)==1 and decl[0][1];props={pred:obj or val for pred,obj,val in c.execute("SELECT predicate,object,value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo','dcterms:license')",(decl[0][0],))}
+   observed={'url':ob.expand_iri(decl[0][1],prefixes),'version':props['owl:versionInfo'],'license':ob.expand_iri(props['dcterms:license'],prefixes)};assert all(meta[k]==v for k,v in observed.items())
+   terms,absent=ob.extract_terms(c,ids,key);assert not absent,absent
+   raw={i:[{'predicate':a,'object':b,'value':v} for a,b,v in c.execute('SELECT predicate,object,value FROM statements WHERE subject=?',(i,))] for i in ids}
+  osnap['sources'][key]=copy.deepcopy(meta);osnap['terms'].update(terms);replays.append({'prefix':prefix,'original':original,'native_release':observed,'terms':terms,'native_statements':raw})
+ rdfids=sorted(i for i in ontologyids if i.startswith('RHEA:') and i not in osnap['terms'])
+ rm=copy.deepcopy(base['rhea-updates.json']);rm['ids']=rdfids;rp=C/'rhea.rdf.gz';assert bind(rp)['sha256']==rm['sha256'];q=cache/rm['path']
+ if q.exists():assert bind(q)['sha256']==rm['sha256']
+ else:q.symlink_to(rp.resolve())
+ save('incremental-rhea-manifest.json',rm);key,meta,terms=ob.read_rhea_updates(O/'incremental-rhea-manifest.json',cache,set(rdfids));osnap['sources'][key]=meta;osnap['terms'].update(terms);replays.append({'prefix':'RHEA','original':bind(rp),'manifest':rm,'terms':terms})
+ assert set(osnap['terms'])==ontologyids and set(ss['terms']).isdisjoint(osnap['terms'])
+ save('ontology-native-replay.json',replays);save('incremental-ontology-build.json',osnap)
+ preservation={}
+ for name,inc in [('sources.json',ss),('ontology.json',osnap)]:
+  result=copy.deepcopy(base[name]);assert inc['version']==result['version'];added={}
+  for section in ['terms','sources']:
+   added[section]=[]
+   for key,value in inc[section].items():
+    if key in result[section]:assert result[section][key]==value,(name,section,key,result[section][key],value)
+    else:result[section][key]=copy.deepcopy(value);added[section].append(key)
+   assert all(result[section][key]==value for key,value in base[name][section].items())
+  save('proposals/'+name,result);preservation[name]={'prior_counts':{s:len(base[name][s]) for s in ['terms','sources']},'proposed_counts':{s:len(result[s]) for s in ['terms','sources']},'added':added,'all_prior_objects_exact':True}
+ manifest=copy.deepcopy(base['manifest.json'])+new;assert manifest[:750]==base['manifest.json'];save('proposals/manifest.json',manifest)
+ rhea=copy.deepcopy(base['rhea-updates.json']);rhea['ids']+=[i for i in rdfids if i not in rhea['ids']];assert rhea['ids'][:22]==base['rhea-updates.json']['ids'];save('proposals/rhea-updates.json',rhea)
+ plan=[]
+ for e in new:
+  destination=CACHE/e['path'];existing=bind(destination) if destination.exists() else None
+  if existing:assert existing['sha256']==e['sha256']
+  plan.append({'entry_key':e['key'],'original':bindings[e['key']],'destination':str(destination),'observed_destination':existing,'action':'reuse_exact_existing_whole_original' if existing else 'copy_new_whole_original_after_root_acceptance','archive':e.get('archive')})
+ save('source-cache-copy-plan.json',{'scope':'Plan only; no shared-cache writes. Whole original bytes only. Root must verify all prior cache objects and exact destination absence/equality immediately before and after future copy.','accepted_EG_base':intake['EG_actual_outputs'],'entries':plan,'new_originals':sum(r['observed_destination'] is None for r in plan),'reused_originals':sum(r['observed_destination'] is not None for r in plan),'reject':['Changed prior originals','Changed source order','Destination collision','Replacing a whole ZIP by extracted member','Unbound source or selector']})
+ save('authority-preservation.json',{'status':'append-only native proposals composed','scope':'Actual accepted EG authority objects preserved; no full canonical build or maintained adoption asserted.','draft':bind(draft),'selected_ids':sorted(named),'source_ids':sorted(sourceids),'ontology_ids':sorted(ontologyids),'preservation':preservation,'prior_manifest_prefix_exact':True,'prior_rhea_prefix_exact':True,'manifest_count':len(manifest),'rhea_selector_count':len(rhea['ids']),'new_source_keys':[e['key'] for e in new],'root_acceptance':intake['EG_canonical_root_acceptance']})
+ save('working-labels.json',{i:t['label'] for s in [ss,osnap] for i,t in s['terms'].items()})
+ print(json.dumps({'status':'composed','selected':len(named),'source_selected':len(sourceids),'ontology_selected':len(ontologyids),'preservation':preservation,'manifest':len(manifest),'rhea_selectors':len(rhea['ids']),'new_originals':sum(r['observed_destination'] is None for r in plan)}))
+if __name__=='__main__':main()

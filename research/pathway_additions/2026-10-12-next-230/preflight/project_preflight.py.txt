@@ -1,0 +1,70 @@
+from pathlib import Path
+import json,hashlib,zipfile,collections,re,datetime
+from lxml import etree as E,html
+B=Path(__file__).parent; D=B/'derived'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def put(n,x):(D/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def binding(p):return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+receipts=[r for p in B.glob('acquisition-*-receipts.json') for r in json.loads(p.read_text())]
+by={r['name']:r for r in receipts if 'sha256' in r}
+index=[];native=[];primary=[];proteins=[];genes=[]
+for p in sorted(list((B/'raw').iterdir())+list((B/'root-leads').glob('*'))):
+ if not p.is_file():continue
+ row=binding(p);row['relative']=str(p.relative_to(B));row['acquisition']=by.get(p.name)
+ data=p.read_bytes();kind='other retained artifact'
+ try:
+  t=E.fromstring(data)
+  if t.tag=='ptools-xml':
+   kind='native PGDB XML';tree=t.getroottree();meta=t.find('metadata');tops=[x for x in t if x.tag not in ['metadata']]
+   native.append(dict(**row,metadata_xml=E.tostring(meta,encoding='unicode'),objects=[dict(type=x.tag,attributes=dict(x.attrib),slots=[dict(slot=c.tag,xpath=tree.getpath(c),attributes=dict(c.attrib),text=' '.join(''.join(c.itertext()).split()),xml=E.tostring(c,encoding='unicode')) for c in x]) for x in tops]))
+  elif t.tag=='article':
+   kind='full JATS article';tree=t.getroottree();primary.append(dict(**row,kind=kind,article_ids=[dict(type=x.get('pub-id-type'),value=x.text)for x in t.xpath('./front/article-meta/article-id')],sections=[dict(xpath=tree.getpath(x),title=' '.join(''.join(x.find('title').itertext()).split()) if x.find('title')is not None else None)for x in t.xpath('./body//sec')],passages=[dict(xpath=tree.getpath(x),text=' '.join(''.join(x.itertext()).split()))for x in t.xpath('./body//p|./body//table-wrap|./body//fig')]))
+  elif t.tag=='collection' and t.findall('.//passage'):
+   kind='full BioC article';tree=t.getroottree();primary.append(dict(**row,kind=kind,passages=[dict(xpath=tree.getpath(x),infons={y.get('key'):y.text for y in x.findall('infon')},text=x.findtext('text'))for x in t.findall('.//passage')]))
+  elif t.tag=='Entrezgene-Set':
+   kind='issuing Entrez gene';tree=t.getroottree()
+   for x in t.findall('Entrezgene'):
+    genes.append(dict(**row,xpath=tree.getpath(x),id=x.findtext('.//Gene-track_geneid'),locus=x.findtext('.//Gene-ref_locus'),locus_tag=x.findtext('.//Gene-ref_locus-tag'),description=x.findtext('.//Gene-ref_desc'),taxon=x.xpath('.//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()'),taxname=x.findtext('.//Org-ref_taxname'),status=x.find('.//Gene-track_status').get('value') if x.find('.//Gene-track_status') is not None else None))
+  elif E.QName(t).localname=='RDF':kind='BioPAX whole member'
+  elif t.tag.lower()=='html':kind='HTML response; requires separate body assessment'
+ except E.XMLSyntaxError:
+  if data.startswith(b'%PDF-'):kind='genuine PDF'
+  elif data.startswith(b'\xd0\xcf\x11\xe0'):kind='OLE/XLS workbook'
+  elif data.startswith(b'PK'):kind='ZIP/XLSX container'
+  else:
+   try:
+    j=json.loads(data)
+    if 'primaryAccession' in j or ('results'in j and j['results']and 'primaryAccession'in j['results'][0]):
+     kind='full issuing UniProt JSON';rows=j.get('results',[j])
+     for x in rows:
+      proteins.append(dict(**row,selector=f"results[primaryAccession='{x['primaryAccession']}']" if 'results'in j else '$',id='UniProtKB:'+x['primaryAccession'],organism=x['organism'],genes=x.get('genes'),proteinDescription=x['proteinDescription'],length=x['sequence']['length'],sequence_sha256=hashlib.sha256(x['sequence']['value'].encode()).hexdigest(),references=[a for a in x.get('uniProtKBCrossReferences',[]) if a['database']in['GeneID','BioCyc','RefSeq']],comments=x.get('comments',[])))
+    elif 'resultList'in j:kind='issuing publication metadata/abstract response'
+    else:kind='JSON retained projection/metadata'
+   except Exception:
+    s=data[:3000].lower()
+    if b'<html'in s or b'<!doctype html'in s:kind='HTML response; requires separate body assessment'
+    elif b'no result'in s:kind='BioC error text, not a body'
+ row['format_assessment']=kind
+ if 'HTML response'in kind:
+  try:
+   h=html.fromstring(data);row['html_title']=' '.join(h.xpath('//title/text()'));row['html_h1']=[' '.join(''.join(z.itertext()).split())for z in h.xpath('//h1')];row['captcha_or_error']=bool(re.search(r'recaptcha|captcha|checking your browser|access denied|page not found|not a robot',data[:20000].decode(errors='replace'),re.I))
+  except Exception:pass
+ index.append(row)
+put('all-original-source-index.json',index);put('native-whole-source-slots.json',native);put('primary-whole-passages.json',primary);put('protein-original-identities.json',proteins);put('gene-original-identities.json',genes)
+# Publisher body is a complete article even when Europe PMC returned HTTP 500.
+p=B/'raw/PMID21272324-publisher.html';t=html.parse(str(p));sections=[]
+for x in t.xpath('//section[@data-title]'):
+ if x.get('data-title')in['Abstract','Background','Results','Discussion','Conclusions','Materials and methods']:
+  sections.append(dict(xpath=t.getpath(x),title=x.get('data-title'),text=' '.join(''.join(x.itertext()).split())))
+put('PMID21272324-publisher-sections.json',dict(**binding(p),sections=sections))
+# Exact frozen archive member, root, children and all graph objects are independently replayed.
+zpath=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip');zb=binding(zpath);assert zb['sha256']=='b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44'
+with zipfile.ZipFile(zpath)as z:
+ names=[n for n in z.namelist()if n=='PW002098.owl'];assert len(names)==1;data=z.read(names[0])
+assert data==(B/'root-leads/PW002098.owl').read_bytes()
+t=E.fromstring(data);tree=t.getroottree();rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';bp='{http://www.biopax.org/release/biopax-level3.owl#}'
+obj={}
+for x in t:
+ key=x.get(rdf+'ID')or x.get(rdf+'about');assert key not in obj;obj[key]=dict(type=E.QName(x).localname,xpath=tree.getpath(x),slots=[dict(slot=E.QName(c).localname,text=c.text,resource=c.get(rdf+'resource'))for c in x])
+put('pathbank-whole-original-projection.json',dict(archive=zb,member='PW002098.owl',member_sha256=hashlib.sha256(data).hexdigest(),selected_root='http://identifiers.org/smpdb/SMP0002110',all_objects=obj,disposition='Frozen ZIP member, not a current per-pathway download. Children and interaction markers describe boundaries, not transport or new internal events.'))
+print(json.dumps(dict(originals=len(index),native=len(native),full_primary=len(primary),proteins=len(proteins),genes=len(genes),pathbank_objects=len(obj))))

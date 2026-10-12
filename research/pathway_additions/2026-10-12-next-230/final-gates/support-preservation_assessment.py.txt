@@ -1,0 +1,39 @@
+"""Recheck original preservation plus actual metadata-only correction bridge."""
+import argparse
+from support import *
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('gates', 'preservation', 'output'): parser.add_argument('--' + name, required=True, type=Path)
+    args = parser.parse_args(); verify_support(); out = external_new(args.output)
+    assert_head(); gates, inputs = verify_gates(args.gates); bridge = verify_final_bridge()
+    observed = load(args.preservation)
+    assert bind(args.preservation) == bridge['historical_preservation']
+    assert observed['target_sha256'] == HISTORICAL_SHA
+    assert observed['gate_receipt'] == bridge['historical_gates']
+    assert observed['status'] == 'passed' and not observed['problems']
+    assert observed['old_record_count'] == observed['old_page_count'] == 230
+    for key in ('baseline', 'baseline_kgx'): verify(observed[key])
+    baseline = load(observed['baseline']['path']); assert baseline['head'] == BASE and baseline['tree'] == TREE
+    assert observed['old_review_bundles'] == baseline['counts']['structured_review_bundles']
+    for group, values in observed['retained_files'].items():
+        assert values['checked'] == len(baseline[group]) and not values['changed_or_missing']
+        for row in baseline[group]: verify(row, ROOT / row['relative_path'])
+    assert observed['old_edge_cells_exact'] and not observed['lost_contexts']
+    for field in ('unexpected_context_nodes', 'unapproved_old_file_changes', 'changed_old_cache_files'): assert not observed[field]
+    assert observed['new_edges'] == 67
+    for field in ('approved_node_display_delta', 'approved_extra_files'):
+        if observed.get(field): verify(observed[field])
+    write(out, {'status': 'passed', 'at': now(), 'target_sha256': TARGET_SHA,
+        'preservation': bind(args.preservation), 'historical_target_sha256': HISTORICAL_SHA,
+        'historical_gates': bridge['historical_gates'], 'root_correction_proof': bridge['root_metadata_bridge'],
+        'final_target_bridge': bind(BRIDGE_PATH), 'gate_receipt': bind(args.gates), 'gate_inputs': gates['inputs'],
+        'full_current_nongenerated_inventory_verified': True, 'full_render_history_inventory_verified': True,
+        'old_record_count': 230, 'old_page_count': 230, 'old_review_bundles': observed['old_review_bundles'],
+        'old_edges': observed['old_edges'], 'old_source_contexts': observed['old_source_contexts'],
+        'new_edges': observed['new_edges'], 'new_nodes': observed['new_nodes'], 'new_source_contexts': observed['new_source_contexts'],
+        'node_display_delta': observed['node_display_delta'], 'unresolved_problems': [],
+        'scope': 'Original preservation remains historically bound. Current complete inventory, all230 prior record/page/review/history bytes and exact metadata-only correction bridge rechecked. QA independently checks all current edge cells and context multiplicities. No new display approval or fresh scientific rereview.'})
+
+if __name__ == '__main__': main()

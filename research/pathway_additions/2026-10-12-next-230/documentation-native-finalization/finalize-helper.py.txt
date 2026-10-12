@@ -1,0 +1,106 @@
+"""Archive actual documentation-review outcomes and verify the exact final scope."""
+import json
+import subprocess
+import sys
+from pathlib import Path
+sys.path.insert(0, '/private/tmp/pathwaymech-next-230-finalization-support-20261012')
+from support import ROOT, BASE, ENV, PYTHON, DOSSIER_REL, bind, verify, load, write, files, now, assert_head
+
+OUT = Path('/private/tmp/pathwaymech-next-230-documentation-final-checks-20261012')
+NATIVE = Path('/private/tmp/pathwaymech-next-230-readme-native-finalization-successor-20261012')
+ASSEMBLY = Path('/private/tmp/pathwaymech-next-230-readme-correction-native-successor-20261012')
+ORIGINAL = Path('/private/tmp/pathwaymech-next-230-readme-correction-20261012')
+ARCH = ROOT / DOSSIER_REL / 'documentation-native-finalization'
+
+
+def main():
+    assert_head()
+    native = load(NATIVE / 'execution.json')
+    assert native['status'] == 'passed' and native['base'] == BASE
+    assert [r['name'] for r in native['receipts']] == ['validate', 'save', 'check']
+    assert all(r['exit_code'] == 0 for r in native['receipts'])
+    for key in ('saved_yaml', 'saved_markdown', 'assembly', 'serialization', 'gate_receipt'):
+        verify(native[key])
+    import yaml
+    review = yaml.safe_load(Path(native['saved_yaml']['path']).read_bytes())
+    wanted = {r['relative_path']: r for r in load(ORIGINAL / 'before.json')}
+    correction = load(ROOT / DOSSIER_REL / 'documentation-correction/correction.json')
+    readme = DOSSIER_REL + '/README.md'
+    wanted[readme] = {'relative_path': readme, **correction['after']}
+    docprefix = DOSSIER_REL + '/documentation-correction/'
+    docrows = [r for r in review['source']['inputs'] if r['path'].startswith(docprefix)]
+    assert len(docrows) == 6
+    for r in docrows:
+        row = bind(ROOT / r['path'])
+        assert row['sha256'] == r['sha256']
+        wanted[r['path']] = {'relative_path': r['path'], **row}
+    for key in ('saved_yaml', 'saved_markdown'):
+        row = native[key]; rel = str(Path(row['path']).relative_to(ROOT))
+        assert rel not in wanted
+        wanted[rel] = {'relative_path': rel, **row}
+    assert set(files(ROOT)) == set(wanted)
+    for rel, row in wanted.items(): verify(row, ROOT / rel)
+    assert not OUT.exists() and not ARCH.exists()
+    OUT.mkdir(); ARCH.mkdir()
+    plan = [
+        (ORIGINAL / 'assembly.json', 'initial-assembly.json'),
+        (ORIGINAL / 'inspect.stdout', 'native-inspection.json'),
+        (ORIGINAL / 'inspect-execution.json', 'inspection-execution.json'),
+        (ORIGINAL / 'root-read-receipt.json', 'initial-root-read.json'),
+        (ASSEMBLY / 'assembly.json', 'successor-assembly.json'),
+        (ASSEMBLY / 'root-read-receipt.json', 'successor-root-read.json'),
+        (Path('/private/tmp/pathwaymech-next-230-readme-native-finalization-20261012/execution.json'), 'initial-serialization-failure.json'),
+        (NATIVE / 'execution.json', 'native-execution.json'),
+        (NATIVE / 'serialization.json', 'native-serialization.json'),
+        (Path('/private/tmp/pathwaymech-next-230-pr-adversarial-review-20261012/readme-successor-reassessment.json'), 'independent-readme-reassessment.json'),
+        (Path(__file__), 'finalize-helper.py.txt'),
+    ]
+    for name in ('validate', 'save', 'check'):
+        for stream in ('stdout', 'stderr'):
+            plan.append((NATIVE / (name + '.' + stream), name + '.' + stream))
+    mapping = []
+    for source, name in plan:
+        dest = ARCH / name
+        dest.write_bytes(source.read_bytes())
+        assert bind(dest)['sha256'] == bind(source)['sha256']
+        mapping.append({'source': bind(source), 'archived': bind(dest)})
+    write(ARCH / 'archive-map.json', mapping)
+    for p in ARCH.iterdir():
+        rel = str(p.relative_to(ROOT)); assert rel not in wanted
+        wanted[rel] = {'relative_path': rel, **bind(p)}
+    write(OUT / 'expected-final-inventory.json', list(wanted.values()))
+    def state():
+        assert_head()
+        assert set(files(ROOT)) == set(wanted)
+        for rel, row in wanted.items(): verify(row, ROOT / rel)
+        for row in review['source']['inputs']:
+            assert bind(ROOT / row['path'])['sha256'] == row['sha256']
+        return len(wanted)
+    assert state() == len(wanted)
+    commands = [
+        ('native-review', [PYTHON, '-B', 'scripts/record_review.py', 'check', '--require-reviews', '--base', BASE]),
+        ('site-current', [PYTHON, '-B', '-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))']),
+        ('diff-check', ['git', 'diff', '--check']),
+        ('staged-diff-check', ['git', 'diff', '--cached', '--check']),
+    ]
+    receipts = []
+    for name, command in commands:
+        started = now(); r = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True)
+        stdout, stderr = OUT / (name + '.stdout'), OUT / (name + '.stderr')
+        stdout.write_bytes(r.stdout); stderr.write_bytes(r.stderr)
+        receipts.append({'name': name, 'command': command, 'cwd': str(ROOT), 'started_at': started,
+                         'finished_at': now(), 'exit_code': r.returncode, 'stdout': bind(stdout), 'stderr': bind(stderr)})
+        (OUT / 'execution.json').write_text(json.dumps({'status': 'running' if r.returncode == 0 else 'failed',
+            'receipts': receipts, 'inventory': bind(OUT / 'expected-final-inventory.json')}, indent=2) + '\n')
+        print(name, r.returncode, flush=True); r.check_returncode()
+    state()
+    (OUT / 'execution.json').write_text(json.dumps({'status': 'passed', 'receipts': receipts,
+        'inventory': bind(OUT / 'expected-final-inventory.json'), 'native': bind(NATIVE / 'execution.json'),
+        'archive_map': bind(ARCH / 'archive-map.json'), 'current_file_count': len(wanted),
+        'exact_scope': '8419 earlier files preserved except the exact corrected README; six documentation evidence files, two successor review files and18 native finalization archive files appended. Target, pages, exports, history and original reviews remain byte-identical.',
+        'source_count': len(review['source']['inputs']), 'inherited_assessments': 79,
+        'full_tests_scope': '2394 passed with3 skipped in original maintained build, then exact title correction gates; no new full test suite claimed for README/review archival additions.',
+        'helper': bind(__file__)}, indent=2) + '\n')
+    print(json.dumps(bind(OUT / 'execution.json')))
+
+if __name__ == '__main__': main()

@@ -1,0 +1,108 @@
+"""External ATP-SBP author helpers. References bind original artifacts and selectors."""
+from pathlib import Path
+import hashlib,json,sqlite3,re
+from lxml import etree as X,html
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');C=Path('/private/tmp/pathwaymech-curation-authorities')
+refs={};sources={};ledger=[];edges=[];participants=[];reactions=[];contexts=[]
+claims=json.loads((P/'derived/claim-dispositions.json').read_text())
+source_index=json.loads((P/'derived/all-original-source-index.json').read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size)
+def save(n,v):
+ p=A/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def ref(id,p,title,url,version):
+ p=Path(p)
+ if id in refs:assert refs[id]['source_sha256']==sha(p),(id,p);return id
+ refs[id]=dict(id=id,title=title,url=url,source_version=version,source_sha256=sha(p));sources[id]={**bind(p),'url':url,'version':version};return id
+def evidence(id,text,loc,kind,selector,observed):
+ assert 0<len(text)<=400,(len(text),text)
+ ev=dict(reference_id=id,source_assertion=text,source_locator=loc)
+ ledger.append(dict(evidence=ev,binding=sources[id],selector_type=kind,selector=selector,observed=observed));return ev
+def original(frame,org='ECOLI'):
+ for root in [A/'raw',P/'raw',P/'root-leads']:
+  for suffix in ['-native.xml','.xml']:
+   p=root/(org+'-'+frame+suffix)
+   if p.exists():
+    try:t=X.parse(str(p))
+    except X.XMLSyntaxError:continue
+    if t.getroot().tag=='ptools-xml'and t.findtext('metadata/query')==org+':'+frame:return p
+ raise FileNotFoundError((org,frame))
+def xe(frame,text,xpath,org='ECOLI'):
+ p=original(frame,org);t=X.parse(str(p));assert t.xpath('/ptools-xml/metadata/PGDB/@version')==['27.0'];prefix='EcoCyc'if org=='ECOLI'else'MetaCyc'
+ vals=t.xpath(xpath);assert vals,(frame,xpath)
+ id=ref(prefix+':'+frame,p,prefix+' '+frame+': native original','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+org+':'+frame,'PGDB27.0; exact unmodified native XML; retrieved2026-10-12; source evidence and scope retained')
+ return evidence(id,text,'XPath '+xpath,'xpath',xpath,[X.tostring(v,encoding='unicode')if isinstance(v,X._Element)else str(v)for v in vals])
+def upath(acc):
+ for row in json.loads((P/'derived/protein-original-identities.json').read_text()):
+  # The projection preserves the full issuing entry below its original binding.
+  if row.get('primaryAccession')==acc:return Path(row['path'])
+ for p in sorted((P/'raw').glob('*.json')):
+  try:j=json.loads(p.read_text())
+  except(ValueError,UnicodeError):continue
+  if not isinstance(j,dict):continue
+  if any(x.get('primaryAccession')==acc for x in j.get('results',[j])):return p
+ raise FileNotFoundError(acc)
+def upentry(acc):
+ p=upath(acc);j=json.loads(p.read_text());return p,next(x for x in j.get('results',[j])if x.get('primaryAccession')==acc)
+def uref(acc):
+ p,j=upentry(acc);row=next(x for x in source_index if x['path']==str(p));url=row['acquisition']['url']
+ return ref('UniProtKB:'+acc,p,j['proteinDescription']['recommendedName']['fullName']['value'],url,'Complete issuing UniProt original; exact accession selector for batch query; retrieved2026-10-12; entryAudit retained')
+def ue(acc,ctype,text):
+ p,j=upentry(acc);vals=[v for v in j['comments']if v['commentType']==ctype];assert vals,(acc,ctype)
+ return evidence(uref(acc),text,f"entry[primaryAccession='{acc}'].comments[commentType='{ctype}']",'uniprot_comment',dict(accession=acc,comment_type=ctype),vals)
+def uid(acc,text):
+ p,j=upentry(acc)
+ return evidence(uref(acc),text,f"entry[primaryAccession='{acc}'].genes,organism,sequence",'uniprot_identity',acc,dict(genes=j['genes'],organism=j['organism'],sequence=j['sequence']))
+papers={'19756045':P/'root-leads/PMC2758719.xml','31871051':P/'root-leads/PMC7029132.xml','31464375':P/'raw/PMC6706640.xml','19838295':P/'raw/PMC2759082.xml','22014167':P/'raw/PMC3225726-bioc.xml','21272324':P/'raw/PMC3037301-bioc.xml'}
+def pref(pmid):
+ p=papers[pmid];t=X.parse(str(p))
+ if t.getroot().tag=='article':
+  assert pmid in t.xpath('/article/front/article-meta/article-id[@pub-id-type="pmid"]/text()');title=' '.join(t.xpath('/article/front/article-meta/title-group/article-title//text()'))
+ else:
+  assert pmid in t.xpath('/collection/document/passage/infon[@key="article-id_pmid"]/text()')
+  title=' '.join(t.xpath('/collection/document/passage[infon[@key="section_type"]="TITLE"]/text/text()'))
+  if not title:title='Full primary BioC article '+pmid
+ return ref('PMID:'+pmid,p,title,'https://pubmed.ncbi.nlm.nih.gov/'+pmid+'/','Full retained primary JATS/BioC XML; original paragraph selectors. Supplementary originals are separately bound when expressly cited.'),t
+def pe(pmid,xpath,text):
+ id,t=pref(str(pmid));vals=t.xpath(xpath);assert vals,(pmid,xpath)
+ return evidence(id,text,'XPath '+xpath,'xpath',xpath,[X.tostring(x,encoding='unicode')for x in vals])
+def pfind(pmid,needle,text,tag='p'):
+ id,t=pref(str(pmid));xp='//'+tag+'[contains(string(.),$needle)]';vs=t.xpath(xp,needle=needle);assert vs,(pmid,needle)
+ # Smallest matching elements prevent an ancestor-body locator from hiding exact evidence.
+ vs=[v for v in vs if not any(x is not v and x in v.iterdescendants()for x in vs)];loc=' | '.join(t.getpath(v)for v in vs)
+ return pe(str(pmid),loc,text)
+def pube(pmid,text):
+ pmid=str(pmid)
+ for p in sorted((P/'raw').glob('*search.json')):
+  j=json.loads(p.read_text());rows=j.get('resultList',{}).get('result',[])
+  matches=[r for r in rows if r.get('id')==pmid and r.get('abstractText')]
+  if matches:
+   r=matches[0];id=ref('PMID:'+pmid,p,r['title'],'https://pubmed.ncbi.nlm.nih.gov/'+pmid+'/','EuropePMC original primary metadata/abstract response; exact PMID selector; full paper not acquired for this claim')
+   return evidence(id,text,f"resultList.result[id='{pmid}'].abstractText",'primary_abstract',pmid,r)
+ raise FileNotFoundError('abstract '+pmid)
+def ge(gid,text):
+ p=P/'raw'/('Entrez-'+gid+'-native.xml');t=X.parse(str(p));assert t.findtext('.//Gene-track_geneid')==gid;title=t.findtext('.//Gene-ref_locus');url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml'
+ id=ref('Entrez:'+gid,p,title+': exact issuing Gene record',url,'Native Entrezgene XML; exact issuing GeneID, organism and locus; retrieved2026-10-12')
+ xp='/Entrezgene-Set/Entrezgene';return evidence(id,text,'XPath '+xp,'xpath',xp,[X.tostring(t.xpath(xp)[0],encoding='unicode')])
+def edge(s,p,o,*ev,description=None,qualifiers=None,claim_keys=()):
+ assert ev
+ d=dict(id=f'sbp-{len(edges)+1:03d}',subject=s,predicate=p,object=o,description=description or ev[0]['source_assertion'],evidence=list(ev))
+ if qualifiers:d['endpoint_qualifiers']=qualifiers
+ edges.append(d);edge_claims[d['id']]=list(claim_keys);return d
+edge_claims={}
+def qual(endpoint,kind,desc,*ev):
+ assert 0<len(desc)<=400,(len(desc),desc);assert ev
+ return dict(endpoint=endpoint,kind=kind,description=desc,evidence=list(ev))
+def ont(id):
+ db={'CHEBI':'chebi','GO':'go','NCBITaxon':'ncbitaxon','RHEA':'rhea'}[id.split(':')[0]]
+ with sqlite3.connect('file:'+str(C/(db+'.db'))+'?mode=ro&immutable=1',uri=True)as c:xs=c.execute('select value from statements where subject=? and predicate="rdfs:label"',(id,)).fetchall()
+ assert len(xs)==1,(id,xs);return xs[0][0]
+def node(id,cat,label=None):
+ if id in {n['id']for n in participants}:return id
+ if label is None:
+  if id.startswith('UniProtKB:'):label=upentry(id.split(':')[1])[1]['proteinDescription']['recommendedName']['fullName']['value']
+  elif id.startswith('EcoCyc:'):
+   t=X.parse(str(original(id.split(':')[1])));raw=t.xpath('/ptools-xml/Protein/common-name/text()');assert len(raw)==1;label=html.fromstring('<span>'+raw[0]+'</span>').text_content()
+  elif id.startswith('Entrez:'):label=X.parse(str(P/'raw'/('Entrez-'+id.split(':')[1]+'-native.xml'))).findtext('.//Gene-ref_locus')
+  else:label=ont(id)
+ participants.append(dict(id=id,label=label,category=cat));return id

@@ -1,0 +1,370 @@
+"""Guarded full ATP source/ontology build. Default is an inert plan; --execute is required."""
+
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import time
+import traceback
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+import yaml
+
+from common import (
+    HERE,
+    OUTPUT,
+    PYTHON,
+    TARGET_SHA,
+    bind,
+    check,
+    check_sql_stat,
+    differences,
+    inventory,
+    load,
+    now,
+    preserve,
+    sha,
+    validate_manifest,
+    validate_output,
+    validate_updates,
+    write,
+)
+
+CREATED_BY_THIS_RUN = False
+
+
+def input_check():
+    capture = load(HERE / "capture.json")
+    for receipt in capture["root_receipts"].values():
+        check(receipt)
+    for row in capture["records"] + capture["baseline"] + capture["candidate_code"]:
+        check(row["captured"])
+    check(capture["collector_bridge"])
+    check(capture["target"]["captured"])
+    assert capture["target"]["captured"]["sha256"] == TARGET_SHA
+    for row in capture["proposals"].values():
+        check(row["captured"])
+    for packet in capture["packages"]:
+        check(packet["handoff"])
+        check(packet["manifest"])
+    for row in capture["sql_originals"]:
+        check_sql_stat(row)
+    old = {
+        kind: load(HERE / "captured/baseline" / (kind + ".json"))
+        for kind in ("sources", "ontology")
+    }
+    retention = sorted(set(old["sources"]["terms"]) | set(old["ontology"]["terms"]))
+    assert capture["retention_ids"] == retention and len(retention) == 4411
+    manifest = load(HERE / "captured/proposals/manifest.json")
+    hashes = validate_manifest(load(HERE / "captured/baseline/manifest.json"), manifest)
+    updates = load(HERE / "captured/proposals/rhea-updates.json")
+    validate_updates(load(HERE / "captured/baseline/rhea-updates.json"), updates)
+    hashes[updates["path"]] = updates["sha256"]
+    assert {
+        row["cache_relative_path"]: row["sha256"] for row in capture["source_originals"]
+    } == hashes
+    expected = load(HERE / "expected-native-comparison.json")
+    for kind in ("sources", "ontology"):
+        assert expected["snapshots"][kind] == load(HERE / "captured/proposals" / (kind + ".json"))
+    for section, rows in (("corpus", capture["records"]), ("baseline", capture["baseline"]), ("code", capture["candidate_code"])):
+        assert set(inventory(HERE / "captured" / section)) == {Path(row["captured"]["path"]) for row in rows}, section
+    assert set(inventory(HERE / "captured/target")) == {Path(capture["target"]["captured"]["path"])}
+    assert len(capture["source_originals"]) == 756 and len(capture["candidate_code"]) == 222
+    assert len({r["cache_relative_path"] for r in capture["source_originals"]}) == 756
+    assert len(capture["sql_originals"]) == 4
+    for kind, snapshot in old.items():
+        preserve(snapshot, expected["snapshots"][kind])
+    assert len(manifest) == 758 and len(updates["ids"]) == 24
+    assert len([r for r in capture["records"] if r["relative_path"].endswith(".yaml")]) == 249
+    # The sealed preparation is authoritative even if the maintained baseline is committed later.
+    # Such a commit needs a separate root exact-tree bridge, never a changed capture claim.
+    if (HERE / "artifact-manifest.json").is_file():
+        rows = load(HERE / "artifact-manifest.json")["artifacts"]
+        for row in rows:
+            check(row)
+        assert set(inventory(HERE)) == {Path(row["path"]) for row in rows} | {HERE / "artifact-manifest.json", HERE / "handoff.json"}, "sealed preparation inventory changed"
+    return capture, old, expected
+
+
+def plan(capture):
+    source = [
+        PYTHON,
+        "-B",
+        str(OUTPUT / "runtime/scripts/build_source_identifier_snapshot.py"),
+        "--manifest",
+        str(OUTPUT / "manifest.json"),
+        "--cache-dir",
+        str(OUTPUT / "originals"),
+        "--records",
+        str(OUTPUT / "corpus"),
+        "--output",
+        str(OUTPUT / "sources.json"),
+    ]
+    ontology = [PYTHON, "-B", str(OUTPUT / "runtime/scripts/build_ontology_identifier_snapshot.py")]
+    for row in capture["sql_originals"]:
+        ontology += ["--source", row["prefix"] + "=" + row["path"]]
+    ontology += [
+        "--corpus",
+        str(OUTPUT / "corpus"),
+        "--rhea-updates",
+        str(OUTPUT / "rhea-updates.json"),
+        "--cache-dir",
+        str(OUTPUT / "originals"),
+        "--output",
+        str(OUTPUT / "ontology.json"),
+    ]
+    return {
+        "cwd": str(OUTPUT),
+        "environment": {
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "UV_NO_SYNC": "1",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONPATH": str(OUTPUT / "runtime/src") + ":" + str(OUTPUT / "runtime"),
+        },
+        "source_builder": source,
+        "ontology_builder": ontology,
+    }
+
+
+def stage(capture, config):
+    global CREATED_BY_THIS_RUN
+    validate_output(OUTPUT)
+    # Freshly verify every selected original before creating any build output. SQL native
+    # full-file hashing remains the ontology builder's job, checked against four pinned hashes.
+    original_bindings = []
+    for row in capture["source_originals"]:
+        original_bindings.append({**row, "fresh_execution_binding": check(row)})
+    OUTPUT.mkdir()
+    CREATED_BY_THIS_RUN = True
+    shutil.copytree(HERE / "captured/code", OUTPUT / "runtime")
+    shutil.copytree(HERE / "captured/corpus", OUTPUT / "corpus")
+    shutil.copytree(HERE / "captured/baseline", OUTPUT / "baseline")
+    shutil.copyfile(
+        capture["target"]["captured"]["path"], OUTPUT / "corpus/sedoheptulose-bisphosphate-bypass.yaml"
+    )
+    assert sha(OUTPUT / "corpus/sedoheptulose-bisphosphate-bypass.yaml") == TARGET_SHA
+    retention_dir = OUTPUT / "corpus/_authority_retention"
+    retention_dir.mkdir()
+    (retention_dir / "selector.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "id": capture["retention_ids"][0],
+                "participants": [{"id": identifier} for identifier in capture["retention_ids"][1:]],
+            },
+            sort_keys=False,
+        )
+    )
+    for row in original_bindings:
+        destination = OUTPUT / "originals" / row["cache_relative_path"]
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.symlink_to(Path(row["path"]).resolve())
+    shutil.copyfile(HERE / "captured/proposals/manifest.json", OUTPUT / "manifest.json")
+    shutil.copyfile(HERE / "captured/proposals/rhea-updates.json", OUTPUT / "rhea-updates.json")
+    shutil.copyfile(
+        HERE / "expected-native-comparison.json", OUTPUT / "expected-native-comparison.json"
+    )
+    shutil.copyfile(HERE / "capture.json", OUTPUT / "preparation-capture.json")
+    shutil.copyfile(__file__, OUTPUT / "prepare_and_build.py")
+    shutil.copyfile(HERE / "common.py", OUTPUT / "common.py")
+    write(
+        OUTPUT / "execution-intake.json",
+        {
+            "at": now(),
+            "preparation": bind(HERE / "handoff.json"),
+            "preparation_manifest": bind(HERE / "artifact-manifest.json"),
+            "observed_base_at_preparation": {
+                "head": capture["observed_head"],
+                "tree": capture["observed_tree"],
+                "scope": capture["scope"],
+            },
+            "source_originals_freshly_hashed": original_bindings,
+            "sql_originals_pinned": capture["sql_originals"],
+            "corpus_records": 231,
+            "retention_ids": len(capture["retention_ids"]),
+            "retention_selector_build_only": True,
+            "new_manifest_entries": 8,
+            "new_original_paths": 7,
+            "existing_zip_path_shared_by_exact_member_bindings": True,
+            "maintained_or_shared_cache_writes": False,
+        },
+    )
+    write(OUTPUT / "commands.json", config)
+    write(
+        OUTPUT / "staged-bindings.json",
+        {
+            "files": [
+                bind(path)
+                for directory in ("runtime", "corpus", "baseline")
+                for path in inventory(OUTPUT / directory)
+            ]
+        },
+    )
+
+
+def execute(name, command, config):
+    started = now()
+    tick = time.monotonic()
+    with (
+        (OUTPUT / (name + ".stdout")).open("xb") as stdout,
+        (OUTPUT / (name + ".stderr")).open("xb") as stderr,
+    ):
+        result = subprocess.run(
+            command,
+            cwd=config["cwd"],
+            env={**os.environ, **config["environment"]},
+            stdout=stdout,
+            stderr=stderr,
+            check=False,
+        )
+    receipt = {
+        "name": name,
+        "command": command,
+        "cwd": config["cwd"],
+        "environment": config["environment"],
+        "started_at": started,
+        "finished_at": now(),
+        "seconds": round(time.monotonic() - tick, 3),
+        "exit_code": result.returncode,
+        "stdout": bind(OUTPUT / (name + ".stdout")),
+        "stderr": bind(OUTPUT / (name + ".stderr")),
+    }
+    write(OUTPUT / (name + "-execution.json"), receipt)
+    print("BUILDER_TERMINAL " + json.dumps(receipt), flush=True)
+    return receipt
+
+
+def verify(capture, old, expected, executions):
+    assert {row["name"] for row in executions} == {"source_builder", "ontology_builder"}
+    assert len(executions) == 2 and all(row["exit_code"] == 0 for row in executions), "native builder failed"
+    config = plan(capture)
+    for row in executions:
+        assert row["command"] == config[row["name"]]
+        assert row["cwd"] == config["cwd"] and row["environment"] == config["environment"]
+        check(row["stdout"])
+        check(row["stderr"])
+    actual = {kind: load(OUTPUT / (kind + ".json")) for kind in old}
+    comparison = {kind: differences(expected["snapshots"][kind], actual[kind]) for kind in old}
+    write(OUTPUT / "proposal-comparison.json", {
+        "actual_counts": {kind: {section: len(value[section]) for section in ("terms", "sources")} for kind, value in actual.items()},
+        "against_accepted_authority_proposals": comparison,
+        "expectation_never_used_as_builder_input": True,
+    })
+    for kind in old:
+        preserve(old[kind], actual[kind])
+        assert comparison[kind] == {"terms": [], "sources": []}, (kind, "unexpected native output; inspect recorded comparison; no output rewriting permitted")
+        assert actual[kind] == expected["snapshots"][kind], (kind, "native top-level object differs")
+    assert (len(actual["sources"]["terms"]), len(actual["sources"]["sources"]), len(actual["ontology"]["terms"]), len(actual["ontology"]["sources"])) == (2474, 595, 1963, 5)
+    for row in capture["source_originals"]:
+        check({**row, "path": str(OUTPUT / "originals" / row["cache_relative_path"])})
+    for row in capture["sql_originals"]:
+        check_sql_stat(row)
+        assert actual["ontology"]["sources"][row["source_key"]]["sha256"] == row["sha256"], "native full SQL hash mismatch"
+    staged_rows = load(OUTPUT / "staged-bindings.json")["files"]
+    for row in staged_rows:
+        check(row)
+    assert {path for directory in ("runtime", "corpus", "baseline") for path in inventory(OUTPUT / directory)} == {Path(row["path"]) for row in staged_rows}, "staged input inventory changed"
+    assert set(inventory(OUTPUT / "originals")) == {OUTPUT / "originals" / row["cache_relative_path"] for row in capture["source_originals"]}, "original inventory changed"
+    for name in ("manifest.json", "rhea-updates.json"):
+        assert (OUTPUT / name).read_bytes() == (HERE / "captured/proposals" / name).read_bytes()
+    write(OUTPUT / "verification.json", {
+        "status": "native_full_build_passed_external_only", "at": now(),
+        "target_sha256": TARGET_SHA, "baseline_scope": capture["scope"],
+        "baseline_capture": bind(HERE / "capture.json"), "corpus_records": 231,
+        "old_records_exact": 230, "retained_authority_ids": 4411,
+        "old_sources": {"terms": 2454, "metadata": 587}, "old_ontology": {"terms": 1957, "metadata": 5},
+        "old_objects_exact": True, "manifest_entries": 758, "old_ordered_manifest_entries_exact": 750,
+        "rhea_selectors": 24, "old_ordered_rhea_selectors_exact": 22,
+        "fresh_source_original_hashes": 756, "native_full_SQL_hashes_match": 4,
+        "output_counts": {"source_terms": 2474, "source_metadata": 595, "ontology_terms": 1963, "ontology_metadata": 5},
+        "full_tests_or_integration_claim": False, "scientific_acceptance": False,
+        "maintained_writes": False, "shared_cache_writes": False,
+        "git_github_mutations": False, "environment_installs_or_sync": False, "source_exhausted": False,
+    })
+
+
+def seal():
+    artifacts = [
+        bind(path)
+        for path in inventory(OUTPUT)
+        if not path.is_symlink() and path.name not in ("artifact-manifest.json", "handoff.json")
+    ]
+    # Exact originals are independently bound in execution-intake; symlinks do not duplicate them.
+    write(OUTPUT / "artifact-manifest.json", {"artifacts": artifacts, "count": len(artifacts)})
+    write(
+        OUTPUT / "handoff.json",
+        {
+            "status": "full_original_backed_build_completed_pending_independent_audit",
+            "created_at": now(),
+            "manifest": bind(OUTPUT / "artifact-manifest.json"),
+            "artifact_count": len(artifacts),
+            "verification": bind(OUTPUT / "verification.json"),
+            "execution_ledger": bind(OUTPUT / "execution-ledger.json"),
+            "outputs": {
+                name: bind(OUTPUT / name)
+                for name in ("sources.json", "ontology.json", "manifest.json", "rhea-updates.json")
+            },
+            "preparation": bind(HERE / "handoff.json"),
+            "target_sha256": TARGET_SHA,
+            "maintained_adoption": False,
+            "independent_canonical_acceptance": False,
+        },
+    )
+    print("SEALED " + json.dumps(bind(OUTPUT / "handoff.json")), flush=True)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Run the two full native builders in a new fixed external output directory.",
+    )
+    parser.add_argument(
+        "--check-inputs",
+        action="store_true",
+        help="Rehash captured small files and check inherited SQL stats only; no build or writes.",
+    )
+    args = parser.parse_args()
+    assert not (args.execute and args.check_inputs), "choose execution or read-only input check"
+    capture, old, expected = input_check()
+    config = plan(capture)
+    if not args.execute:
+        print(
+            json.dumps(
+                {
+                    "status": "inputs_checked_no_build"
+                    if args.check_inputs
+                    else "inert_build_plan",
+                    "commands": config,
+                    "output": str(OUTPUT),
+                    "will_not_overwrite": True,
+                },
+                indent=2,
+            )
+        )
+        return
+    assert (HERE / "handoff.json").is_file(), "preparation must be sealed before executing"
+    stage(capture, config)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        pending = [
+            pool.submit(execute, name, config[name], config)
+            for name in ("source_builder", "ontology_builder")
+        ]
+        executions = [future.result() for future in pending]
+    write(OUTPUT / "execution-ledger.json", {"executions": executions})
+    verify(capture, old, expected, executions)
+    seal()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        detail = traceback.format_exc()
+        print(detail, flush=True)
+        # No accidental writes on inert/default/check-only failures.
+        if CREATED_BY_THIS_RUN:
+            (OUTPUT / ("failure-" + str(time.time_ns()) + ".txt")).write_text(detail)
+        raise

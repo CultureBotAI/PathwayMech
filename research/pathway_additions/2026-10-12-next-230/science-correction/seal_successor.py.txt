@@ -1,0 +1,73 @@
+"""Seal bounded author corrections; independent approval remains separately owned."""
+from pathlib import Path
+import json,hashlib,datetime,subprocess,ast
+import yaml
+S=Path(__file__).parent;O=Path('/private/tmp/pathwaymech-next-230-author-20261012');R=Path('/private/tmp/pathwaymech-next-230-science-review-20261012');H=Path('/private/tmp/pathwaymech-next-230-authority-preparation-20261012')
+assert not(S/'handoff.json').exists(),'Already sealed'
+def sha(p):
+ with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def js(p):return json.loads(Path(p).read_text())
+def save(n,v):(S/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+t=S/'draft/sedoheptulose-bisphosphate-bypass.yaml';target=bind(t);assert target['sha256']=='cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101'
+check=js(S/'candidate-checks/result.json');delta=js(S/'semantic-delta.json');assert check['target']==target and delta['final']==target and delta['exact_changes']==6
+unchanged=[]
+for root in [O,R]:
+ m=js(root/'artifact-manifest.json')
+ for row in m['artifacts']:
+  p=root/row['path'];assert sha(p)==row['sha256']and p.stat().st_size==row['bytes'],p
+ unchanged.append(dict(handoff=bind(root/'handoff.json'),manifest=bind(root/'artifact-manifest.json'),artifacts=len(m['artifacts']),all_unchanged=True))
+source_issues=js('/private/tmp/pathwaymech-next-230-issue-creation-20261012.json')['issues'];findings=js(R/'findings.json');dispositions=[]
+for f in findings:
+ issue=next(i for i in source_issues if i['issue_key']==f['issue_key']);dispositions.append(dict(issue_key=f['issue_key'],issue_url=issue['url'],predecessor=dict(external_science_handoff=bind(R/'handoff.json'),finding_id=f['finding_id'],finding_file=bind(R/'findings.json')),affected_edges=f['affected_edge_ids'],disposition='Author implemented exact source-locator repair; independent successor review and root acceptance pending.',evidence=bind(S/'changed-selector-proofs.json')))
+dispositions.append(dict(issue_key='atp-sbp-f6p-e4p-not-determined',issue_url='https://github.com/CultureBotAI/PathwayMech/issues/453',predecessor=dict(root_finding=bind('/private/tmp/pathwaymech-next-230-root-tableIII-finding-20261012.json'),issue_body=bind('/private/tmp/pathwaymech-next-230-e4p-issue-20261012.md'),root_reported_creation_terminal='fa7c23/0'),affected_field='description',disposition='Author corrected the F6P E4P outcome to not determined from its original blank cell. Root independently confirmed; independent successor acceptance pending.',evidence=bind(S/'tableIII-cell-proof.json'),lineage='Additional defect found after the complete independent review; not attributed to that original review.'))
+dispositions[-1]['predecessor']['independent_additive_observation']=dict(handoff=bind('/private/tmp/pathwaymech-next-230-science-tableIII-addendum-20261012/handoff.json'),finding_id='ATP-SCI-004')
+save('author-dispositions.json',dict(status='Implemented and bounded-author-verified; not native saved terminal dispositions.',target=target,findings=dispositions,advisory=bind(S/'tableIII-successor-disposition.json'),native_review_saver='Root owned after maintained adoption; no fabricated native review ID or previous_occurrence.'))
+addendum=S/'independent-table-addendum-input.json'
+additive=js(addendum)if addendum.exists()else dict(status='Reviewer independently confirmed the exact cells by message; additive sealed assessment not yet supplied. Not a condition of author implementation; independent successor review remains pending.')
+save('inherited-scope.json',dict(original_author=bind(O/'handoff.json'),independent_full_science=bind(R/'handoff.json'),root_science_intake=bind('/private/tmp/pathwaymech-next-230-root-science-intake-20261012.json'),counts=dict(edges=67,chemical_sides=8,core_events=2,qualifiers=24,references=94,claims=61,construct_contexts=19,context_paragraphs=22,source_selector_observations=159,actual_evidence_uses=145),fresh_scope='Five original evidence-selector unions; exact source table cells/footnotes; six-field semantic delta; native collector/consumer/schema/strict/page/KGX checks; all337+89 prior artifact hashes.',inherited_scope='Whole-record scientific review, full original Rhea chemistry, other154 unchanged source observations, all other primary/supplement interpretations and corpus novelty. No fresh full-record scientific review is claimed here.',additional_independent_table_observation=additive,limits=['Full builders/full production tests/lint/native saved review checks are root-owned and have not run here.','Original whole-record reviewer missed the F6P E4P description and its initial TableIII advisory had imprecise no-metabolite mapping; those observations remain unchanged and are additively corrected.','No source refresh or new authority term; all old references, source hashes, IDs and claims other than the exact description correction remain unchanged.']))
+save('preservation.json',dict(parent_packets=unchanged,source_authority_input_files=js(S/'authority-collector-bridge.json')['proposal_files'],five_locator_intermediate=bind(S/'intermediate/five-locator-only.yaml'),graph_unchanged_except_evidence_locators=True,source_originals_unchanged=True))
+for p in S.glob('*.py'):ast.parse(p.read_text(),filename=str(p))
+save('process-notes.json',dict(syntax='All successor Python helpers parsed via ast; no full repository lint claim.',first_wrapper_path_typo=dict(terminal='66b70d/2',result='No script opened because directory segment next230 omitted a hyphen; corrected invocation953194/0 prepared the successor.'),receipt_search=dict(terminal='35085 interrupted via afd00d/130',scope='An unnecessarily broad hidden/ignored/followed /private/tmp filename search encountered unrelated dangling symlinks and was interrupted. It establishes no absence or completeness claim. Parent supplied exact issue receipt; all authoritative lineage uses that exact receipt.'),skill=dict(path='/Users/marcin/.codex/skills/pathwaymech-resolve-reviews/SKILL.md',scope='Review interpretation, primary-source correction and append-only disposition principles applied. Parent explicitly restricts this task to external author correction; native saver, maintained history and whole repository gates remain parent owned.')))
+report=f'''# ATP bypass author correction successor
+
+The final target is `draft/{t.name}`, SHA256 `{target['sha256']}`. It implements issues #450–#453 in a separate immutable author packet. Independent successor reassessment and root acceptance remain pending.
+
+Exactly six parsed YAML string values changed relative to the sealed original `efd16783`: five evidence locators and one description string. `semantic-delta.json` proves that reverting those six changes exactly recovers the original parsed record. All 67 edge identities, predicates, assertions, qualifier kinds/descriptions, 94 references and their original hashes, 62 named authority selectors, two core events/eight sides, 61 claims and 19 construct contexts remain. The original author337-artifact packet and independent science89-artifact packet were rehashed before correction and again before this seal; neither was edited.
+
+The five-locator-only intermediate is preserved at `intermediate/five-locator-only.yaml`, SHA256 `bf9e76bf7c6ec7d32b2870c21aa8cad482ce5a2a8ff889e852af6a52fdbe8e8a`. It records the originally requested repair before the additional description finding.
+
+## Exact repairs
+
+- #450 / ATP-SCI-001, `sbp-018`: the construct evidence includes the actual HisTrap purification paragraph `/article/body/sec[5]/sec[7]/p[1]` in addition to the existing cloning/expression/assay selectors.
+- #451 / ATP-SCI-002, `sbp-056`: the strain/growth qualifier points to `/article/body/sec[4]/sec[1]/p`, which specifies JM101-derived PB11/PB12, rpoS derivatives and aerobic M9 glucose growth. The old reporter/TSS selectors are retained only as historical observations.
+- #452 / ATP-SCI-003, `sbp-038`, `sbp-039`, `sbp-062`: each compound identity union includes the sibling `/ptools-xml/Compound/inchi`. Formula/charge/ChEBI grounding and the existing inconsistent-SMILES and unmeasured-protonation qualifications remain unchanged.
+- #453 / `atp-sbp-f6p-e4p-not-determined`: the description phrase “but no detected E4P” becomes “with E4P not determined.” Original TableIII F6P-experiment E4P cell `tbody/tr[11]/td[6]` is blank; the footnote defines blank as not determined. This additional defect was found during successor authoring and independently confirmed by root; it was missed by the earlier whole-record review.
+
+## Corrected Table III disposition
+
+There are **six preparations: the combined S7P experiment plus five controls**. The YAML phrase “five separate controls” remains correct and unchanged. In the no-metabolite control, S7P, SBP, DHAP and E4P are all ND; F6P and FBP are blank/not determined. The F6P-experiment E4P cell is blank/not determined. Neither blank nor ND is a measured numerical zero. `tableIII-cell-proof.json` retains every original row/column, exact cell XML and the footnotes. `tableIII-successor-disposition.json` corrects the original author preparation count and the independent review advisory's incomplete cell mapping additively, while preserving both sealed originals.
+
+## Actual checks and inheritance
+
+All five old and replacement selectors were replayed directly against the same original bodies and compared with the independent review's exact XML projections. Five negative controls demonstrate that each old locator omits its claimed HisTrap, strain/growth or InChI element; two more controls reject blank→ND and ND→blank swaps. Seven positive and seven negative focused checks pass. The updated159-row selector ledger preserves154 observations exactly and replaces only the five affected observations, retaining their predecessors in `changed-selector-proofs.json`.
+
+Native schema, strict and identifier checks pass. The unchanged native collector proves equality of all62 selectors across the authority helper's frozen77c360 draft, sealed original efd167 target and this successor. Actual native page/KGX generation retains all67 edges, all145 edge/qualifier evidence uses and all24 qualifiers. This is deterministic HTML/SVG/KGX inspection, with no browser interaction or visual-layout claim. Authority files are byte-identical to the original native proposals; no authority refresh, adapter change, full canonical build or full production test run occurred.
+
+The completed independent whole-record science review is inherited through its exact sealed handoff `630923e6`; this author correction is not a new independent review. All other chemistry, sources, constructs, negatives, unavailable-fulltext limits, computational-context limits and corpus novelty are inherited unchanged. The separately confirmed #453 correction is not falsely attributed to that original review. Original and corrected source observations are distinguished in the ledgers. `author-dispositions.json` preserves stable finding keys and actual issue bindings without inventing native saved review identities.
+
+All work stayed in this external successor directory. No maintained record, shared cache, Git/GitHub object, original packet or environment installation was changed. Root owns independent successor acceptance, full canonical builders/audit, maintained adoption, native saved review/history, production gates and PR/merge workflow. Replays belong in a new external copy after sealing.
+'''
+(S/'AUTHOR-HANDOFF.md').write_text(report)
+save('receipt.json',dict(status='Bounded author successor complete; independent successor/root acceptance pending.',target=target,exact_string_changes=6,counts=js(S/'inherited-scope.json')['counts'],focused_checks={'positive':7,'negative':7},native_checks='schema,strict,identifier,page,KGX passed',full_tests=False,full_canonical_build=False,independent_review=False,maintained_adoption=False,source_exhaustion=False))
+cmd=['rg','--files','--no-ignore','--hidden','--follow','-0',str(S)];r=subprocess.run(cmd,capture_output=True);assert r.returncode==0,r.stderr
+artifacts=[]
+for n in sorted(x for x in r.stdout.split(b'\0')if x):
+ p=Path(n.decode())
+ if p.parent==S and p.name in ['artifact-manifest.json','handoff.json']:continue
+ assert p.suffix!='.pyc'and'__pycache__'not in p.parts
+ artifacts.append(dict(path=str(p.relative_to(S)),bytes=p.stat().st_size,sha256=sha(p)))
+save('artifact-manifest.json',dict(package=str(S),scope='Every hidden/ignored/followed regular file; excludes only manifest and handoff to avoid circular hashes.',inventory_command=cmd,inventory_exit=r.returncode,inventory_stderr=r.stderr.decode(),artifacts=artifacts))
+save('handoff.json',dict(schema_version=1,package=str(S),status='Sealed complete bounded author successor; independent review and root acceptance pending.',sealed_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),candidate='MetaCyc:PWY0-1517',target=target,original_author=bind(O/'handoff.json'),original_science_review=bind(R/'handoff.json'),report=bind(S/'AUTHOR-HANDOFF.md'),manifest=bind(S/'artifact-manifest.json'),artifact_count=len(artifacts),semantic_delta=bind(S/'semantic-delta.json'),original_selector_replay=bind(S/'changed-selector-proofs.json'),authority_collector_consumer_bridge=bind(S/'authority-collector-bridge.json'),actual_checks=bind(S/'candidate-checks/result.json'),actual_commands=bind(S/'validation/execution-history.json'),issue_dispositions=bind(S/'author-dispositions.json'),tableIII_disposition=bind(S/'tableIII-successor-disposition.json'),preservation=bind(S/'preservation.json'),inheritance=bind(S/'inherited-scope.json'),full_canonical_build=False,independent_review=False,maintained_adoption=False,source_exhaustion=False,immutability='Do not mutate; any further correction requires a separate successor.'))
+for row in artifacts:assert sha(S/row['path'])==row['sha256']
+print(json.dumps(dict(handoff=bind(S/'handoff.json'),manifest=bind(S/'artifact-manifest.json'),target=target,artifacts=len(artifacts))))
