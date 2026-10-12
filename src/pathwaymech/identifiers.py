@@ -36,6 +36,12 @@ from pathwaymech.biocyc_electron_transfer import (
     validate_reaction_metadata,
 )
 from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_term, validate_pathway_metadata
+from pathwaymech.biocyc_protein_carrier_reaction import (
+    PROTEIN_CARRIER_REACTION_KIND,
+    carrier_reaction_term,
+    validate_carrier_reaction_assertions,
+    validate_carrier_reaction_metadata,
+)
 from pathwaymech.ecocyc_complex import (
     ECOCYC_COMPLEX_KIND,
     complex_term,
@@ -132,6 +138,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "pathway_accessions",
                 "native_complex",
                 "native_electron_transfer",
+                "native_protein_carrier_reaction",
                 "native_chemical_class",
                 "native_named_complex",
                 "native_aceto",
@@ -152,6 +159,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "pathway_accessions",
                 "native_complex",
                 "native_electron_transfer",
+                "native_protein_carrier_reaction",
                 "native_chemical_class",
                 "native_named_complex",
                 "native_aceto",
@@ -175,6 +183,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
             ELECTRON_TRANSFER_KIND,
+            PROTEIN_CARRIER_REACTION_KIND,
             CHEMICAL_CLASS_KIND,
             NAMED_COMPLEX_KIND,
             PATHWAY_KIND,
@@ -212,6 +221,11 @@ def _load_authority(path: Path) -> dict[str, Any]:
         elif "native_aceto" in metadata:
             raise ValueError("aceto native metadata requires a matching typed source kind")
         for native_kind, field, validator in [
+            (
+                PROTEIN_CARRIER_REACTION_KIND,
+                "native_protein_carrier_reaction",
+                validate_carrier_reaction_metadata,
+            ),
             (ELECTRON_TRANSFER_KIND, "native_electron_transfer", validate_reaction_metadata),
             (CHEMICAL_CLASS_KIND, "native_chemical_class", validate_chemical_class_metadata),
             (NAMED_COMPLEX_KIND, "native_named_complex", validate_named_complex_metadata),
@@ -254,6 +268,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             # and their agreement with the request remain the builder's remit.
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
     validate_aceto_assertions(data["sources"], [])
+    carrier_reaction_ids = validate_carrier_reaction_assertions(data["sources"])
     # Every source above has already reconstructed its complete native object.
     # Check all owners before reading terms: an unselected owner can still
     # contradict coefficients, retained evidence, or release identity.
@@ -319,6 +334,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if identifier in carrier_reaction_ids and source_kind != PROTEIN_CARRIER_REACTION_KIND:
+            raise ValueError(f"{identifier}: protein-carrier reaction requires whole typed scope")
         if identifier in pathway_assertions and source_kind not in {PATHWAY_KIND, SGD_KIND}:
             raise ValueError(f"{identifier}: conflicting typed native pathway identity scope")
         if "allowed_categories" in term and source_kind not in {CHEMICAL_CLASS_KIND, RESIDUE_KIND}:
@@ -353,6 +370,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError(f"{identifier}: invalid typed aceto authority projection")
         elif source_kind in {
             ELECTRON_TRANSFER_KIND,
+            PROTEIN_CARRIER_REACTION_KIND,
             CHEMICAL_CLASS_KIND,
             NAMED_COMPLEX_KIND,
             PATHWAY_KIND,
@@ -365,6 +383,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 expected_id, expected_term = polymer_term(metadata, term["source"], identifier)
             else:
                 projector = {
+                    PROTEIN_CARRIER_REACTION_KIND: carrier_reaction_term,
                     PATHWAY_KIND: pathway_term,
                     ELECTRON_TRANSFER_KIND: reaction_term,
                     CHEMICAL_CLASS_KIND: chemical_class_term,

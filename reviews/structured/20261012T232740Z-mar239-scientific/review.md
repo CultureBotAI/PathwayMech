@@ -1,0 +1,3356 @@
+# S-methyl-5-thio-alpha-D-ribose1-phosphate degradationIII: maintained scientific review
+
+- Review: 20261012T232740Z-mar239-scientific
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T23:13:16Z
+- Finished UTC: 2026-10-12T23:27:40Z
+- Reviewer: Codex /root/nitrate235_finish (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The exact maintained five-event pathway retains all accepted scientific judgments and qualifications.21 paragraphs,44 whole edges,7 qualifiers,38 identities,93 references and20 mappings pass fresh maintained page/export/source checks. All nine native gates ultimately pass; prior source-reading, technical-role and static visual limits are explicit.
+
+## Scope And Provenance
+
+One exact maintained PWY8132 record; all material source contexts, narrative/edge judgments and current generated representation.
+
+Selection: Exact root-assigned accepted scientific target; no sampling.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 12bc8c721fa8b8d824bcb8cea8b0bfa0ffbc0449.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-8132 | data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml | maintained | S-methyl-5-thio-α-D-ribose 1-phosphate degradation III |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| prepare-science | failed | False | MetaCyc:PWY-8132 | Retained preparatory guard or manifest-shape error, corrected in the successful successor; scientific originals unchanged. |
+| prepare-science-corrected | failed | False | MetaCyc:PWY-8132 | Retained preparatory guard or manifest-shape error, corrected in the successful successor; scientific originals unchanged. |
+| prepare-science-lineage | passed | True | MetaCyc:PWY-8132 | Actual bounded scientific/currentness check. |
+| serialize-scientific | failed | False | MetaCyc:PWY-8132 | Retained preparatory guard or manifest-shape error, corrected in the successful successor; scientific originals unchanged. |
+| final-native-inspect | passed | True | MetaCyc:PWY-8132 | Actual bounded scientific/currentness check. |
+| maintained-dom | passed | True | MetaCyc:PWY-8132 | Actual bounded scientific/currentness check. |
+| maintained-exports | passed | True | MetaCyc:PWY-8132 | Actual bounded scientific/currentness check. |
+| history-1 | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| history-2 | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| sssom | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| render | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| skills | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| validate | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| tests | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| lint | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| kgx | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| vendored | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| diff-check | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| site-current | passed | True | MetaCyc:PWY-8132 | Actual authorized native command passed; original receipt and whole streams verified. |
+| vendored-gate historical vendored attempt | failed | False | MetaCyc:PWY-8132 | Preserved DNS or Broken pipe attempt; later read-only vendored retry passed. |
+| network-resumption historical vendored attempt | failed | False | MetaCyc:PWY-8132 | Preserved DNS or Broken pipe attempt; later read-only vendored retry passed. |
+
+## Scientific And Domain Assessments
+
+### Whole narrative paragraph 1
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+All five native events and four material transfers are present. The upstream MtnP phosphorolysis is correctly outside this exact pathway; no physical substrate channel is inferred.
+
+Exact current paragraph SHA256 d0736393bdd8ff03fde6c3dd22d73d80d0b8ff883e55d7d09bef1697dd7b077d; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 2
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2017 feeding/deletion/complementation and 2020 Science strain tables support the stated R. rubrum S1/ATCC 11170 and R. palustris CGA010 scope. Residual phenotypes and species-versus-strain boundaries are explicit.
+
+Exact current paragraph SHA256 77746d802460844fb651919150c74879995550226748e5ce5e17d5bcb6c5e9b7; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 3
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Native reversibility of MtnA and the written RIGHT-TO-LEFT aldehyde reduction axis are preserved; all graph sides follow the physiological layout. NAD/NADH remain a formal putative equation.
+
+Exact current paragraph SHA256 966340a684a5fa7a4cc2eebdb5aaeece6fb4d960d5c532ad6f76def367485f9c; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 4
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2017 yeast-ADH coupled assay demonstrates aldehyde production and chemical reducibility without identifying a cellular aldehyde reductase. Native feeding and assay evidence are distinguished.
+
+Exact current paragraph SHA256 db4f8fa511936eab3c6b0877c69ee0e736a41891bdda3492135fd5e2f1621a59; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 5
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+All seven Mar written sides and their coefficients are retained. Generic ferredoxin classes and ATP dependence do not establish a physiological donor or ATP stoichiometry; formal small-molecule balance is correctly limited.
+
+Exact current paragraph SHA256 b63dce3a7160e7bfe77a1e3c98a51b12f7a3739a932ac47ba6ac018eddb56f49; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 6
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2020 Science mutants and complementation distinguish Mar from nitrogen fixation. NflDK deletion and weak cross-complementation do not prove universal interchangeability or unqualified growth support.
+
+Exact current paragraph SHA256 00845262d6545f1fe4506fc54724e3dbc5fd7e77103942029f8dd34974a6b60a; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 7
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Current complete native gene/product links and six UniProt bodies support the chosen chains. Reviewed MtnA/Ald2/Mar identities are separated from unreviewed Oah and its automated annotations.
+
+Exact current paragraph SHA256 978dc3c58c32929d60202cfed7ab06a0fbad5bbc3d0fbd885febd090dfe90df0; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 8
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Complete native nested Mar composition and reciprocal memberships agree. The formal H2(DK)2 assembly is not conflated with purified component masses, one/two docking states or the incomplete trapped reconstruction.
+
+Exact current paragraph SHA256 21b774337f61fc60630a234705f9ed335df52f01aeb09ed5861980e6bce8a694; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 9
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2025 main Methods and SI Tables 4/6 explicitly identify engineered R. capsulatus MM0422, parent genotype, pMM0181 and N-terminal His6 MarH/C-terminal Strep-tagII MarD. This does not transfer native pathway physiology to that host.
+
+Exact current paragraph SHA256 5b5c29b0b3ccb33d1d3c6c71def4ce441a65cc5137c00be4aeb5b73f2ccddda2; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 10
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Purified 2025 activity conditions and units are correctly attached to Mar(DK)2 mass, substrate concentration, ATP/dithionite, temperature and pH. Alternative substrates and the particular negative nitrogenase assay remain scoped.
+
+Exact current paragraph SHA256 519848a0973e8c75ae2b59aecd86b98610e96ae2b14f849f476459dc59bf3837; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 11
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+One MarH2 interfacial cluster and MgADP–AlF3 trapping are supported. P-cluster and active-site model are described with central carbide inferred from geometry/MarB context rather than directly resolved. EPR/ICP tiers remain separate.
+
+Exact current paragraph SHA256 a1d14763739b4a5e34fe1b0dc37c2e24a5d2f89fe621cb1d1b4e97d31382e528; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 12
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+CAVER channels, candidate proton routes and ancestral reconstructions remain explicitly modeled proposals. No elementary catalytic-step graph or certain ancestral phenotype is asserted.
+
+Exact current paragraph SHA256 a9e005fb857cf9ff615d567de08841fd1e81cdcb4ab5e298d2a43c67b8104388; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 13
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2017 SI and 2020 Methods support recombinant Ald2 expression/purification. Older MtnA His10 metadata remain attributed to native database commentary; tag orientation is unresolved.
+
+Exact current paragraph SHA256 aca533a85619560807fb1014c695670cf39a61b4245668c0e4f283472db96538; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 14
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+MTR substrate-specific MtnA and Ald2 kinetic pairs match main Table 1/native/current entries. Conflicting catalytic-efficiency arithmetic and misfiled native activity slots are identified instead of promoted as consistent measurements.
+
+Exact current paragraph SHA256 dde3aa073a938a96879a7f7dfa615d9c8c92236b3d96f43f58f208d0b713d837; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 15
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Co2+ and Ni2+ are independent recombinant apoenzyme reconstitution conditions after EDTA/Chelex treatment. Native metal occupancy and simultaneous binding are not claimed.
+
+Exact current paragraph SHA256 d2ca18af34d2f517e34bc20759d29fbb608747e9bc1b28d7732b4c030ab797a3; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 16
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2012 accessible main text supports Rru_A0774 methanethiol-specific Oah; detailed kcat/mass/pI/His10 are honestly database-attributed because the original SI was unavailable. Automated PLP annotation is separately qualified.
+
+Exact current paragraph SHA256 08b3835b92eaeeea11728455a105d8cae342f8200e9bfc91717efb344971f805; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 17
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+All nine activity contexts are retained without transferring E. coli ATCC 25922 shared upstream module, Klebsiella, Arabidopsis or other contexts to an experimentally complete Mar pathway.
+
+Exact current paragraph SHA256 4b2a5ba3169242b4a79eda580ccd9d5d25e804bb9f449cad8dabacdb0ae73431; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 18
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Thermus Oah catalytic conditions remain a separately attributed native catalog context. Older pathway citation/unknown sulfur endpoint and 2012/2017 locus conflicts are explicitly reconciled with primary evidence.
+
+Exact current paragraph SHA256 339dd9240db4fc577bd1940bb5d16cecdf54cbeb85743d7f77a28d8a92cc7a00; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 19
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+2020 SalR dependence and sulfate regulation are demonstrated in the tested R. rubrum background; direct promoter binding and universal regulatory behavior are not inferred. Aerobic shunt and other VOSC hosts remain distinct.
+
+Exact current paragraph SHA256 bfa9050ae075ecde15d58f7236105c377b55de7c5a6ffd28f260b04d7a3f0220; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 20
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+Fourteen defined reaction chemicals agree in full InChI, including stereochemical and protonation layers; generic carriers have no defined formula. Exact protein mappings do not duplicate native Mar chain nodes. Native directions remain separate from current UniProt/Rhea catalog directions.
+
+Exact current paragraph SHA256 22d9cacbc0283fa3414ca54eb2e285054a58f96bd3a8257e43f4560970552fe8; same complete source bodies as earlier independent science reading.
+
+### Whole narrative paragraph 21
+
+evidence: supported. Targets: MetaCyc:PWY-8132.
+
+The author reading/access statement is consistent with retained bodies and evidence; whole main-text sources, limited SI coverage, unavailable images/raw supplements and lack of new assay reanalysis are disclosed.
+
+Exact current paragraph SHA256 ff93319b7aedfb20628cc373f5a25a65a047b0b2de06270b16dc3cfe89496055; same complete source bodies as earlier independent science reading.
+
+### member-5.3.1.23-rxn
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact native pathway reaction-list and reciprocal reaction in-pathway agree; 2017/2020 primary organism scope is appropriately bounded.
+
+Exact whole edge SHA256 4a1ec052a43af48b224ab736adfe045d0b9fee56ae0237e53c7f3526217c45bb; full qualifier/evidence content remains in record, page and export.
+
+### 5.3.1.23-rxn-left-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 b592c943353f82aea45f4f15d2a6baca4c27f607adeb4de6cfcbf848334802cb; full qualifier/evidence content remains in record, page and export.
+
+### 5.3.1.23-rxn-right-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 0cd6062d6ed8f466610c9443aea6848c491ea6bdf35f21c33af211ac37b08f41; full qualifier/evidence content remains in record, page and export.
+
+### member-rxn-21318
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact native pathway reaction-list and reciprocal reaction in-pathway agree; 2017/2020 primary organism scope is appropriately bounded.
+
+Exact whole edge SHA256 6e66e3e673b97ad3928d9c555c9d555c3e871f15998901e1c9972ff62878c7ad; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21318-left-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 f573cda5cf91d456edad320876395607f6938d8f6c015ee14c8bc2634562066e; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21318-right-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 5e220b87c6bd3728f9f019aebf9e63475cdebe65bf0b29f27c52c954663cd005; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21318-right-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 2bcee5562b151e85a33881847362452df0fcdbd37b072824994dc8e3528bd71c; full qualifier/evidence content remains in record, page and export.
+
+### member-rxn-21319
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact native pathway reaction-list and reciprocal reaction in-pathway agree; 2017/2020 primary organism scope is appropriately bounded.
+
+Exact whole edge SHA256 3b7d8ca6484ce76333ba64dc612b65ea40e413d6d65870ee4c87e485181e46ab; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21319-left-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 aa0a6927791033b74924c26b67c5fc0cd092be460247d6b905ba24f44807d635; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21319-left-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 8305695c5b25487be4d311b82369067866696d6987e4a30f70fe2cb3fc502824; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21319-right-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 78a088d328d2ea9303deb5367ffeaac8edddc4bb32eb46b8d85b84b3d29a8eec; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21319-right-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 1707ad1b4a5802312ccdf56d520645d9b723bd2309474476a42f7f6731a83266; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21319-right-3
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 3122460b9db2f06134cbbb8390d7bc2c9677126943be718101d78005fc31ac23; full qualifier/evidence content remains in record, page and export.
+
+### member-rxn-21320
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact native pathway reaction-list and reciprocal reaction in-pathway agree; 2017/2020 primary organism scope is appropriately bounded.
+
+Exact whole edge SHA256 745b2337781504d659d9b6204cf12a0e1d53f956953360e5e7a9f3fe60c46107; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-left-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 f1b7d88db3afed8c20a5cc3a9e690c64a50aa36a0e98bc090a7269f30e9742d1; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-left-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 9a5e6e542f2979ff005df9078bb2775012ead34fde6412e111ecf7a07dc5b60b; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-left-3
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 3d1ec1ee96bcb38dd56530ba573ba3d790d4cf205d054ecb502b63b5d3b4546b; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-right-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 4f8e74b86be783ad5955fdfbc202b21b56fad777cf4d24498360b26a6c00e5a9; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-right-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 d6f06e32e2ec328dcc615c1d3650903a2fa42a800c8fa5a88e3fdb8830b9f5e5; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-right-3
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 4795a5cc1ea8673becaabbd204edb5fc5e336bf44657a4e8905e7f99d9a208fc; full qualifier/evidence content remains in record, page and export.
+
+### rxn-21320-right-4
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 f525f8848567e7284aa7b3ecd44191c1142c389b65b7d7bcfe6c5ccb43287f2a; full qualifier/evidence content remains in record, page and export.
+
+### member-o-acetylhomoserine-thiol-lyase-rxn
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact native pathway reaction-list and reciprocal reaction in-pathway agree; 2017/2020 primary organism scope is appropriately bounded.
+
+Exact whole edge SHA256 395ef1b696986812ab5953714fdf8050777c488685cb1b415064ae99525bc212; full qualifier/evidence content remains in record, page and export.
+
+### o-acetylhomoserine-thiol-lyase-rxn-left-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 9e96163e8c6558e8d926259778470c972da2e9b8ceeb5799266fd406f71c75f1; full qualifier/evidence content remains in record, page and export.
+
+### o-acetylhomoserine-thiol-lyase-rxn-left-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 3daf07de0618ec35f4a7fdffb471e87e7eb2b9708c10b25f2aae873e735648df; full qualifier/evidence content remains in record, page and export.
+
+### o-acetylhomoserine-thiol-lyase-rxn-right-1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 42ca198596d62217dd1640e7075da857436f30c7b904d024a6ef538ab1886cd8; full qualifier/evidence content remains in record, page and export.
+
+### o-acetylhomoserine-thiol-lyase-rxn-right-2
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 fe8e4e044165c4a05fb43165c35bc13e04fee605a3d0a5fe1aa18605657e67db; full qualifier/evidence content remains in record, page and export.
+
+### o-acetylhomoserine-thiol-lyase-rxn-right-3
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Exact original written side, occurrence order, participant type, selected chemical identity and coefficient agree. Physiological graph direction follows native layout, including physical reversal for RXN-21319.
+
+Exact whole edge SHA256 bba377b425c6a6eba369767f8f63700ac40a63f96f150b847134a9f618b113bc; full qualifier/evidence content remains in record, page and export.
+
+### transfer-5.3.1.23-rxn
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Native predecessor ordering plus a specific produced/consumed intermediate support material continuity. No physical channeling is asserted.
+
+Exact whole edge SHA256 01d36fa92e22a7d3e55bc7a81c5aecdd13ede650b1c361cc52e6ada60adafbeb; full qualifier/evidence content remains in record, page and export.
+
+### transfer-rxn-21318
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Native predecessor ordering plus a specific produced/consumed intermediate support material continuity. No physical channeling is asserted.
+
+Exact whole edge SHA256 3a51a8f5ff31090add4412f4faea578249f26dbc87ce37b2731e6a0485e3deac; full qualifier/evidence content remains in record, page and export.
+
+### transfer-rxn-21319
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Native predecessor ordering plus a specific produced/consumed intermediate support material continuity. No physical channeling is asserted.
+
+Exact whole edge SHA256 d3f699f3cf77beb358554cc347113948015c4a4fff8c60593d8f8fa0ca7a5497; full qualifier/evidence content remains in record, page and export.
+
+### transfer-rxn-21320
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Native predecessor ordering plus a specific produced/consumed intermediate support material continuity. No physical channeling is asserted.
+
+Exact whole edge SHA256 0090d4baa63a4d327ce7166c96ab95e205dae93a28358f1e6d77206f4e131b46; full qualifier/evidence content remains in record, page and export.
+
+### assembly-cplx-9561
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Whole typed native composition, coefficients and reciprocal component-of links agree; the 2025 structural/purification contexts are retained separately.
+
+Exact whole edge SHA256 3fdbb076359701c721fdf4f7e2426ac8bc750cd4917c9ede794b3f2cc03a3372; full qualifier/evidence content remains in record, page and export.
+
+### assembly-cplx-9560
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Whole typed native composition, coefficients and reciprocal component-of links agree; the 2025 structural/purification contexts are retained separately.
+
+Exact whole edge SHA256 5c202137f7d9ecf23adc4be921c2a056ca225947b48f077d5533cc308ed04263; full qualifier/evidence content remains in record, page and export.
+
+### assembly-monomer-21382
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Whole typed native composition, coefficients and reciprocal component-of links agree; the 2025 structural/purification contexts are retained separately.
+
+Exact whole edge SHA256 509ca4c9b72ced83998df5e00abc12d479c803774932b4f549cb835206f68bcb; full qualifier/evidence content remains in record, page and export.
+
+### assembly-monomer-21381
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Whole typed native composition, coefficients and reciprocal component-of links agree; the 2025 structural/purification contexts are retained separately.
+
+Exact whole edge SHA256 e97831909b93abcf2b17e0a503a192ab45eab037e85c3d6f13b8de7f3495a5e8; full qualifier/evidence content remains in record, page and export.
+
+### assembly-monomer-21380
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Whole typed native composition, coefficients and reciprocal component-of links agree; the 2025 structural/purification contexts are retained separately.
+
+Exact whole edge SHA256 dfbfe8475e175e3e3eae58e1fcafd519e588fe7c5b9bafc4be7acd34ea87bf76; full qualifier/evidence content remains in record, page and export.
+
+### catalysis-q2rxi0
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Complete native activity/gene/chain context and cited primary experiment support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications prevent transfer from recombinant activity to unconstrained native physiology.
+
+Exact whole edge SHA256 4fe7007f81ba750fb97574ee685460024a728271ed4c951bfc166df88ca90c4c; full qualifier/evidence content remains in record, page and export.
+
+### catalysis-q2rxi1
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Complete native activity/gene/chain context and cited primary experiment support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications prevent transfer from recombinant activity to unconstrained native physiology.
+
+Exact whole edge SHA256 b9e122866f457848fdc0131650194da542990651323ab1c655a807d4e9491593; full qualifier/evidence content remains in record, page and export.
+
+### catalysis-q2rwb7
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Complete native activity/gene/chain context and cited primary experiment support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications prevent transfer from recombinant activity to unconstrained native physiology.
+
+Exact whole edge SHA256 077db0d4cdd8fe64fd9f4ca024987773f2159760538cdbe552f34cbedc3f7632; full qualifier/evidence content remains in record, page and export.
+
+### catalysis-mar
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Complete native activity/gene/chain context and cited primary experiment support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications prevent transfer from recombinant activity to unconstrained native physiology.
+
+Exact whole edge SHA256 0860c7c88ffb750c8dc22c3d37296f5dcd9d168387f15b9696b4bdfceba409e9; full qualifier/evidence content remains in record, page and export.
+
+### ald2-48828
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+2020 whole primary Methods and metal-reconstitution results support separate Co2+ or Ni2+ apoenzyme preparations; subject molecular-state qualifiers exclude a simultaneous or native-occupancy claim.
+
+Exact whole edge SHA256 8332d72fd52f9da343aaa97e0c3754ca18e7e8fd80582a1f75ed52caa53523a9; full qualifier/evidence content remains in record, page and export.
+
+### ald2-49786
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+2020 whole primary Methods and metal-reconstitution results support separate Co2+ or Ni2+ apoenzyme preparations; subject molecular-state qualifiers exclude a simultaneous or native-occupancy claim.
+
+Exact whole edge SHA256 02b50a4af92911862b6f810ad3170dc1204b07e9293540daf147221d6a586f51; full qualifier/evidence content remains in record, page and export.
+
+### oah-plp
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+Whole unreviewed UniProt entry directly links the active ChEBI PLP dianion with automated ECO evidence. Edge explicitly preserves inferred tier and does not determine bound protonation.
+
+Exact whole edge SHA256 1b5336eb02644f951411a442ab5eb25e5ff5478d4b312cf1f023e52d3cb8b4db; full qualifier/evidence content remains in record, page and export.
+
+### marh-iron-sulfur
+
+graph: supported. Targets: MetaCyc:PWY-8132.
+
+2025 structural/EPR evidence supports one interfacial Fe4S4 cluster per tagged MarH2 dimer; current UniProt similarity tier and generic cluster identity do not assign exact assay redox state.
+
+Exact whole edge SHA256 b4c231c2a4a6046f1918115e16281732de26b178cf42e58ccdd31a3fdafb2ca9; full qualifier/evidence content remains in record, page and export.
+
+### Complete issuer identities and native membership
+
+identity: supported. Targets: MetaCyc:PWY-8132.
+
+All38 selected identities retain exact source scope,14 defined full-InChI structures, six chain identities, five reactions, native taxon boundaries and full nested Mar composition. Generic ferredoxin Protein classes remain generic redox carriers; neither a defined small molecule nor a proven physiological donor is implied.
+
+### Assay conditions and source artifacts
+
+quantity: supported. Targets: MetaCyc:PWY-8132.
+
+Native kinetic misfiling, 2020 efficiency arithmetic, alternative Co/Ni Ald2 states, Oah automatic PLP annotation, missing older SI and native-versus-tagged heterologous constructs remain explicitly qualified. No coefficient or ATP budget is inferred from the Mar schematic.
+
+### All source boundaries retained
+
+scope: supported. Targets: MetaCyc:PWY-8132.
+
+Native reversible MtnA and written RXN21319 right-to-left axis remain explicit. The unassigned aldehyde reductase, proposed physiological donor, inferred carbide/channels and separate engineered 2025 host construct are not upgraded to established native mechanisms.
+
+### Current graph, page and exports
+
+representation: supported. Targets: MetaCyc:PWY-8132.
+
+All21 paragraphs,44 complete edges,7 qualifiers,93 references,42 visual nodes and38 identities match the maintained record. Whole target KGX contexts/edges and20 SSSOM mappings pass.
+
+### Scientific independence and subsequent technical authorship
+
+ownership: supported. Targets: MetaCyc:PWY-8132.
+
+This reviewer did not author the scientific draft. After its earlier independent scientific review, the reviewer authored authority design, adapter correction and canonical preparation. This SCI judgment concerns unchanged science; root and separate peers own independent technical review.
+
+### Whole-source and execution evidence
+
+provenance: supported. Targets: MetaCyc:PWY-8132.
+
+All98 original bodies and96 receipts are unchanged; all94 original native execution files are copied exactly including original seals and both failed public fetches.12 commands and nine gates ultimately passed; no failing attempt is relabeled as passing.
+
+### Regulatory interpretation remains bounded
+
+scope: supported. Targets: MetaCyc:PWY-8132.
+
+SalR genetic dependence remains regulatory context; no direct promoter occupancy, obligatory physical interaction or expanded regulon is inferred. This review adds no regulatory edges or new iModulon interpretation.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| current-record | data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml | supports | Current complete record exactly equals the accepted scientific draft. |
+| paragraphs | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/paragraph-appraisals.json | supports | All 21 paragraph appraisals, exact current text and earlier evidence locators. |
+| edges | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/edge-appraisals.json | supports | All 44 whole edge objects, qualifiers and scientific rationales; pending wording in this original preparatory ledger is superseded by final DOM/export receipts. |
+| identities | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/identity-appraisals.json | supports | All 38 exact identities and full original identity judgments. |
+| references | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/reference-appraisals.json | supports | All 93 reference-to-whole-source bindings. |
+| source-closure | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/whole-source-closure.json | supports | All 98 complete original bodies and 96 receipts equal the retained originals and maintained decoded archive bodies. |
+| read-coverage | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/read-coverage-final.json | supports | Same-day earlier complete primary/native reading is inherited; current rereading and technical authorship are explicitly separate. |
+| dom | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/dom-audit.json | supports | Complete current page and graph payload comparison, all local anchor targets. |
+| visual | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/visual-assessment.json | supports | Personally viewed complete current static image with explicit browser and layout limits. |
+| exports | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/exports-currentness.json | supports | All 38 whole target node contexts, 44 edge rows,20 mappings and authority identities pass. |
+| currentness | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/final-current-bindings.json | supports | Fresh all41 native inputs,98 originals,96 receipts and decoded-body owners still exact. |
+| native-copy | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native-copy.json | supports | Exact94 native files including original seals, receipts, failed attempts and original streams. |
+| root-binding | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/root-QA-binding.json | supports | Fresh44+2 root packet closure; root independently owns technical and whole-checkout assessment. |
+| root-QA | research/pathway_additions/2026-10-12-next-239/native-integration/root-review/REPORT.md | supports | Separate root whole target/checkouts/cache preservation and TECH assessment; no independent certification of this reviewer’s adapter code is claimed. |
+| prior-search | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/exports-currentness.json | supports | No prior exact target native review was found in the complete current structured-review inventory. |
+| execution-prepare-science | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| execution-prepare-science-corrected | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| execution-prepare-science-lineage | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| execution-serialize-scientific | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| execution-final-native-inspect | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| execution-maintained-dom | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| execution-maintained-exports | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/completion.json | supports | Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history. |
+| native-history-1 | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-history-2 | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-sssom | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-render | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-skills | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-validate | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-tests | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-lint | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-kgx | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-vendored | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/vendored.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-diff-check | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/diff-check.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| native-site-current | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/site-current.execution.json | supports | Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer. |
+| failed-vendored-gate | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/failure.json | supports | Original read-only vendored fetch failure, superseded by passing network-resumption-successor. |
+| failed-network-resumption | research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/failure.json | supports | Original read-only vendored fetch failure, superseded by passing network-resumption-successor. |
+
+## Limits And Additional Notes
+
+- The earlier same-day complete primary/native science reading is inherited, not repeated or relabeled as a fresh whole-paper read. Exact whole originals and current narrative/edge judgments were reconciled now.
+- 2012 SI, some 2018 supplemental images and external Science spreadsheet/database materials remained unavailable;2017 SI extended gene inventory pages19–29 were retained but not fully manually read. No raw cryo-EM,EPR,transcriptomics or whole figure-pixel reanalysis is claimed.
+- Static light image only: no browser was available. Dense crossings, small full-image text, truncated labels and tall blank canvas remain. Whole DOM retains full qualifier/evidence text.
+- Subsequent authority-design/adapter/preparation authorship prevents this reviewer from independently certifying those technical changes. Root and separate peer technical assessments remain separately attributed.
+- Both failed public fetches and two preparatory guard errors are retained with the successful successor receipts. No public release or licensing clearance is asserted.
+- Proposed durable evidence paths name the exact independent-qa and root-review destinations. Native save is not performed. Later source extension must preserve these original native inputs and original judgments/timestamps.
+- Preparation reports retain their then-pending states; final DOM,export,phase-origin and native inspection records supersede those temporal statements. planned-native-commands.json remains unmodified and the exact planned inspection argv was used.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261012T232740Z-mar239-scientific
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'S-methyl-5-thio-alpha-D-ribose1-phosphate degradationIII: maintained scientific
+  review'
+started_at: '2026-10-12T23:13:16Z'
+finished_at: '2026-10-12T23:27:40Z'
+reviewer:
+  identity: Codex /root/nitrate235_finish
+  kind: agent
+  independence: independent
+  independence_basis: Aceto authored the scientific draft/preflight. This reviewer
+    independently reviewed the complete science earlier the same day and now reconciles
+    the identical maintained record and sources. Subsequent authority design, adapter/successor
+    implementation and canonical preparation were authored by this reviewer; those
+    technical changes are independently assessed by root and peers, not certified
+    by this SCI review.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The exact maintained five-event pathway retains all accepted scientific judgments
+  and qualifications.21 paragraphs,44 whole edges,7 qualifiers,38 identities,93 references
+  and20 mappings pass fresh maintained page/export/source checks. All nine native
+  gates ultimately pass; prior source-reading, technical-role and static visual limits
+  are explicit.
+source:
+  git_revision: 12bc8c721fa8b8d824bcb8cea8b0bfa0ffbc0449
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f2991a22f16f0d14d83226c6ac261bc779b253b2547fae9724474d8596b411c7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 41029fa6a8782959f1548b5fee9f1c23f91582895c6f9351e4ec8615d4487372
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: f155aeff12118e7aa7176c58f32ea231ad61fa25cd43a1c90aa6ff6f383ef9e2
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 90ef29ec10d1a04569df9c9983d14e9329035de267345a608e49a564a947c5f5
+    role: context
+  - path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+    sha256: 60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: output/kgx/edges.tsv
+    sha256: 6d49f52eaf2f3fe6e96e7f9a9644d3e567f8afc6d252aa018906805c29a9ac71
+    role: context
+  - path: output/kgx/nodes.tsv
+    sha256: ad1e0305d07e6a67a993e27a0aa16a31f580e3bb6eb277760b9c60b374f52eb0
+    role: context
+  - path: output/sssom/source_mappings.sssom.tsv
+    sha256: c531d0807aedaadeb6c4ab5326da32cdd729ecb3e3ca5a14f3a5ce80aaa54e0f
+    role: context
+  - path: pages/assets/pathway-network.css
+    sha256: ffe62865f9ede1d8ae7c361a5576823921c850542cf03d2ca7b3c945d63d7645
+    role: context
+  - path: pages/assets/pathway-network.js
+    sha256: 23b6fc25a1522c945cf61b7c269dadf93a90b8c78c357652e6653a05bcb97eac
+    role: context
+  - path: pages/records/MetaCyc_PWY-8132.html
+    sha256: 6d0a265d554401b25b7c9af11939a8c033a251a8347e3a0a99928bc518d2680c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-233/archives/author.zip
+    sha256: 65b742a54c39639dab2ff40d33945a9fcbabe7f854717fd43f68c026bcd7f16b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-234/archives/evidence-bodies.zip.part-001
+    sha256: e78e3da4fe6df6c3a6b9f5aa55df25dc663f7b6cf43fdf242654f0073edaf750
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-234/archives/evidence-bodies.zip.part-002
+    sha256: 83a7ed3743f75994d98fe474f3403f5c3fa4115cf60467d78cb55ceb4f7cb19d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-234/archives/evidence-bodies.zip.part-003
+    sha256: f9695d1b350e6c60080bd6161fa3c7a97e18b5b4bf7b01bb5fabb1aaf7d8c429
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-234/archives/evidence-bodies.zip.part-004
+    sha256: b429e2f27cd5d8045d0644f7f6470bd476013c252ea27cdc30fcdccd191e9382
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-234/archives/evidence-bodies.zip.part-005
+    sha256: ce9419752b531a6a36aff0eb709669d7763f91307970a93286e39b324b858d24
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/archives/evidence-bodies.zip
+    sha256: 740a9622a76ca5d0ae16a815d2c9ca6e1871512c86fb198215a97c89382c9d1a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-237/archives/evidence-bodies.zip.part-001
+    sha256: 430cd347e9540c2d90ed653bce1e7d3af4e9bc3e06f0c6a232cfc0c6205f01d8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/archives/evidence-bodies.zip.part-001
+    sha256: 671255ab13c714eef57825ae192068355c2610a440d83b2972b533dfefe4ed4c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/NCBITaxon-1085.xml
+    sha256: 99dd29408ae9745f19eb66387ad81ade7e959034c7c8b06ea3164e4338712b53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/NCBITaxon-269796.xml
+    sha256: e4c5142b695722b7d0151f5e6c293ccbf9e277babf478293934da01e4b631587
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/archives/evidence-bodies.zip.part-001
+    sha256: cdb8c2f388c03262584ccbaaa135883132e75b75adca984bc13871902d6c6d51
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/archives/evidence-bodies.zip.part-002
+    sha256: 7a805b48ab17043036a4910ca1895e2078767e1ca7e739c9416860db047a8dff
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/archives/evidence-bodies.zip.part-003
+    sha256: 788f9e6cad1f88226f3afb7e16f6d32bce140068018601791b8569a436084c5f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/evidence-index.json.gz
+    sha256: bcf874ff7c921fdcb6bde0f326e1bbbc7e3a23dd2472423853052eb8890904ba
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/README.md
+    sha256: f87a918e133415cee8d94c56f0de0af16df861d076e72f2a519140b552df0c91
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/finalization-plan.zip
+    sha256: 4d596c988ca15384121674ea7a098d6b72156ff34ecc9e161e4c1ea9235d03d2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/REPORT-preparation.md
+    sha256: 8026fcbf70fe82235fad9a1dd10795dde7667b3c5ef45f538baf6c948b67310f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/REPORT.md
+    sha256: e0e9dd3ef61633e5ebda1ffc025a24014b89eb9b982efe58480d254adbceb157
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native-copy.json
+    sha256: bec3897a3400ceae26a5bb1d7737657c8521032e3def1bc5edb6f7fe32e7626d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/REPORT.md
+    sha256: ce16615eba500b281aeef1e1e968b6f2e321a55286a8fa5462e43f27923edf24
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/actual-tool-provenance.json
+    sha256: 2a1ef3851be5bceafaff8d8b39bf485e60069a6a98b3349a82962bddc01d3ce1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/artifact-manifest.json
+    sha256: 07ba4d437d3e80a887c87de3e3e5aa37e24549fe177620b8932ba9ba2eff7727
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/execution-summary.json
+    sha256: 7360f5976516c62a5d5ed53b121190c9d2d7f7d4e984633d78591478cdd57525
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/handoff.json
+    sha256: ece82f35077cb4a317c0960ca437ac3069f84a8414490087b50658a4d27c5f43
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/completion.json
+    sha256: db826d179a4f7919aa54a7d5367896dbdd59fc183ecabc88b9f765257f7ac42a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/histories-before-generation.json
+    sha256: c1abd4ac96450b3f08b7dbeb1f66c8c8f13e4d255ca7342726bf50f4b89d240e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json
+    sha256: 9ae1cd3adf6f0e8a3b717d5247d48e6ca70610984bf206287df4e34167e9cd7a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-1.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-1.stdout
+    sha256: dcbe0ac1283b3e4ae26ddc4a573dd8c9c56d59be09aa86f6723cee0732fe4908
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json
+    sha256: 5ce95c14a9530e1798f0d38fed4e40058e9e321071c7cb5a35da5a7e08d70024
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-2.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-2.stdout
+    sha256: 155629f25d336589c1c18aa08dc643b9e760158cd01b4b0de20ff5303a238f0b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/phase-start.json
+    sha256: 356468f03776827dd950c67f8178b7d9d9aa17eef67e7b00653cdf9e0ff2eff2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json
+    sha256: bfd76f4280175474d1269c87f482667a825055c1347545cf0a5885655ec17bfb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/render.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/render.stdout
+    sha256: 75468778dfb76826cccc4935dd4dec58302021adc12b045355d0003f0b7c56de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/runner-at-start.py.gz
+    sha256: c6f9b878b070569e0440861d299aae426b802ee19c25b92843da310c53927b66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json
+    sha256: 808281369407b79066f5a56dbc283debb792f0c82a32a5ad9e8c4bae357bf804
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/skills.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/skills.stdout
+    sha256: aa2d3652343b880d16a176d45deb7b4907fb11f43e31f1840d7724658478a527
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/sssom-preservation.json
+    sha256: 628cbab907692dbfc4a73d2cd0c0f1dfa6a916b883b44e5d2138b03313651dc8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json
+    sha256: 40fbe03ad1e04d2cdb41520f0fef123ac97138ae63ed25dd949475131afd7ae6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/sssom.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/sssom.stdout
+    sha256: 61a315a62dc244f895731c22e22286acded4100a3600ef5312fff8150b76f1b8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/adoption.json
+    sha256: 5ea7bdebdfc11f789e54063b769a3230e564194a826c01f490a281b6e5a0b16b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/network-resumption-successor.py.gz
+    sha256: 6d59c5808b0598ec4c447d6648ebd11d47365fa9760fe587a367a2cd7afde54a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/network-resumption.patch
+    sha256: 59a1f6ca0c34e7a01eafa900deb71725a58cd3504e728ab53368c5aadd5d2a98
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/network-resumption.py.gz
+    sha256: 867a9537052595dcae0e718d7439e954c40724e94c174edc43b769048bfdbfb2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/network-retry-successor.patch
+    sha256: cbb43de5df89bb26309eb3dfeee358ebad7915f4fefc29890421f117337790a0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/root-acceptance.json
+    sha256: cad2d88ea48fe6681d92a1e3c428313cbd5bc61625cdb4f97c97141a3c72daef
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/runner-lineage.json
+    sha256: c8b5e3e816c04d8c094a3d5f54ee02031e53e26d12a9cad2d8fd26e11abf7789
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/input-receipts/stages.json
+    sha256: 331e58003f7b0aaa815d5a64e4bca24aaab4696bfc21a4cecfc0eefbdb2dde6d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/completion.json
+    sha256: a9f299452dd3dd061e4b4e4dc6d898c8c67a27ba2d05f90dce152bd86c720462
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/diff-check.execution.json
+    sha256: c6281b31a81d233071026b57924d6cf64dde07ea95fb53339b1ba162f5f33e67
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/phase-start.json
+    sha256: 09d651d96ff96fe2a28b542e64bb191b54902c2f1d7f5553275cb27c1d006a52
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/runner-at-start.py.gz
+    sha256: 6d59c5808b0598ec4c447d6648ebd11d47365fa9760fe587a367a2cd7afde54a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/site-current.execution.json
+    sha256: 18b58b48ea233f7f595939bf5ba3f9e2e1af16d0a2c378971f2d39caf8665ec0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/site-current.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/site-current.stdout
+    sha256: 423be7b442fd0e6dbe8d1e9de065b8e2f9438452b966c6f019b351d06d629351
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/vendored.execution.json
+    sha256: ce9e6bc44cf1eff497ee856e17f20863c4bf913c0a50017d21ce0fb91a5a2c79
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/vendored.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/vendored.stdout
+    sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/failure.json
+    sha256: df431321ffa26f0393140b0e45815ab872017b3b83384f7f477865b8b78f044f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/phase-start.json
+    sha256: ae020c155dbec3aae9c72dd998e69fa9529c6723f59884335d5dfbf2b20e57bb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/runner-at-start.py.gz
+    sha256: 867a9537052595dcae0e718d7439e954c40724e94c174edc43b769048bfdbfb2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/vendored.execution.json
+    sha256: c38d09895a57e34d8715bd137a76485940eceeae2b25b0ad6ad2cd438fe38d31
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/vendored.stderr
+    sha256: a7537cac36fa4099fe6cc1067f8d04b9842d2dcb7b2a7eeb842acaa30b87ab74
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/vendored.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/capture-wrapper.py.gz
+    sha256: 950fff2fa3a95e6d2bbcd05ac433746741247e77c0f5a8c27fdb0199e0abe527
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/execution.json
+    sha256: 348ccaee22ed01958fe5ae63a1ced36167a26f6727c1350159ef8d435b07e2c1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/helper-at-start.py.gz
+    sha256: c6f9b878b070569e0440861d299aae426b802ee19c25b92843da310c53927b66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/stdout
+    sha256: 1b3be0d9dd85a685ec2125cafcf076beb9007c7ca4b2696f43cc5fb07afaaebf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption-successor/execution.json
+    sha256: 05d87cfeb946c0d10997a810a9119166645248a991b313310f84bb29fa83235a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption-successor/helper-at-start.py.gz
+    sha256: 6d59c5808b0598ec4c447d6648ebd11d47365fa9760fe587a367a2cd7afde54a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption-successor/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption-successor/stdout
+    sha256: af19534753fd6f044fb0b1938c6d9cf5e8f328b3045946f083d323238c481f7d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption/execution.json
+    sha256: 6edd8f7271933aa3a58842c1bcd3d60b3448f3cafd35588260bb68c5d098f7c4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption/helper-at-start.py.gz
+    sha256: 867a9537052595dcae0e718d7439e954c40724e94c174edc43b769048bfdbfb2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/network-resumption/stdout
+    sha256: 71017b296f65f0900b368f7e71ad8df743731165079a1acbc300614e0b4cc33b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/execution.json
+    sha256: a62ccdd27765558a788f17a0d7a09d00b87634a1e62b0ef31d555f33af169f9d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/helper-at-start.py.gz
+    sha256: c6f9b878b070569e0440861d299aae426b802ee19c25b92843da310c53927b66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/stdout
+    sha256: 2ad08ad60f6c37e6a063a38bfb6cbb1888774793ab7a94beab681e7d63bba827
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/execution.json
+    sha256: 423fc4ed3129985fa649179445bb4088c560481c219f7e52da252fd131b71ce7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/helper-at-start.py.gz
+    sha256: c6f9b878b070569e0440861d299aae426b802ee19c25b92843da310c53927b66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/stdout
+    sha256: 703d8e81ffd9e4f5c501d7b5707fdda160761be1370937671cc6e5b04259e9dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/completion.json
+    sha256: f861a6e9679c5ebd4bbf9cd9776b34eaa8a52dcbc057d09e08df643f5546f09f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json
+    sha256: 8453cbdc0f64126e41befc1753338ebe7751af4e40f8ce06c5a56a621dfe47bd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.stdout
+    sha256: 2481437f9b615b19000544baba2cc2c8779b35643f24712b9ccce103014da8b9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json
+    sha256: c062dc1f055332e5c0ddc1e901e341c5e15972337cb4e69e68c61e71c8fd992a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.stdout
+    sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/phase-start.json
+    sha256: 76caa7c7d8a4d111a18bdfd49b51a0799bafa1de7b3c94d02b9ad0024602bbf1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/runner-at-start.py.gz
+    sha256: c6f9b878b070569e0440861d299aae426b802ee19c25b92843da310c53927b66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json
+    sha256: c914955ff987b73ec593cfcee41d0dc1a734fd4eaa02e18a6c533f7c66a1d0c6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.stdout
+    sha256: a3f5258ba54077a6abc3a3e086e564753d51b634e9ac100db40dad840d580790
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json
+    sha256: 6f107c6540ca3088eccd40365baa4236d1929a86355d380d4fc39ed7fecda92b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.stdout
+    sha256: 3f54c17d4e7c8860ed8c477bbcb93f4c5671d587778bad056fb8d4e9cd229709
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/sealing-helper.py.gz
+    sha256: 64f987a5279832e4f6a32428a4ead11f9f80726151e63a43a20074a0da1d5778
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/failure.json
+    sha256: 8acfe9de3931d8c753fd714ddc1ee850975cdbfb142e88a3d1cf27bd63aa0b91
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/phase-start.json
+    sha256: 6a266b1df723d9be4d791d986fce823d0ebabc5089d2d821f315f3cac642dac6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/runner-at-start.py.gz
+    sha256: c6f9b878b070569e0440861d299aae426b802ee19c25b92843da310c53927b66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/vendored.execution.json
+    sha256: f307f8ad3d0c981305b71c3715a19353d8c4aad4cc9ab5eb578a66b34b61abe5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/vendored.stderr
+    sha256: ede217865e5d787bac31473163e00ab87cb7b8b1cda244481cffa493a1a844d3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/vendored.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-tool-provenance.json
+    sha256: c9702252cf2078dcbb22956b5ef6182860a86bc286f4e0a9baf433571d056b42
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/artifact-manifest.json
+    sha256: eb32e024facc8264b38d744a48ce734bf10d99704da0291351e858953be838d2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/completed-review-ready.yaml
+    sha256: 71575aa26dfc2748e032955a4e049939374fe60ddf48431f2d16ad4e5bc7e9c4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/completed-review.yaml
+    sha256: 71575aa26dfc2748e032955a4e049939374fe60ddf48431f2d16ad4e5bc7e9c4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/dom-audit.json
+    sha256: 5a6f08a11e772099bfbd7c14ab60bfc6f69f01f50b5800d86bc032f4022b3d72
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/dom-helper-plan.json
+    sha256: 2c0da563d06d843b2640aa9d095fae42b5b720548373f44e72c81bab88058394
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/dom-helper-rebase.patch
+    sha256: d7c958f6d2bba19b74605a51f994424088590e194dfbe3ef2cbb82e55f76552a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/edge-appraisals.json
+    sha256: 31e8669cfe1048856e843072910769d0673799ea8cd358bf57b623ed2d404d20
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/completion.json
+    sha256: ef55eb703531a1e905a04eef8a2ebc8d076cb83a59c3a2d8effc25e25b81dc72
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/helper.py.gz
+    sha256: 65743a990f15501e19bb1b8b32869398fcf2a08a68ebd6f44565612366827ee4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/start.json
+    sha256: 19910a30252941c622701dd0d3f19a87d137629a0ecaaff2693b0ad3f665cfd3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/stdout
+    sha256: 3dcdc10257d9664c0c4b3728dda0032ca00692219e7e453b0327cb1024f5f845
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/completion.json
+    sha256: 7a6cf67b1ad318c9c2bd0a829264f73f3a52d4b8ca124d8fcebdb2111f622424
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/helper.py.gz
+    sha256: 08b8970682298180018d389787826d4762da8767b59d1248ca1b98c0a6091e74
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/start.json
+    sha256: 5acb83ad8ae53aa7dd8a9e57b3502029ad638948d93c8306528d930bbf9fc9dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/stdout
+    sha256: c7309f64b77ece45d1d2cb292b35ffc68fa60061cca84148743e0b6e9ed86843
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/completion.json
+    sha256: dc9c937457e18b6578f87fd70dae397aff1cf9e563d6d7daa1b1ae93a7dcb630
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/helper.py.gz
+    sha256: 44362f3de8731cbeeb156e5b35aba6df3c71622e6cc865387fb8df5670ea0e7a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/start.json
+    sha256: e0660af3e5466fce587e0aaee24bc6cab4e35a42ed3ba9fcf51a695f4a48cbfd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/stdout
+    sha256: 9c71e8c7432b0334245949d2b1f07bd0cfbf6dd04a5259b28c6602918153b3c1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/native-validate/completion.json
+    sha256: 548e45cb10fb7461995172f8dc17416cbacda5289aceb51889e99eb2fec6bbd5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/native-validate/helper.py.gz
+    sha256: c7fa7210c1e35dd08d51b26e216b0354fef7610ff94fde2e346f76d1153dbbc1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/native-validate/start.json
+    sha256: 3186f4271b187897aea39f32b0635c9427a02117bbeb2ba13244642c6aa1b0e1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/native-validate/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/native-validate/stdout
+    sha256: dc1fe8a98cc40a5289c72e47d247696208b372198cb46b1bf06a08c4ff62816e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/completion.json
+    sha256: 7953fe44b96e544f1224a781a70955239cfa11b232beeb13a07e06303b432134
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/helper.py.gz
+    sha256: 47a49751e4dc0d86ea8a8d367f1dc949fe73e08a60c55aa042920daaf2630139
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/start.json
+    sha256: 14c0c453377d00039863a3d42d2b8cc5aa193b199b557c2cdd7a38f5b4089c80
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/stderr
+    sha256: 067b9adb2ef4aa244ccb92b323df3f96030fe1ba696693158d643b518558d7f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/completion.json
+    sha256: ed5c5e795bf1032737f28e17a54e7c4834eadcaace88fdf09e173c82b8dee9ab
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/helper.py.gz
+    sha256: febf8372d396c989a171a7afa4cd6d7af6024e4c4c51e8217322b961dffcd114
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/start.json
+    sha256: 483972264c52b046d1748f8a00077ed26c52937dcff1377a805252f91c15fc4f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/stdout
+    sha256: cc0c496e0f546cbd9a504828692df80b241d589c50ac3c5c5eb8174e317b1a0f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/completion.json
+    sha256: ed96b605593f74dbcd950a632b84aa492c76aad503687ca9cc04c224cf46026a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/helper.py.gz
+    sha256: 56669074512db933fdb255c69088b016d2890f68934e222e140b0e728d1f1f92
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/start.json
+    sha256: 5220a01e0233e6d26c94719701081f97a60719e3158b249680621f926a04ddd0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/stderr
+    sha256: 17b7b91f93888f11c19fe89b79c0460799a3f9b759abab8807bd922c1ab04006
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific-corrected/completion.json
+    sha256: 96cbf2509d605e87334a6c11b3e3e644fe627efee4a743ed76d4d9db0ba245dc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific-corrected/helper.py.gz
+    sha256: cf0640e8e68486bf5778499bfaee6f98234fad421373a9d77c5e001931f1a27c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific-corrected/start.json
+    sha256: 3a7c94982dc1719c07560e232e78c5689dfe546024df5eedfe5f738d0e290663
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific-corrected/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific-corrected/stdout
+    sha256: c420cf0c338d59266443729562cd51aa08f86ce7be77504764e1b100821f1732
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/completion.json
+    sha256: cb278d27a86ebec246472d5adabcd7ccd5657f709b6fb15bbe50dd4f1a72a52a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/helper.py.gz
+    sha256: cf7f984a0d45983791c8d7f3671c27d236be1c0ec6584a13f82f3fb257cc3923
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/start.json
+    sha256: 568fd3b879dcca7c2086940f3a635a15c934af22005e8a9aa2754d5226186d5d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/stderr
+    sha256: 459cc38ed9a957af618d71a5a7020c55f165df26580d83f4516d855ff06f33ff
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/exports-currentness.json
+    sha256: aa62b90d948c98476ed9a1fb608f0296c582272997cdcefc7a0272f0fbab8663
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/final-current-bindings.json
+    sha256: 8c7175127e3b607ca7765d39a26443214b237ededfd36b8fea644cd37378d767
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/final-review-summary.json
+    sha256: 914a10841656e8803ed0202eacb41b5254aaf42afbe6bce70d3b10b2d0013aa2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/finalize_science.py.gz
+    sha256: cf0640e8e68486bf5778499bfaee6f98234fad421373a9d77c5e001931f1a27c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/handoff.json
+    sha256: d28fae2f02327ac9f509975032ce432fa386ba3f66d38a0d3302541c48ecfe62
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/identity-appraisals.json
+    sha256: 3be27c61203b7505089ce9669c686f59dd55c215f609bab628234d2bb07edb3d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/incidental-read-failures.json
+    sha256: a5ac9e54d058cb7dc759971a0d12aea68a7423aae034f5a88f50bb4886814da8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/inspect_final.py.gz
+    sha256: 65743a990f15501e19bb1b8b32869398fcf2a08a68ebd6f44565612366827ee4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/maintained-graph-light.png
+    sha256: f7f25bd66814234617dde3219ebcd53c172fb16ac3d30cf4e8d207c95fdfc978
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/maintained-graph-light.svg
+    sha256: e135c26d0e7fe20209830047a06f4d8e727abe245ae5ae285d08a190820c3809
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/maintained-graph-original.svg
+    sha256: fa65a16d0c6d9433e19ccc3e422e491e522a5a16ea905af310211d8efddc1c88
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/native-inspection.execution.json
+    sha256: c484792c4c889318d91bef2b87245fe505eaed84f2f50ca76abfc9ed0f21152a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/native-inspection.json
+    sha256: c58e50de737068213961309b584f7c7cf227e4b12ab7af16ac89c5726646d574
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/native-inspection.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/native-validation.execution.json
+    sha256: 899b184568b104bc48695840f36c8b02ce6d4b0b83ff3a08c334bfe0db0ca711
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/native-validation.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/native-validation.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/paragraph-appraisals.json
+    sha256: b8b370efd788a3916d0b1dbf4aefee1c0224227e9dabb5fce384e4a3e5d758a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/planned-native-commands.json
+    sha256: ee160a45d6380fcb4b795c35fd2a23a113c57e1d95b3df4968781de8e780487d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/preparation-results.json
+    sha256: cc0c496e0f546cbd9a504828692df80b241d589c50ac3c5c5eb8174e317b1a0f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/prepare_science.py.gz
+    sha256: febf8372d396c989a171a7afa4cd6d7af6024e4c4c51e8217322b961dffcd114
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/prior-review-files.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/prior-review-files.stdout
+    sha256: 9b7233efc7e3e6e1fabeb9f3e1c1805d63c186aeb13451f9295003feabc015b7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/raster-execution.json
+    sha256: 5c4a613ac058b9d33262a846eca53992b79e4a2ca8d38698d1b0be4d9e4551b5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/raster.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/raster.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/read-coverage-final.json
+    sha256: 44185ecd723494c1fa92ce13a94f2b773f27ed19ecea04b7579f8a285effffe5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/read-coverage.json
+    sha256: c1b18bf95a51f39b9443ea5d4cf56109baec8f52a5d1925813af51d2d82d78a0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/reference-appraisals.json
+    sha256: 2f7a8e43a987302bdb44f2521812686a5ca3c204c09013b6ebe81b6b2620009f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/review_dom.py.gz
+    sha256: 08b8970682298180018d389787826d4762da8767b59d1248ca1b98c0a6091e74
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/review_exports.py.gz
+    sha256: 44362f3de8731cbeeb156e5b35aba6df3c71622e6cc865387fb8df5670ea0e7a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/root-QA-binding.json
+    sha256: 35926ae22b6a795183bf56c23f88d1dfee8fd40aec23947cf27857fcaa136fbd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/run_step.py.gz
+    sha256: 87a5a0b4b49d92c272bf799aed2cf7c3aba964bc17465e6f46d6fe37f4870ec0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/seal_review.py.gz
+    sha256: 569487b8d48fbb6f6edebae482fefd82cd4d667803c57d2ea75ca29d2d28312d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/sealing-currentness.json
+    sha256: 556467d5c995be5b532423514553139254a00e7cd6e649d31de97936550e764a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/targets.yaml
+    sha256: cb304177dda46904ca42e1d6ae8add18274ee9dab506c103c5780510f589ae29
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/validate_proposal.py.gz
+    sha256: c7fa7210c1e35dd08d51b26e216b0354fef7610ff94fde2e346f76d1153dbbc1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/visual-assessment.json
+    sha256: 1fec7438074509ca4262ca3e076237b4299f52d44311ff061a0d651753f40d96
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/whole-source-closure.json
+    sha256: 0fef63a48d6cdb58aac84e8c70c9b09304a0ffcda3eb07e47240ef4da32b58af
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/maintained-review-acceptance.json
+    sha256: d95dc75b7c41c1a64d347073d00202cbefe9c123f7d5ef0fc402fba14062d69c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/REPORT.md
+    sha256: 9094d72dc41fbc523f319e2d55768202864c5a67c40d2ee561762c3d70d04f03
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/actual-root-tools.json
+    sha256: a9bedfe5a250383f9d8c12c3c9b97aa68f55a33b0b1ea2c61bd78c1d034d3023
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/additional-helper-preparation.json
+    sha256: c28f13856f1bb91315625c932b6419777a4b9f83eeae179d7ea8e6309745232b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/artifact-manifest.json
+    sha256: bb6740d11d3bdfb8b0789ed12732f6823203db5e42af71df9641ccd28e12307d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-history-shape-correction.py.gz
+    sha256: af0907cea8bf48a90b7b61a42e6361303b16d83493545eb09dba6b96881e2c69
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/check_checkout.py.gz
+    sha256: 3b75c3b4c349184567e52a8e1b740623a11d1c096c99098d5d3ba2927f9f1cda
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/check_checkout.py.patch
+    sha256: ea51156e7ac716b8aed17d6cfc15eba017024aacb478edeb223f225148a42be7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/inspect_technical.py.gz
+    sha256: 3e96a36ceb20289f4c07ab1d5a531e8a1a9b06936f9b6d095aa827bf7161f9ff
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/inspect_technical.py.patch
+    sha256: 2cd34be4b686882b0f04685fb1ec49291353b40f5aff9ecd8b431b7d079ede18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/write_technical_proposal-before-failure-evidence.py.gz
+    sha256: e605154eccf5fe002a7d2708a8da45c0ff60a0f15206c5c4a3bbedd19daa3b1c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/write_technical_proposal.py.gz
+    sha256: 59be87598b983346ef6717a149b76aa5be036afe9f5dc5c20e4003169318eb5f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/before-network-resumption/write_technical_proposal.py.patch
+    sha256: 4fb96ad2289e780ed0340214ae60b27ab17adb0a69ec95d8999346c680468415
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/canonical-acceptance.json
+    sha256: 1e66867ec9eb4041e97ba03744f2891f1812ee653a40c17f2c28600152b8e7c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/check_checkout.py.gz
+    sha256: 659bb633085393808db35376d33ec58c8635848169348b372553e8f79f4b1082
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/check_target.py.gz
+    sha256: 516a3bb9a3f73470a9aa7db97e5e0840605db04833aa068f5f56724ce6e72cac
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/checkout-preservation.json
+    sha256: dcb488c4ab3d6ace821146deae16d98f788eae541a76147d946dbe144ff96602
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/checkout.execution.json
+    sha256: ef12e0bee0e1f678639ef316146b53c6943319fffb9f593fc6122f956e55f52c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/checkout.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/checkout.stdout
+    sha256: e1abae8fe9e63861b23ca30528717e3c7ce8ecc264441ccad214a04791222b5e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/handoff.json
+    sha256: 4bd0a92ab07c7fbbb38d7968aafc6253c3b51bfa6191e1fc6229225e97eab69a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/history-shape-correction.json
+    sha256: ba2401e9a2ec38e04628cc88e47a89bc9c3fc561d9f14c9d95d6e87d367e25d1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/implementation-acceptance.json
+    sha256: b64186c13d6285015645a36ceed8c0dc0446da5053dd44248cbec4409f338252
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/inspect_technical.py.gz
+    sha256: c69cdcb6364c15597a64af9ded2dcaf4b1e53575649a1cc6cce85a583016792e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/integration-acceptance.json
+    sha256: cad2d88ea48fe6681d92a1e3c428313cbd5bc61625cdb4f97c97141a3c72daef
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/native-execution-intake.json
+    sha256: 4e453a3ecc4bb0a7fd951c86e22f3374f65c8043f6b464d5bd35e4f944abd8db
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/network-resumption-qa-update.json
+    sha256: df2b9a91382045e81fbcd5e240c56888cca91063c4ee8273ded69bd69724814a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/preparation-note.json
+    sha256: 15b049dba72b076b415f75430509998a0f574a6d93a4f9d0eb1b408451f5340f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/preview-visual-reading.json
+    sha256: 9eea1c94e950efa0eebe7832f16da90b17c49750a48408d91b8bb1f2e0e71b0f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/run_qa.py.gz
+    sha256: 62b472d9ff41870b87bd051e6b8e248e76eebd65dda81e01c731afb66fd514d1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/seal.py.gz
+    sha256: a65bc9a5bf49c3ef9fe1821875f8e06874a8b443f10695fe750cbbb5ea56c8d4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/target-check-rebase.patch
+    sha256: d996c0f86c06cd1cd79afe112efcae9e24d19fb433144b65effa28a7a0c53023
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/target-qa.json
+    sha256: dc3dae58b5bc7b1361130f6b024f3eeb6253f8f967fc6b2a7f946c78c2de1bf7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/target.execution.json
+    sha256: 2b72f802f5de90710fd5bba7a0d27ae0d4d18248de898f9fb04b57f550239cae
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/target.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/target.stdout
+    sha256: 7877e1ddb157981a0189c441fdaaae1f3807ef65db6565c32a225bce6e3e8fb1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-inspect.execution.json
+    sha256: b748c64a985ae5314482f6584663b6afd9e4f1286a3f270cbba29e2032c6f559
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-inspect.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-inspect.stdout
+    sha256: c8c34d78490a7fcca90e64b33ce2c539bf6af720fd741443bf3040031556636e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-proposal.json
+    sha256: 6f74ed8ec2babccd26a350c6c7e26853c5cd37323ea0bedb91763ae89bade590
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-targets.json
+    sha256: 7dbf46714b5bd18921f394be1dc54c569c82f0f72e4babaaa03ab1a8d3bf79a2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-validate.execution.json
+    sha256: 63efe0c112abd6af0ea03c4cd7ada637e7546051aa826276f75e86d665cc6f39
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-validate.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/technical-validate.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/validate_technical.py.gz
+    sha256: c30f02c82926f8de138be974e388fc9a46dea377ac7f59b96d1ea30c89a706f5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/visual-assessment.json
+    sha256: 3a3091e97f8ca3f6f4c96fa8266dc6c72b2d9a8240d62baa3e8c2f1dfa7b48ea
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/write_technical_proposal.py.gz
+    sha256: 8feeebfc330554ecc49f876897f945e437d80a0de07f6c4139a2ed38baa60b36
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/root-storage-map.json
+    sha256: a3826200eb97de545c918edf616a459221e9e077f4cb67c2153bc227eb653c70
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/scientific-review-acceptance.json
+    sha256: 8349e3cbf26ef68645059ee4de640c7ad65ba554698341a51ae2cdfb245fb981
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-239/native-integration/storage-ledger.json
+    sha256: c6f266206462b7062b99c3a54d64b6cef2e66c825615b8155cf04b4991c4ea31
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/cli.py
+    sha256: a170e60e3c398755a21e1304e3bec9e2af743af46ca62de3bbb47ea878ca0b7e
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: df277b9222b84ed0d225d6a9e2c8933ac210773239d46e26faf77e19e179d923
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+scope:
+  description: One exact maintained PWY8132 record; all material source contexts,
+    narrative/edge judgments and current generated representation.
+  selection: Exact root-assigned accepted scientific target; no sampling.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-8132
+targets:
+- target_id: MetaCyc:PWY-8132
+  path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+  label: S-methyl-5-thio-α-D-ribose 1-phosphate degradation III
+  kind: maintained
+  ownership_note: Maintained YAML is the scientific owner; no target or generated
+    representation was edited.
+checks:
+- check_id: execution-prepare-science
+  name: prepare-science
+  status: failed
+  required: false
+  summary: Retained preparatory guard or manifest-shape error, corrected in the successful
+    successor; scientific originals unchanged.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/prepare_science.py
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-prepare-science
+- check_id: execution-prepare-science-corrected
+  name: prepare-science-corrected
+  status: failed
+  required: false
+  summary: Retained preparatory guard or manifest-shape error, corrected in the successful
+    successor; scientific originals unchanged.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/prepare_science.py
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-prepare-science-corrected
+- check_id: execution-prepare-science-lineage
+  name: prepare-science-lineage
+  status: passed
+  required: true
+  summary: Actual bounded scientific/currentness check.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/prepare_science.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-prepare-science-lineage
+- check_id: execution-serialize-scientific
+  name: serialize-scientific
+  status: failed
+  required: false
+  summary: Retained preparatory guard or manifest-shape error, corrected in the successful
+    successor; scientific originals unchanged.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/finalize_science.py
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-serialize-scientific
+- check_id: execution-final-native-inspect
+  name: final-native-inspect
+  status: passed
+  required: true
+  summary: Actual bounded scientific/currentness check.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/inspect_final.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-final-native-inspect
+- check_id: execution-maintained-dom
+  name: maintained-dom
+  status: passed
+  required: true
+  summary: Actual bounded scientific/currentness check.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/review_dom.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-maintained-dom
+- check_id: execution-maintained-exports
+  name: maintained-exports
+  status: passed
+  required: true
+  summary: Actual bounded scientific/currentness check.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/review_exports.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - execution-maintained-exports
+- check_id: native-history-1
+  name: history-1
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind record --slug s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii
+    --target-root data/pathways --event CREATE --outcome changed --summary 'Add complete
+    evidence-backed S-methyl-5-thio-alpha-D-ribose 1-phosphate degradation III.' --details
+    'Exact accepted MetaCyc:PWY-8132:21 paragraphs,44 edges,7 qualifications,38 IDs,93
+    references and20 mappings; all five events,22 sides and whole Mar nested assembly
+    retained. Formal ferredoxin chemistry does not identify physiological donor or
+    ATP stoichiometry; native R2L reduction lacks a named cellular catalyst. Construct/kinetic/source
+    limits and98 whole scientific originals remain in research/pathway_additions/2026-10-12-next-239.
+    Actual maintained gates/native review remain pending.' --actor-name codex --agent-tool
+    codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-history-1
+- check_id: native-history-2
+  name: history-2
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind infrastructure --slug mar239-native-authority --path scripts/build_source_identifier_snapshot.py
+    --event EDIT --outcome changed --summary 'Integrate reviewed protein-carrier authority
+    profile and accepted actual snapshots.' --details 'Adopt exact276-file runtime
+    with preselection successor,887-row manifest retaining874 old entries, and whole
+    actual snapshots. Preserve original rejected adapter controls and local finding
+    mar239-protected-identity-preselection plus accepted disposition; no public issue
+    was created. All old authority objects, first owners, graph edges and contexts
+    remain exact. Only two approved generic ferredoxin aggregate category unions change.
+    Both histories precede SSSOM/render; maintained gates and reviews remain pending.'
+    --actor-name codex --agent-tool codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-history-2
+- check_id: native-sssom
+  name: sssom
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-sssom
+- check_id: native-render
+  name: render
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-render
+- check_id: native-skills
+  name: skills
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-skills
+- check_id: native-validate
+  name: validate
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-validate
+- check_id: native-tests
+  name: tests
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-239-local-gate-tests-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-tests
+- check_id: native-lint
+  name: lint
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-lint
+- check_id: native-kgx
+  name: kgx
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-kgx
+- check_id: native-vendored
+  name: vendored
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-vendored
+- check_id: native-diff-check
+  name: diff-check
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-diff-check
+- check_id: native-site-current
+  name: site-current
+  status: passed
+  required: true
+  summary: Actual authorized native command passed; original receipt and whole streams
+    verified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-site-current
+- check_id: failed-vendored-gate
+  name: vendored-gate historical vendored attempt
+  status: failed
+  required: false
+  summary: Preserved DNS or Broken pipe attempt; later read-only vendored retry passed.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - failed-vendored-gate
+- check_id: failed-network-resumption
+  name: network-resumption historical vendored attempt
+  status: failed
+  required: false
+  summary: Preserved DNS or Broken pipe attempt; later read-only vendored retry passed.
+  target_ids:
+  - MetaCyc:PWY-8132
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - failed-network-resumption
+evidence:
+- evidence_id: current-record
+  kind: record_content
+  reference: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Current complete record exactly equals the accepted scientific draft.
+  snapshot_sha256: 60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa
+- evidence_id: paragraphs
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/paragraph-appraisals.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: All 21 paragraph appraisals, exact current text and earlier evidence locators.
+  snapshot_sha256: b8b370efd788a3916d0b1dbf4aefee1c0224227e9dabb5fce384e4a3e5d758a3
+- evidence_id: edges
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/edge-appraisals.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: All 44 whole edge objects, qualifiers and scientific rationales; pending
+    wording in this original preparatory ledger is superseded by final DOM/export
+    receipts.
+  snapshot_sha256: 31e8669cfe1048856e843072910769d0673799ea8cd358bf57b623ed2d404d20
+- evidence_id: identities
+  kind: database
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/identity-appraisals.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: All 38 exact identities and full original identity judgments.
+  snapshot_sha256: 3be27c61203b7505089ce9669c686f59dd55c215f609bab628234d2bb07edb3d
+- evidence_id: references
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/reference-appraisals.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: All 93 reference-to-whole-source bindings.
+  snapshot_sha256: 2f7a8e43a987302bdb44f2521812686a5ca3c204c09013b6ebe81b6b2620009f
+- evidence_id: source-closure
+  kind: database
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/whole-source-closure.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: All 98 complete original bodies and 96 receipts equal the retained originals
+    and maintained decoded archive bodies.
+  snapshot_sha256: 0fef63a48d6cdb58aac84e8c70c9b09304a0ffcda3eb07e47240ef4da32b58af
+- evidence_id: read-coverage
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/read-coverage-final.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Same-day earlier complete primary/native reading is inherited; current
+    rereading and technical authorship are explicitly separate.
+  snapshot_sha256: 44185ecd723494c1fa92ce13a94f2b773f27ed19ecea04b7579f8a285effffe5
+- evidence_id: dom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/dom-audit.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Complete current page and graph payload comparison, all local anchor targets.
+  snapshot_sha256: 5a6f08a11e772099bfbd7c14ab60bfc6f69f01f50b5800d86bc032f4022b3d72
+- evidence_id: visual
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/visual-assessment.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Personally viewed complete current static image with explicit browser and
+    layout limits.
+  snapshot_sha256: 1fec7438074509ca4262ca3e076237b4299f52d44311ff061a0d651753f40d96
+- evidence_id: exports
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/exports-currentness.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: All 38 whole target node contexts, 44 edge rows,20 mappings and authority
+    identities pass.
+  snapshot_sha256: aa62b90d948c98476ed9a1fb608f0296c582272997cdcefc7a0272f0fbab8663
+- evidence_id: currentness
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/final-current-bindings.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Fresh all41 native inputs,98 originals,96 receipts and decoded-body owners
+    still exact.
+  snapshot_sha256: 8c7175127e3b607ca7765d39a26443214b237ededfd36b8fea644cd37378d767
+- evidence_id: native-copy
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native-copy.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Exact94 native files including original seals, receipts, failed attempts
+    and original streams.
+  snapshot_sha256: bec3897a3400ceae26a5bb1d7737657c8521032e3def1bc5edb6f7fe32e7626d
+- evidence_id: root-binding
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/root-QA-binding.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Fresh44+2 root packet closure; root independently owns technical and whole-checkout
+    assessment.
+  snapshot_sha256: 35926ae22b6a795183bf56c23f88d1dfee8fd40aec23947cf27857fcaa136fbd
+- evidence_id: root-QA
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/root-review/REPORT.md
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Separate root whole target/checkouts/cache preservation and TECH assessment;
+    no independent certification of this reviewer’s adapter code is claimed.
+  snapshot_sha256: 9094d72dc41fbc523f319e2d55768202864c5a67c40d2ee561762c3d70d04f03
+- evidence_id: prior-search
+  kind: search
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/exports-currentness.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: No prior exact target native review was found in the complete current structured-review
+    inventory.
+  snapshot_sha256: aa62b90d948c98476ed9a1fb608f0296c582272997cdcefc7a0272f0fbab8663
+  search_scope: rg --files --no-ignore --hidden across the current maintained reviews/structured
+    tree; every YAML body checked for exact target_id MetaCyc:PWY-8132 or exact target
+    path. Literal symlinks were recorded without traversal. External earlier science
+    review is separately bound; other-target text references are not predecessors.
+- evidence_id: execution-prepare-science
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: ed96b605593f74dbcd950a632b84aa492c76aad503687ca9cc04c224cf46026a
+- evidence_id: execution-prepare-science-corrected
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-corrected/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: 7953fe44b96e544f1224a781a70955239cfa11b232beeb13a07e06303b432134
+- evidence_id: execution-prepare-science-lineage
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/prepare-science-lineage/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: ed5c5e795bf1032737f28e17a54e7c4834eadcaace88fdf09e173c82b8dee9ab
+- evidence_id: execution-serialize-scientific
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/serialize-scientific/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: cb278d27a86ebec246472d5adabcd7ccd5657f709b6fb15bbe50dd4f1a72a52a
+- evidence_id: execution-final-native-inspect
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/final-native-inspect/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: ef55eb703531a1e905a04eef8a2ebc8d076cb83a59c3a2d8effc25e25b81dc72
+- evidence_id: execution-maintained-dom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-dom/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: 7a6cf67b1ad318c9c2bd0a829264f73f3a52d4b8ca124d8fcebdb2111f622424
+- evidence_id: execution-maintained-exports
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/executions/maintained-exports/completion.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Actual bounded helper receipt with exact original helper and streams; preparatory
+    failures remain resolved history.
+  snapshot_sha256: dc9c937457e18b6578f87fd70dae397aff1cf9e563d6d7daa1b1ae93a7dcb630
+- evidence_id: native-history-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 9ae1cd3adf6f0e8a3b717d5247d48e6ca70610984bf206287df4e34167e9cd7a
+- evidence_id: native-history-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 5ce95c14a9530e1798f0d38fed4e40058e9e321071c7cb5a35da5a7e08d70024
+- evidence_id: native-sssom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 40fbe03ad1e04d2cdb41520f0fef123ac97138ae63ed25dd949475131afd7ae6
+- evidence_id: native-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: bfd76f4280175474d1269c87f482667a825055c1347545cf0a5885655ec17bfb
+- evidence_id: native-skills
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 808281369407b79066f5a56dbc283debb792f0c82a32a5ad9e8c4bae357bf804
+- evidence_id: native-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 6f107c6540ca3088eccd40365baa4236d1929a86355d380d4fc39ed7fecda92b
+- evidence_id: native-tests
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: c914955ff987b73ec593cfcee41d0dc1a734fd4eaa02e18a6c533f7c66a1d0c6
+- evidence_id: native-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: c062dc1f055332e5c0ddc1e901e341c5e15972337cb4e69e68c61e71c8fd992a
+- evidence_id: native-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 8453cbdc0f64126e41befc1753338ebe7751af4e40f8ce06c5a56a621dfe47bd
+- evidence_id: native-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/vendored.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: ce9e6bc44cf1eff497ee856e17f20863c4bf913c0a50017d21ce0fb91a5a2c79
+- evidence_id: native-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/diff-check.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: c6281b31a81d233071026b57924d6cf64dde07ea95fb53339b1ba162f5f33e67
+- evidence_id: native-site-current
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption-successor/site-current.execution.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Inherited actual native execution by root/Aceto; original receipt and streams
+    verified, not rerun by this reviewer.
+  snapshot_sha256: 18b58b48ea233f7f595939bf5ba3f9e2e1af16d0a2c378971f2d39caf8665ec0
+- evidence_id: failed-vendored-gate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/vendored-gate/failure.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Original read-only vendored fetch failure, superseded by passing network-resumption-successor.
+  snapshot_sha256: 8acfe9de3931d8c753fd714ddc1ee850975cdbfb142e88a3d1cf27bd63aa0b91
+- evidence_id: failed-network-resumption
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/actual-native/network-resumption/failure.json
+  accessed_at: '2026-10-12T23:27:40Z'
+  support: supports
+  summary: Original read-only vendored fetch failure, superseded by passing network-resumption-successor.
+  snapshot_sha256: df431321ffa26f0393140b0e45815ab872017b3b83384f7f477865b8b78f044f
+assessments:
+- assessment_id: paragraph-1
+  area: evidence
+  topic: Whole narrative paragraph 1
+  outcome: supported
+  summary: All five native events and four material transfers are present. The upstream
+    MtnP phosphorolysis is correctly outside this exact pathway; no physical substrate
+    channel is inferred.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 d0736393bdd8ff03fde6c3dd22d73d80d0b8ff883e55d7d09bef1697dd7b077d;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-2
+  area: evidence
+  topic: Whole narrative paragraph 2
+  outcome: supported
+  summary: 2017 feeding/deletion/complementation and 2020 Science strain tables support
+    the stated R. rubrum S1/ATCC 11170 and R. palustris CGA010 scope. Residual phenotypes
+    and species-versus-strain boundaries are explicit.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 77746d802460844fb651919150c74879995550226748e5ce5e17d5bcb6c5e9b7;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-3
+  area: evidence
+  topic: Whole narrative paragraph 3
+  outcome: supported
+  summary: Native reversibility of MtnA and the written RIGHT-TO-LEFT aldehyde reduction
+    axis are preserved; all graph sides follow the physiological layout. NAD/NADH
+    remain a formal putative equation.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 966340a684a5fa7a4cc2eebdb5aaeece6fb4d960d5c532ad6f76def367485f9c;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-4
+  area: evidence
+  topic: Whole narrative paragraph 4
+  outcome: supported
+  summary: 2017 yeast-ADH coupled assay demonstrates aldehyde production and chemical
+    reducibility without identifying a cellular aldehyde reductase. Native feeding
+    and assay evidence are distinguished.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 db4f8fa511936eab3c6b0877c69ee0e736a41891bdda3492135fd5e2f1621a59;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-5
+  area: evidence
+  topic: Whole narrative paragraph 5
+  outcome: supported
+  summary: All seven Mar written sides and their coefficients are retained. Generic
+    ferredoxin classes and ATP dependence do not establish a physiological donor or
+    ATP stoichiometry; formal small-molecule balance is correctly limited.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 b63dce3a7160e7bfe77a1e3c98a51b12f7a3739a932ac47ba6ac018eddb56f49;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-6
+  area: evidence
+  topic: Whole narrative paragraph 6
+  outcome: supported
+  summary: 2020 Science mutants and complementation distinguish Mar from nitrogen
+    fixation. NflDK deletion and weak cross-complementation do not prove universal
+    interchangeability or unqualified growth support.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 00845262d6545f1fe4506fc54724e3dbc5fd7e77103942029f8dd34974a6b60a;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-7
+  area: evidence
+  topic: Whole narrative paragraph 7
+  outcome: supported
+  summary: Current complete native gene/product links and six UniProt bodies support
+    the chosen chains. Reviewed MtnA/Ald2/Mar identities are separated from unreviewed
+    Oah and its automated annotations.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 978dc3c58c32929d60202cfed7ab06a0fbad5bbc3d0fbd885febd090dfe90df0;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-8
+  area: evidence
+  topic: Whole narrative paragraph 8
+  outcome: supported
+  summary: Complete native nested Mar composition and reciprocal memberships agree.
+    The formal H2(DK)2 assembly is not conflated with purified component masses, one/two
+    docking states or the incomplete trapped reconstruction.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 21b774337f61fc60630a234705f9ed335df52f01aeb09ed5861980e6bce8a694;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-9
+  area: evidence
+  topic: Whole narrative paragraph 9
+  outcome: supported
+  summary: 2025 main Methods and SI Tables 4/6 explicitly identify engineered R. capsulatus
+    MM0422, parent genotype, pMM0181 and N-terminal His6 MarH/C-terminal Strep-tagII
+    MarD. This does not transfer native pathway physiology to that host.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 5b5c29b0b3ccb33d1d3c6c71def4ce441a65cc5137c00be4aeb5b73f2ccddda2;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-10
+  area: evidence
+  topic: Whole narrative paragraph 10
+  outcome: supported
+  summary: Purified 2025 activity conditions and units are correctly attached to Mar(DK)2
+    mass, substrate concentration, ATP/dithionite, temperature and pH. Alternative
+    substrates and the particular negative nitrogenase assay remain scoped.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 519848a0973e8c75ae2b59aecd86b98610e96ae2b14f849f476459dc59bf3837;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-11
+  area: evidence
+  topic: Whole narrative paragraph 11
+  outcome: supported
+  summary: One MarH2 interfacial cluster and MgADP–AlF3 trapping are supported. P-cluster
+    and active-site model are described with central carbide inferred from geometry/MarB
+    context rather than directly resolved. EPR/ICP tiers remain separate.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 a1d14763739b4a5e34fe1b0dc37c2e24a5d2f89fe621cb1d1b4e97d31382e528;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-12
+  area: evidence
+  topic: Whole narrative paragraph 12
+  outcome: supported
+  summary: CAVER channels, candidate proton routes and ancestral reconstructions remain
+    explicitly modeled proposals. No elementary catalytic-step graph or certain ancestral
+    phenotype is asserted.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 a9e005fb857cf9ff615d567de08841fd1e81cdcb4ab5e298d2a43c67b8104388;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-13
+  area: evidence
+  topic: Whole narrative paragraph 13
+  outcome: supported
+  summary: 2017 SI and 2020 Methods support recombinant Ald2 expression/purification.
+    Older MtnA His10 metadata remain attributed to native database commentary; tag
+    orientation is unresolved.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 aca533a85619560807fb1014c695670cf39a61b4245668c0e4f283472db96538;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-14
+  area: evidence
+  topic: Whole narrative paragraph 14
+  outcome: supported
+  summary: MTR substrate-specific MtnA and Ald2 kinetic pairs match main Table 1/native/current
+    entries. Conflicting catalytic-efficiency arithmetic and misfiled native activity
+    slots are identified instead of promoted as consistent measurements.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 dde3aa073a938a96879a7f7dfa615d9c8c92236b3d96f43f58f208d0b713d837;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-15
+  area: evidence
+  topic: Whole narrative paragraph 15
+  outcome: supported
+  summary: Co2+ and Ni2+ are independent recombinant apoenzyme reconstitution conditions
+    after EDTA/Chelex treatment. Native metal occupancy and simultaneous binding are
+    not claimed.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 d2ca18af34d2f517e34bc20759d29fbb608747e9bc1b28d7732b4c030ab797a3;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-16
+  area: evidence
+  topic: Whole narrative paragraph 16
+  outcome: supported
+  summary: 2012 accessible main text supports Rru_A0774 methanethiol-specific Oah;
+    detailed kcat/mass/pI/His10 are honestly database-attributed because the original
+    SI was unavailable. Automated PLP annotation is separately qualified.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 08b3835b92eaeeea11728455a105d8cae342f8200e9bfc91717efb344971f805;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-17
+  area: evidence
+  topic: Whole narrative paragraph 17
+  outcome: supported
+  summary: All nine activity contexts are retained without transferring E. coli ATCC
+    25922 shared upstream module, Klebsiella, Arabidopsis or other contexts to an
+    experimentally complete Mar pathway.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 4b2a5ba3169242b4a79eda580ccd9d5d25e804bb9f449cad8dabacdb0ae73431;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-18
+  area: evidence
+  topic: Whole narrative paragraph 18
+  outcome: supported
+  summary: Thermus Oah catalytic conditions remain a separately attributed native
+    catalog context. Older pathway citation/unknown sulfur endpoint and 2012/2017
+    locus conflicts are explicitly reconciled with primary evidence.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 339dd9240db4fc577bd1940bb5d16cecdf54cbeb85743d7f77a28d8a92cc7a00;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-19
+  area: evidence
+  topic: Whole narrative paragraph 19
+  outcome: supported
+  summary: 2020 SalR dependence and sulfate regulation are demonstrated in the tested
+    R. rubrum background; direct promoter binding and universal regulatory behavior
+    are not inferred. Aerobic shunt and other VOSC hosts remain distinct.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 bfa9050ae075ecde15d58f7236105c377b55de7c5a6ffd28f260b04d7a3f0220;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-20
+  area: evidence
+  topic: Whole narrative paragraph 20
+  outcome: supported
+  summary: Fourteen defined reaction chemicals agree in full InChI, including stereochemical
+    and protonation layers; generic carriers have no defined formula. Exact protein
+    mappings do not duplicate native Mar chain nodes. Native directions remain separate
+    from current UniProt/Rhea catalog directions.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 22d9cacbc0283fa3414ca54eb2e285054a58f96bd3a8257e43f4560970552fe8;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: paragraph-21
+  area: evidence
+  topic: Whole narrative paragraph 21
+  outcome: supported
+  summary: The author reading/access statement is consistent with retained bodies
+    and evidence; whole main-text sources, limited SI coverage, unavailable images/raw
+    supplements and lack of new assay reanalysis are disclosed.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - paragraphs
+  - source-closure
+  - read-coverage
+  details: Exact current paragraph SHA256 ff93319b7aedfb20628cc373f5a25a65a047b0b2de06270b16dc3cfe89496055;
+    same complete source bodies as earlier independent science reading.
+- assessment_id: edge-1
+  area: graph
+  topic: member-5.3.1.23-rxn
+  outcome: supported
+  summary: Exact native pathway reaction-list and reciprocal reaction in-pathway agree;
+    2017/2020 primary organism scope is appropriately bounded.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 4a1ec052a43af48b224ab736adfe045d0b9fee56ae0237e53c7f3526217c45bb;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-2
+  area: graph
+  topic: 5.3.1.23-rxn-left-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 b592c943353f82aea45f4f15d2a6baca4c27f607adeb4de6cfcbf848334802cb;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-3
+  area: graph
+  topic: 5.3.1.23-rxn-right-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 0cd6062d6ed8f466610c9443aea6848c491ea6bdf35f21c33af211ac37b08f41;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-4
+  area: graph
+  topic: member-rxn-21318
+  outcome: supported
+  summary: Exact native pathway reaction-list and reciprocal reaction in-pathway agree;
+    2017/2020 primary organism scope is appropriately bounded.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 6e66e3e673b97ad3928d9c555c9d555c3e871f15998901e1c9972ff62878c7ad;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-5
+  area: graph
+  topic: rxn-21318-left-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 f573cda5cf91d456edad320876395607f6938d8f6c015ee14c8bc2634562066e;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-6
+  area: graph
+  topic: rxn-21318-right-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 5e220b87c6bd3728f9f019aebf9e63475cdebe65bf0b29f27c52c954663cd005;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-7
+  area: graph
+  topic: rxn-21318-right-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 2bcee5562b151e85a33881847362452df0fcdbd37b072824994dc8e3528bd71c;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-8
+  area: graph
+  topic: member-rxn-21319
+  outcome: supported
+  summary: Exact native pathway reaction-list and reciprocal reaction in-pathway agree;
+    2017/2020 primary organism scope is appropriately bounded.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 3b7d8ca6484ce76333ba64dc612b65ea40e413d6d65870ee4c87e485181e46ab;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-9
+  area: graph
+  topic: rxn-21319-left-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 aa0a6927791033b74924c26b67c5fc0cd092be460247d6b905ba24f44807d635;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-10
+  area: graph
+  topic: rxn-21319-left-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 8305695c5b25487be4d311b82369067866696d6987e4a30f70fe2cb3fc502824;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-11
+  area: graph
+  topic: rxn-21319-right-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 78a088d328d2ea9303deb5367ffeaac8edddc4bb32eb46b8d85b84b3d29a8eec;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-12
+  area: graph
+  topic: rxn-21319-right-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 1707ad1b4a5802312ccdf56d520645d9b723bd2309474476a42f7f6731a83266;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-13
+  area: graph
+  topic: rxn-21319-right-3
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 3122460b9db2f06134cbbb8390d7bc2c9677126943be718101d78005fc31ac23;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-14
+  area: graph
+  topic: member-rxn-21320
+  outcome: supported
+  summary: Exact native pathway reaction-list and reciprocal reaction in-pathway agree;
+    2017/2020 primary organism scope is appropriately bounded.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 745b2337781504d659d9b6204cf12a0e1d53f956953360e5e7a9f3fe60c46107;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-15
+  area: graph
+  topic: rxn-21320-left-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 f1b7d88db3afed8c20a5cc3a9e690c64a50aa36a0e98bc090a7269f30e9742d1;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-16
+  area: graph
+  topic: rxn-21320-left-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 9a5e6e542f2979ff005df9078bb2775012ead34fde6412e111ecf7a07dc5b60b;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-17
+  area: graph
+  topic: rxn-21320-left-3
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 3d1ec1ee96bcb38dd56530ba573ba3d790d4cf205d054ecb502b63b5d3b4546b;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-18
+  area: graph
+  topic: rxn-21320-right-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 4f8e74b86be783ad5955fdfbc202b21b56fad777cf4d24498360b26a6c00e5a9;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-19
+  area: graph
+  topic: rxn-21320-right-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 d6f06e32e2ec328dcc615c1d3650903a2fa42a800c8fa5a88e3fdb8830b9f5e5;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-20
+  area: graph
+  topic: rxn-21320-right-3
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 4795a5cc1ea8673becaabbd204edb5fc5e336bf44657a4e8905e7f99d9a208fc;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-21
+  area: graph
+  topic: rxn-21320-right-4
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 f525f8848567e7284aa7b3ecd44191c1142c389b65b7d7bcfe6c5ccb43287f2a;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-22
+  area: graph
+  topic: member-o-acetylhomoserine-thiol-lyase-rxn
+  outcome: supported
+  summary: Exact native pathway reaction-list and reciprocal reaction in-pathway agree;
+    2017/2020 primary organism scope is appropriately bounded.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 395ef1b696986812ab5953714fdf8050777c488685cb1b415064ae99525bc212;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-23
+  area: graph
+  topic: o-acetylhomoserine-thiol-lyase-rxn-left-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 9e96163e8c6558e8d926259778470c972da2e9b8ceeb5799266fd406f71c75f1;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-24
+  area: graph
+  topic: o-acetylhomoserine-thiol-lyase-rxn-left-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 3daf07de0618ec35f4a7fdffb471e87e7eb2b9708c10b25f2aae873e735648df;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-25
+  area: graph
+  topic: o-acetylhomoserine-thiol-lyase-rxn-right-1
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 42ca198596d62217dd1640e7075da857436f30c7b904d024a6ef538ab1886cd8;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-26
+  area: graph
+  topic: o-acetylhomoserine-thiol-lyase-rxn-right-2
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 fe8e4e044165c4a05fb43165c35bc13e04fee605a3d0a5fe1aa18605657e67db;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-27
+  area: graph
+  topic: o-acetylhomoserine-thiol-lyase-rxn-right-3
+  outcome: supported
+  summary: Exact original written side, occurrence order, participant type, selected
+    chemical identity and coefficient agree. Physiological graph direction follows
+    native layout, including physical reversal for RXN-21319.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 bba377b425c6a6eba369767f8f63700ac40a63f96f150b847134a9f618b113bc;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-28
+  area: graph
+  topic: transfer-5.3.1.23-rxn
+  outcome: supported
+  summary: Native predecessor ordering plus a specific produced/consumed intermediate
+    support material continuity. No physical channeling is asserted.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 01d36fa92e22a7d3e55bc7a81c5aecdd13ede650b1c361cc52e6ada60adafbeb;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-29
+  area: graph
+  topic: transfer-rxn-21318
+  outcome: supported
+  summary: Native predecessor ordering plus a specific produced/consumed intermediate
+    support material continuity. No physical channeling is asserted.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 3a51a8f5ff31090add4412f4faea578249f26dbc87ce37b2731e6a0485e3deac;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-30
+  area: graph
+  topic: transfer-rxn-21319
+  outcome: supported
+  summary: Native predecessor ordering plus a specific produced/consumed intermediate
+    support material continuity. No physical channeling is asserted.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 d3f699f3cf77beb358554cc347113948015c4a4fff8c60593d8f8fa0ca7a5497;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-31
+  area: graph
+  topic: transfer-rxn-21320
+  outcome: supported
+  summary: Native predecessor ordering plus a specific produced/consumed intermediate
+    support material continuity. No physical channeling is asserted.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 0090d4baa63a4d327ce7166c96ab95e205dae93a28358f1e6d77206f4e131b46;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-32
+  area: graph
+  topic: assembly-cplx-9561
+  outcome: supported
+  summary: Whole typed native composition, coefficients and reciprocal component-of
+    links agree; the 2025 structural/purification contexts are retained separately.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 3fdbb076359701c721fdf4f7e2426ac8bc750cd4917c9ede794b3f2cc03a3372;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-33
+  area: graph
+  topic: assembly-cplx-9560
+  outcome: supported
+  summary: Whole typed native composition, coefficients and reciprocal component-of
+    links agree; the 2025 structural/purification contexts are retained separately.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 5c202137f7d9ecf23adc4be921c2a056ca225947b48f077d5533cc308ed04263;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-34
+  area: graph
+  topic: assembly-monomer-21382
+  outcome: supported
+  summary: Whole typed native composition, coefficients and reciprocal component-of
+    links agree; the 2025 structural/purification contexts are retained separately.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 509ca4c9b72ced83998df5e00abc12d479c803774932b4f549cb835206f68bcb;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-35
+  area: graph
+  topic: assembly-monomer-21381
+  outcome: supported
+  summary: Whole typed native composition, coefficients and reciprocal component-of
+    links agree; the 2025 structural/purification contexts are retained separately.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 e97831909b93abcf2b17e0a503a192ab45eab037e85c3d6f13b8de7f3495a5e8;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-36
+  area: graph
+  topic: assembly-monomer-21380
+  outcome: supported
+  summary: Whole typed native composition, coefficients and reciprocal component-of
+    links agree; the 2025 structural/purification contexts are retained separately.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 dfbfe8475e175e3e3eae58e1fcafd519e588fe7c5b9bafc4be7acd34ea87bf76;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-37
+  area: graph
+  topic: catalysis-q2rxi0
+  outcome: supported
+  summary: Complete native activity/gene/chain context and cited primary experiment
+    support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications
+    prevent transfer from recombinant activity to unconstrained native physiology.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 4fe7007f81ba750fb97574ee685460024a728271ed4c951bfc166df88ca90c4c;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-38
+  area: graph
+  topic: catalysis-q2rxi1
+  outcome: supported
+  summary: Complete native activity/gene/chain context and cited primary experiment
+    support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications
+    prevent transfer from recombinant activity to unconstrained native physiology.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 b9e122866f457848fdc0131650194da542990651323ab1c655a807d4e9491593;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-39
+  area: graph
+  topic: catalysis-q2rwb7
+  outcome: supported
+  summary: Complete native activity/gene/chain context and cited primary experiment
+    support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications
+    prevent transfer from recombinant activity to unconstrained native physiology.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 077db0d4cdd8fe64fd9f4ca024987773f2159760538cdbe552f34cbedc3f7632;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-40
+  area: graph
+  topic: catalysis-mar
+  outcome: supported
+  summary: Complete native activity/gene/chain context and cited primary experiment
+    support this exact catalyst/reaction. Construct, organism and evidence-tier qualifications
+    prevent transfer from recombinant activity to unconstrained native physiology.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 0860c7c88ffb750c8dc22c3d37296f5dcd9d168387f15b9696b4bdfceba409e9;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-41
+  area: graph
+  topic: ald2-48828
+  outcome: supported
+  summary: 2020 whole primary Methods and metal-reconstitution results support separate
+    Co2+ or Ni2+ apoenzyme preparations; subject molecular-state qualifiers exclude
+    a simultaneous or native-occupancy claim.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 8332d72fd52f9da343aaa97e0c3754ca18e7e8fd80582a1f75ed52caa53523a9;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-42
+  area: graph
+  topic: ald2-49786
+  outcome: supported
+  summary: 2020 whole primary Methods and metal-reconstitution results support separate
+    Co2+ or Ni2+ apoenzyme preparations; subject molecular-state qualifiers exclude
+    a simultaneous or native-occupancy claim.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 02b50a4af92911862b6f810ad3170dc1204b07e9293540daf147221d6a586f51;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-43
+  area: graph
+  topic: oah-plp
+  outcome: supported
+  summary: Whole unreviewed UniProt entry directly links the active ChEBI PLP dianion
+    with automated ECO evidence. Edge explicitly preserves inferred tier and does
+    not determine bound protonation.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 1b5336eb02644f951411a442ab5eb25e5ff5478d4b312cf1f023e52d3cb8b4db;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: edge-44
+  area: graph
+  topic: marh-iron-sulfur
+  outcome: supported
+  summary: 2025 structural/EPR evidence supports one interfacial Fe4S4 cluster per
+    tagged MarH2 dimer; current UniProt similarity tier and generic cluster identity
+    do not assign exact assay redox state.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - current-record
+  - edges
+  - source-closure
+  - dom
+  - exports
+  details: Exact whole edge SHA256 b4c231c2a4a6046f1918115e16281732de26b178cf42e58ccdd31a3fdafb2ca9;
+    full qualifier/evidence content remains in record, page and export.
+- assessment_id: identity
+  area: identity
+  topic: Complete issuer identities and native membership
+  outcome: supported
+  summary: All38 selected identities retain exact source scope,14 defined full-InChI
+    structures, six chain identities, five reactions, native taxon boundaries and
+    full nested Mar composition. Generic ferredoxin Protein classes remain generic
+    redox carriers; neither a defined small molecule nor a proven physiological donor
+    is implied.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - identities
+  - source-closure
+  - exports
+- assessment_id: kinetics
+  area: quantity
+  topic: Assay conditions and source artifacts
+  outcome: supported
+  summary: Native kinetic misfiling, 2020 efficiency arithmetic, alternative Co/Ni
+    Ald2 states, Oah automatic PLP annotation, missing older SI and native-versus-tagged
+    heterologous constructs remain explicitly qualified. No coefficient or ATP budget
+    is inferred from the Mar schematic.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - paragraphs
+  - edges
+  - read-coverage
+- assessment_id: source-scope
+  area: scope
+  topic: All source boundaries retained
+  outcome: supported
+  summary: Native reversible MtnA and written RXN21319 right-to-left axis remain explicit.
+    The unassigned aldehyde reductase, proposed physiological donor, inferred carbide/channels
+    and separate engineered 2025 host construct are not upgraded to established native
+    mechanisms.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - paragraphs
+  - edges
+  - source-closure
+- assessment_id: representation
+  area: representation
+  topic: Current graph, page and exports
+  outcome: supported
+  summary: All21 paragraphs,44 complete edges,7 qualifiers,93 references,42 visual
+    nodes and38 identities match the maintained record. Whole target KGX contexts/edges
+    and20 SSSOM mappings pass.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - dom
+  - exports
+  - visual
+- assessment_id: role
+  area: ownership
+  topic: Scientific independence and subsequent technical authorship
+  outcome: supported
+  summary: This reviewer did not author the scientific draft. After its earlier independent
+    scientific review, the reviewer authored authority design, adapter correction
+    and canonical preparation. This SCI judgment concerns unchanged science; root
+    and separate peers own independent technical review.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - read-coverage
+  - root-QA
+- assessment_id: source-preservation
+  area: provenance
+  topic: Whole-source and execution evidence
+  outcome: supported
+  summary: All98 original bodies and96 receipts are unchanged; all94 original native
+    execution files are copied exactly including original seals and both failed public
+    fetches.12 commands and nine gates ultimately passed; no failing attempt is relabeled
+    as passing.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - source-closure
+  - currentness
+  - native-copy
+- assessment_id: regulation
+  area: scope
+  topic: Regulatory interpretation remains bounded
+  outcome: supported
+  summary: SalR genetic dependence remains regulatory context; no direct promoter
+    occupancy, obligatory physical interaction or expanded regulon is inferred. This
+    review adds no regulatory edges or new iModulon interpretation.
+  target_ids:
+  - MetaCyc:PWY-8132
+  evidence_ids:
+  - paragraphs
+  - edges
+  - read-coverage
+findings: []
+actions: []
+limitations:
+- The earlier same-day complete primary/native science reading is inherited, not repeated
+  or relabeled as a fresh whole-paper read. Exact whole originals and current narrative/edge
+  judgments were reconciled now.
+- 2012 SI, some 2018 supplemental images and external Science spreadsheet/database
+  materials remained unavailable;2017 SI extended gene inventory pages19–29 were retained
+  but not fully manually read. No raw cryo-EM,EPR,transcriptomics or whole figure-pixel
+  reanalysis is claimed.
+- 'Static light image only: no browser was available. Dense crossings, small full-image
+  text, truncated labels and tall blank canvas remain. Whole DOM retains full qualifier/evidence
+  text.'
+- Subsequent authority-design/adapter/preparation authorship prevents this reviewer
+  from independently certifying those technical changes. Root and separate peer technical
+  assessments remain separately attributed.
+- Both failed public fetches and two preparatory guard errors are retained with the
+  successful successor receipts. No public release or licensing clearance is asserted.
+notes:
+- Proposed durable evidence paths name the exact independent-qa and root-review destinations.
+  Native save is not performed. Later source extension must preserve these original
+  native inputs and original judgments/timestamps.
+- Preparation reports retain their then-pending states; final DOM,export,phase-origin
+  and native inspection records supersede those temporal statements. planned-native-commands.json
+  remains unmodified and the exact planned inspection argv was used.
+tags:
+- scientific-review
+- maintained-record
+- mar239
+- source-scope
+```

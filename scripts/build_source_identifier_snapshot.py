@@ -69,6 +69,12 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_term,
 )
 from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_metadata, pathway_term
+from pathwaymech.biocyc_protein_carrier_reaction import (
+    PROTEIN_CARRIER_REACTION_KIND,
+    carrier_reaction_metadata,
+    carrier_reaction_term,
+    validate_carrier_reaction_assertions,
+)
 from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata, complex_term
 from pathwaymech.ecocyc_named_complex import (
     NAMED_COMPLEX_KIND,
@@ -2058,7 +2064,17 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     entries = json.loads(manifest.read_text(encoding="utf-8"))
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
-    for entry in entries:
+    # Validate complete carrier-reaction assertions and request-only downgrade
+    # claims before any source contributes a selected term. Keep ordinary owner
+    # serialization unchanged; this temporary inventory is not persisted.
+    carrier_sources = {
+        index: carrier_reaction_metadata(entry, cache_dir)
+        if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
+        else {"url": entry["url"], "kind": entry["kind"]}
+        for index, entry in enumerate(entries)
+    }
+    carrier_reaction_ids = validate_carrier_reaction_assertions(carrier_sources)
+    for entry_index, entry in enumerate(entries):
         for native_kind, companion_field in COMPANION_FIELDS.items():
             if companion_field in entry and entry["kind"] != native_kind:
                 raise ValueError("companion source field requires its matching native kind")
@@ -2127,6 +2143,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         elif entry["kind"] in ACETO_KINDS:
             metadata = aceto_metadata(entry, cache_dir)
             identifier, typed_term = aceto_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
+        elif entry["kind"] == PROTEIN_CARRIER_REACTION_KIND:
+            metadata = carrier_sources[entry_index]
+            identifier, typed_term = carrier_reaction_term(metadata, key)
             parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in {
             ELECTRON_TRANSFER_KIND,
@@ -2290,6 +2310,16 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             )
         all_aceto_sources[key] = metadata
         for identifier, label, synonyms in parsed_terms:
+            # Body-derived identity is authoritative even when its request URL
+            # has no frame identifier. Check every claim before corpus selection.
+            if (
+                identifier in carrier_reaction_ids
+                and entry["kind"] != PROTEIN_CARRIER_REACTION_KIND
+            ):
+                raise ValueError(
+                    f"{identifier}: protein-carrier native identity requires "
+                    "its complete typed scope"
+                )
             if identifier.startswith(("MetaCyc:", "EcoCyc:")):
                 all_aceto_claims.append((identifier, key))
             if identifier.startswith("MetaCyc:"):
@@ -2300,7 +2330,14 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                         f"conflicting MetaCyc reaction identity scope for {identifier}"
                     )
                 if (
-                    kinds.intersection({ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND, PATHWAY_KIND})
+                    kinds.intersection(
+                        {
+                            ELECTRON_TRANSFER_KIND,
+                            CHEMICAL_CLASS_KIND,
+                            PATHWAY_KIND,
+                            PROTEIN_CARRIER_REACTION_KIND,
+                        }
+                    )
                     and len(kinds) != 1
                 ):
                     raise ValueError(
@@ -2406,6 +2443,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = projector(metadata, key)[1]
             if entry["kind"] in ACETO_KINDS:
                 terms[identifier] = aceto_term(metadata, key)[1]
+            if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND:
+                terms[identifier] = carrier_reaction_term(metadata, key)[1]
             if entry["kind"] == RHEA_POLYMER_KIND:
                 terms[identifier] = polymer_term(metadata, key, identifier)[1]
             if entry["kind"] == ECOCYC_COMPLEX_KIND:
