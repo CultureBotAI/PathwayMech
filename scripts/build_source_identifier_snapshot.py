@@ -4,7 +4,8 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip, metacyc-html,
-metacyc-protein-xml, metacyc-reaction-xml, ecocyc-protein-xml, ecocyc-rna-xml,
+metacyc-protein-xml, metacyc-reaction-xml, metacyc-carrier-class-xml,
+ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
@@ -38,7 +39,17 @@ from xml.parsers import expat
 
 import yaml
 
+from pathwaymech.biocyc_carrier import (
+    CARRIER_CLASS_KIND,
+    class_metadata,
+    class_native,
+    class_term,
+)
+from pathwaymech.biocyc_carrier import (
+    original_path as carrier_original_path,
+)
 from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata, complex_term
+from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_metadata, state_term
 from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_KIND,
     PATHBANK_ARCHIVE_URL,
@@ -47,9 +58,23 @@ from pathwaymech.pathbank_provenance import (
 
 SOURCE_NAMESPACES = frozenset(
     {
-        "BiGG", "EC", "EcoCyc", "Entrez", "MIBiG", "MetaCyc", "NCBIProtein", "PathBank",
-        "PubChem", "Reactome", "SGD",
-        "UniProtKB", "WikiPathways", "gomodel", "RHEA-COMP", "KEGG", "metanetx.chemical",
+        "BiGG",
+        "EC",
+        "EcoCyc",
+        "Entrez",
+        "MIBiG",
+        "MetaCyc",
+        "NCBIProtein",
+        "PathBank",
+        "PubChem",
+        "Reactome",
+        "SGD",
+        "UniProtKB",
+        "WikiPathways",
+        "gomodel",
+        "RHEA-COMP",
+        "KEGG",
+        "metanetx.chemical",
     }
 )
 
@@ -218,8 +243,11 @@ def _pathbank_request(url: str) -> str | None:
         return None  # Legacy archive artifacts still require a single Pathway.
     request = re.fullmatch(r"/view/(SMP[0-9]+)/download", parsed.path)
     if (
-        parsed.scheme != "https" or parsed.netloc != "pathbank.org"
-        or parsed.fragment or any(char.isspace() for char in url) or not request
+        parsed.scheme != "https"
+        or parsed.netloc != "pathbank.org"
+        or parsed.fragment
+        or any(char.isspace() for char in url)
+        or not request
         or parse_qsl(parsed.query, keep_blank_values=True, strict_parsing=True)
         != [("type", "owl_markup")]
     ):
@@ -228,7 +256,10 @@ def _pathbank_request(url: str) -> str | None:
 
 
 def pathbank_terms(
-    root: ElementTree.Element, *, url: str = "", archive_root: str | None = None,
+    root: ElementTree.Element,
+    *,
+    url: str = "",
+    archive_root: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
     """Read one native pathway and its declared local graph objects, not xref labels.
 
@@ -241,7 +272,8 @@ def pathbank_terms(
     base = root.get("{http://www.w3.org/XML/1998/namespace}base", "")
     if any(
         "{http://www.w3.org/XML/1998/namespace}base" in node.attrib
-        for node in root.iter() if node is not root
+        for node in root.iter()
+        if node is not root
     ):
         raise ValueError("PathBank authority does not support nested XML base overrides")
 
@@ -267,15 +299,14 @@ def pathbank_terms(
             if uri in index:
                 raise ValueError(f"PathBank source has duplicate RDF subject: {uri}")
             index[uri] = node
+
     def native_accession(pathway: ElementTree.Element) -> str:
         accessions = set()
         for link in pathway.findall(bp + "xref"):
             xref = index.get(urljoin(base, link.get(rdf + "resource", "")))
             if xref is None or xref.tag != bp + "UnificationXref":
                 continue
-            databases = {
-                (item.text or "").strip().casefold() for item in xref.findall(bp + "db")
-            }
+            databases = {(item.text or "").strip().casefold() for item in xref.findall(bp + "db")}
             if "smpdb" not in databases:
                 continue
             if databases != {"smpdb"}:
@@ -300,8 +331,11 @@ def pathbank_terms(
     if archive_root is None:
         requested = _pathbank_request(url)
     else:
-        if (url != PATHBANK_ARCHIVE_URL or not isinstance(archive_root, str)
-                or not re.fullmatch(r"SMP[0-9]+", archive_root)):
+        if (
+            url != PATHBANK_ARCHIVE_URL
+            or not isinstance(archive_root, str)
+            or not re.fullmatch(r"SMP[0-9]+", archive_root)
+        ):
             raise ValueError("PathBank archive selection requires exact archive/root provenance")
         requested = archive_root
     if requested is None:
@@ -338,7 +372,8 @@ def pathbank_terms(
                 if step.tag not in {bp + "PathwayStep", bp + "BiochemicalPathwayStep"}:
                     raise ValueError("PathBank pathwayOrder must identify a native pathway step")
                 result.extend(
-                    resolve(link) for tag in ("stepProcess", "stepConversion")
+                    resolve(link)
+                    for tag in ("stepProcess", "stepConversion")
                     for link in step.findall(bp + tag)
                 )
             return result
@@ -371,9 +406,10 @@ def pathbank_terms(
         def literal(node: ElementTree.Element, tag: str, count: int) -> list[str]:
             values = node.findall(bp + tag)
             if len(values) != count or any(
-                len(value) or not (value.text or "").strip()
-                or value.attrib not in ({}, {rdf + "datatype":
-                                            "http://www.w3.org/2001/XMLSchema#string"})
+                len(value)
+                or not (value.text or "").strip()
+                or value.attrib
+                not in ({}, {rdf + "datatype": "http://www.w3.org/2001/XMLSchema#string"})
                 for value in values
             ):
                 raise ValueError("PathBank interface bridge has unsupported literal fields")
@@ -381,8 +417,10 @@ def pathbank_terms(
 
         def pointer(link: ElementTree.Element) -> ElementTree.Element:
             if (
-                set(link.attrib) != {rdf + "resource"} or len(link)
-                or (link.text or "").strip() or not link.get(rdf + "resource", "")
+                set(link.attrib) != {rdf + "resource"}
+                or len(link)
+                or (link.text or "").strip()
+                or not link.get(rdf + "resource", "")
             ):
                 raise ValueError("PathBank interface bridge requires exact resource pointers")
             return resolve(link)
@@ -400,20 +438,30 @@ def pathbank_terms(
             names = literal(node, "name", 2)
             if len(set(names)) != 2 or names.count("InhibitorySubPathwayControl") != 1:
                 raise ValueError("PathBank interface bridge has an unsupported source marker")
-            direct = [link for link in pathway.findall(bp + "pathwayComponent")
-                      if resolve(link) is node]
+            direct = [
+                link for link in pathway.findall(bp + "pathwayComponent") if resolve(link) is node
+            ]
             ordered = []
             for link in pathway.findall(bp + "pathwayOrder"):
                 step = resolve(link)
-                links = [item for item in step if item.tag in {
-                    bp + "stepProcess", bp + "stepConversion",
-                } and resolve(item) is node]
+                links = [
+                    item
+                    for item in step
+                    if item.tag
+                    in {
+                        bp + "stepProcess",
+                        bp + "stepConversion",
+                    }
+                    and resolve(item) is node
+                ]
                 if not links:
                     continue
                 pointer(link)
                 local_object(step)
-                if step.tag != bp + "PathwayStep" or len(step) != 1 or (
-                    step[0].tag != bp + "stepProcess" or pointer(step[0]) is not node
+                if (
+                    step.tag != bp + "PathwayStep"
+                    or len(step) != 1
+                    or (step[0].tag != bp + "stepProcess" or pointer(step[0]) is not node)
                 ):
                     raise ValueError("PathBank interface bridge requires an exact PathwayStep")
                 ordered.append(step)
@@ -431,8 +479,10 @@ def pathbank_terms(
                 raise ValueError("PathBank interface bridge requires one compound and one child")
             compound = compounds[0]
             local_object(compound)
-            if any(item.tag not in {bp + "displayName", bp + "name", bp + "entityReference"}
-                   for item in compound):
+            if any(
+                item.tag not in {bp + "displayName", bp + "name", bp + "entityReference"}
+                for item in compound
+            ):
                 raise ValueError("PathBank interface compound has unsupported fields")
             literal(compound, "displayName", 1)
             if literal(compound, "name", 1) != ["SubPathwayInhibitor"]:
@@ -442,10 +492,13 @@ def pathbank_terms(
                 raise ValueError("PathBank interface compound requires its native reference")
             local_object(pointer(references[0]))
             child = children[0]
-            if set(child.attrib) != {rdf + "about"} or any(
-                item.tag not in {bp + "displayName", bp + "name", bp + "xref"}
-                for item in child
-            ) or literal(child, "name", 1) != ["InhibitorySubPathway"]:
+            if (
+                set(child.attrib) != {rdf + "about"}
+                or any(
+                    item.tag not in {bp + "displayName", bp + "name", bp + "xref"} for item in child
+                )
+                or literal(child, "name", 1) != ["InhibitorySubPathway"]
+            ):
                 raise ValueError("PathBank interface bridge requires an empty native child stub")
             literal(child, "displayName", 1)
             xrefs = [pointer(link) for link in child.findall(bp + "xref")]
@@ -476,8 +529,10 @@ def pathbank_terms(
                 continue
             members = processes(other)
             direct_stub = (
-                subject(other) in attached and "SubPathway" in labels(other)
-                and members and all(node.tag == bp + "Interaction" for node in members)
+                subject(other) in attached
+                and "SubPathway" in labels(other)
+                and members
+                and all(node.tag == bp + "Interaction" for node in members)
             )
             if not direct_stub and subject(other) not in bridged:
                 raise ValueError(
@@ -485,7 +540,8 @@ def pathbank_terms(
                 )
             display_names = other.findall(bp + "displayName")
             if (
-                len(display_names) != 1 or len(display_names[0])
+                len(display_names) != 1
+                or len(display_names[0])
                 or not (display_names[0].text or "").strip()
             ):
                 raise ValueError("PathBank attached pathway requires one direct displayName")
@@ -504,9 +560,18 @@ def pathbank_terms(
     yield from child_terms
 
     graph_types = {
-        bp + kind for kind in (
-            "BiochemicalReaction", "Transport", "Complex", "PhysicalEntity", "SmallMolecule",
-            "Protein", "Dna", "Rna", "DnaRegion", "RnaRegion",
+        bp + kind
+        for kind in (
+            "BiochemicalReaction",
+            "Transport",
+            "Complex",
+            "PhysicalEntity",
+            "SmallMolecule",
+            "Protein",
+            "Dna",
+            "Rna",
+            "DnaRegion",
+            "RnaRegion",
         )
     }
     for node in root:
@@ -526,7 +591,11 @@ def pathbank_terms(
 
 
 def _pathbank_archive_terms(
-    path: Path, *, url: str, sha256: str, archive: Any,
+    path: Path,
+    *,
+    url: str,
+    sha256: str,
+    archive: Any,
 ) -> list[tuple[str, str, list[str]]]:
     """Verify actual ZIP and member bytes before native membership selection."""
     validate_pathbank_archive(url, sha256, archive)
@@ -536,19 +605,26 @@ def _pathbank_archive_terms(
     try:
         with zipfile.ZipFile(io.BytesIO(raw)) as source:
             members = [info for info in source.infolist() if info.filename == archive["member"]]
-            if (len(members) != 1 or members[0].is_dir()
-                    or members[0].file_size != archive["member_bytes"]):
+            if (
+                len(members) != 1
+                or members[0].is_dir()
+                or members[0].file_size != archive["member_bytes"]
+            ):
                 raise ValueError("PathBank ZIP requires one exact member with bound byte count")
             member = source.read(members[0])
     except (zipfile.BadZipFile, RuntimeError, NotImplementedError) as error:
         raise ValueError("PathBank ZIP member could not be verified") from error
-    if (len(member) != archive["member_bytes"]
-            or hashlib.sha256(member).hexdigest() != archive["member_sha256"]):
+    if (
+        len(member) != archive["member_bytes"]
+        or hashlib.sha256(member).hexdigest() != archive["member_sha256"]
+    ):
         raise ValueError("PathBank ZIP member bytes disagree with member provenance")
     root = ElementTree.fromstring(member)
-    if (root.tag != "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"
-            or any(not node.tag.startswith("{http://www.biopax.org/release/biopax-level3.owl#}")
-                   and node.tag != "{http://www.w3.org/2002/07/owl#}Ontology" for node in root)):
+    if root.tag != "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF" or any(
+        not node.tag.startswith("{http://www.biopax.org/release/biopax-level3.owl#}")
+        and node.tag != "{http://www.w3.org/2002/07/owl#}Ontology"
+        for node in root
+    ):
         raise ValueError("PathBank ZIP member requires native RDF/BioPAX object types")
     return list(pathbank_terms(root, url=url, archive_root=archive["root"]))
 
@@ -579,7 +655,7 @@ def _metacyc_metadata_fields(text: str) -> Iterator[str]:
             elif char == "}":
                 depth -= 1
                 if depth == 0:
-                    yield text[match.start():index + 1]
+                    yield text[match.start() : index + 1]
                     break
         else:
             raise ValueError("MetaCyc source has unfinished native metadata")
@@ -623,11 +699,7 @@ class _MetaCycProteinTreeBuilder(ElementTree.TreeBuilder):
 
 def _metacyc_protein_name_character(number: int) -> bool:
     # Preserve the name lower bound and XML 1.0 ranges after HTML decoding too.
-    return (
-        0x20 <= number <= 0xD7FF
-        or 0xE000 <= number <= 0xFFFD
-        or 0x10000 <= number <= 0x10FFFF
-    )
+    return 0x20 <= number <= 0xD7FF or 0xE000 <= number <= 0xFFFD or 0x10000 <= number <= 0x10FFFF
 
 
 class _MetaCycProteinName(HTMLParser):
@@ -677,9 +749,12 @@ def _metacyc_protein_request(url: str, *, legacy: bool = False) -> tuple[str, st
     if (
         any(char.isspace() for char in url)
         or parsed.scheme not in {"http", "https"}
-        or not parsed.hostname or parsed.username is not None or parsed.password is not None
+        or not parsed.hostname
+        or parsed.username is not None
+        or parsed.password is not None
         or parsed.port == 0
-        or parsed.path != "/getxml" or parsed.fragment
+        or parsed.path != "/getxml"
+        or parsed.fragment
     ):
         raise ValueError("MetaCyc protein source requires a native getxml URL")
     if legacy and "=" not in parsed.query:
@@ -688,7 +763,8 @@ def _metacyc_protein_request(url: str, *, legacy: bool = False) -> tuple[str, st
         fields = parse_qsl(parsed.query, keep_blank_values=True, strict_parsing=True)
         ids = [value for key, value in fields if key == "id"]
         if (
-            len(ids) != 1 or len(fields) != len(set(fields))
+            len(ids) != 1
+            or len(fields) != len(set(fields))
             or any(key != "id" and (key, value) != ("detail", "full") for key, value in fields)
         ):
             raise ValueError("MetaCyc protein URL requires one META frame request")
@@ -699,12 +775,16 @@ def _metacyc_protein_request(url: str, *, legacy: bool = False) -> tuple[str, st
 
 
 def _metacyc_protein_identity(
-    path: Path, *, url: str, version: str,
+    path: Path,
+    *,
+    url: str,
+    version: str,
 ) -> tuple[ElementTree.Element, str]:
     """Validate the request, native service/version and one full Protein instance."""
     requested, host = _metacyc_protein_request(url)
     root = ElementTree.fromstring(
-        path.read_bytes(), parser=ElementTree.XMLParser(target=_MetaCycProteinTreeBuilder()),
+        path.read_bytes(),
+        parser=ElementTree.XMLParser(target=_MetaCycProteinTreeBuilder()),
     )
     if root.tag != "ptools-xml" or [node.tag for node in root].count("metadata") != 1:
         raise ValueError("MetaCyc protein source lacks native XML metadata")
@@ -725,7 +805,8 @@ def _metacyc_protein_identity(
         text(metadata, "service_name") != "getxml"
         or text(metadata, "num_results") != "1"
         or text(metadata, "query") != requested
-        or len(pgdbs) != 1 or pgdbs[0].get("orgid") != "META"
+        or len(pgdbs) != 1
+        or pgdbs[0].get("orgid") != "META"
         or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)*", version)
         or pgdbs[0].get("version") != version
         or text(pgdbs[0], "species") != "MetaCyc"
@@ -738,17 +819,24 @@ def _metacyc_protein_identity(
     service_url = urlsplit(native_url)
     if (
         any(char.isspace() for char in native_url)
-        or service_url.scheme not in {"http", "https"} or service_url.hostname != host
-        or service_url.username is not None or service_url.password is not None
+        or service_url.scheme not in {"http", "https"}
+        or service_url.hostname != host
+        or service_url.username is not None
+        or service_url.password is not None
         or service_url.port == 0
-        or service_url.query or service_url.fragment or service_url.path not in {"", "/"}
+        or service_url.query
+        or service_url.fragment
+        or service_url.path not in {"", "/"}
     ):
         raise ValueError("MetaCyc protein metadata names a different source service")
     frame = requested.removeprefix("META:")
     if (
-        protein.get("ID") != requested or protein.get("frameid") != frame
-        or protein.get("orgid") != "META" or protein.get("detail") != "full"
-        or "resource" in protein.attrib or protein.get("class", "false") != "false"
+        protein.get("ID") != requested
+        or protein.get("frameid") != frame
+        or protein.get("orgid") != "META"
+        or protein.get("detail") != "full"
+        or "resource" in protein.attrib
+        or protein.get("class", "false") != "false"
     ):
         raise ValueError("MetaCyc protein source has mismatched or unresolved top-level identity")
     return protein, frame
@@ -762,7 +850,10 @@ def _metacyc_protein_one(parent: ElementTree.Element, tag: str) -> ElementTree.E
 
 
 def _metacyc_protein_label(
-    parent: ElementTree.Element, frame: str, *, activity_frame: str | None = None,
+    parent: ElementTree.Element,
+    frame: str,
+    *,
+    activity_frame: str | None = None,
 ) -> str:
     """Decode a native name after its owning Protein or activity is validated."""
     node = _metacyc_protein_one(parent, "common-name")
@@ -780,7 +871,10 @@ def _metacyc_protein_label(
     if activity_frame is not None:
         unresolved.update({activity_frame, "META:" + activity_frame, "MetaCyc:" + activity_frame})
     if (
-        name.tags or not label or "<" in label or ">" in label
+        name.tags
+        or not label
+        or "<" in label
+        or ">" in label
         or re.search(r"&(?:#|[A-Za-z][A-Za-z0-9]*;)", label)
         or any(not _metacyc_protein_name_character(ord(char)) for char in label)
         or label in unresolved
@@ -792,14 +886,16 @@ def _metacyc_protein_label(
 
 def _metacyc_protein_reference(node: ElementTree.Element, frame: str, resource: str) -> None:
     if (
-        len(node) or (node.text or "").strip()
+        len(node)
+        or (node.text or "").strip()
         or node.attrib != {"resource": resource, "orgid": "META", "frameid": frame}
     ):
         raise ValueError("MetaCyc protein source requires an exact empty native reference")
 
 
 def _metacyc_complex_activity(
-    protein: ElementTree.Element, frame: str,
+    protein: ElementTree.Element,
+    frame: str,
 ) -> tuple[ElementTree.Element, str]:
     """Resolve the sole native enzyme-name relation for an unnamed homomer.
 
@@ -810,10 +906,15 @@ def _metacyc_complex_activity(
     parent = _metacyc_protein_one(protein, "parent")
     parent_class = _metacyc_protein_one(parent, "Protein")
     if (
-        len(parent) != 1 or len(parent_class) or (parent_class.text or "").strip()
-        or parent_class.attrib != {
-            "resource": "getxml?META:Protein-Complexes", "orgid": "META",
-            "frameid": "Protein-Complexes", "class": "true",
+        len(parent) != 1
+        or len(parent_class)
+        or (parent_class.text or "").strip()
+        or parent_class.attrib
+        != {
+            "resource": "getxml?META:Protein-Complexes",
+            "orgid": "META",
+            "frameid": "Protein-Complexes",
+            "class": "true",
         }
     ):
         raise ValueError(
@@ -827,7 +928,8 @@ def _metacyc_complex_activity(
     _metacyc_protein_reference(subunit, subunit_frame, "getxml?META:" + subunit_frame)
     coefficient = _metacyc_protein_one(component, "coefficient")
     if (
-        len(coefficient) or coefficient.attrib != {"datatype": "integer"}
+        len(coefficient)
+        or coefficient.attrib != {"datatype": "integer"}
         or not re.fullmatch(r"[1-9][0-9]*", (coefficient.text or "").strip())
         or int(coefficient.text.strip()) < 2
     ):
@@ -836,8 +938,10 @@ def _metacyc_complex_activity(
     activity = _metacyc_protein_one(catalyzes, "Enzymatic-Reaction")
     activity_frame = activity.get("frameid", "")
     if (
-        len(catalyzes) != 1 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", activity_frame)
-        or activity.get("ID") != "META:" + activity_frame or activity.get("orgid") != "META"
+        len(catalyzes) != 1
+        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", activity_frame)
+        or activity.get("ID") != "META:" + activity_frame
+        or activity.get("orgid") != "META"
         or activity.get("detail") not in {"low", "full"}
         or set(activity.attrib) != {"ID", "orgid", "frameid", "detail"}
     ):
@@ -860,7 +964,10 @@ def _metacyc_complex_activity(
 
 
 def metacyc_protein_terms(
-    path: Path, *, url: str, version: str,
+    path: Path,
+    *,
+    url: str,
+    version: str,
 ) -> list[tuple[str, str, list[str]]]:
     """Extract one native Protein name, including a guarded homomer enzyme name."""
     protein, frame = _metacyc_protein_identity(path, url=url, version=version)
@@ -879,9 +986,12 @@ class _MetaCycReactionTreeBuilder(ElementTree.TreeBuilder):
 
 
 def _metacyc_reaction_record(
-    path: Path, *, url: str, version: str,
+    path: Path,
+    *,
+    url: str,
+    version: str,
 ) -> tuple[tuple[str, str, list[str]], tuple]:
-    """Establish typed native identity for an unnamed small-molecule reaction.
+    """Establish typed native identity for bounded unnamed native reactions.
 
     This deliberately does not name a reaction from nested curator/evidence
     objects, its equation, or a curated record. Named reactions and more complex
@@ -895,7 +1005,8 @@ def _metacyc_reaction_record(
         raise ValueError("MetaCyc reaction requires an exact native HTTPS META request")
     requested, frame = request.groups()
     root = ElementTree.fromstring(
-        path.read_bytes(), parser=ElementTree.XMLParser(target=_MetaCycReactionTreeBuilder()),
+        path.read_bytes(),
+        parser=ElementTree.XMLParser(target=_MetaCycReactionTreeBuilder()),
     )
 
     def one(parent: ElementTree.Element, tag: str) -> ElementTree.Element:
@@ -906,8 +1017,11 @@ def _metacyc_reaction_record(
 
     def text(parent: ElementTree.Element, tag: str, *, native: bool = False) -> str:
         node = one(parent, tag)
-        if (len(node) or node.attrib != ({"datatype": "string"} if native else {})
-                or not (node.text or "").strip()):
+        if (
+            len(node)
+            or node.attrib != ({"datatype": "string"} if native else {})
+            or not (node.text or "").strip()
+        ):
             raise ValueError(f"MetaCyc reaction requires one nonempty native {tag}")
         return node.text.strip()
 
@@ -916,12 +1030,15 @@ def _metacyc_reaction_record(
     metadata, reaction = one(root, "metadata"), one(root, "Reaction")
     if (
         set(root.attrib) != {"ptools-version", "{http://www.w3.org/XML/1998/namespace}base"}
-        or root.get("{http://www.w3.org/XML/1998/namespace}base") not in {
-            url, f"http://{ECOCYC_HOST}:443/getxml?{requested}",
+        or root.get("{http://www.w3.org/XML/1998/namespace}base")
+        not in {
+            url,
+            f"http://{ECOCYC_HOST}:443/getxml?{requested}",
         }
         or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", version)
         or root.get("ptools-version") != version
-        or (root.text or "").strip() or any((child.tail or "").strip() for child in root)
+        or (root.text or "").strip()
+        or any((child.tail or "").strip() for child in root)
     ):
         raise ValueError("MetaCyc reaction XML base or native version disagrees with request")
     if metadata.attrib or sorted(n.tag for n in metadata) != sorted(
@@ -929,11 +1046,14 @@ def _metacyc_reaction_record(
     ):
         raise ValueError("MetaCyc reaction has malformed native metadata")
     if (
-        text(metadata, "url") not in {
-            f"https://{ECOCYC_HOST}/", f"http://{ECOCYC_HOST}:443/",
+        text(metadata, "url")
+        not in {
+            f"https://{ECOCYC_HOST}/",
+            f"http://{ECOCYC_HOST}:443/",
         }
         or text(metadata, "service_name") != "getxml"
-        or text(metadata, "query") != requested or text(metadata, "num_results") != "1"
+        or text(metadata, "query") != requested
+        or text(metadata, "num_results") != "1"
     ):
         raise ValueError("MetaCyc reaction service/query identity mismatch")
     pgdb = one(metadata, "PGDB")
@@ -944,7 +1064,10 @@ def _metacyc_reaction_record(
     ):
         raise ValueError("MetaCyc reaction PGDB/version/species mismatch")
     if reaction.attrib != {
-        "ID": requested, "orgid": "META", "frameid": frame, "detail": "full",
+        "ID": requested,
+        "orgid": "META",
+        "frameid": frame,
+        "detail": "full",
     }:
         raise ValueError("MetaCyc reaction has a mismatched or unresolved top-level identity")
     # Any direct slot prevents the identity-only path, including an empty,
@@ -956,22 +1079,45 @@ def _metacyc_reaction_record(
         child = one(parent, "Reaction")
         parent_frame = child.get("frameid", "")
         if (
-            len(parent) != 1 or parent.attrib or (parent.text or "").strip()
-            or len(child) or (child.text or "").strip()
-            or parent_frame not in {"Chemical-Reactions", "Small-Molecule-Reactions"}
-            or child.attrib != {
-                "resource": "getxml?META:" + parent_frame, "orgid": "META",
-                "frameid": parent_frame, "class": "true",
+            len(parent) != 1
+            or parent.attrib
+            or (parent.text or "").strip()
+            or len(child)
+            or (child.text or "").strip()
+            or parent_frame
+            not in {
+                "Chemical-Reactions",
+                "Small-Molecule-Reactions",
+                "Protein-Modification-Reactions",
+            }
+            or child.attrib
+            != {
+                "resource": "getxml?META:" + parent_frame,
+                "orgid": "META",
+                "frameid": parent_frame,
+                "class": "true",
             }
         ):
             raise ValueError("MetaCyc reaction has an unsupported native parent class")
         parents.append(parent_frame)
-    if sorted(parents) != ["Chemical-Reactions", "Small-Molecule-Reactions"]:
-        raise ValueError("MetaCyc reaction requires chemical and small-molecule parent classes")
+    protein_mode = parents == ["Protein-Modification-Reactions"]
+    if not protein_mode and sorted(parents) != ["Chemical-Reactions", "Small-Molecule-Reactions"]:
+        raise ValueError(
+            "MetaCyc reaction requires chemical and small-molecule parent classes "
+            "or one protein-modification parent"
+        )
+    if protein_mode and any(
+        (node.tail or "").strip() or (node[0].tail or "").strip()
+        for node in reaction.findall("parent")
+    ):
+        raise ValueError("MetaCyc reaction has malformed protein-modification parent text")
     direction = text(reaction, "reaction-direction")
     if direction not in {
-        "REVERSIBLE", "LEFT-TO-RIGHT", "RIGHT-TO-LEFT",
-        "PHYSIOL-LEFT-TO-RIGHT", "PHYSIOL-RIGHT-TO-LEFT",
+        "REVERSIBLE",
+        "LEFT-TO-RIGHT",
+        "RIGHT-TO-LEFT",
+        "PHYSIOL-LEFT-TO-RIGHT",
+        "PHYSIOL-RIGHT-TO-LEFT",
     }:
         raise ValueError("MetaCyc reaction has an unsupported native direction")
     sides = []
@@ -981,33 +1127,70 @@ def _metacyc_reaction_record(
             raise ValueError(f"MetaCyc reaction requires nonempty native {side} slots")
         participants = []
         for slot in slots:
-            compound = one(slot, "Compound")
+            if protein_mode:
+                if len(slot) != 1 or slot[0].tag not in {"Protein", "Compound"}:
+                    raise ValueError(
+                        "MetaCyc reaction requires one typed Protein or Compound side reference"
+                    )
+                compound = slot[0]
+            else:
+                compound = one(slot, "Compound")
             compound_frame = compound.get("frameid", "")
             if (
-                len(slot) != 1 or slot.attrib or (slot.text or "").strip()
-                or len(compound) or (compound.text or "").strip()
+                len(slot) != 1
+                or slot.attrib
+                or (slot.text or "").strip()
+                or len(compound)
+                or (compound.text or "").strip()
                 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", compound_frame)
-                or compound.attrib not in ({
-                    "resource": "getxml?META:" + compound_frame,
-                    "orgid": "META", "frameid": compound_frame,
-                }, {
-                    "resource": "getxml?META:" + compound_frame,
-                    "orgid": "META", "frameid": compound_frame, "class": "true",
-                })
+                or compound.attrib
+                not in (
+                    {
+                        "resource": "getxml?META:" + compound_frame,
+                        "orgid": "META",
+                        "frameid": compound_frame,
+                    },
+                    {
+                        "resource": "getxml?META:" + compound_frame,
+                        "orgid": "META",
+                        "frameid": compound_frame,
+                        "class": "true",
+                    },
+                )
             ):
                 raise ValueError("MetaCyc reaction requires exact native Compound side references")
             # Keep the source's class assertion in conflict comparisons. It
             # does not establish an external chemical/anomer equivalence.
-            participants.append((compound_frame, compound.get("class")))
-        if len(participants) != len({frame for frame, _ in participants}):
+            if protein_mode:
+                if (
+                    (compound.tag == "Protein" and compound.get("class") != "true")
+                    or (slot.tail or "").strip()
+                    or (compound.tail or "").strip()
+                ):
+                    raise ValueError(
+                        "MetaCyc reaction requires an exact Protein class/typed side reference"
+                    )
+                participants.append((compound.tag, compound_frame, compound.get("class")))
+            else:
+                # Preserve the exact historical old-mode conflict signature.
+                participants.append((compound_frame, compound.get("class")))
+        frames = [item[1] if protein_mode else item[0] for item in participants]
+        if len(participants) != len(set(frames)):
             raise ValueError("MetaCyc reaction repeats a native side participant")
+        if protein_mode and not any(item[0] == "Protein" for item in participants):
+            raise ValueError(
+                "MetaCyc protein-modification reaction requires a Protein class on each side"
+            )
         sides.append(tuple(sorted(participants)))
     flags = []
     for tag in ("spontaneous", "physiologically-relevant"):
         if reaction.findall(tag):
             node = one(reaction, tag)
-            if (node.attrib != {"datatype": "boolean"} or len(node)
-                    or node.text not in {"true", "false"}):
+            if (
+                node.attrib != {"datatype": "boolean"}
+                or len(node)
+                or node.text not in {"true", "false"}
+            ):
                 raise ValueError(f"MetaCyc reaction has a malformed native {tag}")
             flags.append((tag, node.text))
     if reaction.findall("orphan"):
@@ -1030,16 +1213,22 @@ def _ecocyc_one(parent: ElementTree.Element, tag: str) -> ElementTree.Element:
 
 def _ecocyc_text(parent: ElementTree.Element, tag: str, *, native: bool = False) -> str:
     node = _ecocyc_one(parent, tag)
-    if (len(node) or node.attrib != ({"datatype": "string"} if native else {})
-            or not (node.text or "").strip()):
+    if (
+        len(node)
+        or node.attrib != ({"datatype": "string"} if native else {})
+        or not (node.text or "").strip()
+    ):
         raise ValueError(f"EcoCyc source requires one nonempty native {tag}")
     return node.text.strip()
 
 
 def _ecocyc_name(node: ElementTree.Element, frame: str) -> str:
-    if (len(node) or node.attrib != {"datatype": "string"}
-            or not (node.text or "").strip()
-            or any(not _metacyc_protein_name_character(ord(c)) for c in node.text)):
+    if (
+        len(node)
+        or node.attrib != {"datatype": "string"}
+        or not (node.text or "").strip()
+        or any(not _metacyc_protein_name_character(ord(c)) for c in node.text)
+    ):
         raise ValueError("EcoCyc name/alias requires one safe native string")
     name = _MetaCycProteinName()
     try:
@@ -1049,7 +1238,10 @@ def _ecocyc_name(node: ElementTree.Element, frame: str) -> str:
         raise ValueError("EcoCyc name/alias contains unsafe markup") from error
     label = " ".join("".join(name.parts).split())
     if (
-        name.tags or not label or "<" in label or ">" in label
+        name.tags
+        or not label
+        or "<" in label
+        or ">" in label
         or re.search(r"&(?:#|[A-Za-z][A-Za-z0-9]*;)", label)
         or any(not _metacyc_protein_name_character(ord(c)) for c in label)
         or label in {frame, "ECOLI:" + frame, "EcoCyc:" + frame}
@@ -1060,7 +1252,11 @@ def _ecocyc_name(node: ElementTree.Element, frame: str) -> str:
 
 
 def _ecocyc_record(
-    kind: str, path: Path, *, url: str, version: str,
+    kind: str,
+    path: Path,
+    *,
+    url: str,
+    version: str,
 ) -> tuple[tuple[str, str, list[str]], str]:
     """Read one ECOLI complex or regulatory RNA, never a nested frame or xref.
 
@@ -1075,7 +1271,8 @@ def _ecocyc_record(
         raise ValueError("EcoCyc source requires an exact native HTTPS ECOLI request")
     requested, frame = request.groups()
     root = ElementTree.fromstring(
-        path.read_bytes(), parser=ElementTree.XMLParser(target=_EcoCycTreeBuilder()),
+        path.read_bytes(),
+        parser=ElementTree.XMLParser(target=_EcoCycTreeBuilder()),
     )
     tag, parent_classes = ECOCYC_SOURCE_TYPES[kind]
     if root.tag != "ptools-xml" or len(root) != 2:
@@ -1094,8 +1291,10 @@ def _ecocyc_record(
     ):
         raise ValueError("EcoCyc source has malformed native metadata")
     if (
-        _ecocyc_text(metadata, "url") not in {
-            f"https://{ECOCYC_HOST}/", f"http://{ECOCYC_HOST}:443/",
+        _ecocyc_text(metadata, "url")
+        not in {
+            f"https://{ECOCYC_HOST}/",
+            f"http://{ECOCYC_HOST}:443/",
         }
         or _ecocyc_text(metadata, "service_name") != "getxml"
         or _ecocyc_text(metadata, "query") != requested
@@ -1112,15 +1311,14 @@ def _ecocyc_record(
         raise ValueError("EcoCyc PGDB/version/species/strain mismatch")
     taxonomy = _ecocyc_one(pgdb, "dblink")
     if (
-        taxonomy.attrib or sorted(n.tag for n in taxonomy) != sorted(
-            ["dblink-db", "dblink-oid", "dblink-relationship", "dblink-URL"]
-        )
+        taxonomy.attrib
+        or sorted(n.tag for n in taxonomy)
+        != sorted(["dblink-db", "dblink-oid", "dblink-relationship", "dblink-URL"])
         or _ecocyc_text(taxonomy, "dblink-db") != "NCBI-TAXONOMY-DB"
         or _ecocyc_text(taxonomy, "dblink-oid") != "511145"
         or _ecocyc_text(taxonomy, "dblink-relationship") != "unification"
-        or _ecocyc_text(taxonomy, "dblink-URL") != (
-            "http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=511145"
-        )
+        or _ecocyc_text(taxonomy, "dblink-URL")
+        != ("http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=511145")
     ):
         raise ValueError("EcoCyc native taxon mismatch")
     if entity.attrib != {"ID": requested, "orgid": "ECOLI", "frameid": frame, "detail": "full"}:
@@ -1129,12 +1327,18 @@ def _ecocyc_record(
     parent_class = _ecocyc_one(parent, tag)
     parent_frame = parent_class.get("frameid", "")
     if (
-        len(parent) != 1 or parent.attrib or (parent.text or "").strip()
-        or len(parent_class) or (parent_class.text or "").strip()
+        len(parent) != 1
+        or parent.attrib
+        or (parent.text or "").strip()
+        or len(parent_class)
+        or (parent_class.text or "").strip()
         or parent_frame not in parent_classes
-        or parent_class.attrib != {
-            "resource": "getxml?ECOLI:" + parent_frame, "orgid": "ECOLI",
-            "frameid": parent_frame, "class": "true",
+        or parent_class.attrib
+        != {
+            "resource": "getxml?ECOLI:" + parent_frame,
+            "orgid": "ECOLI",
+            "frameid": parent_frame,
+            "class": "true",
         }
     ):
         raise ValueError("EcoCyc source has a mismatched native RNA/complex parent class")
@@ -1165,17 +1369,22 @@ def rhea_component_terms(path: Path) -> Iterator[tuple[str, str, list[str]]]:
                     root = node
                 continue
             if depth == 2:
-                classes = {item.get(rdf + "resource")
-                           for item in node.findall(rdfs + "subClassOf")}
+                classes = {item.get(rdf + "resource") for item in node.findall(rdfs + "subClassOf")}
                 if "http://rdf.rhea-db.org/GenericPolypeptide" in classes:
                     uri = node.get(rdf + "about", "")
                     match = re.fullmatch(r"http://rdf\.rhea-db\.org/Compound_([0-9]+)", uri)
-                    values = {key: [item.text for item in node.findall(rh + key)]
-                              for key in ("id", "accession", "name")}
-                    if (not match or values["id"] != [match[1]]
-                            or values["accession"] != ["GENERIC:" + match[1]]
-                            or len(values["name"]) != 1 or not values["name"][0]
-                            or not values["name"][0].strip()):
+                    values = {
+                        key: [item.text for item in node.findall(rh + key)]
+                        for key in ("id", "accession", "name")
+                    }
+                    if (
+                        not match
+                        or values["id"] != [match[1]]
+                        or values["accession"] != ["GENERIC:" + match[1]]
+                        or len(values["name"]) != 1
+                        or not values["name"][0]
+                        or not values["name"][0].strip()
+                    ):
                         raise ValueError(f"Rhea component has ambiguous identity or name: {uri}")
                     identifier = "RHEA-COMP:" + match[1]
                     if identifier in seen:
@@ -1265,8 +1474,7 @@ def metanetx_chemical_terms(text: str, url: str) -> list[tuple[str, str, list[st
     page = _MetaNetXPage()
     page.feed(text)
     page.close()
-    if (page._script is not None or page._heading is not None
-            or page._rows or page._cells):
+    if page._script is not None or page._heading is not None or page._rows or page._cells:
         raise ValueError("MetaNetX source has an unfinished identity surface")
 
     entities: list[dict[str, Any]] = []
@@ -1291,21 +1499,31 @@ def metanetx_chemical_terms(text: str, url: str) -> list[tuple[str, str, list[st
         raise ValueError("MetaNetX source requires exactly one MolecularEntity")
     entity = entities[0]
     identifier = "metanetx.chemical:" + request[1]
-    if (entity.get("@context") != "https://schema.org"
-            or entity.get("@type") != "MolecularEntity"
-            or entity.get("identifier") != identifier
-            or entity.get("@id") != url or entity.get("url") != url):
+    if (
+        entity.get("@context") != "https://schema.org"
+        or entity.get("@type") != "MolecularEntity"
+        or entity.get("identifier") != identifier
+        or entity.get("@id") != url
+        or entity.get("url") != url
+    ):
         raise ValueError("MetaNetX JSON-LD identity, class and production URL must agree")
     label = entity.get("name")
-    if (not isinstance(label, str) or not label.strip()
-            or label.strip() in {request[1], identifier}
-            or label.strip().casefold().startswith(("error", "unknown", "not found"))):
+    if (
+        not isinstance(label, str)
+        or not label.strip()
+        or label.strip() in {request[1], identifier}
+        or label.strip().casefold().startswith(("error", "unknown", "not found"))
+    ):
         raise ValueError("MetaNetX source lacks a resolved native name")
     label = " ".join(label.split())
     visible_ids = [row[1:] for row in page.rows if row and row[0] == "MNX_ID"]
     # The production row also includes an image cell; its text is not identity.
-    if (len(visible_ids) != 1 or not visible_ids[0] or visible_ids[0][0] != request[1]
-            or page.headings != [label]):
+    if (
+        len(visible_ids) != 1
+        or not visible_ids[0]
+        or visible_ids[0][0] != request[1]
+        or page.headings != [label]
+    ):
         raise ValueError("MetaNetX visible native ID/name and JSON-LD must agree")
     return [(identifier, label, [])]
 
@@ -1395,18 +1613,23 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
     fields = parse_qsl(request.query, keep_blank_values=True, strict_parsing=True)
     query = dict(fields)
     if (
-        request.scheme != "https" or request.netloc != "eutils.ncbi.nlm.nih.gov"
-        or request.path != "/entrez/eutils/efetch.fcgi" or request.fragment
+        request.scheme != "https"
+        or request.netloc != "eutils.ncbi.nlm.nih.gov"
+        or request.path != "/entrez/eutils/efetch.fcgi"
+        or request.fragment
         or any(char.isspace() for char in url)
-        or len(fields) != 3 or set(query) != {"db", "id", "rettype"}
-        or query.get("db") != "gene" or query.get("rettype") != "xml"
+        or len(fields) != 3
+        or set(query) != {"db", "id", "rettype"}
+        or query.get("db") != "gene"
+        or query.get("rettype") != "xml"
         or not re.fullmatch(r"[1-9][0-9]*", query.get("id", ""))
     ):
         raise ValueError("NCBI Gene source requires one exact official gene EFetch XML request")
 
     def doctype(name: str, system: str | None, public: str | None, internal: int) -> None:
         if (
-            name != "Entrezgene-Set" or internal
+            name != "Entrezgene-Set"
+            or internal
             or system != "https://www.ncbi.nlm.nih.gov/data_specs/dtd/NCBI_Entrezgene.dtd"
             or public != "-//NLM//DTD NCBI-Entrezgene, 21st January 2005//EN"
         ):
@@ -1425,7 +1648,10 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
     root = ElementTree.fromstring(raw)
 
     def one(
-        parent: ElementTree.Element, tag: str, *, optional: bool = False,
+        parent: ElementTree.Element,
+        tag: str,
+        *,
+        optional: bool = False,
     ) -> ElementTree.Element:
         nodes = parent.findall(tag)
         if len(nodes) != 1 and not (optional and not nodes):
@@ -1453,7 +1679,8 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
         raise ValueError("NCBI Gene native ID and requested ID disagree")
     status = one(track, "Gene-track_status", optional=True)
     if track.findall("Gene-track_status") and (
-        len(status) or status.attrib != {"value": "live"}
+        len(status)
+        or status.attrib != {"value": "live"}
         or (status.text or "").strip() not in {"", "0"}
     ):
         raise ValueError("NCBI Gene explicit status is not an unambiguous live record")
@@ -1462,7 +1689,8 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
     gene_ref = one(one(gene, "Entrezgene_gene"), "Gene-ref")
     label = text(gene_ref, "Gene-ref_locus")
     if (
-        any(char.isspace() for char in label) or any(char in label for char in "<>&")
+        any(char.isspace() for char in label)
+        or any(char in label for char in "<>&")
         or label in {gid, "Entrez:" + gid}
         or label.casefold() in {"unknown", "error", "not-found", "not_found", "null"}
     ):
@@ -1479,9 +1707,8 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
         if node.tag != "Gene-ref_syn_E" or len(node) or not (node.text or "").strip():
             raise ValueError("NCBI Gene source has a malformed native synonym")
         value = node.text.strip()
-        if (
-            any(char in value for char in "<>&")
-            or any(not _metacyc_protein_name_character(ord(char)) for char in value)
+        if any(char in value for char in "<>&") or any(
+            not _metacyc_protein_name_character(ord(char)) for char in value
         ):
             raise ValueError("NCBI Gene source has an invalid native synonym")
         synonyms.append(value)
@@ -1508,6 +1735,7 @@ def _ncbi_gene_record(path: Path, url: str) -> tuple[tuple[str, str, list[str]],
 
 def _bigg_json(path: Path) -> dict[str, Any]:
     """Reject ambiguous JSON, including duplicate keys in nested source objects."""
+
     def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         result = {}
         for key, value in pairs:
@@ -1520,8 +1748,9 @@ def _bigg_json(path: Path) -> dict[str, Any]:
         raise ValueError(f"BiGG source contains nonfinite JSON value {value}")
 
     try:
-        value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique,
-                           parse_constant=nonfinite)
+        value = json.loads(
+            path.read_text(encoding="utf-8"), object_pairs_hook=unique, parse_constant=nonfinite
+        )
     except (UnicodeError, json.JSONDecodeError) as error:
         raise ValueError("BiGG source requires original JSON, not HTML or an error page") from error
     if not isinstance(value, dict):
@@ -1533,15 +1762,16 @@ def _bigg_record(kind: str, path: Path, url: str) -> tuple[str, str, list[str]]:
     """Extract only a universal native identity and name, never model chemistry."""
     category = BIGG_SOURCE_TYPES[kind]
     request = re.fullmatch(
-        r"https://bigg\.ucsd\.edu/api/v2/universal/" + category
-        + r"/([A-Za-z0-9][A-Za-z0-9_]*)", url,
+        r"https://bigg\.ucsd\.edu/api/v2/universal/" + category + r"/([A-Za-z0-9][A-Za-z0-9_]*)",
+        url,
     )
     if request is None:
         raise ValueError("BiGG source requires an exact official universal API URL of its kind")
     body = _bigg_json(path)
     common = {"bigg_id", "name", "old_identifiers", "database_links"}
     lists = (
-        {"compartments_in_models", "charges", "formulae"} if category == "metabolites"
+        {"compartments_in_models", "charges", "formulae"}
+        if category == "metabolites"
         else {"models_containing_reaction", "metabolites"}
     )
     fields = common | lists
@@ -1553,7 +1783,8 @@ def _bigg_record(kind: str, path: Path, url: str) -> tuple[str, str, list[str]]:
         raise ValueError("BiGG native bigg_id and requested identity disagree")
     label = body["name"]
     if (
-        not isinstance(label, str) or not label.strip()
+        not isinstance(label, str)
+        or not label.strip()
         or any(char in label for char in "<>")
         or any(not _metacyc_protein_name_character(ord(char)) for char in label)
         or label.strip() == body["bigg_id"]
@@ -1568,7 +1799,8 @@ def _bigg_record(kind: str, path: Path, url: str) -> tuple[str, str, list[str]]:
         raise ValueError("BiGG source has malformed native cross-reference containers")
     if category == "reactions" and (
         type(body["pseudoreaction"]) is not bool
-        or not isinstance(body["reaction_string"], str) or not body["reaction_string"].strip()
+        or not isinstance(body["reaction_string"], str)
+        or not body["reaction_string"].strip()
     ):
         raise ValueError("BiGG reaction source lacks its native reaction fields")
     # Old identifiers are accessions, not name synonyms. Cross-database links,
@@ -1596,15 +1828,18 @@ def _bigg_version(entry: dict[str, Any], cache_dir: Path) -> tuple[str, str]:
         raise ValueError("BiGG version source requires the native database version object")
     version = body["bigg_models_version"]
     if (
-        body["api_version"] != "v2" or not isinstance(version, str)
+        body["api_version"] != "v2"
+        or not isinstance(version, str)
         or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version)
         or not isinstance(body["last_updated"], str)
-        or not re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{1,6})?",
-                            body["last_updated"])
+        or not re.fullmatch(
+            r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{1,6})?", body["last_updated"]
+        )
     ):
         raise ValueError("BiGG version source has an unsupported release or API version")
-    match = re.fullmatch(r"BiGG Models " + re.escape(version) + r"; retrieved (\d{4}-\d{2}-\d{2})",
-                         entry["version"])
+    match = re.fullmatch(
+        r"BiGG Models " + re.escape(version) + r"; retrieved (\d{4}-\d{2}-\d{2})", entry["version"]
+    )
     if match is None:
         raise ValueError("BiGG manifest release and native database version disagree")
     try:
@@ -1621,7 +1856,8 @@ def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
     """Bind one native compound Title to its exact official CID property request."""
     request = re.fullmatch(
         r"https://pubchem\.ncbi\.nlm\.nih\.gov/rest/pug/compound/cid/([1-9][0-9]*)/"
-        r"property/Title,IUPACName,MolecularFormula,InChIKey/JSON", url,
+        r"property/Title,IUPACName,MolecularFormula,InChIKey/JSON",
+        url,
     )
     if request is None:
         raise ValueError("PubChem requires the exact official single-CID property URL")
@@ -1644,8 +1880,12 @@ def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
         return number
 
     try:
-        body = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique,
-                          parse_constant=nonfinite, parse_float=finite_float)
+        body = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=unique,
+            parse_constant=nonfinite,
+            parse_float=finite_float,
+        )
     except (UnicodeError, json.JSONDecodeError) as error:
         raise ValueError("PubChem source requires original UTF-8 JSON") from error
     if not isinstance(body, dict) or body.keys() != {"PropertyTable"}:
@@ -1658,7 +1898,11 @@ def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
         raise ValueError("PubChem source requires exactly one compound property object")
     compound = rows[0]
     if not isinstance(compound, dict) or compound.keys() != {
-        "CID", "Title", "IUPACName", "MolecularFormula", "InChIKey",
+        "CID",
+        "Title",
+        "IUPACName",
+        "MolecularFormula",
+        "InChIKey",
     }:
         raise ValueError("PubChem source lacks the requested native compound properties")
     if type(compound["CID"]) is not int or compound["CID"] != int(request[1]):
@@ -1666,9 +1910,12 @@ def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
     for field in ("Title", "IUPACName", "MolecularFormula", "InChIKey"):
         value = compound[field]
         if (
-            not isinstance(value, str) or not value.strip()
-            or any(ord(char) < 32 or 127 <= ord(char) <= 159
-                   or 0xD800 <= ord(char) <= 0xDFFF for char in value)
+            not isinstance(value, str)
+            or not value.strip()
+            or any(
+                ord(char) < 32 or 127 <= ord(char) <= 159 or 0xD800 <= ord(char) <= 0xDFFF
+                for char in value
+            )
         ):
             raise ValueError(f"PubChem source has an invalid native {field}")
     if not re.fullmatch(r"[A-Z]{14}-[A-Z]{10}-[A-Z]", compound["InChIKey"]):
@@ -1679,14 +1926,22 @@ def _pubchem_record(path: Path, url: str) -> tuple[str, str, list[str]]:
 
 
 def source_terms(
-    kind: str, path: Path, *, url: str | None = None, version: str | None = None,
-    archive: dict[str, Any] | None = None, sha256: str | None = None,
+    kind: str,
+    path: Path,
+    *,
+    url: str | None = None,
+    version: str | None = None,
+    archive: dict[str, Any] | None = None,
+    sha256: str | None = None,
 ) -> Iterator[tuple[str, str, list[str]]]:
     if archive is not None and kind != PATHBANK_ARCHIVE_KIND:
         raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
     if kind == PATHBANK_ARCHIVE_KIND:
         yield from _pathbank_archive_terms(
-            path, url=url or "", sha256=sha256 or "", archive=archive,
+            path,
+            url=url or "",
+            sha256=sha256 or "",
+            archive=archive,
         )
     elif kind in {"gocam-tar", "mibig-tar"}:
         parser = gocam_terms if kind == "gocam-tar" else mibig_terms
@@ -1720,6 +1975,9 @@ def source_terms(
     elif kind == "metacyc-reaction-xml":
         term, _ = _metacyc_reaction_record(path, url=url or "", version=version or "")
         yield term
+    elif kind == CARRIER_CLASS_KIND:
+        native = class_native(path, url or "", version or "")
+        yield native["id"], native["direct_common_name"], native["direct_synonyms"]
     elif kind in BIGG_SOURCE_TYPES:
         yield _bigg_record(kind, path, url or "")
     elif kind == "pubchem-compound-property-json":
@@ -1756,6 +2014,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metacyc_xml_ids: set[str] = set()
     metacyc_kinds: dict[str, set[str]] = {}
     metacyc_reaction_assertions: dict[str, tuple] = {}
+    metacyc_carrier_assertions: dict[str, tuple] = {}
     gene_assertions: dict[str, tuple[str, tuple[str, ...], str]] = {}
     bigg_assertions: dict[str, tuple[str, str, str, str]] = {}
     bigg_versions: dict[str, str] = {}
@@ -1767,6 +2026,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
     for entry in entries:
+        if "counterpart_source" in entry and entry["kind"] != ECOCYC_STATE_KIND:
+            raise ValueError(
+                "EcoCyc counterpart_source requires the typed protein-state source kind"
+            )
         if "class_source" in entry and entry["kind"] != ECOCYC_COMPLEX_KIND:
             raise ValueError("EcoCyc class_source requires the typed complex source kind")
         key = entry["key"]
@@ -1777,6 +2040,9 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
+        if entry["kind"] in {CARRIER_CLASS_KIND, ECOCYC_STATE_KIND}:
+            # Refuse non-regular resolved originals before the common byte read.
+            carrier_original_path(entry, cache_dir)
         metadata = {name: entry[name] for name in ("url", "version", "license")}
         if "sha256_scope" in entry:
             metadata["sha256_scope"] = entry["sha256_scope"]
@@ -1789,28 +2055,84 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
         if entry["kind"] == PATHBANK_ARCHIVE_KIND:
             if entry.keys() != {
-                "key", "kind", "path", "url", "version", "license", "sha256", "archive",
+                "key",
+                "kind",
+                "path",
+                "url",
+                "version",
+                "license",
+                "sha256",
+                "archive",
             }:
                 raise ValueError("PathBank ZIP requires closed source manifest fields")
             parsed_terms = _pathbank_archive_terms(
-                path, url=entry["url"], sha256=entry["sha256"], archive=entry["archive"],
+                path,
+                url=entry["url"],
+                sha256=entry["sha256"],
+                archive=entry["archive"],
             )
             metadata.update(
-                kind=PATHBANK_ARCHIVE_KIND, archive=dict(entry["archive"]),
-                pathway_accessions=[identifier.split(":", 1)[1]
-                                    for identifier, _, _ in parsed_terms if "/" not in identifier],
+                kind=PATHBANK_ARCHIVE_KIND,
+                archive=dict(entry["archive"]),
+                pathway_accessions=[
+                    identifier.split(":", 1)[1]
+                    for identifier, _, _ in parsed_terms
+                    if "/" not in identifier
+                ],
             )
         elif entry["kind"] == "metacyc-reaction-xml":
             term, assertion = _metacyc_reaction_record(
-                path, url=entry["url"], version=entry["version"],
+                path,
+                url=entry["url"],
+                version=entry["version"],
             )
             identifier = term[0]
-            if (identifier in metacyc_reaction_assertions
-                    and metacyc_reaction_assertions[identifier] != assertion):
+            if (
+                identifier in metacyc_reaction_assertions
+                and metacyc_reaction_assertions[identifier] != assertion
+            ):
                 raise ValueError(f"conflicting MetaCyc reaction native assertions for {identifier}")
             metacyc_reaction_assertions[identifier] = assertion
             metadata["kind"] = "metacyc-reaction-xml"
             parsed_terms = [term]
+        elif entry["kind"] == CARRIER_CLASS_KIND:
+            metadata = class_metadata(entry, cache_dir)
+            identifier, typed_term = class_term(metadata, key)
+            assertion = (
+                json.dumps(metadata["native_carrier_class"], sort_keys=True),
+                entry["version"],
+            )
+            if (
+                identifier in metacyc_carrier_assertions
+                and metacyc_carrier_assertions[identifier] != assertion
+            ):
+                raise ValueError(
+                    f"conflicting MetaCyc carrier-class native assertions for {identifier}"
+                )
+            metacyc_carrier_assertions[identifier] = assertion
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
+        elif entry["kind"] == ECOCYC_STATE_KIND:
+            metadata = state_metadata(entry, cache_dir)
+            identifier, typed_term = state_term(metadata, key)
+            # Both whole originals assert a native instance identity, including
+            # when the companion is not selected as its own corpus term.
+            for observation in (metadata, metadata["counterpart"]):
+                native = observation["native_protein_state"]
+                assertion = (
+                    ECOCYC_STATE_KIND,
+                    json.dumps(native, sort_keys=True),
+                    observation["version"],
+                )
+                observed_id = native["id"]
+                if observed_id in ecocyc_assertions and ecocyc_assertions[observed_id] != assertion:
+                    raise ValueError(
+                        f"conflicting EcoCyc native identity assertions for {observed_id}"
+                    )
+                ecocyc_assertions[observed_id] = assertion
+            ecocyc_versions.add(entry["version"])
+            if len(ecocyc_versions) != 1:
+                raise ValueError("conflicting EcoCyc native PGDB versions")
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in BIGG_SOURCE_TYPES:
             version = _bigg_version(entry, cache_dir)
             if version[0] in bigg_versions and bigg_versions[version[0]] != version[1]:
@@ -1826,8 +2148,11 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         elif entry["kind"] == ECOCYC_COMPLEX_KIND:
             metadata = complex_metadata(entry, cache_dir)
             identifier, typed_term = complex_term(metadata, key)
-            assertion = (entry["kind"], json.dumps(metadata["native_complex"], sort_keys=True),
-                         entry["version"])
+            assertion = (
+                entry["kind"],
+                json.dumps(metadata["native_complex"], sort_keys=True),
+                entry["version"],
+            )
             if identifier in ecocyc_assertions and ecocyc_assertions[identifier] != assertion:
                 raise ValueError(f"conflicting EcoCyc native identity assertions for {identifier}")
             ecocyc_assertions[identifier] = assertion
@@ -1837,7 +2162,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in ECOCYC_SOURCE_TYPES:
             term, parent_class = _ecocyc_record(
-                entry["kind"], path, url=entry["url"], version=entry["version"],
+                entry["kind"],
+                path,
+                url=entry["url"],
+                version=entry["version"],
             )
             identifier, label, synonyms = term
             assertion = (entry["kind"], parent_class, label, tuple(synonyms), entry["version"])
@@ -1858,7 +2186,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             parsed_terms = [term]
         else:
             parsed_terms = source_terms(
-                entry["kind"], path, url=entry["url"], version=entry["version"],
+                entry["kind"],
+                path,
+                url=entry["url"],
+                version=entry["version"],
             )
         for identifier, label, synonyms in parsed_terms:
             if identifier.startswith("MetaCyc:"):
@@ -1868,6 +2199,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     raise ValueError(
                         f"conflicting MetaCyc reaction identity scope for {identifier}"
                     )
+                if CARRIER_CLASS_KIND in kinds and len(kinds) != 1:
+                    raise ValueError(
+                        f"conflicting MetaCyc carrier-class identity scope for {identifier}"
+                    )
             if identifier.startswith("PubChem:"):
                 if entry["kind"] != "pubchem-compound-property-json":
                     raise ValueError(
@@ -1876,13 +2211,18 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 if identifier in pubchem_assertions and pubchem_assertions[identifier] != label:
                     raise ValueError(f"conflicting PubChem native names for {identifier}")
                 pubchem_assertions[identifier] = label
-            if (entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
-                    and "/" not in identifier):
+            if (
+                entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
+                and "/" not in identifier
+            ):
                 if identifier in pathbank_assertions and pathbank_assertions[identifier] != label:
                     raise ValueError(f"conflicting PathBank native pathway names for {identifier}")
                 pathbank_assertions[identifier] = label
-            if (identifier.startswith("EcoCyc:") and entry["kind"] not in ECOCYC_SOURCE_TYPES
-                    and entry["kind"] != ECOCYC_COMPLEX_KIND):
+            if (
+                identifier.startswith("EcoCyc:")
+                and entry["kind"] not in ECOCYC_SOURCE_TYPES
+                and entry["kind"] not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND}
+            ):
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
                 raise ValueError("BiGG identifiers require native universal JSON authority")
@@ -1893,8 +2233,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     metacyc_xml_ids.add(identifier)
                 if identifier in metacyc_xml_ids and len(names) != 1:
                     raise ValueError(f"conflicting MetaCyc protein native names for {identifier}")
-            if (identifier.startswith("metanetx.chemical:")
-                    and entry["kind"] != "metanetx-chemical-html"):
+            if (
+                identifier.startswith("metanetx.chemical:")
+                and entry["kind"] != "metanetx-chemical-html"
+            ):
                 raise ValueError("MetaNetX chemical identifiers require native chemical HTML")
             if entry["kind"] == "metanetx-chemical-html":
                 if identifier in metanetx_assertions and metanetx_assertions[identifier] != label:
@@ -1923,12 +2265,18 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             }
             if entry["kind"] == ECOCYC_COMPLEX_KIND:
                 terms[identifier] = complex_term(metadata, key)[1]
+            if entry["kind"] == CARRIER_CLASS_KIND:
+                terms[identifier] = class_term(metadata, key)[1]
+            if entry["kind"] == ECOCYC_STATE_KIND:
+                terms[identifier] = state_term(metadata, key)[1]
             if entry["kind"] == "metacyc-reaction-xml":
                 terms[identifier].update(label_kind="source_context", entity_type="reaction")
             if (
                 (identifier.startswith("WikiPathways:") and "/" in identifier)
-                or (entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
-                    and "/" in identifier)
+                or (
+                    entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
+                    and "/" in identifier
+                )
                 or identifier.startswith("MIBiG:")
                 or (
                     entry["kind"] == "gocam-tar"

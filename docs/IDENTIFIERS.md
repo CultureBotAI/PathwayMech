@@ -111,8 +111,8 @@ contextual slot. It cannot satisfy canonical-label verification even if the
 strings happen to match. This records the evidence boundary for native IDs
 whose independently available source supplies membership but no canonical name.
 
-The `metacyc-reaction-xml` source kind supports the bounded case of a genuinely
-unnamed native small-molecule reaction. It accepts only an exact HTTPS request
+The `metacyc-reaction-xml` source kind supports bounded unnamed native
+small-molecule and whole-carrier protein-modification reactions. It accepts only an exact HTTPS request
 `https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:<frame>` and one original
 full META `Reaction` with matching metadata query, PGDB version, species
 `MetaCyc`, and identity attributes. The root software-version field must also
@@ -122,13 +122,19 @@ HTTP-with-port-443 base/service are supported. Alternate requests, ports,
 duplicate metadata/entities, top-level reaction class instances, HTML, DTDs and entities fail.
 Original declared XML encoding and bytes are retained unchanged.
 
-This adapter requires both native `Chemical-Reactions` and
-`Small-Molecule-Reactions` parents, a native reaction direction, and nonempty
-left/right sides containing exact empty META Compound references. Explicit
-coefficient/compartment slots and participant objects other than exact Compound
-references remain unsupported. The optional literal Compound `class="true"`
-marker is retained; other class values or placements fail rather than being
-silently normalized. A direct `common-name` slot of any shape also fails: named
+The original small-molecule mode requires exactly both native
+`Chemical-Reactions` and `Small-Molecule-Reactions` parents and exact empty META
+Compound side references. A separate mode requires exactly one
+`Protein-Modification-Reactions` parent, with at least one direct whole
+`Protein class="true"` on each side; its other direct sides may be Compound
+references. Neither unions of the parent modes nor arbitrary Protein instances
+are supported. Both modes retain native direction and nonempty left/right
+sides. Explicit coefficients/compartments remain unsupported; omitted native
+coefficients remain omitted in the source assertion. The optional literal
+Compound `class="true"` marker is retained. Other markers, unresolved/cross-PGDB
+references, duplicate frames per side, or malformed wrappers fail. New-mode
+conflict signatures retain XML participant type as well as frame/class marker;
+old-mode signatures are unchanged. A direct `common-name` slot of any shape also fails: named
 reaction support is not an implicit fallback. Nested evidence/curator names,
 equations and curated labels never supply a canonical reaction name.
 
@@ -525,3 +531,52 @@ attributes, class markers on side wrappers and duplicate side frames fail.
 The class marker is retained in same-frame conflict comparisons, so a class
 reference cannot silently overwrite an unmarked assertion. This does not alter
 the unnamed frame-token authority label or establish chemical/anomer identity.
+
+
+## Native carrier classes and protein state instances
+
+`metacyc-carrier-class-xml` owns explicitly typed, directly named META classes.
+It accepts a whole Protein class with direct `Thioredoxin` parent, optionally
+also `Modified-Proteins`, and the corresponding single native modified/unmodified
+state link. It separately accepts a Compound class with the exact direct parent
+`Hydride-Acceptors`. Both cases require literal top-level `class="true"`, one full
+native object, exact HTTPS issuing request/query/PGDB/release identity and safe
+direct common-name/synonym slots. There is no nested-name or xref fallback.
+
+The source contains closed `native_carrier_class` metadata with native type,
+class marker, parents, names and the explicit Protein state link. Terms have
+`entity_type: protein_class` or `chemical_class` and source-native names.
+The loader permits only `participants/category: protein` or
+`participants/category: chemical_entity`, respectively, and checks canonical or
+authorized synonym names before any contextual-label exemption. Generic electron
+carrier classes do not establish exact homogeneous client chemicals, formulas,
+charges, sequence identities or reactive-part/whole-protein equivalences.
+
+`ecocyc-protein-state-xml` is separate from the named-protein and complex adapters.
+It supports exact ECOLI thioredoxin state **instances**, with the native
+`Red-Thioredoxin` parent or `Modified-Proteins` plus `Ox-Thioredoxin` parents.
+It retains direct source names, a single state link and a direct gene reference.
+The source entry requires `counterpart_source`, a separate whole original with
+closed `path`, `url`, `version`, `sha256` and `license` provenance. Both objects
+must carry the exact ECOLI species/strain/taxon and same release, reciprocal state
+links, opposite states and matching native gene identities. Each original is
+hashed independently; counterpart assertions participate in conflict checks
+even if only the other member is selected by the corpus.
+
+The state source includes closed `native_protein_state` and `counterpart`
+metadata. Its term has `entity_type: protein_state`, restricted to
+`participants/category: protein` with source-native canonical/synonym names.
+A reduced state whose direct common-name is `thioredoxin 1` keeps that name;
+state assertions do not authorize rewriting it or identifying an engineered
+mutant/construct. All selected state counterparts must remain explicit originals
+in source inventories, copy plans and archives; a top-level-path-only collector
+is insufficient. This is independent of the accepted complex adapter's separate
+`class_source` requirement, which remains unchanged.
+
+Class/state conflicts, issuing identity mismatches and malformed originals fail
+before corpus filtering. Typed identities cannot be overwritten by legacy
+untyped sources or used as pathways, reactions, small molecules or complexes to
+bypass placement checks. Whole Rhea components 10698/10700 remain whole generic
+protein redox states; ChEBI reactive parts do not replace those proteins. Native
+Protein and Compound class references preserve both events of a carrier cycle,
+including the generic-client reaction when it lacks an exact Rhea mapping.

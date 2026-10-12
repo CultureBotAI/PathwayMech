@@ -16,11 +16,13 @@ from urllib.parse import urlparse
 
 import yaml
 
+from pathwaymech.biocyc_carrier import CARRIER_CLASS_KIND, class_term, validate_class_metadata
 from pathwaymech.ecocyc_complex import (
     ECOCYC_COMPLEX_KIND,
     complex_term,
     validate_complex_metadata,
 )
+from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_term, validate_state_metadata
 from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
 from pathwaymech.schema import ALLOWED_CURIE_PREFIXES
 from pathwaymech.yaml_io import load_yaml_file, pathway_files
@@ -97,13 +99,30 @@ def _load_authority(path: Path) -> dict[str, Any]:
         _keys(
             metadata,
             {"url", "version", "sha256", "license"},
-            {"sha256_scope", "kind", "archive", "pathway_accessions", "native_complex"},
+            {
+                "sha256_scope",
+                "kind",
+                "archive",
+                "pathway_accessions",
+                "native_complex",
+                "native_carrier_class",
+                "native_protein_state",
+                "counterpart",
+            },
             f"source {source}",
         )
         if any(
             not _text(value)
             for name, value in metadata.items()
-            if name not in {"archive", "pathway_accessions", "native_complex"}
+            if name
+            not in {
+                "archive",
+                "pathway_accessions",
+                "native_complex",
+                "native_carrier_class",
+                "native_protein_state",
+                "counterpart",
+            }
         ):
             raise ValueError(f"source {source}: provenance fields must be nonempty strings")
         url = urlparse(metadata["url"])
@@ -115,6 +134,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             ECOCYC_COMPLEX_KIND,
+            CARRIER_CLASS_KIND,
+            ECOCYC_STATE_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
         if metadata.get("kind") == PATHBANK_ARCHIVE_KIND:
@@ -148,6 +169,18 @@ def _load_authority(path: Path) -> dict[str, Any]:
         elif "native_complex" in metadata:
             raise ValueError(
                 f"source {source}: native complex provenance requires its typed source kind"
+            )
+        if metadata.get("kind") == CARRIER_CLASS_KIND:
+            validate_class_metadata(metadata)
+        elif "native_carrier_class" in metadata:
+            raise ValueError(
+                f"source {source}: native class provenance requires its typed source kind"
+            )
+        if metadata.get("kind") == ECOCYC_STATE_KIND:
+            validate_state_metadata(metadata)
+        elif "native_protein_state" in metadata or "counterpart" in metadata:
+            raise ValueError(
+                f"source {source}: native state provenance requires its typed source kind"
             )
         if metadata.get("kind") == "metacyc-reaction-xml":
             request = re.fullmatch(
@@ -224,6 +257,11 @@ def _load_authority(path: Path) -> dict[str, Any]:
             )
             if identifier != expected_id or term != expected_term:
                 raise ValueError(f"{identifier}: invalid typed native complex authority")
+        elif source_kind in {CARRIER_CLASS_KIND, ECOCYC_STATE_KIND}:
+            projector = class_term if source_kind == CARRIER_CLASS_KIND else state_term
+            expected_id, expected_term = projector(data["sources"][term["source"]], term["source"])
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid typed native carrier authority")
         elif "entity_type" in term or source_kind == "metacyc-reaction-xml":
             if (
                 term.get("entity_type") != "reaction"
@@ -340,6 +378,29 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     )
                 # No broad contextual-label rule may invent names for this
                 # bounded unnamed/synonym-only authority representation.
+                continue
+            carrier_category = {
+                "protein_class": "protein",
+                "chemical_class": "chemical_entity",
+                "protein_state": "protein",
+            }.get(term.get("entity_type"))
+            if carrier_category is not None:
+                if section != "participants" or node.get("category") != carrier_category:
+                    errors.append(
+                        f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+                        f"typed native carrier requires participants/category {carrier_category}"
+                    )
+                else:
+                    labels = [term["label"]]
+                    if entry["policy"] == "canonical_or_synonym":
+                        labels += term["synonyms"]
+                    if _normalize(label) not in {_normalize(value) for value in labels}:
+                        errors.append(
+                            f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
+                            f"authority label is {term['label']!r}"
+                        )
+                # A generic namespace rule cannot erase class/state scope or
+                # manufacture a name for these explicitly typed identities.
                 continue
             contextual = any(
                 rule["namespace"] == prefix
